@@ -377,7 +377,7 @@ namespace CalamityMod.NPCs.HiveMind
             int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
-                int type = NPCID.EaterofSouls;
+                int type = 0;
                 int choice = masterMode ? 1 : -1;
                 do
                 {
@@ -386,25 +386,26 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         case 0:
                         case 1:
-                            type = NPCID.EaterofSouls;
+                            type = NPC.CountNPCS(NPCID.EaterofSouls) < 2 ? NPCID.EaterofSouls : 0;
                             break;
 
                         case 2:
-                            type = NPCID.DevourerHead;
+                            type = NPC.CountNPCS(NPCID.DevourerHead) < 2 ? NPCID.DevourerHead : 0;
                             break;
 
                         case 3:
                         case 4:
-                            type = ModContent.NPCType<DankCreeper>();
+                            type = NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < 2 ? ModContent.NPCType<DankCreeper>() : 0;
                             break;
 
                         default:
+                            type = -1;
                             break;
                     }
                 }
-                while (NPC.CountNPCS(type) < 2 && choice < 5);
+                while (type == 0);
 
-                if (choice < 5)
+                if (type > 0)
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + Main.rand.Next(NPC.width), (int)NPC.position.Y + Main.rand.Next(NPC.height), type);
             }
 
@@ -1343,9 +1344,15 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(60))
+                    if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 3)
+                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
+                    }
+
+                    if (Main.rand.NextBool(60))
+                    {
+                        if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                     }
 
