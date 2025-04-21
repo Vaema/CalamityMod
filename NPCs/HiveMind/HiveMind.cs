@@ -771,7 +771,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (nextState == 0)
                     {
                         NPC.TargetClosest();
-                        if (revenge && lifeRatio < 0.5f)
+                        if (revenge && lifeRatio < 0.6f)
                         {
                             if (death)
                             {
@@ -780,7 +780,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 while (nextState == previousState);
                                 previousState = nextState;
                             }
-                            else if (lifeRatio < 0.25f)
+                            else if (lifeRatio < 0.3f)
                             {
                                 do
                                     nextState = Main.rand.Next(3, 6);
@@ -948,7 +948,7 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
-                        if (revenge && lifeRatio < 0.53f && lungesPerformed == 0 && rainDashesPerformed == 0)
+                        if (revenge && lifeRatio < 0.6f && lungesPerformed == 0 && rainDashesPerformed == 0)
                         {
                             state = nextState;
                             nextState = 0;
@@ -1273,8 +1273,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));
-                            int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height - 32));
+                            int x = (int)(NPC.position.X + Main.rand.Next(NPC.width));
+                            int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height));
                             int type = ModContent.NPCType<DarkHeart>();
                             int tenPercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
                             Main.npc[tenPercentMinions].SetDefaults(type);
