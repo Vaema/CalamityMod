@@ -92,8 +92,8 @@ HolyFireBullet: {
 	DisplayName: Holy Fire Bullet
 	Tooltip:
 		'''
-		Profaned bullets that explode on impact, dealing extra damage
-		The explosion grows weaker the further the bullet travels
+		Profaned bullets that explode on impact
+		The explosion is larger and the bullet deals increased damage if impact occurs immediately after firing
 		'''
 }
 
