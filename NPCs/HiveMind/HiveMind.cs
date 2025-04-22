@@ -502,6 +502,25 @@ namespace CalamityMod.NPCs.HiveMind
                             Gore.NewGore(NPC.GetSource_FromAI(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("HiveMindGore" + i).Type, 1f);
                     }
 
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].velocity *= 3f;
+                        if (Main.rand.NextBool())
+                        {
+                            Main.dust[dust].scale = 0.5f;
+                            Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        }
+                    }
+                    for (int j = 0; j < 35; j++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 3f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].velocity *= 5f;
+                        dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].velocity *= 2f;
+                    }
+
                     SoundEngine.PlaySound(SoundID.NPCDeath1, NPC.Center);
 
                     NPC.position = NPC.Center;
@@ -1247,8 +1266,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     NPC.ai[3] = NPC.life;
 
-                    int maxDarkHearts = ((revenge && lifeRatio < 0.25f) || death) ? 2 : 1;
-                    if (NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxDarkHearts)
+                    if (!NPC.AnyNPCs(ModContent.NPCType<DarkHeart>()))
                     {
                         SoundEngine.PlaySound(SoundID.NPCDeath22, NPC.Center);
 
