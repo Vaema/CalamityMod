@@ -58,7 +58,7 @@ ElysianArrow: {
 
 FlashRound: {
 	DisplayName: Flash Round
-	Tooltip: Emits a wide-reaching concussive blast which briefly confuses enemies
+	Tooltip: A ricocheting bullet that confuses enemies when it flashes and deals more damage with each bounce
 }
 
 GodSlayerSlug: {
