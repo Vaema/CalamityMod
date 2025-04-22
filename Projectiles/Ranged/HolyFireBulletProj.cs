@@ -44,6 +44,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (time == 0)
             {
+                Projectile.damage = (int)(Projectile.damage * 1.15f);
                 col = Main.rand.NextBool() ? Color.Orange : Color.Goldenrod;
                 SizeVariance = Main.rand.NextFloat(0.95f, 1.05f);
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 14;
@@ -64,7 +65,9 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.color = col;
                 }
 
-                if (time > 2)
+                Player Owner = Main.player[Projectile.owner];
+                float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+                if (time > 2 && targetDist < 1400)
                 {
                     Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.5f, "CalamityMod/Particles/DualTrail", false, 4, 0.03f, col * 0.9f, new Vector2(1f, 3), true, true, shrinkSpeed: 0.8f, glowOpacity: 0.6f);
                     GeneralParticleHandler.SpawnParticle(trail);
@@ -94,9 +97,9 @@ namespace CalamityMod.Projectiles.Ranged
         public void MakeBlast(int target, bool hitTarget)
         {
             float blastSize = 50 * sizeBonus;
-            float minMultiplier = 0.25f;
+            float minMultiplier = 0.35f;
             int hitsToMinMult = 8;
-            int blastDamage = (int)(Projectile.damage * 0.5f);
+            int blastDamage = (int)(Projectile.damage * 0.33f);
             int knockback = -10;
             int debuff = ModContent.BuffType<HolyFlames>();
             int debuffTime = 180;
@@ -170,11 +173,12 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
             MakeBlast(target.whoAmI, true);
-            if (sizeBonus == 2)
+            if (sizeBonus == 2) // If you're at max damage get extra damage
             {
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Pitch = 0.3f, Volume = 0.4f, MaxInstances = 10 }, Projectile.Center);
             }
-            modifiers.SourceDamage *= MathHelper.Lerp(1, 1.25f, sizeBonus - 1); // Up to 25% damage bonus
+            // This used to be 25% was I fucking insane???
+            modifiers.SourceDamage *= MathHelper.Lerp(1, 1.15f, sizeBonus - 1); // Up to 15% damage bonus
         }
     }
 }
