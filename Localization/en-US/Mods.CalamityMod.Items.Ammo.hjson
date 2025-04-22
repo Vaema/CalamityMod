@@ -23,7 +23,7 @@ BloodfireBullet: {
 		'''
 		Passes through tiles and accelerates your natural life regen on hit based on how powerful the hit was
 		Deals bonus damage based on your current natural life regen
-		This damage caps at 1.08x
+		This damage caps at 1.1x
 		'''
 }
 

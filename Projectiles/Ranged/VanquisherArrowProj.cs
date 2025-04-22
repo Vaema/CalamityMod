@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // First hit is 25% damage
+            // First hit is 30% damage
             // Second hit is 100% base damage, it is the "Slash Hit"
             modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.3f : 1f);
             if (Projectile.damage < 1)
