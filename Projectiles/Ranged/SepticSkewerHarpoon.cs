@@ -7,6 +7,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -267,8 +268,11 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
-                        int heal = 25;
-                        Owner.HealPlayer(heal);
+                        if (!chosenTarget.SpawnedFromStatue)
+                        {
+                            int heal = Math.Max(25 - (int)Projectile.ai[1], 10);
+                            Owner.HealPlayer(heal);
+                        }
 
                         spawnPullBlood = false;
                     }
