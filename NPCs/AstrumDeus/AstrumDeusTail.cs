@@ -23,6 +23,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public static Asset<Texture2D> GlowTexture;
         public static Asset<Texture2D> GlowTexture2;
+        public static Asset<Texture2D> TextureFlash;
 
         public override void SetStaticDefaults()
         {
@@ -32,6 +33,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
                 GlowTexture2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
+                TextureFlash = ModContent.Request<Texture2D>(Texture + "GlowFlash", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -106,11 +108,18 @@ namespace CalamityMod.NPCs.AstrumDeus
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            bool drawCyan = NPC.Calamity().newAI[3] >= (Main.getGoodWorld ? 300f : 600f);
             bool deathModeEnragePhase = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
+            // Tail is always the first segment to visually transition
+            float transitionStart = cyanThreshold * 0.75f;
+            float transitionEnd = cyanThreshold * 0.8f;
+            bool drawCyan = NPC.Calamity().newAI[3] >= transitionEnd && NPC.Calamity().newAI[3] <= cyanThreshold + transitionEnd;
+            bool inColorTrans = doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold >= transitionStart && NPC.Calamity().newAI[3] % cyanThreshold <= transitionEnd;
+
             Texture2D wormTexture = TextureAssets.Npc[Type].Value;
+            Texture2D otherTexture;
             Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -120,15 +129,29 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             wormTexture = GlowTexture.Value;
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
-            if (doubleWormPhase)
+            Color otherPhaseColor = drawCyan ? Color.Orange : Color.Cyan;
+            if (doubleWormPhase) // otherTexture contains the opposite texture, and is faded in during the transition
+            {
                 wormTexture = drawCyan ? GlowTexture2.Value : wormTexture;
+                otherTexture = drawCyan ? wormTexture : GlowTexture2.Value;
+            }
+            else
+                otherTexture = wormTexture;
 
             Color wormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
 
             int timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 2 : 1;
             for (int i = 0; i < timesToDraw; i++)
-                spriteBatch.Draw(wormTexture, drawLocation, NPC.frame, wormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
-
+            {
+                float opacity = Utils.GetLerpValue(transitionStart, transitionEnd, NPC.Calamity().newAI[3] % cyanThreshold, true);
+                spriteBatch.Draw(wormTexture, drawLocation, NPC.frame, wormColorLerp * (inColorTrans ? 1f - opacity : 1f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the new fading in glowmask for the upcoming behavior
+                if (inColorTrans)
+                    spriteBatch.Draw(otherTexture, drawLocation, NPC.frame, Color.Lerp(Color.White, otherPhaseColor, 0.5f) * opacity, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the white flash immediately after swapping behaviors
+                if (doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold < 25f)
+                    spriteBatch.Draw(TextureFlash.Value, drawLocation, NPC.frame, Color.White * MathHelper.Lerp(1f, 0f, NPC.Calamity().newAI[3] % cyanThreshold / 25f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+            }
             return false;
         }
 

@@ -65,7 +65,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
             shineRot += Math.Sign(shineRot) * 0.05f;
 
-            if (time > 2 && time % 2 == 0)
+            Player Owner = Main.player[Projectile.owner];
+            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            if (time > 2 && time % 2 == 0 && targetDist < 1400)
             {
                 float trailSize = Utils.GetLerpValue(2, 5, Projectile.velocity.Length(), true);
                 Particle trail = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.5f, "CalamityMod/Particles/BloomCircle", false, 5, 0.13f, Color.White * 0.6f, new Vector2(1f - 0.2f * trailSize, 1 + 2f * trailSize), true, false, shrinkSpeed: 0.8f * trailSize);
@@ -150,7 +152,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.velocity *= 0.97f;
 
-            int expectedDamage = Math.Max((int)(Projectile.damage * 1.2f), Projectile.damage + 2);
+            int expectedDamage = Math.Max((int)(Projectile.damage * 1.13f), Projectile.damage + 2);
             Projectile.damage = expectedDamage;
 
             makeDust(false);

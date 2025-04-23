@@ -102,6 +102,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
                 calamityGlobalNPC.newAI[3] = 0f;
+            // Sound effect for swapping between attack behaviors in phase 2
+            if (doubleWormPhase && calamityGlobalNPC.newAI[3] % aiSwitchTimer == 0f && !(deathModeEnragePhase_Head || deathModeEnragePhase_BodyAndTail))
+                SoundEngine.PlaySound(AstrumDeusHead.SplitSound with { Pitch = -0.2f, Volume = 0.9f }, player.Center);
 
             // Phase for flying at the player
             bool flyAtTarget = calamityGlobalNPC.newAI[3] >= (aiSwitchTimer * 0.5f) && startFlightPhase;
@@ -365,6 +368,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 SyncCalamityNPCAIArrayPacket.Send(Main.npc[lol]);
                             }
 
+                            Main.npc[lol].ai[3] = segments + 1;
                             Main.npc[lol].ai[2] = npc.whoAmI;
                             Main.npc[lol].ai[1] = Previous;
                             Main.npc[Previous].ai[0] = lol;
