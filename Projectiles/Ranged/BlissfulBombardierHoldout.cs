@@ -87,6 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.CantUseHoldout() && PostFireCooldown <= 0 && shootingTimer < (int)(Owner.itemAnimationMax * 0.8f))
             {
                 Projectile.Kill();
+                return;
             }
 
             if (!hasFired)
