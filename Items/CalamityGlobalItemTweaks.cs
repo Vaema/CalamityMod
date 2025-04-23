@@ -278,6 +278,7 @@ namespace CalamityMod.Items
                 { ItemID.TungstenShortsword, Do(AutoReuse, TrueMelee, DamageExact(15)) },
                 { ItemID.UnholyArrow, Do(DamageExact(11)) },
                 { ItemID.UnholyTrident, Do(ManaRatio(0.78f), DamageRatio(0.91f)) },  // Uses ratios due to remix seed
+                { ItemID.Uzi, Do(PointBlank, UseExact(8)) },
                 { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
                 { ItemID.VenomStaff, Do(DamageExact(55)) },
@@ -482,7 +483,6 @@ namespace CalamityMod.Items
                 { ItemID.StakeLauncher, pointBlank },
                 { ItemID.TinBow, pointBlank },
                 { ItemID.TungstenBow, pointBlank },
-                { ItemID.Uzi, pointBlank },
                 { ItemID.VortexBeater, pointBlank },
                 { ItemID.WoodenBow, pointBlank },
                 #endregion
