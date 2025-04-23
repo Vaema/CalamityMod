@@ -76,7 +76,8 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.SoulofFright, 5).
                 AddIngredient(ItemID.SoulofMight, 5).
                 AddIngredient(ItemID.SoulofSight, 5).
-                AddTile(TileID.MythrilAnvil).
+                //Not an anvil because making fruit at an anvil is a little weird, so here's something more magical.
+                AddTile(TileID.DemonAltar).
                 Register();
         }
     }

@@ -94,7 +94,8 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(5).
                 AddIngredient<AuricOre>(50).
                 AddIngredient<YharonSoulFragment>().
-                AddTile<CosmicAnvil>().
+                //Not Cosmic Anvil because making a bar at an anvil is a little odd? also allows pre-moon lord scal for those who really want to do it. win-win.
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }
