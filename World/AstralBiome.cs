@@ -500,7 +500,7 @@ namespace CalamityMod.World
                     int distanceToCheckForCriticalTilesY = 50;
 
                     int attempts = 0;
-                    int maxAttempts = 10000;
+                    int maxAttempts = 100000;
                     while (!altarPlaced)
                     {
                         WorldGen.gen = true;

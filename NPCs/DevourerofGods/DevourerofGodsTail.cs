@@ -146,10 +146,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.frame = frame;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            return false;
-        }
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
@@ -450,15 +447,10 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             // viable???, done here since it's conditional
             if (Main.zenithWorld && projectile.type == ModContent.ProjectileType<LaceratorYoyo>())
-            {
                 modifiers.SourceDamage *= 40f;
-            }
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool CheckDead()
         {
