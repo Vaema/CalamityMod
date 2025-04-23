@@ -401,11 +401,13 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool instakill = false;
             List<string> metarexNames = new List<string> { "LordMetarex", "Metarex" };
             foreach (string s in metarexNames)
+            {
                 if (s.ToLower() == target.name.ToLower())
                 {
                     instakill = true;
                     break;
                 }
+            }
 
             if (instakill)
             {
