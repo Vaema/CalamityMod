@@ -451,6 +451,9 @@ namespace CalamityMod.NPCs.Perforator
                 }
             }
 
+            if (NPC.Distance(player.Center) > 1280f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
             float minimalDamageVelocity = maxChargeSpeed * 0.5f;

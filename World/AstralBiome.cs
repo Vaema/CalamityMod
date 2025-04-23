@@ -455,31 +455,249 @@ namespace CalamityMod.World
                     if (j < 181)
                         j = 181;
 
-                    int xOffset = GenVars.dungeonX < Main.maxTilesX / 2 ? WorldGen.genRand.Next(-100, -50) : WorldGen.genRand.Next(50, 100);
+                    IList<ushort> AstralTilesToCheckFor = new List<ushort>(16);
+                    int[] AstralTiles = new int[]
+                    {
+                        ModContent.TileType<AstralSand>(),
+                        ModContent.TileType<AstralSandstone>(),
+                        ModContent.TileType<HardenedAstralSand>(),
+                        ModContent.TileType<CelestialRemains>(),
+                        ModContent.TileType<AstralIce>(),
+                        ModContent.TileType<AstralSnow>(),
+                        ModContent.TileType<AstralDirt>(),
+                        ModContent.TileType<AstralStone>(),
+                        ModContent.TileType<AstralGrass>(),
+                        ModContent.TileType<AstralOre>(),
+                        ModContent.TileType<NovaeSlag>(),
+                        ModContent.TileType<AstralClay>(),
+                    };
+                    foreach (int modTile in AstralTiles)
+                        AstralTilesToCheckFor.Add((ushort)modTile);
 
                     bool altarPlaced = false;
+                    int altarX = i + (GenVars.dungeonX < Main.maxTilesX / 2 ? -50 : 50);
+                    int altarY = j - 5;
+
+                    // Variables used for checking both the bottom and top of the potential altar location
+                    int distanceToCheckForAstralTilesX = 40;
+                    int distanceToCheckForAstralTilesY = 10;
+                    int startCheckingX = altarX - 20;
+                    int startCheckingY = altarY + 10;
+                    int startCheckingY2 = altarY - 25;
+
+                    // Variables used for checking the bottom of the potential altar location
+                    int astralTilesRequired = 200;
+                    int emptyTilesRequiredToMove = 200;
+
+                    // Variables used for checking the top of the potential altar location
+                    int emptyTilesRequired = 200;
+
+                    // Whether Magic Storage tiles need to be looked for
+                    bool needsToCheckForMSTiles = magicStorage is not null;
+
+                    // Variables used for checking the entire potential altar location for critical tiles like chests, torches, etc.
+                    int distanceToCheckForCriticalTilesX = 40;
+                    int distanceToCheckForCriticalTilesY = 50;
+
+                    int attempts = 0;
+                    int maxAttempts = 10000;
                     while (!altarPlaced)
                     {
                         WorldGen.gen = true;
 
-                        int x = i + xOffset;
-                        int y = j - 100;
-
-                        while (!WorldGen.SolidTile(x, y) && y <= Main.worldSurface)
+                        // Check if there are enough Astral tiles on the bottom of the altar's gen location
+                        // 400 tiles checked in total
+                        int astralTileCount = 0;
+                        bool enoughAstralTilesOnBottom = false;
+                        for (int astralTileCheckIndexX = startCheckingX; astralTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; astralTileCheckIndexX++)
                         {
-                            y += 5;
+                            if (enoughAstralTilesOnBottom)
+                                break;
+
+                            for (int astralTileCheckIndexY = startCheckingY; astralTileCheckIndexY < startCheckingY + distanceToCheckForAstralTilesY; astralTileCheckIndexY++)
+                            {
+                                if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY] != null)
+                                {
+                                    if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].HasTile)
+                                    {
+                                        if (AstralTilesToCheckFor.Contains(Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].TileType))
+                                        {
+                                            astralTileCount++;
+                                            if (astralTileCount >= astralTilesRequired)
+                                            {
+                                                enoughAstralTilesOnBottom = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        if (Main.tile[x, y].HasTile || Main.tile[x, y].WallType > 0 && !TileID.Sets.Torch[Main.tile[x, y].TileType] && !TileID.Sets.IsAContainer[Main.tile[x, y].TileType]
-                            && (magicStorage is not null && MSTilesToAvoid.Contains(Main.tile[x, y].TileType))) //AVOID HOUSES
+                        // Check if there are too many empty tiles on the bottom of the altar's gen location
+                        // 400 tiles checked in total
+                        int emptyTileCount = 0;
+                        bool tooManyEmptyTilesOnBottom = false;
+                        for (int astralTileCheckIndexX = startCheckingX; astralTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; astralTileCheckIndexX++)
                         {
+                            if (tooManyEmptyTilesOnBottom)
+                                break;
 
-                            bool place = true;
-                            SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(x, y - 5), SchematicAnchor.Center, ref place);
+                            for (int astralTileCheckIndexY = startCheckingY; astralTileCheckIndexY < startCheckingY + distanceToCheckForAstralTilesY; astralTileCheckIndexY++)
+                            {
+                                if (Main.tile[astralTileCheckIndexX, astralTileCheckIndexY] == null || !Main.tile[astralTileCheckIndexX, astralTileCheckIndexY].HasTile)
+                                {
+                                    emptyTileCount++;
+                                    if (emptyTileCount >= emptyTilesRequiredToMove)
+                                    {
+                                        tooManyEmptyTilesOnBottom = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check for the number of empty tiles on the top of the altar's gen location
+                        // 800 tiles checked in total
+                        int emptyTileCount2 = 0;
+                        bool enoughEmptyTilesOnTop = false;
+                        for (int emptyTileCheckIndexX = startCheckingX; emptyTileCheckIndexX < startCheckingX + distanceToCheckForAstralTilesX; emptyTileCheckIndexX++)
+                        {
+                            if (enoughEmptyTilesOnTop)
+                                break;
+
+                            for (int emptyTileCheckIndexY = startCheckingY2; emptyTileCheckIndexY < startCheckingY2 + distanceToCheckForAstralTilesY; emptyTileCheckIndexY++)
+                            {
+                                if (Main.tile[emptyTileCheckIndexX, emptyTileCheckIndexY] == null || !Main.tile[emptyTileCheckIndexX, emptyTileCheckIndexY].HasTile)
+                                {
+                                    emptyTileCount2++;
+                                    if (emptyTileCount2 >= emptyTilesRequired)
+                                    {
+                                        enoughEmptyTilesOnTop = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Check for houses and other critical bullshit
+                        // 2000 tiles checked in total
+                        bool criticalTileDetected = false;
+                        for (int criticalTileCheckIndexX = startCheckingX; criticalTileCheckIndexX < startCheckingX + distanceToCheckForCriticalTilesX; criticalTileCheckIndexX++)
+                        {
+                            if (criticalTileDetected)
+                                break;
+
+                            for (int criticalTileCheckIndexY = startCheckingY2; criticalTileCheckIndexY < startCheckingY2 + distanceToCheckForCriticalTilesY; criticalTileCheckIndexY++)
+                            {
+                                if (Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY] != null)
+                                {
+                                    if (Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].HasTile)
+                                    {
+                                        if (needsToCheckForMSTiles)
+                                        {
+                                            if (TileID.Sets.Clock[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.Paintings[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.InteractibleByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.CanBeSleptIn[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.AvoidedByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.IsAContainer[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                MSTilesToAvoid.Contains(Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType))
+                                            {
+                                                criticalTileDetected = true;
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (TileID.Sets.Clock[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.Paintings[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.InteractibleByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.CanBeSleptIn[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.AvoidedByNPCs[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType] ||
+                                                TileID.Sets.IsAContainer[Main.tile[criticalTileCheckIndexX, criticalTileCheckIndexY].TileType])
+                                            {
+                                                criticalTileDetected = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        bool canPlaceAltar = enoughAstralTilesOnBottom && !tooManyEmptyTilesOnBottom && enoughEmptyTilesOnTop && !criticalTileDetected;
+
+                        if (canPlaceAltar)
+                        {
+                            SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(altarX, altarY), SchematicAnchor.Center, ref canPlaceAltar);
 
                             WorldGen.gen = false;
 
                             altarPlaced = true;
+                        }
+
+                        // Move the location if the requirements are not met and check again
+                        else
+                        {
+                            altarX += 5;
+                            if (altarX >= i + 150)
+                                altarX -= 300;
+
+                            if (!enoughEmptyTilesOnTop)
+                                altarY -= 5;
+                            else if (tooManyEmptyTilesOnBottom)
+                                altarY += 5;
+
+                            if (altarY <= Main.worldSurface - 150)
+                                altarY += 150;
+                            else if (altarY >= Main.worldSurface + 150)
+                                altarY -= 150;
+
+                            attempts++;
+                            if (attempts >= maxAttempts)
+                            {
+                                // If all else fails, place the fucking thing anyway, by using the original code :^)
+                                int altarX2 = i;
+                                int altarY2 = j - 50;
+                                bool forcedPlacedAltar = false;
+                                while (!forcedPlacedAltar)
+                                {
+                                    while (!WorldGen.SolidTile(altarX2, altarY2 + 15) && altarY2 + 15 <= Main.worldSurface)
+                                        altarY2 += 5;
+
+                                    bool canPlaceAltar2 = false;
+                                    if (needsToCheckForMSTiles)
+                                    {
+                                        canPlaceAltar2 = !TileID.Sets.Clock[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.Paintings[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.InteractibleByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.CanBeSleptIn[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.AvoidedByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.IsAContainer[Main.tile[altarX2, altarY2].TileType] &&
+                                            !MSTilesToAvoid.Contains(Main.tile[altarX2, altarY2].TileType);
+                                    }
+                                    else
+                                    {
+                                        canPlaceAltar2 = !TileID.Sets.Clock[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.Paintings[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.InteractibleByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.CanBeSleptIn[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.AvoidedByNPCs[Main.tile[altarX2, altarY2].TileType] &&
+                                            !TileID.Sets.IsAContainer[Main.tile[altarX2, altarY2].TileType];
+                                    }
+
+                                    if (canPlaceAltar2)
+                                    {
+                                        SchematicManager.PlaceSchematic<Action<Chest>>(SchematicManager.AstralBeaconKey, new Point(altarX2, altarY2), SchematicAnchor.Center, ref canPlaceAltar2);
+
+                                        WorldGen.gen = false;
+
+                                        forcedPlacedAltar = true;
+                                        altarPlaced = true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
