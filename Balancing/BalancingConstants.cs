@@ -21,7 +21,8 @@
         internal const float VanillaFrogLegJumpSpeedBoost = 1.6f;
 
         // Altered jump speed boost provided by Amphibian Boots via global item UpdateAccessory
-        internal static readonly float AmphibianBootsJumpSpeedBoost = 1f;
+        //doze 23apr2025 - Undid nerf, it's now the same as frog leg. If it's a problem, maybe retier it?
+        internal static readonly float AmphibianBootsJumpSpeedBoost = 1.6f;
 
         // Altered movement stats provided by Shadow Armor via IL edit
         // This item is modified to not stack with Magiluminescence if on the ground. If in the air, it still functions.
