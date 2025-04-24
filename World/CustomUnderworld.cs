@@ -440,6 +440,82 @@ namespace CalamityMod.World
                     }
                 }
             }
+
+            // Place Geyser Traps on ash islands
+            if (!WorldGen.remixWorldGen)
+            {
+                // Small = 12.6 Medium = 19.2 Large = 25.2
+                double trapFrequency = (double)Main.maxTilesX * 0.003;
+                if (WorldGen.noTrapsWorldGen)
+                    trapFrequency = ((!WorldGen.tenthAnniversaryWorldGen && !WorldGen.notTheBees) ? (trapFrequency * 100D) : (trapFrequency * 5D));
+                else if (WorldGen.getGoodWorldGen)
+                    trapFrequency *= 1.5;
+
+                if (Main.starGame)
+                    trapFrequency *= Main.starGameMath(0.2);
+
+                int maxTrapPlacementAttempts = 1150;
+                for (int trapIndex = 0; (double)trapIndex < trapFrequency; trapIndex++)
+                {
+                    for (int trapIndex2 = 0; trapIndex2 < maxTrapPlacementAttempts; trapIndex2++)
+                    {
+                        int trapPlacementX = WorldGen.genRand.Next(ashIslandX, ashIslandX2);
+                        int trapPlacementY = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 100);
+
+                        if (GeyserTraps(trapPlacementX, trapPlacementY))
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static bool GeyserTraps(int geyserX, int geyserY)
+        {
+            int geyserPlacementY = geyserY;
+
+            while (!WorldGen.SolidTile(geyserX, geyserPlacementY))
+            {
+                geyserPlacementY++;
+                if (geyserPlacementY > Main.maxTilesY - 10)
+                    return false;
+            }
+
+            geyserPlacementY--;
+
+            if (!WorldGen.InWorld(geyserX, geyserPlacementY, 3))
+                return false;
+
+            if (Main.tile[geyserX, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 2].HasUnactuatedTile)
+                return false;
+
+            if (Main.tile[geyserX + 1, geyserPlacementY].HasTile)
+                return false;
+
+            for (int k = geyserX; k <= geyserX + 1; k++)
+            {
+                int j2 = geyserPlacementY + 1;
+                if (!WorldGen.SolidTile(k, j2))
+                    return false;
+            }
+
+            int geyserPlacementY2 = WorldGen.genRand.Next(2);
+            for (int l = 0; l < 2; l++)
+            {
+                Main.tile[geyserX + l, geyserPlacementY].Get<TileWallWireStateData>().HasTile = true;
+                Main.tile[geyserX + l, geyserPlacementY].TileType = TileID.GeyserTrap;
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameX = (short)(18 * l + 36 * geyserPlacementY2);
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameY = 0;
+            }
+
+            return true;
         }
 
         private static void AddHellHouses()
