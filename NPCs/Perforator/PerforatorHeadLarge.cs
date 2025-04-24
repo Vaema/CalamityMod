@@ -155,14 +155,14 @@ namespace CalamityMod.NPCs.Perforator
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = 0.09f;
-            float turnSpeed = 0.06f;
+            float speed = 0.1f;
+            float turnSpeed = 0.07f;
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float velocityScale = (death ? 0.1f : 0.07f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = (death ? 0.07f : 0.05f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
@@ -171,15 +171,16 @@ namespace CalamityMod.NPCs.Perforator
 
             // Spit attack in Rev
             // Spit ichor blobs in Death
-            float spitDistance = 480f;
-            bool canSpit = (NPC.Distance(player.Center) < spitDistance &&
+            float spitDistance = 800f;
+            float tooCloseToSpitDistance = 160f;
+            bool canSpit = (NPC.Distance(player.Center) <= spitDistance && NPC.Distance(player.Center) > tooCloseToSpitDistance &&
                 (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation() &&
                 Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height)) || NPC.Calamity().newAI[1] == 1f;
 
             if (canSpit)
             {
                 NPC.Calamity().newAI[0] += 1f;
-                float spitGateValue = 300f;
+                float spitGateValue = 180f;
                 bool spit = NPC.Calamity().newAI[0] >= spitGateValue;
                 float telegraphSpitGateValue = spitGateValue - 30f;
                 bool telegraphSpit = NPC.Calamity().newAI[0] >= telegraphSpitGateValue;
@@ -188,12 +189,13 @@ namespace CalamityMod.NPCs.Perforator
                 {
                     NPC.Calamity().newAI[1] = 1f;
                     Vector2 dustVelocity = spitLocation - spitLocation;
+                    int dustType = Main.rand.NextBool() ? DustID.Ichor : DustID.Blood;
                     for (int k = 0; k < 10; k++)
                     {
-                        int dust = Dust.NewDust(spitLocation, 0, 0, Main.rand.NextBool() ? DustID.Ichor : DustID.Blood, 0f, 0f, 100, default, 1f);
+                        int dust = Dust.NewDust(spitLocation, 0, 0, dustType);
                         Main.dust[dust].position = spitLocation + Main.rand.NextVector2CircularEdge(25f, 25f);
                         Main.dust[dust].velocity = spitLocation - Main.dust[dust].position;
-                        Main.dust[dust].fadeIn = 1.1f;
+                        Main.dust[dust].scale = dustType == DustID.Ichor ? 1f : 3f;
                         Main.dust[dust].noGravity = true;
                     }
                 }

@@ -124,14 +124,14 @@ namespace CalamityMod.NPCs.Perforator
             // Percent body segments remaining
             float lifeRatio = MathHelper.Clamp(segmentCount / totalSegments, 0f, 1f);
 
-            float speed = 0.1f;
-            float turnSpeed = 0.08f;
+            float speed = 0.125f;
+            float turnSpeed = 0.085f;
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.07f : 0.05f) * enrageScale;
+                float velocityScale = (death ? 0.125f : 0.085f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.07f : 0.05f) * enrageScale;
+                float accelerationScale = (death ? 0.085f : 0.06f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
