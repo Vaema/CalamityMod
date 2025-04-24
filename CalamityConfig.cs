@@ -285,6 +285,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool CalamityArmorSetBonusDoubleTap { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool StutterFix { get; set; }
         #endregion
     }
 
