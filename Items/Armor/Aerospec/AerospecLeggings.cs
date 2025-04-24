@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient<AerialiteBar>(7).
                 AddIngredient(ItemID.SunplateBlock, 4).
                 AddIngredient(ItemID.Feather, 2).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

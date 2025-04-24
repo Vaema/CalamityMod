@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient<AerialiteBar>(8).
                 AddIngredient(ItemID.SunplateBlock, 3).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

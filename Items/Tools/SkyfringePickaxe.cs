@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Tools
             CreateRecipe().
                 AddIngredient<AerialiteBar>(7).
                 AddIngredient(ItemID.SunplateBlock, 3).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
 
