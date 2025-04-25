@@ -2628,7 +2628,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 45, 55));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 65, 80));
                 normalOnly.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 150, 250);
 
                 // Equipment
