@@ -56,12 +56,23 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AdditionalAI()
         {
-            Projectile.scale = baseScale * Math.Min(MathHelper.SmoothStep(1, 2, swingTimer / (float)swingTime), MathHelper.SmoothStep(2, 1, swingTimer / (float)swingTime));
+            if (inStartup)
+            {
+                Projectile.scale = baseScale * MathHelper.Lerp(0.5f, 1, 1 - MathF.Pow(1 - StartupCompletion, 2f));
+            } else if (inCooldown)
+            {
+                Projectile.scale = baseScale * MathHelper.Lerp(1,0.5f,MathF.Pow(CooldownCompletion,2));
+            } else 
+                Projectile.scale = baseScale * Math.Min(MathHelper.SmoothStep(1, 2, SwingCompletion), MathHelper.SmoothStep(2, 1, SwingCompletion));
         }
 
         public override float SwingFunction()
         {
-            return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth / 4 * 3, swingWidth / 4, swingTimer / (float)swingTime));
+            if (inStartup)
+                return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth * 0.5f, -swingWidth * 0.75f, 1-MathF.Pow(1-StartupCompletion,2f)));
+            if (inCooldown)
+                return MathHelper.ToRadians(MathHelper.SmoothStep(swingWidth * 0.25f, swingWidth * 0.33f, CooldownCompletion));
+            return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth *0.75f, swingWidth *0.25f, SwingCompletion));
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

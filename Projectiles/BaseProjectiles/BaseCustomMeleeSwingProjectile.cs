@@ -189,6 +189,20 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         List<Vector2> oldProjectilePos = new List<Vector2> { };
 
         internal int ExistsTime = 20;
+        public bool inStartup => timer < StartupTime;
+
+        public bool inCooldown => timer > CooldownStartFrame;
+
+        public bool inSwing => !(inStartup || inCooldown);
+
+        public int CooldownStartFrame => swingTime + StartupTime;
+
+        public int CooldownTimer => timer - CooldownStartFrame;
+
+        public float StartupCompletion => timer / (float)StartupTime;
+        public float SwingCompletion => swingTimer / (float)swingTime;
+        public float CooldownCompletion => CooldownTimer / (float)CooldownTime;
+
         #endregion
 
         #region Overridable Methods  
@@ -206,13 +220,14 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual void Defaults() { }
         /// <summary>
-        /// Returns the offset from the centerpoint in radians. Automatically will be inverted if AlternateSwings is enabled.
+        /// Returns the swing offset from the center angle in radians. Automatically will be inverted if AlternateSwings is enabled.
         /// </summary>
         /// <returns></returns>
         public virtual float SwingFunction()
         {
             return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth / 2, swingWidth / 2, swingTimer / (float)swingTime));
         }
+
         /// <summary>
         /// The function for the width of the trail
         /// </summary>
@@ -441,6 +456,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             modifiers.HitDirectionOverride = ((Main.player[Projectile.owner].DirectionTo(target.Center)).X >= 0 ? 1 : -1);
         }
+
+        public override bool? CanDamage()
+        {
+            return inSwing;
+        }
         #endregion
 
         #region Helper Methods
@@ -470,6 +490,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation + negate * MathHelper.ToRadians(45 - negate * 90)).ToRotationVector2() * velocity, type, (int)(Projectile.damage * damagemod), Projectile.knockBack, Projectile.owner, ai0);
             }
         }
+
         #endregion
     }
 
