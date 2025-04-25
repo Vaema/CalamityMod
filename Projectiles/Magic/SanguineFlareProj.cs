@@ -155,7 +155,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 //Photoviscerator drawcode, edited slightly
                 float colorInterpolation = (float)Math.Cos(Projectile.timeLeft / 32f + dmgMult / 20f + i / (float)Projectile.oldPos.Length * MathHelper.Pi) * 0.5f + 0.5f;
-                Color color = Color.Lerp(Color.Red, Color.DarkRed, colorInterpolation) * 0.8f;
+                Color color = Color.Lerp(Color.Red, Color.DarkRed, colorInterpolation) * 0.8f * ((dmgMult-1)/4f);
                 color.A = 0;
                 Vector2 drawPosition = Projectile.oldPos[i]+Projectile.Size /2f + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2(-32.5f, -32.5f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
                 Color outerColor = color;
@@ -171,8 +171,8 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 innerScale = new Vector2(1f) * Projectile.scale * intensity * 0.7f;
                 outerColor *= intensity;
                 innerColor *= intensity;
-                Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * dmgMult * 0.25f, SpriteEffects.None, 0);
-                Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, 0f, lightTexture.Size() * 0.5f, innerScale * dmgMult * 0.25f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * 1.25f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, 0f, lightTexture.Size() * 0.5f, innerScale * 1.25f, SpriteEffects.None, 0);
                 }
             }
 
