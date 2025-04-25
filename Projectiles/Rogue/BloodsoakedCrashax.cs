@@ -6,6 +6,10 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
+using System.Reflection.Metadata;
+using Terraria.Audio;
 namespace CalamityMod.Projectiles.Rogue
 {
     public class BloodsoakedCrashax : ModProjectile, ILocalizedModType
@@ -109,7 +113,7 @@ namespace CalamityMod.Projectiles.Rogue
                 int projID = ModContent.ProjectileType<Blood>();
                 int bloodDamage = Projectile.damage;
                 float bloodKB = 1f;
-                int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, projID, bloodDamage, bloodKB, Projectile.owner, 1f, 0.85f + Main.rand.NextFloat() * 1.15f);
+                int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi)*4f, projID, bloodDamage, bloodKB, Projectile.owner, 1f, 0.85f + Main.rand.NextFloat() * 1.15f);
                 if (stealth.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[stealth].DamageType = RogueDamageClass.Instance;
@@ -117,14 +121,16 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
 
-            int heal = (int)Math.Round(damage * 0.01);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
+            float orbAmount = Projectile.Calamity().stealthStrike ? 3 : Projectile.penetrate % 2;
+            if (orbAmount > 0)
+            {
+                float spreadAmount = MathHelper.ToRadians(360);
+                for (var i = 0; i < orbAmount; i++)
+                {
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.One.RotatedByRandom(spreadAmount) * 2f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
 
-            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
+                }
+            }
         }
 
         public override bool PreDraw(ref Color lightColor) //afterimages

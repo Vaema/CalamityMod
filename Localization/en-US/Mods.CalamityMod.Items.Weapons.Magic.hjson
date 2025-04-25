@@ -749,7 +749,12 @@ SandstreamScepter: {
 
 SanguineFlare: {
 	DisplayName: Sanguine Flare
-	Tooltip: Fires a blast of sanguine flares that drain enemy life
+	Tooltip:
+		'''
+		Charges up a sanguine flare that gains power over time
+		When striking an enemy, this flare causes a bloodsplosion and splits into blood orbs
+		Picking up these blood orbs reduces the duration of Potion Sickness
+		'''
 }
 
 SeethingDischarge: {
