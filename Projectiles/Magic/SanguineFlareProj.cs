@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //target.AddBuff(ModContent.BuffType<Laceration>(), 360);
+            target.AddBuff(ModContent.BuffType<Laceration>(), 360);
             if (beingChanneled || Projectile.penetrate == -1)
                 return;
             var player = Main.player[Projectile.owner];
