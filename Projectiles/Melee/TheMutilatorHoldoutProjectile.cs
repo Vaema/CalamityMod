@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.Items.Weapons.Melee;
+using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Healing;
+using Terraria.Audio;
+using Terraria.IO;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
+
+namespace CalamityMod.Projectiles.Melee
+{
+    public class MutilatorSwordProj : BaseSwordHoldoutProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Melee";
+        public override int swingWidth => 180;
+        public override string Texture => ModContent.GetModItem(BaseItem.type).Texture;
+        public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<TheMutilator>()).Item;
+        public override int AfterImageLength => 5;
+        public override int OffsetDistance => 60;
+        public override bool drawSwordTrail => true;
+        public override Color[] trailColors => [Color.Red, Color.DarkRed, Color.Gold];
+
+        public override float trailOffset => 30;
+
+        public override float trailWidth(float completion)
+        {
+            return base.trailWidth(completion);
+        }
+
+        public override int trailLength => 5;
+
+        public override int StartupTime { get; set; }
+        public override int CooldownTime { get; set; }
+
+        public bool hasGivenBlood = false;
+
+        public override void Spawn(IEntitySource source)
+        {
+            var player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
+            StartupTime = 15;
+            CooldownTime = 5;
+            swingTime -= StartupTime + CooldownTime;
+            modplayer.swingNum = 0;
+        }
+
+        public override void AdditionalAI()
+        {
+            Projectile.scale = baseScale * Math.Min(MathHelper.SmoothStep(1, 2, swingTimer / (float)swingTime), MathHelper.SmoothStep(2, 1, swingTimer / (float)swingTime));
+        }
+
+        public override float SwingFunction()
+        {
+            return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth / 4 * 3, swingWidth / 4, swingTimer / (float)swingTime));
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Laceration>(), 60);
+            var player = Main.player[Projectile.owner];
+            var item = player.HeldItem;
+            if (item.type != ModContent.ItemType<TheMutilator>())
+            {
+                Projectile.Kill();
+                return;
+            }
+            var modItem = item.ModItem as TheMutilator;
+            if (!hasGivenBlood)
+            {
+                modItem.Charge++;
+                hasGivenBlood = true;
+                if (modItem.Charge > TheMutilator.MaximumCharge)
+                {
+                    modItem.Charge = 0;
+                    int healAmount = 1;
+                    int orbAmount = 30;
+                    if (orbAmount > 0)
+                    {
+                        float spreadAmount = MathHelper.ToRadians(360);
+                        for (var i = 0; i < orbAmount; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_OnHit(target), target.Center, -angle.RotatedByRandom(spreadAmount) * 3.5f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), healAmount, 0f, player.whoAmI);
+
+                        }
+                        Particle bloodsplosion2 = new CustomPulse(target.Center, Vector2.Zero, new Color(255, 32, 32) * 0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f, 0.155f, 40);
+                        GeneralParticleHandler.SpawnParticle(bloodsplosion2);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/BloodPactCrit") { Volume = 0.5f }, player.Center);
+                    }
+                }
+                modItem.DecayTimer = 180;
+            }
+        }
+    }
+}

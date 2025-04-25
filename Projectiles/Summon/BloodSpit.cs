@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.Calamity().BloodstoneOrbValue = 1; //Bloodstone Orb lifesteal. May want to go back to regular lifesteal.
         }
 
         public override void AI()
@@ -49,8 +50,8 @@ namespace CalamityMod.Projectiles.Summon
                 blood.velocity = Main.rand.NextVector2Circular(1f, 2f);
                 blood.noGravity = true;
             }
-
-            int heal = (int)Math.Round(hit.Damage * 0.01);
+            //regular lifesteal code. Not sure if we wanna go back to it so I left it here.
+            /*int heal = (int)Math.Round(hit.Damage * 0.01);
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
@@ -58,6 +59,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
+            */
         }
     }
 }
