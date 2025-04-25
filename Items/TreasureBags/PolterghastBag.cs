@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 10, 20);
+            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 25, 30);
             itemLoot.Add(ModContent.ItemType<Necroplasm>(), 1, 40, 50);
 
             // Weapons
