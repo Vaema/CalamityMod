@@ -87,9 +87,14 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
+        public override bool? CanDamage()
+        {
+            return !beingChanneled;
+        }
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
+            SoundStyle hitSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
+            SoundEngine.PlaySound(hitSound with { Volume = 0.5f }, Projectile.Center);
             Projectile.position.X = Projectile.position.X + (float)(Projectile.width / 2);
             Projectile.position.Y = Projectile.position.Y + (float)(Projectile.height / 2);
             Projectile.width = 10;
@@ -134,8 +139,9 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.Center = Projectile.position;
                 Projectile.penetrate = -1;
                 Projectile.extraUpdates = 0;
-                Projectile.timeLeft = 20;
+                Projectile.timeLeft = 2;
                 Projectile.velocity *= 0;
+                Projectile.damage /= 2;
                 Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed*0.5f, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f*dmgMult/5f, 0.87f * dmgMult / 5f, (int)(Viscera.BoomLifetime * 0.38f), false);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion);
                 Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32)*0.5f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * dmgMult / 5f, 0.155f * dmgMult / 5f, Viscera.BoomLifetime);
@@ -154,8 +160,7 @@ namespace CalamityMod.Projectiles.Magic
             for (int i = 0; i < 1; i++)
             {
                 //Photoviscerator drawcode, edited slightly
-                float colorInterpolation = (float)Math.Cos(Projectile.timeLeft / 32f + dmgMult / 20f + i / (float)Projectile.oldPos.Length * MathHelper.Pi) * 0.5f + 0.5f;
-                Color color = Color.Lerp(Color.Red, Color.DarkRed, colorInterpolation) * 0.8f * ((dmgMult-1)/4f);
+                    Color color = Color.DarkRed * (dmgMult/5f);
                 color.A = 0;
                 Vector2 drawPosition = Projectile.oldPos[i]+Projectile.Size /2f + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2(-32.5f, -32.5f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
                 Color outerColor = color;

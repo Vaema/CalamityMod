@@ -15,6 +15,8 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ArterialAssault : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        int shotNum = 0;
         public override void SetDefaults()
         {
             Item.width = 44;
@@ -36,11 +38,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 30f;
             Item.useAmmo = AmmoID.Arrow;
         }
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-
-            position += velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(1.8f) * 64;
+            float rotateBy = 0.75f * ((shotNum*3) % 5 - 2);
+            position += velocity.SafeNormalize(Vector2.Zero).RotatedBy(rotateBy) * 64;
             velocity = position.DirectionTo(Main.MouseWorld) * velocity.Length()*2;
             type = ModContent.ProjectileType<BloodfireArrowProj>();
             Projectile shotArrow = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI);
@@ -49,6 +50,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             (shotArrow.ModProjectile as BloodfireArrowProj).DisableEffects = true;
             shotArrow.Calamity().conditionalHomingRange = 175f;
             shotArrow.Calamity().BloodstoneOrbValue = 1;
+            shotNum++;
+            if (shotNum > 4) shotNum = 0;
             return false;
         }
 
