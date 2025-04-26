@@ -4,6 +4,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -97,7 +98,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Vitamins, 50);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {

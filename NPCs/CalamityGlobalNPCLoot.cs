@@ -134,9 +134,21 @@ namespace CalamityMod.NPCs
 
                 // Crawdad
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
+                // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
+                    break;
+
+                // Medusa
+                // Pocket Mirror @ 10% Normal, 20% Expert+
+                case NPCID.Medusa:
+                    // Remove the vanilla loot rule for Pocket Mirror.
+                    npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.PocketMirror);
+
+                    // Define a replacement rule which has an increased chance.
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 10, 5));
                     break;
 
                 // Tim
@@ -231,10 +243,16 @@ namespace CalamityMod.NPCs
 
                 #region Ice
 
-                // Ice Bat.
+                // Ice Bat
                 // Frostbat Staff @ 6.67%
                 case NPCID.IceBat:
                     npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
+                    break;
+
+                // Undead Viking
+                // Armor Polish @ 1% Normal, 2% Expert
+                case NPCID.UndeadViking:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
 
                 // Icy Merman, Icy Tortoise, Ice Elemental, Wolf
@@ -349,6 +367,13 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Corruption, Crimson, Hallow
+                // Face Monster, Devourer
+                // Vitamins @ 1% Normal, 2% Expert+
+                case NPCID.FaceMonster:
+                case NPCID.DevourerHead:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
+                    break;
+
                 // Gastropod
                 // 5-10 Pink Gel @ 100%
                 case NPCID.Gastropod:

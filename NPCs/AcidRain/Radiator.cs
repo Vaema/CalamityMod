@@ -7,8 +7,10 @@ using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.NPCs.AcidRain
 {
     public class Radiator : ModNPC
@@ -116,6 +118,7 @@ namespace CalamityMod.NPCs.AcidRain
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
         }
     }
 }

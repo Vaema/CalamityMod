@@ -11,6 +11,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -256,6 +257,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 4, 3, 6));
         }
 

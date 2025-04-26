@@ -6209,6 +6209,17 @@ namespace CalamityMod.NPCs
 
                     break;
 
+                case NPCID.DevourerHead:
+                case NPCID.FaceMonster:
+                    target.AddBuff(BuffID.Weak, 180);
+                    break;
+
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                case NPCID.UndeadViking:
+                    target.AddBuff(BuffID.BrokenArmor, 180);
+                    break;
+
                 case NPCID.ShadowFlameApparition:
                     target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
