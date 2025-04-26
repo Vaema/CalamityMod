@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using CalamityMod.Events;
 using CalamityMod.Items;
@@ -258,10 +259,23 @@ namespace CalamityMod.NPCs
                 // Icy Merman, Icy Tortoise, Ice Elemental, Wolf
                 // Essence of Eleum @ 100%
                 case NPCID.IcyMerman:
-                case NPCID.IceTortoise:
                 case NPCID.IceElemental:
                 case NPCID.Wolf:
                     npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
+                    break;
+
+                // Modify Frozen Turtle Shell drop rate from 2% to 5%
+                case NPCID.IceTortoise:
+                    npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
+                    List<IItemDropRule> rules = npcLoot.Get(false);
+                    foreach (IItemDropRule rule in rules)
+                    {
+                        if (rule is CommonDrop drop && drop.itemId == ItemID.FrozenTurtleShell)
+                        {
+                            drop.chanceDenominator = 20;
+                            return;
+                        }
+                    }
                     break;
 
                 // Ice Mimic

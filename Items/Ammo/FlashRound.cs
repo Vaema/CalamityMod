@@ -32,9 +32,9 @@ namespace CalamityMod.Items.Ammo
 
         public override void AddRecipes()
         {
-            CreateRecipe(333).
-                AddRecipeGroup("AnyCopperBar", 7).
-                AddIngredient(ItemID.Glass, 5).
+            CreateRecipe(70).
+                AddRecipeGroup("AnyCopperBar", 1).
+                AddIngredient(ItemID.Glass, 1).
                 AddTile(TileID.Anvils).
                 Register();
         }

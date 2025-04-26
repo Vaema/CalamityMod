@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Shroomer>().
+                AddIngredient(ItemID.RocketLauncher).
                 AddRecipeGroup("IronBar", 50).
                 AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.TigerSkin).
