@@ -16,9 +16,9 @@ namespace CalamityMod.Items.Tools
             Item.height = 48;
             Item.damage = 19;
             Item.knockBack = 2.5f;
-            Item.useTime = 9;
+            Item.useTime = 6;
             Item.useAnimation = 20;
-            Item.pick = 105;
+            Item.pick = 90;
             Item.tileBoost += 1;
 
             Item.DamageType = DamageClass.Melee;
