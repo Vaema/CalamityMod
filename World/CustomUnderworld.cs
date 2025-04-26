@@ -41,14 +41,16 @@ namespace CalamityMod.World
 
             // Generate lava
             int lavaDepth = Main.maxTilesY - WorldGen.genRand.Next(40, 70);
+            int lavaMaxDepth = Main.maxTilesY - 60;
+            int lavaMaxHeight = Main.maxTilesY - 110;
             for (int x = 10; x < Main.maxTilesX - 10; x++)
             {
                 lavaDepth += WorldGen.genRand.Next(-10, 11);
-                if (lavaDepth > Main.maxTilesY - 60)
-                    lavaDepth = Main.maxTilesY - 60;
+                if (lavaDepth > lavaMaxDepth)
+                    lavaDepth = lavaMaxDepth;
 
-                if (lavaDepth < Main.maxTilesY - 110)
-                    lavaDepth = Main.maxTilesY - 110;
+                if (lavaDepth < lavaMaxHeight)
+                    lavaDepth = lavaMaxHeight;
 
                 for (int y = lavaDepth; y < Main.maxTilesY - 10; y++)
                 {
@@ -57,6 +59,176 @@ namespace CalamityMod.World
                         Main.tile[x, y].Get<LiquidData>().LiquidType = LiquidID.Lava;
                         Main.tile[x, y].LiquidAmount = byte.MaxValue;
                     }
+                }
+            }
+
+            // Generate background walls
+            int maxWallHeight = 68;
+            int randomizedWallSectionsHeight = 4;
+            int maxWallTypes = 4;
+            int newWallTypeStart = maxWallHeight / maxWallTypes;
+            int maxWallDepth = Main.maxTilesY - 40;
+            int smoulderingStoneWallStartDepth = maxWallDepth - maxWallHeight;
+            int cinderWallStartDepth = smoulderingStoneWallStartDepth + newWallTypeStart;
+            int emberWallStartDepth = cinderWallStartDepth + newWallTypeStart;
+            int magmaWallStartDepth = emberWallStartDepth + newWallTypeStart;
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = smoulderingStoneWallStartDepth; y < maxWallDepth; y++)
+                {
+                    // -100 to -97
+                    if (y < smoulderingStoneWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (smoulderingStoneWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+                        }
+                    }
+
+                    // -96 to -76
+                    else if (y < cinderWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                    }
+
+                    // -75 to -72
+                    else if (y < cinderWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (cinderWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+                        }
+                    }
+
+                    // -71 to -51
+                    else if (y < emberWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                    }
+
+                    // -50 to -47
+                    else if (y < emberWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (emberWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+                        }
+                    }
+
+                    // -46 to -26
+                    else if (y < magmaWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                    }
+
+                    // -25 to -22
+                    else if (y < magmaWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (magmaWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+                        }
+                    }
+
+                    // -21 to -1
+                    else
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe3;
                 }
             }
 
