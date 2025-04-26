@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
@@ -336,7 +337,9 @@ namespace CalamityMod.Systems
                 ItemID.EbonwoodSword,
                 ItemID.ShadewoodSword,
                 ItemID.PearlwoodSword,
-                ItemID.AshWoodSword
+                ItemID.AshWoodSword,
+                ItemType<AcidwoodSword>(),
+                ItemType<DriftwoodSword>()
             });
             AnyWoodenSword = RecipeGroup.RegisterGroup("AnyWoodenSword", group);
 
