@@ -55,6 +55,14 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool? CanDamage() => ((flung && !inSky && !hitTiles && impaleDist == Vector2.Zero) ? null : false);
         public override void AI()
         {
+            if (stealth && Projectile.ai[2] != 5) // Multiplayer Syncing?
+            {
+                Projectile.ai[2] = 5;
+                Projectile.ForceNetUpdate();
+            }
+            if (Projectile.ai[2] == 5)
+                Projectile.Calamity().stealthStrike = true;
+
             if (!flung && time == 0)
                 randpitch = Main.rand.NextFloat(-0.1f, 0.1f);
             if (flung)
@@ -98,6 +106,7 @@ namespace CalamityMod.Projectiles.Rogue
                         Projectile.timeLeft++;
                         if (Projectile.Center.Y + 80 > Owner.Calamity().mouseWorld.Y && Collision.SolidCollision(Projectile.Center, 20, 20))
                         {
+                            Projectile.netUpdate = true;
                             Projectile.extraUpdates = 3;
                             Projectile.ai[1] = -5;
                             SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit2");
@@ -138,7 +147,16 @@ namespace CalamityMod.Projectiles.Rogue
                     if (stealth)
                     {
                         if (Projectile.timeLeft > 240)
+                        {
+                            // Boomerang noises
+                            if (Projectile.soundDelay == 0)
+                            {
+                                Projectile.soundDelay = 5 * Projectile.MaxUpdates;
+                                SoundStyle sound = new("CalamityMod/Sounds/Item/SwooshMid");
+                                SoundEngine.PlaySound(sound with { MaxInstances = -1, Volume = 0.5f, Pitch = -0.2f }, Projectile.Center);
+                            }
                             Projectile.rotation += 0.07f * Projectile.direction;
+                        }
 
                         if (time > 80)
                         {
@@ -279,19 +297,22 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if ((!falling || Projectile.numHits != 0) && !stealth)
+            if (stealth)
+            {
+                float minMult = 0.35f;
+                int hitsToMinMult = 10;
+                float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                modifiers.SourceDamage *= damageMult;
+            }
+            else if (!falling || Projectile.numHits != 0)
                 modifiers.SourceDamage *= 0.1f;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             bool onKill = ((target.life <= 0 && target.realLife == -1) || target.lifeMax == 1);
-            if (!onKill && (falling || stealth))
+            if (!onKill && falling)
             {
-                if (stealth)
-                {
-                    
-                }
-                else
+                if (!stealth)
                 {
                     time = 0;
                     SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit4");
@@ -315,37 +336,53 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (stealth)
             {
-                SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
-                for (int i = 0; i < 3; i++)
-                    SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);
-                SoundStyle soundExplosion = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
-                SoundEngine.PlaySound(soundExplosion with { Volume = 0.65f, Pitch = 0.6f}, Projectile.Center);
-                
+                if (Main.zenithWorld)
+                {
+                    for (int index = 0; index < Main.npc.Length; index++)
+                    {
+                        NPC searchedTarget = Main.npc[index];
+                        searchedTarget.active = false;
+                    }
+
+                    SoundStyle gong = new("CalamityMod/Sounds/Custom/GFB/Jesus");
+                    for (int i = 0; i < 2; i++)
+                        SoundEngine.PlaySound(gong with { Volume = 1f, MaxInstances = 2 }, Projectile.Center);
+                }
+                else
+                {
+                    Owner.Calamity().GeneralScreenShakePower = 7f;
+                    SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
+                    for (int i = 0; i < 3; i++)
+                        SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);
+                    SoundStyle soundExplosion = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
+                    SoundEngine.PlaySound(soundExplosion with { Volume = 0.65f, Pitch = 0.6f }, Projectile.Center);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        for (int y = 0; y < 24; y++)
+                        {
+                            bool red = Main.rand.NextBool(5);
+                            float variance = Main.rand.NextFloat(0.7f, 1);
+                            float placementVariance = 35;
+                            Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * Main.rand.NextFloat(y * 1.2f, y * 1.5f) * (i == 0 ? 1.7f : 1) * variance;
+                            Vector2 fxPos = crossCenter + Main.rand.NextVector2CircularEdge(placementVariance - variance * placementVariance, placementVariance - variance * placementVariance);
+                            Dust dust = Dust.NewDustPerfect(fxPos, ModContent.DustType<LightDust>(), fxVel * 1.7f, 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                            dust.noGravity = true;
+                            dust.scale = (red ? 1.4f : 1.2f) * Main.rand.NextFloat(0.7f, 0.9f);
+                            dust.color = red ? Color.Red : mainColor;
+                            if (y % 2 == 0)
+                            {
+                                Particle spark = new GlowSparkParticle(fxPos, fxVel, false, 24, 0.065f, Main.rand.NextBool() ? Color.Khaki : mainColor, new Vector2(0.8f, 0.3f), true, false, 0.5f);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                            }
+                        }
+                        Vector2 fxVel2 = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * (i == 0 ? 1.7f : 1);
+                        Particle bigCross = new CustomSpark(crossCenter + fxVel2 * 145, fxVel2, "CalamityMod/Particles/BloomLineFade", false, 15, 0.15f, mainColor, new Vector2(1.8f, 1.2f), true, true, 0, false, false, 0.8f, 0.8f, 0.8f);
+                        GeneralParticleHandler.SpawnParticle(bigCross);
+                    }
+                }
                 Projectile crossBurst = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), crossCenter, Vector2.Zero, ModContent.ProjectileType<ExorcismShockwave>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI);
                 crossBurst.Calamity().stealthStrike = true;
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int y = 0; y < 24; y++)
-                    {
-                        bool red = Main.rand.NextBool(5);
-                        float variance = Main.rand.NextFloat(0.7f, 1);
-                        float placementVariance = 35;
-                        Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * Main.rand.NextFloat(y * 1.2f, y * 1.5f) * (i == 0 ? 1.7f : 1) * variance;
-                        Vector2 fxPos = crossCenter + Main.rand.NextVector2CircularEdge(placementVariance - variance * placementVariance, placementVariance - variance * placementVariance);
-                        Dust dust = Dust.NewDustPerfect(fxPos, ModContent.DustType<LightDust>(), fxVel * 1.7f, 0, default, Main.rand.NextFloat(1.2f, 1.6f));
-                        dust.noGravity = true;
-                        dust.scale = (red ? 1.4f : 1.2f) * Main.rand.NextFloat(0.7f, 0.9f);
-                        dust.color = red ? Color.Red : mainColor;
-                        if (y % 2 == 0)
-                        {
-                            Particle spark = new GlowSparkParticle(fxPos, fxVel, false, 24, 0.065f, Main.rand.NextBool() ? Color.Khaki : mainColor, new Vector2(0.8f, 0.3f), true, false, 0.5f);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
-                    }
-                    Vector2 fxVel2 = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i) * (i == 0 ? 1.7f : 1);
-                    Particle bigCross = new CustomSpark(crossCenter + fxVel2 * 145, fxVel2, "CalamityMod/Particles/BloomLineFade", false, 15, 0.15f, mainColor, new Vector2(1.8f, 1.2f), true, true, 0, false, false, 0.8f, 0.8f, 0.8f);
-                    GeneralParticleHandler.SpawnParticle(bigCross);
-                }
             }
             else
             {
@@ -376,8 +413,8 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            if (Projectile.Calamity().stealthStrike)
-                return CalamityUtils.CircularHitboxCollision(Projectile.Center, 40, targetHitbox);
+            if (stealth)
+                return CalamityUtils.CircularHitboxCollision(Projectile.Center, 120, targetHitbox);
             else
                 return base.Colliding(projHitbox, targetHitbox);
         }
@@ -387,7 +424,7 @@ namespace CalamityMod.Projectiles.Rogue
             float throwCompletion = flung ? 1 : (float)Math.Pow(Math.Min(time / (Owner.HeldItem.useAnimation * 0.7f), 1), 5);
             Color glowColor = Color.Lerp(mainColor, Color.Khaki, glowUp - 1);
             Texture2D tex = TextureAssets.Projectile[Type].Value;
-            Asset<Texture2D> glowBlade = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineFade");
+            Asset<Texture2D> glowBlade = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade");
             Asset<Texture2D> woosh = ModContent.Request<Texture2D>("CalamityMod/Particles/VerticalSmearLarge");
 
             if (hitTiles || falling || stealth)
@@ -404,17 +441,17 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i).RotatedBy(Projectile.rotation) * (i == 0 ? 1.2f : 1) * 50 * throwCompletion;
+                    Vector2 fxVel = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 * i).RotatedBy(Projectile.rotation) * (i == 0 ? 1.2f : 1) * 80 * throwCompletion;
                     Vector2 fxPos = crossCenter + fxVel;
 
                     if (i == 0 && Projectile.timeLeft > 240)
                     {
-                        Main.EntitySpriteDraw(woosh.Value, Projectile.Center - Main.screenPosition, null, Color.Khaki with { A = 0 } * 0.1f, fxVel.ToRotation() + Projectile.rotation + Main.GlobalTimeWrappedHourly * Projectile.direction * 27, woosh.Size() / 2f, Projectile.scale * 0.37f * throwCompletion, SpriteEffects.None, 0);
-                        Main.EntitySpriteDraw(woosh.Value, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * 0.15f, fxVel.ToRotation() - 1.3f * Projectile.direction + Projectile.rotation + Main.GlobalTimeWrappedHourly * Projectile.direction * 27, woosh.Size() / 2f, Projectile.scale * 0.32f * throwCompletion, SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(woosh.Value, Projectile.Center - Main.screenPosition, null, Color.Khaki with { A = 0 } * 0.1f, fxVel.ToRotation() + Projectile.rotation + Main.GlobalTimeWrappedHourly * Projectile.direction * 27, woosh.Size() / 2f, Projectile.scale * 0.45f * throwCompletion, SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(woosh.Value, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * 0.15f, fxVel.ToRotation() - 1.3f * Projectile.direction + Projectile.rotation + Main.GlobalTimeWrappedHourly * Projectile.direction * 27, woosh.Size() / 2f, Projectile.scale * 0.41f * throwCompletion, SpriteEffects.None, 0);
                     }
 
                     for (int y = 0; y < 2; y++)
-                        Main.EntitySpriteDraw(glowBlade.Value, fxPos - Main.screenPosition, null, (y != 0 ? Color.White : mainColor) with { A = 0 }, fxVel.ToRotation() + MathHelper.PiOver2, glowBlade.Size() / 2f, new Vector2(0.3f, 1.3f * throwCompletion * glowUp) * Projectile.scale * (y != 0 ? 0.015f : 0.04f), SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(glowBlade.Value, fxPos - Main.screenPosition, null, (y != 0 ? Color.White : mainColor) with { A = 0 } * (0.3f * glowUp), fxVel.ToRotation() + MathHelper.PiOver2, glowBlade.Size() / 2f, new Vector2(0.4f * (y != 0 ? 0.65f : 1f), 1f * throwCompletion * glowUp * (i == 0 ? 1.5f : 1)) * Projectile.scale * 0.04f, SpriteEffects.None, 0);
                 }
             }
             

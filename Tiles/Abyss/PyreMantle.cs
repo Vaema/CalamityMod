@@ -14,7 +14,7 @@ namespace CalamityMod.Tiles.Abyss
     public class PyreMantle : ModTile
     {
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;

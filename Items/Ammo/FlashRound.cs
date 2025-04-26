@@ -18,23 +18,23 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 12;
             Item.height = 18;
-            Item.damage = 5;
+            Item.damage = 6;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
-            Item.knockBack = 1.15f;
-            Item.value = Item.sellPrice(copper: 2);
+            Item.knockBack = 6f;
+            Item.value = Item.sellPrice(copper: 1);
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<FlashRoundProj>();
-            Item.shootSpeed = 12f;
+            Item.shootSpeed = 10f;
             Item.ammo = AmmoID.Bullet;
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(10).
-                AddIngredient(ItemID.Grenade).
-                AddIngredient(ItemID.Glass, 3).
+            CreateRecipe(70).
+                AddRecipeGroup("AnyCopperBar", 1).
+                AddIngredient(ItemID.Glass, 1).
                 AddTile(TileID.Anvils).
                 Register();
         }

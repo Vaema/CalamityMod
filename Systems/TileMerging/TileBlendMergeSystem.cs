@@ -28,6 +28,8 @@ namespace CalamityMod.Systems
 
             static void SetupTileTypeToBlendTextureSlot()
             {
+                if (TileBlendTextureLoader.AllTextures == null)
+                    return;
                 foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
                 {
                     _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;

@@ -34,6 +34,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Leviathan
 {
     [AutoloadBossHead]
+    [HasPierceResist(singleHitbox: true)]
     public class Leviathan : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;

@@ -15,6 +15,7 @@ using CalamityMod.Tiles.FurnitureEutrophic;
 using CalamityMod.Tiles.FurnitureOtherworldly;
 using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.FurnitureVoid;
+using CalamityMod.Tiles.FurnitureWulfrum;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
@@ -443,7 +444,7 @@ namespace CalamityMod
             TileType<BlackPearlPile>(),
             TileType<WhitePearlPile>(),
             TileType<Shellstone>(),
-            TileType<RuneSand>(),
+            TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
             TileType<SulphurousShale>(),
@@ -523,7 +524,7 @@ namespace CalamityMod
             TileType<WhitePearlPile>(),
             TileType<Shellstone>(),
             TileType<Runestone>(),
-            TileType<RuneSand>(),
+            TileType<Dunesand>(),
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
@@ -646,6 +647,13 @@ namespace CalamityMod
             SetMerge(type, TileType<RunicProfanedBrick>());
             SetMerge(type, TileType<AshenSlab>());
             SetMerge(type, TileType<VoidstoneSlab>());
+            SetMerge(type, TileType<WulfrumPanels>());
+            SetMerge(type, TileType<WulfrumSiding>());
+            SetMerge(type, TileType<WulfrumPlating>());
+            SetMerge(type, TileType<WulfrumEnergyBarrier>());
+            SetMerge(type, TileType<RoundedAnodizedWulfrumPanels>());
+            SetMerge(type, TileType<AnodizedWulfrumTrim>());
+            SetMerge(type, TileType<AnodizedWulfrumPanels>());
         }
 
         /// <summary>

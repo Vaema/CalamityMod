@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -30,6 +31,8 @@ namespace CalamityMod.Items.Accessories
             modPlayer.deadshotBrooch = true;
             modPlayer.rangedAmmoCost *= 0.8f;
         }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateHotkey(CalamityKeybinds.AmmoCycleHotkey);
 
         public override void AddRecipes()
         {

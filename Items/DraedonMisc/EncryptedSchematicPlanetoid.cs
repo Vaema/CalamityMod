@@ -59,7 +59,7 @@ namespace CalamityMod.Items.DraedonMisc
                     meleeDisplay.OverrideColor = new Color(31, 242, 245);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<MatterModulator>();
+                    int rangedItem = ModContent.ItemType<HolofiberImmolator>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 2, rangedDisplay);
@@ -74,7 +74,7 @@ namespace CalamityMod.Items.DraedonMisc
                     summonDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 4, summonDisplay);
 
-                    int rogueItem = ModContent.ItemType<FrequencyManipulator>();
+                    int rogueItem = ModContent.ItemType<PulseGrenade>();
                     TooltipLine rogueDisplay = new TooltipLine(this.Mod, "CalamityMod:RogueDisplay", $"[i:{rogueItem}] {CalamityUtils.GetItemName(rogueItem)}");
                     rogueDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 5, rogueDisplay);

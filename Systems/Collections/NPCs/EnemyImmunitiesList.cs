@@ -138,7 +138,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<SplitEbonianPaladin>(),
                 NPCType<SplitCrimulanPaladin>(),
                 NPCType<Horse>(),
-                NPCType<ThiccWaifu>(),
+                NPCType<CloudElemental>(),
                 NPCType<CryogenShield>(),
                 NPCType<AquaticScourgeHead>(),
                 NPCType<AquaticScourgeBody>(),

@@ -106,9 +106,9 @@ AmbrosialAmpoule: {
 	Tooltip:
 		'''
 		+50 max life
-		Grants +1 HP/s life regen
-		Grants +2 to +6 HP/s life regen based on missing health
+		Grants +2 to +5 HP/s life regen based on missing health
 		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
+		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
 		'''
@@ -116,7 +116,11 @@ AmbrosialAmpoule: {
 
 AncientFossil: {
 	DisplayName: Ancient Fossil
-	Tooltip: Increases mining speed by 10%
+	Tooltip:
+		'''
+		Increases mining speed by 10%
+		Provides immunity to damage from falling blocks
+		'''
 }
 
 AnechoicPlating: {
@@ -202,8 +206,10 @@ ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
 		'''
-		Increases mining speed by 15%
-		5% increased damage reduction and +10 defense while underground or in the underworld
+		Increases mining speed by 30%
+		Provides immunity to damage from falling blocks and dart traps
+		65% resistance to all damage from traps
+		Does not stack with downgrades
 		'''
 }
 
@@ -211,7 +217,7 @@ AscendantInsignia: {
 	DisplayName: Ascendant Insignia
 	Tooltip:
 		'''
-		Increases wing flight time by 50%, movement and jump speed by 10%, and acceleration by 1.5x
+		Increases wing flight time by 50%, movement and jump speed by 15%, and acceleration by 1.5x
 		Pressing [KEY] grants you the power of ascension, providing infinite flight time for 4 seconds
 		Ascension has a 40 second cooldown
 		'''
@@ -264,7 +270,7 @@ BadgeofBravery: {
 	DisplayName: Badge of Bravery
 	Tooltip:
 		'''
-		Increases melee damage and melee crit by 10%
+		Increases melee damage and critical strike chance by 10%
 		Increases melee armor penetration by 5
 		'''
 }
@@ -542,7 +548,12 @@ DarkSunRing: {
 
 DeadshotBrooch: {
 	DisplayName: Deadshot Brooch
-	Tooltip: 10% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
+	Tooltip:
+		'''
+		12% increased ranged damage, 7% increased ranged critical strike chance and 20% reduced ammo usage
+		Pressing [KEY] will automatically swap the order of ammos in your ammo slots
+		The ammo type swapped depends on the ammo of the weapon you are holding
+		'''
 }
 
 DeepDiver: {
@@ -854,7 +865,7 @@ GladiatorsLocket: {
 	Tooltip:
 		'''
 		Enemies drop a healing orb on kill
-		Gain an increase to your damage and movement speed the lower your health is, up to 20%
+		Gain an increase to your damage and movement speed the lower your health is, up to 20% at 50% life or below
 		'''
 }
 
@@ -999,7 +1010,13 @@ InterstellarStompers: {
 
 IronBoots: {
 	DisplayName: Iron Boots
-	Tooltip: Allows you to sink faster through liquids
+	Tooltip:
+		'''
+		Hold DOWN to increase your maximum fall speed, even in water
+		Upon hitting the ground, a shockwave is created at your feet 
+		The shockwave scales in both damage and size the longer you fall for
+		Negates fall damage
+		'''
 }
 
 JellyChargedBattery: {
@@ -1029,8 +1046,9 @@ LeviathanAmbergris: {
 	DisplayName: Leviathan Ambergris
 	Tooltip:
 		'''
-		20% increased dash velocity, and dash cooldown is 33% faster
+		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
 		Your dashes are empowered by water, knocking back and damaging nearby enemies with viscous currents
+		Visual effects are reduced if visibility is disabled
 		'''
 }
 
@@ -1142,8 +1160,9 @@ NecklaceofVexation: {
 	DisplayName: Necklace of Vexation
 	Tooltip:
 		'''
-		20% increased damage when under 50% life
-		All attacks inflict acid venom while wearing Reaver armor
+		Up to 30% increased damage the lower your life is
+		Current boost: [DAMAGE]%
+		All attacks inflict acid venom
 		Revenge
 		'''
 }
@@ -1291,7 +1310,8 @@ PlanebreakersPouch: {
 		'''
 		15% increased ranged damage, 5% increased ranged critical strike chance and 20% reduced ammo usage
 		Grants a 20% chance to not consume arrows
-		Greatly increases all ranged projectile velocity
+		Pressing [KEY] will automatically swap the ammos in your ammo slots
+		The ammo type swapped depends on the ammo of the weapon you are holding
 		'''
 }
 
@@ -1356,15 +1376,21 @@ Radiance: {
 	Tooltip:
 		'''
 		+70 max life
-		Increases life regen based on missing health
-		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
-		Each additional debuff grants 8 defense, which slowly decays while not debuffed
-		Standing still grants +2 HP/s life regen
-		Grants 20 defense and stronger regeneration while afflicted with any debuff
-		The healing eventually slows down if debuffed for an extended period of time
-		Weaker DoT debuffs are harmless and halves the duration of most other debuffs
+		Provides greatly improved life regen, increasing with lost health
+		Gain increased defense from debuffs inflicted on you, and greatly reduces their effectiveness
+		Current boosts: +[REGEN] HP/s and [DEFENSE] defense.
 		You emit shining blue light if visibility is enabled
 		'A once putrid crystal, now glimmering with immaculate purity'
+		'''
+	HoldShiftTooltip:
+		'''
+		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
+		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
+		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
+		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
+		[c/CDF69C:+20 defense and faster natural regen recovery while afflicted with any debuff]
+		[c/CDF69C:Each additional debuff grants 8 defense, which slowly decays while not debuffed]
+		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
 
@@ -1373,13 +1399,14 @@ RadiantOoze: {
 	Tooltip:
 		'''
 		Grants +2 to +6 HP/s life regen based on missing health
+		Current boost: +[REGEN] HP/s
 		You emit yellow light if visibility is enabled
 		'''
 }
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+	Tooltip: Stealth strikes grant 15% critical strike chance to non-stealth strikes for 10 seconds
 }
 
 RampartofDeities: {
@@ -1440,7 +1467,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling and deal 8% more damage
+	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1490,7 +1517,7 @@ SandSharkToothNecklace: {
 	Tooltip:
 		'''
 		Increases armor penetration by 10
-		6% increased damage
+		10% increased damage
 		'''
 }
 
@@ -1564,8 +1591,12 @@ ShieldoftheOcean: {
 	DisplayName: Shield of the Ocean
 	Tooltip:
 		'''
-		Increased defense by 5 when submerged in liquid
-		10% increased movement speed and +1 HP/s life regen while wearing Victide armor
+		Pressing [KEY] will activate a parry, encasing you in a bubble
+		Being hit shortly after encasement will pop the bubble, granting 60% DR for that hit
+		Upon popping, nearby enemies are violently launched away from you, and will be damaged if they collide with tiles
+		Enemies which cannot be launched instead directly take large damage
+		After popping, the damage reducing effect goes on a 20 second cooldown
+		Damage parried whilst on cooldown will not be reduced, and will not deal collision damage to launched enemies
 		'''
 }
 
@@ -1590,6 +1621,7 @@ SlagsplitterPauldron: {
 		'''
 		You gain 10% damage reduction while dashing, and enemies are inflicted with Armor Crunch
 		Your dashes are empowered by fire, shredding enemies near you with violent explosions
+		Visual effects are reduced if visibility is disabled
 		'''
 }
 
@@ -1665,12 +1697,11 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		32% increased jump speed, allows auto-jump, and negates fall damage
-		Increases movement acceleration and deceleration by 1.75x
-		Increases movement speed by 1.15x. This bonus applies to running boot accessories
-		Grants the ability to swim, climb walls, dash, and dodge attacks
-		Provides light when worn
-		{$Common.AbyssLightLevel1}
+		Provides a high-speed dash that scales with your movement speed
+		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		Increases movement acceleration and deceleration by 1.6x
+		Grants the ability to swim, climb walls, and dodge attacks
+		Consecutive dashes in the same direction reduce dash speed
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -1679,13 +1710,12 @@ StatisVoidSash: {
 	DisplayName: Statis' Void Sash
 	Tooltip:
 		'''
-		32% increased jump speed, allows auto-jump, and negates fall damage
-		Increases movement acceleration and deceleration by 1.75x
-		Increases movement speed by 1.15x. This bonus applies to running boot accessories
-		Grants the ability to swim, climb walls, dash, and dodge attacks
-		Dashes leave homing scythes in your wake
-		Provides light when worn
-		{$Common.AbyssLightLevel1}
+		Provides a high-speed dash that scales with your movement speed
+		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
+		Increases movement acceleration and deceleration by 1.85x
+		Grants the ability to swim, climb walls, and dodge attacks
+		Visual effects are reduced if visibility is disabled
+		Consecutive dashes in the same direction reduce dash speed
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -1866,8 +1896,8 @@ TheEvolution: {
 		'''
 		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
 		{$Common.ReflectInformation}
-		Reflecting a projectile grants +6 HP/s life regen for 5 seconds and grants maximum natural life regen
-		Getting hit by the same enemy projectile type during cooldown will resist its damage by 20%
+		Reflecting a projectile grants maximum natural life regen for 10 seconds
+		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
 
@@ -1885,9 +1915,9 @@ TheSponge: {
 	Tooltip:
 		'''
 		Gain a barrier with 180 health
-		The barrier grants 30 defense and 10% damage reduction while active
+		The barrier grants 20 defense and 10% damage reduction while active
 		[ADREN]
-		Once depleted, the barrier will regenerate 9 seconds after being hit
+		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
 		Getting hit resets the timer
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -1929,7 +1959,7 @@ TrinketofChi: {
 	DisplayName: Trinket of Chi
 	Tooltip:
 		'''
-		Increases damage reduction by 4% if you avoid taking damage for 5 seconds
+		Increases damage reduction by 8% if you avoid taking damage for 10 seconds
 		This buff expires on hit
 		+1 HP/s life regen for teammates
 		'''
@@ -1949,8 +1979,11 @@ VampiricTalisman: {
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
-		12% increased rogue damage
+		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
+		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
+		'Possessing the talisman makes you yearn for blood'
 		'''
+	YearningForBlood: THIS ENDLESS HUNGER WON'T END
 }
 
 VeneratedLocket: {
@@ -2001,7 +2034,7 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Damage is increased by 20% when close to enemies, but decreased by 60% when none are nearby
+		Damage is increased by 20% when close to enemies, but decreased by 40% when none are nearby
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
@@ -2026,8 +2059,10 @@ WulfrumAcrobaticsPack: {
 	DisplayName: Wulfrum Acrobatics Pack
 	Tooltip:
 		'''
-		Transforms equipped hooks into a wulfrum slingshot
+		Provides a wulfrum slingshot grappling hook
+		This slingshot's stats scale with your equipped hook
 		The slingshot allows for advanced rope-swinging physics
+		Hold UP or DOWN to retract or extend the slingshot's rope
 		Automatically grapples nearby walls if a lethal fall is detected
 		This safety feature won't activate if DOWN is held
 		8% increased movement speed

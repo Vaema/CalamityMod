@@ -89,7 +89,7 @@ namespace CalamityMod.NPCs.HiveMind
                 acceleration *= 2f;
             }
 
-            if (NPC.position.Y > Main.player[NPC.target].position.Y - 350f)
+            if (NPC.position.Y > Main.player[NPC.target].position.Y - 400f)
             {
                 if (NPC.velocity.Y > 0f)
                     NPC.velocity.Y *= deceleration;
@@ -104,7 +104,7 @@ namespace CalamityMod.NPCs.HiveMind
                 NPC.velocity.Y = MathHelper.Clamp(NPC.velocity.Y + acceleration, -velocity, velocity * 1.5f);
             }
 
-            bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 300f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
+            bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 350f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
             float distanceX = masterMode ? 200f : 400f;
             if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                float rainDropRate = Main.getGoodWorld ? 10f : death ? 20f : revenge ? 25f : 30f;
+                float rainDropRate = Main.getGoodWorld ? 10f : death ? 15f : revenge ? 20f : 30f;
                 if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;
@@ -146,7 +146,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void OnKill()
         {
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
-            if (Main.rand.NextBool(4) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
+            if (Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
         }
 

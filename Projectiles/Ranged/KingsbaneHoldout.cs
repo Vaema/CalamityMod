@@ -98,10 +98,10 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.Calamity().GeneralScreenShakePower = 1.85f;
                     //recoil
                     Owner.velocity += -Projectile.velocity * fullRevShots * (Main.zenithWorld ? 0.028f : 0.013f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage * 0.9f), Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmall");
                     if (fullRevShots % 2 == 0)
-                        SoundEngine.PlaySound(fire with { Volume = 0.8f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.7f }, Projectile.Center);
                     //SoundEngine.PlaySound(SoundID.Item40 with { PitchVariance = 0.4f }, Projectile.Center);
                     Owner.channel = true;
 
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
-                        SoundEngine.PlaySound(fire with { Volume = 0.6f }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.4f }, Projectile.Center);
                         framesBetweenShots = 3;
                     }
                     if (framesBetweenShots > 0)
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 float interpolant = Utils.GetLerpValue(0f, 55f, Owner.Distance(Main.MouseWorld), true);
                 Vector2 oldVelocity = Projectile.velocity;
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), 0.185f).SafeNormalize(Vector2.UnitY);
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.SafeDirectionTo(Main.MouseWorld), (discharging ? 0.2f : 0.45f)).SafeNormalize(Vector2.UnitY);
                 if (Projectile.velocity != oldVelocity)
                     Projectile.ForceNetUpdate();
             }

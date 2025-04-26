@@ -569,6 +569,13 @@ namespace CalamityMod.Items
 
             if (item.healLife > 0 && Main.LocalPlayer.Calamity().healingPotionMultiplier != 1f)
                 EditTooltipByName("HealLife", (line) => line.Text = Language.GetOrRegister("CommonItemTooltip.RestoresLife").Format((int)(item.healLife * Main.LocalPlayer.Calamity().healingPotionMultiplier)));
+
+            if (item.type == ItemID.GravityGlobe)
+                EditTooltipByName("Tooltip1", (line) => line.Text = EditedTooltip("GravityGlobe"));
+
+
+            if (item.type == ItemID.PortableStool)
+                EditTooltipByName("Tooltip0", (line) => line.Text += AddedTooltip("Stepstool"));
             #endregion
 
             // For boss summon item clarity

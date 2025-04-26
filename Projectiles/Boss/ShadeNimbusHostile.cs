@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Events;
+using CalamityMod.World;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,6 +9,7 @@ namespace CalamityMod.Projectiles.Boss
     public class ShadeNimbusHostile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
@@ -19,7 +22,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.hostile = true;
-            Projectile.timeLeft = 360;
+            Projectile.timeLeft = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 480 : 360;
             Projectile.penetrate = -1;
         }
 
@@ -31,12 +34,11 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frameCounter = 0;
                 Projectile.frame++;
                 if (Projectile.frame > 5)
-                {
                     Projectile.frame = 0;
-                }
             }
+
             Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] >= 300f)
+            if (Projectile.ai[1] >= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 420f : 300f))
             {
                 Projectile.alpha += 5;
                 if (Projectile.alpha > 255)

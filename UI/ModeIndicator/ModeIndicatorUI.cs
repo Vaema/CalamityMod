@@ -218,9 +218,9 @@ namespace CalamityMod.UI.ModeIndicator
                         anyActiveMode = true;
                     }
                 }
-                string modeStr = CalamityUtils.GetTextValue("UI.ModeAppend");
+                string modeStr = CalamityUtils.GetText("UI.ModeAppend").Format(modeToDisplay);
                 string activeText = CalamityUtils.GetTextValue("UI." + (anyActiveMode ? "Active" : "NotActive"));
-                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeToDisplay + modeStr, activeText.ToLower());
+                text = CalamityUtils.GetText("UI.DifficultyStatusText").WithFormatArgs(modeStr, activeText.ToLower());
             }
         }
 
@@ -354,7 +354,12 @@ namespace CalamityMod.UI.ModeIndicator
                         modeHovered = true;
 
                         text = GetDifficultyText(mode);
-                        if (ClickingMouse)
+
+                        // Cannot switch to Death Mode if Master Mode isn't active.
+                        // Cannot switch to Revengeance Mode if Master Mode is active.
+                        // I hate how this is coded, it makes me want to smash my head through a wall. - Fabsol
+                        bool cannotSwitchTo = (!Main.masterMode && mode == Difficulties[2]) || (Main.masterMode && mode == Difficulties[1]);
+                        if (ClickingMouse && !cannotSwitchTo)
                             SwitchToDifficulty(mode);
                     }
                 }

@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ProfanedGuardians
 {
+    [HasPierceResist]
     public class ProfanedRocks : ModNPC
     {
         private bool start = true;

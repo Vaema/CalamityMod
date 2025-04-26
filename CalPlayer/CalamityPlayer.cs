@@ -61,9 +61,11 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -143,6 +145,7 @@ namespace CalamityMod.CalPlayer
         public bool disableHiveCystSpawns = false;
         public bool disableNaturalScourgeSpawns = false;
         public bool disableAnahitaSpawns = false;
+        public int whitewaterHeal = 0;
         /// <summary> Used for toggling Calamity's blazing cursor effect. </summary>
         public bool blazingCursorDamage = false;
         /// <summary>
@@ -297,7 +300,12 @@ namespace CalamityMod.CalPlayer
         public int GalaxyHammer = 0;
         /// <summary> Variable used to apply Ontological Despoiler's nerfs when continuously using a single firing mode. </summary>
         public bool despoilerNerf = false;
+        /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
+        /// <summary> Variable used to track the fuel of Pristine Fury right click </summary>
+        public int furyFuelMax = 1800;
+        public int furyFuel = 1800;
+        public float furyRefuelTimer = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
@@ -309,7 +317,7 @@ namespace CalamityMod.CalPlayer
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
         /// The player's alcohol level. Increased by 1 for each alcohol the player has drank, 2 for Everclear.<br/>
-        /// Is this value is greater than 3, the player is inflicted with Alcohol Poisoning.
+        /// If this value is greater than 3, the player is inflicted with Alcohol Poisoning.
         /// </summary>
         public int alcoholPoisonLevel = 0;
         public int dashTimeMod;
@@ -358,7 +366,7 @@ namespace CalamityMod.CalPlayer
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
         public int RustyMedallionCooldown = 0;
-        public int MiniSwamerCooldown = 0;
+        public int MiniSwarmerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
         public NPC unstableSelectedTarget;
@@ -710,9 +718,11 @@ namespace CalamityMod.CalPlayer
         public bool shieldOfTheHighRulerDashVelocityBoosted = false;
         public bool luxorsGift = false;
         public bool luxorHit = false;
+        public bool luxorsGiftVanity = false;
         public bool fungalSymbiote = false;
         public bool trinketOfChi = false;
         public bool gladiatorSword = false;
+        public int gladiatorTimer = 0;
         public bool unstableGraniteCore = false;
         public bool regenator = false;
         public float regenatorDamage = 0;
@@ -731,6 +741,10 @@ namespace CalamityMod.CalPlayer
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
+        public bool aFossil = false;
+        public bool aPowder = false;
+        public bool fallingBlockProtection = false;
+        public bool trapProtection = false;
         public bool alluringBait = false;
         public bool enchantedPearl = false;
         public bool fishingStation = false;
@@ -773,8 +787,13 @@ namespace CalamityMod.CalPlayer
         public int gloveLevel = 0;
         public bool alreadyHasFrogLeg = false; // Unused, intended to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
-        /// <summary> Counter variable used for spawning Statis' Void Sash's scythes when dashing. </summary>
-        public int statisTimer = 0;
+        public bool statisNinjaBelt = false;
+        /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
+        public int statisPenaltyTimer = 0;
+        public int statisAnticheese = 0;
+        public int statisTimerMax => (int)(Utils.Remap(statisAnticheese, 1, 6, 120, 50, true));
+        public bool voidSashVisuals = true;
+        public bool statisVoidSash = false;
         public bool nucleogenesis = false;
         public bool nuclearFuelRod = false;
         public bool nebulousCore = false;
@@ -794,9 +813,11 @@ namespace CalamityMod.CalPlayer
         public bool rampartOfDeities = false;
         public bool gShell = false;
         public bool lAmbergris = false;
+        public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
         public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
@@ -813,11 +834,14 @@ namespace CalamityMod.CalPlayer
         public float pulseRate = 1;
         public bool aAmpoule = false;
         public bool rOoze = false;
+        public float radiantOozeRegen = 0;
+        public float ambrosialAmpouleRegen = 0;
+        public float purityRegen = 0;
         public bool fBarrier = false;
         public bool aBrain = false;
         public bool amalgam = false;
         public bool raiderTalisman = false;
-        public float raiderCritLifespan = 0f;
+        public int raiderCritLifespan = 0;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
         public int gSabatonHotkeyHoldTime = 0;
@@ -873,8 +897,6 @@ namespace CalamityMod.CalPlayer
         public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
-        /// <summary> Synergy effect while wearing Harpy Wings with Harpy Ring or Angel Treads, allowing attacks to be accompanied by feathers. </summary>
-        public bool harpyWingBoost = false;
         /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
         public int vortexBoosterStealthDelay = 0;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health by 45. </summary>
@@ -884,7 +906,7 @@ namespace CalamityMod.CalPlayer
         public bool anechoicPlating = false;
         /// <summary> Used for increasing light level in the Abyss. </summary>
         public bool jellyfishNecklace = false;
-        /// <summary> Calamity's Fairy Boots effect; makes fairies spawn around you which give stats. </summary>
+        /// <summary> Calamity's Fairy Boots effect; makes fairies spawn around the player which give stats. </summary>
         public bool fairyBoots = false;
         /// <summary> Calamity's Flame Waker Boots effect; multiplies heat debuff damage and makes attacks inflict On Fire. </summary>
         public bool flameWakerBoots = false;
@@ -909,6 +931,7 @@ namespace CalamityMod.CalPlayer
         public bool baroclaw = false;
         public bool HasIncreasedDashFirstFrame = false;
         public bool IsFirstDashFrame = true;
+        public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
         public bool voidOfExtinction = false;
         public bool eArtifact = false;
@@ -916,11 +939,15 @@ namespace CalamityMod.CalPlayer
         public bool auricSArtifact = false;
         public bool pSoulArtifact = false;
         public bool giantPearl = false;
+        public bool shieldOfTheOcean = false;
+        public int shieldOfTheOceanParry = 0;
+        public bool shieldOfTheOceanEmpoweredParry = false;
         public bool normalityRelocator = false;
         public bool flameLickedShell = false;
         public int flameLickedShellParry = 0;
         public bool flameLickedShellEmpoweredParry = false;
-        public bool Pauldron = false;
+        public bool sPauldron = false;
+        public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
         public bool manaOverloader = false;
@@ -1002,7 +1029,7 @@ namespace CalamityMod.CalPlayer
         public int phantomicHeartRegen = 0;
         public bool silvaWings = false;
         public int silvaWingsLifeRegenTimer = 0;
-        /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Harpy Wings, Tattered Fairy Wings, and Festive Wings. </summary>
+        /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
         public bool noStupidNaturalARSpawns = false;
@@ -1024,7 +1051,7 @@ namespace CalamityMod.CalPlayer
 
         #region Armor Set
         public int ArmorSetBonusKeyHeldTimer;
-        /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if you avoid damage for 2 seconds. </summary>
+        /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if the player avoids damage for 2 seconds. </summary>
         public bool silverMedkit = false;
         public int silverMedkitTimer = 0;
         /// <summary> Calamity's Gold armor set bonus; makes enemies drop Gold Coins. </summary>
@@ -1039,7 +1066,7 @@ namespace CalamityMod.CalPlayer
         public int tornadoCooldown = 0;
         /// <summary> Calamity's Snow armor set bonus; reduces cold enemy damage and increases cold debuff damage. </summary>
         public bool eskimoSet = false;
-        /// <summary> Calamity's Rain armor set bonus; gives jump speed and makes jumps create a splash </summary>
+        /// <summary> Calamity's Rain armor set bonus; increases jump speed and makes jumps create a damaging splash. </summary>
         public bool rainSet = false;
         /// <summary> Calamity's Meteor armor set bonus; makes all magic guns cost 33% mana instead of Space Gun costing 0 mana. </summary>
         public bool meteorSet = false;
@@ -1151,12 +1178,14 @@ namespace CalamityMod.CalPlayer
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
         public bool omegaBlueSet = false;
-        public bool omegaBlueHentai = false;
+        public bool omegaBlueAbyssalMadness = false;
         /// <summary> Aerospec armor's summoner set bonus minion. </summary>
         public bool valkyrie = false;
         /// <summary> Statigel armor's summoner set bonus minion. </summary>
         public bool slimeGod = false;
-        public bool molluskSet = false;
+        public bool molluskHelmet = false;
+        public bool molluskChest = false;
+        public bool molluskLegs = false;
         public bool fearmongerSet = false;
         public int fearmongerRegenFrames = 0;
         public bool daedalusCrystal = false;
@@ -1388,7 +1417,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Sun Spirit Staff. </summary>
         public bool SP = false;
         public bool dCreeper = false;
-        public bool bClot = false;
         public bool eAxe = false;
         public bool endoCooper = false;
         /// <summary> Vengeful Sun Staff. </summary>
@@ -1451,6 +1479,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Dragonblood Disgorger. </summary>
         public bool dragonFamily = false;
         public bool providenceStabber = false;
+        public bool seashineSwordBuff = false;
         public bool saros = false;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
@@ -2097,9 +2126,11 @@ namespace CalamityMod.CalPlayer
 
             omegaBlueChestplate = false;
             omegaBlueSet = false;
-            omegaBlueHentai = false;
+            omegaBlueAbyssalMadness = false;
 
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
 
             ataxiaBolt = false;
@@ -2121,6 +2152,7 @@ namespace CalamityMod.CalPlayer
             blazingCursorVisuals = false;
 
             luxorsGift = false;
+            luxorsGiftVanity = false;
             fungalSymbiote = false;
             trinketOfChi = false;
             gladiatorSword = false;
@@ -2132,6 +2164,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            aFossil = false;
+            aPowder = false;
+            fallingBlockProtection = false;
+            trapProtection = false;
             alluringBait = false;
             enchantedPearl = false;
             fishingStation = false;
@@ -2152,11 +2188,15 @@ namespace CalamityMod.CalPlayer
             tortShell = false;
             absorber = false;
             alwaysHoneyRegen = false;
+            alwaysHoneyRegenAmount = 0;
             honeyTurboRegen = false;
             honeyDewHalveDebuffs = false;
             livingDewHalveDebuffs = false;
             aAmpoule = false;
             rOoze = false;
+            radiantOozeRegen = 0;
+            ambrosialAmpouleRegen = 0;
+            purityRegen = 0;
             fBarrier = false;
             aBrain = false;
             amalgam = false;
@@ -2175,6 +2215,8 @@ namespace CalamityMod.CalPlayer
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
+            statisNinjaBelt = false;
+            statisVoidSash = false;
             alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
@@ -2206,14 +2248,10 @@ namespace CalamityMod.CalPlayer
             purity = false;
             harpyRing = false;
             angelTreads = false;
-            harpyWingBoost = false; //harpy wings + harpy ring
             fleshKnuckles = false;
             darkSunRing = false;
             crawCarapace = false;
             baroclaw = false;
-            gShell = false;
-            lAmbergris = false;
-            tortShell = false;
             voidOfCalamity = false;
             voidOfExtinction = false;
             eArtifact = false;
@@ -2221,9 +2259,10 @@ namespace CalamityMod.CalPlayer
             auricSArtifact = false;
             pSoulArtifact = false;
             giantPearl = false;
+            shieldOfTheOcean = false;
             normalityRelocator = false;
             flameLickedShell = false;
-            Pauldron = false;
+            sPauldron = false;
             XykVisualsBlue = false;
             XykVisualsOrange = false;
             manaOverloader = false;
@@ -2538,7 +2577,6 @@ namespace CalamityMod.CalPlayer
             aquaticStar = false;
             SP = false;
             dCreeper = false;
-            bClot = false;
             eAxe = false;
             endoCooper = false;
             apexShark = false;
@@ -2597,6 +2635,7 @@ namespace CalamityMod.CalPlayer
             powerfulRaven = false;
             dragonFamily = false;
             providenceStabber = false;
+            seashineSwordBuff = false;
             plaguebringerMK2 = false;
             igneousExaltation = false;
             GlacialEmbrace = false;
@@ -2783,6 +2822,7 @@ namespace CalamityMod.CalPlayer
             #region Buffs, Debuffs, Counters, and Nonsense
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
+            whitewaterHeal = 0;
             luxorHit = false;
             arsenalCooldown = 0;
             andromedaState = AndromedaPlayerState.Inactive;
@@ -2803,7 +2843,7 @@ namespace CalamityMod.CalPlayer
             spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
-            raiderCritLifespan = 0f;
+            raiderCritLifespan = 0;
             raiderSoundCooldown = 0;
             gSabatonHotkeyHoldTime = 0;
             gSabatonFall = 0;
@@ -2844,7 +2884,7 @@ namespace CalamityMod.CalPlayer
             scuttlerCooldown = 0;
             rogueCrownCooldown = 0;
             wingProjectileCooldown = 0;
-            statisTimer = 0;
+            statisPenaltyTimer = -1;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
             ladHearts = 0;
@@ -3055,7 +3095,9 @@ namespace CalamityMod.CalPlayer
             ChlorophyteHealDelay = 0;
             omegaBlueChestplate = false;
             omegaBlueSet = false;
-            molluskSet = false;
+            molluskHelmet = false;
+            molluskChest = false;
+            molluskLegs = false;
             fearmongerSet = false;
             daedalusReflect = false;
             daedalusSplit = false;
@@ -3136,6 +3178,8 @@ namespace CalamityMod.CalPlayer
             tracersDust = false;
             elysianWingsDust = false;
             GemTechState.OnDeathEffects();
+            shieldOfTheOceanParry = 0;
+            shieldOfTheOceanEmpoweredParry = false;
             blazingCoreParry = 0;
             blazingCoreEmpoweredParry = false;
             blazingCoreSuccessfulParry = 0;
@@ -3265,7 +3309,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero
-            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != Player.oldVelocity.Y) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
+            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
             {
                 gSabatonHotkeyHoldTime++;
                 if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime % 3f == 0)
@@ -3394,20 +3438,97 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(SoundID.Item34, Player.Center);
             }
 
+            if (CalamityKeybinds.AmmoCycleHotkey.JustPressed && deadshotBrooch)
+            {
+                SoundEngine.PlaySound(SoundID.Item149, Player.Center);
+
+                // I could've made this so simple on myself, but no, I felt the need to make things convenient for the users...
+                // First we need to determine the bounds for what we're swapping.
+                int ammoType = Player.HeldItem.useAmmo;
+                int lastSlot, firstSlot;
+                for (lastSlot = 57; lastSlot >= 54; lastSlot--)
+                {
+                    if (!Player.inventory[lastSlot].IsAir && Player.inventory[lastSlot].ammo == ammoType)
+                        break;
+                }
+                for (firstSlot = 54; firstSlot <= 57; firstSlot++)
+                {
+                    if (!Player.inventory[firstSlot].IsAir && Player.inventory[firstSlot].ammo == ammoType)
+                        break;
+                }
+                // If firstSlot = lastSlot, then there is only one ammo in ammo slots, so don't do anything.
+                if (firstSlot != lastSlot)
+                {
+                    int tempType = Player.inventory[lastSlot].type;
+                    int tempStack = Player.inventory[lastSlot].stack;
+                    // This list tracks the favorited status of the ammo slots. Since swapping the slots around fucks with the favorite status it must be manually set.
+                    List<bool> favorited = [];
+                    for (int z = 54; z <= 57; z++)
+                        favorited.Add(!Player.inventory[z].IsAir && Player.inventory[z].favorited);
+
+                    // It is impossible for lastSlot to equal 54 and firstSlot to not equal 54.
+                    for (int i = lastSlot; i >= 55; i--)
+                    {
+                        if (Player.inventory[i].IsAir || Player.inventory[i].ammo != ammoType)
+                            continue;
+
+                        // If the slot we're interested in is the lower bound of our ammos, set it to the temp values and don't run anything else.
+                        if (i == firstSlot)
+                        {
+                            Player.inventory[i].SetDefaults(tempType);
+                            Player.inventory[i].stack = tempStack;
+                            Player.inventory[i].favorited = favorited[lastSlot - 54];
+                            continue;
+                        }
+
+                        // Find the next slot that has ammo in it.
+                        int nextSlot;
+                        for (nextSlot = i - 1; nextSlot >= 54; nextSlot--)
+                        {
+                            if (!Player.inventory[nextSlot].IsAir && Player.inventory[nextSlot].ammo == ammoType)
+                                break;
+                        }
+
+                        // Set this slot to what is in that slot.
+                        Player.inventory[i].SetDefaults(Player.inventory[nextSlot].type);
+                        Player.inventory[i].stack = Player.inventory[nextSlot].stack;
+                        Player.inventory[i].favorited = favorited[nextSlot - 54];
+                    }
+
+                    // Handles swapping the ammo that is in the first slot.
+                    if (firstSlot == 54)
+                    {
+                        Player.inventory[54].SetDefaults(tempType);
+                        Player.inventory[54].stack = tempStack;
+                        Player.inventory[54].favorited = favorited[lastSlot - 54];
+                    }
+
+                    // Produce a visual effect showing the top ammo that you swapped to.
+                    int visualType = Player.inventory[firstSlot].type;
+                    Texture2D ammoTex = TextureAssets.Item[visualType].Value;
+                    int frameAmt = Main.itemAnimations[visualType] == null ? 1 : ammoTex.Height / Main.itemAnimations[visualType].GetFrame(ammoTex).Height;
+                    CustomSprite ammoVisual = new(Player.Center - Vector2.UnitY * 20f, -Vector2.UnitY * 7f, 30, ammoTex, 1f, Color.White, 0f, false, false, frameAmt);
+                    GeneralParticleHandler.SpawnParticle(ammoVisual);
+                }
+            }
+
             if (CalamityKeybinds.ArmorSetBonusHotKey.JustPressed)
             {
                 PlayerLoader.ArmorSetBonusActivated(Player);
 
-                // Activate vanilla set bonuses
-                if (Player.setVortex && !Player.mount.Active)
-                    Player.vortexStealthActive = !Player.vortexStealthActive;
-
-                if (Player.setForbidden)
+                if (CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap)
                 {
-                    Player.MinionRestTargetAim();
+                    // Activate vanilla set bonuses
+                    if (Player.setVortex && !Player.mount.Active)
+                        Player.vortexStealthActive = !Player.vortexStealthActive;
 
-                    if (!Player.setForbiddenCooldownLocked)
-                        Player.CommandForbiddenStorm();
+                    if (Player.setForbidden)
+                    {
+                        Player.MinionRestTargetAim();
+
+                        if (!Player.setForbiddenCooldownLocked)
+                            Player.CommandForbiddenStorm();
+                    }
                 }
             }
 
@@ -3446,6 +3567,12 @@ namespace CalamityMod.CalPlayer
                         SoundEngine.PlaySound(ProfanedGuardianDefender.RockShieldSpawnSound, Player.Center);
                         flameLickedShellParry = FlameLickedShell.flameLickedParry;
                     }
+                }
+                else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
+                {
+                    GeneralScreenShakePower = 2f;
+                    SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
+                    shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
                 }
             }
 
@@ -3614,6 +3741,10 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
+            // Don't trigger set bonuses if the config is disabled and the double-tap hotkey was triggered
+            if (!(CalamityKeybinds.ArmorSetBonusHotKey.JustPressed || CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap))
+                return;
+
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
@@ -3990,7 +4121,7 @@ namespace CalamityMod.CalPlayer
                     }
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
-                    if (Player.velocity.Y < 0f || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
+                    if ((Player.gravDir == 1 && Player.velocity.Y < 0f) || (Player.gravDir == -1 && Player.velocity.Y > 1f) || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
@@ -4009,7 +4140,7 @@ namespace CalamityMod.CalPlayer
                         Player.controlJump = false;
 
                         // Check if player hit some form of solid resistance (the ground)
-                        if (Player.oldVelocity.Y == Player.velocity.Y)
+                        if (0 == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
                             //Spawn explosion. ai[0] is used for transferring the recorded falling time
@@ -4303,6 +4434,8 @@ namespace CalamityMod.CalPlayer
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
+                    (statisNinjaBelt ? 0.6f : 0f) +
+                    (statisVoidSash ? 0.85f : 0f) +
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     //(exaltedKillMode ? 7f : devilsDevastationKillMode ? 11f : 0) +
@@ -4364,6 +4497,8 @@ namespace CalamityMod.CalPlayer
                     ModDashMovement();
             }
             #endregion
+            
+            Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }
         #endregion
 
@@ -5524,6 +5659,9 @@ namespace CalamityMod.CalPlayer
         // It also starts the speedrun timer if applicable.
         public override void OnEnterWorld()
         {
+            if (CalamityClientConfig.Instance.StutterFix)
+                WorldGen.SectionTileFrameWithCheck(0, 0, Main.maxTilesX, Main.maxTilesY);
+
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 EnterWorldSync();
 
@@ -5538,9 +5676,7 @@ namespace CalamityMod.CalPlayer
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display
             if (showStartupMessages)
-            {
                 startMessageDisplayDelay = Main.rand.Next(CalamityUtils.SecondsToFrames(12), CalamityUtils.SecondsToFrames(20) + 1);
-            }
         }
 
         /// <summary>
@@ -5587,7 +5723,7 @@ namespace CalamityMod.CalPlayer
                     Player.HealEffect(-5);
                     Player.statLife -= 5;
                     if (Player.statLife <= 0)
-                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").Format(Player.name)), 1000, -1);
+                        Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ManaConversionEnchant").ToNetworkText(Player.name)), 1000, -1);
                 }
 
                 for (int i = 0; i < 8; i++)

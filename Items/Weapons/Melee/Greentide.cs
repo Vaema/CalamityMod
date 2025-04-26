@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 87; // IS THAT THE BITE OF '87
+            Item.damage = 97;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = 27;
             Item.useAnimation = 27;

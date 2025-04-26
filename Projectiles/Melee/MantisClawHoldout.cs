@@ -270,6 +270,6 @@ namespace CalamityMod.Projectiles.Melee
         // The holdout cannot deal damage.
         public override bool? CanDamage() => false;
 
-        public override void OnSpawn(IEntitySource source) => Projectile.scale = 0f;
+        public override void WhenSpawned() => Projectile.scale = 0f;
     }
 }

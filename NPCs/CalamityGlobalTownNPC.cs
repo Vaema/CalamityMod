@@ -69,6 +69,7 @@ namespace CalamityMod.NPCs
             "Dazren",
             "Johnny Test", // <@!589966747977777197> (konorango)
             "Bling Bling Boy", // <@!522970788203069442> (phallguy)
+            "RICE", // <@!400107830889152524> (rice_xd.)
         };
         private static readonly string[] ArmsDealerNames =
         {
@@ -141,6 +142,7 @@ namespace CalamityMod.NPCs
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Cooler Kevin", // <@!614126424751603714> (exellent.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
+            "Wamy",
         };
         private static readonly string[] MechanicNames =
         {
@@ -188,6 +190,7 @@ namespace CalamityMod.NPCs
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
+            "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -212,6 +215,7 @@ namespace CalamityMod.NPCs
             "Amber", // <@!114677116473180169> (mishirousui)
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
+            "Lain", // <@!655201622863118337> (literallyadeerfr)
         };
         private static readonly string[] TavernkeepNames =
         {
@@ -223,6 +227,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         {
             "Emmett",
+            "Casino King Gray", // <@!555512087711973390> (eternalgrayson)
         };
         private static readonly string[] TravelingMerchantNames =
         {
@@ -681,11 +686,11 @@ namespace CalamityMod.NPCs
             (NPCID.Cyborg,(Player player) => player.Calamity().newCyborgInventory, (Player player, bool enabled) =>{ player.Calamity().newCyborgInventory = enabled; }),
             (NPCID.Princess, (Player player) => player.Calamity().newPrincessInventory,(Player player, bool enabled) =>{ player.Calamity().newPrincessInventory = enabled; }),
             (NPCID.SkeletonMerchant, (Player player) => player.Calamity().newSkeletonMerchantInventory, (Player player, bool enabled) =>{ player.Calamity().newSkeletonMerchantInventory = enabled; }),
-            (NPCType<SEAHOE>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
-            (NPCType<THIEF>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
-            (NPCType<FAP>(), (Player player) => player.Calamity().newCirrusInventory,(Player player, bool enabled) =>{ player.Calamity().newCirrusInventory = enabled; }),
-            (NPCType<DILF>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
-            (NPCType<WITCH>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
+            (NPCType<SeaKing>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
+            (NPCType<Bandit>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
+            (NPCType<Cirrus>(), (Player player) => player.Calamity().newCirrusInventory,(Player player, bool enabled) =>{ player.Calamity().newCirrusInventory = enabled; }),
+            (NPCType<Archmage>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
+            (NPCType<BrimstoneWitch>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
         };
 
         public void TownNPCAlertSystem(NPC npc, Mod mod, SpriteBatch spriteBatch)
@@ -763,10 +768,10 @@ namespace CalamityMod.NPCs
         #region NPC Chat
         public override void GetChat(NPC npc, ref string chat)
         {
-            int fapsol = NPC.FindFirstNPC(NPCType<FAP>());
-            int permadong = NPC.FindFirstNPC(NPCType<DILF>());
-            int seahorse = NPC.FindFirstNPC(NPCType<SEAHOE>());
-            int thief = NPC.FindFirstNPC(NPCType<THIEF>());
+            int cirrus = NPC.FindFirstNPC(NPCType<Cirrus>());
+            int permadong = NPC.FindFirstNPC(NPCType<Archmage>());
+            int seahorse = NPC.FindFirstNPC(NPCType<SeaKing>());
+            int thief = NPC.FindFirstNPC(NPCType<Bandit>());
             int angelstatue = NPC.FindFirstNPC(NPCID.Merchant);
 
             switch (npc.type)
@@ -819,8 +824,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.DarksunEclipse");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.ZoneGlowshroom)
                     {
-                        if (Main.rand.NextBool() && fapsol != -1)
-                            chat = CalamityUtils.GetText("Vanilla.DryadChat.DrunkPrincessShroom").Format(Main.npc[fapsol].GivenName);
+                        if (Main.rand.NextBool() && cirrus != -1)
+                            chat = CalamityUtils.GetText("Vanilla.DryadChat.DrunkPrincessShroom").Format(Main.npc[cirrus].GivenName);
                         else
                             chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.Mushroom");
                     }
@@ -862,8 +867,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
                     else if (Main.rand.NextBool(5) && AcidRainEvent.AcidRainEventIsOngoing)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.AcidRain");
-                    else if (Main.rand.NextBool(5) && fapsol != -1)
-                        chat = CalamityUtils.GetText("Vanilla.MechanicChat.DrunkPrincess").Format(Main.npc[fapsol].GivenName);
+                    else if (Main.rand.NextBool(5) && cirrus != -1)
+                        chat = CalamityUtils.GetText("Vanilla.MechanicChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.Merchant:
@@ -912,8 +917,8 @@ namespace CalamityMod.NPCs
                 case NPCID.PartyGirl:
                     if (Main.rand.NextBool(4) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.PartyGirlChat.Eclipse" + Main.rand.Next(1, 2 + 1));
-                    else if (Main.rand.NextBool(10) && fapsol != -1)
-                        chat = CalamityUtils.GetText("Vanilla.PartyGirlChat.DrunkPrincess").Format(Main.npc[fapsol].GivenName);
+                    else if (Main.rand.NextBool(10) && cirrus != -1)
+                        chat = CalamityUtils.GetText("Vanilla.PartyGirlChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.Pirate:
@@ -921,7 +926,7 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.PreLeviathan");
                     else if (Main.rand.NextBool(5) && DownedBossSystem.downedAquaticScourge)
                         chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.WetScourgeDefeated");
-                    else if (Main.rand.NextBool(5) && fapsol != -1)
+                    else if (Main.rand.NextBool(5) && cirrus != -1)
                         chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.DrunkPrincess");
                     else if (Main.rand.NextBool(5) && seahorse != -1)
                         chat = CalamityUtils.GetText("Vanilla.PirateChat.SeaKing").Format(Main.npc[seahorse].GivenName);
@@ -949,8 +954,12 @@ namespace CalamityMod.NPCs
                     string worldEvil = Language.GetTextValue("LegacyMisc." + (WorldGen.crimson ? 102 : 101));
                     if (Main.rand.NextBool(15) && Main.hardMode)
                         chat = CalamityUtils.GetText("Vanilla.StylistChat.Hardmode").Format(worldEvil);
-                    if (Main.rand.NextBool(15) && fapsol != -1)
-                        chat = CalamityUtils.GetText("Vanilla.StylistChat.DrunkPrincess" + (ChildSafety.Disabled ? Main.rand.Next(1, 2 + 1) : 1)).Format(Main.npc[fapsol].GivenName);
+                    if (Main.rand.NextBool(15) && cirrus != -1)
+                    {
+                        int noChildSafetyCirrusLines = NPC.downedMoonlord ? Main.rand.Next(2, 3 + 1) : Main.rand.Next(1, 2 + 1);
+                        int childSafetyCirrusLines = NPC.downedMoonlord ? 3 : 1;
+                        chat = CalamityUtils.GetText("Vanilla.StylistChat.DrunkPrincess" + (ChildSafety.Disabled ? noChildSafetyCirrusLines : childSafetyCirrusLines)).Format(Main.npc[cirrus].GivenName);
+                    }
                     if ((Main.rand.NextBool(npc.GivenName == "Amber" ? 10 : 15)) && Main.LocalPlayer.Calamity().pSoulArtifact)
                     {
                         if (Main.LocalPlayer.Calamity().profanedCrystalBuffs)
@@ -963,8 +972,8 @@ namespace CalamityMod.NPCs
                 case NPCID.DD2Bartender:
                     if (Main.rand.NextBool(5) && !Main.dayTime && Main.moonPhase == 0)
                         chat = CalamityUtils.GetTextValue("Vanilla.TavernkeepChat.FullMoon");
-                    else if (Main.rand.NextBool(10) && fapsol != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TavernkeepChat.DrunkPrincess").Format(Main.npc[fapsol].GivenName);
+                    else if (Main.rand.NextBool(10) && cirrus != -1)
+                        chat = CalamityUtils.GetText("Vanilla.TavernkeepChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.TaxCollector:
@@ -994,13 +1003,13 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.TravellingMerchant:
-                    if (Main.rand.NextBool(5) && fapsol != -1 && angelstatue != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TravellingMerchantChat.DrunkPrincessMerchant").Format(Main.npc[fapsol].GivenName, Main.npc[angelstatue].GivenName);
+                    if (Main.rand.NextBool(5) && cirrus != -1 && angelstatue != -1)
+                        chat = CalamityUtils.GetText("Vanilla.TravellingMerchantChat.DrunkPrincessMerchant").Format(Main.npc[cirrus].GivenName, Main.npc[angelstatue].GivenName);
                     break;
 
                 case NPCID.Truffle:
-                    if (Main.rand.NextBool(4) && fapsol != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TruffleChat.DrunkPrincess").Format(Main.npc[fapsol].GivenName);
+                    if (Main.rand.NextBool(4) && cirrus != -1)
+                        chat = CalamityUtils.GetText("Vanilla.TruffleChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     else if (Main.rand.NextBool(8))
                         chat = CalamityUtils.GetTextValue("Vanilla.TruffleChat.Normal");
                     break;
@@ -1115,7 +1124,7 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
                 shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<THIEF>()))
+                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()))
                 .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons);
@@ -1150,8 +1159,8 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<AdrenalineHairDye>(), revengeance)
                 .Add(ItemType<RageHairDye>(), revengeance)
                 .AddWithCustomValue(ItemID.StylistKilLaKillScissorsIWish, Item.buyPrice(gold: 15))
-                .Add(ItemType<CirrusDress>(), Condition.NpcIsPresent(NPCType<FAP>()), drunk)
-                .AddWithCustomValue(ItemID.ChocolateChipCookie, Item.buyPrice(gold: 3), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCType<FAP>()));
+                .Add(ItemType<CirrusDress>(), Condition.NpcIsPresent(NPCType<Cirrus>()), drunk)
+                .AddWithCustomValue(ItemID.ChocolateChipCookie, Item.buyPrice(gold: 3), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCType<Cirrus>()));
             }
 
             if (type == NPCID.Cyborg)
@@ -1240,14 +1249,14 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
-                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50))
+                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
                 .Add(ItemType<LanternCenter>())
-                .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<FAP>()))
-                .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<FAP>()))
-                .Add(ItemID.Lemonade, Condition.NpcIsPresent(NPCType<FAP>()))
-                .Add(ItemID.PrismaticPunch, Condition.NpcIsPresent(NPCType<FAP>()))
-                .Add(ItemID.SmoothieofDarkness, Condition.NpcIsPresent(NPCType<FAP>()))
-                .Add(ItemID.TropicalSmoothie, Condition.NpcIsPresent(NPCType<FAP>()));
+                .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
+                .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
+                .Add(ItemID.Lemonade, Condition.NpcIsPresent(NPCType<Cirrus>()))
+                .Add(ItemID.PrismaticPunch, Condition.NpcIsPresent(NPCType<Cirrus>()))
+                .Add(ItemID.SmoothieofDarkness, Condition.NpcIsPresent(NPCType<Cirrus>()))
+                .Add(ItemID.TropicalSmoothie, Condition.NpcIsPresent(NPCType<Cirrus>()));
             }
 
             if (type == NPCID.SkeletonMerchant)

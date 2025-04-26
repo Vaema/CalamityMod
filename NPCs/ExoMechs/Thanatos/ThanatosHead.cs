@@ -22,6 +22,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Thanatos
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class ThanatosHead : ModNPC
     {
@@ -120,6 +121,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
         // Variable used to stop the segment spawning loop
         private bool tailSpawned = false;
+
+        // Variable used to prevent the fight from softlocking if one mech enters berserk before spawning the others
+        public bool berserkEarlyBugFix = false;
 
         // Used in the lerp to smoothly scale velocity up and down
         private float chargeVelocityScalar = 0f;
@@ -262,6 +266,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
                     otherExoMechsAlive++;
                     exoPrimeAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ModNPC as AresBody).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
 
@@ -272,6 +279,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 {
                     otherExoMechsAlive++;
                     exoTwinsAlive = true;
+                    // Spread the early berserk bug fix variable if it has been set
+                    if ((Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].ModNPC as Apollo.Apollo).berserkEarlyBugFix)
+                        berserkEarlyBugFix = true;
                 }
             }
             return otherExoMechsAlive;
@@ -574,6 +584,10 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<Artemis.Artemis>());
                                 NPC.SpawnOnPlayer(Main.player[targetIndex].whoAmI, ModContent.NPCType<Apollo.Apollo>());
                             }
+
+                            // If the mech somehow got low enough to enter berserk phase here, trigger the bug fix variable
+                            if (lifeRatio < 0.4f)
+                                berserkEarlyBugFix = true;
                         }
                     }
                     else
@@ -672,8 +686,8 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     AIState = (float)Phase.UndergroundLaserBarrage;
 
                     // Enter the fight again if any of the other exo mechs is below 70% or dead and other mechs aren't berserk
-                    // CIT 10FEB2025: Added checks for if the other mechs are alive, to fix softlocks if you somehow skip straight to berserk
-                    if ((!exoPrimeAlive || exoPrimeLifeRatio < 0.7f || !exoTwinsAlive || exoTwinsLifeRatio < 0.7f) && !otherMechIsBerserk)
+                    // CIT 24MAR2025: Actually fixed the early berserk softlock without affecting the normal fight
+                    if ((exoPrimeLifeRatio < 0.7f || exoTwinsLifeRatio < 0.7f || berserkEarlyBugFix) && !otherMechIsBerserk)
                     {
                         // Tells Thanatos to return to the battle in passive state and reset everything
                         // Return to normal phases if one or more mechs have been downed
@@ -963,7 +977,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.chaseable = vulnerable;
 
             // Adjust DR based on vulnerable
-            NPC.Calamity().DR = vulnerable ? 0.15f : 0.9999f;
+            NPC.Calamity().DR = vulnerable ? 0.1f : 0.9999f;
             NPC.Calamity().unbreakableDR = !vulnerable;
 
             // Vent noise and steam

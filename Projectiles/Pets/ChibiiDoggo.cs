@@ -219,7 +219,7 @@ IL_6899:
                     }
                     else
                     {
-                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChibiiDoggo").Format(player.name)), 500, 0);
+                        player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChibiiDoggo").ToNetworkText(player.name)), 500, 0);
                     }
                     player.RemoveAllIFrames();
                 }

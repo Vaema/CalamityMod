@@ -2563,7 +2563,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedDoG);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedDoG);
 
             // If DoG has not been killed yet, notify players that the holiday moons are buffed
             if (!DownedBossSystem.downedDoG)
@@ -2628,7 +2628,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 45, 55));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 65, 80));
                 normalOnly.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 150, 250);
 
                 // Equipment
@@ -2670,7 +2670,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GFBOnly.Add(ItemID.JungleTorch, dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ItemID.MushroomTorch, dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ItemID.ShimmerTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<CausticTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<KelpTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<ThermalTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<VoidTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax, true);

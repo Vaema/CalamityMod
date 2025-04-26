@@ -70,16 +70,20 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
                 float throwCount = Projectile.localAI[0];
-                for (int i = 0; i < (Main.zenithWorld ? 38 : 8); i++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    throwCount++;
-                    Vector2 vel = (Vector2.UnitY * -5).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.8f, 1.3f);
-                    int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel, Projectile.type, Projectile.damage / 4, Projectile.knockBack, Projectile.owner);
-                    Main.projectile[stealth].Calamity().stealthStrike = true;
-                    Main.projectile[stealth].localAI[0] = throwCount;
-                    Main.projectile[stealth].ai[0] = 1;
-                    Main.projectile[stealth].extraUpdates = 3;
+                    for (int i = 0; i < (Main.zenithWorld ? 38 : 8); i++)
+                    {
+                        throwCount++;
+                        Vector2 vel = (Vector2.UnitY * -5).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.8f, 1.3f);
+                        int stealth = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vel, Projectile.type, Projectile.damage / 4, Projectile.knockBack, Projectile.owner);
+                        Main.projectile[stealth].Calamity().stealthStrike = true;
+                        Main.projectile[stealth].localAI[0] = throwCount;
+                        Main.projectile[stealth].ai[0] = 1;
+                        Main.projectile[stealth].extraUpdates = 3;
+                    }
                 }
+                
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Pitch = -0.3f, Volume = 0.8f }, Projectile.Center);
             }
             else // Normal bubble spawn

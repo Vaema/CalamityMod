@@ -634,7 +634,7 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.ai[1] += 1f;
 
                 float attackDivisor = 140f - (int)(30f * enrageScale);
-                float telegraphOffset = (masterMode && revenge) ? 45f : 60f;
+                float telegraphOffset = death ? 45f : 60f;
                 if (!leviAlive || phase4)
                 {
                     attackDivisor -= (float)Math.Ceiling(50f * (1f - lifeRatio));

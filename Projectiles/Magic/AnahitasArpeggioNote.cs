@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.NPCs;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using System;
@@ -10,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException(onlyForSingleHitbox: true)]
     public class AnahitasArpeggioNote : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";

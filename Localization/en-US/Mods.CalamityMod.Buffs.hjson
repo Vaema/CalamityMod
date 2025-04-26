@@ -1473,6 +1473,11 @@ SarosPossessionBuff: {
 	Description: A radiant aura protects you
 }
 
+SeashineSwordBuff: {
+	DisplayName: Seashine Sword
+	Description: A beautiful dance of crystalline blades...
+}
+
 SeaSnailBuff: {
 	DisplayName: Sea Snail
 	Description: Meow?
@@ -1594,6 +1599,12 @@ YoungDukeBuff: {
 }
 
 // Misc
+
+HyperiusCollapse: {
+	DisplayName: Hyperius Collapse
+	Description: You should never see this...
+}
+
 PopoBuff: {
 	DisplayName: Popo
 	Description: You are a snowman now!

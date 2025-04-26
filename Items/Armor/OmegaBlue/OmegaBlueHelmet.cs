@@ -70,7 +70,6 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
 
             var mp = player.Calamity();
-            player.GetArmorPenetration<GenericDamageClass>() += 15;
             player.maxMinions += 2;
             mp.wearingRogueArmor = true;
             mp.omegaBlueSet = true;

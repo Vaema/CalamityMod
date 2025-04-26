@@ -120,6 +120,8 @@ namespace CalamityMod.CalPlayer
                     dashDelayToApply = BalancingConstants.UniversalShieldBonkCooldown;
                 if (DashID == DeepDiverDash.ID)
                     dashDelayToApply = 23;
+                if (DashID == StatisNinjaBeltDash.ID || DashID == StatisVoidSashDash.ID || Player.dashType == 1)
+                    dashDelayToApply = BalancingConstants.UniversalSashDashCooldown;
 
                 float dashSpeed = 12f;
                 float dashSpeedDecelerationFactor = 0.985f;

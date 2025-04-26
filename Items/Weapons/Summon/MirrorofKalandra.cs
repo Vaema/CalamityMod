@@ -97,6 +97,13 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<DivineGeode>(10).
                 AddCondition(Condition.NearShimmer).
                 Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.IceMirror).
+                AddIngredient<CosmiliteBar>(10).
+                AddIngredient<DivineGeode>(10).
+                AddCondition(Condition.NearShimmer).
+                Register();
         }
     }
 }

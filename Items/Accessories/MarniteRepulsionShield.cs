@@ -92,6 +92,8 @@ namespace CalamityMod.Items.Accessories
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 20;
             Projectile.netImportant = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
