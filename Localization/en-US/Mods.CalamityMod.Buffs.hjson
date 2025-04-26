@@ -1603,3 +1603,8 @@ PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
 }
+
+FleshTotemBuff: {
+	DisplayName: Flesh Totem Buff
+	Description: Mods.CalamityMod.Buffs.FleshTotemBuff.Description
+}

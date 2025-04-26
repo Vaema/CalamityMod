@@ -770,8 +770,12 @@ FleshTotem: {
 	DisplayName: Flesh Totem
 	Tooltip:
 		'''
-		Halves enemy contact damage
-		When you take contact damage this effect has a 20 second cooldown
+		5% increased magic critical strike chance
+		+30 max mana
+		Summons an effigy above your head that stores mana as you use it
+		The effigy occasionally pulses, restoring 30 mana
+		Pulses appear more frequently the more mana is stored
+		Upon being struck, the effigy unleashes all stored up mana as vengeful souls that chase your enemies
 		'''
 }
 

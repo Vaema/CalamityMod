@@ -852,6 +852,7 @@ namespace CalamityMod.CalPlayer
         public bool community = false;
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
+        public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
         public bool bloodPactBoost = false;
         public bool bloodflareCore = false;
@@ -5597,6 +5598,19 @@ namespace CalamityMod.CalPlayer
                     life.scale = Main.rand.NextFloat(1.5f, 1.72f);
                     life.fadeIn = 0.7f;
                     life.noGravity = true;
+                }
+            }
+            
+            if (modPlayer.fleshTotem)
+            {
+                if (Main.myPlayer == Player.whoAmI)
+                {
+                    //Main.NewText(fleshTotemManaStorage);
+                    fleshTotemManaStorage += manaConsumed;
+                    if (fleshTotemManaStorage >= FleshTotem.manaStorageMax)
+                    {
+                        fleshTotemManaStorage = FleshTotem.manaStorageMax;
+                    }
                 }
             }
         }

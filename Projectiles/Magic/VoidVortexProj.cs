@@ -172,7 +172,6 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<AuricRebuke>(), 180);
             if (hit.Damage > 1 && Projectile.ai[2] == 3)
                 Projectile.Kill();
         }

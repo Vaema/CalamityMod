@@ -1,13 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Accessories;
+using Microsoft.Xna.Framework;
 using Terraria.Localization;
 
 namespace CalamityMod.Cooldowns
 {
-    public class FleshTotem : CooldownHandler
+    public class FleshTotemStorage : CooldownHandler
     {
-        public static new string ID => "FleshTotem";
+        public static new string ID => "FleshTotemStorage";
 
-        public override bool ShouldDisplay => true;
+        private CalamityPlayer CalPlayer => instance.player.Calamity();
+        public override bool ShouldDisplay => CalPlayer.fleshTotem;
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => "CalamityMod/Cooldowns/FleshTotem";
         public override Color OutlineColor => new Color(157, 248, 234);

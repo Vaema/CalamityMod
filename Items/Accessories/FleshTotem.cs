@@ -1,4 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
+using CalamityMod.Projectiles.Magic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +13,10 @@ namespace CalamityMod.Items.Accessories
     public class FleshTotem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int manaStorageMax = 600;
+        public const int lostSoulDamage = 200;
+
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -21,6 +30,24 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.fleshTotem = true;
+            player.statManaMax2 += 30;
+            player.GetCritChance<MagicDamageClass>() += 5;
+            if (player.whoAmI == Main.myPlayer)
+            {
+                var source = player.GetSource_Accessory(Item);
+                if (player.FindBuffIndex(ModContent.BuffType<FleshTotemBuff>()) == -1)
+                {
+                    player.AddBuff(ModContent.BuffType<FleshTotemBuff>(), 3600, true);
+                }
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<FleshTotemMinion>()] < 1)
+                {
+                    int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(lostSoulDamage);
+
+                    int effigy = Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<FleshTotemMinion>(), damage, 2f, Main.myPlayer);
+                    if (Main.projectile.IndexInRange(effigy))
+                        Main.projectile[effigy].originalDamage = lostSoulDamage;
+                }
+            }
         }
     }
 }
