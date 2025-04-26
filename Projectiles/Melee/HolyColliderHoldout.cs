@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -16,6 +17,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class HolyColliderHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<HolyCollider>();
@@ -55,12 +57,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, it does not influence Holy Collider's projectile spawning
             mousePos = Owner.Calamity().mouseWorld;
@@ -346,8 +347,8 @@ namespace CalamityMod.Projectiles.Melee
                                 Projectile projectile = Main.projectile[x];
                                 if (Vector2.Distance(Owner.Center + (new Vector2(100, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10)
                                 {
-                                    Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -2.5f;
-                                    projectile.velocity += launchVel;
+                                    Vector2 launch = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -2.5f;
+                                    projectile.velocity += launch;
                                     projectile.timeLeft = 300;
                                     projectile.owner = Owner.whoAmI;
                                     Particle orb2 = new CustomPulse(projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.8f, 11);
@@ -415,12 +416,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * (chargedSwing ? -35 : -23);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.3f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, (chargedSwing ? 35 : 23), true);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

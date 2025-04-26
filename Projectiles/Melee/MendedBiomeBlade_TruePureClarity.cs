@@ -48,10 +48,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
         }
 
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             SwingDir = 1f;
-            base.OnSpawn(source);
             mousePos = Owner.Calamity().mouseWorld;
             aimPos = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnimation = Owner.itemAnimationMax;
@@ -74,8 +73,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.rotation = (Owner.Calamity().mouseWorld - Owner.Center).SafeNormalize(Vector2.UnitX).ToRotation();
                     Projectile.timeLeft = dashTime;
                     lastDisplacement = Projectile.Center - Owner.Center;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
             }
 
@@ -200,8 +198,7 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.itemAnimation = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
 
                 Owner.velocity = dashDirection * 30f;

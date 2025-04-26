@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (Projectile.timeLeft % 50 == 0)
                 {
-                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
+                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.4f), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
                     dustProjectile.timeLeft = 240;
                 }
             }

@@ -47,8 +47,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient(ItemID.Valor).
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
+                AddIngredient(ItemID.SoulofLight, 7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -35,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumAureus
 {
     [AutoloadBossHead]
+    [HasPierceResist(singleHitbox: true)]
     public class AstrumAureus : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AureusHit", 4);
@@ -431,7 +432,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<FAP>() }, DownedBossSystem.downedAstrumAureus);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)

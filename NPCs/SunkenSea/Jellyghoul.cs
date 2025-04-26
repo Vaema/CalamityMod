@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            //NPC.Center -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
+            NPC.Center -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
         }
         public override void AI()
         {
@@ -150,7 +150,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Tile tile = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY);
 
-            return !spawnInfo.Player.Calamity().clamity && tile.WallType == WallID.CrimstoneUnsafe ? 0.05f : 0f;
+            return !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>() ? 0.05f : 0f;
 
             //fuck this
             //if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>())

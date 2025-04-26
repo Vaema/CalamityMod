@@ -31,6 +31,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
             Projectile.timeLeft = 20;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

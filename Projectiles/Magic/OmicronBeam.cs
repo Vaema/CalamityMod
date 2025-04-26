@@ -40,8 +40,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (isSplit == 0)
             {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
                 splitShot = true;
             }
 
@@ -70,10 +69,7 @@ namespace CalamityMod.Projectiles.Magic
             time++;
 
             if (Projectile.numUpdates == 1)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
         }
 
         public override void OnKill(int timeLeft)

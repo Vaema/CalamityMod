@@ -621,6 +621,7 @@ namespace CalamityMod
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
+                    ["spawnItems"] = ItemType<NaiadsWarhorn>(),
                     ["collectibles"] = collection,
                     ["customPortrait"] = portrait
                 });
@@ -1142,7 +1143,7 @@ namespace CalamityMod
             Mod dialogueMod = ExternalMods.dialogueTweak;
             if (dialogueMod != null)
             {
-                dialogueMod.Call("ReplaceShopButtonIcon", NPCType<WITCH>(), "Head");
+                dialogueMod.Call("ReplaceShopButtonIcon", NPCType<BrimstoneWitch>(), "Head");
             }
         }
         #endregion

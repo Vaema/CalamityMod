@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
@@ -13,6 +14,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -84,7 +86,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Emit some light
-            Lighting.AddLight(Projectile.Center, bColor.ToVector3() * 1.5f);
+            Lighting.AddLight(Projectile.Center, bColor.ToVector3() * 0.65f);
 
             if (SoundEngine.TryGetActiveSound(soundSlot, out var sound) && sound.IsPlaying)
                 sound.Position = Projectile.Center;
@@ -125,11 +127,11 @@ namespace CalamityMod.Projectiles.Typeless
                     if (!outOfRange)
                         Projectile.velocity = Projectile.velocity.RotatedBy(0.0065f * (energyNumber % 2 == 0 ? -1 : 1)) * 1.004f;
 
-                    if (soundCooldown == 0 && Main.rand.NextBool(3000 * Projectile.MaxUpdates) && visuals && time > 1200) // They will make sounds but only if they've been idle for a while
+                    if (soundCooldown == 0 && Main.rand.NextBool(4500 * Projectile.MaxUpdates) && visuals && time > 18000 * Projectile.MaxUpdates && !Main.dedServ) // Sounds are an easter egg that only plays if they've been alive for over 5 minutes
                     {
                         SoundStyle certainlyNotADeadChild = new("CalamityMod/Sounds/Item/AmuletVox", 6);
                         soundSlot = SoundEngine.PlaySound(certainlyNotADeadChild with { Volume = 0.3f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);
-                        soundCooldown = 300 * Projectile.MaxUpdates;
+                        soundCooldown = 800 * Projectile.MaxUpdates;
                     }
                     if (soundCooldown > 0)
                         soundCooldown--;
@@ -142,6 +144,7 @@ namespace CalamityMod.Projectiles.Typeless
                 soundCooldown = 0;
                 if (Projectile.ai[2] == 5) // Effects for the moment they stop being idle
                 {
+                    Projectile.netUpdate = true;
                     time = 0;
                     healing = (Owner.statLife < Owner.statLifeMax2 * 0.5f);
                     Projectile.ai[2]++;
@@ -168,7 +171,8 @@ namespace CalamityMod.Projectiles.Typeless
 
                         if (Utils.Distance(goalPosition, Projectile.Center) < 50)
                         {
-                            Owner.HealPlayer(2);
+                            Owner.HealPlayer((energyNumber % 2 == 0 ? 3 : 4));
+                            Projectile.netUpdate = true;
                             Projectile.Kill();
                         }
                     }
@@ -214,6 +218,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 420);
+            Projectile.netUpdate = true;
         }
         public override void OnKill(int timeLeft)
         {
@@ -237,6 +242,7 @@ namespace CalamityMod.Projectiles.Typeless
                     dust2.noLightEmittence = true;
                 }
             }
+            Projectile.netUpdate = true;
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -254,5 +260,14 @@ namespace CalamityMod.Projectiles.Typeless
             return false;
         }
         public override bool? CanDamage() => canDamage ? null : false;
+        public override bool? CanCutTiles() => false;
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteFlags(canDamage, healing);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            reader.ReadFlags(out canDamage, out healing);
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -87,6 +89,21 @@ namespace CalamityMod.Items.Accessories.Vanity
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
+            }
+        }
+
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            if (vanityEquipped)
+            {
+                drawInfo.drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
+                drawInfo.legsGlowMask = -1;
+                drawInfo.legsOffset = Vector2.Zero;
+                drawInfo.drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
+                drawInfo.bodyGlowMask = -1;
+                drawInfo.drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
+                drawInfo.headGlowMask = -1;
+                drawInfo.helmetOffset = Vector2.Zero;
             }
         }
     }

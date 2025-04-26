@@ -4043,3 +4043,273 @@ WaterTurret: {
 		Cannot attack while a boss is alive
 		'''
 }
+
+// Draedon lab lights
+
+CagedLablightItem: {
+	DisplayName: Caged Lablight
+	Tooltip: ""
+}
+
+AgedLablightItem: {
+	DisplayName: Aged Lablight
+	Tooltip: ""
+}
+
+MiniCagedLablightItem: {
+	DisplayName: Mini Caged Lablight
+	Tooltip: ""
+}
+
+MiniAgedLablightItem: {
+	DisplayName: Mini Aged Lablight
+	Tooltip: ""
+}
+
+CagedCinderlightItem: {
+	DisplayName: Caged Cinderlight
+	Tooltip: ""
+}
+
+AgedCinderlightItem: {
+	DisplayName: Aged Cinderlight
+	Tooltip: ""
+}
+
+MiniCagedCinderlightItem: {
+	DisplayName: Mini Caged Cinderlight
+	Tooltip: ""
+}
+
+MiniAgedCinderlightItem: {
+	DisplayName: Mini Aged Cinderlight
+	Tooltip: ""
+}
+
+CagedFlamelightItem: {
+	DisplayName: Caged Flamelight
+	Tooltip: ""
+}
+
+AgedFlamelightItem: {
+	DisplayName: Aged Flamelight
+	Tooltip: ""
+}
+
+MiniCagedFlamelightItem: {
+	DisplayName: Mini Caged Flamelight
+	Tooltip: ""
+}
+
+MiniAgedFlamelightItem: {
+	DisplayName: Mini Aged Flamelight
+	Tooltip: ""
+}
+
+CagedFrostlightItem: {
+	DisplayName: Caged Frostlight
+	Tooltip: ""
+}
+
+AgedFrostlightItem: {
+	DisplayName: Aged Frostlight
+	Tooltip: ""
+}
+
+MiniCagedFrostlightItem: {
+	DisplayName: Mini Caged Frostlight
+	Tooltip: ""
+}
+
+MiniAgedFrostlightItem: {
+	DisplayName: Mini Aged Frostlight
+	Tooltip: ""
+}
+
+CagedBiolightItem: {
+	DisplayName: Caged Biolight
+	Tooltip: ""
+}
+
+AgedBiolightItem: {
+	DisplayName: Aged Biolight
+	Tooltip: ""
+}
+
+MiniCagedBiolightItem: {
+	DisplayName: Mini Caged Biolight
+	Tooltip: ""
+}
+
+MiniAgedBiolightItem: {
+	DisplayName: Mini Aged Biolight
+	Tooltip: ""
+}
+
+CagedBlacklightItem: {
+	DisplayName: Caged Blacklight
+	Tooltip: ""
+}
+
+AgedBlacklightItem: {
+	DisplayName: Aged Blacklight
+	Tooltip: ""
+}
+
+MiniCagedBlacklightItem: {
+	DisplayName: Mini Caged Blacklight
+	Tooltip: ""
+}
+
+MiniAgedBlacklightItem: {
+	DisplayName: Mini Aged Blacklight
+	Tooltip: ""
+}
+
+CagedFloodlightItem: {
+	DisplayName: Caged Floodlight
+	Tooltip: ""
+}
+
+AgedFloodlightItem: {
+	DisplayName: Aged Floodlight
+	Tooltip: ""
+}
+
+MiniCagedFloodlightItem: {
+	DisplayName: Mini Caged Floodlight
+	Tooltip: ""
+}
+
+MiniAgedFloodlightItem: {
+	DisplayName: Mini Aged Floodlight
+	Tooltip: ""
+}
+
+ProbesnoutBanner.DisplayName: Probesnout Banner
+SharkoonBanner.DisplayName: Sharkoon Banner
+
+LimestoneWall: {
+	DisplayName: Limestone Wall
+	Tooltip: ""
+}
+
+RunestoneWall: {
+	DisplayName: Runestone Wall
+	Tooltip: ""
+}
+
+WulfrumEnergyBarrier: {
+	DisplayName: Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumPanels: {
+	DisplayName: Wulfrum Panels
+	Tooltip: ""
+}
+
+ChargedWulfrumEnergyBarrier: {
+	DisplayName: Charged Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumEnergyBarrierWall: {
+	DisplayName: Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+ChargedWulfrumEnergyBarrierWall: {
+	DisplayName: Charged Wulfrum Energy Barrier Wall
+	Tooltip: ""
+}
+
+WulfrumPlatform: {
+	DisplayName: Wulfrum Platform
+	Tooltip: ""
+}
+
+WulfrumSheets: {
+	DisplayName: Wulfrum Sheets
+	Tooltip: ""
+}
+
+WulfrumSiding: {
+	DisplayName: Wulfrum Siding
+	Tooltip: ""
+}
+
+WulfrumPillar: {
+	DisplayName: Wulfrum Pillar
+	Tooltip: ""
+}
+
+WulfrumComplexPanelWall: {
+	DisplayName: Wulfrum Complex Panel Wall
+	Tooltip: ""
+}
+
+AnodizedWulfrumPlatform: {
+	DisplayName: Anodized Wulfrum Platform
+	Tooltip: ""
+}
+
+AnodizedWulfrumTrim: {
+	DisplayName: Anodized Wulfrum Trim
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanels: {
+	DisplayName: Rounded Anodized Wulfrum Panels
+	Tooltip: ""
+}
+
+AnodizedWulfrumTrimWall: {
+	DisplayName: Anodized Wulfrum Trim Wall
+	Tooltip: ""
+}
+
+RoundedAnodizedWulfrumPanelWall: {
+	DisplayName: Rounded Anodized Wulfrum Panel Wall
+	Tooltip: ""
+}
+
+AnodizedWulfrumPanels: {
+	DisplayName: Anodized Wulfrum Panels
+	Tooltip: ""
+}
+
+WulfrumPanelWall: {
+	DisplayName: Wulfrum Panel Wall
+	Tooltip: ""
+}
+
+ChargedWulfrumWallMountedBulb: {
+	DisplayName: Mods.CalamityMod.Items.Placeables.ChargedWulfrumWallMountedBulb.DisplayName
+	Tooltip: ""
+}
+
+WulfrumWallMountedBulb: {
+	DisplayName: Mods.CalamityMod.Items.Placeables.WulfrumWallMountedBulb.DisplayName
+	Tooltip: ""
+}
+
+WulfrumSheetWall: {
+	DisplayName: Wulfrum Sheet Wall
+	Tooltip: ""
+}
+
+WulfrumSidingWall: {
+	DisplayName: Wulfrum Siding Wall
+	Tooltip: ""
+}
+
+Dunesand: {
+	DisplayName: Dunesand
+	Tooltip: ""
+}
+
+EutrophicGlassWall: {
+	DisplayName: Eutrophic Glass Wall
+	Tooltip: ""
+}

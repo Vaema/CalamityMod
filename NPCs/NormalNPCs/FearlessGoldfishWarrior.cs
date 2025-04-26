@@ -401,15 +401,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool instakill = false;
             List<string> metarexNames = new List<string> { "LordMetarex", "Metarex" };
             foreach (string s in metarexNames)
+            {
                 if (s.ToLower() == target.name.ToLower())
                 {
                     instakill = true;
                     break;
                 }
+            }
 
             if (instakill)
             {
-                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").Format(target.name)), 1000.0, 0, false);
+                target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Goldfish").ToNetworkText(target.name)), 1000.0, 0, false);
                 modifiers.FinalDamage *= target.statLifeMax2 * Main.rand.NextFloat(2.0f, 3.5f);
             }
         }

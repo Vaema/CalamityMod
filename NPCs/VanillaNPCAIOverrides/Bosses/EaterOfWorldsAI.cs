@@ -13,6 +13,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EaterOfWorldsAI
     {
+        private const float ProjectileTelegraphDuration = 30f;
         private const int TotalMasterModeWorms = 4;
         public const float DRIncreaseTime = 600f;
 
@@ -21,7 +22,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Causes it to split far more in death mode
@@ -70,17 +70,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phases
 
             // Cursed Flame phase
-            bool phase2 = lifeRatio < 0.8f || masterMode;
+            bool phase2 = lifeRatio < 0.8f || death;
 
             // Boost velocity by 20% phase
-            bool phase3 = lifeRatio < 0.4f || masterMode;
+            bool phase3 = lifeRatio < 0.4f || death;
 
             // Boost velocity by 50% phase
-            bool phase4 = lifeRatio < (masterMode ? 0.5f : 0.2f);
+            bool phase4 = lifeRatio < (death ? 0.5f : 0.2f);
 
             // Go fucking crazy in Master Mode
-            bool phase5 = lifeRatio < 0.1f && masterMode;
-            bool phase6 = lifeRatio < 0.05f && masterMode;
+            bool phase5 = lifeRatio < 0.1f && death;
+            bool phase6 = lifeRatio < 0.05f && death;
 
             // Fire projectiles
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else
                         npc.localAI[1] -= 1f;
 
-                    int vileSpitGateValue = (int)MathHelper.Lerp(masterMode ? 45f : 90f, 900f, lifeRatio);
+                    int vileSpitGateValue = (int)MathHelper.Lerp(death ? 45f : 90f, 900f, lifeRatio);
                     if (Main.getGoodWorld)
                         vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
 
@@ -108,7 +108,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] = 0f;
                     }
 
-                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                     {
                         Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                         Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
@@ -122,17 +122,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (phase2)
                     {
-                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                            calamityGlobalNPC.newAI[0] += ((npc.justHit && masterMode && calamityGlobalNPC.newAI[0] < 30f) ? 10f : 1f);
-                        else
-                            calamityGlobalNPC.newAI[0] -= 1f;
-
-                        float timer = enrageScale > 0f ? 60f : 90f;
-                        float shootBoost = lifeRatio * 60f;
+                        float timer = enrageScale > 0f ? 90f : 120f;
+                        float shootBoost = lifeRatio * 90f;
                         timer += shootBoost;
 
                         if (enrageScale >= 2f)
                             timer = 60f;
+
+                        float showTelegraphGateValue = timer - ProjectileTelegraphDuration;
+
+                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                        {
+                            if (npc.justHit && death && calamityGlobalNPC.newAI[0] < showTelegraphGateValue)
+                            {
+                                calamityGlobalNPC.newAI[0] += 10f;
+                                if (calamityGlobalNPC.newAI[0] > showTelegraphGateValue)
+                                    calamityGlobalNPC.newAI[0] = showTelegraphGateValue;
+                            }
+                            else
+                                calamityGlobalNPC.newAI[0] += 1f;
+                        }
+                        else
+                            calamityGlobalNPC.newAI[0] -= 1f;
 
                         if (calamityGlobalNPC.newAI[0] >= timer)
                         {
@@ -158,7 +169,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                         }
 
-                        if (calamityGlobalNPC.newAI[0] > timer - 30f)
+                        if (calamityGlobalNPC.newAI[0] > showTelegraphGateValue)
                         {
                             Vector2 dustCenter = npc.Center + Main.rand.NextVector2CircularEdge(10f, 10f);
                             int dustType = (death && phase3) ? DustID.Shadowflame : DustID.CursedTorch;
@@ -190,10 +201,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.type == NPCID.EaterofWorldsHead)
                     {
                         // Amount of segments to spawn.
-                        int segmentSpawnAmount = (int)(masterMode ? (totalSegments / TotalMasterModeWorms) : totalSegments);
+                        int segmentSpawnAmount = (int)(death ? (totalSegments / TotalMasterModeWorms) : totalSegments);
 
                         // Spawn additional worms of reduced length in Master Mode.
-                        if (masterMode)
+                        if (death)
                         {
                             Vector2 additionalWormSpawnLocation = new Vector2(spawnX, spawnY);
                             int randomXLimit = 80;
@@ -273,8 +284,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     
-                    npc.netUpdate = true;
-                    npc.netSpam = 0;
+                    npc.ForceNetUpdate();
                     npc.alpha = 0;
                 }
 
@@ -296,8 +306,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     
-                    npc.netUpdate = true;
-                    npc.netSpam = 0;
+                    npc.ForceNetUpdate();
                     npc.alpha = 0;
                 }
 
@@ -347,12 +356,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!inTiles && npc.type == NPCID.EaterofWorldsHead)
             {
                 Rectangle rectangle = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
-                int noFlyZone = death ? 800 : 900;
+                int noFlyZone = death ? (800 - (phase5 ? 400 : 200)) : 900;
                 noFlyZone -= (int)(enrageScale * 200f);
-
-                if (masterMode)
-                    noFlyZone -= phase5 ? 400 : 200;
-
                 if (noFlyZone < 100)
                     noFlyZone = 100;
 
@@ -384,26 +389,26 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (phase6)
             {
-                segmentVelocity += (death ? 2.4f : 4f) * (enrageScale + 1f);
-                segmentAcceleration += 0.2f * (enrageScale + 1f);
+                segmentVelocity += 2.4f * (enrageScale + 1f);
+                segmentAcceleration += 0.12f * (enrageScale + 1f);
             }
             else if (phase5)
             {
-                segmentVelocity += (death ? 2.2f : 3f) * (enrageScale + 1f);
-                segmentAcceleration += 0.15f * (enrageScale + 1f);
+                segmentVelocity += 1.8f * (enrageScale + 1f);
+                segmentAcceleration += 0.09f * (enrageScale + 1f);
             }
             else if (phase4)
             {
-                segmentVelocity += 2f * (enrageScale + 1f);
-                segmentAcceleration += 0.1f * (enrageScale + 1f);
+                segmentVelocity += 1.2f * (enrageScale + 1f);
+                segmentAcceleration += 0.06f * (enrageScale + 1f);
             }
             else if (phase3)
             {
-                segmentVelocity += 0.8f * (enrageScale + 1f);
-                segmentAcceleration += 0.04f * (enrageScale + 1f);
+                segmentVelocity += 0.6f * (enrageScale + 1f);
+                segmentAcceleration += 0.03f * (enrageScale + 1f);
             }
 
-            if (masterMode)
+            if (death)
             {
                 segmentVelocity += (npc.justHit ? 8f : 2f);
                 segmentAcceleration += (npc.justHit ? 0.16f : 0.04f);
@@ -474,7 +479,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (!inTiles)
                 {
                     npc.velocity.Y += death ? 0.1375f : 0.11f;
-                    if (masterMode && npc.velocity.Y > 0f)
+                    if (death && npc.velocity.Y > 0f)
                         npc.velocity.Y += 0.07f;
 
                     if (npc.velocity.Y > segmentVelocity)
@@ -739,7 +744,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     for (int dustIndex = 0; dustIndex < 2; dustIndex++)
                     {
-                        int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default(Color), 2f);
+                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].noLight = true;
                     }
@@ -798,7 +803,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.localAI[1] = 0f;
                         }
 
-                        if (npc.localAI[1] > vileSpitGateValue - 30f)
+                        if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                         {
                             Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                             Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
@@ -828,7 +833,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] = 0f;
                     }
 
-                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                     {
                         Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                         Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
@@ -1283,7 +1288,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     for (int num80 = 0; num80 < 2; num80++)
                     {
-                        int num81 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y), npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default(Color), 2f);
+                        int num81 = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
                         Main.dust[num81].noGravity = true;
                         Main.dust[num81].noLight = true;
                     }

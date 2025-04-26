@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.BaseItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -45,13 +42,9 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override bool AltFunctionUse(Player player) => true;
         public override bool MeleePrefix() => true;
-        public override void HoldItem(Player player)
-        {
-            return;
-        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            if (player.Calamity().mouseRight)
             {
                 Projectile.NewProjectile(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 5);
             }

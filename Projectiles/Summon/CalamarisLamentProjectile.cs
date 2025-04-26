@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -46,8 +47,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * inertia + Projectile.SafeDirectionTo(TargetShot.Center) * CalamarisLament.ShootingProjectileSpeed) / (inertia + 1f);
                 Projectile.extraUpdates = 1;
 
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
             else
                 Projectile.extraUpdates = 0;
@@ -71,6 +71,8 @@ namespace CalamityMod.Projectiles.Summon
         // Made for DoG so the projectile can go through segments without spamming numbers
         // and hit DoG's head and/or tail reliably and without penetration.
         public override bool? CanDamage() => Projectile.getRect().Intersects(TargetShot.getRect()) ? null : false;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 120);
 
         public override void OnKill(int timeLeft)
         {

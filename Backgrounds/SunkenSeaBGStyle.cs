@@ -15,10 +15,10 @@ namespace CalamityMod.Backgrounds
             if (Main.dedServ)
                 return;
 
-            SSBG0 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG0");
-            SSBG1 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG1");
-            SSBG2 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG2");
-            SSBG3 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG3");
+            SSBG0 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/BlankPixel");
+            SSBG1 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/BlankPixel");
+            SSBG2 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/BlankPixel");
+            SSBG3 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/BlankPixel");
         }
 
         public override void FillTextureArray(int[] textureSlots)

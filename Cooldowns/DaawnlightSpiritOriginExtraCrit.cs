@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,7 +16,7 @@ namespace CalamityMod.Cooldowns
         // If the player doesn't have DSO, this cooldown should not appear.
         public override bool ShouldDisplay => instance.player.GetModPlayer<CalamityPlayer>().spiritOrigin;
 
-        private float ExtraCritChance => instance.player.GetModPlayer<CalamityPlayer>().spiritOriginCritBoost;
+        private float ExtraCritChance => Math.Min(instance.player.GetModPlayer<CalamityPlayer>().spiritOriginCritBoost, CritHardCap);
 
         private float TextXOffset => (ExtraCritChance > 99 ? -24 : ExtraCritChance > 9 ? -20 : -16) * TextScale;
         private Vector2 TextPosition => new(TextXOffset , 25);

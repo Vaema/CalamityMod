@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 4;
             NPC.lifeMax = 25;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
-            NPC.HitSound = SoundID.NPCHit4;
+            NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

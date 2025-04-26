@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(DesertScourgeHead))]
     public class DesertScourgeTail : ModNPC
     {
@@ -82,6 +83,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[1]].dontTakeDamage;
+            NPC.canDisplayBuffs = Main.npc[(int)NPC.ai[1]].canDisplayBuffs;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;

@@ -178,6 +178,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, targetHitbox);
 
+        // Explodes on contact
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => Projectile.Kill();
+
         public override void OnKill(int timeLeft)
         {
             // Nuke explosion sound.

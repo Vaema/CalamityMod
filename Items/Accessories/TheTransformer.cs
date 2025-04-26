@@ -28,7 +28,8 @@ namespace CalamityMod.Items.Accessories
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 16));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
         }
-
+        public static int blobCap = 30;
+        public static int blobDamage = 50;
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -56,10 +57,10 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<SeaPrism>(10).
                 AddRecipeGroup("AnyMythrilBar", 5).
                 AddIngredient<EssenceofSunlight>(2).
-                AddIngredient<EssenceofEleum>(2).
                 AddIngredient<EssenceofHavoc>(2).
-                AddIngredient(ItemID.SoulofNight, 3).
+                AddIngredient<EssenceofEleum>(2).
                 AddIngredient(ItemID.SoulofLight, 3).
+                AddIngredient(ItemID.SoulofNight, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

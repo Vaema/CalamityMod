@@ -407,7 +407,6 @@ namespace CalamityMod.NPCs.SlimeGod
                                 case 2:
                                     NPC.ai[0] = 1f;
                                     break;
-
                             }
 
                             if (NPC.ai[0] == 1f)

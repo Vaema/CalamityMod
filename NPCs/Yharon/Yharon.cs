@@ -919,9 +919,8 @@ namespace CalamityMod.NPCs.Yharon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (player.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = player.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -1290,9 +1289,8 @@ namespace CalamityMod.NPCs.Yharon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = player.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = player.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (player.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = player.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -2034,9 +2032,8 @@ namespace CalamityMod.NPCs.Yharon
                                 }
 
                                 float bulletHellTeleportLocationDistance = 540f;
-                                Vector2 defaultTeleportLocation = new Vector2(0f, -bulletHellTeleportLocationDistance);
-                                Vector2 teleportLocation = targetData.velocity.SafeNormalize(Vector2.Zero) * -1f * bulletHellTeleportLocationDistance;
-                                Vector2 center = targetData.Center + (teleportLocation == Vector2.Zero ? defaultTeleportLocation : teleportLocation);
+                                Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (targetData.velocity.Y >= 0f).ToDirectionInt();
+                                Vector2 center = targetData.Center + teleportLocation;
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
@@ -3003,7 +3000,7 @@ namespace CalamityMod.NPCs.Yharon
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 25, 30));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 35, 40));
 
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
@@ -3040,7 +3037,7 @@ namespace CalamityMod.NPCs.Yharon
             if (BossRushEvent.BossRushActive)
                 return;
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedYharon);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Yharon has not been killed yet, notify players of Auric Ore

@@ -2,14 +2,14 @@ AstralBreastplate: {
 	DisplayName: Astral Breastplate
 	Tooltip:
 		'''
-		10% increased damage
+		7% increased damage
 		+80 max mana and +20 max life
 		'''
 }
 
 AstralHelm: {
 	DisplayName: Astral Helm
-	Tooltip: 5% increased damage and 15% increased critical strike chance
+	Tooltip: 5% increased damage and 10% increased critical strike chance
 	SetBonus:
 		'''
 		+3 max minions
@@ -24,7 +24,7 @@ AstralLeggings: {
 	DisplayName: Astral Leggings
 	Tooltip:
 		'''
-		10% increased damage
+		5% increased damage
 		15% increased movement speed
 		'''
 }
@@ -48,16 +48,16 @@ BrimflameScowl: {
 	Tooltip:
 		'''
 		5% increased magic damage and critical strike chance
-		Increases maximum mana by 70 and reduces mana usage by 10%
+		Increases maximum mana by 80 and reduces mana usage by 10%
 		Immunity to On Fire!, Brimstone Flames and Frostburn
 		'''
 	SetBonus:
 		'''
-		Grants an additional 15% increased magic damage and crit
+		Grants an additional 15% increased magic damage and critical strike chance
 		Press {0} to trigger a brimflame frenzy effect
 		While under this effect, you get an additional 40% increase to magic damage
-		However, this comes at the cost of rapid life loss and no mana regeneration
-		This can be toggled off, however, a brimflame frenzy has a 30 second cooldown
+		However, this inflicts rapid life loss and disables mana regeneration and mana potions
+		This can be toggled off, however, brimflame frenzy has a 30 second cooldown
 		'''
 }
 
@@ -206,6 +206,7 @@ ForbiddenCirclet: {
 		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
 		Rogue stealth strikes spawn homing eaters on enemy hits
 		Rogue and summon attacks will scale off of the stat with a higher boost
+		Minions no longer deal less damage while wielding rogue weapons
 		'''
 }
 
@@ -312,7 +313,7 @@ LunicCorpsBoots: {
 	Tooltip:
 		'''
 		15% increased movement speed
-		4% increased ranged critical strike chance
+		5% increased ranged critical strike chance
 		10% increased max movement speed and acceleration
 		'''
 }
@@ -321,7 +322,7 @@ LunicCorpsHelmet: {
 	DisplayName: Lunic Corps Helmet
 	Tooltip:
 		'''
-		12% increased ranged damage
+		15% increased ranged damage
 		Night vision and creature detect
 		'''
 	SetBonus:
@@ -331,8 +332,8 @@ LunicCorpsHelmet: {
 		The shield starts recharging 5 seconds after being hit
 		Recharging from zero to full charge takes 2 seconds
 		Being hit again while recharging restarts the charge timer
-		10% increased bullet damage
-		10% increased specialist ranged damage
+		15% increased bullet damage
+		15% increased specialist ranged damage
 		These are launchers, dartguns, or anything else that doesn't shoot arrows/bullets
 		20% increased jump speed
 		'''
@@ -343,8 +344,8 @@ LunicCorpsVest: {
 	DisplayName: Lunic Corps Vest
 	Tooltip:
 		'''
-		3% increased ranged damage
-		11% increased ranged critical strike chance
+		5% increased ranged damage
+		15% increased ranged critical strike chance
 		'''
 }
 
@@ -352,8 +353,8 @@ MolluskShelleggings: {
 	DisplayName: Mollusk Shelleggings
 	Tooltip:
 		'''
-		12% increased damage and 4% increased critical strike chance
-		7% decreased movement speed
+		6% increased damage and 4% increased critical strike chance
+		Your horizontal movement is slowed
 		'''
 }
 
@@ -363,12 +364,12 @@ MolluskShellmet: {
 		'''
 		5% increased damage and 4% increased critical strike chance
 		You can move freely through liquids
+		Your horizontal movement is slowed
 		'''
 	SetBonus:
 		'''
 		Two shellfishes aid you in combat
-		10% increased damage
-		Your horizontal movement is slowed
+		10% increased damage reduction
 		'''
 }
 
@@ -376,8 +377,8 @@ MolluskShellplate: {
 	DisplayName: Mollusk Shellplate
 	Tooltip:
 		'''
-		10% increased damage and 6% increased critical strike chance
-		15% decreased movement speed
+		6% increased damage and 5% increased critical strike chance
+		Your horizontal movement is slowed
 		'''
 }
 
@@ -521,7 +522,7 @@ TitanHeartBoots: {
 
 TitanHeartMantle: {
 	DisplayName: Titan Heart Mantle
-	Tooltip: 5% boosted rogue knockback but 15% lowered rogue attack speed
+	Tooltip: 5% boosted rogue damage and knockback
 }
 
 TitanHeartMask: {
@@ -533,7 +534,7 @@ TitanHeartMask: {
 		'''
 	SetBonus:
 		'''
-		15% increased rogue damage and knockback
+		10% increased rogue damage and 20% increased rogue knockback
 		+100 maximum stealth
 		Stealth strikes deal double knockback and cause an astral explosion
 		Grants immunity to knockback

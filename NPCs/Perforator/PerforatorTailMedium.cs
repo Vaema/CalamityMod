@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadMedium))]
     public class PerforatorTailMedium : ModNPC
     {
@@ -79,6 +80,9 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || bossRush;
+
             NPC.realLife = -1;
 
             // Target
@@ -88,18 +92,20 @@ namespace CalamityMod.NPCs.Perforator
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
-            if (Main.npc[(int)NPC.ai[1]].alpha < 128)
-            {
-                NPC.alpha -= 42;
-                if (NPC.alpha < 0)
-                    NPC.alpha = 0;
-            }
-
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 // Splitting effect
+                bool spawnedBlob = false;
                 if (!Main.npc[(int)NPC.ai[1]].active && !Main.npc[(int)NPC.ai[0]].active)
                 {
+                    if (death)
+                    {
+                        spawnedBlob = true;
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -108,6 +114,13 @@ namespace CalamityMod.NPCs.Perforator
                 }
                 if (!Main.npc[(int)NPC.ai[1]].active)
                 {
+                    if (death && !spawnedBlob)
+                    {
+                        int type = ModContent.ProjectileType<IchorBlob>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                    }
+
                     NPC.life = 0;
                     NPC.HitEffect(0, 10.0);
                     NPC.checkDead();
@@ -169,6 +182,32 @@ namespace CalamityMod.NPCs.Perforator
             {
                 float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
                 NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
+
+            if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
+            {
+                if (NPC.alpha > 0 && NPC.life > 0)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, Main.rand.NextBool() ? DustID.Ichor : DustID.Blood, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+
+                if ((NPC.position - NPC.oldPosition).Length() > 2f)
+                {
+                    NPC.alpha -= 42;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                }
+            }
+            else if (NPC.alpha > 0)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
             }
         }
 

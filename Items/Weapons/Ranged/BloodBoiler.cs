@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 player.statLife -= 1;
             if (player.statLife <= 0)
             {
-                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).Format(player.name));
+                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
                 player.KillMe(pdr, 1000.0, 0, false);
                 return false;
             }

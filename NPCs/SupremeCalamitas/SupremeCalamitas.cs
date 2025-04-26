@@ -794,7 +794,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                             // Make the town NPC spawn.
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<FAP>() : ModContent.NPCType<WITCH>());
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
                         }
 
                         NPC.active = false;
@@ -3447,7 +3447,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             // Spawn the SCal NPC directly where the boss was
             if (!BossRushEvent.BossRushActive)
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<FAP>() : ModContent.NPCType<WITCH>());
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
 
             // Mark Calamitas as defeated
             DownedBossSystem.downedCalamitas = true;
@@ -3879,7 +3879,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         target.AddBuff(ModContent.BuffType<EvergreenGinBuff>(), MaxCirrusAlcoholDebuffDuration);
                         break;
                     case 5:
-                        target.AddBuff(ModContent.BuffType<FabsolVodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
+                        target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
                         break;
                     case 6:
                         target.AddBuff(ModContent.BuffType<FireballBuff>(), MaxCirrusAlcoholDebuffDuration);

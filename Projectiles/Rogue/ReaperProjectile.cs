@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class ReaperProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -243,7 +245,7 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                     Particle Smear = new CustomPulse(rainSpot, Vector2.Zero, Color.Chartreuse * 0.7f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-5, 5), 0, 0.35f, 12);
                     GeneralParticleHandler.SpawnParticle(Smear);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0, 0, 100);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), rainSpot, Vector2.Zero, ModContent.ProjectileType<RadiationRain>(), (int)(Projectile.damage * 0.13), 0f, Projectile.owner, 0, 0, 100);
                 }
                 else // Radiation Burst
                 {

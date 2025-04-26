@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerLegLeft : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");

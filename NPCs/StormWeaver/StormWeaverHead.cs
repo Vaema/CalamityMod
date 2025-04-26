@@ -33,6 +33,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class StormWeaverHead : ModNPC
     {
@@ -997,7 +998,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArcFlashRing>()));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 10, 12));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<StormWeaverMask>(), 7);

@@ -99,7 +99,7 @@ namespace CalamityMod.Items.Accessories
                     // If this reduces the player's health to zero, make sure they actually die.
                     if (player.statLife <= 0)
                     {
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 
@@ -137,7 +137,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         // Death message changes depending on whether it was the last few drips of an "honored" bleed, or attempting to cheat by removing the accessory.
                         string deathMessageKey = modPlayer.chaliceOfTheBloodGod ? "Status.Death.ChaliceOfTheBloodGodClose" : "Status.Death.ChaliceOfTheBloodGodUnequip";
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 

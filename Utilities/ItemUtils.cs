@@ -187,12 +187,15 @@ namespace CalamityMod
                 // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
                 else
                 {
+                    // 14MAR2025: Ozzatron: Add support for allowing Ruthless over Godly if the player has more than 100% crit chance of the appropriate class
+                    bool has100Crit = Main.LocalPlayer.GetTotalCritChance(item.DamageType) >= 100;
+
                     int[][] meleeNoSpeedReforgeTiers = new int[][]
                     {
                         /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
                         /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
                         /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
-                        /* 3 */ new int[] { PrefixID.Godly }
+                        /* 3 */ has100Crit ? new int[] { PrefixID.Godly, PrefixID.Ruthless } : new int[] { PrefixID.Godly }
                     };
                     prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
                 }

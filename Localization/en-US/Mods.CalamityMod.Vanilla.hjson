@@ -29,6 +29,7 @@ AddedTooltip: {
 	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
 	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
+	Stepstool: Standing on the stool grants 5% increased critical strike chance
 	Tombstones:
 		'''
 		13 of any tombstone turns the surrounding area into a graveyard
@@ -73,7 +74,7 @@ AddedTooltip: {
 	TungstenHelmet: 7% increased damage
 	TungstenChainmail: +0.5 HP/s life regen
 	TungstenGreaves: 8% increased movement speed
-	GoldHelmet: 6% increased damage
+	GoldHelmet: 5% increased damage
 	GoldChainmail: Increases damage reduction by 5%
 	GoldGreaves: 10% increased movement speed
 	PlatinumHelmet: 6% increased damage
@@ -230,25 +231,29 @@ EditedTooltip: {
 	/*
 	OOA sets
 	*/
-	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
-	SquirePlating: 10% increased summon damage and 15% increased melee damage
+	SquireGreatHelm: Increases your max number of sentries by 1 and grants +0.5 HP/s life regen
+	SquirePlating: 5% increased summon damage and 15% increased melee damage
 	SquireGreaves:
 		'''
 		5% increased summon damage and melee critical strike chance
 		15% increased movement speed
 		'''
-	MonkBrows: Increases your max number of sentries by 1 and increases melee attack speed by 10%
-	MonkShirt: 10% increased summon and melee damage
-	MonkPants1: 5% increased summon damage and melee critical strike chance
+	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 10%
+	MonkShirt: 5% increased summon and rogue damage
+	MonkPants1: 5% increased summon damage and rogue critical strike chance
 	MonkPants2: 20% increased movement speed
 	// Valhalla Knight
-	SquireAltShirt: 30% increased summon damage and grants +4 HP/s life regen
-	SquireAltPants: 10% increased summon damage and melee critical strike chance
+	SquireAltHead: Increases your max number of sentries by 2 and increases summon and melee damage by 15%
+	SquireAltShirt: 15% increased summon damage and grants +1 HP/s life regen
+	SquireAltPants: 10% increased summon damage
 	HuntressJerkin:
 		'''
-		10% increased summon and ranged damage
+		10% increased summon damage and 5% increased ranged damage and critical strike chance
 		10% chance to not consume ammo
 		'''
+	HuntressPants: 5% increased summon damage and 20% increased movement speed
+	ApprenticeHat: Increases your max number of sentries by 1, 5% increased magic damage and 10% reduced mana cost
+	ApprenticeRobe: 10% increased summon and magic damage
 	ApprenticeTrousers:
 		'''
 		5% increased summon damage and magic critical strike chance
@@ -258,14 +263,24 @@ EditedTooltip: {
 	MonkAltHead:
 		'''
 		Increases your max number of sentries by 2
-		10% increased melee and summon damage
+		10% increased summon and rogue damage
 		'''
-	MonkAltShirt: 10% increased summon damage and melee speed
-	MonkAltPants: 10% increased summon damage and melee critical strike chance
+	MonkAltShirt0: 10% increased summon damage and 15% increased rogue velocity
+	MonkAltShirt1: 5% increased rogue critical strike chance
+	MonkAltPants: 10% increased summon damage and rogue critical strike chance
 	// Red Riding
-	HuntressAltShirt: 15% increased summon and ranged damage and 20% chance to not consume ammo
+	HuntressAltShirt: 10% increased summon and ranged damage and 20% chance to not consume ammo
+	HuntressAltPants: 20% increased summon damage and 5% increased ranged critical strike chance
 	// Dark Artist
-	ApprenticeAltPants: 10% increased summon damage and magic critical strike chance
+	ApprenticeAltHead: 10% increased summon & magic damage
+	ApprenticeAltShirt: 15% increased summon damage and 10% increased magic damage
+	ApprenticeAltPants: 10% increased summon damage
+	GravityGlobe:
+		'''
+		Provides 32% increased jump speed and increased fall speed
+		Press UP to change gravity
+		Press DOWN to fall faster
+		'''
 }
 
 // Buff Descriptions
@@ -421,8 +436,9 @@ SteampunkerChat: {
 
 StylistChat: {
 	Hardmode: Please don't catch space lice. Or {0} lice. Or just lice in general.
-	DrunkPrincess1: "{0} is always trying to brighten my mood... even if, deep down, I know she's sad..."
+	DrunkPrincess1: "{0} is always trying to brighten my mood... even though, deep down, I know she's sad..."
 	DrunkPrincess2: Sometimes I catch {0} sneaking up from behind me.
+	DrunkPrincess3: "{0} has been smiling more often lately, even without alcohol. I think I can thank you for that, at least somewhat."
 	ProfanedSoulCrystal1: They look so cute and yet, I can feel their immense power just by being near them. What are you?
 	ProfanedSoulCrystal2: I hate to break it to you, but you don't have hair to cut or style, hun.
 	ProfanedDonuts: Aww, they're so cute, do they have names?

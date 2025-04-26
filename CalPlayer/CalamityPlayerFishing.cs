@@ -286,17 +286,25 @@ namespace CalamityMod.CalPlayer
 
                 if (attempt.legendary)
                 {
-                    List<int> legendaryCatches = new List<int>()
-                    {
+                    List<int> legendaryCatches =
+                    [
                         ModContent.ItemType<RustedJingleBell>()
-                    };
-                    legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
-                    legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
+                    ];
+
                     legendaryCatches.AddWithCondition<int>(ModContent.ItemType<SerpentsBite>(), Main.hardMode);
                     itemDrop = legendaryCatches[Main.rand.Next(legendaryCatches.Count)];
                 }
                 else if (attempt.veryrare)
-                    itemDrop = ModContent.ItemType<GreenwaveLoach>();
+                {
+                    List<int> veryRareCatches =
+                    [
+                        ModContent.ItemType<GreenwaveLoach>()
+                    ];
+
+                    veryRareCatches.AddWithCondition<int>(ModContent.ItemType<SparklingEmpress>(), DownedBossSystem.downedDesertScourge);
+                    veryRareCatches.AddWithCondition<int>(ModContent.ItemType<SeaSpiritAmulet>(), DownedBossSystem.downedDesertScourge);
+                    itemDrop = veryRareCatches[Main.rand.Next(veryRareCatches.Count)];
+                }
                 // Quest fish hover around this priority
                 else if (questFish == ModContent.ItemType<EutrophicSandfish>() && attempt.uncommon)
                     itemDrop = ModContent.ItemType<EutrophicSandfish>();
@@ -315,7 +323,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (attempt.legendary)
                 {
-                    ModContent.ItemType<AlluringBait>();
+                    itemDrop = ModContent.ItemType<AlluringBait>();
                 }
                 else if (attempt.common && Main.rand.NextBool())
                     itemDrop = ModContent.ItemType<PlantyMush>();

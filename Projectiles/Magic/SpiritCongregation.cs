@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Metaballs;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class SpiritCongregation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -113,10 +115,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Sync velocity if it changed from what it was before.
                 if (previousVelocity != Projectile.velocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation();

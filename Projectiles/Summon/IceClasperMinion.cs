@@ -154,13 +154,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
-
+        public void SyncVariables() => Projectile.ForceNetUpdate(false);
         #endregion
 
         public override void OnSpawn(IEntitySource source)

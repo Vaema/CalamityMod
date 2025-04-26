@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Potions
                 AddIngredient<SunkenSailfish>().
                 AddIngredient(ItemID.SoulofFlight).
                 AddTile(TileID.AlchemyTable).
-                AddConsumeItemCallback(Recipe.ConsumptionRules.Alchemy).
+                AddConsumeIngredientCallback(Recipe.IngredientQuantityRules.Alchemy).
                 Register();
 
             CreateRecipe().

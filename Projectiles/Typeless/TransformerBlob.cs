@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class TransformerBlob : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -34,9 +39,32 @@ namespace CalamityMod.Projectiles.Typeless
         public Color cl1 = Color.LightSkyBlue;
         public Color cl2 = Color.DodgerBlue;
         public float poweredLerp => (float)Math.Pow(Utils.GetLerpValue(poweredTimerMax, 90, poweredTimer, true), 4);
+        public override void SendExtraAI(BinaryWriter writer) // These MP syncs cause tons of errors so they're disabled until we can fix that
+        {
+            //writer.Write(time);
+            //writer.Write(currentLayer);
+            //writer.Write(speed);
+            //writer.Write(rotSpeed);
+            //writer.Write(rotationAngle);
+            //writer.Write(Projectile.localAI[0]);
+
+            //writer.WriteFlags(canDamage);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            //time = reader.Read();
+            //currentLayer = reader.Read();
+            //speed = reader.ReadSingle();
+            //rotSpeed = reader.ReadSingle();
+            //rotationAngle = reader.ReadSingle();
+            //Projectile.localAI[0] = reader.ReadSingle();
+
+            //reader.ReadFlags(out canDamage);
+        }
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 16;
+            ProjectileID.Sets.NoLiquidDistortion[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -63,7 +91,8 @@ namespace CalamityMod.Projectiles.Typeless
             if (!powered)
                 poweredTimerMax = (int)(140 + (MathHelper.Clamp(Utils.Remap(Owner.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()], 1, 30, 7, 6, false), 1, 120)) * Projectile.ai[1]);
             if (time == 0)
-            { 
+            {
+                Projectile.netUpdate = true;
                 rotationAngle = Projectile.ai[2];
                 Projectile.frame = 8;
             }
@@ -111,6 +140,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (poweredTimer == 1)
                 {
+                    Projectile.netUpdate = true;
                     if (visuals)
                         Owner.Calamity().GeneralScreenShakePower = 3.5f;
                     Projectile.numHits = 0;
@@ -208,8 +238,7 @@ namespace CalamityMod.Projectiles.Typeless
             else
                 modifiers.SourceDamage *= 0.2f;
 
-            if (target.CanBeMoved(true))
-                target.velocity = Utils.DirectionTo(Owner.Center, target.Center) * (poweredTimer == 0 ? 7 : 3) * (target.knockBackResist == 0 ? 0.5f : 1f);
+            target.MoveNPC(Utils.DirectionTo(Owner.Center, target.Center), (poweredTimer == 0 ? 7 : 3));
 
             if (Projectile.numHits == 0 && poweredTimer == 0)
             {

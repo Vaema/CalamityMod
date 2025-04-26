@@ -92,6 +92,7 @@ namespace CalamityMod.ILEditing
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
+            On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
@@ -147,6 +148,7 @@ namespace CalamityMod.ILEditing
             IL_Projectile.Damage += VanillaBossResistChanges;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
+            IL_Player.UpdateArmorSets += SolarWingsDashChange;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 
@@ -176,7 +178,6 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
             IL_UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
-            IL_UIWorldCreation.AddWorldDifficultyOptions += SwapMasterModeDescriptionKey;
             Terraria.IO.On_WorldFile.ClearTempTiles += ClearModdedTempTiles;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
@@ -188,6 +189,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
+            IL_Player.ItemCheck_Shoot += RemoveForcedInaccuracyFromChainGunAndGatligator;
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
@@ -205,6 +207,7 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
+            On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

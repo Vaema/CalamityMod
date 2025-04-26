@@ -32,8 +32,8 @@ namespace CalamityMod.NPCs.Crags
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 40;
-            NPC.width = 72;
-            NPC.height = 72;
+            NPC.width = 66;
+            NPC.height = 64;
             NPC.defense = 38;
             NPC.DR_NERD(0.35f);
             NPC.lifeMax = 180;

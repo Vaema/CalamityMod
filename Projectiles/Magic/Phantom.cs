@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         public int spinDir = 100;
         public int waveOften = 40;
         public float scaleVariance = 1;
+        public NPC targeted;
 
         public bool launched = false;
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -71,10 +72,10 @@ namespace CalamityMod.Projectiles.Magic
                     time = 600;
                 }
 
-                NPC target = Projectile.Center.ClosestNPCAt(550);
-                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, true, 0.15f, 6, 0.98f, accelerate: true);
+                targeted = Projectile.Center.ClosestNPCAt(950);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
-                if (time < 550 && target == null)
+                if (time < 550 && targeted == null)
                 {
                     if (Projectile.velocity.Length() < 6)
                         Projectile.velocity += (mouse - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
@@ -104,12 +105,17 @@ namespace CalamityMod.Projectiles.Magic
             modifiers.SourceDamage *= (launched ? 1f : 0.4f);
 
             Player Owner = Main.player[Projectile.owner];
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center);
+            target.MoveNPC(launchVel, 10 * (launched ? 0.5f : 1), true);
+            
+        }
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (targeted != null)
+                return (target == targeted ? null : false);
+            else
+                return null;
         }
         public override void OnKill(int timeLeft)
         {

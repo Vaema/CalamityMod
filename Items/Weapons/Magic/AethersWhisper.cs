@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<PlasmaRod>().
-                AddIngredient<Lazhar>().
                 AddIngredient<TwistingNether>(3).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

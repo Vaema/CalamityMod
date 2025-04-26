@@ -73,8 +73,7 @@ namespace CalamityMod.Projectiles.Magic
                         Projectile.Center = Owner.Bottom;
 
                     Projectile.ai[2] = 1f;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
                 if (Owner.channel)
                 {

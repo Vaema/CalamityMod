@@ -78,8 +78,6 @@ namespace CalamityMod.Projectiles.Rogue
                 if (flash.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[flash].DamageType = RogueDamageClass.Instance;
-                    Main.projectile[flash].usesLocalNPCImmunity = true;
-                    Main.projectile[flash].localNPCHitCooldown = 10;
                 }
 
                 Vector2 pos = new Vector2(Projectile.Center.X + Projectile.width * 0.5f + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));

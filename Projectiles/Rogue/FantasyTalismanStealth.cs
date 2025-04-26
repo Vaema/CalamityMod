@@ -1,10 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class FantasyTalismanStealth : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";

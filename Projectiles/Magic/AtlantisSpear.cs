@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -8,14 +9,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException(onlyForSingleHitbox: true)]
     public class AtlantisSpear : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public bool devourer = DownedBossSystem.downedDoG;
-        public static int TotalSegments = 16;
-        public float damageMultiplier = 1f;
-        public int time = 0;
-        public float fade = 1;
+        private static int TotalSegments = 16;
+        private float damageMultiplier = 1f;
+        private int time = 0;
+        private float fade = 1;
 
         public override void SetDefaults()
         {
@@ -29,6 +31,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.extraUpdates = (Main.zenithWorld && devourer) ? 1 : 0;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 8;
+            Projectile.appliesImmunityTimeOnSingleHits = true;
         }
 
         public override void AI()

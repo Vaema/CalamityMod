@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
             player.statLife -= 3;
             if (player.statLife <= 0)
             {
-                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").Format(player.name)), 1000.0, 0, false);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").ToNetworkText(player.name)), 1000.0, 0, false);
             }
             for (int index = 0; index < 3; ++index)
             {

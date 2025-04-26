@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.Abyss
 
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-            Main.tileBrick[Type] = true; 
+            Main.tileBrick[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);

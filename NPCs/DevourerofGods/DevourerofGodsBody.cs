@@ -145,10 +145,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.frame = frame;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            return false;
-        }
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
@@ -179,12 +176,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(70 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 114, 88);
                     NPC.position -= NPC.Size * 0.5f;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
             }
 
@@ -220,67 +212,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.HitEffect(0, 10.0);
                 NPC.checkDead();
                 NPC.active = false;
-            }
-
-            // Lasers
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (!NPC.dontTakeDamage && NPC.Opacity >= 1f && invinceTime <= 0)
-                {
-                    if (phase2)
-                    {
-                        // Fire lasers from every 15th (20th in normal mode) body segment if not in laser wall phase
-                        float laserWallPhaseGateValue = DevourerofGodsHead.LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
-                        if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[3] < laserWallPhaseGateValue - 180f)
-                        {
-                            NPC.localAI[0] += 1f;
-                            float laserGateValue = bossRush ? 156f : death ? 180f : 192f;
-                            if (Main.getGoodWorld)
-                                laserGateValue *= 0.5f;
-
-                            if (NPC.localAI[0] >= laserGateValue && NPC.ai[0] % (expertMode ? 15f : 20f) == 0f)
-                            {
-                                NPC.localAI[0] = 0f;
-                                if (!AnyTeleportRifts())
-                                {
-                                    NPC.TargetClosest();
-                                    SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                                    float maxProjectileVelocity = bossRush ? 24f : death ? 20f : revenge ? 18.25f : expertMode ? 17.5f : 16f;
-                                    float minProjectileVelocity = maxProjectileVelocity * LaserVelocityMultiplierMin;
-                                    float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * LaserVelocityDistanceMultiplier, minProjectileVelocity, maxProjectileVelocity);
-                                    Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
-                                    int type = ModContent.ProjectileType<DoGDeath>();
-                                    int damage = NPC.GetProjectileDamage(type);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Fire lasers from every 20th (25th in normal mode) body segment if not in laser barrage phase
-                        float laserBarrageGateValue = bossRush ? 1080f : death ? 1320f : 1440f;
-                        float laserBarrageShootGateValue = bossRush ? 160f : 240f;
-                        float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue * 1.5f;
-                        if (Main.npc[(int)NPC.ai[2]].Calamity().newAI[1] < laserBarragePhaseGateValue)
-                        {
-                            NPC.localAI[0] += 1f;
-                            if (NPC.localAI[0] >= laserBarrageGateValue * (Main.getGoodWorld ? 0.1f : 0.2f) && NPC.ai[0] % (expertMode ? 20f : 25f) == 0f)
-                            {
-                                NPC.TargetClosest();
-                                SoundEngine.PlaySound(SoundID.Item12, player.Center);
-                                NPC.localAI[0] = 0f;
-                                float maxProjectileVelocity = bossRush ? 22f : death ? 18f : revenge ? 16.25f : expertMode ? 15.5f : 14f;
-                                float minProjectileVelocity = maxProjectileVelocity * LaserVelocityMultiplierMin;
-                                float projectileVelocity = MathHelper.Clamp(Vector2.Distance(player.Center, NPC.Center) * LaserVelocityDistanceMultiplier, minProjectileVelocity, maxProjectileVelocity);
-                                Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
-                                int type = ModContent.ProjectileType<DoGDeath>();
-                                int damage = NPC.GetProjectileDamage(type);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
-                            }
-                        }
-                    }
-                }
             }
 
             if (Main.npc[(int)NPC.ai[1]].Opacity >= 0.5f && (!setOpacity || (Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f && Main.npc[(int)NPC.ai[2]].localAI[2] > 0f)))
@@ -319,11 +250,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (NPC.Opacity < 0.2f)
                                 NPC.Opacity = 0f;
 
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -364,16 +291,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
                 NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
-        }
-
-        private bool AnyTeleportRifts()
-        {
-            foreach (Projectile p in Main.ActiveProjectiles)
-            {
-                if (p.type == ModContent.ProjectileType<DoGTeleportRift>())
-                    return true;
-            }
-            return false;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -457,27 +374,17 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             // viable???, done here since it's conditional
             if (Main.zenithWorld && projectile.type == ModContent.ProjectileType<LaceratorYoyo>())
-            {
                 modifiers.SourceDamage *= 40f;
-            }
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool CheckDead()
         {
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             if (NPC.realLife >= 0)
             {
@@ -487,12 +394,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
-
-                Head.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (Head.netSpam >= 10)
-                    Head.netSpam = 9;
+                Head.ForceNetUpdate(false);
             }
             return false;
         }

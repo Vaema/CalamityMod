@@ -160,8 +160,7 @@ namespace CalamityMod.Projectiles.Melee
                 controlPoint2 = Projectile.Center;
                 Projectile.timeLeft = (int)MaxTime;
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             if (ReelingBack && HasSnapped == 0f) //Snap & also small coyote time for the hook

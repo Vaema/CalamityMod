@@ -24,15 +24,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Phases
-            float phase2LifeRatio = masterMode ? 0.75f : 0.6f;
-            float phase3LifeRatio = masterMode ? 0.4f : 0.3f;
-            float finalPhaseRevLifeRatio = masterMode ? 0.2f : 0.15f;
-            float penultimatePhaseDeathLifeRatio = masterMode ? 0.3f : 0.2f;
-            float finalPhaseDeathLifeRatio = masterMode ? 0.15f : 0.1f;
+            float phase2LifeRatio = death ? 0.75f : 0.6f;
+            float phase3LifeRatio = death ? 0.4f : 0.3f;
+            float finalPhaseRevLifeRatio = death ? 0.2f : 0.15f;
+            float penultimatePhaseDeathLifeRatio = death ? 0.3f : 0.2f;
+            float finalPhaseDeathLifeRatio = death ? 0.15f : 0.1f;
             bool phase2 = lifeRatio < phase2LifeRatio;
             bool phase3 = lifeRatio < phase3LifeRatio;
             bool finalPhaseRev = lifeRatio < finalPhaseRevLifeRatio;
@@ -42,9 +41,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lineUpDist = death ? 15f : 20f;
 
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
-            float servantAndProjectileVelocity = (death ? 8f : 6f) + (masterMode ? 2f : 0f);
+            float servantAndProjectileVelocity = death ? 10f : 6f;
 
-            float enrageScale = bossRush ? 2.25f : masterMode ? 0.5f : 0f;
+            float enrageScale = bossRush ? 2.25f : death ? 0.5f : 0f;
             if (Main.IsItDay())
             {
                 npc.Calamity().CurrentlyEnraged = !bossRush;
@@ -151,7 +150,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         hoverAcceleration += 0.08f;
                     }
 
-                    float attackSwitchTimer = (masterMode ? 120f : 180f) - (death ? 180f * (1f - lifeRatio) : 0f);
+                    float attackSwitchTimer = death ? (120f - 180f * (1f - lifeRatio)) : 180f;
                     bool timeToCharge = npc.ai[2] >= attackSwitchTimer;
                     Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * 400f;
                     Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * (hoverSpeed + (timeToCharge ? ((npc.ai[2] - attackSwitchTimer) * 0.01f) : 0f));
@@ -173,7 +172,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                             npc.ai[3] += 1f;
 
-                        float servantSpawnGateValue = death ? (masterMode ? 10f : 20f) : (masterMode ? 25f : 40f);
+                        float servantSpawnGateValue = death ? 10f : 40f;
                         if (Main.getGoodWorld)
                             servantSpawnGateValue *= 0.8f;
 
@@ -233,23 +232,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
 
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (npc.ai[1] == 2f)
                 {
                     // Set damage
                     npc.damage = npc.defDamage;
 
-                    int chargeDelay = masterMode ? 75 : 95;
-                    if (death)
-                        chargeDelay -= (int)Math.Round(30f * (1f - lifeRatio));
+                    int chargeDelay = death ? (75 - (int)Math.Round(30f * (1f - lifeRatio))) : 95;
                     if (Main.getGoodWorld)
                         chargeDelay -= 30;
 
-                    float slowDownGateValue = chargeDelay * (death ? (masterMode ? 0.85f : 0.75f) : (masterMode ? 0.75f : 0.65f));
+                    float slowDownGateValue = chargeDelay * (death ? 0.85f : 0.65f);
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
@@ -261,7 +255,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (decelerationScalar < 0f)
                             decelerationScalar = 0f;
 
-                        npc.velocity *= (MathHelper.Lerp(masterMode ? 0.76f : 0.92f, masterMode ? 0.88f : 0.96f, decelerationScalar));
+                        npc.velocity *= (MathHelper.Lerp(death ? 0.76f : 0.92f, death ? 0.88f : 0.96f, decelerationScalar));
                         if (Main.getGoodWorld)
                             npc.velocity *= 0.99f;
 
@@ -304,11 +298,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] = 0f;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                    
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -340,7 +330,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] += phaseChangeRate;
                 if (npc.ai[1] % servantSpawnGateValue == 0f)
                 {
-                    float servantVelocity = masterMode ? 11.3f : 5.65f;
+                    float servantVelocity = death ? 11.3f : 5.65f;
                     Vector2 servantSpawnVelocity = Main.rand.NextVector2CircularEdge(servantVelocity, servantVelocity);
                     if (Main.getGoodWorld)
                         servantSpawnVelocity *= 3f;
@@ -349,7 +339,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int spawnType = NPCID.ServantofCthulhu;
-                        if (masterMode)
+                        if (death)
                         {
                             int maxBloodServants = 2;
                             bool spawnBloodServant = NPC.CountNPCS(ModContent.NPCType<BloodlettingServant>()) < maxBloodServants;
@@ -473,13 +463,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         hoverAcceleration += 0.1f;
                     }
 
-                    float phaseLimit = (masterMode ? 160f : 200f) - (death ? 150f * (phase2LifeRatio - lifeRatio) : 0f);
+                    float phaseLimit = death ? (160f - 150f * (phase2LifeRatio - lifeRatio)) : 200f;
                     bool timeToCharge = npc.ai[2] >= phaseLimit;
                     Vector2 idealHoverVelocity = npc.SafeDirectionTo(hoverDestination) * (hoverSpeed + (timeToCharge ? ((npc.ai[2] - phaseLimit) * 0.01f) : 0f));
                     npc.SimpleFlyMovement(idealHoverVelocity, hoverAcceleration + (timeToCharge ? ((npc.ai[2] - phaseLimit) * 0.001f) : 0f));
 
                     npc.ai[2] += 1f;
-                    float projectileGateValue = (lifeRatio < 0.5f && death) ? (masterMode ? 40f : 50f) : (masterMode ? 60f : 80f);
+                    float projectileGateValue = (lifeRatio < 0.5f && death) ? 40f : (death ? 60f : 80f);
                     if (npc.ai[2] % projectileGateValue == 0f && shootProjectile)
                     {
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity * 2f;
@@ -488,8 +478,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             int type = ProjectileID.BloodNautilusShot;
                             int damage = npc.GetProjectileDamage(type);
-                            int numProj = masterMode ? 4 : 3;
-                            int spread = masterMode ? 12 : 10;
+                            int numProj = death ? 4 : 3;
+                            int spread = death ? 12 : 10;
                             float rotation = MathHelper.ToRadians(spread);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -531,10 +521,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 else if (npc.ai[1] == 2f)
@@ -542,11 +529,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set damage
                     npc.damage = setDamage;
 
-                    int phase2ChargeDelay = masterMode ? 70 : 85;
-                    if (death)
-                        phase2ChargeDelay -= (int)Math.Round(25f * (phase2LifeRatio - lifeRatio));
+                    int phase2ChargeDelay = death ? (70 - (int)Math.Round(25f * (phase2LifeRatio - lifeRatio))) : 85;
 
-                    float slowDownGateValue = phase2ChargeDelay * (death ? (masterMode ? 0.9f : 0.85f) : (masterMode ? 0.85f : 0.75f));
+                    float slowDownGateValue = phase2ChargeDelay * (death ? 0.9f : 0.75f);
 
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
@@ -558,7 +543,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (decelerationScalar < 0f)
                             decelerationScalar = 0f;
 
-                        npc.velocity *= (MathHelper.Lerp(masterMode ? 0.6f : 0.9f, masterMode ? 0.7f : 0.95f, decelerationScalar));
+                        npc.velocity *= (MathHelper.Lerp(death ? 0.6f : 0.9f, death ? 0.7f : 0.95f, decelerationScalar));
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                             npc.velocity.X = 0f;
                         if (npc.velocity.Y > -0.1 && npc.velocity.Y < 0.1)
@@ -581,10 +566,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
-                            npc.netUpdate = true;
-
-                            if (npc.netSpam > 10)
-                                npc.netSpam = 10;
+                            npc.ForceNetUpdate(false);
                         }
                         else
                             npc.ai[1] = 1f;
@@ -601,10 +583,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -621,10 +600,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float targetVelocity = Math.Abs(Main.player[npc.target].velocity.X) + Math.Abs(Main.player[npc.target].velocity.Y) / 4f;
                         targetVelocity += 10f - targetVelocity;
 
-                        if (targetVelocity < (masterMode ? 2f : 5f))
-                            targetVelocity = (masterMode ? 2f : 5f);
-                        if (targetVelocity > (masterMode ? 6f : 15f))
-                            targetVelocity = (masterMode ? 6f : 15f);
+                        if (targetVelocity < (death ? 2f : 5f))
+                            targetVelocity = (death ? 2f : 5f);
+                        if (targetVelocity > (death ? 6f : 15f))
+                            targetVelocity = (death ? 6f : 15f);
 
                         if (npc.ai[2] == -1f)
                         {
@@ -673,10 +652,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         npc.ai[1] = 4f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -711,10 +687,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float lineUpDistNetUpdate = lineUpDistControl + 13f;
                     if (npc.ai[2] >= lineUpDistNetUpdate)
                     {
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
 
                         npc.ai[3] += 1f;
                         npc.ai[2] = 0f;
@@ -785,7 +758,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int spawnType = NPCID.ServantofCthulhu;
                         bool spawnServant = false;
                         float enrageScaleToPass = enrageScale;
-                        if (masterMode)
+                        if (death)
                         {
                             int maxBloodServants = 2;
                             bool spawnBloodServant = NPC.CountNPCS(ModContent.NPCType<BloodlettingServant>()) < maxBloodServants;
@@ -882,17 +855,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 break;
                         }
 
-                        calamityGlobalNPC.newAI[0] += ((masterMode && calamityGlobalNPC.newAI[0] % 2f != 0f) ? Main.rand.Next(2) + 1f : 1f);
+                        calamityGlobalNPC.newAI[0] += ((death && calamityGlobalNPC.newAI[0] % 2f != 0f) ? Main.rand.Next(2) + 1f : 1f);
                         if (calamityGlobalNPC.newAI[0] > 3f)
-                            calamityGlobalNPC.newAI[0] = masterMode ? Main.rand.Next(2) : 0f;
+                            calamityGlobalNPC.newAI[0] = death ? Main.rand.Next(2) : 0f;
 
                         npc.SyncExtraAI();
                     }
 
-                    npc.netUpdate = true;
-
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 else if (npc.ai[1] == 6f)
@@ -908,10 +878,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
 
                         npc.ai[1] = 7f;
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                 }
 
@@ -948,11 +915,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Deal less damage overall while not charging
                         npc.damage = reducedSetDamage;
-
-                        npc.netUpdate = true;
-
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
 
                         npc.ai[2] = 0f;
                         npc.ai[1] = 0f;
@@ -1198,9 +1161,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.velocity.X = num24 * num26;
                     npc.velocity.Y = num25 * num26;
                     npc.ai[1] = 2f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (npc.ai[1] == 2f)
                 {
@@ -1275,10 +1236,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] = 0f;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                    
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
 
                 return false;
@@ -1510,9 +1468,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.velocity.X = num45 * num47;
                 npc.velocity.Y = num46 * num47;
                 npc.ai[1] = 2f;
-                npc.netUpdate = true;
-                if (npc.netSpam > 10)
-                    npc.netSpam = 10;
+                npc.ForceNetUpdate(false);
             }
             else if (npc.ai[1] == 2f)
             {
@@ -1567,9 +1523,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] += Main.rand.Next(1, 4);
                         }
 
-                        npc.netUpdate = true;
-                        if (npc.netSpam > 10)
-                            npc.netSpam = 10;
+                        npc.ForceNetUpdate(false);
                     }
                     else
                         npc.ai[1] = 1f;
@@ -1585,9 +1539,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
                     npc.ai[3] = 0f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
                 else if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -1679,9 +1631,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     npc.ai[1] = 4f;
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
                 }
             }
             else if (npc.ai[1] == 4f)
@@ -1712,9 +1662,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float num63 = num62 + 13f;
                 if (npc.ai[2] >= num63)
                 {
-                    npc.netUpdate = true;
-                    if (npc.netSpam > 10)
-                        npc.netSpam = 10;
+                    npc.ForceNetUpdate(false);
 
                     npc.ai[3] += 1f;
                     npc.ai[2] = 0f;

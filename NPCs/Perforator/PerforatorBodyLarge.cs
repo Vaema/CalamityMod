@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadLarge))]
     public class PerforatorBodyLarge : ModNPC
     {
@@ -106,13 +107,6 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.active = false;
             }
 
-            if (Main.npc[(int)NPC.ai[1]].alpha < 128)
-            {
-                NPC.alpha -= 42;
-                if (NPC.alpha < 0)
-                    NPC.alpha = 0;
-            }
-
             if (Main.player[NPC.target].dead)
                 NPC.TargetClosest(false);
 
@@ -166,6 +160,32 @@ namespace CalamityMod.NPCs.Perforator
             {
                 float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
                 NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
+            }
+
+            if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
+            {
+                if (NPC.alpha > 0 && NPC.life > 0)
+                {
+                    for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].noLight = true;
+                    }
+                }
+
+                if ((NPC.position - NPC.oldPosition).Length() > 2f)
+                {
+                    NPC.alpha -= 42;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                }
+            }
+            else if (NPC.alpha > 0)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
             }
         }
 

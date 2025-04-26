@@ -8,6 +8,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
@@ -91,7 +92,8 @@ namespace CalamityMod
             }
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > bestDamage)
             {
                 bestClass = RogueDamageClass.Instance;
@@ -125,7 +127,8 @@ namespace CalamityMod
             if (summon > best) best = summon;
             // We intentionally don't check whip class, because it inherits 100% from Summon
 
-            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive;
+            // CIT 28FEB2025: Damage boosts from stealth are now subtracted from total damage when considering best class, to prevent all-class damage from being skewed by it.
+            float rogue = player.GetTotalDamage<RogueDamageClass>().Additive - player.Calamity().stealthDamage;
             if (rogue > best) best = rogue;
 
             // Add the best typical damage stat, then return the full modifier.
@@ -459,7 +462,7 @@ namespace CalamityMod
             if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
                 extraIFrames += 30;
 
-            if (modPlayer.fabsolVodka)
+            if (modPlayer.cirrusVodka)
             {
                 if (hurtInfo.Damage == 1)
                     extraIFrames += 5;
@@ -907,9 +910,10 @@ namespace CalamityMod
             var modPlayer = player.Calamity();
 
             bool forbiddenWithMagicWeapon = player.armor[0].type == ItemID.AncientBattleArmorHat && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<MagicDamageClass>();
+            bool circletWithRogueWeapon = player.armor[0].type == ModContent.ItemType<ForbiddenCirclet>() && player.armor[1].type == ItemID.AncientBattleArmorShirt && player.armor[2].type == ItemID.AncientBattleArmorPants && item.CountsAsClass<RogueDamageClass>();
             bool gemTechBlueGem = modPlayer.GemTechSet && modPlayer.GemTechState.IsBlueGemActive;
 
-            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
+            bool crossClassNerfDisabled = forbiddenWithMagicWeapon || circletWithRogueWeapon || modPlayer.fearmongerSet || gemTechBlueGem || modPlayer.profanedCrystalBuffs || DD2Event.Ongoing;
 
             if (item.type > ItemID.None && !crossClassNerfDisabled)
             {

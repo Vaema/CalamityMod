@@ -68,10 +68,10 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
         public static void HoverItemIcon()
         {
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
             if (vodka)
             {
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<FabsolsVodka>();
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CirrusVodka>();
             }
             else if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
             {
@@ -94,12 +94,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             int top = j - tile.TileFrameY / 18;
 
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<AshesofCalamity>()) &&
-                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld))
+                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld))
             {
                 return true;
             }
 
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<FabsolsVodka>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) || BossRushEvent.BossRushActive)
                 return true;
@@ -117,10 +117,10 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
             if (vodka)
             {
-                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<FabsolsVodka>(), true);
+                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<CirrusVodka>(), true);
                 for (int f = 0; f < Main.maxNPCs; f++)
                 {
-                    if (Main.npc[f].type == ModContent.NPCType<FAP>() && Main.npc[f].active)
+                    if (Main.npc[f].type == ModContent.NPCType<Cirrus>() && Main.npc[f].active)
                     {
                         Main.npc[f].active = false;
                     }

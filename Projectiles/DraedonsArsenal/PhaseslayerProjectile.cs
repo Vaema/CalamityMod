@@ -6,6 +6,7 @@ using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
+    [PierceResistException]
     public class PhaseslayerProjectile : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Phaseslayer>();
@@ -145,10 +147,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     // Also flag for netcode sync if applicable (this is the only way the sword can rotate in multiplayer).
                     float newRotation = Projectile.rotation.AngleLerp(player.AngleTo(Main.MouseWorld), aimResponsiveness);
                     if (Projectile.rotation != newRotation)
-                    {
-                        Projectile.netUpdate = true;
-                        Projectile.netSpam = 0; // You cannot stop Phaseslayer from sending packets.
-                    }
+                        Projectile.ForceNetUpdate(); // You cannot stop Phaseslayer from sending packets.
                     Projectile.rotation = newRotation;
                 }
 

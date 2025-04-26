@@ -1,39 +1,37 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.BaseItems;
+using CalamityMod.Projectiles.Melee;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("OldLordOathsword")]
-    public class OldLordClaymore : ModItem, ILocalizedModType
+    public class OldLordClaymore : CustomUseProjItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public bool RMBchannel = false;
 
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 70;
-            Item.damage = 60;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 34;
-            Item.useTime = 34;
-            Item.channel = true;
-            Item.useStyle = ItemUseStyleID.Swing;
+            Item.damage = 195;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.useAnimation = Item.useTime = 90; // Yes it's actually supposed to be this slow
+
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.shoot = ModContent.ProjectileType<OldLordClaymoreHoldout>();
             Item.useTurn = true;
-            Item.knockBack = 7f;
-            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 10f;
             Item.autoReuse = true;
             Item.noUseGraphic = true;
+            Item.noMelee = true;
             Item.channel = true;
+
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
         }
-
-        public override bool AltFunctionUse(Player player) => true;
-
-        public override bool? CanHitNPC(Player player, NPC target) => false;
-
-        public override bool CanHitPvp(Player player, Player target) => false;
+        public override bool MeleePrefix() => true;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 11;
     }
 }
