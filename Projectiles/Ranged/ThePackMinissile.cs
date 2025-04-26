@@ -31,15 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.rotation = Projectile.velocity.ToRotation();
             CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 300f, 12f, 15f);
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 3)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame > 3)
-            {
-                Projectile.frame = 0;
-            }
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
         }
 
         public override void OnKill(int timeLeft)
