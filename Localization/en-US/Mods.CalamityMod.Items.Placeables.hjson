@@ -677,6 +677,11 @@ YharonRelic: {
 	Tooltip: A glimpse into what will be...
 }
 
+CausticTorch: {
+	DisplayName: Caustic Torch
+	Tooltip: Can be placed in water
+}
+
 ChaosCandle: {
 	DisplayName: Chaos Candle
 	Tooltip: The mere presence of this candle enrages surrounding enemies drastically
@@ -887,6 +892,11 @@ FrigidMonolith: {
 	Tooltip: "'Enchant the sky with frosty auroras.'"
 }
 
+KelpTorch: {
+	DisplayName: Kelp Torch
+	Tooltip: Can be placed in water
+}
+
 OtonilouStatue: {
 	DisplayName: Otonilou Memorial
 	Tooltip: ""
@@ -969,9 +979,19 @@ ThaumaticChair: {
 	Tooltip: One of Chloe's finest creations
 }
 
+ThermalTorch: {
+	DisplayName: Thermal Torch
+	Tooltip: Can be placed in water
+}
+
 TranquilityCandle: {
 	DisplayName: Tranquility Candle
 	Tooltip: The mere presence of this candle calms surrounding enemies drastically
+}
+
+VoidTorch: {
+	DisplayName: Void Torch
+	Tooltip: Can be placed in water
 }
 
 AnahitaTrophy: {
@@ -1292,11 +1312,6 @@ AbyssSynth: {
 AbyssTable: {
 	DisplayName: Abyss Table
 	Tooltip: ""
-}
-
-AbyssTorch: {
-	DisplayName: Abyss Torch
-	Tooltip: Can be placed in water
 }
 
 AbyssWorkBench: {

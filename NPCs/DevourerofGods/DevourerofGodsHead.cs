@@ -2670,7 +2670,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GFBOnly.Add(ItemID.JungleTorch, dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ItemID.MushroomTorch, dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ItemID.ShimmerTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<CausticTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<KelpTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<ThermalTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(ModContent.ItemType<VoidTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax, true);
                 GFBOnly.Add(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax, true);

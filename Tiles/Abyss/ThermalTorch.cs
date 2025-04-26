@@ -5,15 +5,15 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.FurnitureAbyss
+namespace CalamityMod.Tiles.Abyss
 {
-    public class AbyssTorch : ModTile
+    public class ThermalTorch : ModTile
     {
-        public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.FurnitureAbyss.AbyssTorch>(), true, true);
+        public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.ThermalTorch>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 130, 150), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(200, 0, 0), 1f);
             return false;
         }
 
@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.FurnitureAbyss
             Player player = Main.LocalPlayer;
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = ModContent.ItemType<Items.Placeables.FurnitureAbyss.AbyssTorch>();
+            player.cursorItemIconID = ModContent.ItemType<Items.Placeables.Furniture.ThermalTorch>();
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -35,9 +35,9 @@ namespace CalamityMod.Tiles.FurnitureAbyss
             Tile tile = Main.tile[i, j];
             if (tile.TileFrameX < 66)
             {
-                r = 0.6f;
-                g = 0.6f;
-                b = 2.3f;
+                r = 2f;
+                g = 0.5f;
+                b = 0.5f;
             }
         }
 
@@ -56,13 +56,13 @@ namespace CalamityMod.Tiles.FurnitureAbyss
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAbyss/AbyssTorchFlame").Value, i, j, 2);
+            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/ThermalTorchFlame").Value, i, j, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
             if (Main.tile[i, j].TileFrameX < 66)
-                CalamityUtils.DrawFlameSparks(187, 5, i, j);
+                CalamityUtils.DrawFlameSparks(DustID.RedTorch, 5, i, j);
         }
 
         public override bool RightClick(int i, int j)

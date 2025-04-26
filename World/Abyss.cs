@@ -1132,7 +1132,7 @@ namespace CalamityMod.World
                 Main.chest[ChestIndex].item[4].SetDefaults(ItemID.ManaPotion);
                 Main.chest[ChestIndex].item[4].stack = WorldGen.genRand.Next(2, 5);
 
-                Main.chest[ChestIndex].item[5].SetDefaults(ModContent.ItemType<Items.Placeables.FurnitureAbyss.AbyssTorch>());
+                Main.chest[ChestIndex].item[5].SetDefaults(ModContent.ItemType<Items.Placeables.Furniture.KelpTorch>());
                 Main.chest[ChestIndex].item[5].stack = WorldGen.genRand.Next(3, 12);
 
                 Main.chest[ChestIndex].item[6].SetDefaults(ItemID.GoldCoin);
