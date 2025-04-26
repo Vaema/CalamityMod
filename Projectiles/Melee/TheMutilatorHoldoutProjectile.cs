@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool drawSwordTrail => true;
         public override Color[] trailColors => [Color.Red, Color.DarkRed, Color.Gold];
 
-        public override float trailOffset => 30;
+        public override float trailOffset => 20;
 
         public override float trailWidth(float completion)
         {

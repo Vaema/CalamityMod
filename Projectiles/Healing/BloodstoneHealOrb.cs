@@ -20,12 +20,6 @@ namespace CalamityMod.Projectiles.Healing
 
         public int spawnCooldown = 60; //how many frames must pass before it can be picked up
 
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Type] = 20;
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 8;
@@ -41,8 +35,6 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void AI()
         {
-            if ((true))
-            {
                 float particleSize = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 60f * MathHelper.TwoPi);
                 if (Projectile.timeLeft <= 60) //Shrinks to nothing when projectile is nearing death
                 {
@@ -52,13 +44,11 @@ namespace CalamityMod.Projectiles.Healing
                 Particle beam3 = new CustomSpark(Projectile.Center + Projectile.Size / 2f, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
                 GeneralParticleHandler.SpawnParticle(beam3);
 
-                if (Main.rand.NextBool(8))
+                if (false && Main.rand.NextBool(8))
                 {
                     Particle beam4 = new CustomSpark(Projectile.Center + Projectile.Size / 2f, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
                     GeneralParticleHandler.SpawnParticle(beam4);
                 }
-
-            }
             Projectile.scale = MathHelper.Lerp(1, 1, 0.65f);
             float maxDistance = 200f;
             if (spawnCooldown > 0)
@@ -132,23 +122,6 @@ namespace CalamityMod.Projectiles.Healing
 
         public override bool PreDraw(ref Color lightColor)
         {
-            for (int i = 0; i < Projectile.oldPos.Length; i++)
-            {
-                float particleSize = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 60f * MathHelper.TwoPi);
-                particleSize *= MathHelper.Lerp(0.15f, 1f, 1f - i / (float)Projectile.oldPos.Length);
-                if (Projectile.timeLeft <= 60) //Shrinks to nothing when projectile is nearing death
-                {
-                    particleSize *= Projectile.timeLeft / 60f;
-                }
-                Particle beam3 = new CustomSpark(Projectile.oldPos[i] + Projectile.Size / 2f, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
-                GeneralParticleHandler.SpawnParticle(beam3);
-
-                if (Main.rand.NextBool(8))
-                {
-                    Particle beam4 = new CustomSpark(Projectile.oldPos[i] + Projectile.Size / 2f, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
-                    GeneralParticleHandler.SpawnParticle(beam4);
-                }
-            }
             return false;
         }
     }

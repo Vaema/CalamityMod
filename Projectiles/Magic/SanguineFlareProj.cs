@@ -142,9 +142,9 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.timeLeft = 2;
                 Projectile.velocity *= 0;
                 Projectile.damage /= 2;
-                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed*0.5f, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f*dmgMult/5f, 0.87f * dmgMult / 5f, (int)(Viscera.BoomLifetime * 0.38f), false);
+                Particle bloodsplosion = new CustomPulse(Projectile.Center, Vector2.Zero, Color.DarkRed*0.75f, "CalamityMod/Particles/DetailedExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.16f*dmgMult/5f, 0.87f * dmgMult / 5f, (int)(40 * 0.38f), false);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion);
-                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32)*0.5f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * dmgMult / 5f, 0.155f * dmgMult / 5f, Viscera.BoomLifetime);
+                Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32)*0.5f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * dmgMult / 5f, 0.155f * dmgMult / 5f, 40);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion2);
             }
         }

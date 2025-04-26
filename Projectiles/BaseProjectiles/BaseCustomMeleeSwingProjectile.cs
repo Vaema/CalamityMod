@@ -373,7 +373,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
-            oldScale.Insert(0, Projectile.scale);
 
             player.itemTime = ExistsTime + 1 - timer;
             if (timer > ExistsTime)
@@ -389,6 +388,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             var armDir = armCenter - Projectile.Center;
             armDir.Y *= player.gravDir;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, armDir.ToRotation() + MathHelper.ToRadians(90));
+            oldScale.Insert(0, Projectile.scale);
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -430,10 +430,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue((AlternateSwings && modplayer.swingNum % 2 == 1) ^ Projectile.spriteDirection == -1 ? false : true);
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
-                var positionsToUse = Projectile.oldPos.Take(trailLength).ToArray();
+                var positionsToUse = Projectile.oldPos.Take((int)MathHelper.Min(trailLength,swingTimer)).ToArray();
                 for (var i = 0; i < positionsToUse.Length; i++)
                 {
-                    if (i >= timer) continue;
+                    if (i >= timer) break;
                     positionsToUse[i] += (Projectile.oldRot[i] - MathHelper.PiOver4 * (Projectile.spriteDirection == -1 ? 3 : 1)).ToRotationVector2() * this.trailOffset * oldScale[i];
                 }
                 PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
