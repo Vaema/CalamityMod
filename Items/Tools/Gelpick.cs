@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Tools
             Item.damage = 19;
             Item.knockBack = 2.5f;
             Item.useTime = 6;
-            Item.useAnimation = 20;
+            Item.useAnimation = 12;
             Item.pick = 90;
             Item.tileBoost += 1;
 
