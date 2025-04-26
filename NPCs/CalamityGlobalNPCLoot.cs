@@ -142,6 +142,12 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
 
+                // Toxic Sludge
+                // Fast Clock @ 1% Normal, 2% Expert+
+                case NPCID.ToxicSludge:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
+                    break;
+
                 // Medusa
                 // Pocket Mirror @ 10% Normal, 20% Expert+
                 case NPCID.Medusa:
@@ -231,6 +237,18 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BurntSienna>(), 25, 15));
                     break;
 
+                // Desert Spirit
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.DesertDjinn:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    break;
+
+                // Dreamer Ghoul
+                // Trifold Map @ 1% Normal, 2% Expert+
+                case NPCID.DesertGhoulHallow:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    break;
+
                 // Sand Elemental
                 // Elemental in a Bottle @ 20% Normal, 33.33% Expert+
                 // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
@@ -250,9 +268,10 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
                     break;
 
-                // Undead Viking
+                // Undead Viking, Armored Viking
                 // Armor Polish @ 1% Normal, 2% Expert
                 case NPCID.UndeadViking:
+                case NPCID.ArmoredViking:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
 
@@ -362,6 +381,14 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
                     break;
 
+                // Piranha, Arapaima, Blood Feeder
+                // Adhesive Bandage @ 1% Normal, 2% Expert+
+                case NPCID.Piranha:
+                case NPCID.Arapaima:
+                case NPCID.BloodFeeder:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.AdhesiveBandage, 100, 50));
+                    break;
+
                 // Shark
                 // Shark Tooth Necklace @ 4% Normal, 6.67% Expert+
                 // Joyful Heart @ 5%
@@ -386,6 +413,24 @@ namespace CalamityMod.NPCs
                 case NPCID.FaceMonster:
                 case NPCID.DevourerHead:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
+                    break;
+
+                // Chaos Elemental
+                // Megaphone @ 1% Normal, 2% Expert+
+                case NPCID.ChaosElemental:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
+                    break;
+
+                // Illuminant Bat
+                // Trifold Map @ 1% Normal, 2% Expert+
+                case NPCID.IlluminantBat:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    break;
+
+                // Illuminant Slime
+                // Fast Clock @ 1% Normal, 2% Expert+
+                case NPCID.IlluminantSlime:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Gastropod
@@ -526,6 +571,13 @@ namespace CalamityMod.NPCs
                     npcLoot.ChangeDropRate(ItemID.Tabi, 1, 4);
                     break;
 
+                // Necromancers
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
+                    break;
+
                 // Paladin
                 // Paladin's Hammer @ 15% INSTEAD OF 6.67%
                 // Paladin's Shield @ 20% INSTEAD OF 9.33%
@@ -585,8 +637,11 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
+                // Nazar and Megaphone @ 1% Normal, 2% Expert
                 case NPCID.Ghost:
                     npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -687,6 +742,13 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateShip:
                     rev.Add(ItemID.FlyingDutchmanMasterTrophy);
                     rev.Add(ItemID.PirateShipMountItem, 4);
+                    break;
+
+                // Pirate's Curse
+                // Nazar and Megaphone @ 1% Normal, 2% Expert
+                case NPCID.PirateGhost:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
