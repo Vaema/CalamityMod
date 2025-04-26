@@ -1249,7 +1249,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
-                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50))
+                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
                 .Add(ItemType<LanternCenter>())
                 .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
                 .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
