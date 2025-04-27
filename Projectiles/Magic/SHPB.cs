@@ -119,6 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.scale < 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
                     Projectile.localAI[0] = 0f;
             }
+            Projectile.ExpandHitboxBy((int)(24 * Projectile.scale));
 
             // Sight has weak homing
             if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Sight)
