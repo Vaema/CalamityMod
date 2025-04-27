@@ -482,14 +482,8 @@ namespace CalamityMod.Balancing
             // 15% resist to The Final Dawn's AoE sweep flames.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<FinalDawnFlame>()))));
 
-            // 15% resist to God Slayer Slugs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<GodSlayerSlugProj>()))));
-
             // 15% resist to Gruesome Eminence.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<SpiritCongregation>()))));
-
-            // 15% resist to Luminite Bullets.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileID.MoonlordBullet))));
             #endregion
 
             #region Supreme Calamitas: Brimstone Hearts
