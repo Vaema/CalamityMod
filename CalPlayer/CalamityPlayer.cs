@@ -1531,11 +1531,12 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Biome
-        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneBasaltGully;
+        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneClamDen || ZoneBasaltGully;
         public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
         public bool ZonePolypForest => Player.InModBiome<PolypForestBiome>();
         public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
         public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
+        public bool ZoneClamDen => Player.InModBiome<ClamDenBiome>();
         public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
 
         public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();

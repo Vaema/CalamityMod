@@ -344,7 +344,8 @@ namespace CalamityMod
             /// </returns>
             internal List<Vector2> CalculatePath()
             {
-                if (Main.tile[End.Position].IsTileSolid())
+                Tile t = ParanoidTileRetrieval(End.Position.X, End.Position.Y);
+                if (t.IsTileSolid())
                     return null;
 
                 var openSet = new List<PathfindingNode>();
