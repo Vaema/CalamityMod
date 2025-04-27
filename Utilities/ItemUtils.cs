@@ -304,7 +304,7 @@ namespace CalamityMod
 
             List<string> keys = mhk.GetAssignedKeys();
             if (keys.Count == 0)
-                return "[NONE]";
+                return GetText("Misc.HotkeyNotBound").Value;
             else
             {
                 StringBuilder sb = new StringBuilder(16);

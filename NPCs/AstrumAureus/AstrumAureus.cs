@@ -416,8 +416,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             // GFB Crab Banner and Asteroid Staff drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CrabBanner, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<AsteroidStaff>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CrabBanner, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AsteroidStaff>()), hideLootReport: true);
             }
 
             // Lore

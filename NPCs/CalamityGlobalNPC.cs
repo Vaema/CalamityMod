@@ -7160,6 +7160,54 @@ namespace CalamityMod.NPCs
             }
         }
 
+        public static void AttemptToSpawnLavaNPCs(Player player)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            // For now, we only need this for the Basalt Gully, but this may be used for the crags in the future
+            if (!player.Calamity().ZoneBasaltGully)
+                return;
+
+            int spawnRate = 400;
+            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
+
+            // Enforce a limit on the amount of enemies that can appear.
+            if (player.nearbyActiveNPCs >= maxSpawnCount)
+                return;
+
+            float playerCenterX = player.Center.X / 16f;
+            float playerCenterY = player.Center.Y / 16f;
+            for (int i = 0; i < 8; i++)
+            {
+                int checkPositionX = (int)(playerCenterX + Main.rand.Next(30, 54) * Main.rand.NextBool().ToDirectionInt());
+                int checkPositionY = (int)(playerCenterY + Main.rand.Next(24, 45) * Main.rand.NextBool().ToDirectionInt());
+                Vector2 checkPosition = new Vector2(checkPositionX, checkPositionY);
+
+                Tile aboveSpawnTile = CalamityUtils.ParanoidTileRetrieval(checkPositionX, checkPositionY - 1);
+
+               if (aboveSpawnTile.LiquidAmount < 255 || aboveSpawnTile.LiquidType != LiquidID.Lava || Collision.SolidCollision((checkPosition - new Vector2(2f, 2f)).ToWorldCoordinates(), 4, 4) || player.nearbyActiveNPCs >= maxSpawnCount || !Main.rand.NextBool(spawnRate))
+                    continue;
+
+                WeightedRandom<int> pool = new WeightedRandom<int>();
+                pool.Add(NPCID.None, 0f);
+                pool.Add(NPCType<PodobooKoi>(), 0.25f);
+
+                int typeToSpawn = pool.Get();
+                if (typeToSpawn != NPCID.None)
+                {
+                    int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
+                    {
+                        Main.npc[spawnedNPC].position.Y -= 8f;
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
+                        return;
+                    }
+                }
+            }
+        }
+
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             bool calamityBiomeZone = spawnInfo.Player.Calamity().ZoneAbyss ||

@@ -1066,10 +1066,10 @@ namespace CalamityMod.NPCs.Ravager
             // GFB Sans drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.Skull, hideLootReport: true);
-                GFBOnly.Add(ItemID.Bone, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.Hotdog, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Skull), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Bone, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Hotdog, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999), true);
             }
 
             // Lore

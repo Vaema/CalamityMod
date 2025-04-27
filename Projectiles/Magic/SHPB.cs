@@ -119,6 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.scale < 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
                     Projectile.localAI[0] = 0f;
             }
+            Projectile.ExpandHitboxBy((int)(24 * Projectile.scale));
 
             // Sight has weak homing
             if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Sight)
@@ -139,14 +140,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (index != -1)
-                {
-                    float speed = Projectile.velocity.Length();
-                    Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.npc[index].Center).ToRotation(), 0.1f).ToRotationVector2() * speed;
-                }
-                else // Slow down over time if not homing
-                    Projectile.velocity *= 0.9875f;
+                    Projectile.velocity = (Projectile.velocity * 18f + Utils.DirectionTo(Projectile.Center, Main.npc[index].Center) * 20f) / 19f;
+                else
+                    Projectile.velocity *= 0.9875f; // Slow down over time if not homing
             }
-            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight))// Always slow down if not Flight
+            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight)) // Always slow down if not Flight
                 Projectile.velocity *= 0.9875f;
 
             float explodeRange = 250f;
@@ -190,7 +188,7 @@ namespace CalamityMod.Projectiles.Magic
             if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Might && target.CanBeMoved(false))
             {
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength - new Vector2(0, 3);
+                Vector2 launchVel = Utils.DirectionTo(owner.Center, owner.Calamity().mouseWorld) - Vector2.UnitY * 5f;
                 target.MoveNPC(launchVel, SHPC.MightKnockbackStrength, false);
             }
         }
