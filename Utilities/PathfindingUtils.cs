@@ -460,7 +460,8 @@ namespace CalamityMod
             internal List<Vector2> CalculatePath()
             {
                 // Trying to pathfind to a solid tile would be a waste of resources, we don't even consider pathfinding to it.
-                if (Main.tile[End.Position].IsTileSolid())
+                TileValidity endTile = ParanoidTileRetrieval(End.Position.X, End.Position.Y);
+                if (endTile.IsTileSolid())
                     return null;
 
                 var candidates = new HeapDict<PathfindingNode, float>();

@@ -57,10 +57,10 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<SeaPrism>(10).
                 AddRecipeGroup("AnyMythrilBar", 5).
                 AddIngredient<EssenceofSunlight>(2).
-                AddIngredient<EssenceofEleum>(2).
                 AddIngredient<EssenceofHavoc>(2).
-                AddIngredient(ItemID.SoulofNight, 3).
+                AddIngredient<EssenceofEleum>(2).
                 AddIngredient(ItemID.SoulofLight, 3).
+                AddIngredient(ItemID.SoulofNight, 3).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
