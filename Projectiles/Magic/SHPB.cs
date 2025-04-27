@@ -140,14 +140,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (index != -1)
-                {
-                    float speed = Projectile.velocity.Length();
-                    Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.npc[index].Center).ToRotation(), 0.1f).ToRotationVector2() * speed;
-                }
-                else // Slow down over time if not homing
-                    Projectile.velocity *= 0.9875f;
+                    Projectile.velocity = (Projectile.velocity * 18f + Utils.DirectionTo(Projectile.Center, Main.npc[index].Center) * 20f) / 19f;
+                else
+                    Projectile.velocity *= 0.9875f; // Slow down over time if not homing
             }
-            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight))// Always slow down if not Flight
+            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight)) // Always slow down if not Flight
                 Projectile.velocity *= 0.9875f;
 
             float explodeRange = 250f;
