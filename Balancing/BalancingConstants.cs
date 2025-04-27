@@ -21,7 +21,8 @@
         internal const float VanillaFrogLegJumpSpeedBoost = 1.6f;
 
         // Altered jump speed boost provided by Amphibian Boots via global item UpdateAccessory
-        internal static readonly float AmphibianBootsJumpSpeedBoost = 1f;
+        //doze 23apr2025 - Undid nerf, it's now the same as frog leg. If it's a problem, maybe retier it?
+        internal static readonly float AmphibianBootsJumpSpeedBoost = 1.6f;
 
         // Altered movement stats provided by Shadow Armor via IL edit
         // This item is modified to not stack with Magiluminescence if on the ground. If in the air, it still functions.
@@ -240,6 +241,16 @@
         internal static readonly float AdrenalineFalloffTinyHitHealthRatio = 0.05f; // Hits for 5% max HP or less result in less Adrenaline loss
 
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.
+        #endregion
+
+        #region Pierce Resistance
+        // Both of the below variables only apply when an NPC has universal pierce resistance enabled via attribute.
+        // Projectiles may be marked as exempt from this pierce resistance by using an attribute.
+
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
+        public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
+        public const float PierceResistCap = 0.8f;
         #endregion
 
         // TODO -- NPC classification is not done consistently with predictable thresholds.

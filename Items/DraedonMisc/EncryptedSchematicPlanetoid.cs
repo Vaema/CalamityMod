@@ -74,7 +74,7 @@ namespace CalamityMod.Items.DraedonMisc
                     summonDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 4, summonDisplay);
 
-                    int rogueItem = ModContent.ItemType<FrequencyManipulator>();
+                    int rogueItem = ModContent.ItemType<PulseGrenade>();
                     TooltipLine rogueDisplay = new TooltipLine(this.Mod, "CalamityMod:RogueDisplay", $"[i:{rogueItem}] {CalamityUtils.GetItemName(rogueItem)}");
                     rogueDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 5, rogueDisplay);

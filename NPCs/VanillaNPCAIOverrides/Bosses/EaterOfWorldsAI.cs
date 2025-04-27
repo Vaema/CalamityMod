@@ -13,6 +13,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EaterOfWorldsAI
     {
+        private const float ProjectileTelegraphDuration = 30f;
         private const int TotalMasterModeWorms = 4;
         public const float DRIncreaseTime = 600f;
 
@@ -107,7 +108,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] = 0f;
                     }
 
-                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                     {
                         Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                         Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
@@ -121,17 +122,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (phase2)
                     {
-                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
-                            calamityGlobalNPC.newAI[0] += ((npc.justHit && death && calamityGlobalNPC.newAI[0] < 30f) ? 10f : 1f);
-                        else
-                            calamityGlobalNPC.newAI[0] -= 1f;
-
-                        float timer = enrageScale > 0f ? 60f : 90f;
-                        float shootBoost = lifeRatio * 60f;
+                        float timer = enrageScale > 0f ? 90f : 120f;
+                        float shootBoost = lifeRatio * 90f;
                         timer += shootBoost;
 
                         if (enrageScale >= 2f)
                             timer = 60f;
+
+                        float showTelegraphGateValue = timer - ProjectileTelegraphDuration;
+
+                        if (Collision.CanHitLine(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1))
+                        {
+                            if (npc.justHit && death && calamityGlobalNPC.newAI[0] < showTelegraphGateValue)
+                            {
+                                calamityGlobalNPC.newAI[0] += 10f;
+                                if (calamityGlobalNPC.newAI[0] > showTelegraphGateValue)
+                                    calamityGlobalNPC.newAI[0] = showTelegraphGateValue;
+                            }
+                            else
+                                calamityGlobalNPC.newAI[0] += 1f;
+                        }
+                        else
+                            calamityGlobalNPC.newAI[0] -= 1f;
 
                         if (calamityGlobalNPC.newAI[0] >= timer)
                         {
@@ -157,7 +169,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                         }
 
-                        if (calamityGlobalNPC.newAI[0] > timer - 30f)
+                        if (calamityGlobalNPC.newAI[0] > showTelegraphGateValue)
                         {
                             Vector2 dustCenter = npc.Center + Main.rand.NextVector2CircularEdge(10f, 10f);
                             int dustType = (death && phase3) ? DustID.Shadowflame : DustID.CursedTorch;
@@ -377,23 +389,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (phase6)
             {
-                segmentVelocity += (death ? 2.4f : 4f) * (enrageScale + 1f);
-                segmentAcceleration += 0.2f * (enrageScale + 1f);
+                segmentVelocity += 2.4f * (enrageScale + 1f);
+                segmentAcceleration += 0.12f * (enrageScale + 1f);
             }
             else if (phase5)
             {
-                segmentVelocity += (death ? 2.2f : 3f) * (enrageScale + 1f);
-                segmentAcceleration += 0.15f * (enrageScale + 1f);
+                segmentVelocity += 1.8f * (enrageScale + 1f);
+                segmentAcceleration += 0.09f * (enrageScale + 1f);
             }
             else if (phase4)
             {
-                segmentVelocity += 2f * (enrageScale + 1f);
-                segmentAcceleration += 0.1f * (enrageScale + 1f);
+                segmentVelocity += 1.2f * (enrageScale + 1f);
+                segmentAcceleration += 0.06f * (enrageScale + 1f);
             }
             else if (phase3)
             {
-                segmentVelocity += 0.8f * (enrageScale + 1f);
-                segmentAcceleration += 0.04f * (enrageScale + 1f);
+                segmentVelocity += 0.6f * (enrageScale + 1f);
+                segmentAcceleration += 0.03f * (enrageScale + 1f);
             }
 
             if (death)
@@ -791,7 +803,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.localAI[1] = 0f;
                         }
 
-                        if (npc.localAI[1] > vileSpitGateValue - 30f)
+                        if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                         {
                             Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                             Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
@@ -821,7 +833,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] = 0f;
                     }
 
-                    if (npc.localAI[1] > vileSpitGateValue - 30f)
+                    if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                     {
                         Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
                         Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);

@@ -17,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class PerforatorHeadSmall : ModNPC
     {
@@ -147,7 +148,7 @@ namespace CalamityMod.NPCs.Perforator
             {
                 float velocityScale = (death ? 0.15f : 0.1f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = (death ? 0.1f : 0.07f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
@@ -449,6 +450,9 @@ namespace CalamityMod.NPCs.Perforator
                     }
                 }
             }
+
+            if (NPC.Distance(player.Center) > 1280f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;

@@ -32,6 +32,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DesertScourge
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class DesertScourgeHead : ModNPC
     {
@@ -239,13 +240,13 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float burrowDistance = hide ? BurrowDistance_Hide : bossRush ? BurrowDistance_BossRush : BurrowDistance;
 
-            float speed = death ? 0.125f : 0.1f;
-            float turnSpeed = death ? 0.25f : 0.2f;
+            float speed = death ? 0.105f : 0.085f;
+            float turnSpeed = death ? 0.21f : 0.17f;
 
             if (expertMode)
             {
-                speed += speed * 0.2f * (1f - lifeRatio);
-                turnSpeed += turnSpeed * 0.2f * (1f - lifeRatio);
+                speed += speed * 0.4f * (1f - lifeRatio);
+                turnSpeed += turnSpeed * 0.4f * (1f - lifeRatio);
             }
 
             if (revenge)
@@ -254,8 +255,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 turnSpeed += (death ? 0.06f : 0.04f) * (1f - lifeRatio);
             }
 
-            speed += 0.1f * enrageScale;
-            turnSpeed += 0.2f * enrageScale;
+            speed += 0.085f * enrageScale;
+            turnSpeed += 0.17f * enrageScale;
 
             if (Main.getGoodWorld)
             {

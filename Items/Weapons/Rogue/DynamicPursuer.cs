@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient<Eradicator>().
-                AddIngredient<TrackingDisk>().
+                AddIngredient<AerialTracker>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();

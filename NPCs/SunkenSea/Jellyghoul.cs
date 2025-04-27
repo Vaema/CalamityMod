@@ -57,6 +57,10 @@ namespace CalamityMod.NPCs.SunkenSea
            // Banner = NPC.type;
             //BannerItem = ModContent.ItemType<JellyghoulBanner>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

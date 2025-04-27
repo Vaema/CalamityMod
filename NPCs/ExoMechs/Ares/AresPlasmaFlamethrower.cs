@@ -20,6 +20,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresPlasmaFlamethrower : ModNPC
     {
         public enum Phase

@@ -302,6 +302,10 @@ namespace CalamityMod.CalPlayer
         public bool despoilerNerf = false;
         /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
+        /// <summary> Variable used to track the fuel of Pristine Fury right click </summary>
+        public int furyFuelMax = 1800;
+        public int furyFuel = 1800;
+        public float furyRefuelTimer = 0;
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
@@ -837,7 +841,7 @@ namespace CalamityMod.CalPlayer
         public bool aBrain = false;
         public bool amalgam = false;
         public bool raiderTalisman = false;
-        public float raiderCritLifespan = 0f;
+        public int raiderCritLifespan = 0;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
         public int gSabatonHotkeyHoldTime = 0;
@@ -1527,11 +1531,12 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Biome
-        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneBasaltGully;
+        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneClamDen || ZoneBasaltGully;
         public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
         public bool ZonePolypForest => Player.InModBiome<PolypForestBiome>();
         public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
         public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
+        public bool ZoneClamDen => Player.InModBiome<ClamDenBiome>();
         public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
 
         public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();
@@ -2838,7 +2843,7 @@ namespace CalamityMod.CalPlayer
             spiritOriginCritBoost = 0;
             rage = 0f;
             adrenaline = 0f;
-            raiderCritLifespan = 0f;
+            raiderCritLifespan = 0;
             raiderSoundCooldown = 0;
             gSabatonHotkeyHoldTime = 0;
             gSabatonFall = 0;
@@ -5654,6 +5659,9 @@ namespace CalamityMod.CalPlayer
         // It also starts the speedrun timer if applicable.
         public override void OnEnterWorld()
         {
+            if (CalamityClientConfig.Instance.StutterFix)
+                WorldGen.SectionTileFrameWithCheck(0, 0, Main.maxTilesX, Main.maxTilesY);
+
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 EnterWorldSync();
 
@@ -5668,9 +5676,7 @@ namespace CalamityMod.CalPlayer
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display
             if (showStartupMessages)
-            {
                 startMessageDisplayDelay = Main.rand.Next(CalamityUtils.SecondsToFrames(12), CalamityUtils.SecondsToFrames(20) + 1);
-            }
         }
 
         /// <summary>

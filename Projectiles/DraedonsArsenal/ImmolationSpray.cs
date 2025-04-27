@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.timeLeft = 300;
             Projectile.extraUpdates = 3;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 4;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

@@ -25,7 +25,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public bool strongVisuals = true;
         public int lastDashDir = 0;
 
-        public override float CalculateDashSpeed(Player player) => (75f * player.moveSpeed);
+        public override float CalculateDashSpeed(Player player) => (70f * player.moveSpeed);
 
         public override void OnDashEffects(Player player)
         {

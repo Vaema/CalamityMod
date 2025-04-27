@@ -1013,7 +1013,7 @@ namespace CalamityMod.NPCs.Polterghast
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Affliction>()));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 7, 15));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 20, 25));
                 normalOnly.Add(ModContent.ItemType<Necroplasm>(), 1, 30, 40);
 
                 // Vanity

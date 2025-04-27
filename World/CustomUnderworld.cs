@@ -12,6 +12,8 @@ namespace CalamityMod.World
 {
     public class CustomUnderworld
     {
+        private const int MaxIslands = 8;
+
         public static void NewUnderworld()
         {
             // Generate lower Underworld ash
@@ -39,14 +41,16 @@ namespace CalamityMod.World
 
             // Generate lava
             int lavaDepth = Main.maxTilesY - WorldGen.genRand.Next(40, 70);
+            int lavaMaxDepth = Main.maxTilesY - 60;
+            int lavaMaxHeight = Main.maxTilesY - 110;
             for (int x = 10; x < Main.maxTilesX - 10; x++)
             {
                 lavaDepth += WorldGen.genRand.Next(-10, 11);
-                if (lavaDepth > Main.maxTilesY - 60)
-                    lavaDepth = Main.maxTilesY - 60;
+                if (lavaDepth > lavaMaxDepth)
+                    lavaDepth = lavaMaxDepth;
 
-                if (lavaDepth < Main.maxTilesY - 100)
-                    lavaDepth = Main.maxTilesY - 120;
+                if (lavaDepth < lavaMaxHeight)
+                    lavaDepth = lavaMaxHeight;
 
                 for (int y = lavaDepth; y < Main.maxTilesY - 10; y++)
                 {
@@ -55,6 +59,176 @@ namespace CalamityMod.World
                         Main.tile[x, y].Get<LiquidData>().LiquidType = LiquidID.Lava;
                         Main.tile[x, y].LiquidAmount = byte.MaxValue;
                     }
+                }
+            }
+
+            // Generate background walls
+            int maxWallHeight = 68;
+            int randomizedWallSectionsHeight = 4;
+            int maxWallTypes = 4;
+            int newWallTypeStart = maxWallHeight / maxWallTypes;
+            int maxWallDepth = Main.maxTilesY - 40;
+            int smoulderingStoneWallStartDepth = maxWallDepth - maxWallHeight;
+            int cinderWallStartDepth = smoulderingStoneWallStartDepth + newWallTypeStart;
+            int emberWallStartDepth = cinderWallStartDepth + newWallTypeStart;
+            int magmaWallStartDepth = emberWallStartDepth + newWallTypeStart;
+            for (int x = 0; x < Main.maxTilesX; x++)
+            {
+                for (int y = smoulderingStoneWallStartDepth; y < maxWallDepth; y++)
+                {
+                    // -100 to -97
+                    if (y < smoulderingStoneWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (smoulderingStoneWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+                        }
+                    }
+
+                    // -96 to -76
+                    else if (y < cinderWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                    }
+
+                    // -75 to -72
+                    else if (y < cinderWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (cinderWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe4;
+                                break;
+                        }
+                    }
+
+                    // -71 to -51
+                    else if (y < emberWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                    }
+
+                    // -50 to -47
+                    else if (y < emberWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (emberWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe2;
+                                break;
+                        }
+                    }
+
+                    // -46 to -26
+                    else if (y < magmaWallStartDepth)
+                    {
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                    }
+
+                    // -25 to -22
+                    else if (y < magmaWallStartDepth + randomizedWallSectionsHeight)
+                    {
+                        switch (magmaWallStartDepth + randomizedWallSectionsHeight - y)
+                        {
+                            case 4:
+                                if (WorldGen.genRand.NextBool(5))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 3:
+                                if (WorldGen.genRand.NextBool(3))
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 2:
+                                if (WorldGen.genRand.NextBool())
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+
+                            case 1:
+                                if (WorldGen.genRand.Next(4) > 0)
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe3;
+                                else
+                                    Main.tile[x, y].WallType = WallID.LavaUnsafe1;
+                                break;
+                        }
+                    }
+
+                    // -21 to -1
+                    else
+                        Main.tile[x, y].WallType = WallID.LavaUnsafe3;
                 }
             }
 
@@ -67,7 +241,7 @@ namespace CalamityMod.World
                     while (!Main.tile[x, y].HasTile && y > Main.maxTilesY - 135)
                         y--;
 
-                    WorldGen.TileRunner(WorldGen.genRand.Next(0, Main.maxTilesX), y + WorldGen.genRand.Next(20, 50), WorldGen.genRand.Next(15, 20), 1000, TileID.Ash, addTile: true, 0D, WorldGen.genRand.Next(1, 3), noYChange: true);
+                    WorldGen.TileRunner(WorldGen.genRand.Next(Main.maxTilesX), y + WorldGen.genRand.Next(20, 50), WorldGen.genRand.Next(15, 20), 1000, TileID.Ash, addTile: true, 0D, WorldGen.genRand.Next(1, 3), noYChange: true);
                 }
             }
 
@@ -120,81 +294,266 @@ namespace CalamityMod.World
                 WorldGen.TileRunner(WorldGen.genRand.Next((int)(Main.maxTilesX * 0.35), (int)(Main.maxTilesX * 0.65)), WorldGen.genRand.Next(Main.maxTilesY - 180, Main.maxTilesY - 10), WorldGen.genRand.Next(5, 20), WorldGen.genRand.Next(5, 10), -2);
 
             // Place two lines of lava at maxTilesY - 145 and maxTilesY - 144
-            for (int x = 0; x < Main.maxTilesX; x++)
+            if (Main.zenithWorld)
             {
-                if (!Main.tile[x, Main.maxTilesY - 145].HasTile)
+                for (int x = 0; x < Main.maxTilesX; x++)
                 {
-                    Main.tile[x, Main.maxTilesY - 145].LiquidAmount = byte.MaxValue;
-                    Main.tile[x, Main.maxTilesY - 145].Get<LiquidData>().LiquidType = LiquidID.Lava;
-                }
+                    if (!Main.tile[x, Main.maxTilesY - 145].HasTile)
+                    {
+                        Main.tile[x, Main.maxTilesY - 145].LiquidAmount = byte.MaxValue;
+                        Main.tile[x, Main.maxTilesY - 145].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    }
 
-                if (!Main.tile[x, Main.maxTilesY - 144].HasTile)
-                {
-                    Main.tile[x, Main.maxTilesY - 144].LiquidAmount = byte.MaxValue;
-                    Main.tile[x, Main.maxTilesY - 144].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    if (!Main.tile[x, Main.maxTilesY - 144].HasTile)
+                    {
+                        Main.tile[x, Main.maxTilesY - 144].LiquidAmount = byte.MaxValue;
+                        Main.tile[x, Main.maxTilesY - 144].Get<LiquidData>().LiquidType = LiquidID.Lava;
+                    }
                 }
             }
 
             // Place hellstone splotches
             for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0008); i++)
-                WorldGen.TileRunner(WorldGen.genRand.Next(0, Main.maxTilesX), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(2, 7), WorldGen.genRand.Next(3, 7), TileID.Hellstone);
+                WorldGen.TileRunner(WorldGen.genRand.Next(Main.maxTilesX), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(2, 7), WorldGen.genRand.Next(3, 7), TileID.Hellstone);
 
-            // Remix world stuff, the Ash island in the middle
-            int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
-            int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
-            int ashIslandTilePlacementX = ashIslandX;
-            int ashIslandGenLimiter = Main.maxTilesY - 1;
+            // Remix world stuff, the Ash islands in the middle
+
+            // Start generating islands at this point
+            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
+
+            // Stop generating islands at this point
+            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
+
+            // Ash island gen limits
             int ashIslandDepthLimit = Main.maxTilesY - 135;
             int ashIslandHeightLimit = Main.maxTilesY - 160;
-            bool ashIslandGenLimitHit = false;
-            Liquid.QuickWater(-2);
-            for (; ashIslandGenLimiter < Main.maxTilesY - 1 || ashIslandTilePlacementX < ashIslandX2; ashIslandTilePlacementX++)
+
+            // Multiple islands in non-remix
+            if (!WorldGen.remixWorldGen)
             {
-                // Less random ash island terrain to make unmodified traversal less annoying
-                if (!ashIslandGenLimitHit)
+                // Large = 8, Medium = 6, Small = 4
+                int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
+
+                // Total extra distance between islands for lava lakes
+                int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
+
+                // Extra distance per island
+                // Due to this being done on both sides of each island, it is divided by 2
+                int extraDistanceBetweenAshIslands = totalExtraDistanceBetweenAshIslands / numIslands / 2;
+
+                // Calculate distance between islands
+                int distanceBetweenIslands = (ashIslandX2 - ashIslandX) / numIslands;
+
+                // Used for island height randomization
+                int[] randomHeightAdjustmentLimits = new int[MaxIslands]
                 {
-                    ashIslandGenLimiter -= WorldGen.genRand.Next(1, 3);
-                    if (ashIslandGenLimiter < ashIslandDepthLimit)
-                        ashIslandGenLimitHit = true;
-                }
-                else if (ashIslandTilePlacementX >= ashIslandX2)
+                    28,
+                    24,
+                    20,
+                    16,
+                    12,
+                    8,
+                    4,
+                    0
+                };
+
+                // Used for island edge drop off randomization
+                // Taller islands have steeper drop offs
+                // This is also used to decrease the width of the islands
+                int[] randomDropOffAdjustmentLimits = new int[MaxIslands]
                 {
-                    ashIslandGenLimiter += WorldGen.genRand.Next(1, 3);
-                    if (ashIslandGenLimiter > Main.maxTilesY - 1)
-                        ashIslandGenLimiter = Main.maxTilesY - 1;
-                }
-                else
+                    3,
+                    4,
+                    5,
+                    7,
+                    9,
+                    11,
+                    15,
+                    19
+                };
+
+                // Loop to gen the islands
+                int chosenIslandSize;
+                int previouslyChosenIslandSize = -1;
+                for (int i = 0; i < numIslands; i++)
                 {
-                    if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
+                    // Do not repeat the same island size twice in a row
+                    do chosenIslandSize = WorldGen.genRand.Next(MaxIslands);
+                    while (previouslyChosenIslandSize == chosenIslandSize);
+                    previouslyChosenIslandSize = chosenIslandSize;
+
+                    int randomizedIslandDropOffAdjustment = randomDropOffAdjustmentLimits[chosenIslandSize];
+                    int randomizedIslandHeightAdjustment = randomHeightAdjustmentLimits[chosenIslandSize];
+                    int randomizedAshIslandDepthLimit = ashIslandDepthLimit + randomizedIslandHeightAdjustment;
+                    int randomizedAshIslandHeightLimit = ashIslandHeightLimit + randomizedIslandHeightAdjustment;
+
+                    int ashIslandXAdjustment = distanceBetweenIslands * i;
+                    int ashIslandX2Adjustment = distanceBetweenIslands * (numIslands - i - 1);
+
+                    // Decrease the width of each island randomly
+                    // Taller islands have a greater reduction in width
+                    int randomWidthReduction_LeftSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
+                    int randomWidthReduction_RightSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
+                    int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
+                    int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands - randomWidthReduction_RightSide;
+                    int ashIslandGenLimiter = Main.maxTilesY - 1;
+                    bool ashIslandGenLimitHit = false;
+                    Liquid.QuickWater(-2);
+                    for (; ashIslandGenLimiter < Main.maxTilesY - 1 || ashIslandTilePlacementX < ashIslandTilePlacementX2; ashIslandTilePlacementX++)
                     {
-                        if (WorldGen.genRand.NextBool(4))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                        else if (WorldGen.genRand.NextBool(8))
-                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                        // Less random ash island terrain to make unmodified traversal less annoying
+                        if (!ashIslandGenLimitHit)
+                        {
+                            // Steeper ash island edges
+                            ashIslandGenLimiter -= WorldGen.genRand.Next(1, randomizedIslandDropOffAdjustment);
+                            if (ashIslandGenLimiter < randomizedAshIslandDepthLimit)
+                                ashIslandGenLimitHit = true;
+                        }
+                        else if (ashIslandTilePlacementX >= ashIslandTilePlacementX2)
+                        {
+                            // Steeper ash island edges
+                            ashIslandGenLimiter += WorldGen.genRand.Next(1, randomizedIslandDropOffAdjustment);
+                            if (ashIslandGenLimiter > Main.maxTilesY - 1)
+                                ashIslandGenLimiter = Main.maxTilesY - 1;
+                        }
+                        else
+                        {
+                            if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
+                            {
+                                // More randomized terrain depending on island type
+                                // Lower islands have smoother terrain
+                                switch (chosenIslandSize)
+                                {
+                                    default:
+                                    case 0:
+                                    case 1:
+                                        if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(8))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        break;
+
+                                    case 2:
+                                    case 3:
+                                        if (WorldGen.genRand.NextBool(3))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(6))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(9))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+
+                                    case 4:
+                                    case 5:
+                                        if (WorldGen.genRand.NextBool())
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(6))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+
+                                    case 6:
+                                    case 7:
+                                        if (WorldGen.genRand.NextBool())
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                        else if (WorldGen.genRand.NextBool(3))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                        else if (WorldGen.genRand.NextBool(4))
+                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                        break;
+                                }
+                            }
+
+                            if (ashIslandGenLimiter < randomizedAshIslandHeightLimit)
+                                ashIslandGenLimiter = randomizedAshIslandHeightLimit;
+
+                            if (ashIslandGenLimiter > randomizedAshIslandDepthLimit)
+                                ashIslandGenLimiter = randomizedAshIslandDepthLimit;
+                        }
+
+                        for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
+                            Main.tile[ashIslandTilePlacementX, y].LiquidAmount = 0;
+
+                        for (int y = ashIslandGenLimiter; y < Main.maxTilesY; y++)
+                        {
+                            Main.tile[ashIslandTilePlacementX, y].Clear(TileDataType.All);
+                            Main.tile[ashIslandTilePlacementX, y].Get<TileWallWireStateData>().HasTile = true;
+                            Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
+                        }
                     }
 
-                    if (ashIslandGenLimiter < ashIslandHeightLimit)
-                        ashIslandGenLimiter = ashIslandHeightLimit;
+                    // This is necessary due to earlier calculations
+                    int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
 
-                    if (ashIslandGenLimiter > ashIslandDepthLimit)
-                        ashIslandGenLimiter = ashIslandDepthLimit;
-                }
+                    // Lava holes in ash islands
 
-                for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
-                    Main.tile[ashIslandTilePlacementX, y].LiquidAmount = 0;
+                    // Small holes
+                    double holeFrequency = 0.00005 / numIslands;
+                    for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * holeFrequency); j++)
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 30, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
 
-                for (int y = ashIslandGenLimiter; y < Main.maxTilesY; y++)
-                {
-                    Main.tile[ashIslandTilePlacementX, y].Clear(TileDataType.All);
-                    Main.tile[ashIslandTilePlacementX, y].Get<TileWallWireStateData>().HasTile = true;
-                    Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
+                    // Place smaller hellstone splotches in the ash island
+                    // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
+                    double hellstoneFrequency = 0.0002 / numIslands;
+                    for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * hellstoneFrequency); j++)
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit, Main.maxTilesY), WorldGen.genRand.Next(1, 5), WorldGen.genRand.Next(2, 5), TileID.Hellstone);
                 }
             }
+            else
+            {
+                int ashIslandTilePlacementX = ashIslandX;
+                int ashIslandTilePlacementX2 = ashIslandX2;
+                int ashIslandGenLimiter = Main.maxTilesY - 1;
+                bool ashIslandGenLimitHit = false;
+                Liquid.QuickWater(-2);
+                for (; ashIslandGenLimiter < Main.maxTilesY - 1 || ashIslandTilePlacementX < ashIslandTilePlacementX2; ashIslandTilePlacementX++)
+                {
+                    // Less random ash island terrain to make unmodified traversal less annoying
+                    if (!ashIslandGenLimitHit)
+                    {
+                        // Steeper ash island edges
+                        ashIslandGenLimiter -= WorldGen.genRand.Next(1, 4);
+                        if (ashIslandGenLimiter < ashIslandDepthLimit)
+                            ashIslandGenLimitHit = true;
+                    }
+                    else if (ashIslandTilePlacementX >= ashIslandTilePlacementX2)
+                    {
+                        // Steeper ash island edges
+                        ashIslandGenLimiter += WorldGen.genRand.Next(1, 4);
+                        if (ashIslandGenLimiter > Main.maxTilesY - 1)
+                            ashIslandGenLimiter = Main.maxTilesY - 1;
+                    }
+                    else
+                    {
+                        if ((ashIslandTilePlacementX <= Main.maxTilesX / 2 - 5 || ashIslandTilePlacementX >= Main.maxTilesX / 2 + 5) && WorldGen.genRand.NextBool(4))
+                        {
+                            if (WorldGen.genRand.NextBool(3))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                            else if (WorldGen.genRand.NextBool(6))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                            else if (WorldGen.genRand.NextBool(8))
+                                ashIslandGenLimiter += WorldGen.genRand.Next(-4, 5);
+                        }
 
-            // Place smaller hellstone splotches in the ash island
-            // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
-            for (int i = 0; i < (int)((double)(Main.maxTilesX * Main.maxTilesY) * 0.0002); i++)
-                WorldGen.TileRunner(WorldGen.genRand.Next(ashIslandX, ashIslandX2), WorldGen.genRand.Next(Main.maxTilesY - 140, Main.maxTilesY), WorldGen.genRand.Next(1, 4), WorldGen.genRand.Next(2, 4), TileID.Hellstone);
+                        if (ashIslandGenLimiter < ashIslandHeightLimit)
+                            ashIslandGenLimiter = ashIslandHeightLimit;
+
+                        if (ashIslandGenLimiter > ashIslandDepthLimit)
+                            ashIslandGenLimiter = ashIslandDepthLimit;
+                    }
+
+                    for (int y = ashIslandGenLimiter; y > ashIslandGenLimiter - 10; y--)
+                        Main.tile[ashIslandTilePlacementX, y].LiquidAmount = 0;
+
+                    for (int y = ashIslandGenLimiter; y < Main.maxTilesY; y++)
+                    {
+                        Main.tile[ashIslandTilePlacementX, y].Clear(TileDataType.All);
+                        Main.tile[ashIslandTilePlacementX, y].Get<TileWallWireStateData>().HasTile = true;
+                        Main.tile[ashIslandTilePlacementX, y].TileType = TileID.Ash;
+                    }
+                }
+            }
 
             // More cursed magic water function
             Liquid.QuickWater(-2);
@@ -202,7 +561,7 @@ namespace CalamityMod.World
             // Create grass on ash
             for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
             {
-                for (int y = Main.maxTilesY - 300; y < ashIslandDepthLimit + 20; y++)
+                for (int y = Main.maxTilesY - 300; y < ashIslandDepthLimit + 30; y++)
                 {
                     Main.tile[x, y].LiquidAmount = 0;
 
@@ -218,7 +577,7 @@ namespace CalamityMod.World
             // Place ash trees
             for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
             {
-                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 20; y++)
+                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 30; y++)
                 {
                     if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
                         WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
@@ -253,57 +612,89 @@ namespace CalamityMod.World
                     }
                 }
             }
+
+            // Place Geyser Traps on ash islands
+            if (!WorldGen.remixWorldGen)
+            {
+                // Small = 12.6 Medium = 19.2 Large = 25.2
+                double trapFrequency = (double)Main.maxTilesX * 0.003;
+                if (WorldGen.noTrapsWorldGen)
+                    trapFrequency = ((!WorldGen.tenthAnniversaryWorldGen && !WorldGen.notTheBees) ? (trapFrequency * 100D) : (trapFrequency * 5D));
+                else if (WorldGen.getGoodWorldGen)
+                    trapFrequency *= 1.5;
+
+                if (Main.starGame)
+                    trapFrequency *= Main.starGameMath(0.2);
+
+                int maxTrapPlacementAttempts = 1150;
+                for (int trapIndex = 0; (double)trapIndex < trapFrequency; trapIndex++)
+                {
+                    for (int trapIndex2 = 0; trapIndex2 < maxTrapPlacementAttempts; trapIndex2++)
+                    {
+                        int trapPlacementX = WorldGen.genRand.Next(ashIslandX, ashIslandX2);
+                        int trapPlacementY = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 100);
+
+                        if (GeyserTraps(trapPlacementX, trapPlacementY))
+                            break;
+                    }
+                }
+            }
         }
 
-        public static void RemoveLavaFromAshIsland()
+        private static bool GeyserTraps(int geyserX, int geyserY)
         {
-            // Settle liquids again because the Sunken Sea doesn't get liquids settled because the gen step for settling liquids the final time happens before the Sunken Sea
-            Liquid.worldGenTilesIgnoreWater(ignoreSolids: true);
-            Liquid.QuickWater(3);
-            WorldGen.WaterCheck();
-            int attempts = 0;
-            Liquid.quickSettle = true;
-            int maxAttempts = 10;
-            while (attempts < maxAttempts)
+            int geyserPlacementY = geyserY;
+
+            while (!WorldGen.SolidTile(geyserX, geyserPlacementY))
             {
-                attempts++;
-                int liquidAmount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-                int tries = liquidAmount * 5;
-                while (Liquid.numLiquid > 0)
-                {
-                    tries--;
-                    if (tries < 0)
-                        break;
-
-                    if (Liquid.numLiquid + LiquidBuffer.numLiquidBuffer > liquidAmount)
-                        liquidAmount = Liquid.numLiquid + LiquidBuffer.numLiquidBuffer;
-
-                    Liquid.UpdateLiquid();
-                }
-
-                WorldGen.WaterCheck();
+                geyserPlacementY++;
+                if (geyserPlacementY > Main.maxTilesY - 10)
+                    return false;
             }
 
-            Liquid.quickSettle = false;
-            Liquid.worldGenTilesIgnoreWater(ignoreSolids: false);
-            Main.tileSolid[TileID.RollingCactus] = false;
+            geyserPlacementY--;
 
-            // REMOVE THE FUCKING LAVA
-            int ashIslandX = (int)((double)Main.maxTilesX * 0.38);
-            int ashIslandX2 = (int)((double)Main.maxTilesX * 0.62);
-            int ashIslandDepthLimit = Main.maxTilesY - 135;
-            for (int x = ashIslandX; x < ashIslandX2; x++)
+            if (!WorldGen.InWorld(geyserX, geyserPlacementY, 3))
+                return false;
+
+            if (Main.tile[geyserX, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 2].HasUnactuatedTile)
+                return false;
+
+            if (Main.tile[geyserX + 1, geyserPlacementY].HasTile)
+                return false;
+
+            for (int k = geyserX; k <= geyserX + 1; k++)
             {
-                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit; y++)
-                    Main.tile[x, y].LiquidAmount = 0;
+                int j2 = geyserPlacementY + 1;
+                if (!WorldGen.SolidTile(k, j2))
+                    return false;
             }
+
+            int geyserPlacementY2 = WorldGen.genRand.Next(2);
+            for (int l = 0; l < 2; l++)
+            {
+                Main.tile[geyserX + l, geyserPlacementY].Get<TileWallWireStateData>().HasTile = true;
+                Main.tile[geyserX + l, geyserPlacementY].TileType = TileID.GeyserTrap;
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameX = (short)(18 * l + 36 * geyserPlacementY2);
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameY = 0;
+            }
+
+            return true;
         }
 
         private static void AddHellHouses()
         {
             // Original tower gen area was the outer quarters of the underworld
             // New tower gen area is the outer thirds of the underworld
-            int towerGenArea = (int)((double)Main.maxTilesX * 0.33);
+            int towerGenArea = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.25 : 0.33));
 
             // Generate towers
             for (int i = 100; i < Main.maxTilesX - 100; i++)
@@ -334,18 +725,61 @@ namespace CalamityMod.World
                     // Move index further along to keep towers spread apart
                     // Original min and max values were, respectively, 30 and 130
                     // New min and max values are, respectively, 30 and 60
-                    i += WorldGen.genRand.Next(30, 60);
+                    i += WorldGen.genRand.Next(30, WorldGen.remixWorldGen ? 130 : 60);
 
                     // Randomly add more distance between towers
                     // Original max value was 200
                     // New max value is 50
                     if (WorldGen.genRand.NextBool(10))
-                        i += WorldGen.genRand.Next(0, 50);
+                        i += WorldGen.genRand.Next(WorldGen.remixWorldGen ? 200 : 50);
+                }
+            }
+
+            if (!WorldGen.remixWorldGen)
+            {
+                // Generate some small houses on the ash island
+                int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
+                int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
+                int ashIslandDistance = ashIslandX2 - ashIslandX;
+                int flatDistanceBetweenHellHouses = ashIslandDistance / 3;
+
+                // Keep track of world size to adjust house distances
+                float houseDistanceMult = Main.maxTilesX / 4200f;
+                int maxRandomDistanceBetweenHouses = (int)(75 * houseDistanceMult);
+
+                // ashIslandX + 100 places the first hell house at the perfect position on the left shore of the ash island
+                // Add some random variance so that it doesn't feel so artificial
+                int firstHouseLocation = ashIslandX + 100 + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
+
+                // Max amount of houses generated on ash island
+                int maxHouses = 3;
+                int placedHouses = 0;
+                for (int i = firstHouseLocation; i < ashIslandX2 - 100; i++)
+                {
+                    // Start searching at Main.maxTilesY - 130 because ashIsland's max depth is Main.maxTilesY - 135
+                    int hellHouseGenY = Main.maxTilesY - 130;
+                    while (Main.tile[i, hellHouseGenY].HasTile || Main.tile[i, hellHouseGenY].LiquidAmount > 0)
+                        hellHouseGenY--;
+
+                    if (Main.tile[i, hellHouseGenY + 1].HasTile)
+                    {
+                        // Place house
+                        // TODO -- Stip's houses will be generated here eventually
+                        //WorldGen.HellHouse(i, hellHouseGenY);
+
+                        // Move index further along to keep houses spread apart
+                        i += flatDistanceBetweenHellHouses + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
+
+                        // Increment placed houses index and break loop once enough are placed
+                        placedHouses++;
+                        if (placedHouses >= maxHouses)
+                            break;
+                    }
                 }
             }
 
             // Placing torches in towers
-            float torchAmountMult = Main.maxTilesX / 4200;
+            float torchAmountMult = Main.maxTilesX / 4200f;
             for (int torchIndex = 0; (float)torchIndex < 200f * torchAmountMult; torchIndex++)
             {
                 int attempts = 0;

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Critters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -11,16 +10,14 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
 using Terraria.DataStructures;
-using CalamityMod.Particles;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class LostShoal : ModNPC
     {
-        public static Texture2D RedTexture;
-        public static Texture2D BlueTexture;
-        public static Texture2D GoldTexture;
+        public static Asset<Texture2D> RedTexture;
+        public static Asset<Texture2D> BlueTexture;
+        public static Asset<Texture2D> GoldTexture;
 
         public float RandomOpacityOffset;
         public ref float Variant => ref NPC.ai[1];
@@ -35,18 +32,20 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 3
         }
 
+        public override void Load()
+        {
+            RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed");
+            BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue");
+            GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold");
+        }
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 8;
             NPCID.Sets.TrailingMode[Type] = 1;
-            if (!Main.dedServ)
-            {
-                RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
-                BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
-                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold", AssetRequestMode.ImmediateLoad).Value;
-            }
             NPCID.Sets.CountsAsCritter[Type] = true;
         }
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
@@ -88,6 +87,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
                 NPC.catchItem = ItemID.GoldCoin;
+                NPC.value = 10000;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);
@@ -368,6 +368,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return true;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
@@ -399,13 +401,13 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (Variant)
             {
                 case (int)ShoalColor.Blue:
-                    texture = BlueTexture;
+                    texture = BlueTexture.Value;
                     break;
                 case (int)ShoalColor.Red:
-                    texture = RedTexture;
+                    texture = RedTexture.Value;
                     break;
                 case (int)ShoalColor.Gold:
-                    texture = GoldTexture;
+                    texture = GoldTexture.Value;
                     break;
             }
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));

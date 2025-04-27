@@ -1378,6 +1378,10 @@ namespace CalamityMod.CalPlayer
                     // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
                     Player.AddBuff(BuffID.CursedInferno, 60);
                 }
+                else if (proj.type == ProjectileID.DesertDjinnCurse)
+                {
+                    Player.AddBuff(BuffID.Cursed, 180);
+                }
                 else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
                 {
                     // 66.6% chance of Poison for 3 seconds, 1 guaranteed second of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)

@@ -181,25 +181,14 @@ namespace CalamityMod.Systems
                     };
 
                     // place each piece of the sunken sea based on the above positons
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX - 100, sunkenSeaY + 75, true);
-                    SunkenSea.PlaceRadiantReefs(sunkenSeaX + 100, sunkenSeaY + 75, false);
-                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceRadiantReefs(sunkenSeaX, sunkenSeaY + 110);
+                    SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
-                    SunkenSea.PlaceSunkenSeaAmbience();
-                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
-                }));
-            }
-
-            // Remove lava from ash island after it's been settled
-            int ashIslandLavaRemovalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Tile Cleanup"));
-            if (ashIslandLavaRemovalIndex != -1)
-            {
-                tasks.Insert(ashIslandLavaRemovalIndex + 1, new PassLegacy("Ash Island Lava Removal", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AshIslandLavaRemoval").Value;
-                    CustomUnderworld.RemoveLavaFromAshIsland();
+                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
 

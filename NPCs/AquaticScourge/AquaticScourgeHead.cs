@@ -34,6 +34,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AquaticScourge
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class AquaticScourgeHead : ModNPC
     {

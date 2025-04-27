@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 22;
             Item.height = 22;
-            Item.damage = 28;
+            Item.damage = 18;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Ammo
         public override void AddRecipes()
         {
             CreateRecipe(999).
-                AddIngredient(ItemID.EmptyBullet, 999).
+                AddIngredient(ItemID.MoonlordBullet, 999).
                 AddIngredient<CosmiliteBar>().
                 AddTile<CosmicAnvil>().
                 Register();

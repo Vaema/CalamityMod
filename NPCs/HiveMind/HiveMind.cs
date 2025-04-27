@@ -377,7 +377,7 @@ namespace CalamityMod.NPCs.HiveMind
             int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
-                int type = NPCID.EaterofSouls;
+                int type = 0;
                 int choice = masterMode ? 1 : -1;
                 do
                 {
@@ -386,25 +386,26 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         case 0:
                         case 1:
-                            type = NPCID.EaterofSouls;
+                            type = NPC.CountNPCS(NPCID.EaterofSouls) < 2 ? NPCID.EaterofSouls : 0;
                             break;
 
                         case 2:
-                            type = NPCID.DevourerHead;
+                            type = NPC.CountNPCS(NPCID.DevourerHead) < 2 ? NPCID.DevourerHead : 0;
                             break;
 
                         case 3:
                         case 4:
-                            type = ModContent.NPCType<DankCreeper>();
+                            type = NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < 2 ? ModContent.NPCType<DankCreeper>() : 0;
                             break;
 
                         default:
+                            type = -1;
                             break;
                     }
                 }
-                while (NPC.CountNPCS(type) < 2 && choice < 5);
+                while (type == 0);
 
-                if (choice < 5)
+                if (type > 0)
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + Main.rand.Next(NPC.width), (int)NPC.position.Y + Main.rand.Next(NPC.height), type);
             }
 
@@ -499,6 +500,25 @@ namespace CalamityMod.NPCs.HiveMind
                         int goreAmount = 7;
                         for (int i = 1; i <= goreAmount; i++)
                             Gore.NewGore(NPC.GetSource_FromAI(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("HiveMindGore" + i).Type, 1f);
+                    }
+
+                    for (int i = 0; i < 20; i++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].velocity *= 3f;
+                        if (Main.rand.NextBool())
+                        {
+                            Main.dust[dust].scale = 0.5f;
+                            Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                        }
+                    }
+                    for (int j = 0; j < 35; j++)
+                    {
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 3f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].velocity *= 5f;
+                        dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].velocity *= 2f;
                     }
 
                     SoundEngine.PlaySound(SoundID.NPCDeath1, NPC.Center);
@@ -770,7 +790,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (nextState == 0)
                     {
                         NPC.TargetClosest();
-                        if (revenge && lifeRatio < 0.5f)
+                        if (revenge && lifeRatio < 0.6f)
                         {
                             if (death)
                             {
@@ -779,7 +799,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 while (nextState == previousState);
                                 previousState = nextState;
                             }
-                            else if (lifeRatio < 0.25f)
+                            else if (lifeRatio < 0.3f)
                             {
                                 do
                                     nextState = Main.rand.Next(3, 6);
@@ -947,7 +967,7 @@ namespace CalamityMod.NPCs.HiveMind
                         NPC.velocity = Vector2.Zero;
                         dashStarted = false;
 
-                        if (revenge && lifeRatio < 0.53f && lungesPerformed == 0 && rainDashesPerformed == 0)
+                        if (revenge && lifeRatio < 0.6f && lungesPerformed == 0 && rainDashesPerformed == 0)
                         {
                             state = nextState;
                             nextState = 0;
@@ -1246,8 +1266,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     NPC.ai[3] = NPC.life;
 
-                    int maxDarkHearts = ((revenge && lifeRatio < 0.25f) || death) ? 2 : 1;
-                    if (NPC.CountNPCS(ModContent.NPCType<DarkHeart>()) < maxDarkHearts)
+                    if (!NPC.AnyNPCs(ModContent.NPCType<DarkHeart>()))
                     {
                         SoundEngine.PlaySound(SoundID.NPCDeath22, NPC.Center);
 
@@ -1272,8 +1291,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));
-                            int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height - 32));
+                            int x = (int)(NPC.position.X + Main.rand.Next(NPC.width));
+                            int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height));
                             int type = ModContent.NPCType<DarkHeart>();
                             int tenPercentMinions = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, type);
                             Main.npc[tenPercentMinions].SetDefaults(type);
@@ -1343,9 +1362,15 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(60))
+                    if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 3)
+                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
+                    }
+
+                    if (Main.rand.NextBool(60))
+                    {
+                        if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                     }
 

@@ -4132,9 +4132,9 @@ namespace CalamityMod.NPCs
                         {
                             npc.TargetClosest();
 
-                            float velocity = Main.getGoodWorld ? 10f : (Main.masterMode || BossRushEvent.BossRushActive) ? 8f : 6f;
+                            float velocity = Main.getGoodWorld ? 12f : (Main.masterMode || BossRushEvent.BossRushActive) ? 10.5f : 9f;
                             if (npc.ai[1] == 70f)
-                                velocity *= 0.6f;
+                                velocity *= 0.4f;
 
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         }
@@ -6209,6 +6209,52 @@ namespace CalamityMod.NPCs
 
                     break;
 
+                case NPCID.DevourerHead:
+                case NPCID.FaceMonster:
+                    target.AddBuff(BuffID.Weak, 180);
+                    break;
+
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                case NPCID.UndeadViking:
+                    target.AddBuff(BuffID.BrokenArmor, 180);
+                    break;
+
+                case NPCID.ArmoredViking:
+                    target.AddBuff(BuffID.BrokenArmor, 300);
+                    break;
+
+                case NPCID.Ghost:
+                case NPCID.PirateGhost:
+                    target.AddBuff(BuffID.Cursed, 120);
+                    target.AddBuff(BuffID.Silenced, 120);
+                    break;
+
+                case NPCID.ChaosElemental:
+                    target.AddBuff(BuffID.Silenced, 180);
+                    break;
+
+                case NPCID.IlluminantBat:
+                    target.AddBuff(BuffID.Confused, 120);
+                    break;
+
+                case NPCID.IlluminantSlime:
+                    target.AddBuff(BuffID.Slow, 180);
+                    break;
+
+                case NPCID.Piranha:
+                    target.AddBuff(BuffID.Bleeding, 180);
+                    break;
+
+                case NPCID.Arapaima:
+                case NPCID.BloodFeeder:
+                    target.AddBuff(BuffID.Bleeding, 300);
+                    break;
+
+                case NPCID.ToxicSludge:
+                    target.AddBuff(BuffID.Slow, 300);
+                    break;
+
                 case NPCID.ShadowFlameApparition:
                     target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
@@ -6604,9 +6650,6 @@ namespace CalamityMod.NPCs
                     modifiers.SourceDamage *= 0.4f;
             }
 
-            if (PierceResistList.Includes(npc.type))
-                PierceResistGlobal(projectile, npc, ref modifiers);
-
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.1f;
 
@@ -6616,29 +6659,8 @@ namespace CalamityMod.NPCs
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
                 EditWhipTagDamage(projectile, npc, ref modifiers);
         }
+        #endregion  
 
-        // Generalized pierce resistance that stacks with all other resistances for some specific bosses defined in a list.
-        // The actual resistance formula isn't really a problem, but the implementation of this desperately needs refactoring.
-        private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
-        {
-            // Thanatos segments do not trigger pierce resistance if they are closed
-            if (ThanatosIDList.Includes(npc.type) && unbreakableDR)
-                return;
-
-            // Isolates projectiles which ignore pierce resist only on Leviathan and Astrum Aureus
-            if ((npc.type == NPCType<Leviathan.Leviathan>() || npc.type == NPCType<AstrumAureus.AstrumAureus>()) && PierceResistExceptionLeviAureusList.Includes(projectile.type))
-                return;
-
-            float damageReduction = projectile.Calamity().timesPierced * CalamityGlobalProjectile.PierceResistHarshness;
-            if (damageReduction > CalamityGlobalProjectile.PierceResistCap)
-                damageReduction = CalamityGlobalProjectile.PierceResistCap;
-
-            modifiers.FinalDamage *= 1f - damageReduction;
-
-            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !PierceResistExceptionList.Includes(projectile.type) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
-                projectile.Calamity().timesPierced++;
-        }
-        #endregion
         #region OnHitBy overrides
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
         {
@@ -6666,16 +6688,9 @@ namespace CalamityMod.NPCs
             }
 
         }
-
-        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damagedone)
-        {
-            if (IsArmored())
-            {
-                CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
-            }
-        }
         #endregion
-        #region Whip Tag 
+
+        #region Whip Tag
         // Make whip tags multiplicative, by effectively reversing the process done to it
         private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
@@ -6792,7 +6807,8 @@ namespace CalamityMod.NPCs
                         NPCType<PhantomSpiritL>()
                     });
 
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, randomType);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, randomType);
                 }
             }
 
@@ -7144,6 +7160,54 @@ namespace CalamityMod.NPCs
             }
         }
 
+        public static void AttemptToSpawnLavaNPCs(Player player)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            // For now, we only need this for the Basalt Gully, but this may be used for the crags in the future
+            if (!player.Calamity().ZoneBasaltGully)
+                return;
+
+            int spawnRate = 400;
+            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
+
+            // Enforce a limit on the amount of enemies that can appear.
+            if (player.nearbyActiveNPCs >= maxSpawnCount)
+                return;
+
+            float playerCenterX = player.Center.X / 16f;
+            float playerCenterY = player.Center.Y / 16f;
+            for (int i = 0; i < 8; i++)
+            {
+                int checkPositionX = (int)(playerCenterX + Main.rand.Next(30, 54) * Main.rand.NextBool().ToDirectionInt());
+                int checkPositionY = (int)(playerCenterY + Main.rand.Next(24, 45) * Main.rand.NextBool().ToDirectionInt());
+                Vector2 checkPosition = new Vector2(checkPositionX, checkPositionY);
+
+                Tile aboveSpawnTile = CalamityUtils.ParanoidTileRetrieval(checkPositionX, checkPositionY - 1);
+
+               if (aboveSpawnTile.LiquidAmount < 255 || aboveSpawnTile.LiquidType != LiquidID.Lava || Collision.SolidCollision((checkPosition - new Vector2(2f, 2f)).ToWorldCoordinates(), 4, 4) || player.nearbyActiveNPCs >= maxSpawnCount || !Main.rand.NextBool(spawnRate))
+                    continue;
+
+                WeightedRandom<int> pool = new WeightedRandom<int>();
+                pool.Add(NPCID.None, 0f);
+                pool.Add(NPCType<PodobooKoi>(), 0.25f);
+
+                int typeToSpawn = pool.Get();
+                if (typeToSpawn != NPCID.None)
+                {
+                    int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
+                    {
+                        Main.npc[spawnedNPC].position.Y -= 8f;
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
+                        return;
+                    }
+                }
+            }
+        }
+
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             bool calamityBiomeZone = spawnInfo.Player.Calamity().ZoneAbyss ||
@@ -7326,6 +7390,19 @@ namespace CalamityMod.NPCs
                 DeerclopsAI.borderScalar = 0f;
                 DeerclopsAI.innerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
                 DeerclopsAI.outerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
+            }
+
+            // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena
+            if (npc.boss)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (n.type == NPCID.BlazingWheel || n.type == NPCID.SpikeBall)
+                    {
+                        n.active = false;
+                        n.netUpdate = true;
+                    }
+                }
             }
 
             if (npc.type != NPCID.VoodooDemon)

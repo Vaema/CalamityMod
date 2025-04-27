@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.UseSound = SoundID.Item33;
+            Item.UseSound = SoundID.Item158;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<UltimaBowProjectile>();
             Item.shootSpeed = 18f;

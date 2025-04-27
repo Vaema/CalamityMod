@@ -7,6 +7,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -267,8 +268,11 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
-                        int heal = 25;
-                        Owner.HealPlayer(heal);
+                        if (!chosenTarget.SpawnedFromStatue)
+                        {
+                            int heal = Math.Max(25 - (int)Projectile.ai[1], 10);
+                            Owner.HealPlayer(heal);
+                        }
 
                         spawnPullBlood = false;
                     }
@@ -339,71 +343,69 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!target.Calamity().pacified)
+
+            if (!stuckInTarget && canStick && !target.Calamity().pacified)
             {
-                if (!stuckInTarget && canStick)
+                for (int i = 0; i <= 8; i++)
                 {
-                    for (int i = 0; i <= 8; i++)
-                    {
-                        Vector2 sparkVelocity = Projectile.velocity * 0.5f;
+                    Vector2 sparkVelocity = Projectile.velocity * 0.5f;
 
-                        float sparkScale1 = Main.rand.NextFloat(0.3f, 0.8f);
-                        Vector2 sparkvelocity1 = sparkVelocity.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.5f, 0.7f);
-                        Particle spark1 = new LineParticle(Projectile.Center, sparkvelocity1, false, 40, sparkScale1, Main.rand.NextBool() ? bColor : Color.Green);
-                        GeneralParticleHandler.SpawnParticle(spark1);
+                    float sparkScale1 = Main.rand.NextFloat(0.3f, 0.8f);
+                    Vector2 sparkvelocity1 = sparkVelocity.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.5f, 0.7f);
+                    Particle spark1 = new LineParticle(Projectile.Center, sparkvelocity1, false, 40, sparkScale1, Main.rand.NextBool() ? bColor : Color.Green);
+                    GeneralParticleHandler.SpawnParticle(spark1);
 
-                        float sparkScale2 = Main.rand.NextFloat(0.4f, 1f);
-                        Vector2 sparkvelocity2 = sparkVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.9f, 1.6f);
-                        Particle spark2 = new LineParticle(Projectile.Center, sparkvelocity2, false, 40, sparkScale2, Main.rand.NextBool() ? bColor : Color.Green);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                    float sparkScale2 = Main.rand.NextFloat(0.4f, 1f);
+                    Vector2 sparkvelocity2 = sparkVelocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.9f, 1.6f);
+                    Particle spark2 = new LineParticle(Projectile.Center, sparkvelocity2, false, 40, sparkScale2, Main.rand.NextBool() ? bColor : Color.Green);
+                    GeneralParticleHandler.SpawnParticle(spark2);
 
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, sparkvelocity2, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
-                        dust.noGravity = true;
-                    }
-
-                    time = 1;
-                    collideWithTiles = false;
-                    canDamage = false;
-                    placementDistance = -Vector2.Distance(target.Center, Projectile.Center);
-                    placementVelocity = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    placementCenter = placementVelocity * (placementDistance * 0.01f);
-                    chosenTarget = target;
-                    stuckInTarget = true;
-                    canStick = false;
-                    storedVelocity = Projectile.velocity;
-                    Projectile.velocity = Vector2.Zero;
-                    SoundStyle sound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
-                    SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
-
-                    if (pullCheckValid)
-                    {
-                        chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
-                        hasLatchedTarget = true;
-                        if ((chosenTarget.lifeMax >= Projectile.damage * 28f) || chosenTarget.boss)
-                            strongEnemy = true;
-                        SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
-                        SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
-                        if (strongEnemy)
-                        {
-                            SoundStyle sound8 = new("CalamityMod/Sounds/Item/MetalEcho");
-                            SoundEngine.PlaySound(sound8 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.8f, 0.9f) }, Projectile.Center);
-                        }
-                    }
-                    else
-                        normalHit = true;
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, sparkvelocity2, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                    dust.noGravity = true;
                 }
 
-                bool hitTarget = chosenTarget != null && target == chosenTarget;
-                modifiers.SourceDamage *= hitTarget ? (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
-                if (hitTarget && pullingTarget)
-                {
-                    chosenTarget.velocity = -storedVelocity * 3;
-                    modifiers.SetInstantKill();
-                }
+                time = 1;
+                collideWithTiles = false;
+                canDamage = false;
+                placementDistance = -Vector2.Distance(target.Center, Projectile.Center);
+                placementVelocity = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
+                placementCenter = placementVelocity * (placementDistance * 0.01f);
+                chosenTarget = target;
+                stuckInTarget = true;
+                canStick = false;
+                storedVelocity = Projectile.velocity;
+                Projectile.velocity = Vector2.Zero;
+                SoundStyle sound = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit2");
+                SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
 
-                if (!pullCheckValid)
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+                if (pullCheckValid)
+                {
+                    chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
+                    hasLatchedTarget = true;
+                    if ((chosenTarget.lifeMax >= Projectile.damage * 28f) || chosenTarget.boss)
+                        strongEnemy = true;
+                    SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
+                    SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                    if (strongEnemy)
+                    {
+                        SoundStyle sound8 = new("CalamityMod/Sounds/Item/MetalEcho");
+                        SoundEngine.PlaySound(sound8 with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.8f, 0.9f) }, Projectile.Center);
+                    }
+                }
+                else
+                    normalHit = true;
             }
+
+            bool hitTarget = chosenTarget != null && target == chosenTarget;
+            modifiers.SourceDamage *= hitTarget ? (ripped ? 2 : Projectile.numHits < 1 ? 0.01f : 1) : 0.2f;
+            if (hitTarget && pullingTarget)
+            {
+                chosenTarget.velocity = -storedVelocity * 3;
+                modifiers.SetInstantKill();
+            }
+
+            if (!pullCheckValid)
+                target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
         }
         public override bool? CanDamage() => canDamage ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25 * (!spawnPullBlood ? 4 : 1), targetHitbox);

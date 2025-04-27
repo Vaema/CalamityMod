@@ -1358,7 +1358,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 // Materials
                 normalOnly.Add(ItemID.Stinger, 1, 3, 5);
                 normalOnly.Add(ModContent.ItemType<PlagueCellCanister>(), 1, 15, 20);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InfectedArmorPlating>(), 1, 25, 30));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<InfectedArmorPlating>(), 1, 30, 40));
 
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ToxicHeart>()));

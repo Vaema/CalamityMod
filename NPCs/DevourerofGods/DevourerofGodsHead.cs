@@ -2628,7 +2628,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 45, 55));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 65, 80));
                 normalOnly.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 150, 250);
 
                 // Equipment
@@ -2670,7 +2670,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GFBOnly.Add(DropHelper.PerPlayer(ItemID.JungleTorch, dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ItemID.MushroomTorch, dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ItemID.ShimmerTorch, dropRate, dropMin, dropMax), true);
-                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CausticTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<KelpTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ThermalTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidTorch>(), dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax), true);
                 GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax), true);
