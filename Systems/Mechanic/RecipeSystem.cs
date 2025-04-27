@@ -1214,7 +1214,7 @@ namespace CalamityMod.Systems
             #region Prismatic Guppy
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyItem>();
+            r.AddIngredient<PrismaticGuppyBlueItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
