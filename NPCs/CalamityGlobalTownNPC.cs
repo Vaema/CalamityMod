@@ -190,6 +190,7 @@ namespace CalamityMod.NPCs
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
+            "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -1248,7 +1249,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
-                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50))
+                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
                 .Add(ItemType<LanternCenter>())
                 .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
                 .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))

@@ -6209,6 +6209,52 @@ namespace CalamityMod.NPCs
 
                     break;
 
+                case NPCID.DevourerHead:
+                case NPCID.FaceMonster:
+                    target.AddBuff(BuffID.Weak, 180);
+                    break;
+
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                case NPCID.UndeadViking:
+                    target.AddBuff(BuffID.BrokenArmor, 180);
+                    break;
+
+                case NPCID.ArmoredViking:
+                    target.AddBuff(BuffID.BrokenArmor, 300);
+                    break;
+
+                case NPCID.Ghost:
+                case NPCID.PirateGhost:
+                    target.AddBuff(BuffID.Cursed, 120);
+                    target.AddBuff(BuffID.Silenced, 120);
+                    break;
+
+                case NPCID.ChaosElemental:
+                    target.AddBuff(BuffID.Silenced, 180);
+                    break;
+
+                case NPCID.IlluminantBat:
+                    target.AddBuff(BuffID.Confused, 120);
+                    break;
+
+                case NPCID.IlluminantSlime:
+                    target.AddBuff(BuffID.Slow, 180);
+                    break;
+
+                case NPCID.Piranha:
+                    target.AddBuff(BuffID.Bleeding, 180);
+                    break;
+
+                case NPCID.Arapaima:
+                case NPCID.BloodFeeder:
+                    target.AddBuff(BuffID.Bleeding, 300);
+                    break;
+
+                case NPCID.ToxicSludge:
+                    target.AddBuff(BuffID.Slow, 300);
+                    break;
+
                 case NPCID.ShadowFlameApparition:
                     target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;

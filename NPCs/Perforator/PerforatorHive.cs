@@ -296,23 +296,15 @@ namespace CalamityMod.NPCs.Perforator
                         SoundEngine.PlaySound(WormSpawn, NPC.Center);
 
                         for (int i = 0; i < 16; i++)
-                        {
-                            int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
-                            Main.dust[ichorDust].velocity *= 2f;
-                            if (Main.rand.NextBool())
-                            {
-                                Main.dust[ichorDust].scale = 0.25f;
-                                Main.dust[ichorDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                            }
-                        }
+                            Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor);
 
                         for (int j = 0; j < 32; j++)
                         {
-                            int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1.5f);
+                            int bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood);
                             Main.dust[bloodDust].noGravity = true;
-                            Main.dust[bloodDust].velocity *= 3f;
-                            bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 1f);
-                            Main.dust[bloodDust].velocity *= 2f;
+                            Main.dust[bloodDust].scale = 3f;
+                            bloodDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood);
+                            Main.dust[bloodDust].scale = 2f;
                         }
                     }
                 }
@@ -350,15 +342,13 @@ namespace CalamityMod.NPCs.Perforator
 
                             for (int i = 0; i < 32; i++)
                             {
-                                int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor, 0f, 0f, 100, default, 1f);
+                                int ichorDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Ichor);
                                 float dustVelocityYAdd = Math.Abs(Main.dust[ichorDust].velocity.Y) * 0.5f;
                                 if (Main.dust[ichorDust].velocity.Y < 0f)
                                     Main.dust[ichorDust].velocity.Y = 2f + dustVelocityYAdd;
+
                                 if (Main.rand.NextBool())
-                                {
-                                    Main.dust[ichorDust].scale = 0.25f;
-                                    Main.dust[ichorDust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                                }
+                                    Main.dust[ichorDust].scale = 0.5f;
                             }
 
                             bool ichorBlobBigWormPhase = wormsAlive > 0 && large;
@@ -460,7 +450,6 @@ namespace CalamityMod.NPCs.Perforator
                                 int ichorDust = Dust.NewDust(NPC.position, 12, 12, DustID.Ichor);
                                 Main.dust[ichorDust].position = projectileSpawnLocation;
                                 Main.dust[ichorDust].velocity = projectileVelocityRandomized;
-                                Main.dust[ichorDust].scale = 1.4f;
                             }
                         }
                         else
@@ -470,7 +459,7 @@ namespace CalamityMod.NPCs.Perforator
                                 int bloodDust = Dust.NewDust(NPC.position, 12, 12, DustID.Blood);
                                 Main.dust[bloodDust].position = projectileSpawnLocation;
                                 Main.dust[bloodDust].velocity = projectileVelocityRandomized;
-                                Main.dust[bloodDust].scale = 1.4f;
+                                Main.dust[bloodDust].scale = 3f;
                             }
                         }
 

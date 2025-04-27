@@ -148,7 +148,7 @@ namespace CalamityMod.NPCs.Perforator
             {
                 float velocityScale = (death ? 0.15f : 0.1f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = (death ? 0.1f : 0.07f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 

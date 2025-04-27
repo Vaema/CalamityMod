@@ -5658,6 +5658,9 @@ namespace CalamityMod.CalPlayer
         // It also starts the speedrun timer if applicable.
         public override void OnEnterWorld()
         {
+            if (CalamityClientConfig.Instance.StutterFix)
+                WorldGen.SectionTileFrameWithCheck(0, 0, Main.maxTilesX, Main.maxTilesY);
+
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 EnterWorldSync();
 
@@ -5672,9 +5675,7 @@ namespace CalamityMod.CalPlayer
 
             // Set a random delay between 12 and 20 seconds. When this delay hits zero, startup messages display
             if (showStartupMessages)
-            {
                 startMessageDisplayDelay = Main.rand.Next(CalamityUtils.SecondsToFrames(12), CalamityUtils.SecondsToFrames(20) + 1);
-            }
         }
 
         /// <summary>

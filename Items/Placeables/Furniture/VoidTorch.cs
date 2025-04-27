@@ -5,9 +5,9 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.FurnitureAbyss
+namespace CalamityMod.Items.Placeables.Furniture
 {
-    public class AbyssTorch : ModItem, ILocalizedModType
+    public class VoidTorch : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
 
         public override void SetDefaults()
         {
-            Item.DefaultToTorch(ModContent.TileType<Tiles.FurnitureAbyss.AbyssTorch>(), 0, true);
+            Item.DefaultToTorch(ModContent.TileType<Tiles.Abyss.VoidTorch>(), 0, true);
         }
 
         public override void HoldItem(Player player)
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
         {
             CreateRecipe(3).
                 AddIngredient(ItemID.Torch, 3).
-                AddIngredient<AbyssGravel>().
+                AddIngredient<Voidstone>().
                 Register();
         }
     }
