@@ -242,7 +242,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] WitchDoctorNames =
         {
             "Sok'ar",
-            "Toxin", // <@!348174404984766465> (Toxin#9598),
+            "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Khatunz", // <@!303022375191183360> (jackshiz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
