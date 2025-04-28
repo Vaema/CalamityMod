@@ -632,6 +632,7 @@ namespace CalamityMod.World
             int pillarIndexStarY = Main.maxTilesY - 200;
             int pillarIndexEndY = smoulderingStoneWallStartDepth + randomizedWallSectionsHeight;
             int pillarMidPointY = pillarIndexStarY + (pillarIndexEndY - pillarIndexStarY) / 2;
+            int pillarCutOffCheckStart = pillarMidPointY - 10;
             int pillarMinWidth = 6;
             int pillarMinWidthPerSide = pillarMinWidth / 2;
             int pillarMinStartingWidth = 18;
@@ -640,7 +641,8 @@ namespace CalamityMod.World
             int pillarY = 0;
             int pillarLeftSize = 0;
             int pillarRightSize = 0;
-            int obsidianSectionSize = 10;
+            int topTileSectionSize = 10;
+            int pillarTopTileSectionCutOff = pillarIndexStarY + topTileSectionSize;
             ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
             ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
 
@@ -666,6 +668,17 @@ namespace CalamityMod.World
                 // Start the pillar at the top of the underworld and extend down to the hellstone wall
                 for (int y = pillarIndexStarY; y <= pillarIndexEndY; y++)
                 {
+                    // The amount of walls required to stop generating the pillar when it's deeper than pillarCutoffCheckStart
+                    int pillarCutOffSize = pillarLeftSize + pillarRightSize + 2;
+
+                    // Get the amount of empty space on the left and right of the pillar's X mid point
+                    int emptySpaceOnLeft = pillarMaxWidthPerSide - pillarLeftSize;
+                    int emptySpaceOnRight = pillarMaxWidthPerSide - pillarRightSize;
+
+                    // Used for wall cleanup around top tile section
+                    int topTileSectionWallCleanupLeft = startOfPillarX + emptySpaceOnLeft + 1;
+                    int topTileSectionWallCleanupRight = endOfPillarX - emptySpaceOnRight - 1;
+
                     // Create sections of pillar
                     for (int x2 = startOfPillarX; x2 <= endOfPillarX; x2++)
                     {
@@ -673,10 +686,10 @@ namespace CalamityMod.World
                         if (Main.tile[x2, y].WallType != WallID.None)
                         {
                             // Only try to kill further pillar gen if the gen is beyond the pillar's mid point minus 10 tiles
-                            if (y > pillarMidPointY - 10)
+                            if (y > pillarCutOffCheckStart)
                                 wallsDetected++;
 
-                            if (wallsDetected > pillarLeftSize + pillarRightSize + 2)
+                            if (wallsDetected > pillarCutOffSize)
                             {
                                 tooManyWallsToPlacePillarRow = true;
                                 break;
@@ -684,18 +697,15 @@ namespace CalamityMod.World
                         }
                         else
                         {
-                            // Get the amount of empty space on the left and right
-                            int emptySpaceOnLeft = pillarMaxWidthPerSide - pillarLeftSize;
-                            int emptySpaceOnRight = pillarMaxWidthPerSide - pillarRightSize;
                             if (x2 >= startOfPillarX + emptySpaceOnLeft && x2 <= endOfPillarX - emptySpaceOnRight)
                             {
                                 Main.tile[x2, y].WallType = pillarWallID;
 
                                 // Blocks on top to hold the pillars
-                                if (y < pillarIndexStarY + obsidianSectionSize)
+                                if (y < pillarTopTileSectionCutOff)
                                 {
                                     // Clean up walls at the top so it doesn't look ugly
-                                    if (x2 <= startOfPillarX + emptySpaceOnLeft + 1 || x2 >= endOfPillarX - emptySpaceOnRight - 1 || y == pillarIndexStarY)
+                                    if (x2 <= topTileSectionWallCleanupLeft || x2 >= topTileSectionWallCleanupRight || y == pillarIndexStarY)
                                         Main.tile[x2, y].WallType = WallID.None;
 
                                     Main.tile[x2, y].Get<TileWallWireStateData>().HasTile = true;
