@@ -641,8 +641,8 @@ namespace CalamityMod.World
             int pillarLeftSize = 0;
             int pillarRightSize = 0;
             int obsidianSectionSize = 10;
-            ushort pillarTileID = TileID.StoneSlab;
-            ushort pillarWallID = WallID.RocksUnsafe3;
+            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
+            ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
 
             // Use the x tile index to find pillar locations
             for (int x = pillarIndexStartX; x < pillarIndexEndX; x += WorldGen.genRand.Next(80, pillarDistanceFromCragsLimit + 1))
