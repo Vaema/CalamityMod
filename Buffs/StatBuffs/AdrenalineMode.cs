@@ -14,6 +14,7 @@ namespace CalamityMod.Buffs.StatBuffs
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = false;
+            Main.buffNoTimeDisplay[Type] = true; // Consistency with Rage (Look at the bar instead)
             BuffID.Sets.NurseCannotRemoveDebuff[Type] = true;
         }
 
