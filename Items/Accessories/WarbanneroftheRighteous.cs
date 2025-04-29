@@ -57,8 +57,8 @@ namespace CalamityMod.Items.Accessories
             }
 
             int maxValue = (int)(MaxBonus * 100);
-            float bonus = CalculateBonus(player) - 0.6f;
-            float displayBonus = (int)((bonus + 0.6f) * 100); // Should range from 0 to the maxValue
+            float bonus = CalculateBonus(player) - 0.4f;
+            float displayBonus = (int)((bonus + 0.4f) * 100); // Should range from 0 to the maxValue
 
             if (player.Calamity().cooldowns.TryGetValue(WarbanneroftheRighteousBuff.ID, out var cooldown))
             {
