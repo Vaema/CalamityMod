@@ -1842,7 +1842,7 @@ TheAmalgam: {
 		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
-'You have no idea how it's staying together'
+		'You have no idea how it's staying together'
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }

@@ -7250,6 +7250,22 @@ namespace CalamityMod.NPCs
                 }
             }
 
+            // Fuck Chaos Elementals, overrides the vanilla spawn so they can be afk farmed once more
+            if (Main.hardMode && spawnInfo.Player.ZoneRockLayerHeight && !calamityBiomeZone)
+            {
+                // Added more tiles for them to spawn on
+                bool isChaosElementalSpawnTile =
+                    spawnInfo.SpawnTileType == TileID.Pearlstone ||
+                    spawnInfo.SpawnTileType == TileID.Pearlsand ||
+                    spawnInfo.SpawnTileType == TileID.HallowedIce ||
+                    spawnInfo.SpawnTileType == TileID.HallowedGrass ||
+                    spawnInfo.SpawnTileType == TileID.HallowHardenedSand ||
+                    spawnInfo.SpawnTileType == TileID.HallowSandstone;
+
+                if (isChaosElementalSpawnTile)
+                    pool[NPCID.ChaosElemental] = SpawnCondition.Cavern.Chance * 0.125f;
+            }
+
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
             if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
             {
