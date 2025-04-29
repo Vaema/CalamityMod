@@ -6244,8 +6244,8 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Ghost:
                 case NPCID.PirateGhost:
-                    target.AddBuff(BuffID.Cursed, 120);
-                    target.AddBuff(BuffID.Silenced, 120);
+                    target.AddBuff(BuffID.Cursed, 60);
+                    target.AddBuff(BuffID.Silenced, 180);
                     break;
 
                 case NPCID.ChaosElemental:
