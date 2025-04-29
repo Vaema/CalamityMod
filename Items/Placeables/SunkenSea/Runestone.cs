@@ -16,5 +16,15 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         }
 
         public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Runestone>());
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<RunestoneWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
+                Register();
+        }
+
     }
 }

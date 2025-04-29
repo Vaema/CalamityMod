@@ -102,6 +102,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
                 calamityGlobalNPC.newAI[3] = 0f;
+            // Sound effect for swapping between attack behaviors in phase 2
+            if (doubleWormPhase && calamityGlobalNPC.newAI[3] % aiSwitchTimer == 0f && !(deathModeEnragePhase_Head || deathModeEnragePhase_BodyAndTail))
+                SoundEngine.PlaySound(AstrumDeusHead.SplitSound with { Pitch = -0.2f, Volume = 0.9f }, player.Center);
 
             // Phase for flying at the player
             bool flyAtTarget = calamityGlobalNPC.newAI[3] >= (aiSwitchTimer * 0.5f) && startFlightPhase;
@@ -215,8 +218,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 Main.npc[headOneID].Calamity().newAI[0] = 1f;
                                 Main.npc[headOneID].velocity = Vector2.Normalize(player.Center - Main.npc[headOneID].Center) * 16f;
                                 Main.npc[headOneID].timeLeft *= 20;
-                                Main.npc[headOneID].netSpam = 0;
-                                Main.npc[headOneID].netUpdate = true;
+                                Main.npc[headOneID].ForceNetUpdate();
 
                                 // On server, immediately send the correct extra AI of this head to clients.
                                 if (Main.dedServ)
@@ -231,8 +233,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 Main.npc[headTwoID].Calamity().newAI[3] = Main.getGoodWorld ? 300f : 600f;
                                 Main.npc[headTwoID].velocity = Vector2.Normalize(player.Center - Main.npc[headTwoID].Center) * 16f;
                                 Main.npc[headTwoID].timeLeft *= 20;
-                                Main.npc[headTwoID].netSpam = 0;
-                                Main.npc[headTwoID].netUpdate = true;
+                                Main.npc[headTwoID].ForceNetUpdate();
 
                                 // On server, immediately send the correct extra AI of this head to clients.
                                 if (Main.dedServ)
@@ -327,12 +328,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.HitEffect(0, 10.0);
                     npc.checkDead();
                     npc.active = false;
-
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
+                    npc.ForceNetUpdate(false);
                 }
             }
 
@@ -372,6 +368,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 SyncCalamityNPCAIArrayPacket.Send(Main.npc[lol]);
                             }
 
+                            Main.npc[lol].ai[3] = segments + 1;
                             Main.npc[lol].ai[2] = npc.whoAmI;
                             Main.npc[lol].ai[1] = Previous;
                             Main.npc[Previous].ai[0] = lol;
@@ -497,12 +494,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (Main.npc[i].type == headType || Main.npc[i].type == bodyType || Main.npc[i].type == tailType)
                             {
                                 Main.npc[i].active = false;
-
-                                Main.npc[i].netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (Main.npc[i].netSpam >= 10)
-                                    Main.npc[i].netSpam = 9;
+                                Main.npc[i].ForceNetUpdate(false);
                             }
                         }
                     }
@@ -706,38 +698,20 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (shouldFly)
                 {
                     if (npc.localAI[0] != 1f)
-                    {
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
-                    }
+                        npc.ForceNetUpdate(false);
 
                     npc.localAI[0] = 1f;
                 }
                 else
                 {
                     if (npc.localAI[0] != 0f)
-                    {
-                        npc.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (npc.netSpam >= 10)
-                            npc.netSpam = 9;
-                    }
+                        npc.ForceNetUpdate(false);
 
                     npc.localAI[0] = 0f;
                 }
 
                 if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
-                {
-                    npc.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (npc.netSpam >= 10)
-                        npc.netSpam = 9;
-                }
+                    npc.ForceNetUpdate(false);
 
                 npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X) + MathHelper.PiOver2;
             }
@@ -894,8 +868,15 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 }
             }
 
+            // Play spawn sound on Deus on the first frame because otherwise the sound wouldn't play properly in multiplayer
+            if (calamityGlobalNPC.newAI[1] == 0f && !doubleWormPhase)
+            {
+                SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, npc.Center);
+                calamityGlobalNPC.newAI[1] = 1f;
+            }
+
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
                 calamityGlobalNPC.newAI[1] += 1f;
 
             // Calculate contact damage based on velocity

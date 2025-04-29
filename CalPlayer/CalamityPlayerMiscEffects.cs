@@ -68,6 +68,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -202,6 +203,16 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
+            if (furyFuel < furyFuelMax && furyRefuelTimer >= 0)
+            {
+                furyFuel += (int)furyRefuelTimer;
+                furyRefuelTimer = MathHelper.Lerp(furyRefuelTimer, 25, 0.01f);
+                if (furyFuel > furyFuelMax)
+                    furyFuel = furyFuelMax;
+            }
+            else if (furyRefuelTimer < 0)
+                furyRefuelTimer++;
+
             // De-equipping Draedon's Heart deletes all Adrenaline.
             if (!draedonsHeart && hadNanomachinesLastFrame)
             {
@@ -221,9 +232,20 @@ namespace CalamityMod.CalPlayer
             bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
             int dir = MathF.Sign(Player.velocity.X);
 
-            if ((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0))
+            if (((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0)) && dashStart)
             {
                 Player.velocity.X *= 0.9f;
+            }
+
+            // Tabi/Master Ninja Gear dash change
+            if (Player.dashType == 1)
+            {
+                if (dashStart)
+                    Player.velocity.X *= 3.5f;
+                if (Player.dashDelay == -1)
+                {
+                    Player.velocity.X *= 0.9f;
+                }
             }
 
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
@@ -295,49 +317,19 @@ namespace CalamityMod.CalPlayer
             {
                 if (dashStart)
                 {
-                    Player.velocity.X *= 1.2f;
+                    Player.velocity.X *= 2.2f; // +120% dash speed
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
-
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
                 }
 
                 if (Player.miscCounter % 3 == 2 && Player.dashDelay > 0) // Reduced dash cooldown by 33%
                     Player.dashDelay--;
 
-                if (Player.dashDelay == -1)// TODO: prevent working with special dashes, this was inconsitent with my old solution so I didn't keep it. not huge deal)
-                {
-                    float numberOfDusts = 10f;
-                    float rotFactor = 180f / numberOfDusts;
-                    for (int i = 0; i < numberOfDusts; i++)
-                    {
-                        float rot = MathHelper.ToRadians(i * rotFactor);
-                        Vector2 offset = new Vector2(Player.velocity.X * dir * 0.7f + 6f, 0).RotatedBy(rot * Main.rand.NextFloat(4f, 5f));
-                        Vector2 velOffset = Vector2.Zero;
-                        Dust dust = Dust.NewDustPerfect(Player.Center + offset + Player.velocity, Main.rand.NextBool() ? 160 : 307, new Vector2(velOffset.X, velOffset.Y));
-                        dust.noGravity = true;
-                        dust.velocity = velOffset;
-                        dust.alpha = 100;
-                        dust.scale = (Player.velocity.X * dir * 0.08f);
-                    }
-                    if (Player.miscCounter % 4 == 0)
-                    {
-                        float sparkscale = (Player.velocity.X * dir * 0.07f);
-                        Vector2 SparkVelocity1 = Player.velocity.RotatedBy(dir * 2, default) * 0.1f - Player.velocity / 2f;
-                        LineParticle spark = new LineParticle(Player.Center + Player.velocity.RotatedBy(2f * dir) * 1.5f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool() ? Color.DarkTurquoise : Color.DodgerBlue);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        Vector2 SparkVelocity2 = Player.velocity.RotatedBy(dir * -2, default) * 0.1f - Player.velocity / 2f;
-                        LineParticle spark2 = new LineParticle(Player.Center + Player.velocity.RotatedBy(-2f * dir) * 1.5f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool() ? Color.DarkTurquoise : Color.DodgerBlue);
-                        GeneralParticleHandler.SpawnParticle(spark2);
-                    }
-                    if (Player.miscCounter % 4 == 0 && Player.velocity != Vector2.Zero) //every other frame spawn the hitbox
-                    {
-                        int damage = (int)Player.GetBestClassDamage().ApplyTo(LeviathanAmbergris.ambergrisDashDamage);
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<LeviAmberDash>(), damage, 0f, Player.whoAmI);
-                    }
-                }
+                if (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.9f;
             }
 
-            if (Pauldron)
+            if (sPauldron)
             {
                 if (dashStart)
                 {
@@ -345,37 +337,9 @@ namespace CalamityMod.CalPlayer
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(SlagsplitterPauldron.PauldronSlamDamage);
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                 }
-                if (Player.dashDelay == -1)// TODO: prevent working with special dashes, this was inconsitent with my old solution so I didn't keep it. not huge deal)
-                {
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(SlagsplitterPauldron.PauldronSlamDamage);
+                if (Player.dashDelay == -1)
                     Player.endurance += 0.1f;
-                    
-                    float numberOfDusts = 10f;
-                    float rotFactor = 180f / numberOfDusts;
-                    for (int i = 0; i < numberOfDusts; i++)
-                    {
-                        float rot = MathHelper.ToRadians(i * rotFactor);
-                        Vector2 offset = new Vector2(MathF.Min(Player.velocity.X * dir * 0.7f + 8f, 20f), 0).RotatedBy(rot * Main.rand.NextFloat(4f, 5f));
-                        Vector2 velOffset = Vector2.Zero;
-                        Dust dust = Dust.NewDustPerfect(Player.Center + offset + Player.velocity, Main.rand.NextBool() ? 35 : 127, new Vector2(velOffset.X, velOffset.Y));
-                        dust.noGravity = true;
-                        dust.velocity = velOffset;
-                        dust.alpha = 100;
-                        dust.scale = MathF.Min(Player.velocity.X * dir * 0.08f, 1.2f);
-                    }
-                    float sparkscale = MathF.Min(Player.velocity.X * dir * 0.08f, 1.2f);
-                    Vector2 SparkVelocity1 = Player.velocity.RotatedBy(dir * -3, default) * 0.1f - Player.velocity / 2f;
-                    SparkParticle spark = new SparkParticle(Player.Center + Player.velocity.RotatedBy(2f * dir) * 1.5f, SparkVelocity1, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                    Vector2 SparkVelocity2 = Player.velocity.RotatedBy(dir * 3, default) * 0.1f - Player.velocity / 2f;
-                    SparkParticle spark2 = new SparkParticle(Player.Center + Player.velocity.RotatedBy(-2f * dir) * 1.5f, SparkVelocity2, false, Main.rand.Next(11, 13), sparkscale, Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-
-                    if (Player.miscCounter % 6 == 0 && Player.velocity != Vector2.Zero)
-                    {
-                        Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), SlagsplitterPauldron.PauldronSlamDamage, 0, Player.whoAmI);
-                    }
-                }
+                
             }
 
             if (XykVisualsBlue || XykVisualsOrange)
@@ -466,12 +430,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Solar Wings increase dash velocity of Solar Flare armor dash
-            if (Player.wingsLogic == (int)VanillaWingID.WingsSolar && Player.dash == 3 && dashStart)
-            {
-                Player.velocity.X *= 1.25f;
-            }
-
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
             else
@@ -537,13 +495,17 @@ namespace CalamityMod.CalPlayer
             {
                 float rageGen = 0f;
 
-                // Shattered Community provides constant rage generation (stronger than Heart of Darkness).
+                // Shattered Community provides constant rage generation and overrides the value from Heart of Darkness.
                 if (shatteredCommunity)
                 {
                     float scRageGen = rageMax * ShatteredCommunity.RagePerSecond / 60f;
                     if (rageGen < scRageGen)
                         rageGen = scRageGen;
                 }
+
+                // 26MAR2025: Ozzatron: Shattered Community and Heart of Darkness have equal rage generation now.
+                // It's easier to not change the code here to unify the cases, because there is no reason to.
+                //
                 // Heart of Darkness grants constant rage generation.
                 else if (heartOfDarkness)
                 {
@@ -819,7 +781,7 @@ namespace CalamityMod.CalPlayer
                     Player.velocity += yeetVec * auricRejectionKB;
                     if (tile.TileType == auricOreID)
                     {
-                        Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").Format(Player.name)), auricRejectionDamage, 0);
+                        Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.AuricRejection").ToNetworkText(Player.name)), auricRejectionDamage, 0);
                         Player.AddBuff(ModContent.BuffType<AuricRebuke>(), 120);
                     }
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1"), Player.Center);
@@ -1275,9 +1237,6 @@ namespace CalamityMod.CalPlayer
             // Increase fall speed
             if (!Player.mount.Active)
             {
-                if (Player.IsUnderwater() && ironBoots)
-                    Player.maxFallSpeed = 9f;
-
                 if (!Player.wet)
                 {
                     if (cirrusDress)
@@ -1286,6 +1245,15 @@ namespace CalamityMod.CalPlayer
                         Player.maxFallSpeed = 15f;
                     if (Player.PortalPhysicsEnabled)
                         Player.maxFallSpeed = 20f;
+                }
+
+                if (Player.controlDown && ironBoots)
+                {
+                    Player.maxFallSpeed = 23f; // This is slightly faster than slimy saddle (so it can be viable)
+                    if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
+                        Player.velocity.Y *= 0.7f;
+                    else if (Player.gravDir == 1 ? Player.velocity.Y < Player.maxFallSpeed : Player.velocity.Y > Player.maxFallSpeed)
+                        Player.velocity.Y = MathHelper.Lerp(Player.velocity.Y, Player.maxFallSpeed, 0.1f);
                 }
 
                 if (LungingDown)
@@ -1306,7 +1274,7 @@ namespace CalamityMod.CalPlayer
                     if (holdingDown && Player.ControlsEnabled() && notInLiquid && notOnRope && notGrappling && airborne && !Player.Calamity().gSabatonFalling) //Player cannot further increase their ridiculous gravity during a Gravistar Slam
                     {
                         Player.velocity.Y += Player.gravity * Player.gravDir * (BalancingConstants.HoldingDownGravityMultiplier - 1f);
-                        if (Player.Calamity().gSabaton)
+                        if (Player.Calamity().gSabaton && !Player.gravControl2)
                         {
                             Player.maxFallSpeed *= 1.5f;
                         }
@@ -1408,7 +1376,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (!tentaclesPresent[i])
                         {
-                            int damage = (int)Player.GetBestClassDamage().ApplyTo(390);
+                            int damage = (int)Player.GetBestClassDamage().ApplyTo(350);
 
                             var source = Player.GetSource_FromThis(OmegaBlueHelmet.TentacleEntitySourceContext);
                             Vector2 vel = new Vector2(Main.rand.Next(-13, 14), Main.rand.Next(-13, 14)) * 0.25f;
@@ -1419,13 +1387,24 @@ namespace CalamityMod.CalPlayer
 
                 float damageUp = 0.1f;
                 int critUp = 10;
-                if (omegaBlueHentai)
+                if (omegaBlueAbyssalMadness)
                 {
-                    damageUp *= 2f;
-                    critUp *= 2;
+                    damageUp += 0.1f;
+                    critUp += 10;
                 }
                 Player.GetDamage<GenericDamageClass>() += damageUp;
                 Player.GetCritChance<GenericDamageClass>() += critUp;
+            }
+
+            // Rain armor set effects
+            if (rainSet)
+            {
+                if (Player.jump == 15 && Player.whoAmI == Main.myPlayer) // This is technically the frame after you start jumping from the ground
+                {
+                    bool rainBoost = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(30 * (rainBoost ? 2f : 1));
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Vector2.UnitY * 26, Vector2.Zero, ModContent.ProjectileType<PuddleSplash>(), damage, 0, Main.myPlayer);
+                }
             }
 
             bool profanedSoulBuffs = profanedCrystalBuffs || (!profanedCrystal && pSoulArtifact) || (profanedCrystal && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
@@ -1597,7 +1576,7 @@ namespace CalamityMod.CalPlayer
                         {
                             float insanityValue = ((p.ai[1] % 10) + 1);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1648,7 +1627,7 @@ namespace CalamityMod.CalPlayer
                                 {
                                     float insanityValue = ((p.ai[1] % 10) + 1);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / CalamityUtils.CountProjectiles(ModContent.ProjectileType<TransformerBlob>()) * (angleMax) - (angleMax) / 2f;
+                                        p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -1720,6 +1699,49 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (ironBoots)
+            {
+                if (Player.controlDown)
+                {
+                    if (Player.gravDir == 1 ? Player.velocity.Y > 0 : Player.velocity.Y < 0)
+                        fallingBootVelCheckTimer++;
+
+                    if (Player.velocity.Y == 0 && fallingBootVelCheckTimer > 10)
+                    {
+                        float power = Utils.Remap(fallingBootVelCheckTimer, 10, 40, 0.1f, 1);
+                        float scaledPower = (float)Math.Pow(power, 3);
+                        int damage = (int)Player.GetBestClassDamage().ApplyTo(1500 * scaledPower); // Damage scales down thrice
+                        Vector2 playerFeet = Player.Center + Vector2.UnitY * 26 * Player.gravDir;
+
+                        float blastSize = 120 * power;
+                        float minMultiplier = 0.1f;
+                        int hitsToMinMult = 6;
+                        int debuff = ModContent.BuffType<ArmorCrunch>();
+                        int debuffTime = (int)(300 * power);
+                        Projectile blast = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), playerFeet, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(damage), -25 * power, Player.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                        blast.localAI[0] = debuff;
+                        blast.localAI[1] = debuffTime;
+                        blast.timeLeft = 5;
+
+                        int particleNumber = (int)Math.Max(15 * power, 2);
+                        for (int i = -particleNumber; i <= particleNumber; i++)
+                        {
+                            Particle sparks = new AltSparkParticle(playerFeet, (Vector2.UnitX * (5 + Math.Abs(i)) * Math.Sign(i)).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.5f, 1) * power, false, Main.rand.Next(17, 30 + 1), Main.rand.NextFloat(0.2f, 0.8f), Main.rand.NextBool() ? Color.Lerp(Color.Gold, Color.Silver, 0.3f) : Color.Silver);
+                            GeneralParticleHandler.SpawnParticle(sparks);
+                        }
+
+                        SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit3");
+                        SoundEngine.PlaySound(sound with { Volume = 0.6f * power, Pitch = Main.rand.NextFloat(0.6f, 0.8f) }, playerFeet);
+
+                        Player.Calamity().GeneralScreenShakePower = 4 * scaledPower;
+                        fallingBootVelCheckTimer = 0;
+                    }
+                }
+                
+                if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
+                    fallingBootVelCheckTimer = 0;
+            }
+
             if (unstableGraniteCore)
             {
                 zapActivity += 1;
@@ -1782,6 +1804,25 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (whitewaterHeal > 0)
+            {
+                if (whitewaterHeal % 15 == 0)
+                    Player.HealPlayer(1);
+                whitewaterHeal--;
+
+                Vector2 vel = (MathHelper.TwoPi * whitewaterHeal * Player.direction / 25).ToRotationVector2() * 3f;
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    Dust c = Dust.NewDustPerfect(Player.Center + vel * 4 * i, ModContent.DustType<LightDust>());
+                    c.velocity = vel * i;
+                    c.scale = Main.rand.NextFloat(0.9f, 1f);
+                    c.noGravity = true;
+                    c.alpha = 150;
+                    c.color = Color.SkyBlue;
+                    c.noLightEmittence = true;
+                }
+            }
+
             // Tick all cooldowns.
             // Depending on the code for each individual cooldown, this isn't guaranteed to do anything.
             // It may not tick down the timer or not do anything at all.
@@ -1836,6 +1877,8 @@ namespace CalamityMod.CalPlayer
 
             if (arsenalCooldown > 0)
                 arsenalCooldown--;
+            if (Main.zenithWorld)
+                arsenalCooldown = 0;
             if (killModeCooldown > 0)
                 killModeCooldown--;
             if (ascendantInsigniaCooldown > 0 && ascendantInsigniaBuffTime <= 0)
@@ -1864,6 +1907,8 @@ namespace CalamityMod.CalPlayer
                 KameiBladeUseDelay--;
             if (galileoCooldown > 0)
                 galileoCooldown--;
+            if (gladiatorTimer > 0)
+                gladiatorTimer--;
             if (dragonRageCooldown > 0)
                 dragonRageCooldown--;
             if (soundCooldown > 0)
@@ -1880,6 +1925,12 @@ namespace CalamityMod.CalPlayer
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
+            if (bGlassbandCooldown > 0)
+                bGlassbandCooldown--;
+            if (batholithBangleCooldown > 0)
+                batholithBangleCooldown--;
+            if (protolithBangleCooldown > 0)
+                protolithBangleCooldown--;
             if (AlchFlaskCooldown > 0)
                 AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
@@ -1919,11 +1970,16 @@ namespace CalamityMod.CalPlayer
             if (vortexBoosterStealthDelay > 0)
             {
                 vortexBoosterStealthDelay--;
-                if (vortexBoosterStealthDelay == 1)
+                if (vortexBoosterStealthDelay == 1 && Player.setVortex)
                     Player.vortexStealthActive = true;
             }
-            if (statisTimer > 0 && Player.dashDelay >= 0)
-                statisTimer = 0;
+            if (statisPenaltyTimer > 0)
+                statisPenaltyTimer--;
+            if (statisPenaltyTimer == 0 && statisAnticheese > 0)
+            {
+                statisAnticheese--;
+                statisPenaltyTimer = statisTimerMax;
+            }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
             if (sulphurBubbleCooldown > 0)
@@ -2004,9 +2060,21 @@ namespace CalamityMod.CalPlayer
                 else if (blazingCoreParry > 0)
                     BlazingCore.HandleParryCountdown(Player);
             }
-            else if (flameLickedShell && flameLickedShellParry > 0)
+            else if (blazingCoreParry > 0)
+                blazingCoreParry--;
+            else if (flameLickedShellParry > 0)
             {
-                FlameLickedShell.HandleParryCountdown(Player);
+                if (flameLickedShell)
+                    FlameLickedShell.HandleParryCountdown(Player);
+                else
+                    flameLickedShellParry--;
+            }
+            if (shieldOfTheOceanParry > 0)
+            {
+                if (shieldOfTheOcean)
+                    ShieldoftheOcean.HandleParryCountdown(Player);
+                else
+                    shieldOfTheOceanParry--;
             }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
@@ -2064,8 +2132,8 @@ namespace CalamityMod.CalPlayer
                 miningSetCooldown--;
             if (RustyMedallionCooldown > 0)
                 RustyMedallionCooldown--;
-            if (MiniSwamerCooldown > 0)
-                MiniSwamerCooldown--;
+            if (MiniSwarmerCooldown > 0)
+                MiniSwarmerCooldown--;
 
             // God Slayer Armor dash debuff immunity
             if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
@@ -2131,7 +2199,7 @@ namespace CalamityMod.CalPlayer
 
                 if (necroReviveCounter >= NecroArmorSetChange.PostMortemDuration * 60)
                 {
-                    Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").Format(Player.name)), 1000, -1);
+                    Player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.NecroRevive").ToNetworkText(Player.name)), 1000, -1);
                     necroReviveCounter = -1;
                 }
                 else if (necroReviveCounter % 60 == 59)
@@ -2273,8 +2341,10 @@ namespace CalamityMod.CalPlayer
             }
 
             // Raider Talisman bonus
-            if (raiderTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+            if (raiderTalisman && !vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
+            if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
+                Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
 
             if (kamiBoost)
                 Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
@@ -2804,16 +2874,23 @@ namespace CalamityMod.CalPlayer
                     // Record the final breath loss rate for the stat meter
                     abyssBreathLossRateStat = (float)tick;
 
+                    float resistanceSlowdownFactor = 1f;
+
                     // Reduce breath over ticks (frames)
-                    abyssBreathCD++;
-                    if (abyssBreathCD >= (int)tick)
+                    abyssBreathCD++;    
+                    if (abyssBreathCD >= (int)(tick * resistanceSlowdownFactor))
                     {
                         // Reset modded breath variable
                         abyssBreathCD = 0;
 
                         // Reduce breath
                         if (Player.breath > 0)
+                        {
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
+
+                            if (hPressure)
+                                resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
+                        }
                     }
 
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
@@ -3222,7 +3299,7 @@ namespace CalamityMod.CalPlayer
 
                 if (tortShellPostHit > 0)
                 {
-                    Player.statDefense -= 10;
+                    Player.statDefense -= 8;
                     tortShellPostHit--;
                 }
                 else
@@ -3281,8 +3358,8 @@ namespace CalamityMod.CalPlayer
             if (cirrusDress)
                 Player.moveSpeed -= 0.2f;
 
-            if (fabsolVodka)
-                Player.GetDamage<GenericDamageClass>() += FabsolsVodka.DamageBoost;
+            if (cirrusVodka)
+                Player.GetDamage<GenericDamageClass>() += CirrusVodka.DamageBoost;
 
             if (vodka)
             {
@@ -3370,7 +3447,10 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
+                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
+                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
+                        }
                     }
                 }
             }
@@ -3524,8 +3604,12 @@ namespace CalamityMod.CalPlayer
             if ((vaporfied && !purity) || galvanicCorrosion)
                 Player.velocity *= 0.98f;
 
-            if (molluskSet)
-                Player.velocity.X *= 0.985f;
+            if (molluskHelmet)
+                Player.velocity.X *= 0.995f;
+            if (molluskChest)
+                Player.velocity.X *= 0.995f;
+            if (molluskLegs)
+                Player.velocity.X *= 0.995f;
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {
@@ -3593,8 +3677,7 @@ namespace CalamityMod.CalPlayer
 
             if (vexation)
             {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.GetDamage<GenericDamageClass>() += 0.2f;
+                    Player.GetDamage<GenericDamageClass>() += 0.3f* (1 - Player.statLife / (float)Player.statLifeMax2);
             }
 
             if (ataxiaBlaze)
@@ -4141,6 +4224,10 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<MeleeDamageClass>() += 10;
             }
 
+
+            if (Player.portableStoolInfo.IsInUse)
+                Player.GetCritChance(DamageClass.Generic) += 5;
+
             // Amalgam boosts
             if (Main.myPlayer == Player.whoAmI)
             {
@@ -4575,10 +4662,10 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (fabsolVodka)
+            if (cirrusVodka)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * FabsolsVodka.DefenseLossPercent);
+                    Player.statDefense -= (int)(Player.statDefense * CirrusVodka.DefenseLossPercent);
             }
 
             if (vodka)

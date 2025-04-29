@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 92;
             Item.height = 44;
-            Item.damage = 245;
+            Item.damage = 249;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 3;
@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient<P90>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

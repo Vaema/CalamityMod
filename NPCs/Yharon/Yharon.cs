@@ -3000,7 +3000,7 @@ namespace CalamityMod.NPCs.Yharon
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 25, 30));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 35, 40));
 
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
@@ -3017,7 +3017,7 @@ namespace CalamityMod.NPCs.Yharon
             // He is the dragon of rebirth afterall
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<YharonEgg>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonEgg>()), hideLootReport: true);
             }
 
             // Lore
@@ -3037,7 +3037,7 @@ namespace CalamityMod.NPCs.Yharon
             if (BossRushEvent.BossRushActive)
                 return;
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedYharon);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Yharon has not been killed yet, notify players of Auric Ore

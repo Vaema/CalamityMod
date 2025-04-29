@@ -1,4 +1,6 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -41,7 +43,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.height = 30;
             Item.accessory = true;
             
-            // Same as Fabsol's Vodka, due to the obtainment method being shimmering Fabsol's Vodka.
+            // Same as Cirrus' Vodka, due to the obtainment method being shimmering Cirrus' Vodka.
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
 
@@ -80,6 +82,22 @@ namespace CalamityMod.Items.Accessories.Vanity
                 Player.head = EquipLoader.GetEquipSlot(Mod, "CrystalHeartVodka", EquipType.Head);
 
                 //Player.HideAccessories();
+            }
+        }
+
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            if (vanityEquipped)
+            {
+                drawInfo.drawPlayer.back = EquipLoader.GetEquipSlot(Mod, "CrystalHeartVodka", EquipType.Back);
+                drawInfo.drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "CrystalHeartVodka", EquipType.Legs);
+                drawInfo.legsGlowMask = -1;
+                drawInfo.legsOffset = Vector2.Zero;
+                drawInfo.drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "CrystalHeartVodka", EquipType.Body);
+                drawInfo.bodyGlowMask = -1;
+                drawInfo.drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "CrystalHeartVodka", EquipType.Head);
+                drawInfo.headGlowMask = -1;
+                drawInfo.helmetOffset = Vector2.Zero;
             }
         }
     }

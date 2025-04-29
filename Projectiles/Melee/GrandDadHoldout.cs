@@ -1,23 +1,24 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using System.Data;
+using System.IO;
+using System.Runtime.CompilerServices;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class GrandDadHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<GrandDad>();
@@ -39,6 +40,9 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool finalFlip = false;
         public bool swingSound = true;
+
+        private NPC target => Main.npc[(int)Projectile.ai[0]];
+
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -46,12 +50,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+
+        public override void WhenSpawned()
         {
+            Projectile.timeLeft = Owner.HeldItem.useAnimation + 1;
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Dad has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
@@ -61,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             if (mousePos.X < Owner.Center.X) Owner.direction = -1;
             else Owner.direction = 1;
 
-            FlipAsSword = Owner.direction == -1 ? true : false;
+            FlipAsSword = Owner.direction == -1;
         }
 
         public override void UseStyle()
@@ -93,7 +98,7 @@ namespace CalamityMod.Projectiles.Melee
                 CanHit = false;
                 if (mousePos.X < Owner.Center.X) Owner.direction = -1;
                 else Owner.direction = 1;
-                FlipAsSword = Owner.direction == -1 ? true : false;
+                FlipAsSword = Owner.direction == -1;
 
                 doSwing = true;
                 swingCount++;
@@ -112,8 +117,8 @@ namespace CalamityMod.Projectiles.Melee
                     if ((Owner.Center - aimVel).X < Owner.Center.X) Owner.direction = -1;
                     else Owner.direction = 1;
                 }
-                    
-                
+
+
                 Projectile.rotation = Projectile.rotation.AngleLerp(Owner.AngleTo(mousePos) + MathHelper.ToRadians(45f), 0.1f);
 
                 if (AnimationProgress < (useAnim / 1.5f))
@@ -132,7 +137,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     if (!finalFlip)
                     {
-                        FlipAsSword = Owner.direction < 0 ? true : false;
+                        FlipAsSword = Owner.direction < 0;
                     }
 
                     float time = (AnimationProgress) - (useAnim / 3);
@@ -144,7 +149,7 @@ namespace CalamityMod.Projectiles.Melee
                         SoundEngine.PlaySound(fire with { Volume = 0.8f, Pitch = Main.rand.NextFloat(0.2f, 0.32f) }, Projectile.Center);
                         swingSound = false;
                     }
-                    if ( time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
+                    if (time > (int)(timeMax * 0.4f) && time < (int)(timeMax * 0.7f))
                     {
                         CanHit = true;
 
@@ -195,22 +200,19 @@ namespace CalamityMod.Projectiles.Melee
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;
                         }
-                    }   
+                    }
                 }
             }
 
             ArmRotationOffset = MathHelper.ToRadians(-140f);
             ArmRotationOffsetBack = MathHelper.ToRadians(-140f);
         }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
 
-            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-            SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
-            SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
-            SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
             {
                 SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 8);
@@ -219,6 +221,10 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits == 0)
             {
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
+                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             }
 
             int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 12, 1, 20));
@@ -233,7 +239,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     CombatText.NewText(target.Hitbox, Color.Aqua, CalamityUtils.GetTextValue("Misc.HecBoop"));
                     SoundStyle boop = new("CalamityMod/Sounds/Item/SnootBooped");
-                    SoundEngine.PlaySound(boop with {Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
+                    SoundEngine.PlaySound(boop with { Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, Projectile.Center);
                 }
 
                 bool rightClicked = Owner.Calamity().mouseRight;
@@ -268,6 +274,7 @@ namespace CalamityMod.Projectiles.Melee
                 dust.color = Main.rand.NextBool() ? Color.DodgerBlue : Color.Blue;
             }
         }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.Calamity().mouseRight)
@@ -280,6 +287,7 @@ namespace CalamityMod.Projectiles.Melee
                 modifiers.SourceDamage *= damageMult;
             }
         }
+
         public override bool PreDraw(ref Color lightColor)
         {
             // Only draw the projectile if the projectile's owner is currently using the item this projectile is attached to.
@@ -307,9 +315,6 @@ namespace CalamityMod.Projectiles.Melee
 
             }
             return false;
-        }
-        public override void ResetStyle()
-        {
         }
     }
 }

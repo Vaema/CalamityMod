@@ -31,6 +31,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -89,6 +90,8 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
+            target.Calamity().IncreasedDebuffEffects_Amalgam = amalgam;
+
             switch (item.type)
             {
                 case ItemID.DeathSickle:
@@ -145,6 +148,16 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = item.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
+            if (luxorsGift)
+                luxorHit = true;
 
             // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
             if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
@@ -213,6 +226,8 @@ namespace CalamityMod.CalPlayer
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (proj.type)
             {
@@ -305,6 +320,16 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
+            if (bGlassBand && bGlassbandCooldown == 0)
+            {
+                var source = proj.GetSource_FromThis();
+                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                bGlassbandCooldown = BlackGlassBand.cooldown;
+            }
+            if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
+                luxorHit = true;
 
             // Transformer gives +2 blobs on kill, which are stored then given to you one by one (so it can't spawn more than one on a single frame)
             if (transformer && Player.Calamity().transformerCooldown == 0 && target.life <= 0 && target.realLife == -1)
@@ -341,9 +366,23 @@ namespace CalamityMod.CalPlayer
                 CalamityGlobalProjectile cgp = proj.Calamity();
                 if (cgp.appliesSomaShred)
                 {
-                    target.AddBuff(BuffType<Shred>(), 320);
-                    // This information cannot be transferred through the buff, but is necessary to calculate damage
-                    cgn.somaShredApplicator = Player.whoAmI;
+                    // 08MAR2025: Ozzatron: Obsessive Warframe accuracy.
+                    // Typical endgame Soma Prime builds have a 5% chance to apply debuff, then 30% extra chance if it's a crit, rolled separately.
+                    bool actuallyApplyShred = false;
+                    if (Main.rand.NextFloat() < 0.05f)
+                        actuallyApplyShred = true;
+                    if (hit.Crit && Main.rand.NextFloat() < 0.3f)
+                        actuallyApplyShred = true;
+
+                    if (actuallyApplyShred)
+                    {
+                        target.AddBuff(BuffType<Shred>(), 320);
+                        // This information cannot be transferred through the buff, but is necessary to calculate damage
+                        cgn.somaShredApplicator = Player.whoAmI;
+
+                        // 08MAR2025: Ozzatron: God Slayer Slugs can no longer apply Shred multiple times.
+                        cgp.appliesSomaShred = false;
+                    }
                 }
 
                 // Similarly, all shots from Animosity are also marked
@@ -651,14 +690,14 @@ namespace CalamityMod.CalPlayer
             if (abaddon && crit && AbaddonCooldown <= 0 && !voidOfExtinction)
             {
                 AbaddonCooldown = 15;
-                int AbaddonExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 50);
+                int AbaddonExploDamage = (int)Player.GetBestClassDamage().ApplyTo(Abaddon.AbaddonExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<AbaddonCrit>(), AbaddonExploDamage, 0f, Player.whoAmI);
             }
 
             if (voidOfExtinction && crit && VoidCooldown <= 0)
             {
                 VoidCooldown = 15;
-                int VoidExploDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.3f, 70);
+                int VoidExploDamage = (int)Player.GetBestClassDamage().ApplyTo(VoidofExtinction.VoidExploDamage);
                 Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<VoidofExtinctionCrit>(), VoidExploDamage, 0f, Player.whoAmI);
             }
 
@@ -729,7 +768,7 @@ namespace CalamityMod.CalPlayer
                     for (int l = 0; l < 2; l++)
                     {
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        int leafDamage = (int)(0.25f * proj.damage);
+                        int leafDamage = CalamityUtils.DamageSoftCap((int)(0.25f * proj.damage), 150);
                         int leaf = Projectile.NewProjectile(source, position, velocity, ProjectileID.Leaf, leafDamage, 0f, Player.whoAmI);
                         if (leaf.WithinBounds(Main.maxProjectiles))
                         {
@@ -742,11 +781,19 @@ namespace CalamityMod.CalPlayer
                         for (int projCount = 0; projCount < 2; projCount++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                            int energyDamage = (int)(0.33f * proj.damage);
+                            int energyDamage = CalamityUtils.DamageSoftCap((int)(0.33f * proj.damage), 200);
                             Projectile.NewProjectile(source, proj.Center, velocity, ProjectileType<TarraEnergy>(), energyDamage, 0f, proj.owner);
                         }
                     }
                 }
+            }
+            if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
+            {
+                MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
+
+                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
+                Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
         }
         #endregion
@@ -1065,6 +1112,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1195,15 +1243,24 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Irradiated>(), 180);
                 }
             }
+            if (amalgam)
+            {
+                target.AddBuff(BuffType<Irradiated>(), 120);
+                target.AddBuff(BuffType<HolyFlames>(), 120);
+                target.AddBuff(BuffType<Voidfrost>(), 120);
+                target.AddBuff(BuffType<SulphuricPoisoning>(), 120);
+                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffType<HadopelagicPressure>(), 120);
+            }
             if (voidOfExtinction)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
             if (frostFlare)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffID.Frostburn2);
             if (omegaBlueChestplate)
-                target.AddBuff(BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
-            if (aSpark && Player.IsUnderwater())
+            if (ilSpark && Player.IsUnderwater())
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
@@ -1222,12 +1279,7 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                if ((Player.armor[0].type == ItemType<ReaverHeadTank>() || Player.armor[0].type == ItemType<ReaverHeadExplore>() ||
-                    Player.armor[0].type == ItemType<ReaverHeadMobility>()) && Player.armor[1].type == ItemType<ReaverScaleMail>() &&
-                    Player.armor[2].type == ItemType<ReaverCuisses>())
-                {
                     target.AddBuff(BuffID.Venom, 120, false);
-                }
             }
         }
         #endregion
@@ -1248,8 +1300,13 @@ namespace CalamityMod.CalPlayer
 
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
+                float healPower = 10 * Utils.GetLerpValue(300, 0, gladiatorTimer, true);
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center.X, target.Center.Y, target.velocity.X / 2, target.velocity.Y / 2, ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                if (healPower >= 1)
+                {
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                    gladiatorTimer = 300;
+                }
             }
 
             if (Main.LocalPlayer.lifeSteal > 0f && !Player.moonLeech && target.lifeMax > 5)
@@ -1269,11 +1326,19 @@ namespace CalamityMod.CalPlayer
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    int heal = (int)Math.Round(damage * 0.015);
+                    int heal = (int)Math.Round(damage * (Main.zenithWorld ? 0.01 : 0.008));
+                    if (proj.Calamity().stealthStrike)
+                    {
+                        heal /= 2; //stealth strikes heal half due to generally dealing far more dmg
+
+                        if (Main.zenithWorld)
+                            heal *= -2; // IT YEARNS FOR MORE BLOOD
+                    }
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
-                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(1f, heal))
+                    // Heals more if the ability is active
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile((raiderCritLifespan > 0) ? 1.5f : 1f, heal))
                         CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
                 }
 
@@ -1414,8 +1479,13 @@ namespace CalamityMod.CalPlayer
 
             if (gladiatorSword && target.IsAnEnemy(false) && target.life <= 0 && target.Calamity().gladiatorOnKill && target.lifeMax > 5)
             {
+                float healPower = 10 * Utils.GetLerpValue(300, 0, gladiatorTimer, true);
                 target.Calamity().gladiatorOnKill = false;
-                Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0f);
+                if (healPower >= 1)
+                {
+                    Projectile.NewProjectile(Player.GetSource_FromThis(), target.Center, target.velocity * 0.5f, ProjectileType<GladiatorHealOrb>(), 0, 0, -1, (int)healPower);
+                    gladiatorTimer = 300;
+                }
             }
 
             if (reaverDefense)

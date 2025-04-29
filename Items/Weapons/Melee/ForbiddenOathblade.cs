@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 74;
             Item.height = 74;
-            Item.damage = 90;
+            Item.damage = 58;
             Item.useAnimation = Item.useTime = 50;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<ForbiddenOathbladeHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter,Vector2.Zero, ModContent.ProjectileType<ForbiddenOathbladeHoldout>(), Item.damage * 12, Item.knockBack, player.whoAmI, 0, throwCount);
+                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter,Vector2.Zero, ModContent.ProjectileType<ForbiddenOathbladeHoldout>(), Item.damage * 10, Item.knockBack, player.whoAmI, 0, throwCount); // This used to be 12x damage.
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -92,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<BladecrestOathsword>().
                 AddIngredient<OldLordClaymore>().
-                AddRecipeGroup("AnyMythrilBar", 5).
+                AddIngredient<UnholyCore>(5).
                 AddIngredient<EssenceofHavoc>(8).
                 AddTile(TileID.MythrilAnvil).
                 Register();

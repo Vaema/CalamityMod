@@ -37,10 +37,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
         }
 
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             SwingDir = 1f;
-            base.OnSpawn(source);
             mousePos = Owner.Calamity().mouseWorld;
             aimPos = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnimation = Owner.itemAnimationMax;

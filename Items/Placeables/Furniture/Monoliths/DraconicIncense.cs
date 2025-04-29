@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             CreateRecipe().
                 AddIngredient<YharonSoulFragment>(15).
-                AddTile<CosmicAnvil>().
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

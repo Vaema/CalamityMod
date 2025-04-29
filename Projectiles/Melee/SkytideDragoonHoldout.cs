@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class SkytideDragoonHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<SkytideDragoon>();
@@ -52,12 +54,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = DamageClass.Melee;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
-            base.OnSpawn(source);
 
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -221,7 +222,7 @@ namespace CalamityMod.Projectiles.Melee
                                 Owner.Calamity().GeneralScreenShakePower = 3f;
                                 SoundStyle sound = new("CalamityMod/Sounds/Item/SkytiedBolt");
                                 SoundEngine.PlaySound(sound with { Volume = 0.8f }, Projectile.Center);
-                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 5), Projectile.knockBack, Projectile.owner, 0, 0.5f);
+                                Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 0.5f);
                                 proj.timeLeft = 45;
                                 swingCount = 0;
                                 attackPower = 6;

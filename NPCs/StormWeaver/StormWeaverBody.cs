@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(StormWeaverHead))]
     public class StormWeaverBody : ModNPC
     {

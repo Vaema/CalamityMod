@@ -288,10 +288,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             // Be sure to inform clients of the fact that The Devourer of Gods is dying if only the server recieved this packet.
             if (Main.dedServ && !wasDyingBefore && Dying)
-            {
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
-            }
+                NPC.ForceNetUpdate();
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -472,11 +469,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             continue;
 
                         Main.npc[a].active = false;
-                        Main.npc[a].netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (Main.npc[a].netSpam >= 10)
-                            Main.npc[a].netSpam = 9;
+                        Main.npc[a].ForceNetUpdate(false);
                     }
                 }
             }
@@ -534,8 +527,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.ai[3] = 0f;
                         calamityGlobalNPC.newAI[1] = 0f;
                         calamityGlobalNPC.newAI[2] = 0f;
-                        NPC.netSpam = 0;
-                        NPC.netUpdate = true;
+                        NPC.ForceNetUpdate();
                     }
 
                     // Phase 2 countdown
@@ -554,12 +546,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(186 * NPC.scale);
                     NPC.position -= NPC.Size * 0.5f;
                     NPC.frame = new Rectangle(0, 0, 134, 196);
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
 
                 // Dialogue the moment the second phase starts
@@ -598,12 +585,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (Main.netMode != NetmodeID.MultiplayerClient && newOpacity > 0f && NPC.Opacity > newOpacity)
                         {
                             NPC.Opacity = newOpacity;
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
 
                         if (NPC.Opacity < 0.2f)
@@ -620,12 +602,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         PortalIndex = Projectile.NewProjectile(NPC.GetSource_FromAI(), portalSpawnPosition, Vector2.Zero, ModContent.ProjectileType<DoGP1EndPortal>(), 0, 0f);
 
                         hasCreatedPhase1Portal = true;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
 
                     AttemptingToEnterPortal = true;
@@ -659,12 +636,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         Dying = true;
                         NPC.dontTakeDamage = true;
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
 
                         return;
                     }
@@ -1263,12 +1235,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 1f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
 
@@ -1524,38 +1491,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (flies)
                         {
                             if (NPC.localAI[0] != 1f)
-                            {
-                                NPC.netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
-                            }
+                                NPC.ForceNetUpdate(false);
 
                             NPC.localAI[0] = 1f;
                         }
                         else
                         {
                             if (NPC.localAI[0] != 0f)
-                            {
-                                NPC.netUpdate = true;
-
-                                // Prevent netUpdate from being blocked by the spam counter.
-                                if (NPC.netSpam >= 10)
-                                    NPC.netSpam = 9;
-                            }
+                                NPC.ForceNetUpdate(false);
 
                             NPC.localAI[0] = 0f;
                         }
 
                         if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         if (calamityGlobalNPC.newAI[2] > phaseLimit)
                         {
@@ -1563,12 +1512,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ai[3] = 0f;
                             calamityGlobalNPC.newAI[2] = 0f;
                             NPC.TargetClosest();
-
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -2050,12 +1994,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.ai[3] = 1f;
                         calamityGlobalNPC.newAI[2] = 0f;
                         NPC.TargetClosest();
-
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
+                        NPC.ForceNetUpdate(false);
                     }
                 }
 
@@ -2297,38 +2236,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (flies)
                     {
                         if (NPC.localAI[0] != 1f)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         NPC.localAI[0] = 1f;
                     }
                     else
                     {
                         if (NPC.localAI[0] != 0f)
-                        {
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
-                        }
+                            NPC.ForceNetUpdate(false);
 
                         NPC.localAI[0] = 0f;
                     }
 
                     if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
-                    {
-                        NPC.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (NPC.netSpam >= 10)
-                            NPC.netSpam = 9;
-                    }
+                        NPC.ForceNetUpdate(false);
 
                     if (calamityGlobalNPC.newAI[2] > phaseLimit)
                     {
@@ -2438,12 +2359,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Prediction is Death Mode only for now because it's weird without the line telegraph that Shayy spoke about
             Vector2 predictionVector = death ? player.velocity * 40f : Vector2.Zero;
             NPC.velocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * chargeVelocity;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             foreach (NPC n in Main.ActiveNPCs)
             {
@@ -2454,11 +2370,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (n.type == ModContent.NPCType<DevourerofGodsTail>())
                         ((DevourerofGodsTail)n.ModNPC).setInvulTime(720);
 
-                    n.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (n.netSpam >= 10)
-                        n.netSpam = 9;
+                    n.ForceNetUpdate(false);
                 }
             }
 
@@ -2505,12 +2417,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         n.life = 0;
                         n.HitEffect();
                         n.active = false;
-
-                        n.netUpdate = true;
-
-                        // Prevent netUpdate from being blocked by the spam counter.
-                        if (n.netSpam >= 10)
-                            n.netSpam = 9;
+                        n.ForceNetUpdate(false);
 
                         destroyedSegments++;
                         break;
@@ -2566,12 +2473,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.HitEffect();
                 NPC.NPCLoot();
                 NPC.active = false;
-
-                NPC.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (NPC.netSpam >= 10)
-                    NPC.netSpam = 9;
+                NPC.ForceNetUpdate(false);
             }
             DeathAnimationTimer++;
         }
@@ -2661,7 +2563,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedDoG);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedDoG);
 
             // If DoG has not been killed yet, notify players that the holiday moons are buffed
             if (!DownedBossSystem.downedDoG)
@@ -2701,8 +2603,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Extraneous potions
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
 
-            // Fabsol Mount
-            npcLoot.AddIf((info) => info.player.Calamity().fabsolVodka, ModContent.ItemType<Fabsol>());
+            // Alicorn Mount
+            npcLoot.AddIf((info) => info.player.Calamity().cirrusVodka, ModContent.ItemType<PrincessSpiritinaBottle>());
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -2726,7 +2628,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 45, 55));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CosmiliteBar>(), 1, 65, 80));
                 normalOnly.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 150, 250);
 
                 // Equipment
@@ -2739,42 +2641,45 @@ namespace CalamityMod.NPCs.DevourerofGods
             // GFB torch and Wand drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<TheWand>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TheWand>()), hideLootReport: true);
 
                 // this will be disastrous for the torch economy
                 int dropRate = 10;
                 int dropMin = 1;
                 int dropMax = 9999;
-                GFBOnly.Add(ItemID.Torch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.PurpleTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.YellowTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.GreenTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.RedTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.WhiteTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.OrangeTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.PinkTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.RainbowTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.IceTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.BoneTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.UltrabrightTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.DemonTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.CursedTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.IchorTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.DesertTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.CoralTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.CorruptTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.CrimsonTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.HallowedTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.JungleTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.MushroomTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ItemID.ShimmerTorch, dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<AbyssTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<NavyPrismTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<RefractivePrismTorch>(), dropRate, dropMin, dropMax, true);
-                GFBOnly.Add(ModContent.ItemType<SulphurousTorch>(), dropRate, dropMin, dropMax, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Torch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.PurpleTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.YellowTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.GreenTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.RedTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.WhiteTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.OrangeTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.PinkTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.RainbowTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.IceTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.BoneTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.UltrabrightTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.DemonTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CursedTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.IchorTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.DesertTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CoralTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CorruptTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CrimsonTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.HallowedTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.JungleTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.MushroomTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.ShimmerTorch, dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<CausticTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<KelpTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ThermalTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AlgalPrismTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AstralTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<GloomTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<NavyPrismTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RefractivePrismTorch>(), dropRate, dropMin, dropMax), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SulphurousTorch>(), dropRate, dropMin, dropMax), true);
             }
 
             // Trophy (always directly from boss, never in bag)
@@ -2837,12 +2742,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             Dying = true;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             return false;
         }

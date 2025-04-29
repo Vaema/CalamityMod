@@ -46,6 +46,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	CalamityArmorSetBonusDoubleTap: {
+		Label: "[i:CalamityMod/DesertProwlerHat] Calamity Armor Set Bonuses Can Use Vanilla Hotkey"
+		Tooltip:
+			'''
+			When enabled, allows Calamity armor set bonuses to be triggered by the vanilla double-tap DOWN hotkey (or UP depending on your settings).
+			Also allows vanilla armor set bonuses to be triggered by Calamity's armor set bonus hotkey.
+			'''
+	}
+
 	ChargeMeter: {
 		Label: "[i:CalamityMod/DraedonPowerCell] Display Charge Meter"
 		Tooltip:
@@ -297,6 +306,17 @@ CalamityClientConfig: {
 			'''
 			The Y position of the Stealth Meter, measured as a % of your screen height.
 			The meter can be dragged with the mouse if Lock Meter Positions is disabled.
+			'''
+	}
+
+	StutterFix: {
+		Label: "[i:TrifoldMap] Enable Stutter Fix"
+		Tooltip:
+			'''
+			         When enabled, upon entering a world, the entire world will be loaded at once.
+			         This config causes Terraria to stop responding while the world is being loaded, do NOT close the game while this is occurring.
+			         Once the game starts responding again, you will enter the world and be able to play without random stutters.
+			         This config option is only recommended for players who can't stand random stutters while playing.
 			'''
 	}
 

@@ -458,7 +458,7 @@ EarthenPike: {
 
 EmpyreanKnives: {
 	DisplayName: Empyrean Knives
-	Tooltip: Throws a flurry of bouncing knives that can heal the user
+	Tooltip: Throws a flurry of homing knives that bounce off of tiles and heal the user
 }
 
 EntropicClaymore: {
@@ -749,7 +749,7 @@ Hellkite: {
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
 		Holding <right> will begin charging a strengthened swing
-		Releasing <right> while fully charged will unleash a devastating slash
+		Releasing <right> while fully charged will unleash a devastating slash that always critically strikes
 		[c/E1B65F:'Feel the strength of a blade forged through passion']
 		'''
 	TooltipGFB:
@@ -757,7 +757,7 @@ Hellkite: {
 		An ancient blade created during the Draconic Era by Azafure's finest forgemaster
 		Swings a slow and heavy blade with powerful knockback
 		Holding <right> will begin charging a strengthened swing
-		Releasing <right> while fully charged will unleash a devastating slash
+		Releasing <right> while fully charged will unleash a devastating slash that always critically strikes
 		[c/0C507F:'My beloved <3' -Xyk]
 		'''
 }
@@ -776,7 +776,7 @@ HolyCollider: {
 
 IllustriousKnives: {
 	DisplayName: Illustrious Knives
-	Tooltip: Throws a flurry of homing knives that can heal the user
+	Tooltip: Throws a barrage of fast-moving homing knives that heal the user
 }
 
 InsidiousImpaler: {
@@ -870,7 +870,7 @@ MonolithSword: {
 
 MonstrousKnives: {
 	DisplayName: Monstrous Knives
-	Tooltip: Throws a spread of knives that can heal the user
+	Tooltip: Throws a spread of short-range knives that have a chance to heal the user
 }
 
 Mourningstar: {
@@ -899,7 +899,6 @@ Nadir: {
 	Tooltip:
 		'''
 		Fires void essences which flay nearby enemies with tentacles
-		Ignores immunity frames
 		'The abyss has stared back at you long enough. It now speaks, and it does not speak softly'
 		'''
 }
@@ -1069,7 +1068,7 @@ Riptide: {
 	Tooltip:
 		'''
 		{$Common.YoyoStats}
-		Occasionally pulses a riptide wave with heavy knockback
+		Rapidly pulses riptide waves which get larger the more hits landed by the yoyo
 		'''
 }
 
@@ -1105,11 +1104,6 @@ SausageMaker: {
 ScourgeoftheCosmos: {
 	DisplayName: Scourge of the Cosmos
 	Tooltip: Throws a bouncing cosmic scourge that emits tiny homing cosmic scourges on enemy and tile hits
-}
-
-SeashineSword: {
-	DisplayName: Seashine Sword
-	Tooltip: Shoots an aqua sword beam
 }
 
 SeekingScorcher: {

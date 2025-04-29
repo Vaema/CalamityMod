@@ -2,9 +2,11 @@
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class EbonianBlightSlime : ModNPC
@@ -89,6 +91,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.Gel, 1, 10, 14);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
             npcLoot.Add(ModContent.ItemType<BlightedGel>(), 1, 15, 21);
         }
     }

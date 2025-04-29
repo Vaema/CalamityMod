@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
@@ -24,6 +25,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -284,6 +286,13 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
+                int commonCatch = Utils.SelectRandom(Main.rand, new int[]
+                    {
+                        ModContent.ItemType<PrismaticGuppyItem>(),
+                        ModContent.ItemType<PrismaticGuppyPinkItem>(),
+                        ModContent.ItemType<PrismaticGuppyGreenItem>()
+                    });
+
                 if (attempt.legendary)
                 {
                     List<int> legendaryCatches =
@@ -315,7 +324,7 @@ namespace CalamityMod.CalPlayer
                 else if (attempt.uncommon || attempt.rare)
                     itemDrop = ModContent.ItemType<SunkenSailfish>();
                 else
-                    itemDrop = ModContent.ItemType<PrismaticGuppy>();
+                    itemDrop = commonCatch;
                 return;
             }
             // There is no complete fishing pool here, so most of it is vanilla default
@@ -323,7 +332,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (attempt.legendary)
                 {
-                    ModContent.ItemType<AlluringBait>();
+                    itemDrop = ModContent.ItemType<AlluringBait>();
                 }
                 else if (attempt.common && Main.rand.NextBool())
                     itemDrop = ModContent.ItemType<PlantyMush>();

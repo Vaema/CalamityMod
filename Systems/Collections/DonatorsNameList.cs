@@ -235,7 +235,7 @@ namespace CalamityMod.Systems.Collections
                 "oracle",
                 "YumeiSenshi",
                 "Cameron",
-                "Toxin",
+                "Aeroni", // previously "Toxin"
                 "Fweepachino",
                 "DESPACITO",
                 "Altzeus",
@@ -297,7 +297,6 @@ namespace CalamityMod.Systems.Collections
                 "Goblin",
                 "NoOneElse",
                 "Nicholas",
-                "Toasty",
                 "oli saer",
                 "Blobby6799",
                 "Domrinth",

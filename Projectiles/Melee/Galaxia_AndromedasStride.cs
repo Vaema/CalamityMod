@@ -95,8 +95,7 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.timeLeft = (7 + (int)((Charge / MaxCharge - 0.25f) * 20)) * 2; // Keep that even, if it's an odd number it'll fuck off and won't reset the player's velocity on death
                         dashDuration = Projectile.timeLeft;
                         lastDisplacement = Projectile.Center - Owner.Center;
-                        Projectile.netUpdate = true;
-                        Projectile.netSpam = 0;
+                        Projectile.ForceNetUpdate();
                     }
                 }
             }
@@ -173,8 +172,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.timeLeft = 0;
                     Owner.Calamity().LungingDown = false;
                     Projectile.active = false;
-                    Projectile.netUpdate = true;
-                    Projectile.netSpam = 0;
+                    Projectile.ForceNetUpdate();
                 }
 
                 Owner.velocity = direction * 30f;

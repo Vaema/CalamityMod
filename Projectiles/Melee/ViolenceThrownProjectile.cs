@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class ViolenceThrownProjectile : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Violence>();
@@ -75,8 +77,7 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.Center = mouse;
             else
                 Projectile.velocity = (Projectile.velocity * 3f + Projectile.DirectionTo(mouse) * 19f) / 4f;
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         internal void ReturnToOwner()

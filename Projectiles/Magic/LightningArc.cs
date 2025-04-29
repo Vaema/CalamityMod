@@ -26,6 +26,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 20;
             Projectile.penetrate = 5;
             Projectile.tileCollide = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
 

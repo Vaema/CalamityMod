@@ -218,6 +218,33 @@ namespace CalamityMod
             }
         }
 
+        public static void MinionAntiClump(this Projectile projectile, float pushForce = 0.05f)
+        {
+            for (int k = 0; k < Main.maxProjectiles; k++)
+            {
+                Projectile otherProj = Main.projectile[k];
+                // Short circuits to make the loop as fast as possible
+                if (!otherProj.active || otherProj.owner != projectile.owner || !otherProj.minion || k == projectile.whoAmI)
+                    continue;
+
+                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away.
+                bool sameProjType = otherProj.type == projectile.type;
+                float taxicabDist = Math.Abs(projectile.position.X - otherProj.position.X) + Math.Abs(projectile.position.Y - otherProj.position.Y);
+                if (sameProjType && taxicabDist < projectile.width)
+                {
+                    if (projectile.position.X < otherProj.position.X)
+                        projectile.velocity.X -= pushForce;
+                    else
+                        projectile.velocity.X += pushForce;
+
+                    if (projectile.position.Y < otherProj.position.Y)
+                        projectile.velocity.Y -= pushForce;
+                    else
+                        projectile.velocity.Y += pushForce;
+                }
+            }
+        }
+
         public static void FloatingPetAI(this Projectile projectile, bool faceRight, float tiltFloat, bool lightPet = false)
         {
             Player player = Main.player[projectile.owner];

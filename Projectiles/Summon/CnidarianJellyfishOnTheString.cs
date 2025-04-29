@@ -200,8 +200,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SegmentDistance);
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

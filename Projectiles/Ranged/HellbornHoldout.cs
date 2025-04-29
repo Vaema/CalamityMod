@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     public class HellbornHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<Hellborn>();
@@ -32,6 +34,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool hasPlayedSound = false;
         public bool hasPlayedReloadSound = false;
         public float fade = 0;
+        public int hitTimer = 0;
 
         public override void SetStaticDefaults()
         {
@@ -52,6 +55,9 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void HoldoutAI()
         {
+            if (hitTimer > 0)
+                hitTimer--;
+
             fade = Utils.GetLerpValue(0, 40, time, true);
             if (SoundEngine.TryGetActiveSound(SoundSlot, out var sSound) && sSound.IsPlaying)
             {
@@ -87,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
                         drawRot += 0.75f * Projectile.direction * MathHelper.Clamp(fade, 0.3f, 1f);
 
                         Lighting.AddLight(Projectile.Center, Color.Lerp(Color.OrangeRed, Color.White, 0.6f).ToVector3() * fade * 0.7f);
-                        if (!hasPlayedSound)
+                        if (!hasPlayedSound && Main.myPlayer == Projectile.owner)
                         {
                             SoundStyle spin = new("CalamityMod/Sounds/Item/SpinningWoosh");
                             SoundSlot = SoundEngine.PlaySound(spin with { Volume = 0.01f, Pitch = -0.1f, IsLooped = true }, Projectile.Center);
@@ -201,10 +207,18 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.1f;
-            if (Owner.Calamity().hellbornShots < 8)
+            if (hitTimer == 0)
             {
-                Owner.Calamity().hellbornShots++;
+                modifiers.SourceDamage *= 0.08f;
+                if (Owner.Calamity().hellbornShots < 12)
+                {
+                    Owner.Calamity().hellbornShots++;
+                }
+                hitTimer = Projectile.localNPCHitCooldown;
+            }
+            else
+            {
+                modifiers.SourceDamage *= 0.02f;
             }
         }
         public override bool PreDraw(ref Color lightColor)

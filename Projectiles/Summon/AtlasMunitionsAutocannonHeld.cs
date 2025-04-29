@@ -243,10 +243,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Notify other clients and the server if the cannon's firing state has changed. This sync cannot be blocked by the net spam threshold.
             if (wasFiring != IsFiring)
-            {
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
-            }
+                Projectile.ForceNetUpdate();
         }
 
         public void ShootProjectiles()
@@ -290,10 +287,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.direction = (Projectile.velocity.X > 0f).ToDirectionInt();
                 Projectile.spriteDirection = Projectile.direction;
                 if (Projectile.velocity != oldVelocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Vector2 cannonEndOffset = Projectile.velocity * 26f + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.spriteDirection) * 2f;

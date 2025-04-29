@@ -127,6 +127,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
+            DropHelper.NormalVsExpertQuantity(ModContent.ItemType<MysteriousCircuitry>(), 2, 1, 2, 2, 3);
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 1, 2, 2, 3));
         }

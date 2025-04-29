@@ -65,7 +65,6 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<AbyssalDivingGear>().
                 AddIngredient<AnechoicPlating>().
-                AddIngredient<IronBoots>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<MolluskHusk>(15).
                 AddTile(TileID.LunarCraftingStation).

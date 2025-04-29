@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -17,6 +18,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class GrandGuardianHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<GrandGuardian>();
@@ -46,12 +48,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = 1;
-            base.OnSpawn(source);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, as Grand Guardian has no projectiles
             mousePos = Owner.Calamity().mouseWorld;
@@ -207,7 +208,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/ExobladeBeamSlash");
             SoundEngine.PlaySound(fire2 with { Volume = 0.35f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, Projectile.Center);
 
-            int heal = (int)(MathHelper.Clamp(4 - Projectile.numHits * 2, 1, 4));
+            int heal = (int)(MathHelper.Clamp(5 - Projectile.numHits * 3, 1, 5));
             if (Projectile.numHits < 5)
             {
                 Owner.HealPlayer(heal);

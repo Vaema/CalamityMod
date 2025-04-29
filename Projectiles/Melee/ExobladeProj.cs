@@ -257,8 +257,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = (int)SwingTime;
 
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public override void AI()

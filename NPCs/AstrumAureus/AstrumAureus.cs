@@ -35,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumAureus
 {
     [AutoloadBossHead]
+    [HasPierceResist(singleHitbox: true)]
     public class AstrumAureus : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AureusHit", 4);
@@ -415,8 +416,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             // GFB Crab Banner and Asteroid Staff drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CrabBanner, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<AsteroidStaff>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CrabBanner, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AsteroidStaff>()), hideLootReport: true);
             }
 
             // Lore
@@ -431,7 +432,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<FAP>() }, DownedBossSystem.downedAstrumAureus);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)

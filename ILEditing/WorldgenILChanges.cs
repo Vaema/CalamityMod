@@ -161,7 +161,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Change World Generation Descriptions
+        #region Change Small World Description
         /// <summary>
         /// Changes the description of Small worlds to serve as a warning.
         /// </summary>
@@ -183,26 +183,6 @@ namespace CalamityMod.ILEditing
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
 
 
-        }
-
-        /// <summary>
-        /// Changes the description of Master Mode to mention boss changes.
-        /// </summary>
-        private static void SwapMasterModeDescriptionKey(ILContext il)
-        {
-            // Swap vanilla's Master Mode description string (UI.WorldDescriptionMaster) with Calamity's edited version (Mods.CalamityMod.UI.WorldMaster).
-            var cursor = new ILCursor(il);
-
-            // Move to after the string.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdstr("UI.WorldDescriptionMaster")))
-            {
-                LogFailure("Change Master Mode Description", "Could not match string \"UI.WorldDescriptionMaster\".");
-                return;
-            }
-
-            // Pop this value off, then replace it with Calamity's new string.
-            cursor.EmitPop();
-            cursor.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.WorldMaster");
         }
         #endregion
 

@@ -424,10 +424,7 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                 }
 
-                NPC.netUpdate = true;
-
-                if (NPC.netSpam > 10)
-                    NPC.netSpam = 10;
+                NPC.ForceNetUpdate(false);
 
                 if (Main.dedServ)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);

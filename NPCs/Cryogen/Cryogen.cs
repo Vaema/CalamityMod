@@ -1428,8 +1428,6 @@ namespace CalamityMod.NPCs.Cryogen
                 normalOnly.Add(ModContent.ItemType<FrostFlare>(), DropHelper.NormalWeaponDropRateFraction);
             }
 
-            npcLoot.Add(ItemID.FrozenKey, 3);
-
             // Trophy (always directly from boss, never in bag)
             npcLoot.Add(ModContent.ItemType<CryogenTrophy>(), 10);
 
@@ -1437,7 +1435,7 @@ namespace CalamityMod.NPCs.Cryogen
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CryogenRelic>());
 
             // GFB Bloodflare Core drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<BloodflareCore>(), hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<BloodflareCore>()), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCryogen, ModContent.ItemType<LoreArchmage>(), desc: DropHelper.FirstKillText);
@@ -1452,9 +1450,9 @@ namespace CalamityMod.NPCs.Cryogen
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // Spawn Permafrost if he isn't in the world
-            int permafrostNPC = NPC.FindFirstNPC(ModContent.NPCType<DILF>());
+            int permafrostNPC = NPC.FindFirstNPC(ModContent.NPCType<Archmage>());
             if (permafrostNPC == -1 && !BossRushEvent.BossRushActive)
-                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<DILF>(), 0, 0f, 0f, 0f, 0f, 255);
+                NPC.NewNPC(NPC.GetSource_Death(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<Archmage>(), 0, 0f, 0f, 0f, 0f, 255);
 
             // If Cryogen has not been killed, notify players about Cryonic Ore
             if (!DownedBossSystem.downedCryogen)

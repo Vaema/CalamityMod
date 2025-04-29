@@ -221,21 +221,19 @@ namespace CalamityMod.Projectiles.Summon
                     !Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, Owner.position, Owner.width, Owner.height))
                 {
                     Projectile.velocity.Y = -12f - StuckJumpSpeed;
-                    Projectile.netSpam -= 10;
                     StuckJumpSpeed += 3.5f;
                     StuckJumpSpeed = Utils.Clamp(StuckJumpSpeed, 0f, 14f);
 
                     StuckWalkThroughWallsTimer += 10f;
 
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else if (tilesSearchedAhead > 0)
                 {
                     Projectile.velocity.X = 7f;
 
                     Projectile.velocity.Y = -(5f + tilesSearchedAhead * 2f);
-                    Projectile.netSpam -= 10;
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else
                 {

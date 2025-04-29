@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
@@ -20,14 +22,14 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class BabyGhostBell : ModNPC
+    public class BabyGhostBell : SunkenSeaNPC
     {
         public bool hasBeenHit = false;
-        public static Texture2D RadiantTexture;
-        public static Texture2D VoltaicTexture;
-        public static Texture2D RedTexture;
-        public static Texture2D GreenTexture;
-        public static Texture2D GoldTexture;
+        public static Asset<Texture2D> RadiantTexture;
+        public static Asset<Texture2D> VoltaicTexture;
+        public static Asset<Texture2D> RedTexture;
+        public static Asset<Texture2D> GreenTexture;
+        public static Asset<Texture2D> GoldTexture;
         public ref float Variant => ref NPC.ai[1];
         public enum JellyColor
         {
@@ -39,18 +41,23 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 5
         }
 
-        public static Asset<Texture2D> GlowTexture;
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>();
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows;
+
+        public override void Load()
+        {
+            RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRadiant");
+            VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic");
+            GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen");
+            RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRed");
+            GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold");
+        }
 
         public override void SetStaticDefaults()
         {
-            if (!Main.dedServ)
-            {
-                RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRadiant", AssetRequestMode.ImmediateLoad).Value;
-                VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic", AssetRequestMode.ImmediateLoad).Value;
-                GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen", AssetRequestMode.ImmediateLoad).Value;
-                RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRed", AssetRequestMode.ImmediateLoad).Value;
-                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold", AssetRequestMode.ImmediateLoad).Value;
-            }
             Main.npcFrameCount[Type] = 6;
             Main.npcCatchable[Type] = true;
             NPCID.Sets.CountsAsCritter[Type] = true;
@@ -133,12 +140,14 @@ namespace CalamityMod.NPCs.SunkenSea
                     {
                         NPC.catchItem = ModContent.ItemType<BabyGhostBellRadiantItem>();
                         NPC.rarity = 3;
+                        NPC.value = 100000;
                     }
                     break;
                 case (int)JellyColor.Gold:
                     {
                         NPC.catchItem = ModContent.ItemType<BabyGhostBellGoldItem>();
                         NPC.rarity = 3;
+                        NPC.value = 100000;
                     }
                     break;
                 case (int)JellyColor.Voltaic:
@@ -229,7 +238,23 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)JellyColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
+            }
+            if (Variant == (int)JellyColor.Radiant || Variant == (int)JellyColor.Gold)
+            {
                 NPC.rarity = 3;
+                NPC.value = 100000;
+            }
+        }
+
+        public override void ModifyTypeName(ref string typeName)
+        {
+            if (Variant == (int)JellyColor.Radiant)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.RadiantBabyGhostBell");
+            }
+            if (Variant == (int)JellyColor.Gold)
+            {
+                typeName = CalamityUtils.GetTextValue("NPCs.GoldBabyGhostBell");
             }
         }
 
@@ -252,7 +277,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneGleamingBurrows && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.CaveJellyfish.Chance * 1.5f;
             }
@@ -296,19 +321,19 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (Variant)
             {
                 case (int)JellyColor.Red:
-                    texture = RedTexture;
+                    texture = RedTexture.Value;
                     break;
                 case (int)JellyColor.Green:
-                    texture = GreenTexture;
+                    texture = GreenTexture.Value;
                     break;
                 case (int)JellyColor.Radiant:
-                    texture = RadiantTexture;
+                    texture = RadiantTexture.Value;
                     break;
                 case (int)JellyColor.Voltaic:
-                    texture = VoltaicTexture;
+                    texture = VoltaicTexture.Value;
                     break;
                 case (int)JellyColor.Gold:
-                    texture = GoldTexture;
+                    texture = GoldTexture.Value;
                     break;
             }
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / Main.npcFrameCount[Type] / 2);

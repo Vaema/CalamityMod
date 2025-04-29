@@ -657,10 +657,7 @@ namespace CalamityMod.NPCs.Polterghast
                         NPC.SimpleFlyMovement(chargeLocationVelocity, chargeAcceleration);
                 }
 
-                NPC.netUpdate = true;
-
-                if (NPC.netSpam > 10)
-                    NPC.netSpam = 10;
+                NPC.ForceNetUpdate(false);
 
                 if (Main.dedServ)
                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI, 0f, 0f, 0f, 0, 0, 0);
@@ -1016,7 +1013,7 @@ namespace CalamityMod.NPCs.Polterghast
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Affliction>()));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 7, 15));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RuinousSoul>(), 1, 20, 25));
                 normalOnly.Add(ModContent.ItemType<Necroplasm>(), 1, 30, 40);
 
                 // Vanity
@@ -1032,7 +1029,7 @@ namespace CalamityMod.NPCs.Polterghast
             // GFB Cell Phone drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CellPhone, hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CellPhone), hideLootReport: true);
             }
 
             // Lore

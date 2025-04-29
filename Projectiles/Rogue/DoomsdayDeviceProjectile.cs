@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class DoomsdayDeviceProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -235,7 +237,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             float finalHitMult = 1; // If it is the last hit of a stealth strike, this is increased.
 
-            if (Projectile.Calamity().stealthStrike && !doneHitting) // Stealth strike bounce code, TODO: port this over to Pulse Rifle/Pusle Pistol because this is just a more functional version of theirs.
+            if (Projectile.Calamity().stealthStrike && !doneHitting) // Stealth strike bounce code
             {
                 NPC chosenTarget = null;
                 float distance = 2500;

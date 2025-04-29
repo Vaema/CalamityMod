@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Melee
                 Owner.Calamity().mouseWorldListener = true;
 
                 { 
-                    if (SlashTimer % SlashSpeed == 0)
+                    if (SlashTimer % (int)(SlashSpeed / Owner.GetAttackSpeed<MeleeDamageClass>()) == 0)
                     {
                         SoundStyle SlashStyle = new SoundStyle("CalamityMod/Sounds/Item/MantisSwipe", 2);
                         SlashStyle.PitchVariance = 0.3f;
@@ -270,6 +270,6 @@ namespace CalamityMod.Projectiles.Melee
         // The holdout cannot deal damage.
         public override bool? CanDamage() => false;
 
-        public override void OnSpawn(IEntitySource source) => Projectile.scale = 0f;
+        public override void WhenSpawned() => Projectile.scale = 0f;
     }
 }

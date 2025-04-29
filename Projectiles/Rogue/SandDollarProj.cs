@@ -18,6 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.aiStyle = ProjAIStyleID.Boomerang;
             Projectile.timeLeft = 300;
             AIType = ProjectileID.Bananarang;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

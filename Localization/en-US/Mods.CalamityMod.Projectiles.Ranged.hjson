@@ -88,6 +88,7 @@ FlakKrakenProjectile.DisplayName: Flak Kraken
 FlakToxicannonProjectile.DisplayName: Flak Toxicannon
 FlareBat.DisplayName: Flare Bat
 Flash.DisplayName: Flash
+FlashRoundFlash.DisplayName: Flash
 FlashRoundProj.DisplayName: Flash Round
 FlurrystormIceChunk.DisplayName: Ice Chunk
 FlurrystormIceShard.DisplayName: Ice Shard
@@ -108,7 +109,7 @@ HydraHead.DisplayName: Hydra Head
 HydraHeadLaunch.DisplayName: Hydra Head
 HydrasBlood.DisplayName: Hydra's Blood
 HyperiusBulletProj.DisplayName: Hyperius Bullet
-HyperiusSplit.DisplayName: Hyperius Bad Time
+HyperiusSplit.DisplayName: Hyperius Fragment
 IcicleArrowProj.DisplayName: Icicle Arrow
 HailstormBulletProj.DisplayName: Hailstorm Bullet
 HallowPointRoundProj.DisplayName: Hallow-Point Round
@@ -198,6 +199,8 @@ ShadeFire.DisplayName: Shady Fire
 Shell.DisplayName: Shell
 Shockblast.DisplayName: Blast
 ShockblastRound.DisplayName: Round
+ShortCircuitExplosion.DisplayName: Short Circuit
+ShortCircuitShot.DisplayName: Short Circuit Shot
 Shroom.DisplayName: Shroom
 Sickness.DisplayName: Sickness
 SicknessRound.DisplayName: Round

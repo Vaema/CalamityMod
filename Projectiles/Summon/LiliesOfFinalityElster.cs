@@ -176,8 +176,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Timer++;
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         private void IdleState()

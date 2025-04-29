@@ -1,5 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -43,12 +44,12 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<AmalgamatedBrain>().
-                AddIngredient<CosmiliteBar>(5).
                 AddIngredient<AscendantSpiritEssence>(4).
-                AddIngredient<UnholyCore>(5).
-                AddIngredient<MolluskHusk>(10).
-                AddIngredient<CorrodedFossil>(15).
-                AddIngredient<PlagueCellCanister>(15).
+                AddIngredient<UnholyEssence>(10).
+                AddIngredient<ExodiumCluster>(10).
+                AddIngredient<CorrodedFossil>(10).
+                AddIngredient<DepthCells>(10).
+                AddIngredient<EffulgentFeather>(10).
                 AddTile<CosmicAnvil>().
                 Register();
         }

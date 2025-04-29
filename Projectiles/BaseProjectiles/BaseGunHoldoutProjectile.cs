@@ -230,8 +230,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (OffsetLengthFromArm != MaxOffsetLengthFromArm)
                 OffsetLengthFromArm = MathHelper.Lerp(OffsetLengthFromArm, MaxOffsetLengthFromArm, RecoilResolveSpeed);
 
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         /// <summary>

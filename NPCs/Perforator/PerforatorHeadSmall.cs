@@ -17,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Perforator
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class PerforatorHeadSmall : ModNPC
     {
@@ -147,7 +148,7 @@ namespace CalamityMod.NPCs.Perforator
             {
                 float velocityScale = (death ? 0.15f : 0.1f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.12f : 0.1f) * enrageScale;
+                float accelerationScale = (death ? 0.1f : 0.07f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
@@ -163,10 +164,6 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-
-            NPC.alpha -= 42;
-            if (NPC.alpha < 0)
-                NPC.alpha = 0;
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
@@ -454,6 +451,9 @@ namespace CalamityMod.NPCs.Perforator
                 }
             }
 
+            if (NPC.Distance(player.Center) > 1280f)
+                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
+
             // Calculate contact damage based on velocity
             float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
             float minimalDamageVelocity = maxChargeSpeed * 0.5f;
@@ -486,6 +486,23 @@ namespace CalamityMod.NPCs.Perforator
 
             if (((NPC.velocity.X > 0f && NPC.oldVelocity.X < 0f) || (NPC.velocity.X < 0f && NPC.oldVelocity.X > 0f) || (NPC.velocity.Y > 0f && NPC.oldVelocity.Y < 0f) || (NPC.velocity.Y < 0f && NPC.oldVelocity.Y > 0f)) && !NPC.justHit)
                 NPC.netUpdate = true;
+
+            if (NPC.alpha > 0 && NPC.life > 0)
+            {
+                for (int dustIndex = 0; dustIndex < 2; dustIndex++)
+                {
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 0f, 0f, 100, default, 2f);
+                    Main.dust[dust].noGravity = true;
+                    Main.dust[dust].noLight = true;
+                }
+            }
+
+            if ((NPC.position - NPC.oldPosition).Length() > 2f)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

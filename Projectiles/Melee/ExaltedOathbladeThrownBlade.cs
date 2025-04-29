@@ -226,7 +226,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int bonusDamage = 120;
+            int bonusDamage = 100;
             if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;
@@ -366,6 +366,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
+        /*
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.timeLeft);
@@ -384,5 +385,6 @@ namespace CalamityMod.Projectiles.Melee
 
             reader.ReadFlags(out stuckInTarget, out thrown);
         }
+        */
     }
 }

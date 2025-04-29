@@ -205,35 +205,42 @@ CrushsawCrasher: {
 		Throws bouncing axes
 		Stealth strikes throw five at once
 		'''
-	GFBFirstWord1: Crushsaw
-	GFBFirstWord2: Crashsaw
-	GFBFirstWord3: Crushclaw
-	GFBFirstWord4: Crashclaw
-	GFBFirstWord5: Crushcaw
-	GFBFirstWord6: Crushaw
-	GFBFirstWord7: Crushmaw
-	GFBFirstWord8: Crashmaw
-	GFBFirstWord9: Crawshaw
-	GFBFirstWord10: Coleslaw
-	GFBFirstWord11: Cashew
-	GFBFirstWord12: Cawcaw
-	GFBFirstWord13: Crabshaw
-	GFBFirstWord14: Castle
-	GFBFirstWord15: Catshaw
-	GFBFirstWord16: Catspaw
-	GFBLastWord1: Crasher
-	GFBLastWord2: Crusher
-	GFBLastWord3: Clasher
-	GFBLastWord4: Casher
-	GFBLastWord5: Clacker
-	GFBLastWord6: Catcher
-	GFBLastWord7: Trasher
-	GFBLastWord8: Rasher
-	GFBLastWord9: Cracker
-	GFBLastWord10: Cackler
-	GFBLastWord11: Checker
-	GFBLastWord12: Clicker
-	GFBLastWord13: Catsher
+	GFBFirstWords:
+		'''
+		Crushsaw
+		Crashsaw
+		Crushclaw
+		Crashclaw
+		Crushcaw
+		Crushaw
+		Crushmaw
+		Crashmaw
+		Crawshaw
+		Coleslaw
+		Cashew
+		Cawcaw
+		Crabshaw
+		Castle
+		Catshaw
+		Catspaw
+		'''
+	GFBLastWords:
+		'''
+		Crasher
+		Crusher
+		Clasher
+		Casher
+		Clacker
+		Catcher
+		Trasher
+		Rasher
+		Cracker
+		Cackler
+		Checker
+		Clicker
+		Catsher
+		'''
+	GFBWordSeparator: " "
 }
 
 Crystalline: {
@@ -306,7 +313,7 @@ DoomsdayDevice: {
 	DisplayName: Doomsday Device
 	Tooltip:
 		'''
-		Direct hits from the weapon grants stealth
+		Direct hits from the weapon grant stealth
 		Non-stealth strikes do not consume stealth when fully charged
 		Holding a stealth strike charge beyond its limit rapidly drains stealth
 		Stealth strikes ricochet between multiple enemies, ending in a strong impact
@@ -378,9 +385,9 @@ Equanimity: {
 	DisplayName: Equanimity
 	Tooltip:
 		'''
-		Throws a boomerang born of light and darkness that confuses enemies
-		The boomerang will create light shards upon hitting enemies when thrown out, and will fire homing dark shards when returning
-		Stealth strikes cause the boomerang to create both dark and light shards whenever one type would be created
+		Throws a confusing boomerang that ricochets between enemies
+		Enemy hits alternate summoning homing light shards or piercing dark shards
+		Stealth strikes cause an alternating explosion of light or dark on every ricochet, empowering the opposite color of shard
 		'''
 }
 
@@ -406,8 +413,10 @@ Exorcism: {
 	DisplayName: Exorcism
 	Tooltip:
 		'''
-		Throws a hallowed cross which explodes into a flash of light that damages nearby enemies
-		Stealth strikes create larger flashes and rain stars infused with holy light
+		Throws a gigantic hallowed cross to the heavens, which will fall at your cursor a moment later
+		Enemies hit as it falls are impaled and repeatedly seared with holy light
+		Upon experation a cross shaped explosion is created
+		Stealth strikes twirl and throw the cross, ending in a stronger explosion at your cursor
 		'''
 }
 
@@ -435,7 +444,8 @@ FishboneBoomerang: {
 	DisplayName: Fishbone Boomerang
 	Tooltip:
 		'''
-		Stealth strikes make the boomerang ricochet between enemies
+		Ricochets between up to three enemies
+		Stealth strikes release rotting bone shards with every ricochet
 		[c/5C95A1:Though the evaporating Sea Kingdom fought a losing battle, its proud inhabitants did not go down easily.]
 		[c/5C95A1:As a last resort, they had to fashion weapons from the skeletons of dead animals.]
 		'''
@@ -1378,11 +1388,11 @@ Whitewater: {
 	DisplayName: Whitewater
 	Tooltip:
 		'''
-		Throws a flask of magic whitewater that tracks your cursor
-		After a second, the flask will glow brightly
-		Flasks that hit enemies while glowing create a temporary burst of returning water spears
-		After exploding or after being thrown for a while, the flask will return to you
-		Stealth strikes create more water spears and will make a swirling vortex of whitewater that heals any player it touches and knocks back enemies
+		Throws a flask of magic white water at the cursor that glows after a short while
+		Flasks that hit enemies while glowing release four water spears that converge back on the flask's position
+		If the flask hits an enemy or gets too far, it will return to the owner
+		Stealth strikes create six water spears and summon a swirling whitewater vortex that heals players and knocks back enemies
+		Allies that enter the vortex will heal for twice as long
 		'''
 }
 

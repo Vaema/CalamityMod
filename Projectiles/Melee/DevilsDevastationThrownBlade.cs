@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee
         public override string Texture => "CalamityMod/Items/Weapons/Melee/DevilsDevastation";
 
         public int ChargeupTime => (int)Projectile.localAI[2];
-        public int Lifetime = 180;
+        public int Lifetime = 300;
         public float OverallProgress => 1 - Projectile.timeLeft / (float)Lifetime;
         public float ThrowProgress => 1 - Projectile.timeLeft / (float)(Lifetime);
         public float ChargeProgress => 1 - (Projectile.timeLeft - Lifetime) / (float)(ChargeupTime);
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Melee
         public Color clr = Color.Lerp(Color.DeepPink, Color.Orange, 0.5f);
         public Color usedColor = Color.White;
         public bool thrown = false;
-        public int fadeOutTime = 120;
+        public int fadeOutTime = 240;
         public bool stuckInTarget = false;
         public int stuckTimer = 0;
         public bool exitedTarget = false;
@@ -364,6 +364,7 @@ namespace CalamityMod.Projectiles.Melee
 
             return false;
         }
+        /*
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.timeLeft);
@@ -382,5 +383,6 @@ namespace CalamityMod.Projectiles.Melee
 
             reader.ReadFlags(out stuckInTarget, out thrown);
         }
+        */
     }
 }

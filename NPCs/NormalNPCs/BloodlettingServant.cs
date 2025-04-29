@@ -101,8 +101,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (NPC.ai[3] > projectileShootGateValue * 0.5f)
                         NPC.ai[3] = projectileShootGateValue * 0.5f;
 
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
 
                 if (NPC.ai[1] < ChargeDuration + 1f)
@@ -115,8 +114,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.ai[0] = 0f;
                         NPC.ai[1] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                 }
             }
@@ -142,10 +140,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     NPC.ai[0] += 1f;
                     if (NPC.ai[0] == ChargeGateValue)
-                    {
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
-                    }
+                        NPC.ForceNetUpdate();
                 }
             }
             else
@@ -177,8 +172,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Main.projectile[proj].timeLeft = 600;
                     }
 
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
 
                 float pushVelocity = 0.2f * enrageScale;

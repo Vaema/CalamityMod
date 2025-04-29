@@ -48,19 +48,19 @@ namespace CalamityMod.Items.Weapons.Summon
                 }
             }
             float angleMax = MathHelper.ToRadians(360f);
-            if (CalamityUtils.CountProjectiles(type) == 1)
+            if (CalamityUtils.CountOwnedProjectiles(type, player.whoAmI) == 1)
                 angleMax = 0f;
             float index = 1f;
             if (player.ownedProjectileCounts[Item.shoot] > 30)
             {
                 angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 30) * 2.5f);
             }
-            angleMax = angleMax > MathHelper.ToRadians(360f) ? MathHelper.ToRadians(360f) : angleMax; // More intuative than using a min function
+            angleMax = angleMax > MathHelper.ToRadians(360f) ? MathHelper.ToRadians(360f) : angleMax; // More intuitive than using a min function
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type == type && p.owner == player.whoAmI)
                 {
-                    p.ai[1] = (index / CalamityUtils.CountProjectiles(type)) * angleMax - angleMax / 2f;
+                    p.ai[1] = (index / CalamityUtils.CountOwnedProjectiles(type, player.whoAmI)) * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;
                 }

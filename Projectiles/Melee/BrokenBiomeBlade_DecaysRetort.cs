@@ -37,6 +37,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -62,8 +64,7 @@ namespace CalamityMod.Projectiles.Melee
                     Lunge();
                 SoundEngine.PlaySound(SoundID.Item103, Projectile.Center);
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -95,13 +96,10 @@ namespace CalamityMod.Projectiles.Melee
 
         private void OnHitEffects(bool cannotLifesteal)
         {
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
-
+            Projectile.ForceNetUpdate();
 
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;
-
 
             if (!cannotLifesteal) //trolled
             {

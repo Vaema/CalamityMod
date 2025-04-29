@@ -208,7 +208,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
                         int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
-                        int charge2DamageNeg = Projectile.damage * 40; // Big charge time? Check. No pierce? Check. 40x damage? Yes!
+                        int charge2DamageNeg = Projectile.damage * 32; // Big charge time? Check. No pierce? Check. 32x damage? Yes!
 
                         if (Positive)
                         {

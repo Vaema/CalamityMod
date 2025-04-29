@@ -23,6 +23,8 @@ using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.Ravager;
+using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
@@ -1075,7 +1077,7 @@ namespace CalamityMod.ILEditing
             });
         }
         #endregion
-        
+
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
@@ -1198,7 +1200,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitBrtrue(target);
         }
         #endregion
-        
+
         #region Lava Replacing
         private void LavaBubbleReplacer(ILContext il)
         {
@@ -1216,17 +1218,17 @@ namespace CalamityMod.ILEditing
             }
             cursor.EmitDelegate<Func<int, int>>(type2 => LavaRenderingSystem.dustLava());
         }
-        
+
         private void LavaDropletReplacer(ILContext il)
-		{
-			ILCursor cursor = new ILCursor(il);
-			if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg(out _), i => i.MatchLdcI4(374), i => i.MatchBneUn(out _), i => i.MatchLdcI4(716)))
+        {
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg(out _), i => i.MatchLdcI4(374), i => i.MatchBneUn(out _), i => i.MatchLdcI4(716)))
             {
                 LogFailure("Ambient lava droplet replacer", "Could not locate the lava droplet newgore parameters");
                 return;
             }
-			cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
-		}
+            cursor.EmitDelegate<Func<int, int>>(type => LavaRenderingSystem.goreLava());
+        }
 
         private void SplashEntityLava(ILContext il)
         {
@@ -1761,8 +1763,8 @@ namespace CalamityMod.ILEditing
         #region Shimmer effect edits
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Fabsol's Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<FabsolsVodka>())
+            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
+            if (self.type == ModContent.ItemType<CirrusVodka>())
             {
                 self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
                 self.shimmered = true;
@@ -1868,7 +1870,7 @@ namespace CalamityMod.ILEditing
         #region Revengeance Master Mode Twins Shenanigans
         public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
         {
-            if (Main.masterMode && CalamityWorld.revenge && type == NPCID.Retinazer)
+            if (CalamityWorld.death && type == NPCID.Retinazer)
             {
                 int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
                 if (retinazerIndex == 200)
@@ -1896,7 +1898,7 @@ namespace CalamityMod.ILEditing
 
         public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
         {
-            if (Main.masterMode && CalamityWorld.revenge && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
+            if (CalamityWorld.death && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
             {
                 self.value = 0f;
                 self.boss = false;
@@ -1911,7 +1913,7 @@ namespace CalamityMod.ILEditing
         public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
         {
             bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
-            if (Main.masterMode && CalamityWorld.revenge && correctNPCType)
+            if (CalamityWorld.death && correctNPCType)
             {
                 if (Main.netMode == NetmodeID.SinglePlayer)
                     Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);
@@ -2287,7 +2289,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("GlowMask Tree Rendering", "Unable to Locate Ldfld for Point::X");
                 return;
             }
-            
+
             if (!cursor.Next.MatchStloc(out var xLocaIdx))
             {
                 LogFailure("GlowMask Tree Rendering", "Unable to Locate Stloc Index for Point::X");
@@ -2484,6 +2486,175 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #endregion
+
+        #region Sunken Sea critter variants
+        public static void ReleaseCritterVariant(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
+        {
+            int mouseX = Main.mouseX + (int)Main.screenPosition.X;
+            int mouseY = Main.mouseY + (int)Main.screenPosition.Y;
+            int tileX = mouseX / 16;
+            int tileY = mouseY / 16;
+            if (item.makeNPC == ModContent.NPCType<BabyGhostBell>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)BabyGhostBell.JellyColor.Blue;
+                    if (item.type == ModContent.ItemType<BabyGhostBellGreenItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellRedItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Red;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<BabyGhostBellGoldItem>())
+                    {
+                        colorType = (int)BabyGhostBell.JellyColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<PolypPanasea>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PolypPanasea.FishColor.Red;
+                    if (item.type == ModContent.ItemType<PolypPanaseaGreenItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaTurquoiseItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Turquoise;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaPurpleItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Purple;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaRadiantItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PolypPanaseaGoldItem>())
+                    {
+                        colorType = (int)PolypPanasea.FishColor.Gold;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<PrismaticGuppy>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)PrismaticGuppy.FishColor.Blue;
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGreenItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Green;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyPinkItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Pink;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyRadiantItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Radiant;
+                    }
+                    if (item.type == ModContent.ItemType<PrismaticGuppyGoldItem>())
+                    {
+                        colorType = (int)PrismaticGuppy.FishColor.Gold;
+                    }
+
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
+                        Main.npc[n].ai[1] = colorType;
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else if (item.makeNPC == ModContent.NPCType<Slugbun>())
+            {
+                if (!WorldGen.SolidTile(tileX, tileY))
+                {
+                    int colorType = (int)Slugbun.SlugSkin.Reef;
+                    if (item.type == ModContent.ItemType<SlugbunPolypItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Polyp;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunBurrowsItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Burrows;
+                    }
+                    if (item.type == ModContent.ItemType<SlugbunRadiantItem>())
+                    {
+                        colorType = (int)Slugbun.SlugSkin.Radiant;
+                    }
+                    player.ApplyItemTime(item);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC, ai1: colorType);
+                        Main.npc[n].catchItem = item.type;
+                        Main.npc[n].releaseOwner = (short)player.whoAmI;
+                    }
+                    else
+                    {
+                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
+                    }
+                }
+            }
+            else
+            {
+                orig(player, item);
+            }
+        }
+        #endregion
+
+        #region Make Celestial Onion give the Master Mode slot
+        public static bool MasterModeCelestialOnionCheck(Terraria.On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
+        {
+            if ((slot == 9 || slot == 19) && self.Calamity().extraAccessoryML && !Main.gameMenu)
+            {
+                return true;
+            }
+            return orig(self, slot);
+        }
         #endregion
     }
 }

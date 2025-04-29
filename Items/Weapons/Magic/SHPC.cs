@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
 
-        public const int ShotsPerSoul = 40;
+        public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
         public int storedSoulType = ItemID.SoulofLight; // Determines bar color and soul effects for projectile
         public int recoilProgress = 0;
@@ -29,8 +29,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float LightExplosionSizeMult = 1.5f;
         public const float NightExplosionTimeMult = 2.5f;
         public const int FlightDirectHitFlightBoost = 25; // The amount of flight time restored on direct hits with Flight bombs, in frames
-        public const float MightKnockbackStrength = 8f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
-        public const float SightHomingRange = 288f; // Range of homing for Sight bombs, in pixels
+        public const float MightKnockbackStrength = 20f; // The value to multiply the unit vector by when applying velocity to enemies launched by Might bombs
+        public const float SightHomingRange = 320f; // Range of homing for Sight bombs, in pixels
         public const int FrightFlatDamage = 20;
 
         public override Color? TooltipExtensionColor => new Color(31, 251, 255);
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         #region Weapon-Specific Functions
-        public int FindSoulForAmmo(Player player)
+        public static int FindSoulForAmmo(Player player)
         {
             int soul = -1;
             bool foundItem = false;
@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Weapons.Magic
                     returnColor = new(79, 255, 124);
                     break;
                 case ItemID.SoulofFright:
-                    returnColor = new(255, 128, 20);
+                    returnColor = new(255, 96, 20);
                     break;
             }
             return returnColor;
@@ -199,7 +199,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
             if (player.altFunctionUse == 2)
-                mult *= 0.3f;
+                mult *= 0f;
         }
 
         public override float UseSpeedMultiplier(Player player)
@@ -247,7 +247,11 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         #region Recoil Stuff
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+            player.Calamity().rightClickListener = true;
+        }
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
@@ -307,7 +311,13 @@ namespace CalamityMod.Items.Weapons.Magic
                 damage *= damageMult;
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (Main.zenithWorld)
+                list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue("TooltipGFB")));
+            else
+                list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalization("TooltipNormal").Format(this.GetLocalizedValue(storedSoulpower == 0 ? "NoSoul" : "SoulDesc" + storedSoulType))));
+        }
 
         public override void AddRecipes()
         {

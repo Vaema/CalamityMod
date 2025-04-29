@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 playerMouth = getPlayerMouth(player);
 
             Vector2 playerToCursor = (player.Calamity().mouseWorld - playerMouth).SafeNormalize(Vector2.UnitX);
-            float pointingDirection = (playerToCursor.ToRotation() + MathHelper.PiOver4 / 3f * player.direction * player.gravDir);
+            float pointingDirection = (playerToCursor.ToRotation() + MathHelper.PiOver4 / 3f * player.direction * player.gravDir) - player.fullRotation;
 
             CalamityUtils.CleanHoldStyle(player, pointingDirection, playerMouth, new Vector2(50, 18), new Vector2(-23, 6));
         }

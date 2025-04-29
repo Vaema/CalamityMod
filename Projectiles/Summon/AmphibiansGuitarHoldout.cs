@@ -85,8 +85,7 @@ namespace CalamityMod.Projectiles.Summon
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, armRotation);
 
             Projectile.timeLeft = 2;
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public override bool ShouldUpdatePosition() => false;

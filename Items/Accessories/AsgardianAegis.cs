@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories
         public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;
 
-        public const int RamExplosionDamage = 1000;
+        public const int RamExplosionDamage = 300;
         public const float RamExplosionKnockback = 20f;
 
         public override void SetDefaults()

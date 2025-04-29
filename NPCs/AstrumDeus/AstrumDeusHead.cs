@@ -35,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumDeus
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class AstrumDeusHead : ModNPC
     {
@@ -50,6 +51,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public static Asset<Texture2D> TextureGlow2;
         public static Asset<Texture2D> TextureGlow3;
         public static Asset<Texture2D> TextureGlow4;
+        public static Asset<Texture2D> TextureFlash2; // There is intentionally no flash texture for the eyes because I thought it looked weird
 
         public override void SetStaticDefaults()
         {
@@ -69,6 +71,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                 TextureGlow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
                 TextureGlow3 = ModContent.Request<Texture2D>(Texture + "Glow3", AssetRequestMode.AsyncLoad);
                 TextureGlow4 = ModContent.Request<Texture2D>(Texture + "Glow4", AssetRequestMode.AsyncLoad);
+                TextureFlash2 = ModContent.Request<Texture2D>(Texture + "GlowFlash2", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -166,12 +169,18 @@ namespace CalamityMod.NPCs.AstrumDeus
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            bool drawCyan = NPC.Calamity().newAI[3] >= (Main.getGoodWorld ? 300f : 600f);
             bool deathModeEnragePhase = NPC.Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
+            // Head is always the last segment to visually transition
+            float transitionStart = cyanThreshold * 0.95f;
+            bool drawCyan = NPC.Calamity().newAI[3] >= cyanThreshold;
+            bool inColorTrans = doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold >= transitionStart;
+
             Texture2D mainWormTex = TextureAssets.Npc[Type].Value;
             Texture2D secondWormTex = TextureGlow2.Value;
+            Texture2D otherMainTex, otherSecondTex;
             Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -180,23 +189,45 @@ namespace CalamityMod.NPCs.AstrumDeus
             spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
             mainWormTex = TextureGlow1.Value;
+            float colorOpacity = Utils.GetLerpValue(transitionStart, cyanThreshold, NPC.Calamity().newAI[3] % cyanThreshold, true);
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
-            if (doubleWormPhase)
+            Color otherPhaseColor = drawCyan ? Color.Orange : Color.Cyan;
+            if (doubleWormPhase) // otherMainTex and otherSecondTex contain the opposite texture, and are faded in during the transition
             {
                 mainWormTex = drawCyan ? mainWormTex : TextureGlow3.Value;
+                otherMainTex = drawCyan ? TextureGlow3.Value : mainWormTex;
                 secondWormTex = drawCyan ? TextureGlow4.Value : secondWormTex;
+                otherSecondTex = drawCyan ? secondWormTex : TextureGlow4.Value;
+            }
+            else
+            {
+                otherMainTex = mainWormTex;
+                otherSecondTex = secondWormTex;
             }
             Color mainWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Cyan, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
             Color secondWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
 
             int timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 1 : 2;
             for (int i = 0; i < timesToDraw; i++)
-                spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, mainWormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+            {
+                spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, mainWormColorLerp * (inColorTrans ? 1f - colorOpacity : 1f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the new fading in glowmask for the upcoming behavior
+                if (inColorTrans)
+                    spriteBatch.Draw(otherMainTex, drawLocation, NPC.frame, Color.Lerp(Color.White, otherPhaseColor, 0.5f) * colorOpacity, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Eyes intentionally do not flash
+            }
 
             timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 2 : 1;
             for (int i = 0; i < timesToDraw; i++)
-                spriteBatch.Draw(secondWormTex, drawLocation, NPC.frame, secondWormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
-
+            {
+                spriteBatch.Draw(secondWormTex, drawLocation, NPC.frame, secondWormColorLerp * (inColorTrans ? 1f - colorOpacity : 1f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the new fading in glowmask for the upcoming behavior
+                if (inColorTrans)
+                    spriteBatch.Draw(otherSecondTex, drawLocation, NPC.frame, Color.Lerp(Color.White, otherPhaseColor, 0.5f) * colorOpacity, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the white flash immediately after swapping behaviors
+                if (doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold < 25f)
+                    spriteBatch.Draw(TextureFlash2.Value, drawLocation, NPC.frame, Color.White * MathHelper.Lerp(1f, 0f, NPC.Calamity().newAI[3] % cyanThreshold / 25f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+            }
             return false;
         }
 
@@ -345,12 +376,12 @@ namespace CalamityMod.NPCs.AstrumDeus
             // GFB Worm and Spaghetti drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.Worm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.CanOfWorms, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.GummyWorm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.TruffleWorm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.EnchantedNightcrawler, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.Spaghetti, 1, 1, 9999, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Worm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CanOfWorms, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.GummyWorm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.TruffleWorm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.EnchantedNightcrawler, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Spaghetti, 1, 1, 9999), true);
             }
 
             // Lore

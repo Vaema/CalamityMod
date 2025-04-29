@@ -4,6 +4,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -19,6 +20,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class ForbiddenOathbladeHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<ForbiddenOathblade>();
@@ -44,6 +46,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool holding = true;
         public int postSwingCooldown = 0;
         public bool willDie = false;
+        public bool hasLaunchedBlades = false;
         public bool swooshFade = false;
         public int postSwingCooldownMax => (int)(useAnim * 0.65f);
         public override void SetDefaults()
@@ -53,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             IgnoreActiveAnimation = true;
             DrawUnconditionally = true;
@@ -61,7 +64,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.knockBack = 0;
             Projectile.scale = 1.15f;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
@@ -143,6 +145,7 @@ namespace CalamityMod.Projectiles.Melee
                 doSwing = true;
                 finalFlip = false;
                 playSwingSound = true;
+                hasLaunchedBlades = false;
                 if (!Owner.Calamity().demonSwordKillMode && postSwingCooldown == 0)
                 {
                     willDie = true;
@@ -270,18 +273,22 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(blastRing2);
             }
 
-            for (int x = 0; x < Main.maxProjectiles; x++)
+            if (!hasLaunchedBlades)
             {
-                Projectile projectile = Main.projectile[x];
-                if (projectile.active && projectile.type == ModContent.ProjectileType<ForbiddenOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                for (int x = 0; x < Main.maxProjectiles; x++)
                 {
-                    projectile.owner = Owner.whoAmI;
-                    projectile.localAI[0] = 5;
-                    projectile.velocity = (launchVel * 16.5f).RotatedByRandom(0.25f);
-                    Owner.Calamity().demonSwordKillMode = true;
-                    if (hasKillMode)
-                        killModeCD.timeLeft = KillMode.cooldownMax + KillMode.buffMax;
-                    Owner.Calamity().killModeCooldown = KillMode.cooldownMax + KillMode.buffMax;
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<ForbiddenOathbladeThrownBlade>() && projectile.ai[2] == target.whoAmI && projectile.localAI[0] != 5)
+                    {
+                        projectile.owner = Owner.whoAmI;
+                        projectile.localAI[0] = 5;
+                        projectile.velocity = (launchVel * 16.5f).RotatedByRandom(0.25f);
+                        Owner.Calamity().demonSwordKillMode = true;
+                        if (hasKillMode)
+                            killModeCD.timeLeft = KillMode.cooldownMax + KillMode.buffMax;
+                        Owner.Calamity().killModeCooldown = KillMode.cooldownMax + KillMode.buffMax;
+                        hasLaunchedBlades = true;
+                    }
                 }
             }
 
@@ -300,7 +307,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.3f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult * (Owner.Calamity().mouseRight ? 2.5f : 1);
+            modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

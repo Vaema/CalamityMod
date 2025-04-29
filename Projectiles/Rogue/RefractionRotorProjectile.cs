@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            if (CalamityUtils.CountProjectiles(shootType) > 24)
+            if (CalamityUtils.CountOwnedProjectiles(shootType, Projectile.owner) > 24)
                 return;
 
             int energyDamage = (int)(Projectile.damage * 0.5f);

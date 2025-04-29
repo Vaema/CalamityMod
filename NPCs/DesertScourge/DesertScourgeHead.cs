@@ -32,6 +32,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DesertScourge
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class DesertScourgeHead : ModNPC
     {
@@ -39,9 +40,9 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
         public bool playRoarSound = false;
 
-        public const float SegmentVelocity_Normal = 12f;
-        public const float SegmentVelocity_Expert = 15f;
-        public const float SegmentVelocity_Master = 18f;
+        public const float SegmentVelocity_Normal = 10f;
+        public const float SegmentVelocity_Expert = 12.5f;
+        public const float SegmentVelocity_Master = 15f;
         public const float SegmentVelocity_GoodWorld = 21f;
         public const float SegmentVelocity_ZenithSeed = 24f;
 
@@ -239,23 +240,23 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float burrowDistance = hide ? BurrowDistance_Hide : bossRush ? BurrowDistance_BossRush : BurrowDistance;
 
-            float speed = death ? 0.15f : 0.12f;
-            float turnSpeed = death ? 0.3f : 0.24f;
+            float speed = death ? 0.105f : 0.085f;
+            float turnSpeed = death ? 0.21f : 0.17f;
 
             if (expertMode)
             {
-                speed += speed * 0.2f * (1f - lifeRatio);
-                turnSpeed += turnSpeed * 0.2f * (1f - lifeRatio);
+                speed += speed * 0.4f * (1f - lifeRatio);
+                turnSpeed += turnSpeed * 0.4f * (1f - lifeRatio);
             }
 
             if (revenge)
             {
-                speed += (death ? 0.05f : 0.04f) * (1f - lifeRatio);
-                turnSpeed += (death ? 0.1f : 0.08f) * (1f - lifeRatio);
+                speed += (death ? 0.03f : 0.02f) * (1f - lifeRatio);
+                turnSpeed += (death ? 0.06f : 0.04f) * (1f - lifeRatio);
             }
 
-            speed += 0.12f * enrageScale;
-            turnSpeed += 0.24f * enrageScale;
+            speed += 0.085f * enrageScale;
+            turnSpeed += 0.17f * enrageScale;
 
             if (Main.getGoodWorld)
             {
@@ -303,7 +304,22 @@ namespace CalamityMod.NPCs.DesertScourge
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40), Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+                            {
+                                Vector2 sandSplashSpawnPos = new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos, Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+
+                                if (death)
+                                {
+                                    int type = ModContent.ProjectileType<DesertScourgeSpit>();
+                                    int damage = NPC.GetProjectileDamage(type);
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
+                                        Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -343,7 +359,22 @@ namespace CalamityMod.NPCs.DesertScourge
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40), Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+                            {
+                                Vector2 sandSplashSpawnPos = new Vector2(headTileCenter.X * 16 + 8, bestY * 16 - 40);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos, Vector2.Zero, ModContent.ProjectileType<DesertScourgeDiveSplash>(), 0, 0f, Main.myPlayer);
+
+                                if (death)
+                                {
+                                    int type = ModContent.ProjectileType<DesertScourgeSpit>();
+                                    int damage = NPC.GetProjectileDamage(type);
+                                    for (int i = 0; i < 7; i++)
+                                    {
+                                        Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
+                                        Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -479,7 +510,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 NPC.localAI[1] = 1f;
                 Rectangle rectangle = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-                int directChaseDistance = expertMode ? 800 : 1000;
+                int directChaseDistance = death ? 600 : expertMode ? 800 : 1000;
                 if (enrageScale > 0f)
                     directChaseDistance = 100;
 
@@ -871,8 +902,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 {
                     NPC.ai[3] = 2f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                     NPC.frame.Y = 0;
                 }
             }
@@ -897,8 +927,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         NPC.frame.Y = 0;
                         NPC.ai[3] = 0f;
-                        NPC.netUpdate = true;
-                        NPC.netSpam = 0;
+                        NPC.ForceNetUpdate();
                     }
                     else
                     {
@@ -913,8 +942,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 else
                 {
                     NPC.ai[3] = 0f;
-                    NPC.netUpdate = true;
-                    NPC.netSpam = 0;
+                    NPC.ForceNetUpdate();
                 }
             }
         }
@@ -1009,7 +1037,7 @@ namespace CalamityMod.NPCs.DesertScourge
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<DesertScourgeRelic>());
 
             // GFB Sand Shark Tooth Necklace drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<SandSharkToothNecklace>(), hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<SandSharkToothNecklace>()), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedDesertScourge, ModContent.ItemType<LoreDesertScourge>(), desc: DropHelper.FirstKillText);
@@ -1054,8 +1082,7 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 target.AddBuff(BuffID.Bleeding, 600);
                 NPC.ai[3] = 1f;
-                NPC.netUpdate = true;
-                NPC.netSpam = 0;
+                NPC.ForceNetUpdate();
             }
         }
 

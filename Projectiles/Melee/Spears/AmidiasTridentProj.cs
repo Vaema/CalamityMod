@@ -23,6 +23,8 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.penetrate = -1;
             Projectile.ownerHitCheck = true;
             Projectile.hide = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override float InitialSpeed => 3f;

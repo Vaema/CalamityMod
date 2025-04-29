@@ -125,8 +125,7 @@ namespace CalamityMod.NPCs.AcidRain
                 if (closestBubble.Hitbox.Intersects(NPC.Hitbox))
                 {
                     Flying = true;
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                     closestBubble.Kill();
                 }
             }
@@ -152,8 +151,7 @@ namespace CalamityMod.NPCs.AcidRain
                     NPC.velocity.Y -= jumpSpeed;
                     NPC.velocity.X = lungeForwardSpeed * (NPC.Center.X - destination.X < 0).ToDirectionInt();
                     NPC.spriteDirection = (NPC.Center.X - destination.X > 0).ToDirectionInt();
-                    NPC.netSpam = 0;
-                    NPC.netUpdate = true;
+                    NPC.ForceNetUpdate();
                 }
             }
             else
@@ -178,8 +176,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (NPC.WithinRange(Target.Center, Target.Size.Length()))
             {
                 Flying = false;
-                NPC.netSpam = 0;
-                NPC.netUpdate = true;
+                NPC.ForceNetUpdate();
             }
         }
 

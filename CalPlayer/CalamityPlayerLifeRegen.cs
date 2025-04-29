@@ -120,6 +120,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(trueVHex, 50);
             ApplyDoTDebuff(cDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
+            ApplyDoTDebuff(hPressure, 40, purity);
             ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
             ApplyDoTDebuff(cragsLava, 30);
             ApplyDoTDebuff(shadowflame, 30, purity);
@@ -177,7 +178,7 @@ namespace CalamityMod.CalPlayer
                 if (SulphWaterPoisoningLevel >= 1f)
                 {
                     SulphWaterPoisoningLevel = 0f;
-                    Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.SulphurMeter").Format(Player.name)), Math.Min(Player.statLifeMax2 / 4, 150), 0);
+                    Player.Hurt(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.SulphurMeter").ToNetworkText(Player.name)), Math.Min(Player.statLifeMax2 / 4, 150), 0);
                 }
             }
             else
@@ -309,6 +310,7 @@ namespace CalamityMod.CalPlayer
                 // Exact copy of vanilla Honey behavior, but does not stack with actually standing in Honey
                 if (!Player.honey)
                 {
+                    alwaysHoneyRegenAmount += 1;
                     Player.lifeRegen += 2;
                     Player.lifeRegenTime += 1;
 
@@ -316,6 +318,7 @@ namespace CalamityMod.CalPlayer
                     // However, this can't bring regen into the positives.
                     if (Player.lifeRegen < 0)
                     {
+                        alwaysHoneyRegenAmount += Math.Min(1f, 0 - Player.lifeRegen/2f);
                         Player.lifeRegen += 2;
                         if (Player.lifeRegen > 0)
                             Player.lifeRegen = 0;
@@ -391,10 +394,13 @@ namespace CalamityMod.CalPlayer
             // Grant life regen based on missing health for Radiant Ooze, Ambrosial Ampule, and purity
             if (rOoze || aAmpoule || purity)
             {
-                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / Player.statLifeMax2;
+                float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 6 hp/s
-                float lifeRegenToGive = MathHelper.Lerp(4f, 12f, missingLifeRatio);
-                Player.lifeRegen += (int)lifeRegenToGive;
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 8f : 12f), missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
+                Player.lifeRegen += lifeRegenToGive; 
+                radiantOozeRegen += lifeRegenToGive / 2f;
+                ambrosialAmpouleRegen += lifeRegenToGive / 2f;
+                purityRegen += lifeRegenToGive / 2f;
             }
 
             if (purity)
@@ -408,10 +414,10 @@ namespace CalamityMod.CalPlayer
                     int healFrameCadence = 12;
 
                     // Healing slows down after 5 seconds (300 frames) debuffed. For every 15 frames thereafter the cadence slows
-                    // There is no upper limit to how slow it can get and it can take a very long time to reset to normal
+                    // The upper limit to how slow it can get is after 15 seconds (900 frames)
                     int punishmentFrames = PurityHealSlowdownFrames - 300;
-                    //lowest punishment is three full seconds between the one health heal
-                    if (healFrameCadence < 180)
+                    //lowest punishment is a little under a second between the one health heal
+                    if (healFrameCadence < 52)
                         healFrameCadence += (punishmentFrames < 0) ? 0 : punishmentFrames / 15;
 
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
@@ -425,7 +431,9 @@ namespace CalamityMod.CalPlayer
                         jewelBonusDefense = intendedPurityDefense;
 
                     // Count up total frames spent healing for slowdown.
-                    ++PurityHealSlowdownFrames;
+                    if (PurityHealSlowdownFrames < 900)
+                        ++PurityHealSlowdownFrames;
+                    purityRegen += (60 / (float)healFrameCadence);
                 }
 
                 // If the defense should be ticking down to some lower value, do that.
@@ -609,10 +617,8 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            // Remember this is for 5 seconds after triggering a reflect with a long cooldown
             if (evolutionLifeRegenCounter > 0)
             {
-                Player.lifeRegen += 12;
                 if (Player.lifeRegenTime < 3600f)
                     Player.lifeRegenTime = 3600f;
             }
@@ -769,6 +775,8 @@ namespace CalamityMod.CalPlayer
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
+                    purityRegen += turboRegenPower/2f;
+                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower/2f;
                 }
 
             }

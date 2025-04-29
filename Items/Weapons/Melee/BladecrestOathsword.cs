@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 56;
             Item.height = 56;
 
-            Item.damage = 44;
+            Item.damage = 50;
             Item.knockBack = 3f;
             Item.useTime = 53;
             Item.useAnimation = 53;
@@ -38,10 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             throwCount++;
-            int useSpeed = (int)MathHelper.Clamp((Item.useTime / 2.8f), 1, 100);
-            Projectile blade = Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
-            blade.localAI[2] = useSpeed;
-            blade.timeLeft += useSpeed;
+            Projectile.NewProjectileDirect(source, player.MountedCenter, velocity, type, damage, knockback, player.whoAmI, 0, throwCount);
             return false;
         }
     }
