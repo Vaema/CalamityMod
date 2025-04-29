@@ -16,7 +16,9 @@ namespace CalamityMod.Projectiles.Magic
         private float AIState = 0f; // 0 = Idle, 1 = Homing to enemy, 2 = Getting sucked to player
         private const float HomingRange = 560f;
 
-        public NPC Target;
+        private NPC Target;
+        private Player ToBuff;
+        private Projectile ToSuckTowards;
         public float RandomAnglingStrength = 0f;
 
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -67,7 +69,18 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else // Only run suction code if a pickup
                 {
-
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.type == ModContent.ProjectileType<SHPV>() && p.Colliding(p.Hitbox, Projectile.Hitbox))
+                        {
+                            AIState = 2f;
+                            ToBuff = Main.player[p.owner];
+                            ToSuckTowards = p;
+                            break;
+                        }
+                        else
+                            AIState = 0f;
+                    }
                 }
             }
 
@@ -80,11 +93,21 @@ namespace CalamityMod.Projectiles.Magic
                     if (Timer % 30 == 1f)
                         RandomAnglingStrength = Main.rand.NextFloat(-0.16f, 0.16f);
                     Projectile.velocity = Projectile.velocity.RotatedBy(RandomAnglingStrength);
+                    if (Projectile.velocity.Length() > 3f && Pickup == 1f)
+                        Projectile.velocity *= 0.985f;
                     break;
                 case 1f:
                     Projectile.extraUpdates = 1;
                     float speed = Projectile.velocity.Length();
                     Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Target.Center).ToRotation(), 0.15f).ToRotationVector2() * speed;
+                    break;
+                case 2f:
+                    Projectile.velocity = (Projectile.velocity * 15f + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) * 15f) / 16f;
+                    if (Vector2.Distance(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) < 40f)
+                    {
+                        // ToBuff.Calamity().whateverBuffName++;
+                        Projectile.Kill();
+                    }
                     break;
             }
 

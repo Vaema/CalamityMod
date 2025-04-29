@@ -146,7 +146,6 @@ namespace CalamityMod.Items.Weapons.Magic
         #endregion
 
         public override Vector2? HoldoutOffset() => new Vector2(-35, -10);
-
         public override bool AltFunctionUse(Player player) => true;
 
         public override void OnCreated(ItemCreationContext context)
@@ -157,40 +156,33 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool CanUseItem(Player player)
         {
-            if (player.altFunctionUse == 2)
-            {
-                Item.useTime = 3;
-                Item.useAnimation = 3 * storedSoulpower;
-                Item.UseSound = null;
-            }
-            else
-            {
-                Item.useTime = Item.useAnimation = 60;
-                Item.UseSound = FireSound;
-            }
-
-            return storedSoulpower > 0 || (FindSoulForAmmo(player) != -1 && player.altFunctionUse != 2);
+            Item.channel = Item.noUseGraphic = player.altFunctionUse == 2;
+            return (player.altFunctionUse == 0 && (storedSoulpower > 0 || (FindSoulForAmmo(player) != -1))) ||
+                (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<SHPV>()] <= 0);
         }
 
         public override bool? UseItem(Player player)
         {
-            if (storedSoulpower > 0)
-                storedSoulpower--;
-
-            if (storedSoulpower <= 0 && player.altFunctionUse != 2)
+            if (player.altFunctionUse != 2)
             {
-                bool ammoConsumed = false;
+                if (storedSoulpower > 0)
+                    storedSoulpower--;
 
-                if (FindSoulForAmmo(player) != -1)
+                if (storedSoulpower <= 0)
                 {
-                    int soulType = FindSoulForAmmo(player);
-                    player.ConsumeItem(soulType);
-                    storedSoulType = soulType;
-                    ammoConsumed = true;
-                }
+                    bool ammoConsumed = false;
 
-                if (ammoConsumed)
-                    storedSoulpower = ShotsPerSoul;
+                    if (FindSoulForAmmo(player) != -1)
+                    {
+                        int soulType = FindSoulForAmmo(player);
+                        player.ConsumeItem(soulType);
+                        storedSoulType = soulType;
+                        ammoConsumed = true;
+                    }
+
+                    if (ammoConsumed)
+                        storedSoulpower = ShotsPerSoul;
+                }
             }
 
             return base.UseItem(player);
@@ -215,11 +207,7 @@ namespace CalamityMod.Items.Weapons.Magic
             if (player.altFunctionUse == 2)
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
-                if (storedSoulpower % 2 == 0)
-                {
-                    Vector2 Speed = new Vector2(velocity.X + Main.rand.NextFloat(-1f, 1f), velocity.Y + Main.rand.NextFloat(-1f, 1f));
-                    Projectile.NewProjectile(source, position + new Vector2(0, -10) + velocity * 2.6f, Speed, ModContent.ProjectileType<SHPL>(), (int)(damage * 0.25f), knockback * 0.5f, player.whoAmI, TransferColorToProj());
-                }
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), 0, 0f, player.whoAmI);
                 return false;
             }
             else
