@@ -1236,12 +1236,11 @@ namespace CalamityMod.CalPlayer
             }
             if (amalgam)
             {
-                target.AddBuff(BuffType<Irradiated>(), 120);
-                target.AddBuff(BuffType<HolyFlames>(), 120);
-                target.AddBuff(BuffType<Voidfrost>(), 120);
-                target.AddBuff(BuffType<SulphuricPoisoning>(), 120);
+                target.AddBuff(BuffID.Daybreak, 120);
+                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<Plague>(), 120);
                 target.AddBuff(BuffType<VermillionFlux>(), 120);
-                target.AddBuff(BuffType<HadopelagicPressure>(), 120);
+                target.AddBuff(BuffType<CrushDepth>(), 120);
             }
             if (voidOfExtinction)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
