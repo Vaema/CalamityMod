@@ -2540,14 +2540,6 @@ namespace CalamityMod.CalPlayer
                         {
                             int duration = Main.rand.Next(300 + hurtInfo.Damage / 3, 480 + hurtInfo.Damage / 2);
                             npc.AddBuff(BuffID.Confused, duration, false);
-                            if (amalgam)
-                            {
-                                npc.AddBuff(BuffID.Venom, duration);
-                                npc.AddBuff(ModContent.BuffType<Plague>(), duration);
-                                npc.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), duration);
-                                npc.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), duration);
-                                npc.AddBuff(ModContent.BuffType<Irradiated>(), duration);
-                            }
                         }
                     }
 

@@ -1836,8 +1836,9 @@ TheAmalgam: {
 	Tooltip:
 		'''
 		15% increased damage
+		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3x
 		Most buffs last twice as long, and persist after dying
-		Taking damage inflicts several debuffs on nearby enemies and spawns a dank creeper
+		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
