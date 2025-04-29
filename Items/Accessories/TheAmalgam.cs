@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
-            player.GetDamage<GenericDamageClass>() += 0.15f;
+            player.GetDamage<GenericDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()
@@ -45,11 +45,11 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<AmalgamatedBrain>().
                 AddIngredient<AscendantSpiritEssence>(4).
-                AddIngredient<UnholyEssence>(10).
-                AddIngredient<ExodiumCluster>(10).
-                AddIngredient<CorrodedFossil>(10).
-                AddIngredient<DepthCells>(10).
-                AddIngredient<EffulgentFeather>(10).
+                AddIngredient(ItemID.LunarBar, 10).
+                AddIngredient(ItemID.FragmentSolar, 10).
+                AddIngredient<PlagueCellCanister>(15).
+                AddIngredient<DepthCells>(15).
+                AddIngredient<EffulgentFeather>(8).
                 AddTile<CosmicAnvil>().
                 Register();
         }

@@ -98,7 +98,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
                         modNPC.warbannerBurnMarked = true;
-                        modNPC.warbannerBurnTimer = 2;
+                        modNPC.warbannerBurnTimer = 180;
                     }
                     if (modNPC.warbannerBurnMarked)
                     {
@@ -107,7 +107,7 @@ namespace CalamityMod.Items.Accessories
                         int burnDamage = (int)player.GetBestClassDamage().ApplyTo(47 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
                         modNPC.warbannerBurnDamage = burnDamage;
                         modNPC.warbannerBurnStacks++;
-                        modNPC.warbannerBurnTimer++;
+                        modNPC.warbannerBurnTimer = 180;
                         modNPC.warbannerBurnHideEffects = hideVisual;
                     }
                 }

@@ -1013,11 +1013,11 @@ namespace CalamityMod.NPCs
             //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
             if (IncreasedDebuffEffects_Amalgam)
             {            
-                heatDamageMult += 3;
-                coldDamageMult += 3;
-                waterDamageMult += 3;
-                sicknessDamageMult += 3;
-                electricityDamageMult += 3;
+                heatDamageMult += 3.5;
+                coldDamageMult += 3.5;
+                waterDamageMult += 3.5;
+                sicknessDamageMult += 3.5;
+                electricityDamageMult += 3.5;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
@@ -5804,6 +5804,10 @@ namespace CalamityMod.NPCs
                 warbannerBurnMarked = false;
                 warbannerBurnStacks = 0;
             }
+            if (warbannerBurnTimer <= 60)
+            {
+                warbannerBurnStacks = (int)(warbannerBurnStacks * 0.9f);
+            }
             if (warbannerBurnMarked)
             {
                 int maxStacks = 300; // Time in frames needed to reach max power
@@ -6240,8 +6244,8 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Ghost:
                 case NPCID.PirateGhost:
-                    target.AddBuff(BuffID.Cursed, 120);
-                    target.AddBuff(BuffID.Silenced, 120);
+                    target.AddBuff(BuffID.Cursed, 60);
+                    target.AddBuff(BuffID.Silenced, 180);
                     break;
 
                 case NPCID.ChaosElemental:
@@ -7244,6 +7248,22 @@ namespace CalamityMod.NPCs
                     if (!NPC.AnyNPCs(NPCID.BoundWizard))
                         pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
                 }
+            }
+
+            // Fuck Chaos Elementals, overrides the vanilla spawn so they can be afk farmed once more
+            if (Main.hardMode && spawnInfo.Player.ZoneRockLayerHeight && !calamityBiomeZone)
+            {
+                // Added more tiles for them to spawn on
+                bool isChaosElementalSpawnTile =
+                    spawnInfo.SpawnTileType == TileID.Pearlstone ||
+                    spawnInfo.SpawnTileType == TileID.Pearlsand ||
+                    spawnInfo.SpawnTileType == TileID.HallowedIce ||
+                    spawnInfo.SpawnTileType == TileID.HallowedGrass ||
+                    spawnInfo.SpawnTileType == TileID.HallowHardenedSand ||
+                    spawnInfo.SpawnTileType == TileID.HallowSandstone;
+
+                if (isChaosElementalSpawnTile)
+                    pool[NPCID.ChaosElemental] = SpawnCondition.Cavern.Chance * 0.125f;
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
