@@ -417,7 +417,7 @@ namespace CalamityMod.NPCs
 
                 // Chaos Elemental
                 // Megaphone @ 1% Normal, 2% Expert+
-                // Rod of Discord @ 1% Normal, 1.25% Expert+ (5 times higher chance than vanilla)
+                // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
                 case NPCID.ChaosElemental:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
 
@@ -425,7 +425,7 @@ namespace CalamityMod.NPCs
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
 
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 100, 80));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
                     break;
 
                 // Illuminant Bat
