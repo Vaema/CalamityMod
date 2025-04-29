@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -60,12 +61,20 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
             if (Projectile.numHits == 0)
             {
                 Player Owner = Main.player[Projectile.owner];
                 Owner.Calamity().sharkGunDamageScaling++;
+            }
+            int bonusDamage = 10000;
+            if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
+            {
+                target.Calamity().demonicFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DemonicFlames>(), 180);
+                // Demonic Flames damage must be synced, because OnHitNPC is only run for the client that hit the NPC
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    DemonicFlamesSyncPacket.Send(target);
             }
         }
 
