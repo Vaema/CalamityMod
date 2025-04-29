@@ -5804,6 +5804,10 @@ namespace CalamityMod.NPCs
                 warbannerBurnMarked = false;
                 warbannerBurnStacks = 0;
             }
+            if (warbannerBurnTimer <= 60)
+            {
+                warbannerBurnStacks = (int)(warbannerBurnStacks * 0.9f);
+            }
             if (warbannerBurnMarked)
             {
                 int maxStacks = 300; // Time in frames needed to reach max power

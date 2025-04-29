@@ -57,8 +57,8 @@ namespace CalamityMod.Items.Accessories
             }
 
             int maxValue = (int)(MaxBonus * 100);
-            float bonus = CalculateBonus(player) - 0.4f;
-            float displayBonus = (int)((bonus + 0.4f) * 100); // Should range from 0 to the maxValue
+            float bonus = CalculateBonus(player) - 0.6f;
+            float displayBonus = (int)((bonus + 0.6f) * 100); // Should range from 0 to the maxValue
 
             if (player.Calamity().cooldowns.TryGetValue(WarbanneroftheRighteousBuff.ID, out var cooldown))
             {
@@ -98,7 +98,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
                         modNPC.warbannerBurnMarked = true;
-                        modNPC.warbannerBurnTimer = 2;
+                        modNPC.warbannerBurnTimer = 180;
                     }
                     if (modNPC.warbannerBurnMarked)
                     {
@@ -107,7 +107,7 @@ namespace CalamityMod.Items.Accessories
                         int burnDamage = (int)player.GetBestClassDamage().ApplyTo(47 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
                         modNPC.warbannerBurnDamage = burnDamage;
                         modNPC.warbannerBurnStacks++;
-                        modNPC.warbannerBurnTimer++;
+                        modNPC.warbannerBurnTimer = 180;
                         modNPC.warbannerBurnHideEffects = hideVisual;
                     }
                 }
