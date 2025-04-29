@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
                 case 4:
                     return new(79, 255, 124);
                 case 5:
-                    return new(255, 128, 20);
+                    return new(255, 96, 20);
 
                 default:
                     return new(0, 0, 0);
@@ -211,10 +211,13 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(6f, 9f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6));
+                    bool pickup = i >= 5;
+                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(6f, 9f) * (pickup ? 0.5f : 1f);
+                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6), 0f, pickup ? 1f : 0f);
+                    if (pickup)
+                        Main.projectile[p].timeLeft *= 2;
                 }
             }
         }

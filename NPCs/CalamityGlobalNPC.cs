@@ -178,6 +178,9 @@ namespace CalamityMod.NPCs
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
+        // Universal debuff effects
+        public bool IncreasedDebuffEffects_Amalgam = false;
+
         /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
@@ -553,6 +556,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
+            myClone.IncreasedDebuffEffects_Amalgam = IncreasedDebuffEffects_Amalgam;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
@@ -1004,6 +1008,16 @@ namespace CalamityMod.NPCs
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
                 waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+            }
+
+            //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
+            if (IncreasedDebuffEffects_Amalgam)
+            {            
+                heatDamageMult += 3.5;
+                coldDamageMult += 3.5;
+                waterDamageMult += 3.5;
+                sicknessDamageMult += 3.5;
+                electricityDamageMult += 3.5;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
@@ -5789,6 +5803,10 @@ namespace CalamityMod.NPCs
                 warbannerBurnDamage = 0;
                 warbannerBurnMarked = false;
                 warbannerBurnStacks = 0;
+            }
+            if (warbannerBurnTimer <= 60)
+            {
+                warbannerBurnStacks = (int)(warbannerBurnStacks * 0.9f);
             }
             if (warbannerBurnMarked)
             {
