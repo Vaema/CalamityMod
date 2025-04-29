@@ -1673,7 +1673,7 @@ namespace CalamityMod.CalPlayer
                     if (numOfEnergy < energyCap)
                     {
                         int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(22);
-                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(Math.PI), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
+                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {
                             SoundStyle transform = new("CalamityMod/Sounds/Item/WaterSplash1");
@@ -1681,7 +1681,7 @@ namespace CalamityMod.CalPlayer
 
                             for (int i = 0; i <= 14; i++)
                             {
-                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(Math.PI) * Main.rand.NextFloat(0.4f, 1.2f);
+                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.4f, 1.2f);
 
                                 Dust dust2 = Dust.NewDustPerfect(Player.Center, ModContent.DustType<LightDust>(), vel);
                                 dust2.scale = Main.rand.NextFloat(0.8f, 1.4f);
@@ -1786,16 +1786,16 @@ namespace CalamityMod.CalPlayer
                     {
                         int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(400);
                         int energyType = (numOfEnergy % 3);
-                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(Math.PI), ModContent.ProjectileType<DiamondOfTheDeepProjectile>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
+                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<DiamondOfTheDeepProjectile>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         energy.localAI[2] = energyType;
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().dOfTheDeepVisual)
                         {
-                            SoundStyle transform = new("CalamityMod/Sounds/Item/WaterSplash1");
-                            SoundEngine.PlaySound(transform with { Volume = 0.25f, Pitch = 0.9f, MaxInstances = -1 }, Player.Center);
+                            SoundStyle max = new("CalamityMod/Sounds/Item/WaterSplash1");
+                            SoundEngine.PlaySound(max with { Volume = 0.35f, Pitch = 0.8f, MaxInstances = -1 }, Player.Center);
 
                             for (int i = 0; i <= 14; i++)
                             {
-                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(Math.PI) * Main.rand.NextFloat(0.4f, 1.2f);
+                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.4f, 1.2f);
 
                                 Dust dust2 = Dust.NewDustPerfect(Player.Center, ModContent.DustType<LightDust>(), vel);
                                 dust2.scale = Main.rand.NextFloat(0.8f, 1.4f);
