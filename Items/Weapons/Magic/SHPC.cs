@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Weapons.Magic
                     returnColor = new(79, 255, 124);
                     break;
                 case ItemID.SoulofFright:
-                    returnColor = new(255, 128, 20);
+                    returnColor = new(255, 96, 20);
                     break;
             }
             return returnColor;
@@ -199,7 +199,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
             if (player.altFunctionUse == 2)
-                mult *= 0.3f;
+                mult *= 0f;
         }
 
         public override float UseSpeedMultiplier(Player player)
@@ -247,7 +247,11 @@ namespace CalamityMod.Items.Weapons.Magic
         }
 
         #region Recoil Stuff
-        public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().mouseWorldListener = true;
+            player.Calamity().rightClickListener = true;
+        }
         public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             player.ChangeDir(Math.Sign((player.Calamity().mouseWorld - player.Center).X));
@@ -307,7 +311,13 @@ namespace CalamityMod.Items.Weapons.Magic
                 damage *= damageMult;
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (Main.zenithWorld)
+                list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue("TooltipGFB")));
+            else
+                list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalization("TooltipNormal").Format(this.GetLocalizedValue(storedSoulpower == 0 ? "NoSoul" : "SoulDesc" + storedSoulType))));
+        }
 
         public override void AddRecipes()
         {
