@@ -68,7 +68,6 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -1649,15 +1648,18 @@ namespace CalamityMod.CalPlayer
                 Projectile projectile = null;
                 if (Player.dashDelay == -1) // When the player dashes, make all the energies exit idle phase
                 {
+                    int energyCount = 0;
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         projectile = Main.projectile[x];
                         if (projectile.active && projectile.type == ModContent.ProjectileType<AmuletEnergy>() && projectile.ai[2] == 0 && projectile.owner == Player.whoAmI)
                         {
                             projectile.ai[2] = 5;
+                            energyCount++;
                         }
                     }
-                    sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
+                    if (energyCount > 0)
+                        sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
                 }
                 int numOfEnergy = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
@@ -1744,21 +1746,32 @@ namespace CalamityMod.CalPlayer
 
             if (dOfTheDeep)
             {
-                int spawnTime = 50; // Time between energy spawns
+                if (dOfTheDeepDefenseBuffTimer > 0)
+                {
+                    int maxDefense = 15;
+                    int givenDefense = (int)Utils.Remap(dOfTheDeepDefenseBuffTimer, 0, dOfTheDeepDefenseBuffMax * 0.5f, 0, maxDefense);
+                    Player.statDefense += givenDefense;
+                    dOfTheDeepDefenseBuffTimer--;
+                }
+
+                int spawnTime = 150; // Time between energy spawns
                 int energyCap = 3; // Max number of energies that can be alive at a time
 
                 Projectile projectile = null;
-                if (Player.dashDelay == -1) // When the player dashes, make all the energies exit idle phase
+                if (Player.dashDelay == -1 && dOfTheDeepTimer > 0) // When the player dashes, make all the energies exit idle phase
                 {
+                    int energyCount = 0;
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         projectile = Main.projectile[x];
                         if (projectile.active && projectile.type == ModContent.ProjectileType<DiamondOfTheDeepProjectile>() && projectile.ai[2] == 0 && projectile.owner == Player.whoAmI)
                         {
                             projectile.ai[2] = 5;
+                            energyCount++;
                         }
                     }
-                    dOfTheDeepTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
+                    if (energyCount > 0)
+                        dOfTheDeepTimer = (int)(-spawnTime * 0.5f); // The spawn cooldown after launching energies is longer
                 }
                 int numOfEnergy = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
@@ -1771,7 +1784,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (numOfEnergy < energyCap)
                     {
-                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(150);
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(400);
                         int energyType = (numOfEnergy % 3);
                         Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(Math.PI), ModContent.ProjectileType<DiamondOfTheDeepProjectile>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         energy.localAI[2] = energyType;

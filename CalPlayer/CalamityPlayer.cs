@@ -4,9 +4,6 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -922,6 +919,8 @@ namespace CalamityMod.CalPlayer
         public bool dOfTheDeep = false;
         public int dOfTheDeepTimer = 0;
         public bool dOfTheDeepVisual = false;
+        public int dOfTheDeepDefenseBuffMax = 420;
+        public int dOfTheDeepDefenseBuffTimer = 0;
         public bool oceanCrest = false;
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
