@@ -470,6 +470,4 @@ WitchDoctorChat: {
 	Jungle: I wonder how my relatives are doing, last time I checked on them they were too busy praising the... Sun, I think.
 }
 
-WizardChat: {
-	Hardmode: Space just got way too close for comfort.
-}
+WizardChat.Hardmode: Space just got way too close for comfort.
