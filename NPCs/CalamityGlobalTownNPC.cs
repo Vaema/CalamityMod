@@ -1024,8 +1024,6 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Wizard:
-                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
-                        chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.MentionRoD");
                     if (Main.rand.NextBool(10) && Main.hardMode)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.Hardmode");
                     break;
