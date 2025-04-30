@@ -178,6 +178,9 @@ namespace CalamityMod.NPCs
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
+        // Universal debuff effects
+        public bool IncreasedDebuffEffects_Amalgam = false;
+
         /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
@@ -553,6 +556,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
+            myClone.IncreasedDebuffEffects_Amalgam = IncreasedDebuffEffects_Amalgam;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
@@ -1004,6 +1008,16 @@ namespace CalamityMod.NPCs
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
                 waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+            }
+
+            //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
+            if (IncreasedDebuffEffects_Amalgam)
+            {            
+                heatDamageMult += 3.5;
+                coldDamageMult += 3.5;
+                waterDamageMult += 3.5;
+                sicknessDamageMult += 3.5;
+                electricityDamageMult += 3.5;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
@@ -5790,6 +5804,10 @@ namespace CalamityMod.NPCs
                 warbannerBurnMarked = false;
                 warbannerBurnStacks = 0;
             }
+            if (warbannerBurnTimer <= 60)
+            {
+                warbannerBurnStacks = (int)(warbannerBurnStacks * 0.9f);
+            }
             if (warbannerBurnMarked)
             {
                 int maxStacks = 300; // Time in frames needed to reach max power
@@ -6224,10 +6242,14 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffID.BrokenArmor, 300);
                     break;
 
+                case NPCID.PossessedArmor:
+                    target.AddBuff(BuffID.Cursed, 60);
+                    break;
+
                 case NPCID.Ghost:
                 case NPCID.PirateGhost:
-                    target.AddBuff(BuffID.Cursed, 120);
-                    target.AddBuff(BuffID.Silenced, 120);
+                    target.AddBuff(BuffID.Cursed, 60);
+                    target.AddBuff(BuffID.Silenced, 180);
                     break;
 
                 case NPCID.ChaosElemental:
@@ -7020,51 +7042,34 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 0.85);
 
             if (Main.SceneMetrics.WaterCandleCount > 0)
+                spawnRate = (int)(spawnRate * 0.8888); // On top of 0.75 = 0.6666x (1.33x -> 1.5x spawn rate)
+            if (player.enemySpawns) // Battle Potion
             {
-                spawnRate = (int)(spawnRate * 0.9);
-                maxSpawns = (int)(maxSpawns * 1.1f);
-            }
-            if (player.enemySpawns)
-            {
-                spawnRate = (int)(spawnRate * 0.8);
-                maxSpawns = (int)(maxSpawns * 1.2f);
+                spawnRate = (int)(spawnRate * 0.8); // On top of 0.5 = 0.4x (2x -> 2.5x spawn rate)
+                maxSpawns = (int)(maxSpawns * 1.25f); // On top of 2 (2x -> 2.5x max spawns)
             }
             if (player.Calamity().chaosCandle)
             {
-                spawnRate = (int)(spawnRate * 0.6);
+                spawnRate = (int)(spawnRate * 0.4); // 2.5x spawn rate
                 maxSpawns = (int)(maxSpawns * 2.5f);
             }
             if (player.Calamity().zerg)
             {
-                spawnRate = (int)(spawnRate * 0.2);
+                spawnRate = (int)(spawnRate * 0.2); // 5x spawn rate
                 maxSpawns = (int)(maxSpawns * 5f);
             }
 
-            // This is horribly unoptimized, I'm leaving it commented out. - Fab
-            /*if (NPC.AnyNPCs(NPCType<WulfrumAmplifier>()))
-            {
-                int otherWulfrumEnemies = NPC.CountNPCS(NPCType<WulfrumDrone>()) + NPC.CountNPCS(NPCType<WulfrumGyrator>()) + NPC.CountNPCS(NPCType<WulfrumHovercraft>()) + NPC.CountNPCS(NPCType<WulfrumRover>());
-                if (otherWulfrumEnemies < 4)
-                {
-                    spawnRate = (int)(spawnRate * 0.8);
-                    maxSpawns = (int)(maxSpawns * 1.2f);
-                }
-            }*/
-
             // Reductions
             if (Main.SceneMetrics.PeaceCandleCount > 0)
-            {
-                spawnRate = (int)(spawnRate * 1.1);
-                maxSpawns = (int)(maxSpawns * 0.9f);
-            }
+                spawnRate = (int)(spawnRate * 1.0989); // On top of 1.3 = 1.4286x (0.77x -> 0.7x spawn rate)
             if (player.Calamity().tranquilityCandle)
             {
-                spawnRate = (int)(spawnRate * 1.4);
-                maxSpawns = (int)(maxSpawns * 0.4f);
+                spawnRate = (int)(spawnRate * 1.6666); // 0.6x spawn rate
+                maxSpawns = (int)(maxSpawns * 0.6f);
             }
             if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
-                spawnRate = (int)(spawnRate * 2.5);
+                spawnRate = (int)(spawnRate * 3.3333); // 0.3x spawn rate
                 maxSpawns = (int)(maxSpawns * 0.3f);
             }
             if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
@@ -7230,6 +7235,22 @@ namespace CalamityMod.NPCs
                     if (!NPC.AnyNPCs(NPCID.BoundWizard))
                         pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
                 }
+            }
+
+            // Fuck Chaos Elementals, overrides the vanilla spawn so they can be afk farmed once more
+            if (Main.hardMode && spawnInfo.Player.ZoneRockLayerHeight && !calamityBiomeZone)
+            {
+                // Added more tiles for them to spawn on
+                bool isChaosElementalSpawnTile =
+                    spawnInfo.SpawnTileType == TileID.Pearlstone ||
+                    spawnInfo.SpawnTileType == TileID.Pearlsand ||
+                    spawnInfo.SpawnTileType == TileID.HallowedIce ||
+                    spawnInfo.SpawnTileType == TileID.HallowedGrass ||
+                    spawnInfo.SpawnTileType == TileID.HallowHardenedSand ||
+                    spawnInfo.SpawnTileType == TileID.HallowSandstone;
+
+                if (isChaosElementalSpawnTile)
+                    pool[NPCID.ChaosElemental] = SpawnCondition.Cavern.Chance * 0.125f;
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops

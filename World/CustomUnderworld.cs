@@ -620,6 +620,182 @@ namespace CalamityMod.World
             // Obsidian and hellstone towers...
             AddHellHouses();
 
+            // Generate after houses to avoid complications
+            // Place pillars of walls to show that the roof of the underworld is being held up
+            // Do not place any pillars in the Brimstone Crags
+            bool cragsLocationIsLeft = GenVars.dungeonX < Main.maxTilesX / 2;
+            int brimstoneCragsSize = Main.maxTilesX / 5;
+            int brimstoneCragsLocationStart = cragsLocationIsLeft ? (25 + brimstoneCragsSize) : ((Main.maxTilesX - brimstoneCragsSize) - 25);
+            int pillarDistanceFromCragsLimit = 160;
+            int pillarIndexStartX = (cragsLocationIsLeft ? brimstoneCragsLocationStart : 0) + pillarDistanceFromCragsLimit;
+            int pillarIndexEndX = (cragsLocationIsLeft ? Main.maxTilesX : brimstoneCragsLocationStart) - pillarDistanceFromCragsLimit;
+            int pillarIndexStarY = Main.maxTilesY - 200;
+            int pillarIndexEndY = smoulderingStoneWallStartDepth + randomizedWallSectionsHeight;
+            int pillarMidPointY = pillarIndexStarY + (pillarIndexEndY - pillarIndexStarY) / 2;
+            int pillarCutOffCheckStart = pillarMidPointY - 10;
+            int pillarMinWidth = 6;
+            int pillarMinWidthPerSide = pillarMinWidth / 2;
+            int pillarMinStartingWidth = 18;
+            int pillarMaxWidth = 24;
+            int pillarMaxWidthPerSide = pillarMaxWidth / 2;
+            int pillarY = 0;
+            int pillarLeftSize = 0;
+            int pillarRightSize = 0;
+            int topTileSectionSize = 10;
+            int pillarTopTileSectionCutOff = pillarIndexStarY + topTileSectionSize;
+            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
+            ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
+
+            // Use the x tile index to find pillar locations
+            for (int x = pillarIndexStartX; x < pillarIndexEndX; x += WorldGen.genRand.Next(80, pillarDistanceFromCragsLimit + 1))
+            {
+                int pillarStartingWidth = WorldGen.genRand.Next(pillarMinStartingWidth, pillarMaxWidth + 1);
+                pillarLeftSize = pillarStartingWidth / 2;
+                pillarRightSize = pillarStartingWidth / 2;
+                if (pillarStartingWidth % 2 != 0)
+                {
+                    if (WorldGen.genRand.NextBool())
+                        pillarLeftSize++;
+                    else
+                        pillarRightSize++;
+                }
+
+                int startOfPillarX = x - pillarMaxWidthPerSide;
+                int endOfPillarX = x + pillarMaxWidthPerSide;
+                int wallsDetected = 0;
+                bool tooManyWallsToPlacePillarRow = false;
+
+                // Start the pillar at the top of the underworld and extend down to the hellstone wall
+                for (int y = pillarIndexStarY; y <= pillarIndexEndY; y++)
+                {
+                    // The amount of walls required to stop generating the pillar when it's deeper than pillarCutoffCheckStart
+                    int pillarCutOffSize = pillarLeftSize + pillarRightSize + 2;
+
+                    // Get the amount of empty space on the left and right of the pillar's X mid point
+                    int emptySpaceOnLeft = pillarMaxWidthPerSide - pillarLeftSize;
+                    int emptySpaceOnRight = pillarMaxWidthPerSide - pillarRightSize;
+
+                    // Used for wall cleanup around top tile section
+                    int topTileSectionWallCleanupLeft = startOfPillarX + emptySpaceOnLeft + 1;
+                    int topTileSectionWallCleanupRight = endOfPillarX - emptySpaceOnRight - 1;
+
+                    // Create sections of pillar
+                    for (int x2 = startOfPillarX; x2 <= endOfPillarX; x2++)
+                    {
+                        // Check if there are too many walls in a line (this ends the current pillar generation and moves to the next)
+                        if (Main.tile[x2, y].WallType != WallID.None)
+                        {
+                            // Only try to kill further pillar gen if the gen is beyond the pillar's mid point minus 10 tiles
+                            if (y > pillarCutOffCheckStart)
+                                wallsDetected++;
+
+                            if (wallsDetected > pillarCutOffSize)
+                            {
+                                tooManyWallsToPlacePillarRow = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (x2 >= startOfPillarX + emptySpaceOnLeft && x2 <= endOfPillarX - emptySpaceOnRight)
+                            {
+                                Main.tile[x2, y].WallType = pillarWallID;
+
+                                // Blocks on top to hold the pillars
+                                if (y < pillarTopTileSectionCutOff)
+                                {
+                                    // Clean up walls at the top so it doesn't look ugly
+                                    if (x2 <= topTileSectionWallCleanupLeft || x2 >= topTileSectionWallCleanupRight || y == pillarIndexStarY)
+                                        Main.tile[x2, y].WallType = WallID.None;
+
+                                    Main.tile[x2, y].Get<TileWallWireStateData>().HasTile = true;
+                                    Main.tile[x2, y].TileType = pillarTileID;
+                                }
+                            }
+                        }
+                    }
+
+                    // Break out if too many walls are already in place
+                    if (tooManyWallsToPlacePillarRow)
+                        break;
+                    else
+                        wallsDetected = 0;
+
+                    if (y < pillarMidPointY)
+                    {
+                        // Becomes more likely to become thinner the further down the pillar is before the mid point
+                        pillarY++;
+                        int chance = pillarY / 3;
+                        if (chance < 2)
+                            chance = 2;
+
+                        if (!WorldGen.genRand.NextBool(chance))
+                        {
+                            switch (WorldGen.genRand.Next(4))
+                            {
+                                default:
+                                    break;
+
+                                case 0:
+                                    pillarLeftSize--;
+                                    break;
+
+                                case 1:
+                                    pillarRightSize--;
+                                    break;
+
+                                case 2:
+                                    pillarLeftSize--;
+                                    pillarRightSize--;
+                                    break;
+                            }
+
+                            // Cap the min width of each side of the pillar
+                            if (pillarLeftSize < pillarMinWidthPerSide)
+                                pillarLeftSize = pillarMinWidthPerSide;
+                            if (pillarRightSize < pillarMinWidthPerSide)
+                                pillarRightSize = pillarMinWidthPerSide;
+                        }
+                    }
+                    else
+                    {
+                        // Becomes more likely to become thicker the further down the pillar is beyond the mid point
+                        pillarY -= 2;
+                        int chance = pillarY;
+                        if (chance < 2)
+                            chance = 2;
+
+                        if (WorldGen.genRand.NextBool(chance))
+                        {
+                            switch (WorldGen.genRand.Next(4))
+                            {
+                                default:
+                                    break;
+
+                                case 0:
+                                    pillarLeftSize++;
+                                    break;
+
+                                case 1:
+                                    pillarRightSize++;
+                                    break;
+
+                                case 2:
+                                    pillarLeftSize++;
+                                    pillarRightSize++;
+                                    break;
+                            }
+
+                            // Cap the max width of each side of the pillar
+                            if (pillarLeftSize > pillarMaxWidthPerSide)
+                                pillarLeftSize = pillarMaxWidthPerSide;
+                            if (pillarRightSize > pillarMaxWidthPerSide)
+                                pillarRightSize = pillarMaxWidthPerSide;
+                        }
+                    }
+                }
+            }
+
             // Drunk world ash grass and trees
             if (WorldGen.drunkWorldGen)
             {
@@ -770,7 +946,7 @@ namespace CalamityMod.World
 
             if (!WorldGen.remixWorldGen)
             {
-                // Generate some small houses on the ash island
+                // Generate some structures on the ash island
                 int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
                 int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
                 int ashIslandDistance = ashIslandX2 - ashIslandX;
@@ -1180,10 +1356,22 @@ namespace CalamityMod.World
                     y = (paintingPlacementY + paintingPlacementY2) / 2;
                 }
 
+                // Clamp this due to out of bounds errors
+                y = (int)MathHelper.Clamp(y, 1, Main.maxTilesY - 1);
+
                 paintingPlacementX = x;
                 paintingPlacementX2 = x;
                 while (!Main.tile[paintingPlacementX, y].HasTile && !Main.tile[paintingPlacementX, y - 1].HasTile && !Main.tile[paintingPlacementX, y + 1].HasTile)
+                {
                     paintingPlacementX--;
+
+                    // Ensure we don't get out of bounds errors
+                    if (paintingPlacementX < 0)
+                    {
+                        paintingPlacementX = 0;
+                        break;
+                    }
+                }
 
                 paintingPlacementX++;
                 for (; !Main.tile[paintingPlacementX2, y].HasTile && !Main.tile[paintingPlacementX2, y - 1].HasTile && !Main.tile[paintingPlacementX2, y + 1].HasTile; paintingPlacementX2++)

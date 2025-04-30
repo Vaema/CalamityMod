@@ -90,6 +90,8 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
 
+            target.Calamity().IncreasedDebuffEffects_Amalgam = amalgam;
+
             switch (item.type)
             {
                 case ItemID.DeathSickle:
@@ -224,6 +226,8 @@ namespace CalamityMod.CalPlayer
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (proj.type)
             {
@@ -1229,6 +1233,14 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), 180);
                     target.AddBuff(BuffType<Irradiated>(), 180);
                 }
+            }
+            if (amalgam)
+            {
+                target.AddBuff(BuffID.Daybreak, 120);
+                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<Plague>(), 120);
+                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffType<CrushDepth>(), 120);
             }
             if (voidOfExtinction)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
