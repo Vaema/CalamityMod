@@ -98,6 +98,12 @@ namespace CalamityMod.NPCs
                 case NPCID.Werewolf:
                     npcLoot.ChangeDropRate(ItemID.MoonCharm, 1, 20);
                     break;
+
+                // Possessed Armor
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.PossessedArmor:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    break;
                 #endregion
 
                 #region Sky / Space

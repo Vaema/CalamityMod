@@ -6242,6 +6242,10 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffID.BrokenArmor, 300);
                     break;
 
+                case NPCID.PossessedArmor:
+                    target.AddBuff(BuffID.Cursed, 60);
+                    break;
+
                 case NPCID.Ghost:
                 case NPCID.PirateGhost:
                     target.AddBuff(BuffID.Cursed, 60);
