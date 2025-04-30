@@ -1599,6 +1599,7 @@ namespace CalamityMod.Systems
 
             // Fledgling Wings
             r = Recipe.Create(ItemID.CreativeWings);
+            r.AddIngredient(ModContent.ItemType<AncientBoneDust>(), 2);
             r.AddIngredient(ItemID.Cloud, 5);
             r.AddIngredient(ItemID.Feather, 10);
             r.AddTile(TileID.Anvils);
