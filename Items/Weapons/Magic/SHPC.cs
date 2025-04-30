@@ -157,8 +157,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool CanUseItem(Player player)
         {
             Item.channel = Item.noUseGraphic = player.altFunctionUse == 2;
-            return (player.altFunctionUse == 0 && (storedSoulpower > 0 || (FindSoulForAmmo(player) != -1))) ||
-                (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<SHPV>()] <= 0);
+            return ((player.altFunctionUse == 0 && (storedSoulpower > 0 || (FindSoulForAmmo(player) != -1))) || player.altFunctionUse == 2) &&
+                player.ownedProjectileCounts[ModContent.ProjectileType<SHPV>()] <= 0;
         }
 
         public override bool? UseItem(Player player)
@@ -206,7 +206,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), 0, 0f, player.whoAmI);
                 return false;
             }

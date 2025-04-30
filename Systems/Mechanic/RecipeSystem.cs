@@ -722,7 +722,6 @@ namespace CalamityMod.Systems
             AddEarlyGameAccessoryRecipes();
             AddHardmodeItemRecipes();
             AddArmorRecipes();
-            AddAnkhShieldRecipes();
         }
         #endregion
 
@@ -1638,6 +1637,13 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
             #endregion
 
+            // Cobalt Shield
+            r = Recipe.Create(ItemID.CobaltShield);
+            r.AddRecipeGroup(AnyCobaltBar, 5);
+            r.AddTile(TileID.Anvils);
+            r.Register();
+            r.DisableDecraft();
+
             // Flame Waker Boots
             r = Recipe.Create(ItemID.FlameWakerBoots);
             r.AddIngredient(ItemID.Silk, 8);
@@ -1707,70 +1713,6 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.PharaohsRobe);
             r.AddIngredient(ItemID.AncientCloth, 4);
             r.AddTile(TileID.Loom);
-            r.Register();
-            r.DisableDecraft();
-        }
-        #endregion
-
-        #region Ankh Shield Components
-        private static void AddAnkhShieldRecipes()
-        {
-            // Cobalt Shield
-            Recipe r = Recipe.Create(ItemID.CobaltShield);
-            r.AddRecipeGroup(AnyCobaltBar, 5);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // The Plan:
-            // Trifold Map (confusion)
-            r = Recipe.Create(ItemID.TrifoldMap);
-            r.AddIngredient(ItemID.Silk, 10);
-            r.AddIngredient(ItemID.SoulofLight, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Fast Clock (slow)
-            r = Recipe.Create(ItemID.FastClock);
-            r.AddIngredient(ItemID.Timer1Second);
-            r.AddIngredient(ItemID.PixieDust, 25);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Countercurse Mantra:
-            // Nazar (curse)
-            r = Recipe.Create(ItemID.Nazar);
-            r.AddIngredient(ItemID.SoulofNight, 10);
-            r.AddIngredient(ItemID.Lens, 3);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Megaphone (silence)
-            r = Recipe.Create(ItemID.Megaphone);
-            r.AddRecipeGroup(AnyCobaltBar, 5);
-            r.AddIngredient(ItemID.Wire, 10);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Reflective Shades:
-            // Blindfold (darkness)
-            r = Recipe.Create(ItemID.Blindfold);
-            r.AddIngredient(ItemID.Silk, 10);
-            r.AddIngredient(ItemID.TatteredCloth);
-            r.AddTile(TileID.Anvils);
-            r.Register();
-            r.DisableDecraft();
-
-            // Pocket Mirror (petrification)
-            r = Recipe.Create(ItemID.PocketMirror);
-            r.AddIngredient(ItemID.Glass, 10);
-            r.AddRecipeGroup(AnyGoldBar, 8);
-            r.AddIngredient(ItemID.CrystalShard, 8);
-            r.AddTile(TileID.Anvils);
             r.Register();
             r.DisableDecraft();
         }

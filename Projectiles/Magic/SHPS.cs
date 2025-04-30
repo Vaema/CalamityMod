@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.Magic
         private const float HomingRange = 560f;
 
         private NPC Target;
-        private Player ToBuff;
         private Projectile ToSuckTowards;
         public float RandomAnglingStrength = 0f;
 
@@ -74,7 +73,6 @@ namespace CalamityMod.Projectiles.Magic
                         if (p.type == ModContent.ProjectileType<SHPV>() && p.Colliding(p.Hitbox, Projectile.Hitbox))
                         {
                             AIState = 2f;
-                            ToBuff = Main.player[p.owner];
                             ToSuckTowards = p;
                             break;
                         }
@@ -105,7 +103,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.velocity = (Projectile.velocity * 15f + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) * 15f) / 16f;
                     if (Vector2.Distance(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) < 40f)
                     {
-                        // ToBuff.Calamity().whateverBuffName++;
+                        ToSuckTowards.ModProjectile<SHPV>().SoulColors.Add(Projectile.ai[0]);
                         Projectile.Kill();
                     }
                     break;
