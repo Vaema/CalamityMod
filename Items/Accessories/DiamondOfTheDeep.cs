@@ -2,14 +2,16 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
+    [LegacyName("LumenousAmulet")]
     [AutoloadEquip(EquipType.Neck)]
-    public class LumenousAmulet : ModItem, ILocalizedModType
+    public class DiamondOfTheDeep : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -24,16 +26,20 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.lumenousAmulet = true;
-            player.buffImmune[ModContent.BuffType<RiptideDebuff>()] = true;
-            player.buffImmune[ModContent.BuffType<CrushDepth>()] = true;
+            modPlayer.dOfTheDeep = true;
+            modPlayer.dOfTheDeepVisual = !hideVisual;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<SeaSpiritAmulet>().
-                AddIngredient<Lumenyl>(15).
+                AddIngredient<AbyssGravel>(10).
+                AddIngredient<DepthCells>(5).
+                AddIngredient<PyreMantle>(10).
+                AddIngredient<ScoriaBar>(5).
+                AddIngredient<Voidstone>(10).
+                AddIngredient<Lumenyl>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
