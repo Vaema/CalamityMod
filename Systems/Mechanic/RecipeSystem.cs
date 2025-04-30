@@ -1731,7 +1731,7 @@ namespace CalamityMod.Systems
             // Rod of Discord
             r = Recipe.Create(ItemID.RodofDiscord);
             r.AddIngredient(ItemID.SoulofLight, 30);
-            r.AddIngredient(ItemID.PixieDust, 50);
+            r.AddIngredient(ItemID.CrystalShard, 25);
             r.AddIngredient(ItemID.ChaosFish, 5);
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
