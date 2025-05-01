@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -473,6 +474,7 @@ namespace CalamityMod.NPCs.OldDuke
             if (hurtInfo.Damage > 0)
             {
                 target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
                 if (Main.zenithWorld)
                 {
                     target.AddBuff(BuffID.Rabies, Main.rand.Next(180, 601));

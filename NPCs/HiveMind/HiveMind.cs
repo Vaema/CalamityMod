@@ -1332,7 +1332,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 300);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 360);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => NPC.scale == 1f; // Only draw HP bar while at full size

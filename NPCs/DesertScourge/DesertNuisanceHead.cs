@@ -607,7 +607,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Bleeding, 180);
+                target.AddBuff(BuffID.Bleeding, 300);
                 NPC.ai[3] = 1f;
                 NPC.ForceNetUpdate();
             }

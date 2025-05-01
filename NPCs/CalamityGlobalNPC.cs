@@ -6297,25 +6297,25 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120);
                     break;
 
                 case NPCID.Plantera:
                     if (npc.life < npc.lifeMax / 2)
-                        target.AddBuff(BuffID.Poisoned, 300);
+                        target.AddBuff(BuffID.Poisoned, 360);
                     break;
 
                 case NPCID.PlanterasTentacle:
-                    target.AddBuff(BuffID.Poisoned, 120);
+                    target.AddBuff(BuffID.Poisoned, 180);
                     break;
 
                 case NPCID.Golem:
@@ -6330,7 +6330,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.DukeFishron:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.AncientLight:
@@ -6339,7 +6339,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.HallowBoss:
                     if (NPC.ShouldEmpressBeEnraged())
-                        target.AddBuff(BuffType<Daybroken>(), 240);
+                        target.AddBuff(BuffType<Daybroken>(), 360);
                     break;
 
                 case NPCID.BloodNautilus:
@@ -6352,7 +6352,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Lavabat:
-                    target.AddBuff(BuffID.OnFire, 120);
+                    target.AddBuff(BuffID.OnFire, 300);
                     break;
 
                 case NPCID.RuneWizard:
@@ -6374,7 +6374,7 @@ namespace CalamityMod.NPCs
                     case NPCID.AngryBonesBig:
                     case NPCID.AngryBonesBigMuscle:
                     case NPCID.AngryBonesBigHelmet:
-                        target.AddBuff(BuffType<ArmorCrunch>(), 60);
+                        target.AddBuff(BuffType<ArmorCrunch>(), 120);
                         break;
 
                     default:
@@ -6397,7 +6397,7 @@ namespace CalamityMod.NPCs
                         case NPCID.HellArmoredBonesSpikeShield:
                         case NPCID.HellArmoredBonesMace:
                         case NPCID.HellArmoredBonesSword:
-                            target.AddBuff(BuffType<ArmorCrunch>(), 120);
+                            target.AddBuff(BuffType<ArmorCrunch>(), 240);
                             break;
 
                         default:
@@ -6411,7 +6411,7 @@ namespace CalamityMod.NPCs
                 switch (npc.type)
                 {
                     case NPCID.Hellbat:
-                        target.AddBuff(BuffID.OnFire, 60);
+                        target.AddBuff(BuffID.OnFire, 120);
                         break;
 
                     default:

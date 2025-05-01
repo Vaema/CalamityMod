@@ -306,12 +306,6 @@ namespace CalamityMod.NPCs.Crags
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)

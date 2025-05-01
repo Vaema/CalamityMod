@@ -842,9 +842,9 @@ namespace CalamityMod.NPCs.SlimeGod
             if (hurtInfo.Damage > 0)
             {
                 int debufftype = Main.zenithWorld ? BuffID.VortexDebuff : BuffID.Slow;
-                target.AddBuff(debufftype, 180, true);
-                target.AddBuff(BuffID.Weak, 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(debufftype, 180);
+                target.AddBuff(BuffID.Weak, 180);
+                target.AddBuff(BuffID.Darkness, 180);
             }
         }
     }

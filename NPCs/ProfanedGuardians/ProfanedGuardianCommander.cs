@@ -1273,7 +1273,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 200, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

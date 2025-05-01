@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 90, true);
+                target.AddBuff(BuffID.Weak, 180);
         }
     }
 }
