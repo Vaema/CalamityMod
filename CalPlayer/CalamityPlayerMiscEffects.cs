@@ -441,7 +441,7 @@ namespace CalamityMod.CalPlayer
             // Multiplies movement speed by 1.5x so that you don't feel like a snail in the early game.
             // This applies to movement speed boosts as well as base speed to ensure they are actually worth their listed value compared to base speed
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (false && ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
+            if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
         }
         #endregion
