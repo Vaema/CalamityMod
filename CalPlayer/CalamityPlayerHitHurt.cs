@@ -1384,11 +1384,11 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
                 {
-                    // 66.6% chance of Poison for 3 seconds, 1 guaranteed second of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
+                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
                     if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 180);
+                        Player.AddBuff(BuffID.Poisoned, 300);
                     else
-                        Player.AddBuff(BuffID.Poisoned, 60);
+                        Player.AddBuff(BuffID.Poisoned, 120);
                 }
                 else if (proj.type == ProjectileID.PoisonSeedPlantera)
                 {
@@ -1400,11 +1400,11 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
-                    Player.AddBuff(BuffID.Poisoned, 300);
+                    Player.AddBuff(BuffID.Poisoned, 420);
                 }
                 else if (proj.type == ProjectileID.CultistBossFireBall)
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
                 }
                 else if (proj.type == ProjectileID.CultistBossIceMist)
                 {
@@ -1415,7 +1415,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
                 {
-                    Player.AddBuff(BuffID.Electrified, 120);
+                    Player.AddBuff(BuffID.Electrified, 180);
                 }
                 else if (proj.type == ProjectileID.AncientDoomProjectile)
                 {
@@ -1423,15 +1423,15 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.CultistBossFireBallClone)
                 {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 180);
                 }
                 else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
                 }
                 else if (proj.type == ProjectileID.PhantasmalSphere)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 210);
                 }
                 else if (proj.type == ProjectileID.PhantasmalDeathray)
                 {
@@ -1439,23 +1439,23 @@ namespace CalamityMod.CalPlayer
                 }
                 else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
                 }
                 else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
                 }
                 else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
-                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
+                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
                 }
                 else if (proj.type == ProjectileID.BloodShot)
                 {
-                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
+                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
                 }
                 else if (proj.type == ProjectileID.RuneBlast && Main.zenithWorld)
                 {

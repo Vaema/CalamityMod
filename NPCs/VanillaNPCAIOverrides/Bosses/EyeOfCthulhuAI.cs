@@ -469,23 +469,27 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.SimpleFlyMovement(idealHoverVelocity, hoverAcceleration + (timeToCharge ? ((npc.ai[2] - phaseLimit) * 0.001f) : 0f));
 
                     npc.ai[2] += 1f;
-                    float projectileGateValue = (lifeRatio < 0.5f && death) ? 40f : (death ? 60f : 80f);
-                    if (npc.ai[2] % projectileGateValue == 0f && shootProjectile)
+
+                    if (death)
                     {
-                        Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity * 2f;
-                        Vector2 projectileSpawnCenter = npc.Center + projectileVelocity;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        float projectileGateValue = lifeRatio < 0.5f ? 40f : 60f;
+                        if (npc.ai[2] % projectileGateValue == 0f && shootProjectile)
                         {
-                            int type = ProjectileID.BloodNautilusShot;
-                            int damage = npc.GetProjectileDamage(type);
-                            int numProj = death ? 4 : 3;
-                            int spread = death ? 12 : 10;
-                            float rotation = MathHelper.ToRadians(spread);
-                            for (int i = 0; i < numProj; i++)
+                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity * 2f;
+                            Vector2 projectileSpawnCenter = npc.Center + projectileVelocity;
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = 600;
+                                int type = ProjectileID.BloodNautilusShot;
+                                int damage = npc.GetProjectileDamage(type);
+                                int numProj = 3;
+                                int spread = 10;
+                                float rotation = MathHelper.ToRadians(spread);
+                                for (int i = 0; i < numProj; i++)
+                                {
+                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Main.projectile[proj].timeLeft = 600;
+                                }
                             }
                         }
                     }
