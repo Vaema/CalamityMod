@@ -218,8 +218,6 @@ namespace CalamityMod
                 light += 1;
             if (mp.reaverExplore)
                 light += 2;
-            if (mp.lumenousAmulet && underwater)
-                light += 2;
             if (mp.shine)
                 light += 2;
             if (mp.blazingCore)
