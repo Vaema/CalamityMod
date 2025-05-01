@@ -1688,6 +1688,10 @@ namespace CalamityMod.CalPlayer
         #region Mouse Controls Syncing
         public bool mouseRight = false;
         private bool oldMouseRight = false;
+
+        private float oldGravDir = 1;
+        public bool justChangedGravity = false;
+
         public Vector2 mouseWorld;
         private Vector2 oldMouseWorld;
 
@@ -2741,6 +2745,8 @@ namespace CalamityMod.CalPlayer
             AbleToSelectExoMech = false;
 
             infiniteFlight = false;
+            justChangedGravity = oldGravDir != Player.gravDir;
+            oldGravDir = Player.gravDir;
 
             EnchantHeldItemEffects(Player, Player.Calamity(), Player.ActiveItem());
         }
