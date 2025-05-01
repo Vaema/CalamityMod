@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             Projectile.width = 5;
             Projectile.height = 5;
+            Projectile.scale = 3f;
             Projectile.friendly = true;
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 600;
