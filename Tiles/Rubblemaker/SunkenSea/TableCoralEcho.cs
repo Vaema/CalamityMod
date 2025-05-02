@@ -21,6 +21,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
@@ -48,5 +49,15 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             frameXOffset = xPos * subsheetWidth;
             frameYOffset = yPos * subsheetHeight;
         }
+    }
+
+    public class TableCoralEcho2 : TableCoralEcho
+    {
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral2";
+    }
+
+    public class TableCoralEcho3 : TableCoralEcho
+    {
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral3";
     }
 }

@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.SailfishBoots;
             AddMapEntry(new Color(36, 61, 111));
             RegisterItemDrop(ModContent.ItemType<Navystone>());
             FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
