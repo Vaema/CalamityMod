@@ -2964,7 +2964,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (Main.hardMode && CalamityNPCSets.NerfDamageInHardmode[npc.type])
+            if (Main.hardMode && (CalamityNPCSets.NerfDamageInHardmode[npc.type] || (npc.type < 0 && CalamityNPCSets.NerfDamageInHardmodeNegativeIDs[-npc.type])))
             {
                 npc.damage = (int)Math.Round(npc.damage * 0.75);
                 npc.defDamage = npc.damage;

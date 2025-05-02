@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
@@ -1088,7 +1089,7 @@ namespace CalamityMod.CalPlayer
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
                         int buffID = Player.buffType[l];
-                        if (Player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
+                        if (Player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                             Player.buffTime[l]--;
                     }
                 }
@@ -2211,8 +2212,10 @@ namespace CalamityMod.CalPlayer
             // God Slayer Armor dash debuff immunity
             if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
             {
-                foreach (int debuff in DebuffsList.List)
-                    Player.buffImmune[debuff] = true;
+                for (int d = 0; d < Player.buffImmune.Length; d++)
+                {
+                    Player.buffImmune[d] |= CalamityBuffSets.IsDebuff[d];
+                }
             }
 
             // Shield of the High Ruler
@@ -2283,8 +2286,11 @@ namespace CalamityMod.CalPlayer
             if (silvaCountdown > 0 && hasSilvaEffect && silvaSet)
             {
                 // You become immune to all debuffs
-                foreach (int debuff in DebuffsList.List)
-                    Player.buffImmune[debuff] = true;
+                foreach (int debuff in Player.buffType)
+                {
+                    if (CalamityBuffSets.IsDebuff[debuff])
+                        Player.buffImmune[debuff] = true;
+                }
 
                 // Prevent thorns effects from being abused during invincibility
                 Player.thorns = 0f;
@@ -2363,8 +2369,7 @@ namespace CalamityMod.CalPlayer
                         if (Player.whoAmI == Main.myPlayer)
                             Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(25));
 
-                    bool shouldAffect = DebuffsList.Includes(buffID);
-                    if (shouldAffect)
+                    if (CalamityBuffSets.IsDebuff[buffID])
                         Player.GetDamage<RogueDamageClass>() += 0.1f;
                 }
             }
@@ -4307,7 +4312,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int buffID = Player.buffType[l];
-                    if (AmalgamBuffList.Includes(buffID))
+                    if (CalamityBuffSets.BuffedByAmalgam[buffID])
                     {
                         if (amalgam)
                         {
@@ -4324,7 +4329,7 @@ namespace CalamityMod.CalPlayer
                         else
                         {
                             // Reset buff persistence if Amalgam is removed.
-                            if (Main.persistentBuff[buffID] && !PersistentBuffList.Includes(buffID))
+                            if (Main.persistentBuff[buffID] && !CalamityBuffSets.IsPersistentBuff[buffID])
                                 Main.persistentBuff[buffID] = false;
                         }
                     }

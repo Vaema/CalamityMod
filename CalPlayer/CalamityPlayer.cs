@@ -5301,7 +5301,7 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < Player.MaxBuffs; i++)
                 {
                     int buff = Player.buffType[i];
-                    if (AlcoholsDict.TryGet(buff, out int level))
+                    if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                         Alcohol.Insert(0, new int[] { i, level });
                 }
 
