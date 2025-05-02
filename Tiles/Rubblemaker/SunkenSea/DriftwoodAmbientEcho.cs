@@ -12,7 +12,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            // TODO: Most of these currently don't work
+            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
 
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            //FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
     public class DriftwoodAmbient3Echo : DriftwoodAmbient3
@@ -43,7 +44,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
     public class DriftwoodAmbient5Echo : DriftwoodAmbient5
@@ -53,7 +54,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
     public class DriftwoodAmbient6Echo : DriftwoodAmbient6
@@ -63,7 +64,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            //FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
 }
