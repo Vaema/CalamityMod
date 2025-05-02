@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 using CalamityMod.Items.Weapons.Melee;
+using Terraria.GameContent;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -60,6 +61,8 @@ namespace CalamityMod.Tiles.SunkenSea
             TileObjectData.newAlternate.Origin = new Point16(0, 0);
             TileObjectData.addAlternate(24);
             TileObjectData.addTile(Type);
+
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<PrismShard>(), Type, [0, 8, 16, 24]);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

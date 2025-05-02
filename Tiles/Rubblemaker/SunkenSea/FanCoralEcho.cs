@@ -23,8 +23,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<SeaPrism>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SeaPrism>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<CyanCoral>());
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<CyanCoral>(), Type, 0);
 
             base.SetStaticDefaults();
         }

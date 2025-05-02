@@ -32,8 +32,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Shellstone>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0);
 
             base.SetStaticDefaults();
         }

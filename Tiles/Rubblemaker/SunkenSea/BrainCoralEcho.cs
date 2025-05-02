@@ -20,8 +20,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = DustID.SailfishBoots;
             AddMapEntry(new Color(36, 61, 111));
-            RegisterItemDrop(ModContent.ItemType<Navystone>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
