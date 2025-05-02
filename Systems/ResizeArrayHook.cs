@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -18,7 +14,7 @@ namespace CalamityMod.Systems
         public override void Load()
         {
             var resizeArrayMethod = typeof(ModContent).GetMethod("ResizeArrays", BindingFlags.NonPublic | BindingFlags.Static);
-            MonoModHooks.Add(resizeArrayMethod, ResizeArrays);
+            MonoModHooks.Add(resizeArrayMethod, Delegate.CreateDelegate(typeof(Action<ResizeArrayDelegate, bool>), typeof(ResizeArrayHook).GetMethod(nameof(ResizeArrays), BindingFlags.NonPublic | BindingFlags.Static)));
         }
 
         private static void ResizeArrays(ResizeArrayDelegate orig, bool unloading)

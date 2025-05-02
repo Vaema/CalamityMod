@@ -10,6 +10,7 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -49,6 +50,17 @@ namespace CalamityMod.NPCs.SunkenSea
         public int digDir = 1;
         public Vector2 headPosition;
         public Vector2 attackPosition;
+
+        public static Asset<Texture2D> headTexture;
+        public static Asset<Texture2D> mandibleTexture;
+        public static Asset<Texture2D> bodyTexture;
+
+        public override void Load()
+        {
+            headTexture = ModContent.Request<Texture2D>(Texture + "Head");
+            mandibleTexture = ModContent.Request<Texture2D>(Texture + "Mandible");
+            bodyTexture = ModContent.Request<Texture2D>(Texture + "Body");
+        }
 
         public override void SetStaticDefaults()
         {
@@ -301,9 +313,9 @@ namespace CalamityMod.NPCs.SunkenSea
             if (time == 0)
                 return false;
 
-            Texture2D body = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/StormlionSentryBody").Value;
-            Texture2D head = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/StormlionSentryHead").Value;
-            Texture2D mandible = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/StormlionSentryMandible").Value;
+            Texture2D body = bodyTexture.Value;
+            Texture2D head = headTexture.Value;
+            Texture2D mandible = mandibleTexture.Value;
             Texture2D attack = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
 
             spriteBatch.Draw(body, NPC.Center - screenPos, null, drawColor, NPC.rotation, body.Size() / 2f, NPC.scale, SpriteEffects.None, 0f);

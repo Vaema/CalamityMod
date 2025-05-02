@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -27,9 +28,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             AddMapEntry(new Color(178, 28, 153));
             DustType = DustID.Coralstone;
             HitSound = SoundID.Grass;
-            RegisterItemDrop(ItemID.CoralstoneBlock);
-            // this one is weird
-            //FlexibleTileWand.RubblePlacementSmall.AddVariations(ItemID.CoralstoneBlock, Type, 0, 1, 2, 3, 4, 5);
+            RegisterItemDrop(ModContent.ItemType<EutrophicSand>());
+            // TODO:  Currently this one doesn't work
+            //FlexibleTileWand.RubblePlacementSmall.AddVariations(ModContent.ItemType<EutrophicSand>(), Type, 0, 1, 2, 3, 4, 5);
 
             base.SetStaticDefaults();
         }
