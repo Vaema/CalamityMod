@@ -1865,7 +1865,7 @@ namespace CalamityMod.NPCs
 
             // All Hardmode Dungeon Enemies
             // Ectoplasm @ 20%
-            if (BuffedDungeonEnemiesList.Includes(npc.type))
+            if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
 

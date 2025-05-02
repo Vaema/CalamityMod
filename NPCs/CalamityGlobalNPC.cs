@@ -1824,7 +1824,7 @@ namespace CalamityMod.NPCs
         #region Boss Value Changes
         private void BossValueChanges(NPC npc)
         {
-            if (BossValueDict.TryGet(npc.type, out var value))
+            if (CalamityNPCSets.BossCoinValue.TryGetValue(npc.type, out var value))
             {
                 npc.value = value;
             }
@@ -1834,10 +1834,9 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (DeathModeSplittingWormList.Includes(npc.type))
+            if (CalamityNPCSets.DeathModeSplittingWorm[npc.type] && CalamityWorld.death)
             {
-                if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
             }
 
             if (npc.type == NPCID.Mothron)
@@ -2965,7 +2964,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (Main.hardMode && HardmodeNPCNerfList.Includes(npc.type))
+            if (Main.hardMode && CalamityNPCSets.NerfDamageInHardmode[npc.type])
             {
                 npc.damage = (int)Math.Round(npc.damage * 0.75);
                 npc.defDamage = npc.damage;
@@ -2973,21 +2972,21 @@ namespace CalamityMod.NPCs
 
             if (DownedBossSystem.downedDoG)
             {
-                if (PumpkinMoonBuffList.Includes(npc.type))
+                if (CalamityNPCSets.IsBuffedPumpkinMoonEnemy[npc.type])
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.5);
                     npc.damage += 30;
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (FrostMoonBuffList.Includes(npc.type))
+                else if (CalamityNPCSets.IsBuffedFrostMoonEnemy[npc.type])
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-                else if (EclipseBuffList.Includes(npc.type))
+                else if (CalamityNPCSets.IsBuffedSolarEclipseEnemy[npc.type])
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 5D);
                     npc.damage += 30;
@@ -2998,7 +2997,7 @@ namespace CalamityMod.NPCs
 
             if (NPC.downedMoonlord)
             {
-                if (BuffedDungeonEnemiesList.Includes(npc.type))
+                if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
                 {
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.5);
                     npc.damage += 30;
@@ -4010,7 +4009,7 @@ namespace CalamityMod.NPCs
             }
 
             // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
-            if (ZeroContactDamageNPCList.Includes(npc.type) && (npc.type != NPCID.RuneWizard || !Main.zenithWorld))
+            if (CalamityNPCSets.DealsZeroContactDamage[npc.type] && !(npc.type == NPCID.RuneWizard && Main.zenithWorld))
                 npc.damage = 0;
 
             // Don't do damage for 42 frames after spawning in
@@ -9276,7 +9275,7 @@ namespace CalamityMod.NPCs
             if (target.damage > 0 && !target.boss && !target.friendly && !target.dontTakeDamage && target.type != NPCID.Creeper && target.type != NPCType<RavagerClawLeft>() &&
                 target.type != NPCID.MourningWood && target.type != NPCID.Everscream && target.type != NPCID.SantaNK1 && target.type != NPCType<RavagerClawRight>() &&
                 target.type != NPCType<ReaperShark>() && target.type != NPCType<Mauler>() && target.type != NPCType<EidolonWyrmHead>() && target.type != NPCID.GolemFistLeft && target.type != NPCID.GolemFistRight &&
-                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !EnemyImmunitiesList.Includes(target.type) && !AcidRainEvent.AllMinibosses.Contains(target.type))
+                target.type != NPCType<PrimordialWyrmHead>() && target.type != NPCType<ColossalSquid>() && target.type != NPCID.DD2Betsy && !CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[target.type] && !AcidRainEvent.AllMinibosses.Contains(target.type))
             {
                 return true;
             }

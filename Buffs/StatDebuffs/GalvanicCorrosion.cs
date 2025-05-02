@@ -20,7 +20,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             if (npc.Calamity().tesla < npc.buffTime[buffIndex])
                 npc.Calamity().tesla = npc.buffTime[buffIndex];
-            if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().tesla;
             npc.DelBuff(buffIndex);
             buffIndex--;
