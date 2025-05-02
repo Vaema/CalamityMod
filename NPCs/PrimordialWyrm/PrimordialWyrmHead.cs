@@ -1519,7 +1519,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (NPC.Opacity == 1f && hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 1200, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 1200);
         }
     }
 }

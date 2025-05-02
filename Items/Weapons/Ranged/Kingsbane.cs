@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient<P90>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

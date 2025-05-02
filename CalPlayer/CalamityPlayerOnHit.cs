@@ -85,10 +85,12 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = dOfTheDeep;
 
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            target.Calamity().IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (item.type)
             {
@@ -220,10 +222,12 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            cgn.IncreasedWaterEffects_Amulet2 = false;
+            cgn.IncreasedWaterEffects_Amulet2 = dOfTheDeep;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (proj.type)
             {
@@ -1230,6 +1234,14 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Irradiated>(), 180);
                 }
             }
+            if (amalgam)
+            {
+                target.AddBuff(BuffID.Daybreak, 120);
+                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<Plague>(), 120);
+                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffType<CrushDepth>(), 120);
+            }
             if (voidOfExtinction)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
             if (frostFlare)
@@ -1242,10 +1254,6 @@ namespace CalamityMod.CalPlayer
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (lumenousAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<CrushDepth>());
             }
             if (corrosiveSpine)
             {

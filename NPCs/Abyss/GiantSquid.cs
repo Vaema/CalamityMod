@@ -11,6 +11,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -248,14 +249,15 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffID.Darkness, 300);
             }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 4, 3, 6));
         }
 

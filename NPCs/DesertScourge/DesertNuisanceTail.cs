@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 30, true);
+                target.AddBuff(BuffID.Bleeding, 60);
         }
 
         public override Color? GetAlpha(Color drawColor)

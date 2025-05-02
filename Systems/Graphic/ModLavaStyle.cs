@@ -4,14 +4,9 @@ using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent.Liquid;
-using Terraria.GameContent;
 using Terraria.Graphics;
-using Terraria.ModLoader;
-using System.Linq;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
-using CalamityMod.Items.Potions.Alcohol;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
 {
@@ -149,7 +144,7 @@ namespace CalamityMod.Systems
         {
             if (ResizeArrayMethodInfo != null)
             {
-                MonoModHooks.Add(ResizeArrayMethodInfo, ResizeArrays);
+                MonoModHooks.Add(ResizeArrayMethodInfo, Delegate.CreateDelegate(typeof(Action<ResizeArray_orig, bool>), typeof(LavaStylesLoader).GetMethod(nameof(ResizeArrays), BindingFlags.NonPublic | BindingFlags.Static)));
             }
         }
 

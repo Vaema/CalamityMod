@@ -453,16 +453,18 @@ namespace CalamityMod.NPCs.Bumblebirb
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<DragonfollyRelic>());
 
             // GFB Omega Healing Potion drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<OmegaHealingPotion>(), 1, 50, 100, true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 50, 100), true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedDragonfolly, ModContent.ItemType<LoreDragonfolly>(), desc: DropHelper.FirstKillText);
         }
+
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<VermillionFlux>(), 120, true);
+                target.AddBuff(ModContent.BuffType<VermillionFlux>(), Main.zenithWorld ? 360 : 180);
         }
+
         public override void OnKill()
         {
             // Don't bother running any of this in Boss Rush.

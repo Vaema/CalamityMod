@@ -376,12 +376,12 @@ namespace CalamityMod.NPCs.AstrumDeus
             // GFB Worm and Spaghetti drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.Worm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.CanOfWorms, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.GummyWorm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.TruffleWorm, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.EnchantedNightcrawler, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.Spaghetti, 1, 1, 9999, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Worm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CanOfWorms, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.GummyWorm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.TruffleWorm, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.EnchantedNightcrawler, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Spaghetti, 1, 1, 9999), true);
             }
 
             // Lore
@@ -393,7 +393,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 200, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 360);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

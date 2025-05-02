@@ -234,7 +234,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DarkPlasma>(), 1, 5, 7));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DarkPlasma>(), 1, 10, 12));
 
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TheEvolution>()));
@@ -256,8 +256,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // GFB Eclipse Mirror and Nucleogenesis drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<EclipseMirror>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<Nucleogenesis>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<EclipseMirror>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Nucleogenesis>()), hideLootReport: true);
             }
 
             // Lore

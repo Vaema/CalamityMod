@@ -178,6 +178,9 @@ namespace CalamityMod.NPCs
         public bool IncreasedSicknessAndWaterEffects_EvergreenGin = false;
         public bool IncreasedSicknessAndWaterEffects_CorrosiveSpine = false;
 
+        // Universal debuff effects
+        public bool IncreasedDebuffEffects_Amalgam = false;
+
         /// <summary> Constant variable representing the grace period, in frames, in which a boss can remain outside of its native biome before enraging. </summary>
         public const int biomeEnrageTimerMax = 300;
 
@@ -553,6 +556,7 @@ namespace CalamityMod.NPCs
             myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
             myClone.IncreasedSicknessAndWaterEffects_CorrosiveSpine = IncreasedSicknessAndWaterEffects_CorrosiveSpine;
             myClone.IncreasedSicknessAndWaterEffects_EvergreenGin = IncreasedSicknessAndWaterEffects_EvergreenGin;
+            myClone.IncreasedDebuffEffects_Amalgam = IncreasedDebuffEffects_Amalgam;
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
@@ -1004,6 +1008,16 @@ namespace CalamityMod.NPCs
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
                 waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+            }
+
+            //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
+            if (IncreasedDebuffEffects_Amalgam)
+            {            
+                heatDamageMult += 3.5;
+                coldDamageMult += 3.5;
+                waterDamageMult += 3.5;
+                sicknessDamageMult += 3.5;
+                electricityDamageMult += 3.5;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
@@ -5790,6 +5804,10 @@ namespace CalamityMod.NPCs
                 warbannerBurnMarked = false;
                 warbannerBurnStacks = 0;
             }
+            if (warbannerBurnTimer <= 60)
+            {
+                warbannerBurnStacks = (int)(warbannerBurnStacks * 0.9f);
+            }
             if (warbannerBurnMarked)
             {
                 int maxStacks = 300; // Time in frames needed to reach max power
@@ -6209,6 +6227,56 @@ namespace CalamityMod.NPCs
 
                     break;
 
+                case NPCID.DevourerHead:
+                case NPCID.FaceMonster:
+                    target.AddBuff(BuffID.Weak, 180);
+                    break;
+
+                case NPCID.Crawdad:
+                case NPCID.Crawdad2:
+                case NPCID.UndeadViking:
+                    target.AddBuff(BuffID.BrokenArmor, 180);
+                    break;
+
+                case NPCID.ArmoredViking:
+                    target.AddBuff(BuffID.BrokenArmor, 300);
+                    break;
+
+                case NPCID.PossessedArmor:
+                    target.AddBuff(BuffID.Cursed, 60);
+                    break;
+
+                case NPCID.Ghost:
+                case NPCID.PirateGhost:
+                    target.AddBuff(BuffID.Cursed, 60);
+                    target.AddBuff(BuffID.Silenced, 180);
+                    break;
+
+                case NPCID.ChaosElemental:
+                    target.AddBuff(BuffID.Silenced, 180);
+                    break;
+
+                case NPCID.IlluminantBat:
+                    target.AddBuff(BuffID.Confused, 120);
+                    break;
+
+                case NPCID.IlluminantSlime:
+                    target.AddBuff(BuffID.Slow, 180);
+                    break;
+
+                case NPCID.Piranha:
+                    target.AddBuff(BuffID.Bleeding, 180);
+                    break;
+
+                case NPCID.Arapaima:
+                case NPCID.BloodFeeder:
+                    target.AddBuff(BuffID.Bleeding, 300);
+                    break;
+
+                case NPCID.ToxicSludge:
+                    target.AddBuff(BuffID.Slow, 300);
+                    break;
+
                 case NPCID.ShadowFlameApparition:
                     target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
@@ -6229,25 +6297,25 @@ namespace CalamityMod.NPCs
 
                 case NPCID.Spazmatism:
                     if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.SkeletronPrime:
                     if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180, true);
+                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.PrimeSaw:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 120);
                     break;
 
                 case NPCID.Plantera:
                     if (npc.life < npc.lifeMax / 2)
-                        target.AddBuff(BuffID.Poisoned, 300);
+                        target.AddBuff(BuffID.Poisoned, 360);
                     break;
 
                 case NPCID.PlanterasTentacle:
-                    target.AddBuff(BuffID.Poisoned, 120);
+                    target.AddBuff(BuffID.Poisoned, 180);
                     break;
 
                 case NPCID.Golem:
@@ -6262,7 +6330,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.DukeFishron:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120, true);
+                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
                     break;
 
                 case NPCID.AncientLight:
@@ -6271,7 +6339,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.HallowBoss:
                     if (NPC.ShouldEmpressBeEnraged())
-                        target.AddBuff(BuffType<Daybroken>(), 240);
+                        target.AddBuff(BuffType<Daybroken>(), 360);
                     break;
 
                 case NPCID.BloodNautilus:
@@ -6284,7 +6352,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Lavabat:
-                    target.AddBuff(BuffID.OnFire, 120);
+                    target.AddBuff(BuffID.OnFire, 300);
                     break;
 
                 case NPCID.RuneWizard:
@@ -6306,7 +6374,7 @@ namespace CalamityMod.NPCs
                     case NPCID.AngryBonesBig:
                     case NPCID.AngryBonesBigMuscle:
                     case NPCID.AngryBonesBigHelmet:
-                        target.AddBuff(BuffType<ArmorCrunch>(), 60);
+                        target.AddBuff(BuffType<ArmorCrunch>(), 120);
                         break;
 
                     default:
@@ -6329,7 +6397,7 @@ namespace CalamityMod.NPCs
                         case NPCID.HellArmoredBonesSpikeShield:
                         case NPCID.HellArmoredBonesMace:
                         case NPCID.HellArmoredBonesSword:
-                            target.AddBuff(BuffType<ArmorCrunch>(), 120);
+                            target.AddBuff(BuffType<ArmorCrunch>(), 240);
                             break;
 
                         default:
@@ -6343,7 +6411,7 @@ namespace CalamityMod.NPCs
                 switch (npc.type)
                 {
                     case NPCID.Hellbat:
-                        target.AddBuff(BuffID.OnFire, 60);
+                        target.AddBuff(BuffID.OnFire, 120);
                         break;
 
                     default:
@@ -6416,13 +6484,12 @@ namespace CalamityMod.NPCs
             }
 
             // True melee resists
-            if (DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper ||
-                PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
-                AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>() ||
-                npc.type == NPCType<ProfanedRocks>())
+            if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
+                AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
+                StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc.type))
             {
-                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : (DesertScourgeIDList.Includes(npc.type) || npc.type == NPCType<Crabulon.Crabulon>()) ? 0.75f : 0.5f;
+                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : 0.5f;
                 if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
@@ -6974,51 +7041,34 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 0.85);
 
             if (Main.SceneMetrics.WaterCandleCount > 0)
+                spawnRate = (int)(spawnRate * 0.8888); // On top of 0.75 = 0.6666x (1.33x -> 1.5x spawn rate)
+            if (player.enemySpawns) // Battle Potion
             {
-                spawnRate = (int)(spawnRate * 0.9);
-                maxSpawns = (int)(maxSpawns * 1.1f);
-            }
-            if (player.enemySpawns)
-            {
-                spawnRate = (int)(spawnRate * 0.8);
-                maxSpawns = (int)(maxSpawns * 1.2f);
+                spawnRate = (int)(spawnRate * 0.8); // On top of 0.5 = 0.4x (2x -> 2.5x spawn rate)
+                maxSpawns = (int)(maxSpawns * 1.25f); // On top of 2 (2x -> 2.5x max spawns)
             }
             if (player.Calamity().chaosCandle)
             {
-                spawnRate = (int)(spawnRate * 0.6);
+                spawnRate = (int)(spawnRate * 0.4); // 2.5x spawn rate
                 maxSpawns = (int)(maxSpawns * 2.5f);
             }
             if (player.Calamity().zerg)
             {
-                spawnRate = (int)(spawnRate * 0.2);
+                spawnRate = (int)(spawnRate * 0.2); // 5x spawn rate
                 maxSpawns = (int)(maxSpawns * 5f);
             }
 
-            // This is horribly unoptimized, I'm leaving it commented out. - Fab
-            /*if (NPC.AnyNPCs(NPCType<WulfrumAmplifier>()))
-            {
-                int otherWulfrumEnemies = NPC.CountNPCS(NPCType<WulfrumDrone>()) + NPC.CountNPCS(NPCType<WulfrumGyrator>()) + NPC.CountNPCS(NPCType<WulfrumHovercraft>()) + NPC.CountNPCS(NPCType<WulfrumRover>());
-                if (otherWulfrumEnemies < 4)
-                {
-                    spawnRate = (int)(spawnRate * 0.8);
-                    maxSpawns = (int)(maxSpawns * 1.2f);
-                }
-            }*/
-
             // Reductions
             if (Main.SceneMetrics.PeaceCandleCount > 0)
-            {
-                spawnRate = (int)(spawnRate * 1.1);
-                maxSpawns = (int)(maxSpawns * 0.9f);
-            }
+                spawnRate = (int)(spawnRate * 1.0989); // On top of 1.3 = 1.4286x (0.77x -> 0.7x spawn rate)
             if (player.Calamity().tranquilityCandle)
             {
-                spawnRate = (int)(spawnRate * 1.4);
-                maxSpawns = (int)(maxSpawns * 0.4f);
+                spawnRate = (int)(spawnRate * 1.6666); // 0.6x spawn rate
+                maxSpawns = (int)(maxSpawns * 0.6f);
             }
             if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
-                spawnRate = (int)(spawnRate * 2.5);
+                spawnRate = (int)(spawnRate * 3.3333); // 0.3x spawn rate
                 maxSpawns = (int)(maxSpawns * 0.3f);
             }
             if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
@@ -7114,6 +7164,54 @@ namespace CalamityMod.NPCs
             }
         }
 
+        public static void AttemptToSpawnLavaNPCs(Player player)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+
+            // For now, we only need this for the Basalt Gully, but this may be used for the crags in the future
+            if (!player.Calamity().ZoneBasaltGully)
+                return;
+
+            int spawnRate = 400;
+            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
+
+            // Enforce a limit on the amount of enemies that can appear.
+            if (player.nearbyActiveNPCs >= maxSpawnCount)
+                return;
+
+            float playerCenterX = player.Center.X / 16f;
+            float playerCenterY = player.Center.Y / 16f;
+            for (int i = 0; i < 8; i++)
+            {
+                int checkPositionX = (int)(playerCenterX + Main.rand.Next(30, 54) * Main.rand.NextBool().ToDirectionInt());
+                int checkPositionY = (int)(playerCenterY + Main.rand.Next(24, 45) * Main.rand.NextBool().ToDirectionInt());
+                Vector2 checkPosition = new Vector2(checkPositionX, checkPositionY);
+
+                Tile aboveSpawnTile = CalamityUtils.ParanoidTileRetrieval(checkPositionX, checkPositionY - 1);
+
+               if (aboveSpawnTile.LiquidAmount < 255 || aboveSpawnTile.LiquidType != LiquidID.Lava || Collision.SolidCollision((checkPosition - new Vector2(2f, 2f)).ToWorldCoordinates(), 4, 4) || player.nearbyActiveNPCs >= maxSpawnCount || !Main.rand.NextBool(spawnRate))
+                    continue;
+
+                WeightedRandom<int> pool = new WeightedRandom<int>();
+                pool.Add(NPCID.None, 0f);
+                pool.Add(NPCType<PodobooKoi>(), 0.25f);
+
+                int typeToSpawn = pool.Get();
+                if (typeToSpawn != NPCID.None)
+                {
+                    int spawnedNPC = NPCLoader.SpawnNPC(typeToSpawn, checkPositionX, checkPositionY - 1);
+                    if (Main.dedServ && spawnedNPC < Main.maxNPCs)
+                    {
+                        Main.npc[spawnedNPC].position.Y -= 8f;
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPC);
+                        return;
+                    }
+                }
+            }
+        }
+
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             bool calamityBiomeZone = spawnInfo.Player.Calamity().ZoneAbyss ||
@@ -7136,6 +7234,22 @@ namespace CalamityMod.NPCs
                     if (!NPC.AnyNPCs(NPCID.BoundWizard))
                         pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
                 }
+            }
+
+            // Fuck Chaos Elementals, overrides the vanilla spawn so they can be afk farmed once more
+            if (Main.hardMode && spawnInfo.Player.ZoneRockLayerHeight && !calamityBiomeZone)
+            {
+                // Added more tiles for them to spawn on
+                bool isChaosElementalSpawnTile =
+                    spawnInfo.SpawnTileType == TileID.Pearlstone ||
+                    spawnInfo.SpawnTileType == TileID.Pearlsand ||
+                    spawnInfo.SpawnTileType == TileID.HallowedIce ||
+                    spawnInfo.SpawnTileType == TileID.HallowedGrass ||
+                    spawnInfo.SpawnTileType == TileID.HallowHardenedSand ||
+                    spawnInfo.SpawnTileType == TileID.HallowSandstone;
+
+                if (isChaosElementalSpawnTile)
+                    pool[NPCID.ChaosElemental] = SpawnCondition.Cavern.Chance * 0.125f;
             }
 
             // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops

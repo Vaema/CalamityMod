@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -11,9 +13,20 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SeaFloaty : ModNPC
+    public class SeaFloaty : SunkenSeaNPC
     {
         private bool hasBeenHit = false;
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<Sharkoon>(),
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
         public override void SetStaticDefaults()
         {
@@ -23,6 +36,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -92,7 +106,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.netUpdate = true;
             }
             // panic when it gets hit or the player is close enough to it
-            if ((NPC.justHit || Main.player[NPC.target].Distance(NPC.Center) < 320) && !hasBeenHit)
+            if ((NPC.justHit || CurrentPlayer != null || CurrentPredator != null) && !hasBeenHit)
             {
                 hasBeenHit = true;
                 NPC.noTileCollide = true;
@@ -147,6 +161,15 @@ namespace CalamityMod.NPCs.SunkenSea
                     return;
                 }
             }
+        }
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 360f * 360f && PredatorIDs.Contains(n.type);
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return NPC.HasSight(p.Center) && Vector2.DistanceSquared(NPC.Center, p.Center) < 360f * 360f;
         }
 
         public override void FindFrame(int frameHeight)

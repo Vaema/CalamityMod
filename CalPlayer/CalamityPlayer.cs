@@ -4,9 +4,6 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -919,7 +916,11 @@ namespace CalamityMod.CalPlayer
         public bool sSpiritAmulet = false;
         public int sSpiritAmuletTimer = 0;
         public bool sSpiritAmuletVisual = false;
-        public bool lumenousAmulet = false;
+        public bool dOfTheDeep = false;
+        public int dOfTheDeepTimer = 0;
+        public bool dOfTheDeepVisual = false;
+        public int dOfTheDeepDefenseBuffMax = 420;
+        public int dOfTheDeepDefenseBuffTimer = 0;
         public bool oceanCrest = false;
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
@@ -1531,11 +1532,12 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Biome
-        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneBasaltGully;
+        public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneClamDen || ZoneBasaltGully;
         public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
         public bool ZonePolypForest => Player.InModBiome<PolypForestBiome>();
         public bool ZoneRadiantReefs => Player.InModBiome<RadiantReefsBiome>();
         public bool ZoneGleamingBurrows => Player.InModBiome<GleamingBurrowsBiome>();
+        public bool ZoneClamDen => Player.InModBiome<ClamDenBiome>();
         public bool ZoneBasaltGully => Player.InModBiome<BasaltGullyBiome>();
 
         public bool ZoneSulphur => Player.InModBiome<SulphurousSeaBiome>();
@@ -1687,6 +1689,10 @@ namespace CalamityMod.CalPlayer
         #region Mouse Controls Syncing
         public bool mouseRight = false;
         private bool oldMouseRight = false;
+
+        private float oldGravDir = 1;
+        public bool justChangedGravity = false;
+
         public Vector2 mouseWorld;
         private Vector2 oldMouseWorld;
 
@@ -1981,8 +1987,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-            if (ZoneAbyss && lumenousAmulet)
-                percentMaxLifeIncrease += 25;
 
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
@@ -2336,7 +2340,7 @@ namespace CalamityMod.CalPlayer
             flameWakerBoots = false;
             hellfireTreads = false;
             sSpiritAmulet = false;
-            lumenousAmulet = false;
+            dOfTheDeep = false;
             oceanCrest = false;
             aquaticEmblem = false;
             if (!spiritOrigin)
@@ -2740,6 +2744,8 @@ namespace CalamityMod.CalPlayer
             AbleToSelectExoMech = false;
 
             infiniteFlight = false;
+            justChangedGravity = oldGravDir != Player.gravDir;
+            oldGravDir = Player.gravDir;
 
             EnchantHeldItemEffects(Player, Player.Calamity(), Player.ActiveItem());
         }

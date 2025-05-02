@@ -190,6 +190,7 @@ namespace CalamityMod.NPCs
             "everquartz", // <@!451343554451865611> (everquartz)
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
+            "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -241,7 +242,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] WitchDoctorNames =
         {
             "Sok'ar",
-            "Toxin", // <@!348174404984766465> (Toxin#9598),
+            "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Khatunz", // <@!303022375191183360> (jackshiz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
@@ -1023,8 +1024,6 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Wizard:
-                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
-                        chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.MentionRoD");
                     if (Main.rand.NextBool(10) && Main.hardMode)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.Hardmode");
                     break;
@@ -1221,7 +1220,6 @@ namespace CalamityMod.NPCs
             {
                 shop.AddWithCustomValue(ItemType<HowlsHeart>(), CalamityGlobalItem.RarityLightRedBuyPrice * 3)
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 5))
-                .AddWithCustomValue(ItemID.RodofDiscord, Item.buyPrice(gold: 50), Condition.Hardmode, Condition.InHallow)
                 .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
@@ -1248,7 +1246,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
-                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50))
+                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
                 .Add(ItemType<LanternCenter>())
                 .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
                 .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))

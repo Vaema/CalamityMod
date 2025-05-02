@@ -4,7 +4,7 @@ Abaddon: {
 		'''
 		8% increased critical strike chance
 		Critical strikes explode, causing nearby enemies to ignite with Brimstone Flames
-		Greatly reduces the damage taken by the Brimstone Flames debuff
+		Reduces the damage of the Brimstone Flames debuff by 50%
 		'''
 }
 
@@ -73,7 +73,7 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and reduces damage taken from the Plague
+		All attacks inflict the Plague and reduces damage taken from the Plague by 50%
 		Projectiles spawn plague seekers on enemy hits
 		Releases plague bees when damaged and douses you in honey 
 		'''
@@ -1068,13 +1068,19 @@ LivingDew: {
 		'''
 }
 
-LumenousAmulet: {
-	DisplayName: Lumenous Amulet
+DiamondOfTheDeep: {
+	DisplayName: Diamond of the Deep
 	Tooltip:
 		'''
-		Attacks inflict Crush Depth, and grants immunity to Crush Depth and Riptide
-		While in the abyss you gain 25% increased max life
-		{$Common.AbyssLightLevel2}
+		Multiplies all water debuff damage by 1.75x
+		Slowly accrue up to three different abyssal spirits
+		Dash to disperse the spirits and have them attack enemies
+		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
+		The spirits appear in order and have different effects based on color:
+		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
+		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 15 temporarily]
+		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
+		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
 
@@ -1835,12 +1841,14 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		15% increased damage
+		10% increased damage
+		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3.5x
 		Most buffs last twice as long, and persist after dying
-		Taking damage inflicts several debuffs on nearby enemies and spawns a dank creeper
+		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
+		'You have no idea how it's staying together'
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -2013,7 +2021,7 @@ VoidofExtinction: {
 		'''
 		13% increased critical strike chance
 		Critical strikes explode, igniting enemies with Brimstone Flames
-		Partially resist the Brimstone Flames debuff
+		Reduces the damage of the Brimstone Flames debuff by 50%
 		'''
 }
 

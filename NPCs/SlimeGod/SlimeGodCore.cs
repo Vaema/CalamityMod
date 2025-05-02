@@ -821,7 +821,7 @@ namespace CalamityMod.NPCs.SlimeGod
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<SlimeGodRelic>());
 
             // GFB Gelatin Crystal drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ItemID.QueenSlimeCrystal, hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ItemID.QueenSlimeCrystal), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedSlimeGod, ModContent.ItemType<LoreSlimeGod>(), desc: DropHelper.FirstKillText);
@@ -842,9 +842,9 @@ namespace CalamityMod.NPCs.SlimeGod
             if (hurtInfo.Damage > 0)
             {
                 int debufftype = Main.zenithWorld ? BuffID.VortexDebuff : BuffID.Slow;
-                target.AddBuff(debufftype, 180, true);
-                target.AddBuff(BuffID.Weak, 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(debufftype, 180);
+                target.AddBuff(BuffID.Weak, 180);
+                target.AddBuff(BuffID.Darkness, 180);
             }
         }
     }

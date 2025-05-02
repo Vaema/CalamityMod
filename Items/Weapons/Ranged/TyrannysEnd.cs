@@ -46,9 +46,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GoldenEagle>().
+                AddIngredient<RubicoPrime>().
                 AddIngredient<AntiMaterielRifle>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

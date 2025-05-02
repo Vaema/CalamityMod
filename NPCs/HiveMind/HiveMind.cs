@@ -1332,7 +1332,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 300);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 360);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => NPC.scale == 1f; // Only draw HP bar while at full size
@@ -1488,11 +1488,11 @@ namespace CalamityMod.NPCs.HiveMind
             // GFB class emblem drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.WarriorEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.RangerEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SorcererEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SummonerEmblem, hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<RogueEmblem>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.WarriorEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.RangerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SorcererEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SummonerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RogueEmblem>()), hideLootReport: true);
             }
 
             // Lore

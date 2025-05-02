@@ -68,7 +68,6 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -1649,15 +1648,18 @@ namespace CalamityMod.CalPlayer
                 Projectile projectile = null;
                 if (Player.dashDelay == -1) // When the player dashes, make all the energies exit idle phase
                 {
+                    int energyCount = 0;
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
                         projectile = Main.projectile[x];
                         if (projectile.active && projectile.type == ModContent.ProjectileType<AmuletEnergy>() && projectile.ai[2] == 0 && projectile.owner == Player.whoAmI)
                         {
                             projectile.ai[2] = 5;
+                            energyCount++;
                         }
                     }
-                    sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
+                    if (energyCount > 0)
+                        sSpiritAmuletTimer = -spawnTime; // The spawn cooldown after launching energies is twice as long
                 }
                 int numOfEnergy = 0;
                 for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
@@ -1671,7 +1673,7 @@ namespace CalamityMod.CalPlayer
                     if (numOfEnergy < energyCap)
                     {
                         int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(22);
-                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(Math.PI), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
+                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<AmuletEnergy>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
                         if (numOfEnergy + 1 == energyCap && Player.Calamity().sSpiritAmuletVisual)
                         {
                             SoundStyle transform = new("CalamityMod/Sounds/Item/WaterSplash1");
@@ -1679,7 +1681,7 @@ namespace CalamityMod.CalPlayer
 
                             for (int i = 0; i <= 14; i++)
                             {
-                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(Math.PI) * Main.rand.NextFloat(0.4f, 1.2f);
+                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.4f, 1.2f);
 
                                 Dust dust2 = Dust.NewDustPerfect(Player.Center, ModContent.DustType<LightDust>(), vel);
                                 dust2.scale = Main.rand.NextFloat(0.8f, 1.4f);
@@ -1740,6 +1742,77 @@ namespace CalamityMod.CalPlayer
                 
                 if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
                     fallingBootVelCheckTimer = 0;
+            }
+
+            if (dOfTheDeep)
+            {
+                if (dOfTheDeepDefenseBuffTimer > 0)
+                {
+                    int maxDefense = 15;
+                    int givenDefense = (int)Utils.Remap(dOfTheDeepDefenseBuffTimer, 0, dOfTheDeepDefenseBuffMax * 0.5f, 0, maxDefense);
+                    Player.statDefense += givenDefense;
+                    dOfTheDeepDefenseBuffTimer--;
+                }
+
+                int spawnTime = 150; // Time between energy spawns
+                int energyCap = 3; // Max number of energies that can be alive at a time
+
+                Projectile projectile = null;
+                if (Player.dashDelay == -1 && dOfTheDeepTimer > 0) // When the player dashes, make all the energies exit idle phase
+                {
+                    int energyCount = 0;
+                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    {
+                        projectile = Main.projectile[x];
+                        if (projectile.active && projectile.type == ModContent.ProjectileType<DiamondOfTheDeepProjectile>() && projectile.ai[2] == 0 && projectile.owner == Player.whoAmI)
+                        {
+                            projectile.ai[2] = 5;
+                            energyCount++;
+                        }
+                    }
+                    if (energyCount > 0)
+                        dOfTheDeepTimer = (int)(-spawnTime * 0.5f); // The spawn cooldown after launching energies is longer
+                }
+                int numOfEnergy = 0;
+                for (int x = 0; x < Main.maxProjectiles; x++) // Get a count of energies in idle mode
+                {
+                    projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<DiamondOfTheDeepProjectile>() && projectile.ai[2] == 0 && projectile.owner == Player.whoAmI)
+                        numOfEnergy++;
+                }
+                if (dOfTheDeepTimer >= spawnTime)
+                {
+                    if (numOfEnergy < energyCap)
+                    {
+                        int energyDamage = (int)Player.GetBestClassDamage().ApplyTo(400);
+                        int energyType = (numOfEnergy % 3);
+                        Projectile energy = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, (Vector2.One * 4).RotatedByRandom(MathHelper.TwoPi), ModContent.ProjectileType<DiamondOfTheDeepProjectile>(), energyDamage, 0f, Player.whoAmI, 0, numOfEnergy);
+                        energy.localAI[2] = energyType;
+                        if (numOfEnergy + 1 == energyCap && Player.Calamity().dOfTheDeepVisual)
+                        {
+                            SoundStyle max = new("CalamityMod/Sounds/Item/WaterSplash1");
+                            SoundEngine.PlaySound(max with { Volume = 0.35f, Pitch = 0.8f, MaxInstances = -1 }, Player.Center);
+
+                            for (int i = 0; i <= 14; i++)
+                            {
+                                Vector2 vel = (Vector2.One * 5).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.4f, 1.2f);
+
+                                Dust dust2 = Dust.NewDustPerfect(Player.Center, ModContent.DustType<LightDust>(), vel);
+                                dust2.scale = Main.rand.NextFloat(0.8f, 1.4f);
+                                dust2.noGravity = false;
+                                dust2.alpha = 180;
+                                dust2.color = Main.rand.NextBool() ? Color.Turquoise : Color.Aquamarine;
+                                dust2.noLight = true;
+                                dust2.noLightEmittence = true;
+                            }
+                        }
+                    }
+                    dOfTheDeepTimer = 0;
+                }
+                else if (!Player.dead)
+                {
+                    dOfTheDeepTimer++;
+                }
             }
 
             if (unstableGraniteCore)

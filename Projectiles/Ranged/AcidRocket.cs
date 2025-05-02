@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (stuckTimer == 40)
                 {
                     SoundStyle Primed = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGAttackSwitchShort");
-                    SoundEngine.PlaySound(Primed with { Volume = 0.5f }, Projectile.Center);
+                    SoundEngine.PlaySound(Primed with { Volume = 0.4f , PitchVariance = 0.2f }, Projectile.Center);
                 }
             }
             Projectile.Opacity = 1f;

@@ -12,6 +12,7 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SlimeGod;
+using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Boss;
@@ -767,6 +768,65 @@ namespace CalamityMod
             }
             target.SyncMotionToServer();
         }
+
+        /// <summary>
+        /// Allows grounded NPCs to step up blocks
+        /// </summary>
+        /// <param name="npc"></param>
+        public static void StepUpBlocks(this NPC npc)
+        {
+            Vector2 position = npc.position;
+            position.X += npc.velocity.X;
+            int x = (int)((position.X + (float)(npc.width / 2) + (float)((npc.width / 2 + 1)) * npc.direction) / 16f);
+            int y = (int)((position.Y + (float)npc.height - 1f) / 16f);
+
+            if ((float)(x * 16) >= position.X + (float)npc.width || (float)(x * 16 + 16) <= position.X)
+                return;
+
+            bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
+            bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
+            bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
+            bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
+            bool tile3AbovePassable = !Main.tile[x - npc.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - npc.direction, y - 3].TileType];
+
+            if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
+            {
+                float npcBottom = (float)(y * 16);
+                if (Main.tile[x, y].IsHalfBlock)
+                {
+                    npcBottom += 8f;
+                }
+                if (Main.tile[x, y - 1].IsHalfBlock)
+                {
+                    npcBottom -= 8f;
+                }
+                if (npcBottom < position.Y + (float)npc.height)
+                {
+                    float percentageTileRisen = position.Y + (float)npc.height - npcBottom;
+                    if (percentageTileRisen <= 16.1f)
+                    {
+                        npc.gfxOffY += npc.position.Y + (float)npc.height - npcBottom;
+                        npc.position.Y = npcBottom - (float)npc.height;
+                        if (percentageTileRisen < 9f)
+                        {
+                            npc.stepSpeed = 1f;
+                        }
+                        else
+                        {
+                            npc.stepSpeed = 2f;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static bool IsPassableTile(int x, int y)
+        {
+            return (!Main.tile[x, y].HasUnactuatedTile ||
+                !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
+        }
+
+
         public static void Inflict246DebuffsNPC(NPC target, int buff, float timeBase = 2f)
         {
             if (Main.rand.NextBool(4))
@@ -906,6 +966,65 @@ namespace CalamityMod
         }
 
         public static bool HasSight(this NPC npc, Vector2 target) => Collision.CanHit(npc.Center, 1, 1, target, 1, 1);
+
+
+        /// <summary>
+        /// Attempts to find a tile of a given type within a given radius
+        /// </summary>
+        /// <param name="npc">The NPC to center it on</param>
+        /// <param name="tileType">The tile type to check for</param>
+        /// <param name="radius">The radius of the check area in pixels</param>
+        /// <param name="usesSunkenSeaValidity">Whether or not SunkenSeaTileValidity should be used</param>
+        /// <returns>The position of the tile, or null if unsuccessful</returns>
+        public static Vector2? NPCTileDetection(NPC npc, int tileType, float radius, bool usesSunkenSeaValidity = false)
+        {
+            Vector2? tileFoundPosition = null;
+            int? tileIndexFound = null;
+            for (int i = 0; i < 360 && tileFoundPosition == null; i += 15)
+            {
+                var points = GetIntersectingPointsInLine(npc.Center, npc.Center - Vector2.UnitY.RotatedBy(MathHelper.ToRadians(i)) * radius);
+                for (int j = points.Count - 1; j >= 0; j--)
+                {
+                    if (Main.tile[points[j]].TileType == tileType)
+                    {
+                        if (usesSunkenSeaValidity)
+                        {
+                            tileIndexFound = j;
+                        }
+                        else
+                        {
+                            tileFoundPosition = points[j].ToWorldCoordinates();
+                        }
+                        break;
+                    }
+                }
+
+                if (usesSunkenSeaValidity)
+                {
+                    if (tileIndexFound == null)
+                        continue;
+
+                    for (int k = tileIndexFound.Value; k >= 0; k--)
+                    {
+                        Vector2 worldPos = points[k].ToWorldCoordinates();
+                        if (npc.HasSight(worldPos) && SunkenSeaNPC.SunkenSeaTileValidity(npc, points[k]))
+                        {
+                            tileFoundPosition = worldPos;
+                            break;
+                        }
+                    }
+                    
+                    tileIndexFound = null;
+                }
+            }
+
+
+
+            if (tileFoundPosition.HasValue)
+                return tileFoundPosition.Value;
+
+            return null;
+        }
 
         #region Boss Spawning
         /// <summary>

@@ -2052,7 +2052,7 @@ namespace CalamityMod.NPCs.Providence
             {
                 Providence prov = info.npc.ModNPC<Providence>();
                 return prov.hasBeenGivenFullPower;
-            }, ModContent.ItemType<DivineGeode>(), 1, 30, 40);
+            }, ModContent.ItemType<DivineGeode>(), 1, 75, 90);
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -2075,8 +2075,8 @@ namespace CalamityMod.NPCs.Providence
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
 
                 // Materials
-                normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 25, 30);
-                normalOnly.Add(ModContent.ItemType<UnholyEssence>(), 1, 20, 30);
+                normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 50, 60);
+                normalOnly.Add(ModContent.ItemType<UnholyEssence>(), 1, 30, 40);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<ProvidenceMask>(), 7);
@@ -2091,8 +2091,8 @@ namespace CalamityMod.NPCs.Providence
             // GFB ASE and Blasphemous Donut drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<AscendantSpiritEssence>(), 1, 1, 99, true);
-                GFBOnly.Add(ModContent.ItemType<BlasphemousDonut>(), 1, 1117, 2201, true); // Reference to the versions the guards were added and got their latest resprites
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AscendantSpiritEssence>(), 1, 1, 99), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlasphemousDonut>(), 1, 1117, 2201), true); // Reference to the versions the guards were added and got their latest resprites
             }
 
             // Lore

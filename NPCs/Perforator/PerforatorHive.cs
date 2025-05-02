@@ -638,7 +638,7 @@ namespace CalamityMod.NPCs.Perforator
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<PerforatorsRelic>());
 
             // GFB Bloodfin drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<Bloodfin>(), 1, 1, 9999, true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<Bloodfin>(), 1, 1, 9999), true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedPerforator, ModContent.ItemType<LorePerforators>(), desc: DropHelper.FirstKillText);
@@ -647,7 +647,10 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
+            {
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
+                target.AddBuff(BuffID.Ichor, 300);
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)

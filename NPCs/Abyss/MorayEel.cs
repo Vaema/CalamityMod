@@ -99,7 +99,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Venom, 30, true);
+                target.AddBuff(BuffID.Venom, 120);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
