@@ -272,15 +272,6 @@ ClamorRifle: {
 	Tooltip: Converts musket balls into homing energy bolts
 }
 
-ClaretCannon: {
-	DisplayName: Claret Cannon
-	Tooltip:
-		'''
-		Fires strings of 3 bullets
-		Converts musket balls into bloody tears that drain enemy health
-		'''
-}
-
 CleansingBlaze: {
 	DisplayName: Cleansing Blaze
 	Tooltip:

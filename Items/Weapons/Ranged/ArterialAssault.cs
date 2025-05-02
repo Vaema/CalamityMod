@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             shotArrow.tileCollide = false;
             (shotArrow.ModProjectile as BloodfireArrowProj).DisableEffects = true;
             shotArrow.Calamity().conditionalHomingRange = 175f;
-            shotArrow.Calamity().BloodstoneOrbValue = 1;
+            shotArrow.Calamity().BloodstoneOrbValue = 20;
             shotNum++;
             if (shotNum > 4) shotNum = 0;
             return false;

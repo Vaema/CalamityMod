@@ -88,19 +88,19 @@ namespace CalamityMod.Projectiles.Healing
             float playerDist = playerVector.Length();
             if (playerDist < 50f && Projectile.position.X < player.position.X + player.width && Projectile.position.X + Projectile.width > player.position.X && Projectile.position.Y < player.position.Y + player.height && Projectile.position.Y + Projectile.height > player.position.Y)
             {
-                AdjustedHeal(player, heal);
+                Heal(player, heal);
                 Projectile.Kill();
             }
 
             Projectile.velocity = (Projectile.velocity * 5 + (playerVector.SafeNormalize(Vector2.Zero) * 5)) / 6f; //Move towards player. Range is determined in the AI();
         }
 
-        public void AdjustedHeal(Player player, int heal)
+        public static void Heal(Player player, int PotionTime)
         {
             var cplayer = player.Calamity();
             if (player.potionDelay > 0)
             {
-                player.potionDelay -= 20;
+                player.potionDelay -= PotionTime;
                 if (player.potionDelay < 0)
                     player.potionDelay = 0;
                 if (player.HasBuff(BuffID.PotionSickness))
@@ -116,8 +116,11 @@ namespace CalamityMod.Projectiles.Healing
             }
             else
             {
-                player.lifeRegenTime += 60; //if Potion Sickness is full, each orb speeds up natural regen by 1 second
+                player.lifeRegenTime += 3*PotionTime; //if Potion Sickness is full, each orb speeds up natural regen
             }
+            
+                Particle ring = new CustomPulse(player.Center, Vector2.Zero, new Color(255, 32, 32)*0.75f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, 0, 0.01f, 0.05f, 20);
+                GeneralParticleHandler.SpawnParticle(ring);
         }
 
         public override bool PreDraw(ref Color lightColor)

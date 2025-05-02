@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Rogue
                 float spreadAmount = MathHelper.ToRadians(360);
                 for (var i = 0; i < orbAmount; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.One.RotatedByRandom(spreadAmount) * 2f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.One.RotatedByRandom(spreadAmount) * 2f * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 20, 0f, Projectile.owner);
 
                 }
             }
