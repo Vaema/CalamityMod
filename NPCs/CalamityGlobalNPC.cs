@@ -1814,7 +1814,7 @@ namespace CalamityMod.NPCs
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
-            if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
+            if (CalamityNPCSets.BossRushHealth.TryGetValue(npc.type, out var newHP))
             {
                 npc.lifeMax = newHP;
             }
@@ -2721,7 +2721,7 @@ namespace CalamityMod.NPCs
                 npc.GetNPCDamage();
                 npc.defDamage = npc.damage;
             }
-            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || BossHPScalingList.Includes(npc.type))
+            if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || CalamityNPCSets.ScalesHealthLikeBoss[npc.type])
             {
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 npc.lifeMax += (int)Math.Round(npc.lifeMax * HPBoost);
@@ -3679,7 +3679,7 @@ namespace CalamityMod.NPCs
                 return;
 
             bool countsAsBoss = npc.boss || NPCID.Sets.ShouldBeCountedAsBoss[npc.type];
-            bool scalesLikeBoss = countsAsBoss || BossHPScalingList.List.Contains(npc.type);
+            bool scalesLikeBoss = countsAsBoss || CalamityNPCSets.ScalesHealthLikeBoss[npc.type];
             bool isCalamityNPC = npc.ModNPC != null && npc.ModNPC.Mod == CalamityMod.Instance;
 
             // 14APR2025: Ozzatron: Reworked how Calamity changes the health of Expert+ multiplayer bosses
@@ -7770,7 +7770,7 @@ namespace CalamityMod.NPCs
             if (npc.HasBuff<Enraged>())
                 return new Color(200, 50, 50, 255 - npc.alpha);
 
-            if (npc.Calamity().kamiFlu > 0 && !KamiDebuffColorImmuneList.Includes(npc.type))
+            if (npc.Calamity().kamiFlu > 0 && !CalamityNPCSets.DoesNotDrawKamiFluDebuffColor[npc.type])
                 return new Color(51, 197, 108, 255 - npc.alpha);
 
             if (npc.type == NPCID.VileSpit || npc.type == NPCID.VileSpitEaterOfWorlds)
@@ -7864,7 +7864,7 @@ namespace CalamityMod.NPCs
             }
             if (npc.type != NPCID.BrainofCthulhu && (npc.type != NPCID.DukeFishron || npc.ai[0] <= 9f) && npc.active)
             {
-                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || NeedsDebuffIconDisplayList.Includes(npc.type)))
+                if (CalamityClientConfig.Instance.DebuffDisplay && (npc.boss || BossHealthBarManager.MinibossHPBarList.Contains(npc.type) || BossHealthBarManager.OneToMany.ContainsKey(npc.type) || CalamityNPCSets.ForceDrawDebuffDisplay[npc.type]))
                 {
                     List<Texture2D> currentDebuffs = new List<Texture2D>() { };
 
@@ -9228,8 +9228,7 @@ namespace CalamityMod.NPCs
         {
             if (!GetDownedBossVariable(npc.type))
             {
-                BossTypeDict.TryGet(npc.type, out int newBossTypeJustDowned);
-
+                CalamityNPCSets.BossSpeedrunTimerID.TryGetValue(npc.type, out int newBossTypeJustDowned);
                 for (int i = 0; i < Main.maxPlayers; i++)
                 {
                     Player player = Main.player[i];

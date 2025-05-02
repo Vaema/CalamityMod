@@ -3528,7 +3528,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (HighTestFishingPoleList.Includes(Player.ActiveItem().type))
+            if (CalamityItemSets.FishingPoleThatNeverBreaks[Player.ActiveItem().type])
                 Player.accFishingLine = true;
 
             if (planarSpeedBoost != 0)
