@@ -206,7 +206,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 return;
             }
-            NPC.TargetClosest();
             // Red/Green in reefs, Green/Blue elsewhere
             if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
             {
@@ -216,6 +215,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentColor = Main.rand.Next(0, 2);
             }
+            NPC.TargetClosest();
             // 1 in 30 chance for a rare fish variant (rfv)
             if (Main.rand.NextBool(30))
             {
