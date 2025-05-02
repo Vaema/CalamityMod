@@ -371,6 +371,14 @@ CalamityClientConfig: {
 		Label: Sunken Sea Multi Threading
 		Tooltip: ""
 	}
+
+	DisableGravityScreenSwap: {
+		Label: Disable Gravity Screen Flip
+		Tooltip:
+		'''
+		Disables screen flipping from changing gravity
+		'''
+	}
 }
 
 CalamityServerConfig: {
