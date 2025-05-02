@@ -2210,7 +2210,7 @@ namespace CalamityMod.CalPlayer
                 MiniSwarmerCooldown--;
 
             // God Slayer Armor dash debuff immunity
-            if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
+            if (LastUsedDashID == GodslayerArmorDash.ID && Player.dashDelay < 0)
             {
                 for (int d = 0; d < Player.buffImmune.Length; d++)
                 {
