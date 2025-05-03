@@ -6487,7 +6487,7 @@ namespace CalamityMod.NPCs
             if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
                 AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
                 StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || AresIDList.Includes(npc.type))
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>())
             {
                 float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : 0.5f;
                 if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
