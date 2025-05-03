@@ -1361,7 +1361,7 @@ TheMutilator: {
 		'''
 		Striking enemies empowers The Mutilator, increasing its damage
 		At full charge, striking enemies causes a blood orb explosion
-		Picking up these blood orbs reduces the duration of Potion Sickness
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
 		'''
 }
 

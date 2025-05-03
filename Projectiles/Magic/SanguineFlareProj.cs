@@ -180,17 +180,6 @@ namespace CalamityMod.Projectiles.Magic
                 Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, 0f, lightTexture.Size() * 0.5f, innerScale * 1.25f, SpriteEffects.None, 0);
                 }
             }
-
-
-            /*if (Main.rand.NextBool(6) && Projectile.ai[1] == 0f)
-            {
-                Color smokeColor = Main.rand.NextBool() ? Color.Red : Color.Firebrick;
-                Vector2 smokePosition = Projectile.Center + Main.rand.NextVector2Circular(5 + Time * 0.3f, 5 + Time * 0.3f);
-                float smokeScale = Main.rand.NextFloat(0.5f, 1.6f);
-                float smokeOpacity = 170 + -Time * 0.6f;
-                Particle smoke = new MediumMistParticle(smokePosition, Vector2.Zero, smokeColor, Color.Black, smokeScale, smokeOpacity, Main.rand.NextFloat(0.2f, -0.2f));
-                GeneralParticleHandler.SpawnParticle(smoke);
-            }*/
             return false;
         }
     }
