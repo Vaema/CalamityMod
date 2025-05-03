@@ -18,13 +18,5 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] CanBeReplacedByAbyssGeneration = Factory.CreateBoolSet();
-
-        /// <summary>
-        /// If <see langword="true"/> for a tile type, then that tile is considered a Living Fire-type tile.<br/>
-        /// Currently unused.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] LivingFireTile = Factory.CreateBoolSet(TileID.LivingFire, TileID.LivingCursedFire, TileID.LivingDemonFire, TileID.LivingFrostFire, TileID.LivingIchor,
-            TileID.LivingUltrabrightFire, TileType<LivingGodSlayerFireBlockTile>(), TileType<LivingHolyFireBlockTile>(), TileType<LivingBrimstoneFireBlockTile>(), TileType<LivingPlagueFireBlockTile>());
     }
 }
