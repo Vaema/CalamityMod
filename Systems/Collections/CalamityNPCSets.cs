@@ -150,12 +150,6 @@ namespace CalamityMod.Systems.Collections
                 NPCID.Scarecrow1, NPCID.Scarecrow2, NPCID.Scarecrow3, NPCID.Scarecrow4, NPCID.Scarecrow5, NPCID.Scarecrow6, NPCID.Scarecrow7, NPCID.Scarecrow8, NPCID.Scarecrow9, NPCID.Scarecrow10,
                 NPCID.Splinterling, NPCID.Flocko, NPCID.GingerbreadMan, NPCID.Krampus, NPCID.Nutcracker, NPCID.NutcrackerSpinning, NPCID.PresentMimic, NPCID.Yeti, NPCID.ZombieElf, NPCID.ZombieElfBeard,
                 NPCID.ZombieElfGirl, NPCID.BloodEelHead, NPCID.GoblinShark, NPCID.EyeballFlyingFish, NPCID.ZombieMerman);
-        // Fuck negative IDs bro this shit sucks
-        /// <summary>
-        /// <inheritdoc cref="NerfDamageInHardmode"/>
-        /// </summary>
-        public static bool[] NerfDamageInHardmodeNegativeIDs = Factory.CreateBoolSet(-NPCID.Slimeling, -NPCID.Slimer2, -NPCID.BigCrimslime, -NPCID.LittleCrimslime, -NPCID.BigMossHornet,
-            -NPCID.GiantMossHornet, -NPCID.LittleMossHornet, -NPCID.TinyMossHornet);
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC is a post-Plantera Dungeon enemy. This causes two separate changes to the enemy.<br/>
