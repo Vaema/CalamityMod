@@ -27,9 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             Tile tile = Framing.GetTileSafely(i, j + 1);
             if (tile.HasTile && tile.TileType == Type)
-            {
                 WorldGen.KillTile(i, j + 1);
-            }
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -37,18 +35,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Tile tileAbove = Framing.GetTileSafely(i, j - 1);
             int type = -1;
             if (tileAbove.HasTile && !tileAbove.BottomSlope) 
-            {
                 type = tileAbove.TileType;
-            }
 
             if (type == ModContent.TileType<Shellstone>() || type == Type) 
-            {
                 return true;
-            }
 
             WorldGen.KillTile(i, j);
             return true;
         }
+
         public override void NearbyEffects(int i, int j, bool closer)
         {
             // Light Cyan
@@ -60,6 +55,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                 dust.noLight = true;
                 dust.fadeIn = 2.5813954f;
             }
+
             //Lilac
             if (closer && Main.rand.NextBool(600))
             {
@@ -70,11 +66,11 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                 dust.fadeIn = 2.5813954f;
             }
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
+            // Quite possibly some of the laggiest calculations I've ever seen
             float brightness = 0.9f;
-            brightness += 0.6f;
-            brightness = MathHelper.Clamp(brightness, 0.5f, 0.9f);
             brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
             Color lilac = new Color(236, 194, 252);
             Color mint = new Color(163, 252, 195);
@@ -117,9 +113,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                     tileBelow.HasTile = true;
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.dedServ) 
-                    {
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-                    }
                 }
             }
         }

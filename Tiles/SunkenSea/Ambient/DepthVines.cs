@@ -4,7 +4,6 @@ using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
 	public class DepthVines : ModTile
@@ -26,9 +25,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             Tile tile = Framing.GetTileSafely(i, j + 1);
             if (tile.HasTile && tile.TileType == Type)
-            {
                 WorldGen.KillTile(i, j + 1);
-            }
         }
 
 		public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -36,14 +33,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			Tile tileAbove = Framing.GetTileSafely(i, j - 1);
 			int type = -1;
 			if (tileAbove.HasTile && !tileAbove.BottomSlope) 
-            {
 				type = tileAbove.TileType;
-			}
 
 			if (type == ModContent.TileType<Navystone>() || type == Type) 
-            {
 				return true;
-			}
 
 			WorldGen.KillTile(i, j);
 			return true;
@@ -78,9 +71,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 					tileBelow.HasTile = true;
 					WorldGen.SquareTileFrame(i, j + 1, true);
 					if (Main.dedServ) 
-                    {
 						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-					}
 				}
 			}
 		}

@@ -68,6 +68,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -1690,7 +1691,8 @@ namespace CalamityMod.CalPlayer
         public bool mouseRight = false;
         private bool oldMouseRight = false;
 
-        private float oldGravDir = 1;
+        public float oldGravDir = 1;
+        public float tempGravDir = 1;
         public bool justChangedGravity = false;
 
         public Vector2 mouseWorld;
@@ -2744,8 +2746,6 @@ namespace CalamityMod.CalPlayer
             AbleToSelectExoMech = false;
 
             infiniteFlight = false;
-            justChangedGravity = oldGravDir != Player.gravDir;
-            oldGravDir = Player.gravDir;
 
             EnchantHeldItemEffects(Player, Player.Calamity(), Player.ActiveItem());
         }
@@ -5639,7 +5639,7 @@ namespace CalamityMod.CalPlayer
         }
 
         public override void PostUpdate() //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
-        {
+        {   
             bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
                                   Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
             if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)
