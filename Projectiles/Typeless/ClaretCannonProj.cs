@@ -16,11 +16,6 @@ namespace CalamityMod.Projectiles.Typeless
     public class ClaretCannonProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 10;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
 
         public override void SetDefaults()
         {
@@ -81,12 +76,6 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(bloodsplosion);
                 Particle bloodsplosion2 = new CustomPulse(Projectile.Center, Vector2.Zero, new Color(255, 32, 32), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0.03f * particleScale / 5f, 0.155f * particleScale / 5f, 40);
                 GeneralParticleHandler.SpawnParticle(bloodsplosion2);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return true;
         }
     }
 }
