@@ -23,15 +23,17 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             base.SetStaticDefaults();
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 2;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
 
@@ -39,9 +41,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
     
@@ -49,9 +51,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
 }
