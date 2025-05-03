@@ -73,7 +73,7 @@ namespace CalamityMod.World
                     if (tile.HasTile)
                     {
                         bool vanillaTile = tile.TileType < TileID.Count;
-                        bool validModdedTile = tile.TileType != ModContent.TileType<SulphurousSandstone>() && AbyssValidTileReplacementList.Includes(tile.TileType);
+                        bool validModdedTile = tile.TileType != ModContent.TileType<SulphurousSandstone>() && CalamityTileSets.CanBeReplacedByAbyssGeneration[tile.TileType];
                         canConvert = vanillaTile || validModdedTile;
                     }
 

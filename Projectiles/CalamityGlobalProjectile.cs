@@ -3313,7 +3313,7 @@ namespace CalamityMod.Projectiles
 
                 if (NPC.downedMoonlord)
                 {
-                    if (BuffedDungeonProjectilesList.Includes(projectile.type))
+                    if (CalamityProjectileSets.IsBuffedDungeonProjectile[projectile.type])
                     {
                         // ai[1] being set to 1 is done only by the Calamity usages of these projectiles in Skeletron and Skeletron Prime boss fights
                         bool isSkeletronBossProjectile = (projectile.type == ProjectileID.RocketSkeleton || projectile.type == ProjectileID.Shadowflames) && projectile.ai[1] > 0f;
@@ -3328,7 +3328,7 @@ namespace CalamityMod.Projectiles
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (EventProjectileBuffList.Includes(projectile.type))
+                    if (CalamityProjectileSets.IsBuffedEventProjectile[projectile.type])
                         projectile.damage += 15;
                 }
 
