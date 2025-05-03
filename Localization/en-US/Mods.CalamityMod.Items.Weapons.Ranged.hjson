@@ -205,7 +205,7 @@ BloodBoiler: {
 		Fires twin streams of bloodfire that returns to you
 		Retuning bloodfire reduces [Potion Sickness] if it struck an enemy
 		Uses your health as ammo
-		80% chance to save health
+		20% chance to save health
 		'''
 }
 
