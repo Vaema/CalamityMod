@@ -104,10 +104,10 @@ CalamityClientConfig: {
 	DisableGravityScreenSwap: {
 		Label: Disable Gravity Screen Flip
 		Tooltip:
-		'''
-		Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
-		Enable this if the screen-flipping is distracting or induces motion sickness.
-		'''
+			'''
+			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
+			Enable this if the screen-flipping is distracting or induces motion sickness.
+			'''
 	}
 
 	EnableVanillaTextureEdits: {
