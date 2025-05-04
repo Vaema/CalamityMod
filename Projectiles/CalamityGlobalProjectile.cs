@@ -219,6 +219,11 @@ namespace CalamityMod.Projectiles
         /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
+        /// <summary> Timer for how long a projectile's damage is reduced by the value in <see cref="multiplicativeDR"/>. </summary>
+        public int multiplicativeDRTimer = 0;
+        /// <summary> A temporary multiplicative amount of damage reduction when hitting the player. Resets to 0 if <see cref="multiplicativeDRTimer"/> drops to 0. </summary>
+        public float multiplicativeDR = 0;
+
         /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
@@ -4006,6 +4011,12 @@ namespace CalamityMod.Projectiles
                 if (flatDRTimer <= 0)
                     flatDR = 0;
             }
+            if (projectile.FinalExtraUpdate() && multiplicativeDRTimer > 0)
+            {
+                multiplicativeDRTimer--;
+                if (multiplicativeDRTimer <= 0)
+                    multiplicativeDR = 0;
+            }
             if (projectile.FinalExtraUpdate() && TransformerTimer > 0)
             {
                 TransformerTimer--;
@@ -4219,6 +4230,7 @@ namespace CalamityMod.Projectiles
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
         {
             modifiers.FinalDamage.Flat -= flatDR;
+            modifiers.FinalDamage *= 1f - multiplicativeDR;
         }
         #endregion
 

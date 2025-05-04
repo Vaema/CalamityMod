@@ -858,8 +858,12 @@ MirrorBlade: {
 	DisplayName: Mirror Blade
 	Tooltip:
 		'''
-		The amount of contact damage an enemy does is added to this weapons' damage
-		You must hit an enemy with the blade to trigger this effect
+		Striking an enemy or a hostile projectile spawns mirror shards
+		You can have up to 10 mirror shards at once, and excess shards are launched at enemies
+		<right> to form your shards into a mirror shield
+		Each shard redues the damage of a projectile that hit the shield by 10%
+		The shield breaks after one projectile, launching the shards at enemies with increasd damage
+		With all 10 shards, you gain a brief period of invulnerability when shattering the shield
 		'''
 }
 

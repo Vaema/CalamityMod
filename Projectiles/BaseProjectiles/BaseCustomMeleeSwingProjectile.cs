@@ -301,8 +301,15 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 player.direction = -1;
                 Projectile.spriteDirection = -1 * (int)player.gravDir;
             }
+            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 0)
+            {
+                Projectile.spriteDirection *= -1;
+            }
             swingTime = Main.player[Projectile.owner].HeldItem.useTime;
             Spawn(source);
+            StartupTime *= Projectile.MaxUpdates;
+            CooldownTime *= Projectile.MaxUpdates;
+            swingTime *= Projectile.MaxUpdates;
             if (useMeleeSpeed)
             {
                 var speed = Main.player[Projectile.owner].GetAttackSpeed<MeleeDamageClass>();
@@ -339,7 +346,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-            float adust = MathHelper.ToRadians(45 + 180);
+            float adust = MathHelper.ToRadians(225);
             if (timer < StartupTime || timer > StartupTime + swingTime)
             {
                 angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
@@ -369,16 +376,18 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     oldProjectilePos.RemoveAt(0);
                 }
             }
-            var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : -SwingFunction());
+            var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
 
-            player.itemTime = ExistsTime + 1 - timer;
+            player.itemTime = ExistsTime + 2 - timer;
+            player.itemAnimation = ExistsTime + 2 - timer;
             if (timer > ExistsTime)
             {
-                Projectile.Kill();
                 player.itemTime = 0;
+                player.itemAnimation = 0;
+                Projectile.Kill();
             }
             timer++;
             if (timer >= StartupTime && timer < StartupTime + swingTime)
@@ -427,7 +436,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
 
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["fireColor"].SetValue(trailColors[2].ToVector3());
 
-                GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue((AlternateSwings && modplayer.swingNum % 2 == 1) ^ Projectile.spriteDirection == -1 ? false : true);
+                GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(Projectile.spriteDirection == -1 ? false : true);
                 GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
                 var positionsToUse = Projectile.oldPos.Take((int)MathHelper.Min(trailLength,swingTimer)).ToArray();
@@ -485,7 +494,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 return;
             }
             amount += 1;
-            if (timer % (swingTime / amount) == 0 && timer > 0 && timer < swingTime - swingTime / amount / 2)
+            if (swingTimer % (swingTime / amount) == 0 && swingTimer > 0 && swingTimer < swingTime - swingTime / amount / 2)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation + negate * MathHelper.ToRadians(45 - negate * 90)).ToRotationVector2() * velocity, type, (int)(Projectile.damage * damagemod), Projectile.knockBack, Projectile.owner, ai0);
             }

@@ -1,24 +1,40 @@
 ﻿using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.DataStructures;
+using Microsoft.Xna.Framework;
+using CalamityMod.Systems.Collections;
+using System;
+using Terraria.Localization;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class MirrorBlade : ModItem, ILocalizedModType
+    public class MirrorBlade : BaseSwordHoldoutItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        private int baseDamage = 100;
+        public override int ProjectileType => ModContent.ProjectileType<MirrorBladeProjectile>();
+        public float damageMultiplier = 1f;
 
+        public int reflectTimer = 0;
+
+        public override void SetStaticDefaults()
+        {
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 5));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            base.SetStaticDefaults();
+        }
         public override void SetDefaults()
         {
-            Item.width = 72;
-            Item.height = 72;
-            Item.damage = baseDamage;
-            Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 12;
-            Item.useTime = 12;
+            Item.width = 114;
+            Item.height = 128;
+            Item.damage = 1000;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.useAnimation = 40;
+            Item.useTime = 40;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7f;
@@ -28,20 +44,80 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<MirrorBlast>();
+            base.SetDefaults();
         }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        public override void UpdateInventory(Player player)
         {
-            int conDamage = target.damage + baseDamage;
-            if (conDamage < baseDamage)
+            if (reflectTimer > 0)
             {
-                conDamage = baseDamage;
+                if (reflectTimer <= 50)
+                {
+
+                    float coneLength = 80f;
+                    float maximumAngle = 0.8f;
+                    float coneRotation = player.DirectionTo(Main.MouseWorld).ToRotation();
+                    var shardCount = 0;
+                    foreach (var proj in Main.projectile)
+                    {
+                        if (proj.active && proj.type == ModContent.ProjectileType<MirrorBlast>() && proj.owner == player.whoAmI && (proj.ModProjectile as MirrorBlast).isShard)
+                        {
+                            shardCount++;
+                        }
+                    }
+                    foreach (var proj in Main.ActiveProjectiles)
+                    {
+                        if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
+                        {
+                            if (shardCount >= 10)
+                            {
+                                player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
+                            }
+                                proj.Calamity().multiplicativeDR += shardCount / 10f;
+                                proj.Calamity().multiplicativeDRTimer = 60;
+                            foreach (var proj2 in Main.projectile)
+                            {
+                                if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)
+                                {
+                                    proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
+                                    (proj2.ModProjectile as MirrorBlast).shardShield = 0;
+                                    (proj2.ModProjectile as MirrorBlast).shardNum = 11;
+                                }
+                            }
+                            reflectTimer = 0;
+                            return;
+                        }
+                    }
+                }
+                reflectTimer--;
             }
-            if (conDamage > 400)
+        }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (player.altFunctionUse == 2)
             {
-                conDamage = 400;
+                reflectTimer = 60;
+                foreach (var proj in Main.projectile)
+                {
+                    if (proj.active && proj.type == ModContent.ProjectileType<MirrorBlast>() && proj.owner == player.whoAmI && (proj.ModProjectile as MirrorBlast).isShard)
+                    {
+                        (proj.ModProjectile as MirrorBlast).shardShield = 60;
+                    }
+                }
+                return false;
             }
-            Item.damage = conDamage;
+            return base.Shoot(player, source, position, velocity, type, damage, knockback);
+        }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
+        }
+
+        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
+        {
+            //damage *= damageMultiplier;
         }
     }
 }
