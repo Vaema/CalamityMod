@@ -143,11 +143,14 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Crawdad
+                // Craw Carapace @ 100% IF Hardmode
+                // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
                 // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<CrawCarapace>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
 
