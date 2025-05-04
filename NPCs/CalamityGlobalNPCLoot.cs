@@ -133,10 +133,13 @@ namespace CalamityMod.NPCs
 
                 #region Underground
                 // Giant Shelly
+                // Giant Shell @ 100% IF Hardmode
+                // OTHERWISE,
                 // Giant Shell @ 14.29% Normal, 25% Expert+
                 case NPCID.GiantShelly:
                 case NPCID.GiantShelly2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<GiantShell>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
                     break;
 
                 // Crawdad
@@ -373,18 +376,21 @@ namespace CalamityMod.NPCs
                 // Life Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Piranha, Arapaima, Blood Feeder
@@ -409,7 +415,7 @@ namespace CalamityMod.NPCs
                 // Jellyfish Necklace @ 1%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 100);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
                     break;
                 #endregion
 
