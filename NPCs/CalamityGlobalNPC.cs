@@ -301,6 +301,10 @@ namespace CalamityMod.NPCs
         public int webbed = 0;
         public int slowed = 0;
         public int electrified = 0;
+
+        public float manaBurn = 0f;
+        public float manaBurnPeak = 0f;
+        public float playerManaBurnIntensity = 0f;
         public int pearlAura = 0;
         /// <summary>
         /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
@@ -480,6 +484,7 @@ namespace CalamityMod.NPCs
 
         // Drawing variables.
         public FireParticleSet VulnerabilityHexFireDrawer = null;
+        public FireParticleSet ManaBurnFireDrawer = null;
 
         /// <summary>
         /// Boss Enrage variable for use with the boss health UI.<br/>
@@ -679,6 +684,7 @@ namespace CalamityMod.NPCs
 
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
+            myClone.ManaBurnFireDrawer = null;
 
             myClone.CurrentlyEnraged = CurrentlyEnraged;
 
@@ -911,6 +917,18 @@ namespace CalamityMod.NPCs
                     ApplyDPSDebuff(projectileCount * 20, projectileCount * 4, ref npc.lifeRegen, ref damage);
                 else
                     ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
+            }
+
+            // Mana Burn
+            if (manaBurn > 0)
+            {
+                manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
+                int burnPerSecond = (int)MathF.Ceiling(manaBurn * 0.5f);
+                manaBurn -= burnPerSecond/60f;
+                ApplyDPSDebuff(burnPerSecond, (int)(burnPerSecond*0.25f), ref npc.lifeRegen, ref damage);
+            } else {
+                manaBurnPeak = 0;
+                playerManaBurnIntensity = 0;
             }
             #endregion
 
@@ -3969,6 +3987,15 @@ namespace CalamityMod.NPCs
 
             if (VulnerabilityHexFireDrawer != null)
                 VulnerabilityHexFireDrawer.Update();
+            
+            if (ManaBurnFireDrawer != null) {
+                ManaBurnFireDrawer.LocalTimer = 0;
+                    float power = npc.height / 100f;
+                    if (power > 2.75f)
+                        power = 2.75f;
+                ManaBurnFireDrawer.RelativePower = power*MathHelper.Lerp(0.5f,1.5f, MathHelper.Clamp(manaBurn/manaBurnPeak,0,1))*playerManaBurnIntensity;
+                ManaBurnFireDrawer.Update();
+            }
 
             SetPatreonTownNPCName(npc, Mod);
 
@@ -8151,7 +8178,7 @@ namespace CalamityMod.NPCs
             }
             else
             {
-                // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
+                // VHex, Mana Burn and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
                 if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
                 {
                     float compactness = npc.width * 0.6f;
@@ -8160,13 +8187,32 @@ namespace CalamityMod.NPCs
                     float power = npc.height / 100f;
                     if (power > 2.75f)
                         power = 2.75f;
+                    var color = Color.Red;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, color * 1.25f, color, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }
                 else
                     VulnerabilityHexFireDrawer = null;
+
+                // Mana Burn effect is just vhex but blue
+                if (npc.Calamity().manaBurn > 0)
+                {
+                    float compactness = npc.width * 0.6f;
+                    if (compactness < 10f)
+                        compactness = 10f;
+                    float power = npc.height / 100f;
+                    if (power > 2.75f)
+                        power = 2.75f;
+                    var color = Color.Blue;
+                    if (ManaBurnFireDrawer is null || ManaBurnFireDrawer.LocalTimer >= ManaBurnFireDrawer.SetLifetime)
+                        ManaBurnFireDrawer = new FireParticleSet(60, 1, color * 1.25f, color, compactness, power);
+                    else
+                        ManaBurnFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
+                }
+                else
+                    ManaBurnFireDrawer = null;
 
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))

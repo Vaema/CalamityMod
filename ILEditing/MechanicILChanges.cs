@@ -697,6 +697,32 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
+            {
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, amount, pay, blockQuickMana);
+        }
+
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
+            {
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
+        }
+        #endregion
+
         #region Fire Cursor Effect for the Calamity Accessory
         private static void UseCoolFireCursorEffect(Terraria.On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
         {

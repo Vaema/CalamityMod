@@ -1678,6 +1678,7 @@ namespace CalamityMod.CalPlayer
         // This may seem like a scuffed setup, but a simple bool will have ordering issues when it comes to drawing.
         // Until ModSceneMetrics gets implemented, this works for now.
         public int BrimstoneLavaFountainCounter = 0;
+        public FireParticleSet ManaBurnFireDrawer = null;
         #endregion Draw Effects
 
         #region Draedon Summoning

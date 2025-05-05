@@ -102,6 +102,8 @@ namespace CalamityMod.ILEditing
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
+            On_Player.CheckMana_int_bool_bool += AllowNegativeCheckMana;
+            On_Player.CheckMana_Item_int_bool_bool += AllowNegativeCheckMana;
 
             //LavaStyles
             if (ExternalMods.biomeLava == null)
