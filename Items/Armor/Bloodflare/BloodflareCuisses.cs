@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(13).
                 AddIngredient<RuinousSoul>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

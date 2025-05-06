@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Mounts
             CreateRecipe().
                 AddIngredient<UnholyCore>(5).
                 AddIngredient<Bloodstone>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

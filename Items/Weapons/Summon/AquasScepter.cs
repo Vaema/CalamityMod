@@ -50,12 +50,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void AddRecipes()
         {
-            Recipe recipe = Recipe.Create(ModContent.ItemType<Items.Weapons.Summon.AquasScepter>());
-            recipe.AddIngredient(ItemID.NimbusRod);
-            recipe.AddIngredient(ItemID.AquaScepter);
-            recipe.AddIngredient<ArmoredShell>(3);
-            recipe.AddTile(TileID.LunarCraftingStation); //LunarCraftingStation = Ancient Manipulator
-            recipe.Register();
+            CreateRecipe().
+                AddIngredient(ItemID.NimbusRod).
+                AddIngredient(ItemID.AquaScepter).
+                AddIngredient<ArmoredShell>(3).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

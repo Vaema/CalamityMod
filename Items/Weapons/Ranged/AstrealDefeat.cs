@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ShadowFlameBow).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<AshesofCalamity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
