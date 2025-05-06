@@ -76,8 +76,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<AscendantSpiritEssence>().
-                //Not an anvil because making fruit at an anvil is a little weird, so here's something more magical.
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

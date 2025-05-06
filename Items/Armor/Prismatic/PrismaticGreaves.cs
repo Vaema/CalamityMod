@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Armor.Prismatic
                 AddIngredient<ExodiumCluster>(5).
                 AddIngredient<DivineGeode>(6).
                 AddIngredient(ItemID.Nanites, 300).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

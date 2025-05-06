@@ -75,7 +75,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<DivineGeode>(8).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

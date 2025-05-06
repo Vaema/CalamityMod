@@ -29,7 +29,8 @@ AddedTooltip: {
 	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
 	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
-	Stepstool: Standing on the stool grants 5% increased critical strike chance
+	// Step Stool
+	PortableStool: Standing on the stool grants 5% increased critical strike chance
 	Tombstones:
 		'''
 		13 of any tombstone turns the surrounding area into a graveyard
@@ -149,6 +150,8 @@ EditedTooltip: {
 		Throws a mixture of slime and sparkling crystals
 		Slimed enemies take more damage from fire-based debuffs
 		'''
+	// Ancient Manipulator
+	LunarCraftingStation: Used to craft items from Lunar Fragments, Luminite, and Astral Bars
 	AnkhShield1: Grants immunity to knockback
 	AnkhShield2: Grants immunity to most debuffs, including Mighty Wind
 	Campfires: Life regen is increased by 0.5 HP/s when near a campfire

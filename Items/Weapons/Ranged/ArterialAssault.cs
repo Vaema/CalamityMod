@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

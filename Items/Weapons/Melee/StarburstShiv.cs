@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.FragmentSolar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

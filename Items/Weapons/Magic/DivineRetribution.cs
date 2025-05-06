@@ -61,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<UndinesRetribution>().
                 AddIngredient<DivineGeode>(8).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

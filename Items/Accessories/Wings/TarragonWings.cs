@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Accessories.Wings
             CreateRecipe().
                 AddIngredient(ItemID.SoulofFlight, 20).
                 AddIngredient<UelibloomBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

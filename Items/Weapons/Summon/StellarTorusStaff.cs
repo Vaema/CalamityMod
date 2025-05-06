@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.XenoStaff).
                 AddIngredient(ItemID.FragmentStardust, 6).
                 AddIngredient<ArmoredShell>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

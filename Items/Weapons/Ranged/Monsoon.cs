@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<FlarewingBow>().
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<DepthCells>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

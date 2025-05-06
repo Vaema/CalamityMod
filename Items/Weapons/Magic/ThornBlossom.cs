@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

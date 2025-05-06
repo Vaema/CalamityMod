@@ -119,7 +119,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<NullificationPistol>().
                 AddIngredient<DarkPlasma>(2).
                 AddIngredient<CoreofCalamity>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
