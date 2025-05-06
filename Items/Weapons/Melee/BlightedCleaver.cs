@@ -93,7 +93,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.BrokenHeroSword).
                 AddIngredient(ItemID.ChlorophyteBar, 15).
                 AddIngredient(ItemID.VialofVenom, 10).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
