@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
         }
 
         public override void FindFrame(int frameHeight) // 9 total frames

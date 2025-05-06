@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -52,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.NebulaBlaze).
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<NightmareFuel>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

@@ -458,11 +458,13 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedDragonfolly, ModContent.ItemType<LoreDragonfolly>(), desc: DropHelper.FirstKillText);
         }
+
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<VermillionFlux>(), 120, true);
+                target.AddBuff(ModContent.BuffType<VermillionFlux>(), Main.zenithWorld ? 360 : 180);
         }
+
         public override void OnKill()
         {
             // Don't bother running any of this in Boss Rush.

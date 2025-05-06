@@ -2,6 +2,7 @@
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,6 +10,7 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class WhitePearlPile : ModTile
     {
+        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -22,7 +24,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine[Type] = 3500;
             Main.tileShine2[Type] = true;
 
-            HitSound = SoundID.Shatter;
+            HitSound = MineSound;
             DustType = DustID.Slush;
             AddMapEntry(new Color(217, 209, 213));
 

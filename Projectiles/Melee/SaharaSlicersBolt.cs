@@ -1,8 +1,9 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -35,6 +36,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             Player Owner = Main.player[Projectile.owner];
             float playerDist = Vector2.Distance(Owner.Center, Projectile.Center);
+            Projectile.ai[2]++;
 
             // Shot Mode
             if (Projectile.ai[0] == 1)
@@ -102,7 +104,28 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.ai[0] == 1)
                 CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return true;
+            Vector2 scale = new Vector2(Projectile.scale);
+            // Squishy fade in. This does not occur if the slicer is instantly thrown
+            if (Projectile.ai[0] == 0)
+            {
+                int endStretch = 4;
+                int endSquash = 8;
+                Vector2 stretch = new Vector2(0.8f, 1.6f);
+                if (Projectile.ai[2] < endStretch)
+                {
+                    float completion = Utils.GetLerpValue(0, endStretch, Projectile.ai[2], true);
+                    scale.X = MathHelper.Lerp(1.8f, stretch.X, completion);
+                    scale.Y = MathHelper.Lerp(0.3f, stretch.Y, completion);
+                }
+                else
+                {
+                    float completion = Utils.GetLerpValue(0, endSquash, Projectile.ai[2], true);
+                    scale.X = MathHelper.Lerp(stretch.X, 1f, completion);
+                    scale.Y = MathHelper.Lerp(stretch.Y, 1f, completion);
+                }
+            }
+            Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, TextureAssets.Projectile[Type].Size() / 2, scale, SpriteEffects.None);
+            return false;
         }
         public override bool? CanDamage() => Projectile.ai[0] == 1 ? true : false;
     }

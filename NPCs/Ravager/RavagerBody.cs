@@ -1006,7 +1006,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480, true);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480);
         }
 
         public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.GreaterHealingPotion;

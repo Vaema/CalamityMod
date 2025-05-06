@@ -30,6 +30,7 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
+using CalamityMod.ExtraJumps;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -1391,6 +1392,13 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.GravityGlobe)
             {
+                player.GetJumpState<GravityJump>().Enable();
+                if (player.Calamity().justChangedGravity) {
+                    player.GetJumpState<GravityJump>().Available = true;
+                }
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8) {
+                    player.maxRunSpeed = 5f;
+                }
                 player.jumpSpeedBoost += 1.6f;
                 if (player.controlDown)
                     player.maxFallSpeed *= 1.5f;

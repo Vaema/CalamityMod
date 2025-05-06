@@ -20,6 +20,8 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Graphics.Effects;
+using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
@@ -1179,6 +1181,85 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, npcType, affectionLevel);
+            }
+        }
+        #endregion
+
+        #region Allow disabling gravity swap visual && allow gravity keybind
+        private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
+        {
+            var cplay = Player.Calamity();
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            {
+                if (Player.controlUp && Player.releaseUp) {
+                    Player.gravDir *= -1;
+                }
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                {
+                    Player.gravDir *= -1;
+                    Player.fallStart = (int)(Player.position.Y / 16f);
+                    Player.jump = 0;
+                    SoundEngine.PlaySound(SoundID.Item8, Player.position);
+                }
+
+                if (Player.forcedGravity > 0) {
+				    Player.gravDir = -1f;
+			}   
+            }
+            
+            if (cplay.justChangedGravity) {
+                Player.gravDir = cplay.oldGravDir;
+            }
+            cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
+            
+            cplay.oldGravDir = Player.gravDir;
+            if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            {
+            if (Player.gravDir == -1) {
+                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene.Activate("CalamityMod:FlipScreen");
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+
+                }
+            } else {
+                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+
+                }
+            }
+            }
+            if (cplay.justChangedGravity)
+            {
+                Player.gravDir *= -1;
+            }
+            orig(Player);
+        }
+
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+            orig();
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                var center = Main.screenHeight / 2;
+                Main.mouseY = center - (Main.mouseY - center);
+            };
+        }
+        private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
+        {
+            if (!Main.gameMenu && (Filters.Scene["CalamityMod:FlipScreen"].IsActive() || Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                Main.LocalPlayer.Calamity().tempGravDir = Main.LocalPlayer.gravDir;
+                Main.LocalPlayer.gravDir = 1;
+            }
+            orig(self);
+        }
+        
+        private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
+        {
+            orig(self, gameTime);
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+            {
+                Main.LocalPlayer.gravDir = Main.LocalPlayer.Calamity().tempGravDir;
             }
         }
         #endregion

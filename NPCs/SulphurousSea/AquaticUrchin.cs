@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.SulphurousSea
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 120, true);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

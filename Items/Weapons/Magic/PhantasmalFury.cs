@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.SpectreStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

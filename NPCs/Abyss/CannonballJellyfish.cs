@@ -326,7 +326,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             npcLoot.Add(ItemID.Bomb);
             npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
-            npcLoot.Add(ItemID.JellyfishNecklace, 100);
+            npcLoot.Add(ItemID.JellyfishNecklace, 25);
         }
     }
 }

@@ -4,9 +4,6 @@ using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
@@ -71,6 +68,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -919,7 +917,11 @@ namespace CalamityMod.CalPlayer
         public bool sSpiritAmulet = false;
         public int sSpiritAmuletTimer = 0;
         public bool sSpiritAmuletVisual = false;
-        public bool lumenousAmulet = false;
+        public bool dOfTheDeep = false;
+        public int dOfTheDeepTimer = 0;
+        public bool dOfTheDeepVisual = false;
+        public int dOfTheDeepDefenseBuffMax = 420;
+        public int dOfTheDeepDefenseBuffTimer = 0;
         public bool oceanCrest = false;
         public bool aquaticEmblem = false;
         public bool spiritOrigin = false;
@@ -1688,6 +1690,11 @@ namespace CalamityMod.CalPlayer
         #region Mouse Controls Syncing
         public bool mouseRight = false;
         private bool oldMouseRight = false;
+
+        public float oldGravDir = 1;
+        public float tempGravDir = 1;
+        public bool justChangedGravity = false;
+
         public Vector2 mouseWorld;
         private Vector2 oldMouseWorld;
 
@@ -1982,8 +1989,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-            if (ZoneAbyss && lumenousAmulet)
-                percentMaxLifeIncrease += 25;
 
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
@@ -2337,7 +2342,7 @@ namespace CalamityMod.CalPlayer
             flameWakerBoots = false;
             hellfireTreads = false;
             sSpiritAmulet = false;
-            lumenousAmulet = false;
+            dOfTheDeep = false;
             oceanCrest = false;
             aquaticEmblem = false;
             if (!spiritOrigin)
@@ -5634,7 +5639,7 @@ namespace CalamityMod.CalPlayer
         }
 
         public override void PostUpdate() //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
-        {
+        {   
             bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
                                   Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
             if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)

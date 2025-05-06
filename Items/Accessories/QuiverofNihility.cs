@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Accessories
                 AddRecipeGroup("AnyQuiver").
                 AddIngredient<GalacticaSingularity>(5).
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

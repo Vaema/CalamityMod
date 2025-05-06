@@ -152,11 +152,11 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 if (Main.zenithWorld) // it is the plague, you get very sick.
                 {
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300, true);
-                    target.AddBuff(BuffID.Poisoned, 300, true);
-                    target.AddBuff(BuffID.Venom, 300, true);
+                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300);
+                    target.AddBuff(BuffID.Poisoned, 300);
+                    target.AddBuff(BuffID.Venom, 300);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 150, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 240);
             }
         }
 

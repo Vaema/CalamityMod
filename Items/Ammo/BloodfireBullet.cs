@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Ammo
         {
             CreateRecipe(333).
                 AddIngredient<BloodstoneCore>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

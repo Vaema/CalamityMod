@@ -28,8 +28,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             AddMapEntry(new Color(156, 87, 57));
             DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
-
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
@@ -37,9 +37,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 192f / 450f;
-            g = 173f / 450f;
-            b = 166f / 450f;
+            r = 0.427f;
+            g = 0.384f;
+            b = 0.369f;
         }
     }
 
@@ -64,6 +64,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
@@ -71,11 +72,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 192f / 450f;
-            g = 173f / 450f;
-            b = 166f / 450f;
+            r = 0.427f;
+            g = 0.384f;
+            b = 0.369f;
         }
     }
+
     public class StalkCoral3 : ModTile
     {
         public override void SetStaticDefaults()
@@ -97,6 +99,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.t_PearlWood;
             HitSound = SoundID.Dig;
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
@@ -104,9 +107,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 192f / 450f;
-            g = 173f / 450f;
-            b = 166f / 450f;
+            r = 0.427f;
+            g = 0.384f;
+            b = 0.369f;
         }
     }
 

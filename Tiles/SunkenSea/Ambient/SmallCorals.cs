@@ -35,14 +35,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			int type = -1;
 
 			if (tileBelow.HasTile)
-            {
 				type = tileBelow.TileType;
-			}
 
 			if (type == ModContent.TileType<EutrophicSand>())
-            {
 				return true;
-			}
 
 			WorldGen.KillTile(i, j);
 

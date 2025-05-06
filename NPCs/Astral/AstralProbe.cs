@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetDefaults()
         {
-            NPC.damage = 0; // 0 contact damage, laser damage in handled separately
+            NPC.damage = 0; // 0 contact damage, laser damage is handled separately
             NPC.width = 30; //324
             NPC.height = 30; //216
             NPC.defense = 10;
@@ -350,12 +350,6 @@ namespace CalamityMod.NPCs.Astral
                 return 0.1f;
             }
             return 0f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
     }
 }

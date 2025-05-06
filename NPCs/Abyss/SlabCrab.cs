@@ -303,6 +303,7 @@ namespace CalamityMod.NPCs.Abyss
                 return false;
             return null;
         }
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneAbyssLayer1 && spawnInfo.Water)
@@ -384,6 +385,7 @@ namespace CalamityMod.NPCs.Abyss
                     break;
             }
         }
+
         // the crab is invincible while hiding
         public override bool? CanBeHitByItem(Player player, Item item) => CurrentPhase > (int)AIState.IdleAnim;
 
@@ -462,11 +464,13 @@ namespace CalamityMod.NPCs.Abyss
                 }                
             }
         }
+
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 90);
+                target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
         }
+
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (!NPC.IsABestiaryIconDummy)

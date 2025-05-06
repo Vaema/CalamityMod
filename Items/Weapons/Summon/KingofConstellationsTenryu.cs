@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.Bookcases).
                 Register();
         }
     }

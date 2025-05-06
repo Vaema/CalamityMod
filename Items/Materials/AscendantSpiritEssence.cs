@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<NightmareFuel>(5).
                 AddIngredient<EndothermicEnergy>(5).
                 AddIngredient<DarksunFragment>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

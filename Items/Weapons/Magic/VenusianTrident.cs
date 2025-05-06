@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.InfernoFork).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<TwistingNether>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
