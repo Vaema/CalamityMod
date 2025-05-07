@@ -232,20 +232,41 @@ namespace CalamityMod.CalPlayer
             bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
             int dir = MathF.Sign(Player.velocity.X);
 
+            if (dashStart)
+            {
+                lastDashWasTabi = false;
+            }
+
             if (((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0)) && dashStart)
             {
                 Player.velocity.X *= 0.9f;
             }
 
             // Tabi/Master Ninja Gear dash change
-            if (Player.dashType == 1)
+            if (lastDashWasTabi)
+            {
+                Player.dashType = 1;
+            }
+            if (Player.dashType == 1 && !Player.Calamity().statisNinjaBelt && !Player.Calamity().statisVoidSash)
             {
                 if (dashStart)
+                {
                     Player.velocity.X *= 3.5f;
+                    lastDashWasTabi = true;
+                }
                 if (Player.dashDelay == -1)
                 {
                     Player.velocity.X *= 0.9f;
                 }
+            }
+            
+            if (Player.Calamity().statisNinjaBelt)
+            {
+                Player.Calamity().DashID = StatisNinjaBeltDash.ID;
+            }
+            if (Player.Calamity().statisVoidSash)
+            {
+                Player.Calamity().DashID = StatisVoidSashDash.ID;
             }
 
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
