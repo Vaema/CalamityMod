@@ -317,37 +317,38 @@ namespace CalamityMod.Tiles
             if (type == TileID.MatureHerbs)
             {
                 int herbType = Main.tile[i, j].TileFrameX / 18;
+                int seedQuantity = Main.rand.Next(2) + 1;
                 switch (herbType)
                 {
                     default:
                         break;
 
                     case (int)HerbType.Daybloom:
-                        DropItem(i, j, ItemID.DaybloomSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.DaybloomSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Moonglow:
-                        DropItem(i, j, ItemID.MoonglowSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.MoonglowSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Blinkroot:
-                        DropItem(i, j, ItemID.BlinkrootSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.BlinkrootSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Deathweed:
-                        DropItem(i, j, ItemID.DeathweedSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.DeathweedSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Waterleaf:
-                        DropItem(i, j, ItemID.WaterleafSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.WaterleafSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Fireblossom:
-                        DropItem(i, j, ItemID.FireblossomSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.FireblossomSeeds, quantity: seedQuantity, asStack: true);
                         break;
 
                     case (int)HerbType.Shiverthorn:
-                        DropItem(i, j, ItemID.ShiverthornSeeds, quantity: 1, asStack: true);
+                        DropItem(i, j, ItemID.ShiverthornSeeds, quantity: seedQuantity, asStack: true);
                         break;
                 }
             }
