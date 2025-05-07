@@ -833,6 +833,9 @@ namespace CalamityMod.Systems
                 // Make Enchanted Boomerang slightly harder to obtain
                 { Vanilla(ItemID.EnchantedBoomerang), EnchantedBoomerangRecipeEdit },
 
+                // Adjust Fertilizer decrafting and add an alternate recipe
+                { Vanilla(ItemID.Fertilizer), FertilizerRecipeEdit },
+
                 // Add 20 Souls of Flight to vanilla Luminite wings
                 { VanillaEach(ItemID.WingsSolar, ItemID.WingsVortex, ItemID.WingsNebula, ItemID.WingsStardust), LunarWingsRecipeEdits },
 
@@ -1016,6 +1019,23 @@ namespace CalamityMod.Systems
 
             // Increase amount of Fallen Stars used
             r.requiredItem[2].stack = 6;
+        }
+
+        private static void FertilizerRecipeEdit(Recipe r)
+        {
+            // Custom Shimmer result, to prevent Scorched Bone -> Bone shenanigans
+            r.AddCustomShimmerResult(ItemID.PoopBlock, 3);
+            r.AddCustomShimmerResult(ItemType<AncientBoneDust>(), 3);
+            r.AddCustomShimmerResult(ItemID.AshBlock, 3);
+
+            // Alternative recipe using (a bit more) Scorched Bones
+            Recipe r2 = Recipe.Create(ItemID.Fertilizer);
+            r2.AddIngredient(ItemID.PoopBlock, 3);
+            r2.AddIngredient<ScorchedBone>(6);
+            r2.AddIngredient(ItemID.AshBlock, 3);
+            r2.AddTile(TileID.Bottles);
+            r2.Register();
+            r2.DisableDecraft();
         }
         #endregion
 
