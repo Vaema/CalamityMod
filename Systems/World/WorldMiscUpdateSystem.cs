@@ -147,6 +147,100 @@ namespace CalamityMod.Systems
 
         public static void HandleTileGrowth()
         {
+            double worldUpdateRate = WorldGen.GetWorldUpdateRate();
+            if (worldUpdateRate == 0)
+                return;
+
+            // Used for growing herbs at an accelerated rate
+            double herbGrowthRateSurface = 3E-05f * (float)worldUpdateRate;
+            double herbGrowthRateUnderground = 1.5E-05f * (float)worldUpdateRate;
+            double remixWorldHerbGrowthRate = 2.5E-05f * (float)worldUpdateRate;
+
+            // 5% chance to boost non-planter box herb growth rate
+            // 50% chance to boost correct planter box herb growth rate
+            int oneInXChanceToBoostHerbGrowthRate = 20;
+            int oneInXChanceToBoostHerbGrowthRate_PlanterBox = 2;
+
+            int oneInXMaximumChanceToPlaceHerb = 15100;
+            int oneInXMinimumChanceToPlaceHerb = (int)(oneInXMaximumChanceToPlaceHerb * 2.8);
+            double chanceAdjustmentBasedOnWorldSize = Utils.Clamp((double)Main.maxTilesX / 4200D - 1D, 0D, 1D);
+            int herbPlacementChance = (int)Utils.Lerp(oneInXMaximumChanceToPlaceHerb, oneInXMinimumChanceToPlaceHerb, chanceAdjustmentBasedOnWorldSize);
+
+            for (int herbPlacementIndex = 0; (double)herbPlacementIndex < (double)(Main.maxTilesX * Main.maxTilesY) * herbGrowthRateSurface; herbPlacementIndex++)
+            {
+                // Call this again to give effectively double the chance for new herbs to be placed in the world
+                if (Main.rand.NextBool(herbPlacementChance))
+                    WorldGen.PlantAlch();
+
+                // Surface-only herb growth
+                // Increase the growth rate of herbs in planter boxes
+                // Slightly increase the growth rate of herbs not in planter boxes
+                int herbGrowthRangeX = WorldGen.genRand.Next(10, Main.maxTilesX - 10);
+                int herbGrowthRangeY = WorldGen.genRand.Next(10, (int)Main.worldSurface - 1);
+                if (Main.tileAlch[Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileType])
+                {
+                    // If you use the wrong planter box you get fuck all
+                    if (Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileType == TileID.PlanterBox)
+                    {
+                        int herbType = Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileFrameX / 18;
+                        int planterBoxType = Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileFrameY / 18;
+                        if (IsCorrectPlanterBox(herbType: herbType, planterBoxType: planterBoxType) && WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate_PlanterBox))
+                            WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                    }
+                    else if (WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate))
+                        WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                }
+            }
+
+            if (Main.remixWorld)
+            {
+                // Remix seed checks the entire world at once for herb growth
+                for (int herbGrowthIndex = 0; (double)herbGrowthIndex < (double)(Main.maxTilesX * Main.maxTilesY) * remixWorldHerbGrowthRate; herbGrowthIndex++)
+                {
+                    // Increase the growth rate of herbs in planter boxes
+                    // Slightly increase the growth rate of herbs not in planter boxes
+                    int herbGrowthRangeX = WorldGen.genRand.Next(10, Main.maxTilesX - 10);
+                    int herbGrowthRangeY = WorldGen.genRand.Next((int)Main.worldSurface - 1, Main.maxTilesY - 20);
+                    if (Main.tileAlch[Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileType])
+                    {
+                        // If you use the wrong planter box you get fuck all
+                        if (Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileType == TileID.PlanterBox)
+                        {
+                            int herbType = Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileFrameX / 18;
+                            int planterBoxType = Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileFrameY / 18;
+                            if (IsCorrectPlanterBox(herbType: herbType, planterBoxType: planterBoxType) && WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate_PlanterBox))
+                                WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                        }
+                        else if (WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate))
+                            WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                    }
+                }
+            }
+            else
+            {
+                // Underground-only herb growth
+                for (int herbGrowthIndex = 0; (double)herbGrowthIndex < (double)(Main.maxTilesX * Main.maxTilesY) * herbGrowthRateUnderground; herbGrowthIndex++)
+                {
+                    // Increase the growth rate of herbs in planter boxes
+                    // Slightly increase the growth rate of herbs not in planter boxes
+                    int herbGrowthRangeX = WorldGen.genRand.Next(10, Main.maxTilesX - 10);
+                    int herbGrowthRangeY = WorldGen.genRand.Next((int)Main.worldSurface - 1, Main.maxTilesY - 20);
+                    if (Main.tileAlch[Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileType])
+                    {
+                        // If you use the wrong planter box you get fuck all
+                        if (Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileType == TileID.PlanterBox)
+                        {
+                            int herbType = Main.tile[herbGrowthRangeX, herbGrowthRangeY].TileFrameX / 18;
+                            int planterBoxType = Main.tile[herbGrowthRangeX, herbGrowthRangeY + 1].TileFrameY / 18;
+                            if (IsCorrectPlanterBox(herbType: herbType, planterBoxType: planterBoxType) && WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate_PlanterBox))
+                                WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                        }
+                        else if (WorldGen.genRand.NextBool(oneInXChanceToBoostHerbGrowthRate))
+                            WorldGen.GrowAlch(herbGrowthRangeX, herbGrowthRangeY);
+                    }
+                }
+            }
+
             // 2MAY2025: Lucille: By default, the assumption that these values are within a natural min/max relationship with searchBottom being greater than searchTop is sensible.
             // However, in subworlds where these lines may be placed arbitrarily (such as shoving the surface line near the bottom of the world), this no longer holds true, and results
             // in the logic below causing a storm of minValue >= maxValue exceptions.
@@ -156,7 +250,7 @@ namespace CalamityMod.Systems
                 return;
 
             int l = 0;
-            float mult2 = (float)(1.5E-05f * WorldGen.GetWorldUpdateRate());
+            float mult2 = (float)(1.5E-05f * worldUpdateRate);
             while (l < Main.maxTilesX * Main.maxTilesY * mult2)
             {
                 int x = WorldGen.genRand.Next(10, Main.maxTilesX - 10);
@@ -422,6 +516,60 @@ namespace CalamityMod.Systems
             }
 
             return true;
+        }
+
+        public static bool IsCorrectPlanterBox(int herbType, int planterBoxType)
+        {
+            bool usingCorrectPlanterBox = false;
+            switch (herbType)
+            {
+                default:
+                    break;
+
+                // Daybloom
+                case 0:
+                    if (planterBoxType == 0)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Moonglow
+                case 1:
+                    if (planterBoxType == 1)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Blinkroot
+                case 2:
+                    if (planterBoxType == 4)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Deathweed
+                case 3:
+                    if (planterBoxType == 2 || planterBoxType == 3)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Waterleaf
+                case 4:
+                    if (planterBoxType == 5)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Fireblossom
+                case 5:
+                    if (planterBoxType == 7)
+                        usingCorrectPlanterBox = true;
+                    break;
+
+                // Shiverthorn
+                case 6:
+                    if (planterBoxType == 6)
+                        usingCorrectPlanterBox = true;
+                    break;
+            }
+
+            return usingCorrectPlanterBox;
         }
         #endregion
 

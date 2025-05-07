@@ -302,16 +302,52 @@ namespace CalamityMod.Tiles
 
                 // Drop Evil Smasher on every 12 alter smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
-                {
                     DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true);
-                }
             }
+
             // Drop Golden Bombs at a 0.33% chance from Pots
             if (type == TileID.Pots)
             {
                 if (Main.rand.NextBool(300))
-                {
                     DropItem(i, j, ItemType<GoldenBomb>(), quantity: 1, asStack: true);
+            }
+
+            // Mature herbs always drop 1 seed (Blooming herbs drop between 1 and 3 seeds, more with Regrowth items)
+            if (type == TileID.MatureHerbs)
+            {
+                int herbType = Main.tile[i, j].TileFrameX / 18;
+                switch (herbType)
+                {
+                    default:
+                        break;
+
+                    case 0:
+                        DropItem(i, j, ItemID.DaybloomSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 1:
+                        DropItem(i, j, ItemID.MoonglowSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 2:
+                        DropItem(i, j, ItemID.BlinkrootSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 3:
+                        DropItem(i, j, ItemID.DeathweedSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 4:
+                        DropItem(i, j, ItemID.WaterleafSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 5:
+                        DropItem(i, j, ItemID.FireblossomSeeds, quantity: 1, asStack: true);
+                        break;
+
+                    case 6:
+                        DropItem(i, j, ItemID.ShiverthornSeeds, quantity: 1, asStack: true);
+                        break;
                 }
             }
         }
