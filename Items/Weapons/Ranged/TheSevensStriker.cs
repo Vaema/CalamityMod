@@ -174,7 +174,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.GoldCoin, 77).
                 AddIngredient(ItemID.LunarBar, 12).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

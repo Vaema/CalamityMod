@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.ShadowbeamStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<ArmoredShell>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

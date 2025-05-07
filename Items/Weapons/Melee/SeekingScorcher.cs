@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.PossessedHatchet).
                 AddIngredient<DivineGeode>(5).
                 AddIngredient<UnholyEssence>(8).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

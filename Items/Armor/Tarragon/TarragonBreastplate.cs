@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             CreateRecipe().
                 AddIngredient<UelibloomBar>(15).
                 AddIngredient<DivineGeode>(18).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

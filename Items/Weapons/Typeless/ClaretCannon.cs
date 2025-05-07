@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

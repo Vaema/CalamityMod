@@ -570,12 +570,17 @@ namespace CalamityMod.Items
             if (item.healLife > 0 && Main.LocalPlayer.Calamity().healingPotionMultiplier != 1f)
                 EditTooltipByName("HealLife", (line) => line.Text = Language.GetOrRegister("CommonItemTooltip.RestoresLife").Format((int)(item.healLife * Main.LocalPlayer.Calamity().healingPotionMultiplier)));
 
+            // Ancient Manipulator also crafts stuff with Astral Bars
+            if (item.type == ItemID.LunarCraftingStation)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("LunarCraftingStation"));
+
+            // Reworked Gravity Globe
             if (item.type == ItemID.GravityGlobe)
-                EditTooltipByName("Tooltip1", (line) => line.Text = EditedTooltip("GravityGlobe"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("GravityGlobe"));
 
-
+            // "Buffed" Step Stool
             if (item.type == ItemID.PortableStool)
-                EditTooltipByName("Tooltip0", (line) => line.Text += AddedTooltip("Stepstool"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
             #endregion
 
             // For boss summon item clarity

@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<DivineGeode>(6).
                 AddIngredient<EssenceofSunlight>(6).
                 AddIngredient<EssenceofHavoc>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

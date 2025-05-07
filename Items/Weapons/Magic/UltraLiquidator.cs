@@ -75,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.AquaScepter).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
             CreateRecipe().
                 AddIngredient(ItemID.TinShortsword).
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<NuclearFury>().
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

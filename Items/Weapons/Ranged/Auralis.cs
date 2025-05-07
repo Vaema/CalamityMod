@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

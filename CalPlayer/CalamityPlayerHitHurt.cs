@@ -32,6 +32,7 @@ using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -2635,20 +2636,25 @@ namespace CalamityMod.CalPlayer
                     }
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
+                // In the meantime, gave them homing astral bombers instead of the lame falling stars
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));
-                    for (int n = 0; n < 3; n++)
+                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    for (int n = 0; n < projAmount; n++)
                     {
                         int baseDamage = 130 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                        int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
+                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
 
-                        Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
-                        if (star.whoAmI.WithinBounds(Main.maxProjectiles))
+                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
+                        if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
-                            star.DamageType = DamageClass.Generic;
-                            star.usesLocalNPCImmunity = true;
-                            star.localNPCHitCooldown = 5;
+                            onHitProj.DamageType = DamageClass.Generic;
+                            onHitProj.usesLocalNPCImmunity = true;
+                            onHitProj.localNPCHitCooldown = 5;
+                            onHitProj.tileCollide = false;
+                            onHitProj.extraUpdates = 1;
+                            onHitProj.Calamity().conditionalHomingRange = 500f;
                         }
                     }
                 }

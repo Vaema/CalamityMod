@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
             CreateRecipe(50).
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<UnholyEssence>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<ProfanedRockWall>(4).
