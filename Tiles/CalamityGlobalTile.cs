@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
@@ -321,31 +322,31 @@ namespace CalamityMod.Tiles
                     default:
                         break;
 
-                    case 0:
+                    case (int)HerbType.Daybloom:
                         DropItem(i, j, ItemID.DaybloomSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 1:
+                    case (int)HerbType.Moonglow:
                         DropItem(i, j, ItemID.MoonglowSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 2:
+                    case (int)HerbType.Blinkroot:
                         DropItem(i, j, ItemID.BlinkrootSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 3:
+                    case (int)HerbType.Deathweed:
                         DropItem(i, j, ItemID.DeathweedSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 4:
+                    case (int)HerbType.Waterleaf:
                         DropItem(i, j, ItemID.WaterleafSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 5:
+                    case (int)HerbType.Fireblossom:
                         DropItem(i, j, ItemID.FireblossomSeeds, quantity: 1, asStack: true);
                         break;
 
-                    case 6:
+                    case (int)HerbType.Shiverthorn:
                         DropItem(i, j, ItemID.ShiverthornSeeds, quantity: 1, asStack: true);
                         break;
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
@@ -526,45 +527,38 @@ namespace CalamityMod.Systems
                 default:
                     break;
 
-                // Daybloom
-                case 0:
-                    if (planterBoxType == 0)
+                case (int)HerbType.Daybloom:
+                    if (planterBoxType == (int)PlanterBoxType.Daybloom)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Moonglow
-                case 1:
-                    if (planterBoxType == 1)
+                case (int)HerbType.Moonglow:
+                    if (planterBoxType == (int)PlanterBoxType.Moonglow)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Blinkroot
-                case 2:
-                    if (planterBoxType == 4)
+                case (int)HerbType.Blinkroot:
+                    if (planterBoxType == (int)PlanterBoxType.Blinkroot)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Deathweed
-                case 3:
-                    if (planterBoxType == 2 || planterBoxType == 3)
+                case (int)HerbType.Deathweed:
+                    if (planterBoxType == (int)PlanterBoxType.Deathweed || planterBoxType == (int)PlanterBoxType.DeathweedCrimson)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Waterleaf
-                case 4:
-                    if (planterBoxType == 5)
+                case (int)HerbType.Waterleaf:
+                    if (planterBoxType == (int)PlanterBoxType.Waterleaf)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Fireblossom
-                case 5:
-                    if (planterBoxType == 7)
+                case (int)HerbType.Fireblossom:
+                    if (planterBoxType == (int)PlanterBoxType.Fireblossom)
                         usingCorrectPlanterBox = true;
                     break;
 
-                // Shiverthorn
-                case 6:
-                    if (planterBoxType == 6)
+                case (int)HerbType.Shiverthorn:
+                    if (planterBoxType == (int)PlanterBoxType.Shiverthorn)
                         usingCorrectPlanterBox = true;
                     break;
             }
