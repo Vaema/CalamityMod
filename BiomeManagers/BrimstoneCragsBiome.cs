@@ -16,7 +16,7 @@ namespace CalamityMod.BiomeManagers
 
         public override bool IsBiomeActive(Player player)
         {
-            return BiomeTileCounterSystem.BrimstoneCragTiles > 150 && player.ZoneUnderworldHeight;
+            return BiomeTileCounterSystem.BrimstoneCragTiles > 500 && player.ZoneUnderworldHeight;
         }
     }
 }
