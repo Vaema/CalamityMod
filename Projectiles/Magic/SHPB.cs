@@ -214,7 +214,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 8; i++)
                 {
                     bool pickup = i >= 5;
-                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (pickup ? 3f : Main.rand.NextFloat(6f, 9f));
+                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (pickup ? 2.75f : Main.rand.NextFloat(6f, 9f));
                     int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6), 0f, pickup ? 1f : 0f);
                     if (pickup)
                         Main.projectile[p].timeLeft *= 3;
