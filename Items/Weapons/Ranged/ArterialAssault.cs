@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 44;
             Item.height = 100;
-            Item.damage = 500;
+            Item.damage = 256;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 6;
             Item.useAnimation = 40;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             shotArrow.tileCollide = false;
             (shotArrow.ModProjectile as BloodfireArrowProj).DisableEffects = true;
             shotArrow.Calamity().conditionalHomingRange = 175f;
-            shotArrow.Calamity().BloodstoneOrbValue = 20;
+            shotArrow.Calamity().BloodstoneOrbValue = 15;
             shotNum++;
             if (shotNum > 4) shotNum = 0;
             return false;
