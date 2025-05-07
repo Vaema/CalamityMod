@@ -560,8 +560,8 @@ namespace CalamityMod.Systems
 
             // Demon Conch
             Recipe.Create(ItemID.DemonConch).
-                AddIngredient(ItemID.HellstoneBar, 4).
-                AddIngredient<ScorchedBone>(8).
+                AddIngredient<ScorchedBone>(20).
+                AddIngredient(ItemID.BlackPearl).
                 AddTile(TileID.Hellforge).
                 Register();
 
