@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
 using Terraria;
@@ -6,7 +8,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
 using Terraria.WorldBuilding;
-using static tModPorter.ProgressUpdate;
+using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
 {
@@ -173,7 +175,7 @@ namespace CalamityMod.World
 
                 // Extra distance per island
                 // Due to this being done on both sides of each island, it is divided by 2
-                int extraDistanceBetweenAshIslands = totalExtraDistanceBetweenAshIslands / numIslands / 2;
+                int extraDistanceBetweenAshIslands_PerIslandSide = totalExtraDistanceBetweenAshIslands / numIslands / 2;
 
                 // Calculate distance between islands
                 int distanceBetweenIslands = (ashIslandX2 - ashIslandX) / numIslands;
@@ -228,8 +230,8 @@ namespace CalamityMod.World
                     // Taller islands have a greater reduction in width
                     int randomWidthReduction_LeftSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
                     int randomWidthReduction_RightSide = WorldGen.genRand.Next(11) + (randomizedIslandDropOffAdjustment - 4);
-                    int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
-                    int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands - randomWidthReduction_RightSide;
+                    int ashIslandTilePlacementX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands_PerIslandSide + randomWidthReduction_LeftSide;
+                    int ashIslandTilePlacementX2 = ashIslandX2 - ashIslandX2Adjustment - extraDistanceBetweenAshIslands_PerIslandSide - randomWidthReduction_RightSide;
                     int ashIslandGenLimiter = Main.maxTilesY - 1;
                     bool ashIslandGenLimitHit = false;
                     Liquid.QuickWater(-2);
@@ -318,9 +320,7 @@ namespace CalamityMod.World
                     }
 
                     // This is necessary due to earlier calculations
-                    int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands + randomWidthReduction_LeftSide;
-
-                    // Lava holes in ash islands
+                    int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands_PerIslandSide + randomWidthReduction_LeftSide;
 
                     // Small holes
                     double holeFrequency = 0.00005 / numIslands;
@@ -607,6 +607,9 @@ namespace CalamityMod.World
                 }
             }
 
+            // Obsidian and hellstone towers and schematics...
+            AddHellHouses();
+
             // Place ash trees
             for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
             {
@@ -617,13 +620,10 @@ namespace CalamityMod.World
                 }
             }
 
-            // Obsidian and hellstone towers...
-            AddHellHouses();
-
             // Generate after houses to avoid complications
             // Place pillars of walls to show that the roof of the underworld is being held up
             // Do not place any pillars in the Brimstone Crags
-            bool cragsLocationIsLeft = GenVars.dungeonX < Main.maxTilesX / 2;
+            bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
             int brimstoneCragsSize = Main.maxTilesX / 5;
             int brimstoneCragsLocationStart = cragsLocationIsLeft ? (25 + brimstoneCragsSize) : ((Main.maxTilesX - brimstoneCragsSize) - 25);
             int pillarDistanceFromCragsLimit = 160;
@@ -880,6 +880,11 @@ namespace CalamityMod.World
             if (Main.tile[geyserX + 1, geyserPlacementY].HasTile)
                 return false;
 
+            // Only place on ash grass to avoid placing in the schematics
+            if (Main.tile[geyserX, geyserPlacementY + 1].TileType != TileID.AshGrass ||
+                Main.tile[geyserX + 1, geyserPlacementY + 1].TileType != TileID.AshGrass)
+                return false;
+
             for (int k = geyserX; k <= geyserX + 1; k++)
             {
                 int j2 = geyserPlacementY + 1;
@@ -946,44 +951,165 @@ namespace CalamityMod.World
 
             if (!WorldGen.remixWorldGen)
             {
-                // Generate some structures on the ash island
-                int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
-                int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
-                int ashIslandDistance = ashIslandX2 - ashIslandX;
-                int flatDistanceBetweenHellHouses = ashIslandDistance / 3;
+                // Generate some structures on the ash islands
+                int ashIslandX = (int)((double)Main.maxTilesX * 0.36);
+                int ashIslandX2 = (int)((double)Main.maxTilesX * 0.64);
+                bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
+                int ashIslandHeightLimit = Main.maxTilesY - 160;
 
                 // Keep track of world size to adjust house distances
                 float houseDistanceMult = Main.maxTilesX / 4200f;
-                int maxRandomDistanceBetweenHouses = (int)(75 * houseDistanceMult);
 
-                // ashIslandX + 100 places the first hell house at the perfect position on the left shore of the ash island
-                // Add some random variance so that it doesn't feel so artificial
-                int firstHouseLocation = ashIslandX + 100 + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
+                // Large = 8, Medium = 6, Small = 4
+                int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
 
-                // Max amount of houses generated on ash island
-                int maxHouses = 3;
-                int placedHouses = 0;
-                for (int i = firstHouseLocation; i < ashIslandX2 - 100; i++)
+                // Small worlds get less structures
+                bool smallWorld = numIslands == 4;
+
+                // Total extra distance between islands for lava lakes
+                int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
+
+                // Extra distance per island
+                int extraDistanceBetweenAshIslands_PerIslandSide = totalExtraDistanceBetweenAshIslands / numIslands / 2;
+
+                // Calculate distance between islands
+                int islandWidth = (ashIslandX2 - ashIslandX) / numIslands + extraDistanceBetweenAshIslands_PerIslandSide;
+                int firstStructureDistanceFromIslandEdge = islandWidth / 2;
+                int distanceBetweenStructures = islandWidth;
+
+                // Pick an atrium type
+                // Small worlds get a random single atrium
+                // Medium and large worlds get a guaranteed shadow chest atrium and another random non-shadow chest atrium
+                string atriumMapKey;
+                int atriumType = smallWorld ? WorldGen.genRand.Next(3) : WorldGen.genRand.Next(2);
+                if (!smallWorld)
                 {
-                    // Start searching at Main.maxTilesY - 130 because ashIsland's max depth is Main.maxTilesY - 135
-                    int hellHouseGenY = Main.maxTilesY - 130;
-                    while (Main.tile[i, hellHouseGenY].HasTile || Main.tile[i, hellHouseGenY].LiquidAmount > 0)
-                        hellHouseGenY--;
-
-                    if (Main.tile[i, hellHouseGenY + 1].HasTile)
+                    switch (atriumType)
                     {
-                        // Place house
-                        // TODO -- Stip's houses will be generated here eventually
-                        //WorldGen.HellHouse(i, hellHouseGenY);
+                        default:
+                        case 0:
+                            atriumMapKey = BrimstoneAtriumType1Key;
+                            break;
 
-                        // Move index further along to keep houses spread apart
-                        i += flatDistanceBetweenHellHouses + WorldGen.genRand.Next(maxRandomDistanceBetweenHouses);
-
-                        // Increment placed houses index and break loop once enough are placed
-                        placedHouses++;
-                        if (placedHouses >= maxHouses)
+                        case 1:
+                            atriumMapKey = BrimstoneAtriumType3Key;
                             break;
                     }
+                }
+                else
+                {
+                    switch (atriumType)
+                    {
+                        default:
+                        case 0:
+                            atriumMapKey = BrimstoneAtriumType1Key;
+                            break;
+
+                        case 1:
+                            atriumMapKey = BrimstoneAtriumType2Key;
+                            break;
+
+                        case 2:
+                            atriumMapKey = BrimstoneAtriumType3Key;
+                            break;
+                    }
+                }
+                var atriumSchematic = TileMaps[atriumMapKey];
+
+                // Place schematics
+                if (cragsLocationIsLeft)
+                {
+                    // Place atrium
+                    // Atrium location is on the crags side
+                    // Atrium is placed in the center of an island due to its immense size
+                    int atriumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
+                    int atriumGenY = ashIslandHeightLimit;
+                    while (!Main.tile[atriumGenX, atriumGenY].HasTile)
+                        atriumGenY++;
+
+                    // Place atrium
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    SchematicAnchor anchorType = SchematicAnchor.Center;
+                    bool place = true;
+                    if (!smallWorld)
+                    {
+                        PlaceSchematic(BrimstoneAtriumType2Key, atriumPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                        // Protect the structure
+                        Rectangle atriumProtectionArea = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
+
+                        // Move index further along to keep structures spread apart
+                        atriumGenX += distanceBetweenStructures;
+
+                        // Reset the Y index
+                        atriumGenY = ashIslandHeightLimit;
+                        while (!Main.tile[atriumGenX, atriumGenY].HasTile)
+                            atriumGenY++;
+
+                        // Placement point for the second atrium
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    }
+
+                    if (atriumMapKey == BrimstoneAtriumType2Key)
+                        PlaceSchematic(atriumMapKey, atriumPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+                    else
+                        PlaceSchematic<Action<Chest>>(atriumMapKey, atriumPlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle atriumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
+
+                    // Move index further along to keep structures spread apart
+                    atriumGenX += distanceBetweenStructures;
+
+                    // Reset the Y index
+                    atriumGenY = ashIslandHeightLimit;
+                }
+                else
+                {
+                    int atriumGenX = ashIslandX2 - firstStructureDistanceFromIslandEdge;
+                    int atriumGenY = ashIslandHeightLimit;
+                    while (!Main.tile[atriumGenX, atriumGenY].HasTile)
+                        atriumGenY++;
+
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    SchematicAnchor anchorType = SchematicAnchor.Center;
+                    bool place = true;
+                    if (!smallWorld)
+                    {
+                        PlaceSchematic(BrimstoneAtriumType2Key, atriumPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                        // Protect the structure
+                        Rectangle atriumProtectionArea = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
+
+                        // Move index further along to keep structures spread apart
+                        atriumGenX -= distanceBetweenStructures;
+
+                        // Reset the Y index
+                        atriumGenY = ashIslandHeightLimit;
+                        while (!Main.tile[atriumGenX, atriumGenY].HasTile)
+                            atriumGenY++;
+
+                        // Placement point for the second atrium
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    }
+
+                    if (atriumMapKey == BrimstoneAtriumType2Key)
+                        PlaceSchematic(atriumMapKey, atriumPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+                    else
+                        PlaceSchematic<Action<Chest>>(atriumMapKey, atriumPlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle atriumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
+
+                    // Move index further along to keep structures spread apart
+                    atriumGenX -= distanceBetweenStructures;
+
+                    // Reset the Y index
+                    atriumGenY = ashIslandHeightLimit;
                 }
             }
 
@@ -1503,6 +1629,27 @@ namespace CalamityMod.World
                         WorldGen.PlaceTile(x, y, TileID.HangingLanterns, mute: true, forced: false, -1, lanternStyle);
                         break;
                 }
+            }
+        }
+
+        private static void FillAtriumChests(Chest chest, int Type, bool place)
+        {
+            int shadowChestItems = Utils.SelectRandom(WorldGen.genRand, ItemID.Sunfury, ItemID.FlowerofFire, ItemID.Flamelash, ItemID.DarkLance, ItemID.HellwingBow);
+            int shadowChestItems2 = Utils.SelectRandom(WorldGen.genRand, ItemID.HellMinecart, ItemID.OrnateShadowKey, ItemID.HellCake);
+            List<ChestItem> contents = new List<ChestItem>()
+            {
+                new ChestItem(shadowChestItems, 1),
+                new ChestItem(shadowChestItems2, 1),
+                new ChestItem(ItemID.ObsidianSkinPotion, WorldGen.genRand.Next(2, 5)),
+                new ChestItem(ItemID.LifeforcePotion, WorldGen.genRand.Next(2, 5)),
+                new ChestItem(ItemID.TeleportationPotion, WorldGen.genRand.Next(2, 5)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(3, 6)),
+            };
+
+            for (int i = 0; i < contents.Count; i++)
+            {
+                chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].stack = contents[i].Stack;
             }
         }
     }

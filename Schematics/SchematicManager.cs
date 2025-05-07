@@ -13,6 +13,15 @@ namespace CalamityMod.Schematics
 {
     public sealed class SchematicManager : ModSystem
     {
+        internal const string BrimstoneAtriumType1Key = "Brimstone Atrium Type 1 Key";
+        internal const string BrimstoneAtriumType1Filename = "Schematics/Brimstone_Atrium1.csch";
+
+        internal const string BrimstoneAtriumType2Key = "Brimstone Atrium Type 2 Key";
+        internal const string BrimstoneAtriumType2Filename = "Schematics/Brimstone_Atrium2.csch";
+
+        internal const string BrimstoneAtriumType3Key = "Brimstone Atrium Type 3 Key";
+        internal const string BrimstoneAtriumType3Filename = "Schematics/Brimstone_Atrium3.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -106,6 +115,11 @@ namespace CalamityMod.Schematics
             PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
             TileMaps = new Dictionary<string, SchematicMetaTile[,]>
             {
+                // Underworld structures
+                [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
+                [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),
+                [BrimstoneAtriumType3Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType3Filename),
+
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),
                 [ResearchOutpostKey] = CalamitySchematicIO.LoadSchematic(ResearchOutpostFilename),

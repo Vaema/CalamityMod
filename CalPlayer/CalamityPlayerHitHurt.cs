@@ -2605,7 +2605,8 @@ namespace CalamityMod.CalPlayer
                     Player.immuneTime += iFramesToAdd;
 
                 // Similar handle to 1.4 Star Cloak: these hits ie. spikes or lava cannot activate hit effects
-                if (hurtInfo.CooldownCounter != -1 && hurtInfo.CooldownCounter != 1)
+                bool canTriggerHitEffects = hurtInfo.CooldownCounter == -1 || hurtInfo.CooldownCounter == 1;
+                if (!canTriggerHitEffects)
                     return;
 
                 if (aeroSet && hurtInfo.Damage > 25)
