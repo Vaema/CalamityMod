@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool finalFlip = false;
         public bool swingSound = true;
+        public int armoredHits = 0;
 
         private NPC target => Main.npc[(int)Projectile.ai[0]];
 
@@ -104,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
                 swingCount++;
                 finalFlip = false;
                 swingSound = true;
+                armoredHits = 0;
             }
             else
             {
@@ -210,8 +212,10 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
             if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
             {
@@ -256,7 +260,9 @@ namespace CalamityMod.Projectiles.Melee
                 target.knockBackResist = 1;
 
                 // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
-                target.FlungNPC().ApplyCollisionDamage(target, Owner, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel * launchPower, 5f, true);
+                float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (Main.zenithWorld ? 77 : 1) * (rightClicked ? 3 : 1);
+                int damage = (int)(Projectile.damage * damageMults);
+                target.FlungNPC().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
             }
 
             if (Projectile.numHits < 3)
@@ -278,12 +284,15 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.Calamity().mouseRight)
-                modifiers.SourceDamage *= 0.0025f;
+            {
+                modifiers.SourceDamage *= 0;
+                modifiers.FinalDamage.Flat = 0.1f;
+            }
             else
             {
                 float minMult = 0.5f;
                 int hitsToMinMult = 15;
-                float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
                 modifiers.SourceDamage *= damageMult;
             }
         }
