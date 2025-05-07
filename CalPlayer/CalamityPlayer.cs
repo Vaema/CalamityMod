@@ -785,6 +785,7 @@ namespace CalamityMod.CalPlayer
         public int gloveLevel = 0;
         public bool alreadyHasFrogLeg = false; // Unused, intended to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
+        public bool lastDashWasTabi = false;
         public bool statisNinjaBelt = false;
         /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
         public int statisPenaltyTimer = 0;
@@ -2220,8 +2221,10 @@ namespace CalamityMod.CalPlayer
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
-            statisNinjaBelt = false;
-            statisVoidSash = false;
+            if (Player.dashDelay != -1)
+                statisNinjaBelt = false;
+            if (Player.dashDelay != -1)
+                statisVoidSash = false;
             alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
