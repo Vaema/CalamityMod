@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
 {
     public class TheMutilator : BaseSwordHoldoutItem, ILocalizedModType
     {
-        public static int MaximumCharge = 10;
+        public static int MaximumCharge = 7;
         public int Charge = 0;
 
         public int DecayTimer = 0;

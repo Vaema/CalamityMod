@@ -29,9 +29,9 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Timer => ref Projectile.ai[0];
 
         // The maximum distance in pixels out from the tip of the gun in which souls can be sucked in.
-        private const float Size = 480f;
-        // The spread of the suction on each side. 25 degrees on each side, 50 degrees total.
-        private const float Spread = MathHelper.Pi / 7.2f;
+        private const float Size = 576f;
+        // The spread of the suction on each side. 27 degrees on each side, 54 degrees total.
+        private const float Spread = MathHelper.Pi / 6.66f;
         // Maximum number of souls per visual ring drawn on the gun. Additional souls get moved into additional rings.
         private const int MaxSoulsRing = 10;
         // Manual offset used for drawing the gun.
@@ -107,8 +107,8 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 // Debug code used for assessing the visual and functional area of the vacuum
-                /*BloomLineVFX l = new(Owner.Center, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(Spread) * Size, 0.4f, Color.Gray, 2, true);
-                BloomLineVFX l2 = new(Owner.Center, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(-Spread) * Size, 0.4f, Color.Gray, 2, true);
+                /*BloomLineVFX l = new(TipPosition, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(Spread) * Size, 0.4f, Color.Gray, 2, true);
+                BloomLineVFX l2 = new(TipPosition, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(-Spread) * Size, 0.4f, Color.Gray, 2, true);
                 GeneralParticleHandler.SpawnParticle(l);
                 GeneralParticleHandler.SpawnParticle(l2);*/
 
@@ -145,12 +145,16 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            // You shouldn't be sucking in souls while firing
+            if (FiringLasers)
+                return false;
+
             bool withinAngle = Math.Abs(Utils.DirectionTo(TipPosition, Owner.Calamity().mouseWorld).ToRotation() - Utils.DirectionTo(TipPosition, targetHitbox.Center.ToVector2()).ToRotation()) <= Spread;
             // This extra safety hitbox is a square around the gun tip used so that the soul doesn't need to perfectly travel down the narrow end of the vacuum to get sucked in
             Rectangle extraSafetyHitbox = new Rectangle((int)TipPosition.X - (Projectile.width / 2), (int)TipPosition.Y - (Projectile.height / 2), Projectile.width, Projectile.height);
             return (CalamityUtils.CircularHitboxCollision(TipPosition, Size, targetHitbox) && withinAngle) || targetHitbox.Intersects(extraSafetyHitbox);
         }
-
+        public override bool? CanDamage() => false;
         public override bool PreDraw(ref Color lightColor)
         {
             // Draw spiraling smoke particles representing the suction radius
@@ -168,7 +172,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int j = 0; j < 3; j++)
                     {
                         float distRatio = 1f - (Main.GameUpdateCount + j * 10) % 30 / 30f;
-                        Vector2 posOffset = new Vector2(MathF.Sin(MathHelper.TwoPi / 6f * i) * 25f * distRatio, MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 30f + MathHelper.TwoPi / 6f * i) * 160f * distRatio).RotatedBy(rotation);
+                        Vector2 posOffset = new Vector2(MathF.Sin(MathHelper.TwoPi / 6f * i) * 25f * distRatio, MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 30f + MathHelper.TwoPi / 6f * i) * 240f * distRatio).RotatedBy(rotation);
                         float colorMult = 0.5f * Utils.GetLerpValue(1f, 0.8f, distRatio, true);
                         Main.EntitySpriteDraw(tex, Vector2.Lerp(TipPosition, farthestPos, distRatio) + posOffset - Main.screenPosition, frame, Color.Gray * colorMult, rotation + MathHelper.Pi, frame.Size() / 2f, 1.5f * distRatio, SpriteEffects.None);
                     }
