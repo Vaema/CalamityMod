@@ -1035,6 +1035,7 @@ namespace CalamityMod.Systems
             r2.AddIngredient(ItemID.AshBlock, 3);
             r2.AddTile(TileID.Bottles);
             r2.Register();
+            r2.SortAfterFirstRecipesOf(ItemID.Fertilizer);
             r2.DisableDecraft();
         }
         #endregion
@@ -1086,6 +1087,7 @@ namespace CalamityMod.Systems
             r.AddIngredient<AstralClay>(2);
             r.AddTile(TileID.Furnaces);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.Bowl);
             r.DisableDecraft();
 
             // Clay Pot
@@ -1093,6 +1095,7 @@ namespace CalamityMod.Systems
             r.AddIngredient<AstralClay>(5);
             r.AddTile(TileID.Furnaces);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.ClayPot);
             r.DisableDecraft();
 
             // Pink Vase
@@ -1100,6 +1103,7 @@ namespace CalamityMod.Systems
             r.AddIngredient<AstralClay>(4);
             r.AddTile(TileID.Furnaces);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.PinkVase);
             r.DisableDecraft();
 
             // Plate
@@ -1107,6 +1111,7 @@ namespace CalamityMod.Systems
             r.AddIngredient<AstralClay>(2);
             r.AddTile(TileID.Furnaces);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FoodPlatter);
             r.DisableDecraft();
 
             // Teapot
@@ -1115,6 +1120,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Bone, 12);
             r.AddTile(TileID.Furnaces);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.TeaKettle);
             r.DisableDecraft();
 
             // Wandering Jingasa
@@ -1123,6 +1129,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Firefly, 3); // Does not use the recipe group in Vanilla
             r.AddTile(TileID.Loom);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.RoninHat);
             r.DisableDecraft();
         }
         #endregion
@@ -1198,6 +1205,7 @@ namespace CalamityMod.Systems
                 r.AddIngredient<BloodOrb>(5);
                 r.AddTile(TileID.AlchemyTable);
                 r.Register();
+                r.SortAfterFirstRecipesOf(potion);
                 r.DisableDecraft();
             }
             foreach (var potion in TenOrbGroup)
@@ -1207,6 +1215,7 @@ namespace CalamityMod.Systems
                 r.AddIngredient<BloodOrb>(10);
                 r.AddTile(TileID.AlchemyTable);
                 r.Register();
+                r.SortAfterFirstRecipesOf(potion);
                 r.DisableDecraft();
             }
             foreach (var potion in FifteenOrbGroup)
@@ -1216,6 +1225,7 @@ namespace CalamityMod.Systems
                 r.AddIngredient<BloodOrb>(15);
                 r.AddTile(TileID.AlchemyTable);
                 r.Register();
+                r.SortAfterFirstRecipesOf(potion);
                 r.DisableDecraft();
             }
         }
@@ -1224,134 +1234,159 @@ namespace CalamityMod.Systems
         #region Cooked Food
         private static void AddCookedFood()
         {
+            #region Alternative Recipes
+            #region Cooked Fish
             Recipe r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<TwinklingPollox>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
-
-            #region Prismatic Guppy
 
             r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<PrismaticGuppyBlueItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<PrismaticGuppyGreenItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<PrismaticGuppyPinkItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
+            #endregion
 
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<PrismaticGuppyGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
+            #region Seafood Dinner
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<PrismaticGuppyRadiantItem>(); // Consistency would be 2, but considering you need only 1 for Golden Delight, I'm leaving this at 1
             r.AddTile(TileID.CookingPots);
             r.Register();
-            r.DisableDecraft();
-
-            #endregion
-
-            r = Recipe.Create(ItemID.Sashimi);
-            r.AddIngredient<CragBullhead>();
-            r.AddTile(TileID.WorkBenches);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.CookedShrimp);
-            r.AddIngredient<ProcyonidPrawn>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<AldebaranAlewife>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<Bloodfin>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<CoastalDemonfish>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<Shadowfish>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<SunkenSailfish>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
+            r.DisableDecraft();
+            #endregion
+
+            #region Golden Delight
+            r = Recipe.Create(ItemID.GoldenDelight);
+            r.AddIngredient<PrismaticGuppyGoldItem>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<BabyGhostBellGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<ProbesnoutGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<PolypPanaseaGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<PearlpodGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<SeaMinnowGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<AlphaSeaMinnowGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.Bacon);
-            r.AddIngredient<PiggyItem>();
-            r.AddTile(TileID.Hellforge);
-            r.Register();
-            r.DisableDecraft();
+            #endregion
 
             r = Recipe.Create(ItemID.BowlofSoup);
             r.AddIngredient(ItemID.Mushroom);
             r.AddIngredient<SeaMinnowItem>();
             r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.BowlofSoup);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.Sashimi);
+            r.AddIngredient<CragBullhead>();
+            r.AddTile(TileID.WorkBenches);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.Sashimi);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedShrimp);
+            r.AddIngredient<ProcyonidPrawn>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedShrimp);
+            r.DisableDecraft();
+            #endregion
+
+            #region New Recipes
+            r = Recipe.Create(ItemID.Bacon);
+            r.AddIngredient<PiggyItem>();
+            r.AddTile(TileID.Hellforge);
             r.Register();
             r.DisableDecraft();
 
@@ -1389,6 +1424,7 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.DisableDecraft();
+            #endregion
         }
         #endregion
 
@@ -1775,6 +1811,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofSight);
             r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.MechanicalGlove);
             r.DisableDecraft();
 
             // Celestial Emblem directly from correct class emblem for cheaper (compromise)
@@ -1786,6 +1823,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofSight);
             r.AddTile(TileID.TinkerersWorkbench);
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CelestialEmblem);
             r.DisableDecraft();
 
             // Tiershift Mini Nuke 1s to post Moon Lord.
