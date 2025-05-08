@@ -799,6 +799,11 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("EmpressFlightBooster2"));
             }
 
+            if (item.type == ItemID.EyeoftheGolem)
+            {
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
+            }
+
             // Rifle Scope visibility change
             if (item.type == ItemID.RifleScope)
             {
@@ -811,6 +816,7 @@ namespace CalamityMod.Items
             {
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SniperScope"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
+                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
             }
 
             // Recon Scope visibility change

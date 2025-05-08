@@ -928,6 +928,11 @@ namespace CalamityMod.CalPlayer
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
         public int spiritOriginCritBoost = 0;
+/// <summary>
+/// The amount of bonus crit damage the player has.
+/// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
+/// </summary>
+        public float critDamage = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
@@ -2352,6 +2357,7 @@ namespace CalamityMod.CalPlayer
                 spiritOriginCritBoost = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
+            critDamage = 0;
 
 
             astralStarRain = false;
@@ -2849,6 +2855,7 @@ namespace CalamityMod.CalPlayer
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
+            critDamage = 0f;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0;
