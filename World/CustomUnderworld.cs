@@ -321,17 +321,18 @@ namespace CalamityMod.World
 
                     // This is necessary due to earlier calculations
                     int startX = ashIslandX + ashIslandXAdjustment + extraDistanceBetweenAshIslands_PerIslandSide + randomWidthReduction_LeftSide;
+                    int endX = ashIslandTilePlacementX2 + extraDistanceBetweenAshIslands_PerIslandSide * 2;
 
                     // Small holes
                     double holeFrequency = 0.00005 / numIslands;
                     for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * holeFrequency); j++)
-                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 30, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, endX), WorldGen.genRand.Next(randomizedAshIslandHeightLimit + 30, Main.maxTilesY), WorldGen.genRand.Next(4, 7), WorldGen.genRand.Next(4, 7), -2);
 
                     // Place smaller hellstone splotches in the ash island
                     // I don't want there to be too many here because I don't want to encourage players to destroy the environmental Wall of Flesh arena
                     double hellstoneFrequency = 0.0002 / numIslands;
                     for (int j = 0; j < (int)((double)(Main.maxTilesX * Main.maxTilesY) * hellstoneFrequency); j++)
-                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, ashIslandTilePlacementX2), WorldGen.genRand.Next(randomizedAshIslandHeightLimit, Main.maxTilesY), WorldGen.genRand.Next(1, 5), WorldGen.genRand.Next(2, 5), TileID.Hellstone);
+                        WorldGen.TileRunner(WorldGen.genRand.Next(startX, endX), WorldGen.genRand.Next(randomizedAshIslandHeightLimit, Main.maxTilesY), WorldGen.genRand.Next(1, 5), WorldGen.genRand.Next(2, 5), TileID.Hellstone);
                 }
             }
             else
@@ -970,12 +971,16 @@ namespace CalamityMod.World
                 int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
 
                 // Extra distance per island
-                int extraDistanceBetweenAshIslands_PerIslandSide = totalExtraDistanceBetweenAshIslands / numIslands / 2;
+                // The right side looks better with half of this adjustment subtracted
+                int divisor = cragsLocationIsLeft ? 2 : 4;
+                int extraDistanceBetweenAshIslands_PerIslandSide = totalExtraDistanceBetweenAshIslands / numIslands / divisor;
 
                 // Calculate distance between islands
-                int islandWidth = (ashIslandX2 - ashIslandX) / numIslands + extraDistanceBetweenAshIslands_PerIslandSide;
-                int firstStructureDistanceFromIslandEdge = islandWidth / 2;
-                int distanceBetweenStructures = islandWidth;
+                int sideAdjustmentMultiplier = cragsLocationIsLeft ? 1 : -1;
+                int distanceBetweenStructures = (ashIslandX2 - ashIslandX) / numIslands;
+                int firstIslandWidth = distanceBetweenStructures + (extraDistanceBetweenAshIslands_PerIslandSide * sideAdjustmentMultiplier);
+                int firstStructureDistanceFromIslandEdge = firstIslandWidth / 2;
+                int distanceBetweenStructures_AfterFirstIsland = distanceBetweenStructures;
 
                 // Pick an atrium type
                 // Small worlds get a random single atrium
@@ -1016,6 +1021,9 @@ namespace CalamityMod.World
                 }
                 var atriumSchematic = TileMaps[atriumMapKey];
 
+                // Offsets for structures
+                int atriumOffset = 9;
+
                 // Place schematics
                 if (cragsLocationIsLeft)
                 {
@@ -1028,7 +1036,7 @@ namespace CalamityMod.World
                         atriumGenY++;
 
                     // Place atrium
-                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
                     if (!smallWorld)
@@ -1040,7 +1048,7 @@ namespace CalamityMod.World
                         CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
 
                         // Move index further along to keep structures spread apart
-                        atriumGenX += distanceBetweenStructures;
+                        atriumGenX += distanceBetweenStructures_AfterFirstIsland;
 
                         // Reset the Y index
                         atriumGenY = ashIslandHeightLimit;
@@ -1048,7 +1056,7 @@ namespace CalamityMod.World
                             atriumGenY++;
 
                         // Placement point for the second atrium
-                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     }
 
                     if (atriumMapKey == BrimstoneAtriumType2Key)
@@ -1061,7 +1069,7 @@ namespace CalamityMod.World
                     CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
 
                     // Move index further along to keep structures spread apart
-                    atriumGenX += distanceBetweenStructures;
+                    atriumGenX += distanceBetweenStructures_AfterFirstIsland;
 
                     // Reset the Y index
                     atriumGenY = ashIslandHeightLimit;
@@ -1073,7 +1081,7 @@ namespace CalamityMod.World
                     while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                         atriumGenY++;
 
-                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
                     if (!smallWorld)
@@ -1085,7 +1093,7 @@ namespace CalamityMod.World
                         CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
 
                         // Move index further along to keep structures spread apart
-                        atriumGenX -= distanceBetweenStructures;
+                        atriumGenX -= distanceBetweenStructures_AfterFirstIsland;
 
                         // Reset the Y index
                         atriumGenY = ashIslandHeightLimit;
@@ -1093,7 +1101,7 @@ namespace CalamityMod.World
                             atriumGenY++;
 
                         // Placement point for the second atrium
-                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + 5);
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     }
 
                     if (atriumMapKey == BrimstoneAtriumType2Key)
@@ -1106,7 +1114,7 @@ namespace CalamityMod.World
                     CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
 
                     // Move index further along to keep structures spread apart
-                    atriumGenX -= distanceBetweenStructures;
+                    atriumGenX -= distanceBetweenStructures_AfterFirstIsland;
 
                     // Reset the Y index
                     atriumGenY = ashIslandHeightLimit;
