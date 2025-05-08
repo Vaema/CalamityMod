@@ -89,14 +89,16 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (Owner.HeldItem.ModItem is SHPC shpc && shpc.storedSoulpower > 0)
                         {
-                            shpc.storedSoulpower--;
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
                             Vector2 laserVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 20f;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), Projectile.damage, 3f, Projectile.owner, SoulColors[0]);
 
                             if (ConsumeSoul)
+                            {
                                 SoulColors.RemoveAt(0);
+                                shpc.storedSoulpower--;
+                            }
                             ConsumeSoul = !ConsumeSoul;
                         }
                         else
@@ -134,7 +136,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Center = Owner.Center;
             // This is used to make the projectile naturally despawn with a delay after running out of souls or if you stop firing with no souls
             if (!FiringLasers || SoulColors.Count > 0)
-                Projectile.timeLeft = 50;
+                Projectile.timeLeft = 48;
         }
 
         public override void OnKill(int timeLeft)

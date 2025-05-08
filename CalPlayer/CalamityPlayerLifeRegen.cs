@@ -685,24 +685,6 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegenTime += 4;
             }
 
-            if (silvaWings)
-            {
-                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
-                    silvaWingsLifeRegenTimer = 0;
-                else
-                {
-                    silvaWingsLifeRegenTimer++;
-                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
-                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
-                }
-
-                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
-                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
-                Player.lifeRegen += lifeRegenBoost;
-            }
-            else
-                silvaWingsLifeRegenTimer = 0;
-
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)

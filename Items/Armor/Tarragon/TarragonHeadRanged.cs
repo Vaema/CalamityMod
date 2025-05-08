@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.defense = 21; //98
+            Item.defense = 27; // 102
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 

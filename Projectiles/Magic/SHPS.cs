@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Target.Center).ToRotation(), 0.15f).ToRotationVector2() * speed;
                     break;
                 case 2f:
-                    Projectile.velocity = (Projectile.velocity * 15f + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition + ToSuckTowards.velocity) * 25f) / 16f;
+                    Projectile.velocity = (Projectile.velocity + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition + Main.player[Projectile.owner].velocity) * 20f) / 2f;
                     if (Vector2.Distance(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) < 70f)
                     {
                         ToSuckTowards.ModProjectile<SHPV>().SoulColors.Add(Projectile.ai[0]);
