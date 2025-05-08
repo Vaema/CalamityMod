@@ -130,6 +130,10 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Increase projectile fire rate based on number of nearby active tiles
             float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
 
+            // Decides whether Ceaseless moves closer to its target or not
+            float distanceRequiredToMove = (Main.getGoodWorld || !anyDarkEnergies) ? 320f : bossRush ? 600f : death ? 520f : revenge ? 480f : expertMode ? 440f : 400f;
+            bool move = Vector2.Distance(npc.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(npc.Center, 1, 1, player.Center, 1, 1);
+
             // Succ attack
             if (!anyDarkEnergies)
             {
@@ -142,7 +146,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     // Avoid cheap bullshit
                     npc.damage = 0;
 
-                    if (Vector2.Distance(npc.Center, player.Center) > 320f || !Collision.CanHit(npc.Center, 1, 1, player.Center, 1, 1))
+                    if (move)
                         Movement(true);
                     else
                         npc.ai[3] = 1f;
@@ -171,7 +175,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.velocity = Vector2.Zero;
 
                     // Move towards target again if they get outside the succ radius
-                    float moveCloserGateValue = suckDistance * 0.75f;
+                    float moveCloserGateValue = suckDistance * 0.8f;
                     if (Vector2.Distance(npc.Center, player.Center) > moveCloserGateValue)
                         npc.ai[3] = 0f;
 
@@ -377,7 +381,18 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
-                Movement(false);
+                if (move)
+                {
+                    Movement(false);
+                }
+                else
+                {
+                    // Slow down
+                    if (npc.velocity.Length() > 0.5f)
+                        npc.velocity *= 0.8f;
+                    else
+                        npc.velocity = Vector2.Zero;
+                }
 
                 // Count up all Dark Energy HP values
                 int totalDarkEnergyHP = 0;
@@ -469,8 +484,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
-                Vector2 moveToOffset = succ ? Vector2.Zero : new Vector2(0f, -maxDistance);
-                if (!succ)
+                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if (!succ && Main.getGoodWorld)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -522,18 +537,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 Vector2 distanceFromDestination = destination - npc.Center;
 
                 // Movement
-                if (npc.Distance(destination) > maxDistance || succ)
-                {
+                if (npc.Distance(destination) > maxDistance || succ || !Main.getGoodWorld)
                     CalamityUtils.SmoothMovement(npc, 0f, distanceFromDestination, velocity, acceleration, true);
-                }
-                else
-                {
-                    // Slow down
-                    if (npc.velocity.Length() > 0.5f)
-                        npc.velocity *= 0.8f;
-                    else
-                        npc.velocity = Vector2.Zero;
-                }
             }
 
             // Spawn more Dark Energies as the fight progresses
