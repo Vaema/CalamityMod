@@ -4118,14 +4118,14 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
-                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
                 float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
-            // Adamantite Throwing Axe's lightning has damage falloff.
+            // Adamantite Throwing Axe's lightning has damage falloff
             if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
             {
                 if (projectile.numHits > 0)
@@ -4134,15 +4134,23 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
-            // Stardust Wings buff the Stardust Guardian's damage.
+            // Heat Ray damage falloff
+            if (projectile.type == ProjectileID.HeatRay)
+            {
+                projectile.damage = (int)(projectile.damage * 0.9f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
+            // Stardust Wings buff the Stardust Guardian's damage
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
 
-            // If applicable, use ricoshot bonus damage.
+            // If applicable, use ricoshot bonus damage
             if (totalRicoshotDamageBonus > 0f)
                 modifiers.ScalingBonusDamage += totalRicoshotDamageBonus;
 
-            // If this projectile is forced to crit, simply set the crit bool.
+            // If this projectile is forced to crit, simply set the crit bool
             if (forcedCrit)
                 modifiers.SetCrit();
 
@@ -4226,9 +4234,8 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (BloodstoneOrbValue > 0)
-            {
-                                Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
-            }
+                Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
+
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {
@@ -4237,6 +4244,7 @@ namespace CalamityMod.Projectiles
                     damage = damageDone - target.Calamity().hyperiusDamage;
                 else
                     damage = damageDone;
+
                 target.Calamity().hyperiusDamage -= damage;
 
                 // Spawn overflow hit
