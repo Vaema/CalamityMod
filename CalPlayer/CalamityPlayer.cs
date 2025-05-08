@@ -851,7 +851,6 @@ namespace CalamityMod.CalPlayer
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
-        public bool elysianWingsDust = false;
         public bool tracersCelestial = false;
         public bool tracersElysian = false;
         public bool tracersSeraph = false;
@@ -1034,8 +1033,6 @@ namespace CalamityMod.CalPlayer
         /// Life regeneration is increased while between 600 and 720, with a 10 second cooldown afterwards represented by being below 600.
         /// </summary>
         public int phantomicHeartRegen = 0;
-        public bool silvaWings = false;
-        public int silvaWingsLifeRegenTimer = 0;
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
@@ -2291,7 +2288,6 @@ namespace CalamityMod.CalPlayer
             hallowedPower = false;
             kamiBoost = false;
             tracersDust = false;
-            elysianWingsDust = false;
             tracersCelestial = false;
             tracersElysian = false;
             tracersSeraph = false;
@@ -2307,7 +2303,6 @@ namespace CalamityMod.CalPlayer
             starbusterCore = false;
             starTaintedGenerator = false;
             camper = false;
-            silvaWings = false;
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
             rottenDogTooth = false;
@@ -3191,7 +3186,6 @@ namespace CalamityMod.CalPlayer
             fearmongerRegenFrames = 0;
             xerocSet = false;
             tracersDust = false;
-            elysianWingsDust = false;
             GemTechState.OnDeathEffects();
             shieldOfTheOceanParry = 0;
             shieldOfTheOceanEmpoweredParry = false;
@@ -3231,7 +3225,6 @@ namespace CalamityMod.CalPlayer
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
             vortexBoosterStealthDelay = 0;
-            silvaWingsLifeRegenTimer = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;

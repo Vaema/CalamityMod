@@ -14,12 +14,12 @@ namespace CalamityMod.Items.Accessories.Wings
     public class HadarianWings : BaseWings
     {
         public override float BonusAscentWhileFalling => 0.8f;
-        public override float BonusAscentWhileRising => 0.155f;
-        public override float RisingSpeedThreshold => 1.05f;
-        public override float MaxAscentSpeed => 2.55f;
-        public override float BaseAscent => 0.13f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 2f;
+        public override float BaseAscent => 0.135f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(90, 9f, 1.75f, true, 11.6f, 11.6f);
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(108, 9f, 2f, true, 11.6f, 11.6f);
 
         public override void SetDefaults()
         {
