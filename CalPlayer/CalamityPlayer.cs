@@ -4047,42 +4047,37 @@ namespace CalamityMod.CalPlayer
 
             // Takes the movement speed bonus and uses it to increase run speed
             float accRunSpeedMin = Player.accRunSpeed * 0.5f;
-            Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.2f;
+            Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.16f;
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
 
-            //Life Jelly regen aura spawn when using a healing potion
+            // Life Jelly regen aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && lifejelly && !GrandGelatin)
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<PinkJellyAura>(), 0, 0, Player.whoAmI);
 
-            //Cleansing Jelly cleansing aura spawn when using a healing potion
+            // Cleansing Jelly cleansing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && cleansingjelly && !GrandGelatin)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<BlueJellyAura>(), 0, 0, Player.whoAmI);
-            }
-            //Grand Gellatin regen and cleansing aura spawn when using a healing potion
+
+            // Grand Gellatin regen and cleansing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && GrandGelatin && !absorber)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<GreenJellyAura>(), 0, 0, Player.whoAmI);
-            }
-            //Absorber's regen, cleansing, and buffing aura spawn when using a healing potion
+
+            // Absorber's regen, cleansing, and buffing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && absorber)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, Player.whoAmI);
-            }
 
             if (snowman)
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
                     Player.AddBuff(BuffType<PopoBuff>(), 60, true);
             }
+
             if (abyssalDivingSuit)
             {
                 Player.AddBuff(BuffType<AbyssalDivingSuitBuff>(), 60, true);
                 if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(DivingPlatesBroken.ID))
-                {
                     Player.AddBuff(BuffType<AbyssalDivingSuitPlates>(), 2);
-                }
 
                 if (Player.whoAmI == Main.myPlayer && Player.active && abyssalDivingSuitPlateHits < 3)
                 {
@@ -4100,40 +4095,36 @@ namespace CalamityMod.CalPlayer
             }
 
             if (aquaticHeart)
-            {
                 Player.AddBuff(BuffType<AquaticHeartBuff>(), 60, true);
-            }
+
             if (aquaticHeart && NPC.downedBoss3)
             {
                 if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(AquaticHeartIceShield.ID))
-                {
                     Player.AddBuff(BuffType<IceShieldBuff>(), 2);
-                }
             }
+
             if (profanedCrystal)
-            {
                 Player.AddBuff(BuffType<ProfanedCrystalBuff>(), 60, true);
-            }
+
             if (gSabaton)
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     // While holding hotkey, but before slam, bring Y velocity closer to 0
                     if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
-                    {
                         Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
-                    }
+
                     // Play sound a bit early so it goes in time with the fall
                     if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
-                    {
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
-                    }
+
                     // 0.5 seconds passed, falling time
                     if (gSabatonHotkeyHoldTime == 30)
                     {
                         gSabatonFalling = true;
                         Player.velocity.Y = 0.01f;
                     }
+
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
                     if ((Player.gravDir == 1 && Player.velocity.Y < 0f) || (Player.gravDir == -1 && Player.velocity.Y > 1f) || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
@@ -4141,6 +4132,7 @@ namespace CalamityMod.CalPlayer
                         gSabatonFall = 0;
                         gSabatonFalling = false;
                     }
+
                     if (gSabatonFalling)
                     {
                         SpawnGravistarParticle();
@@ -4151,6 +4143,7 @@ namespace CalamityMod.CalPlayer
 
                         Player.maxFallSpeed = 40f;
                         Player.gravity = 1.3f;
+
                         // If the player can fly during the fall, the physics gets a bit funky
                         Player.controlJump = false;
 
@@ -4158,13 +4151,14 @@ namespace CalamityMod.CalPlayer
                         if (0 == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
-                            //Spawn explosion. ai[0] is used for transferring the recorded falling time
+                            // Spawn explosion. ai[0] is used for transferring the recorded falling time
 
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
 
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
+
                             // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
                         }
