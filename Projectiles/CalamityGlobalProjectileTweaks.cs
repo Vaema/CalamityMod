@@ -35,8 +35,6 @@ namespace CalamityMod.Projectiles
                 YoyoTopSpeed(topSpeed / (extraUpdates + 1)),
             };
 
-            // TODO -- Very few vanilla yoyos have range and speed tweaks. Looks like an unfinished job.
-
             // SORTING NOTES:
             // 1. Sort tweaks by categories first, then sort by the internal name in alphabetical order. Navigate through categories and names using the search function.
             // 2. Higher categories hold priority over lower ones (ie. Balancing with PB tweaks belong in balancing, rather than PB)
