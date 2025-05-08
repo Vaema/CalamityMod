@@ -714,7 +714,7 @@ namespace CalamityMod.World
                             float cavePerlinValueWalls = CalamityUtils.PerlinNoise2D(X / 600f, Y / 350f, 5, cavePerlinSeedWalls) + 0.5f + horizontalOffsetNoiseWalls;
                             float cavePerlinValue2Walls = CalamityUtils.PerlinNoise2D(X / 600f, Y / 350f, 5, unchecked(cavePerlinSeedWalls - 1)) + 0.5f;
                             float caveNoiseMapWalls = (cavePerlinValueWalls + cavePerlinValue2Walls) * 0.5f;
-                            float caveCreationThresholdWalls = horizontalOffsetNoiseWalls * 3.5f + 0.235f;
+                            float caveCreationThresholdWalls = horizontalOffsetNoiseWalls * 3.5f + 0.3f;
 
                             if (caveNoiseMapWalls * caveNoiseMapWalls > caveCreationThresholdWalls)
                             {
