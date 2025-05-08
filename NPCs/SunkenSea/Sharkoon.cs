@@ -252,8 +252,10 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.wet && !IsExploding)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Reset any squish that is done to the Sharkoon.
+
+            // Reset any squish that is done to the Sharkoon, and clamps its upper limit to prevent it from becoming too tall
             if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
                 ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 

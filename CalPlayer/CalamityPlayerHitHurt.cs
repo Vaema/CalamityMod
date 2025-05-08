@@ -511,6 +511,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
+            modifiers.CritDamage += critDamage;
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
 
@@ -592,6 +593,8 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
+                
+            modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
