@@ -22,6 +22,24 @@ namespace CalamityMod.Schematics
         internal const string BrimstoneAtriumType3Key = "Brimstone Atrium Type 3 Key";
         internal const string BrimstoneAtriumType3Filename = "Schematics/Brimstone_Atrium3.csch";
 
+        internal const string BonescrapperCacheType1Key = "Bonescrapper Cache Type 1 Key";
+        internal const string BonescrapperCacheType1Filename = "Schematics/Bonescrapper_Cache1.csch";
+
+        internal const string BonescrapperCacheType2Key = "Bonescrapper Cache Type 2 Key";
+        internal const string BonescrapperCacheType2Filename = "Schematics/Bonescrapper_Cache2.csch";
+
+        internal const string BonescrapperCacheType3Key = "Bonescrapper Cache Type 3 Key";
+        internal const string BonescrapperCacheType3Filename = "Schematics/Bonescrapper_Cache3.csch";
+
+        internal const string BonescrapperCacheType4Key = "Bonescrapper Cache Type 4 Key";
+        internal const string BonescrapperCacheType4Filename = "Schematics/Bonescrapper_Cache4.csch";
+
+        internal const string BonescrapperCacheType5Key = "Bonescrapper Cache Type 5 Key";
+        internal const string BonescrapperCacheType5Filename = "Schematics/Bonescrapper_Cache5.csch";
+
+        internal const string BonescrapperCacheType6Key = "Bonescrapper Cache Type 6 Key";
+        internal const string BonescrapperCacheType6Filename = "Schematics/Bonescrapper_Cache6.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -119,6 +137,12 @@ namespace CalamityMod.Schematics
                 [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
                 [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),
                 [BrimstoneAtriumType3Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType3Filename),
+                [BonescrapperCacheType1Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType1Filename),
+                [BonescrapperCacheType2Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType2Filename),
+                [BonescrapperCacheType3Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType3Filename),
+                [BonescrapperCacheType4Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType4Filename),
+                [BonescrapperCacheType5Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType5Filename),
+                [BonescrapperCacheType6Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType6Filename),
 
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),
