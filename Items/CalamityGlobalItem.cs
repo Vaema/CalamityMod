@@ -1546,8 +1546,6 @@ namespace CalamityMod.Items
                 default:
                     break;
             }
-
-            Main.NewText($"{ascentWhenFalling.ToString("N2")}, {ascentWhenRising.ToString("N2")}, {maxCanAscendMultiplier.ToString("N2")}, {maxAscentMultiplier.ToString("N2")}, {constantAscend.ToString("N2")} | ({player.velocity.X.ToString("N2")}, {player.velocity.Y.ToString("N2")})");
         }
         #endregion
 
