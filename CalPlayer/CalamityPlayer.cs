@@ -4212,7 +4212,7 @@ namespace CalamityMod.CalPlayer
             if (Main.myPlayer == Player.whoAmI)
             {
                 mouseRight = PlayerInput.Triggers.Current.MouseRight;
-                mouseWorld = Main.MouseWorld;
+                mouseWorld = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
 
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
