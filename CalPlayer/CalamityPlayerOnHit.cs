@@ -72,7 +72,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
-            target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
             target.Calamity().IncreasedElectricityEffects_Unused = false;
@@ -80,7 +79,6 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
-            target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
@@ -209,7 +207,6 @@ namespace CalamityMod.CalPlayer
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
 
             cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
-            cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
             cgn.IncreasedElectricityEffects_Unused = false;
@@ -217,7 +214,6 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             cgn.IncreasedHeatEffects_FireBoots = bootLevel;
-            cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 

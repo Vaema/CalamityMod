@@ -155,7 +155,6 @@ namespace CalamityMod.NPCs
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
-        public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
         // Electric effects
@@ -165,7 +164,6 @@ namespace CalamityMod.NPCs
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
         public int IncreasedHeatEffects_FireBoots = 0;
-        public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
@@ -544,13 +542,11 @@ namespace CalamityMod.NPCs
             myClone.VulnerableToWater = VulnerableToWater;
 
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
-            myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
-            myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
             myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
@@ -974,8 +970,6 @@ namespace CalamityMod.NPCs
 
             if (IncreasedColdEffects_EskimoSet)
                 coldDamageMult += 0.25;
-            if (IncreasedColdEffects_FrozenWings)
-                coldDamageMult += 0.25;
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
@@ -988,8 +982,6 @@ namespace CalamityMod.NPCs
                 heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
                 heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FlameWings)
-                heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;

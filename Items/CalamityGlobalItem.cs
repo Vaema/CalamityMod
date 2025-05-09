@@ -181,32 +181,47 @@ namespace CalamityMod.Items
             SetStaticDefaults_ShimmerRecipes();
 
             #region Vanilla Wing Tweaks
-            // 170 -> 240 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 170 -> 200 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings].FlyTime = 200;
+            // Shorthand to make looking at this easier
+            WingStats[] stats = ArmorIDs.Wing.Sets.Stats;
 
+            // 130 -> 160 flight time, 6.75 -> 7.5 horizontal speed
+            stats[(int)VanillaWingID.HarpyWings].FlyTime = 160;
+            stats[(int)VanillaWingID.HarpyWings].AccRunSpeedOverride = 7.5f;
+            // 6.75 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.FrozenWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.FrozenWings].AccRunAccelerationMult = 1.5f;
+            // 160 -> 130 flight time
+            stats[(int)VanillaWingID.FlameWings].FlyTime = 130;
+            // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
+            stats[(int)VanillaWingID.BatWings].FlyTime = 180;
+            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+
+            // 170 -> 240 flight time
+            stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
+            stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
+
+            // 170 -> 210 flight time
+            stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
             // (Empress Wings) 150 -> 120 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
+            stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
             // 12 -> 10.8 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
 
             // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 11.6 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 11.6f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 11.6f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 11.6f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 11.6f;
             #endregion
         }
 
@@ -1412,57 +1427,14 @@ namespace CalamityMod.Items
                     player.maxFallSpeed *= 1.2f;
             }
 
-            if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
-            {
-                if (player.IsUnderwater())
-                    player.gills = true;
+            if (item.type == ItemID.DemonWings && !player.mount.Active)
+                player.maxFallSpeed *= 1.3f;
+
+            if (item.type == ItemID.FinWings)
                 player.ignoreWater = true;
-                player.noFallDmg = true;
-                if (!player.mount.Active)
-                {
-                    if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-                        player.maxFallSpeed = 12f;
-                }
-            }
-            else if (item.type == ItemID.BeeWings) // Honey buff
-            {
-                player.AddBuff(BuffID.Honey, 2);
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.ButterflyWings) // Boost to mana regen
-            {
-                player.manaRegen = (int)(player.manaRegen * 1.25f);
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.BatWings) // Greatly increases vision
-            {
-                player.noFallDmg = true;
-                player.nightVision = false; // Does not stack with Night Owl; actual effect is handled in LightingEffectsSystem
-            }
-            else if (item.type == ItemID.HarpyWings)
-            {
-                player.moveSpeed += 0.1f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.FrozenWings) // Increases cold debuff damage
-            {
-                player.noFallDmg = true;
-                player.Calamity().frozenWingsCold = true;
-            }
-            else if (item.type == ItemID.FlameWings) // Increases heat debuff damage
-            {
-                player.noFallDmg = true;
-                player.Calamity().flameWingsHeat = true;
-            }
-            else if (item.type == ItemID.LeafWings) // Bonus to defensive stats
-            {
-                player.noFallDmg = true;
-                player.statDefense += 10;
-                player.AddBuff(BuffID.DryadsWard, 2); // Dryad's Blessing
-            }
+
             else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
             {
-                player.noFallDmg = true;
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
@@ -1481,7 +1453,6 @@ namespace CalamityMod.Items
             }
             else if (item.type == ItemID.TatteredFairyWings) // Leave a trail of damaging fairy dust while in flight
             {
-                player.noFallDmg = true;
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
@@ -1495,16 +1466,6 @@ namespace CalamityMod.Items
                             modPlayer.wingProjectileCooldown = 10;
                     }
                 }
-            }
-            else if (item.type == ItemID.FishronWings || item.type == ItemID.BetsyWings || item.type == ItemID.Yoraiz0rWings ||
-                item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings || item.type == ItemID.LokisWings ||
-                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.BejeweledValkyrieWing ||
-                item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings ||
-                item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings || item.type == ItemID.CreativeWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings || item.type == ItemID.RainbowWings || item.type == ItemID.LongRainbowTrailWings)
-            {
-                player.noFallDmg = true;
             }
 
             if (item.type == ItemID.JellyfishNecklace || item.type == ItemID.JellyfishDivingGear || item.type == ItemID.ArcticDivingGear)
@@ -1545,6 +1506,34 @@ namespace CalamityMod.Items
 
             flightAccMult = MathHelper.Clamp(flightAccMult, 0.5f, 1.5f);
             acceleration *= flightAccMult;
+        }
+
+        public override void VerticalWingSpeeds(Item item, Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            switch (item.type)
+            {
+                case ItemID.AngelWings:
+                    maxAscentMultiplier *= 1.3f;
+                    constantAscend *= 1.5f;
+                    break;
+                case ItemID.DemonWings:
+                    ascentWhenFalling *= 2f;
+                    ascentWhenRising *= 2f;
+                    maxCanAscendMultiplier *= 2f;
+                    break;
+                case ItemID.FlameWings:
+                    maxAscentMultiplier *= 1.2f;
+                    constantAscend *= 1.35f;
+                    break;
+                case ItemID.ButterflyWings:
+                    maxAscentMultiplier *= 0.9f;
+                    constantAscend *= 5f;
+                    break;
+                default:
+                    break;
+            }
+
+            Main.NewText($"{ascentWhenFalling.ToString("N2")}, {ascentWhenRising.ToString("N2")}, {maxCanAscendMultiplier.ToString("N2")}, {maxAscentMultiplier.ToString("N2")}, {constantAscend.ToString("N2")} | ({player.velocity.X.ToString("N2")}, {player.velocity.Y.ToString("N2")})");
         }
         #endregion
 
