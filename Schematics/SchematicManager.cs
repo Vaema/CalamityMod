@@ -47,22 +47,22 @@ namespace CalamityMod.Schematics
         internal const string ResearchOutpostFilename = "Schematics/ResearchOutpost.csch";
 
         internal const string SunkenSeaLabKey = "Sunken Sea Laboratory";
-        internal const string SunkenSeaLabFilename = "Schematics/DraedonsLab_SunkenSea.csch";
+        internal const string SunkenSeaLabFilename = "Schematics/Arsenal_Lab_Sunken.csch";
 
         internal const string PlanetoidLabKey = "Planetoid Laboratory";
-        internal const string PlanetoidLabFilename = "Schematics/DraedonsLab_Planetoid.csch";
+        internal const string PlanetoidLabFilename = "Schematics/Arsenal_Lab_Planetoid.csch";
 
         internal const string PlagueLabKey = "Plague Laboratory";
-        internal const string PlagueLabFilename = "Schematics/DraedonsLab_Plague.csch";
+        internal const string PlagueLabFilename = "Schematics/Arsenal_Lab_Plague.csch";
 
         internal const string HellLabKey = "Hell Laboratory";
-        internal const string HellLabFilename = "Schematics/DraedonsLab_Hell.csch";
+        internal const string HellLabFilename = "Schematics/Arsenal_Lab_Underworld.csch";
 
         internal const string IceLabKey = "Ice Laboratory";
-        internal const string IceLabFilename = "Schematics/DraedonsLab_Ice.csch";
+        internal const string IceLabFilename = "Schematics/Arsenal_Lab_Ice.csch";
 
         internal const string CavernLabKey = "Cavern Laboratory";
-        internal const string CavernLabFilename = "Schematics/DraedonsLab_Cavern.csch";
+        internal const string CavernLabFilename = "Schematics/Arsenal_Lab_Onyx.csch";
 
         internal const string CorruptionShrineKey = "Corruption Shrine";
         internal const string CorruptionShrineFilename = "Schematics/Shrine_Corruption.csch";
