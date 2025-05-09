@@ -57,14 +57,14 @@ namespace CalamityMod.Items.Accessories.Wings
             maxAscentMultiplier = MaxAscentSpeed;
             constantAscend = BaseAscent;
 
-            AdditionalFlightMovement(player);
+            AdditionalFlightMovement(player, ref ascentWhenFalling, ref ascentWhenRising, ref maxCanAscendMultiplier, ref maxAscentMultiplier, ref constantAscend);
         }
 
         /// <summary>
         /// Addition for any deviations in regular wing movement.<br/>
         /// This is typically for UP boost or hovers.
         /// </summary>
-        public virtual void AdditionalFlightMovement(Player player) { }
+        public virtual void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend) { }
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
