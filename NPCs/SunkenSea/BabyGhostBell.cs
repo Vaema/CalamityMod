@@ -41,6 +41,14 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 5
         }
 
+        /// <summary>
+        /// The squish of this NPC while drawing.
+        /// </summary>
+        private Vector2 ScaleSquish = Vector2.One;
+
+        // keeps track of the number of hops between a flip
+        public int flipCounter;
+
         protected override List<int> PreyIDs => new List<int>();
 
         protected override List<int> PredatorIDs => new List<int>();
@@ -182,19 +190,58 @@ namespace CalamityMod.NPCs.SunkenSea
                     Main.dust[dust].scale *= 0.5f;
                 }
             }
-            // Quick lil hops in random directions for movement
+
+            // Reset any squish that is done to the Ghost Bells, and clamps its upper limit to prevent it from becoming too tall
+            if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
+            ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
+
+            // Quick lil hops in semi-random directions for movement. its thursday
             if (NPC.wet)
             {
                 NPC.height = (int)(36 * NPC.scale);
-                if (NPC.velocity.Length() < 1f)
+                if (NPC.velocity.Length() < 0.5f)
                 {
-                    NPC.velocity = Main.rand.NextVector2CircularEdge(8, 8);
+                    // stretch a bit for  ~ effect ~
+                    ScaleSquish.Y += 0.4f;
+
+                    // get a semi-random float that is equivalent to +- X (normalised) degrees around the current rotation
+                    float semiRandomAngle = Main.rand.NextFloat(-0.7f, 0.7f);
+                    // multiply velocity by a random amount to break up cycles and appear more natural
+                    NPC.velocity *= Main.rand.NextFloat(12f, 15f);
+                    // check if the velocity lands itself into a tile
+                    bool bonk = CalamityUtils.DistanceToTileCollisionHit(NPC.position, NPC.velocity, 9) != null;
+
+                    // random chance if the last direction flip was 3+ hops ago OR if the ghost bell is about to bonk a tile
+                    if ((flipCounter >= 3 && Main.rand.NextBool(6)) || bonk)
+                    {
+                        // send it in the opposite direction
+                        NPC.velocity *= -1;
+                        NPC.velocity = NPC.velocity.RotatedBy(semiRandomAngle);
+                        flipCounter = 0; // reset the counter
+                        //Main.NewText("flip! " + flipCounter + " " + NPC.velocity + " " + NPC.rotation);
+                    }
+                    else
+                    {
+                        // send it in a random direction
+                        NPC.velocity = NPC.velocity.RotatedBy(semiRandomAngle);
+                        ++flipCounter; // add to the counter
+                        //Main.NewText("swim, " + flipCounter + " " + NPC.velocity + " " + NPC.rotation);
+                    }
                 }
                 NPC.velocity *= 0.95f;
                 NPC.rotation = MathHelper.Lerp(NPC.rotation, NPC.velocity.ToRotation() + MathHelper.PiOver2, 0.5f);
+                
+                if (NPC.velocity == Vector2.Zero)
+                {
+                    // failsafe. turns out they love getting themselves stuck in walls, so this is necessary to prevent that
+                    NPC.velocity = Main.rand.NextVector2CircularEdge(8, 8);
+                }
             }
             else
             {
+                // wouldnt want it flipping back into the air immediately, would we?
+                flipCounter = 0;
                 // Height is changed so that the jelly looks like it's actually laying on the ground when rotated
                 NPC.height = (int)(24 * NPC.scale);
                 // Gravy
@@ -340,7 +387,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, ScaleSquish, spriteEffects, 0f);
 
             return false;
         }

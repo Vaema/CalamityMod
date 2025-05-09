@@ -62,7 +62,6 @@ namespace CalamityMod.Items.Accessories.Wings
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
-            modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersElysian = true;
         }
 

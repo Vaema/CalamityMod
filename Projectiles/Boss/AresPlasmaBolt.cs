@@ -75,7 +75,6 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
-            target.AddBuff(BuffID.OnFire, 180);
             target.AddBuff(BuffID.CursedInferno, 90);
         }
 

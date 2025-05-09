@@ -56,7 +56,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddRecipeGroup("Wood", 25).
                 AddIngredient<Necroplasm>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -168,7 +168,6 @@ namespace CalamityMod.Systems
             {
                 tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
 
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
@@ -181,13 +180,25 @@ namespace CalamityMod.Systems
                     };
 
                     // place each piece of the sunken sea based on the above positons
+
+                    // messages intentionally in the "incorrect" order for the player's experience.
+                    // they'll see the OG message first, then subsequent biomes are placed in vertical order.
+                    // it breaks up the 3 minute gen time and makes it more interesting for those who dont tab out while worldgen runs,
+                    // rather than keeping the player in the dark about what's happening.
+                    // it doesn't have to make sense, just be cool for the players :) -ena
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.TimelessShores").Value;
                     SunkenSea.PlaceRadiantReefs(sunkenSeaX, sunkenSeaY + 110);
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.RadiantReefs").Value;
                     SunkenSea.PlacePolypForest(sunkenSeaX, sunkenSeaY + 500);
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.PolypForest").Value;
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GleamingBurrows").Value;
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BasaltGully").Value;
                     SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
@@ -418,6 +429,7 @@ namespace CalamityMod.Systems
                     bool isMahoganyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 8 * 36;
                     bool isIvyChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 10 * 36;
                     bool isIceChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 11 * 36;
+                    bool isLihzahrdChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 16 * 36;
                     bool isMushroomChest = isContainer1 && Main.tile[chest.x, chest.y].TileFrameX == 32 * 36;
                     bool isMarniteChest = isContainer1 && (Main.tile[chest.x, chest.y].TileFrameX == 50 * 36 || Main.tile[chest.x, chest.y].TileFrameX == 51 * 36);
 
@@ -426,7 +438,7 @@ namespace CalamityMod.Systems
                     bool isSandstoneChest = isContainer2 && Main.tile[chest.x, chest.y].TileFrameX == 10 * 36;
 
                     // Replace Suspicious Looking Eyes in Chests with random useful early game potions.
-                    if (isBrownChest || isGoldChest || isMahoganyChest || isIvyChest || isIceChest || isMushroomChest || isMarniteChest || isDeadManChest || isSandstoneChest)
+                    if (isBrownChest || isGoldChest || isMahoganyChest || isIvyChest || isIceChest || isLihzahrdChest || isMushroomChest || isMarniteChest || isDeadManChest || isSandstoneChest)
                     {
                         for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
                         {

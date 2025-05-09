@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddRecipeGroup("IronBar", 50).
                 AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.TigerSkin).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

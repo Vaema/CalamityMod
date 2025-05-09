@@ -647,7 +647,10 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
+            {
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
+                target.AddBuff(BuffID.Ichor, 300);
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)

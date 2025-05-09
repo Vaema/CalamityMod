@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<Arietes41>().
                 AddIngredient(ItemID.LunarBar, 15).
                 AddIngredient<RuinousSoul>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -18,6 +18,9 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
+        //Used by Arterial Assault
+        public bool DisableEffects = false;
+
         public override string Texture => "CalamityMod/Items/Ammo/BloodfireArrow";
 
         public override void SetStaticDefaults()
@@ -47,14 +50,22 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.localAI[0] == 0)
             {
-                Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
-                player.statLife -= 1;
-                if (player.statLife <= 0)
+                if (DisableEffects)
                 {
-                    PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
-                    player.KillMe(pdr, 1000.0, 0, false);
+
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
+                } else
+                {
+                    Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
+                    player.statLife -= 1;
+                    if (player.statLife <= 0)
+                    {
+                        PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
+                        player.KillMe(pdr, 1000.0, 0, false);
+                    }
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
                 }
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
+
             }
 
             Player Owner = Main.player[Projectile.owner];
@@ -101,6 +112,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (DisableEffects)
+                return;
             Player player = Main.player[Projectile.owner];
             player.lifeRegenTime += 2;
 

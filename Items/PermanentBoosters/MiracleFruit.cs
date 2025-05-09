@@ -73,8 +73,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<LivingShard>(12).
-                //Not an anvil because making fruit at an anvil is a little weird, so here's something more magical.
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

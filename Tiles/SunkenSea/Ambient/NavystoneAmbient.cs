@@ -51,6 +51,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             HitSound = SoundID.Dig;
         }
     }
+
     public class NavystoneAmbient3 : ModTile
     {
         public override void SetStaticDefaults()

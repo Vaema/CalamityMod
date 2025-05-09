@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.Magic
         private const float HomingRange = 560f;
 
         private NPC Target;
-        private Player ToBuff;
         private Projectile ToSuckTowards;
         public float RandomAnglingStrength = 0f;
 
@@ -74,7 +73,6 @@ namespace CalamityMod.Projectiles.Magic
                         if (p.type == ModContent.ProjectileType<SHPV>() && p.Colliding(p.Hitbox, Projectile.Hitbox))
                         {
                             AIState = 2f;
-                            ToBuff = Main.player[p.owner];
                             ToSuckTowards = p;
                             break;
                         }
@@ -93,8 +91,8 @@ namespace CalamityMod.Projectiles.Magic
                     if (Timer % 30 == 1f)
                         RandomAnglingStrength = Main.rand.NextFloat(-0.16f, 0.16f);
                     Projectile.velocity = Projectile.velocity.RotatedBy(RandomAnglingStrength);
-                    if (Projectile.velocity.Length() > 3f && Pickup == 1f)
-                        Projectile.velocity *= 0.985f;
+                    if (Projectile.velocity.Length() > 2.75f && Pickup == 1f)
+                        Projectile.velocity *= 0.96f;
                     break;
                 case 1f:
                     Projectile.extraUpdates = 1;
@@ -102,10 +100,10 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Target.Center).ToRotation(), 0.15f).ToRotationVector2() * speed;
                     break;
                 case 2f:
-                    Projectile.velocity = (Projectile.velocity * 15f + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) * 15f) / 16f;
-                    if (Vector2.Distance(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) < 40f)
+                    Projectile.velocity = (Projectile.velocity + Utils.DirectionTo(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition + Main.player[Projectile.owner].velocity) * 20f) / 2f;
+                    if (Vector2.Distance(Projectile.Center, ToSuckTowards.ModProjectile<SHPV>().TipPosition) < 70f)
                     {
-                        // ToBuff.Calamity().whateverBuffName++;
+                        ToSuckTowards.ModProjectile<SHPV>().SoulColors.Add(Projectile.ai[0]);
                         Projectile.Kill();
                     }
                     break;

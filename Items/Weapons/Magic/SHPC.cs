@@ -20,6 +20,9 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
+        public static readonly SoundStyle VacuumStart = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumStart") with { Volume = 0.75f };
+        public static readonly SoundStyle VacuumLoop = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumLoop") with { Volume = 0.75f };
+        public static readonly SoundStyle VacuumEnd = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumEnd") with { Volume = 0.75f };
 
         public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
@@ -41,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 124;
             Item.height = 52;
-            Item.damage = 94;
+            Item.damage = 110;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.useAnimation = Item.useTime = 60;
@@ -157,8 +160,9 @@ namespace CalamityMod.Items.Weapons.Magic
         public override bool CanUseItem(Player player)
         {
             Item.channel = Item.noUseGraphic = player.altFunctionUse == 2;
-            return (player.altFunctionUse == 0 && (storedSoulpower > 0 || (FindSoulForAmmo(player) != -1))) ||
-                (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<SHPV>()] <= 0);
+            Item.UseSound = player.altFunctionUse == 2 ? null : FireSound;
+            return ((player.altFunctionUse == 0 && (storedSoulpower > 0 || (FindSoulForAmmo(player) != -1))) || player.altFunctionUse == 2) &&
+                player.ownedProjectileCounts[ModContent.ProjectileType<SHPV>()] <= 0;
         }
 
         public override bool? UseItem(Player player)
@@ -206,8 +210,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, player.Center);
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), damage, 0f, player.whoAmI);
                 return false;
             }
             else

@@ -314,11 +314,11 @@ namespace CalamityMod.NPCs.Ravager
             {
                 if (DownedBossSystem.downedProvidence)
                 {
-                    target.AddBuff(ModContent.BuffType<Laceration>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 240);
                 }
                 else
                 {
-                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
                 }
             }
         }

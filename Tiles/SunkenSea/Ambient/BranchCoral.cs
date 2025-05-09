@@ -65,9 +65,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 232 / 500f;
-            g = 122 / 500f;
-            b = 122 / 500f;
+            r = 0.464f;
+            g = 0.244f;
+            b = 0.244f;
         }
     }
 }

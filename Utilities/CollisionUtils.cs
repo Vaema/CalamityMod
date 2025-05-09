@@ -61,6 +61,7 @@ namespace CalamityMod
             return distanceToClosestPoint <= radius;
         }
 
+        /// <summary>
         /// Determines the distance required before a ray in a given direction from a given starting position hits solid tiles. Gives up after a certain quantity of tiles, or when a world border is reached.
         /// </summary>
         /// <param name="startingPoint">The point to check from.</param>

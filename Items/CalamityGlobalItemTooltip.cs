@@ -570,12 +570,17 @@ namespace CalamityMod.Items
             if (item.healLife > 0 && Main.LocalPlayer.Calamity().healingPotionMultiplier != 1f)
                 EditTooltipByName("HealLife", (line) => line.Text = Language.GetOrRegister("CommonItemTooltip.RestoresLife").Format((int)(item.healLife * Main.LocalPlayer.Calamity().healingPotionMultiplier)));
 
+            // Ancient Manipulator also crafts stuff with Astral Bars
+            if (item.type == ItemID.LunarCraftingStation)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("LunarCraftingStation"));
+
+            // Reworked Gravity Globe
             if (item.type == ItemID.GravityGlobe)
-                EditTooltipByName("Tooltip1", (line) => line.Text = EditedTooltip("GravityGlobe"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("GravityGlobe"));
 
-
+            // "Buffed" Step Stool
             if (item.type == ItemID.PortableStool)
-                EditTooltipByName("Tooltip0", (line) => line.Text += AddedTooltip("Stepstool"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
             #endregion
 
             // For boss summon item clarity
@@ -794,6 +799,11 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("EmpressFlightBooster2"));
             }
 
+            if (item.type == ItemID.EyeoftheGolem)
+            {
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
+            }
+
             // Rifle Scope visibility change
             if (item.type == ItemID.RifleScope)
             {
@@ -806,6 +816,7 @@ namespace CalamityMod.Items
             {
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SniperScope"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
+                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
             }
 
             // Recon Scope visibility change
@@ -1223,7 +1234,7 @@ namespace CalamityMod.Items
                 sb.Append('\n');
                 if (Main.keyState.IsKeyDown(Keys.LeftShift))
                 {
-                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + rise + fall).ToMphps()));
+                    sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + fall).ToMphps()));
                     if (hover)
                     {
                         sb.Append('\n');
@@ -1248,34 +1259,34 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.AngelWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.95f, 0.15f);
 
             if (item.type == ItemID.DemonWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 1f, 0.2f, 1f, 1.5f, 0.1f, "DemonWings");
 
             if (item.type == ItemID.Jetpack)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.ButterflyWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.35f, 0.5f);
 
             if (item.type == ItemID.FairyWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.BeeWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BeeWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.HarpyWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "HarpyWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.BoneWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f, "BoneWings");
 
             if (item.type == ItemID.FlameWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FlameWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.8f, 0.135f);
 
             if (item.type == ItemID.FrozenWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "FrozenWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.GhostWings)
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.66f, 0.1f);
@@ -1293,10 +1304,10 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.805f, 0.1f);
 
             if (item.type == ItemID.LeafWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "LeafWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             if (item.type == ItemID.BatWings)
-                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f, "BatWings");
+                AddWingStats(item.wingSlot, 0.5f, 0.1f, 0.5f, 1.5f, 0.1f);
 
             // All developer wings have identical stats and no special effects
             if (item.type == ItemID.Yoraiz0rWings || item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings ||

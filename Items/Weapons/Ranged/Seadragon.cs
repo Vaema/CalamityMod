@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<Necroplasm>(9).
                 AddIngredient<SeaPrism>(10).
                 AddIngredient<ArmoredShell>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

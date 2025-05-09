@@ -165,7 +165,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
+            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
             int afterimageAmt = 5;
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -262,11 +262,11 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 if (Main.zenithWorld) // it is the plague, you get very sick.
                 {
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240, true);
-                    target.AddBuff(BuffID.Poisoned, 240, true);
-                    target.AddBuff(BuffID.Venom, 240, true);
+                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240);
+                    target.AddBuff(BuffID.Poisoned, 240);
+                    target.AddBuff(BuffID.Venom, 240);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 120, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
             }
         }
 

@@ -140,11 +140,11 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (index != -1)
-                    Projectile.velocity = (Projectile.velocity * 18f + Utils.DirectionTo(Projectile.Center, Main.npc[index].Center) * 20f) / 19f;
+                    Projectile.velocity = (Projectile.velocity * 17f + Utils.DirectionTo(Projectile.Center, Main.npc[index].Center) * 20f) / 18f;
                 else
                     Projectile.velocity *= 0.9875f; // Slow down over time if not homing
             }
-            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight)) // Always slow down if not Flight
+            else if (GetSoulEffects((int)Projectile.ai[0]) != SoulType.Flight) // Always slow down if not Flight
                 Projectile.velocity *= 0.9875f;
 
             float explodeRange = 250f;
@@ -209,12 +209,12 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
 
                 for (int i = 0; i < 8; i++)
                 {
                     bool pickup = i >= 5;
-                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (pickup ? 3f : Main.rand.NextFloat(6f, 9f));
+                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (pickup ? 2.75f : Main.rand.NextFloat(6f, 9f));
                     int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6), 0f, pickup ? 1f : 0f);
                     if (pickup)
                         Main.projectile[p].timeLeft *= 3;

@@ -4,6 +4,7 @@ using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
@@ -105,36 +106,37 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(bBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
-            ApplyDoTDebuff(heavybleeding, 30, purity);
-            ApplyDoTDebuff(laceration, 40, purity);
+            ApplyDoTDebuff(heavybleeding, 16, purity);
+            ApplyDoTDebuff(laceration, 24, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
-            ApplyDoTDebuff(bFlames, abaddon ? 10 : 30, purity);
-            ApplyDoTDebuff(demonicFlames, 33, purity);
-            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(hFlames, 40, purity);
-            ApplyDoTDebuff(voidfrost, 40, purity);
-            ApplyDoTDebuff(vHex, 35);
-            ApplyDoTDebuff(trueVHex, 50);
-            ApplyDoTDebuff(cDepth, 18, purity);
-            ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
-            ApplyDoTDebuff(hPressure, 40, purity);
-            ApplyDoTDebuff(pFlames, alchFlask ? 10 : 30, purity);
-            ApplyDoTDebuff(cragsLava, 30);
+            ApplyDoTDebuff(bFlames, abaddon ? 10 : 20, purity);
+            ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
+            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 15 : 30, purity);
+            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 15 : 30, purity);
+            ApplyDoTDebuff(hFlames, 24, purity);
+            ApplyDoTDebuff(voidfrost, 30, purity);
+            ApplyDoTDebuff(vHex, 24);
+            ApplyDoTDebuff(trueVHex, 36);
+            ApplyDoTDebuff(cDepth, 15, purity);
+            ApplyDoTDebuff(astralInfection, 18, infectedJewel || hideOfDeus || purity);
+            ApplyDoTDebuff(hPressure, 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 12 : 24, purity);
+            ApplyDoTDebuff(cragsLava, 30); // Being literally submerged in crags lava should do more than brimstone flames
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(elementalMix, 50, purity);
-            ApplyDoTDebuff(banishingFire, 60);
+            ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
+            ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
+
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
-            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 60 : 50);
-            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 60 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 45 : 35);
+            int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 60) / (dynamoStemCells ? 2 : 1);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 40) / (dynamoStemCells ? 2 : 1);
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
             int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
-            ApplyDoTDebuff(miracleBlight, 80);
+            ApplyDoTDebuff(miracleBlight, 50);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
@@ -498,7 +500,7 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             // During Silva revive or God Slayer dash, all negative life regen is canceled
-            if ((silvaCountdown > 0 && hasSilvaEffect && silvaSet) || (DashID == GodSlayerDash.ID && Player.dashDelay < 0))
+            if ((silvaCountdown > 0 && hasSilvaEffect && silvaSet) || (LastUsedDashID == GodslayerArmorDash.ID && Player.dashDelay < 0))
             {
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen = 0;
@@ -682,24 +684,6 @@ namespace CalamityMod.CalPlayer
 
                 Player.lifeRegenTime += 4;
             }
-
-            if (silvaWings)
-            {
-                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
-                    silvaWingsLifeRegenTimer = 0;
-                else
-                {
-                    silvaWingsLifeRegenTimer++;
-                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
-                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
-                }
-
-                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
-                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
-                Player.lifeRegen += lifeRegenBoost;
-            }
-            else
-                silvaWingsLifeRegenTimer = 0;
 
             if (pinkCandle && !noLifeRegen)
             {

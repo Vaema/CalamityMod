@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.SunplateBlock, 75).
                 AddIngredient<DivineGeode>(15).
                 AddIngredient<EssenceofSunlight>(7).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

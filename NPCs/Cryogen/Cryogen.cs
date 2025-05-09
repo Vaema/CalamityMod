@@ -1507,13 +1507,13 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 if (Main.zenithWorld)
                 {
-                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
-                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120, true);
+                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
                 }
                 else
                 {
-                    target.AddBuff(BuffID.Frostburn, 240, true);
-                    target.AddBuff(BuffID.Chilled, 120, true);
+                    target.AddBuff(BuffID.Frostburn, 360);
+                    target.AddBuff(BuffID.Chilled, 120);
                 }
             }
         }
