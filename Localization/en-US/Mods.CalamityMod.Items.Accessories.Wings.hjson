@@ -3,6 +3,7 @@ AureateBooster: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
+		{$CommonItemTooltip.PressUpToBooster}
 		'Mach speed with style!'
 		'''
 }

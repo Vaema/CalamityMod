@@ -19,6 +19,11 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 2.5f;
         public override float BaseAscent => 0.125f;
 
+        // How powerful the acceleration increase is while pressing UP
+        // This also affects the flight time tick rate
+        // 1f = 2x as fast and 2x flight time drainage
+        public static float BoostPower = 1.5f;
+
         public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 8f, 1.5f);
 
         public override void SetDefaults()
@@ -82,6 +87,36 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
             }
             player.noFallDmg = true;
+        }
+
+        public override void AdditionalFlightMovement(Player player)
+        {
+            if (player.TryingToHoverUp)
+            {
+                player.velocity.Y -= BaseAscent * BoostPower * player.gravDir;
+                if (player.gravDir == 1f)
+                {
+                    if (player.velocity.Y > 0f)
+                        player.velocity.Y -= BonusAscentWhileFalling * BoostPower;
+                    else if (player.velocity.Y > Player.jumpSpeed * RisingSpeedThreshold * -BoostPower)
+                        player.velocity.Y -= BonusAscentWhileRising * BoostPower;
+
+                    if (player.velocity.Y < Player.jumpSpeed * MaxAscentSpeed * -BoostPower)
+                        player.velocity.Y = Player.jumpSpeed * MaxAscentSpeed * -BoostPower;
+                }
+                else
+                {
+                    if (player.velocity.Y < 0f)
+                        player.velocity.Y += BonusAscentWhileFalling * BoostPower;
+                    else if (player.velocity.Y < Player.jumpSpeed * RisingSpeedThreshold * BoostPower)
+                        player.velocity.Y += BonusAscentWhileRising * BoostPower;
+
+                    if (player.velocity.Y > Player.jumpSpeed * MaxAscentSpeed * BoostPower)
+                        player.velocity.Y = Player.jumpSpeed * MaxAscentSpeed * BoostPower;
+                }
+
+                player.wingTime -= BoostPower - 1f;
+            }
         }
 
         public override void AddRecipes()
