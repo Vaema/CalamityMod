@@ -158,9 +158,6 @@ namespace CalamityMod.Balancing
             // See Aquatic Scourge comment.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
 
-            // 50% resist to Aftershock's rocks.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AftershockRock>()))));
-
             // 50% resist to Dormant Brimseeker.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
 
@@ -403,9 +400,6 @@ namespace CalamityMod.Balancing
             #region Exo Mechs: Thanatos
             // 65% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(ResistTrueMelee(0.35f))));
-
-            // 65% resist to The Enforcer's projectiles.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<EssenceFlame2>()))));
 
             // 65% resist to The Final Dawn's lunge.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<FinalDawnThrow2>()))));
