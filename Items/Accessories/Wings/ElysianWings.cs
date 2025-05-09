@@ -35,9 +35,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            player.noFallDmg = true;
-
             if (!hideVisual)
                 DrawWingEffects(player);
         }
