@@ -4135,7 +4135,7 @@ namespace CalamityMod.Projectiles
             }
 
             // Heat Ray damage falloff
-            if (projectile.type == ProjectileID.HeatRay)
+            if (projectile.type == ProjectileID.HeatRay && projectile.numHits > 0)
             {
                 projectile.damage = (int)(projectile.damage * 0.9f);
                 if (projectile.damage < 1)
