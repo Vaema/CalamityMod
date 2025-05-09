@@ -2568,6 +2568,11 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            
+            //Disable Lockon when not on gamepad to prevent it being left on forever by The Pointer
+            if (!Main.gamePad)
+                LockOnHelper.ForceUsability = false;
+
             #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;

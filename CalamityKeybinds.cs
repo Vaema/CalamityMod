@@ -20,6 +20,7 @@ namespace CalamityMod
         public static ModKeybind SpectralVeilHotKey { get; private set; }
         public static ModKeybind TransformerHotKey { get; private set; }
         public static ModKeybind SwitchGravityHotkey {get; private set;}
+        public static ModKeybind ThePointerLock {get; private set;}
 
         public override void Load()
         {
@@ -40,6 +41,7 @@ namespace CalamityMod
             SpectralVeilHotKey = KeybindLoader.RegisterKeybind(Mod, "SpectralVeilTeleport", "Z");
             TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
             SwitchGravityHotkey = KeybindLoader.RegisterKeybind(Mod, "GravitySwapOverride", "T");
+            ThePointerLock = KeybindLoader.RegisterKeybind(Mod, "ThePointerLock", "N");
         }
 
         public override void Unload()
