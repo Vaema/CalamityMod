@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.timeLeft == 12)
             {
                 Vector2 beamVector = Projectile.velocity;
-                float beamLength = DetermineLaserLength_CollideWithTiles(12);
+                float beamLength = DetermineLaserLength_CollideWithTiles();
 
                 //Rapid dust
                 int dustCount = Main.rand.Next(10, 30);
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void DetermineScale() => Projectile.scale = 1f;
 
-        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles(5);
+        public override float DetermineLaserLength() => DetermineLaserLength_CollideWithTiles();
 
         public override bool ShouldUpdatePosition() => false;
 
