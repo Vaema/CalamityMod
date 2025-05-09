@@ -956,6 +956,7 @@ namespace CalamityMod.World
                 int ashIslandX = (int)((double)Main.maxTilesX * 0.36);
                 int ashIslandX2 = (int)((double)Main.maxTilesX * 0.64);
                 bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
+                int ashIslandDepthLimit = Main.maxTilesY - 135;
                 int ashIslandHeightLimit = Main.maxTilesY - 160;
 
                 // Keep track of world size to adjust house distances
@@ -964,8 +965,10 @@ namespace CalamityMod.World
                 // Large = 8, Medium = 6, Small = 4
                 int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
 
-                // Small worlds get less structures
+                // Small and medium worlds get less structures
                 bool smallWorld = numIslands == 4;
+                bool mediumWorld = numIslands == 6;
+                bool largeWorld = numIslands == 8;
 
                 // Total extra distance between islands for lava lakes
                 int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
@@ -982,11 +985,14 @@ namespace CalamityMod.World
                 int firstStructureDistanceFromIslandEdge = firstIslandWidth / 2;
                 int distanceBetweenStructures_AfterFirstIsland = distanceBetweenStructures;
 
+                // Pick structure types
+
                 // Pick an atrium type
                 // Small worlds get a random single atrium
                 // Medium and large worlds get a guaranteed shadow chest atrium and another random non-shadow chest atrium
                 string atriumMapKey;
                 int atriumType = smallWorld ? WorldGen.genRand.Next(3) : WorldGen.genRand.Next(2);
+                int numAtriums = smallWorld ? 1 : 2;
                 if (!smallWorld)
                 {
                     switch (atriumType)
@@ -1023,6 +1029,7 @@ namespace CalamityMod.World
 
                 // Offsets for structures
                 int atriumOffset = 9;
+                int cacheOffset = 45;
 
                 // Place schematics
                 if (cragsLocationIsLeft)
@@ -1118,6 +1125,122 @@ namespace CalamityMod.World
 
                     // Reset the Y index
                     atriumGenY = ashIslandHeightLimit;
+                }
+
+                // Pick cache types
+                List<int> caches = new List<int>();
+                int numCaches = largeWorld ? 8 : 4; // THIS NUMBER MUST BE EVEN!!!
+                int cacheTypes = 6;
+                do
+                {
+                    // Chose a random cache to add to the list
+                    int chosenCache = WorldGen.genRand.Next(cacheTypes);
+
+                    // Don't choose the same cache twice
+                    bool alreadyContainsThisCacheType = caches.Contains(chosenCache);
+
+                    // Avoid an infinite loop by picking a random duplicate cache if the max is reached
+                    bool pickRandomDuplicateCache = caches.Count >= cacheTypes;
+                    if (!alreadyContainsThisCacheType || pickRandomDuplicateCache)
+                        caches.Add(chosenCache);
+                }
+                while (caches.Count < numCaches);
+
+                // Place caches
+                int cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * numAtriums);
+                int cacheGenY = ashIslandDepthLimit + cacheOffset;
+                int randomAdjustmentX = 0;
+                int randomAdjustmentY = 0;
+                int minRandomX = -30;
+                int maxRandomX = -20;
+                int minRandomY = 0;
+                int maxRandomY = 10;
+                int totalCachePositions = numCaches / 2;
+                for (int cacheIndex = 0; cacheIndex < totalCachePositions; cacheIndex++)
+                {
+                    randomAdjustmentX += WorldGen.genRand.Next(minRandomX, maxRandomX + 1);
+                    randomAdjustmentX = (int)MathHelper.Clamp(randomAdjustmentX, minRandomX, maxRandomX);
+                    randomAdjustmentY += WorldGen.genRand.Next(minRandomY, maxRandomY + 1);
+                    randomAdjustmentY = (int)MathHelper.Clamp(randomAdjustmentY, minRandomY, maxRandomY);
+
+                    string cacheMapKey;
+                    switch (caches[cacheIndex])
+                    {
+                        default:
+                        case 0:
+                            cacheMapKey = BonescrapperCacheType1Key;
+                            break;
+
+                        case 1:
+                            cacheMapKey = BonescrapperCacheType2Key;
+                            break;
+
+                        case 2:
+                            cacheMapKey = BonescrapperCacheType3Key;
+                            break;
+
+                        case 3:
+                            cacheMapKey = BonescrapperCacheType4Key;
+                            break;
+
+                        case 4:
+                            cacheMapKey = BonescrapperCacheType5Key;
+                            break;
+
+                        case 5:
+                            cacheMapKey = BonescrapperCacheType6Key;
+                            break;
+                    }
+
+                    Point cachePlacementPoint = new Point(cacheGenX + randomAdjustmentX, cacheGenY + randomAdjustmentY);
+                    SchematicAnchor anchorType = SchematicAnchor.Center;
+                    bool place = true;
+
+                    // Cache types 2, 3, and 6 have chests
+                    if (cacheMapKey == BonescrapperCacheType2Key || cacheMapKey == BonescrapperCacheType3Key || cacheMapKey == BonescrapperCacheType6Key)
+                        PlaceSchematic(cacheMapKey, cachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
+                    else
+                        PlaceSchematic<Action<Chest>>(cacheMapKey, cachePlacementPoint, anchorType, ref place);
+
+                    string secondCacheMapKey;
+                    switch (caches[cacheIndex + totalCachePositions])
+                    {
+                        default:
+                        case 0:
+                            secondCacheMapKey = BonescrapperCacheType1Key;
+                            break;
+
+                        case 1:
+                            secondCacheMapKey = BonescrapperCacheType2Key;
+                            break;
+
+                        case 2:
+                            secondCacheMapKey = BonescrapperCacheType3Key;
+                            break;
+
+                        case 3:
+                            secondCacheMapKey = BonescrapperCacheType4Key;
+                            break;
+
+                        case 4:
+                            secondCacheMapKey = BonescrapperCacheType5Key;
+                            break;
+
+                        case 5:
+                            secondCacheMapKey = BonescrapperCacheType6Key;
+                            break;
+                    }
+
+                    // Place second cache to the right of the first
+                    Point secondCachePlacementPoint = cachePlacementPoint + new Point(WorldGen.genRand.Next(60, 76), 0);
+                    if (secondCacheMapKey == BonescrapperCacheType2Key || secondCacheMapKey == BonescrapperCacheType3Key || secondCacheMapKey == BonescrapperCacheType6Key)
+                        PlaceSchematic(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
+                    else
+                        PlaceSchematic<Action<Chest>>(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place);
+
+                    // Reset positions and move cache placement along the X axis
+                    cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * (numAtriums + cacheIndex + 1));
+                    cacheGenY = ashIslandDepthLimit + cacheOffset;
                 }
             }
 
@@ -1652,6 +1775,36 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.LifeforcePotion, WorldGen.genRand.Next(2, 5)),
                 new ChestItem(ItemID.TeleportationPotion, WorldGen.genRand.Next(2, 5)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(3, 6)),
+            };
+
+            for (int i = 0; i < contents.Count; i++)
+            {
+                chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].stack = contents[i].Stack;
+            }
+        }
+
+        private static void FillCacheChests(Chest chest, int Type, bool place)
+        {
+            int shadowChestItems = Utils.SelectRandom(WorldGen.genRand, ItemID.Sunfury, ItemID.FlowerofFire, ItemID.Flamelash, ItemID.DarkLance, ItemID.HellwingBow);
+            int barTypes = Utils.SelectRandom(WorldGen.genRand, ItemID.MeteoriteBar, GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar);
+            int ammoTypes = Utils.SelectRandom(WorldGen.genRand, ItemID.HellfireArrow, GenVars.silverBar == TileID.Silver ? ItemID.SilverBullet : ItemID.TungstenBullet);
+            int potionTypes = Utils.SelectRandom(WorldGen.genRand, ItemID.SpelunkerPotion, ItemID.FeatherfallPotion, ItemID.ManaRegenerationPotion, ItemID.MagicPowerPotion, ItemID.InvisibilityPotion, ItemID.HunterPotion, ItemID.HeartreachPotion);
+            int potionTypes2 = Utils.SelectRandom(WorldGen.genRand, ItemID.GravitationPotion, ItemID.ThornsPotion, ItemID.WaterWalkingPotion, ItemID.BattlePotion, ItemID.InfernoPotion);
+            int potionTypes3 = Utils.SelectRandom(WorldGen.genRand, ItemID.RecallPotion, ItemID.PotionOfReturn);
+            int lightSourceTypes = Utils.SelectRandom(WorldGen.genRand, ItemID.Torch, ItemID.Glowstick);
+            List<ChestItem> contents = new List<ChestItem>()
+            {
+                new ChestItem(shadowChestItems, 1),
+                new ChestItem(ItemID.Dynamite, WorldGen.genRand.Next(1, 3)),
+                new ChestItem(barTypes, WorldGen.genRand.Next(15, 31)),
+                new ChestItem(ammoTypes, WorldGen.genRand.Next(50, 76)),
+                new ChestItem(ItemID.RestorationPotion, WorldGen.genRand.Next(15, 21)),
+                new ChestItem(potionTypes, WorldGen.genRand.Next(1, 3)),
+                new ChestItem(potionTypes2, WorldGen.genRand.Next(1, 3)),
+                new ChestItem(potionTypes3, WorldGen.genRand.Next(1, 3)),
+                new ChestItem(lightSourceTypes, WorldGen.genRand.Next(15, 31)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(2, 5)),
             };
 
             for (int i = 0; i < contents.Count; i++)
