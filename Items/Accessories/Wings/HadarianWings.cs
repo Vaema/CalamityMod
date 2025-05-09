@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.noFallDmg = true;
         }
 
-        public override void AdditionalFlightMovement(Player player)
+        public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
             if (player.TryingToHoverDown && player.controlJump && player.wingTime > 0f && !player.merman)
             {
@@ -65,6 +65,10 @@ namespace CalamityMod.Items.Accessories.Wings
                 player.velocity.Y *= 0.8f;
                 if (player.velocity.Y > -2f && player.velocity.Y < 1f)
                     player.velocity.Y = 1E-05f;
+
+                ascentWhenFalling *= 0f;
+                ascentWhenRising *= 0f;
+                constantAscend *= 0f;
             }
         }
     }
