@@ -766,10 +766,10 @@ namespace CalamityMod.CalPlayer
                     if (Player.velocity.Length() == 0f)
                         return;
 
-                    Dust dust = Dust.NewDustDirect(Player.Center, 16, 16, DustID.Firefly, 0.23255825f, 10f, 0, new Color(117, 55, 15), 1.5116279f);
+                    Dust dust = Dust.NewDustDirect(Player.Center, 16, 16, DustID.Firefly, 0.2f, 0f, 0, new Color(117, 55, 15), Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                     dust.noLight = true;
-                    dust.fadeIn = 2.5813954f;
+                    dust.fadeIn = 2.5f;
                 }
 
                 // Ores below here
