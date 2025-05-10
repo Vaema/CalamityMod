@@ -581,7 +581,7 @@ namespace CalamityMod.World
             });
         }
 
-        //middle of the sunken sea (polyp forest)
+        // Middle of the sunken sea (polyp forest)
         public static void PlacePolypForest(int startPosX, int startPosY)
         {
             int cavePerlinSeed = WorldGen.genRand.Next();
@@ -604,7 +604,7 @@ namespace CalamityMod.World
             Vector2 topFoci = center - fociOffset;
             Vector2 bottomFoci = center + fociOffset;
 
-            //place the polyp forest caverns
+            // Place the polyp forest caverns
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
             {
                 for (int Y = (int)(origin.Y + verticalRadius * 0.4f) + 3; Y >= origin.Y - verticalRadius - 3; Y--)
@@ -615,7 +615,7 @@ namespace CalamityMod.World
                         float percent = dist / constant;
                         float blurPercent = 0.98f;
 
-                        //biome "blending" on the edges (disabled for now)
+                        // Biome "blending" on the edges (disabled for now)
                         if (percent > blurPercent)
                         {
 
@@ -1709,7 +1709,7 @@ namespace CalamityMod.World
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Shellstone>() && Main.tile[X, Y].Slope == 0 && !Main.tile[X, Y + 1].HasTile && !Main.tile[X, Y + 2].HasTile)
                     {
-                        if (WorldGen.genRand.NextBool(1))
+                        if (WorldGen.genRand.NextBool())
                         {
                             WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<RefractiveHangingCoral>());
                         }
