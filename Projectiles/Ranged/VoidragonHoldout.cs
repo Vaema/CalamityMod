@@ -11,12 +11,9 @@ using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ID;
 using Steamworks;
-using CalamityMod.Projectiles.Turret;
 using Mono.Cecil;
 using Newtonsoft.Json.Serialization;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Magic;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -45,6 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
+            //Spawn dust on the holdout's eyes based on the amount of damage scaling. Currently only works from one side
             for (int i = 0; i < 2; i++)
             {
                 int dustType = ModContent.DustType<VoidDustInverted>();
@@ -98,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
                     OffsetLengthFromArm -= 2.5f;
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
-                    //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
+                    //Alternate between shooting bullets and void blasts. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
                     if (!swapType)
                     {
                         Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -117,7 +115,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     swapType = !swapType;
                     shotCounter++;
-                    //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
+                    //Allow a pause before firing the laser. The long delay lets the laser's charge sound play in full
                     if (shotCounter == 50)
                     {
                         framesBetweenShots = 150;
@@ -135,8 +133,10 @@ namespace CalamityMod.Projectiles.Ranged
                 firingBeam = true;
                 if (firingBeam && beamTimer > 0)
                 {
+                    #region Visuals and Sounds
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
-                    //Debug Text
+                 
+                    //Extremely WIP visuals for the laser source
                     float orbScale = 0.2f * Main.rand.NextFloat(0.8f, 1.1f);
                     Color smokeColor = Color.Lerp(Color.DimGray, Color.DarkGray, Main.rand.NextFloat(0.2f, 0.6f));
                     Particle orb = new CustomPulse(GunTipPosition, Vector2.Zero, smokeColor * 0.7f, "CalamityMod/ExtraTextures/GreyscaleVortex", new Vector2(1, 1), Projectile.ai[2] * 0.45f, orbScale, orbScale * 1.1f, 6, false);
@@ -153,13 +153,16 @@ namespace CalamityMod.Projectiles.Ranged
                         Particle cross = new GlowSparkParticle(GunTipPosition, velocity, false, 6, 0.4f, Color.BlueViolet * 0.7f, new Vector2(0.07f, 0.08f), true, false);
                         GeneralParticleHandler.SpawnParticle(cross);
                     }
+                    #endregion
+
                     //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
                     if (Owner.Calamity().sharkGunDamageScaling == 0)
                     {
                         Owner.Calamity().sharkGunDamageScaling++;
                     }
+                    //Spawn the laser. Change beamTimer to edit its lifetime
+                    //I fucking hate this laser by the way
                     if (Main.myPlayer == Projectile.owner && beamTimer == 500)
-                        //Spawn the beam ONCE why aren't you working holy shit
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, 0);
                     beamTimer--;
                 }

@@ -49,6 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
                     string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
                     Gore.NewGore(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity.RotatedBy(2f * -Owner.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
                 }
+                //Set the scaling to 0 whenever it reloads
                 Owner.Calamity().sharkGunDamageScaling = 0;
             }
             if (Time >= 90)
@@ -76,11 +77,11 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
 
                     //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
-                    framesBetweenShots = 4;
+                    framesBetweenShots = 3;
                     OffsetLengthFromArm -= 3f;
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
-                    //Alternate between shooting bullets and water streams. We seperate it into two different projectiles due to the bullets needing to use a Global Projectile to track the damage multiplier
+                    //Alternate between shooting bullets and water streams. Despite not having damage scaling, the fish gain movement speed based on the scaling, so we still need a Global Projectile
                     if (!swapType)
                     {
                         Projectile scalingShot = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), bulletAMMO, Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -93,10 +94,9 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     swapType = !swapType;
                     shotCounter++;
+                    //Allow a pause before unleashing the fish. This allows the final bullet a chance to hit before the fish are unleashed. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
                     if (shotCounter == 50)
-                    {
                         framesBetweenShots = 18;
-                    }
                     if (Main.zenithWorld && shotCounter == 35)
                     {
                         SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/YouKnowWhatThatMeans");
@@ -111,18 +111,24 @@ namespace CalamityMod.Projectiles.Ranged
                 if (framesBetweenShots == 0)
                 {
                     SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
+
+                    //Need to update this effect. Will probably move to PreDraw
                     SoundEngine.PlaySound(hitSound with { Volume = 0.5f , Pitch = 0.8f }, Projectile.Center);
                     Particle Star = new CritSpark(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 28), Vector2.Zero, Color.Goldenrod, Color.OrangeRed, 2f, 20, 0.2f, 3f);
                     GeneralParticleHandler.SpawnParticle(Star);
+
+                    //Kill the holdout to allow left click to be held down.
                     Projectile.Kill();
                     for (int x = 0; x < Main.maxProjectiles; x++)
                     {
+                        //Activate all fish to rush at the cursor and home in on the nearest enemy
                         Projectile projectile = Main.projectile[x];
                         if (projectile.active && projectile.type == ModContent.ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
                         {
                             projectile.ai[1] = 5;
                             projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
                         }
+                        //If on GFB, also turns ANY projectile on screen into a fish
                         if (Main.zenithWorld && projectile.type != ModContent.ProjectileType<SeaDragonRocket>())
                         {
                             SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/FISH");

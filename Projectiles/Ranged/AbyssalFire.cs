@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Packets.Entities;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 
@@ -65,21 +68,10 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 circlePointDirection = Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction);
             Projectile.Center = VoidragonHoldout.Center;
 
-            // Update the laser length.
-            float[] laserLengthSamplePoints = new float[24];
-            Collision.LaserScan(Projectile.Center, Projectile.velocity, Projectile.scale * 8f, MaxLaserLength, laserLengthSamplePoints);
-            LaserLength = laserLengthSamplePoints.Average();
+            LaserLength = MaxLaserLength;
 
             // Update aim.
             UpdateAim();
-
-            // Create arms on surfaces.
-            if (Main.myPlayer == Projectile.owner && Main.rand.NextBool(8))
-                CreateArmsOnSurfaces();
-
-            // Create hit effects at the end of the beam.
-            if (Main.myPlayer == Projectile.owner)
-                CreateTileHitEffects();
 
             // Make the beam cast light along its length. The brightness of the light is reliant on the scale of the beam.
             DelegateMethods.v3_1 = Color.DarkViolet.ToVector3() * Projectile.scale * 0.4f;
@@ -104,44 +96,15 @@ namespace CalamityMod.Projectiles.Ranged
 
             Projectile.velocity = newAimDirection;
         }
-
-        public void CreateArmsOnSurfaces()
-        {
-            Vector2 endOfLaser = Projectile.Center + Projectile.velocity * LaserLength + Main.rand.NextVector2Circular(80f, 8f);
-            Vector2 idealCenter = endOfLaser;
-            if (WorldUtils.Find(idealCenter.ToTileCoordinates(), Searches.Chain(new Searches.Down(5), new CustomConditions.SolidOrPlatform()), out Point result))
-            {
-                idealCenter = result.ToWorldCoordinates();
-            }
-            Point endOfLaserTileCoords = idealCenter.ToTileCoordinates();
-            Tile endTile = CalamityUtils.ParanoidTileRetrieval(endOfLaserTileCoords.X, endOfLaserTileCoords.Y);
-
-            if (endTile.HasUnactuatedTile && (Main.tileSolid[endTile.TileType] || Main.tileSolidTop[endTile.TileType]) && !endTile.IsHalfBlock && endTile.Slope == 0)
-            {
-                Vector2 armSpawnPosition = endOfLaserTileCoords.ToWorldCoordinates();
-            }
-        }
-
-        public void CreateTileHitEffects()
-        {
-            Vector2 endOfLaser = Projectile.Center + Projectile.velocity * (LaserLength - Main.rand.NextFloat(12f, 72f));
-
-            if (Main.rand.NextBool())
-            {
-            }
-
-            RancorLavaMetaball.SpawnParticle(endOfLaser + Main.rand.NextVector2Circular(10f, 10f) + Projectile.velocity * 40f, 135f);
-        }
-
-        private float PrimitiveWidthFunction(float completionRatio) => Projectile.scale * 20f;
+        private float PrimitiveWidthFunction(float completionRatio) => Projectile.scale * 25f;
 
         private Color PrimitiveColorFunction(float completionRatio)
         {
-            Color vibrantColor = Color.Lerp(Color.Blue, Color.Red, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
+            Color vibrantColor = Color.Lerp(Color.Indigo, Color.BlueViolet, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.97f, 0.9f, completionRatio, true) *
                 Utils.GetLerpValue(0f, MathHelper.Clamp(15f / LaserLength, 0f, 0.5f), completionRatio, true) *
                 (float)Math.Pow(Utils.GetLerpValue(60f, 270f, LaserLength, true), 3D);
-            return Color.Lerp(vibrantColor, Color.White, 0.5f) * opacity * 2f;
+            return Color.Lerp(vibrantColor, Color.Black, 0.5f) * opacity * 2f;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -165,8 +128,20 @@ namespace CalamityMod.Projectiles.Ranged
         {
             overWiresUI.Add(index);
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.Calamity().ashesOnDeath = 10;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.Calamity().ashesOnDeath = 10;
+            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
+            int bonusDamage = 10000;
+            if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
+            {
+                target.Calamity().demonicFlamesBonusDamage = bonusDamage;
+                target.AddBuff(ModContent.BuffType<DemonicFlames>(), 180);
+                // Demonic Flames damage must be synced, because OnHitNPC is only run for the client that hit the NPC
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    DemonicFlamesSyncPacket.Send(target);
+            }
+        }
 
         public override bool ShouldUpdatePosition() => false;
     }

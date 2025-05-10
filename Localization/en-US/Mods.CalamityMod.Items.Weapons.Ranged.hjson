@@ -1084,8 +1084,9 @@ Seadragon: {
 	DisplayName: Seadragon
 	Tooltip:
 		'''
-		Unleashes a deluge of alternating bullets and pressurized water jets
-		Additionally fires rockets and emits devastating muzzle blasts
+		Loads a 50 round deluge of alternating bullets and pressurized water jets
+		Water jets summon a small fish that swims around and follows you
+		After firing, all fish rush toward enemies and explode before the gun reloads
 		Water jets consume no ammo
 		'''
 }

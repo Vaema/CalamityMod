@@ -80,14 +80,12 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnKill(int timeLeft)
         {
+            //We can't set Demonic Flames damage with a Basic Burst projectile, so we'll have to use a new one
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VoidBlastExplosion>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            #region Visuals and Sounds
             SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
             SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);
-            float blastSize = 170;
-            float minMultiplier = 0.25f;
-            int hitsToMinMult = 5;
-            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
-            blast.timeLeft = 2;
-            blast.DamageType = Projectile.DamageType;
+
             for (float k = 0; k < 3; k++)
             {
                 float colorRando = Main.rand.NextFloat(0, 1);
@@ -124,6 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.alpha = Main.rand.Next(120, 180 + 1);
                 dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
             }
+            #endregion
         }
         public override bool PreDraw(ref Color lightColor)
         {
