@@ -85,7 +85,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             modNPC.laserBurnStacks++;
 
-            Projectile.damage = 1;
+            modifiers.SourceDamage *= 0;
+            modifiers.FinalDamage.Flat = 0.1f;
             modifiers.HideCombatText();
             
         }
