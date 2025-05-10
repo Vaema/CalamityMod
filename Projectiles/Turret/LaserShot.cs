@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Turret
 
         public override float DetermineLaserLength()
         {
-            return DetermineLaserLength_CollideWithTiles(8);
+            return DetermineLaserLength_CollideWithTiles();
         }
 
         public override bool PreDraw(ref Color lightColor)

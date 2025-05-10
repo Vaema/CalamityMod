@@ -19,6 +19,7 @@ namespace CalamityMod.Items.Accessories.Vanity
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Head2", EquipType.Head, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Body2", EquipType.Body, this);
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Legs2", EquipType.Legs, this);
+                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Projectiles/InvisibleProj", EquipType.Wings, this);
             }
         }
 
@@ -89,6 +90,7 @@ namespace CalamityMod.Items.Accessories.Vanity
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
                 Player.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
                 Player.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
+                Player.wings = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Wings);
             }
         }
 

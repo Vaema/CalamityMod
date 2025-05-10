@@ -195,16 +195,22 @@ namespace CalamityMod.Items
             // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
             stats[(int)VanillaWingID.BatWings].FlyTime = 180;
             stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+            // 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.ButterflyWings].AccRunAccelerationMult = 1.5f;
 
             // 170 -> 240 flight time
             stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 2 acceleration multiplier
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
             stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
             stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
-            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 2f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
 
             // 170 -> 210 flight time
             stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
+            // 180 -> 210 flight time
+            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 210;
             // (Empress Wings) 150 -> 120 flight time
             stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
@@ -1430,40 +1436,44 @@ namespace CalamityMod.Items
             if (item.type == ItemID.DemonWings && !player.mount.Active)
                 player.maxFallSpeed *= 1.3f;
 
+            if (item.type == ItemID.BeeWings && !player.mount.Active && !player.controlDown)
+            {
+                player.gravity *= 0.6f;
+                player.maxFallSpeed *= 0.6f;
+            }
+
             if (item.type == ItemID.FinWings)
                 player.ignoreWater = true;
 
-            else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
+            // Spawns ornaments which refreshes flight time upon pickup
+            else if (item.type == ItemID.FestiveWings)
             {
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
                     {
-                        int ornamentDamage = (int)player.GetBestClassDamage().ApplyTo(50);
-                        int p = Projectile.NewProjectile(source, player.Center, Vector2.UnitY * 2f, ProjectileID.OrnamentFriendly, ornamentDamage, 5f, player.whoAmI);
+                        Vector2 ornamentPos = player.Center + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(105f)) * Main.rand.NextFloat(-512f, -320f);
+
+                        int p = Projectile.NewProjectile(source, ornamentPos, Vector2.Zero, ModContent.ProjectileType<FestiveWingsOrnament>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[p].DamageType = DamageClass.Generic;
-                            Main.projectile[p].Calamity().lineColor = 1;
-                            modPlayer.wingProjectileCooldown = 15;
-                        }
+                            modPlayer.wingProjectileCooldown = 90;
                     }
                 }
             }
-            else if (item.type == ItemID.TatteredFairyWings) // Leave a trail of damaging fairy dust while in flight
+            // Leaves a trail of black fairy dust which reduces flight time to any player that touches it
+            else if (item.type == ItemID.TatteredFairyWings)
             {
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
                     {
-                        int fairyDustDamage = (int)player.GetBestClassDamage().ApplyTo(35);
                         Vector2 fairyDustVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.08f, 0.2f);
 
-                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), fairyDustDamage, 0f, player.whoAmI);
+                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                            modPlayer.wingProjectileCooldown = 10;
+                            modPlayer.wingProjectileCooldown = 8;
                     }
                 }
             }
@@ -1529,11 +1539,13 @@ namespace CalamityMod.Items
                     maxAscentMultiplier *= 0.9f;
                     constantAscend *= 5f;
                     break;
+                case ItemID.GhostWings:
+                    maxAscentMultiplier *= 0.904f;
+                    constantAscend *= 5f;
+                    break;
                 default:
                     break;
             }
-
-            Main.NewText($"{ascentWhenFalling.ToString("N2")}, {ascentWhenRising.ToString("N2")}, {maxCanAscendMultiplier.ToString("N2")}, {maxAscentMultiplier.ToString("N2")}, {constantAscend.ToString("N2")} | ({player.velocity.X.ToString("N2")}, {player.velocity.Y.ToString("N2")})");
         }
         #endregion
 

@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class LeviatitanMeteor : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Melee/AftershockRock";
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 5;

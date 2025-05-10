@@ -957,6 +957,7 @@ namespace CalamityMod.CalPlayer
         public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
+        public Color XykFXColor = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
         public bool royalGel = false;
@@ -4213,7 +4214,7 @@ namespace CalamityMod.CalPlayer
             if (Main.myPlayer == Player.whoAmI)
             {
                 mouseRight = PlayerInput.Triggers.Current.MouseRight;
-                mouseWorld = Main.MouseWorld;
+                mouseWorld = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
 
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
@@ -4835,12 +4836,7 @@ namespace CalamityMod.CalPlayer
                     Vector2 mouse = Player.ClampedMouseWorld();
                     Vector2 startingPosition = mouse - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
                     Vector2 directionToMouse = (mouse - startingPosition).SafeNormalize(Vector2.UnitX);
-                    int drop = Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<AcidBarrelDrop>(), d, 0f, Player.whoAmI, 3);
-                    if (drop.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[drop].penetrate = 2;
-                        Main.projectile[drop].DamageType = DamageClass.Generic;
-                    }
+                    Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<RustyMedallionDroplet>(), d, 0f, Player.whoAmI, 3);
                     RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
                 }
             }

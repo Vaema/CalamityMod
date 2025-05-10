@@ -109,7 +109,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             var weapons = new int[]
             {
-                ModContent.ItemType<Aftershock>(),
                 ModContent.ItemType<EarthenPike>(),
                 ModContent.ItemType<SlagMagnum>(),
             };

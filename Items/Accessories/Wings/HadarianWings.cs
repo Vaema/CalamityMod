@@ -34,18 +34,6 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             if (player.controlJump && player.wingTime > 0f && player.jump == 0)
             {
-                bool hovering = player.TryingToHoverDown && !player.merman;
-                if (hovering)
-                {
-                    player.velocity.Y *= 0.2f;
-                    if (player.velocity.Y > -2f && player.velocity.Y < 2f)
-                    {
-                        // I can't get the player to have zero y velocity (setting it to 0 doesn't work and I tried a lot of numbers)
-                        player.velocity.Y = 0.105f;
-                    }
-                    player.wingTime += 0.75f;
-                }
-
                 if (player.velocity.Y != 0f && !hideVisual)
                 {
                     float xOffset = 4f;
@@ -53,7 +41,7 @@ namespace CalamityMod.Items.Accessories.Wings
                     {
                         xOffset = -40f;
                     }
-                    if (!hovering || Main.rand.NextBool(3))
+                    if (!player.TryingToHoverDown || Main.rand.NextBool(3))
                     {
                         int idx = Dust.NewDust(new Vector2(player.Center.X + xOffset, player.Center.Y - 15f), 30, 30, ModContent.DustType<AstralOrange>(), 0f, 0f, 100, default, 1.75f);
                         Main.dust[idx].noGravity = true;
@@ -66,7 +54,21 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                 }
             }
-            player.noFallDmg = true;
+        }
+
+        public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            if (player.TryingToHoverDown && player.controlJump && player.wingTime > 0f && !player.merman)
+            {
+                player.wingTime += 0.5f;
+                player.velocity.Y *= 0.8f;
+                if (player.velocity.Y > -2f && player.velocity.Y < 1f)
+                    player.velocity.Y = 1E-05f;
+
+                ascentWhenFalling *= 0f;
+                ascentWhenRising *= 0f;
+                constantAscend *= 0f;
+            }
         }
     }
 }

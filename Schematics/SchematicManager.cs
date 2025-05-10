@@ -22,6 +22,24 @@ namespace CalamityMod.Schematics
         internal const string BrimstoneAtriumType3Key = "Brimstone Atrium Type 3 Key";
         internal const string BrimstoneAtriumType3Filename = "Schematics/Brimstone_Atrium3.csch";
 
+        internal const string BonescrapperCacheType1Key = "Bonescrapper Cache Type 1 Key";
+        internal const string BonescrapperCacheType1Filename = "Schematics/Bonescrapper_Cache1.csch";
+
+        internal const string BonescrapperCacheType2Key = "Bonescrapper Cache Type 2 Key";
+        internal const string BonescrapperCacheType2Filename = "Schematics/Bonescrapper_Cache2.csch";
+
+        internal const string BonescrapperCacheType3Key = "Bonescrapper Cache Type 3 Key";
+        internal const string BonescrapperCacheType3Filename = "Schematics/Bonescrapper_Cache3.csch";
+
+        internal const string BonescrapperCacheType4Key = "Bonescrapper Cache Type 4 Key";
+        internal const string BonescrapperCacheType4Filename = "Schematics/Bonescrapper_Cache4.csch";
+
+        internal const string BonescrapperCacheType5Key = "Bonescrapper Cache Type 5 Key";
+        internal const string BonescrapperCacheType5Filename = "Schematics/Bonescrapper_Cache5.csch";
+
+        internal const string BonescrapperCacheType6Key = "Bonescrapper Cache Type 6 Key";
+        internal const string BonescrapperCacheType6Filename = "Schematics/Bonescrapper_Cache6.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -29,22 +47,22 @@ namespace CalamityMod.Schematics
         internal const string ResearchOutpostFilename = "Schematics/ResearchOutpost.csch";
 
         internal const string SunkenSeaLabKey = "Sunken Sea Laboratory";
-        internal const string SunkenSeaLabFilename = "Schematics/DraedonsLab_SunkenSea.csch";
+        internal const string SunkenSeaLabFilename = "Schematics/Arsenal_Lab_Sunken.csch";
 
         internal const string PlanetoidLabKey = "Planetoid Laboratory";
-        internal const string PlanetoidLabFilename = "Schematics/DraedonsLab_Planetoid.csch";
+        internal const string PlanetoidLabFilename = "Schematics/Arsenal_Lab_Planetoid.csch";
 
         internal const string PlagueLabKey = "Plague Laboratory";
-        internal const string PlagueLabFilename = "Schematics/DraedonsLab_Plague.csch";
+        internal const string PlagueLabFilename = "Schematics/Arsenal_Lab_Plague.csch";
 
         internal const string HellLabKey = "Hell Laboratory";
-        internal const string HellLabFilename = "Schematics/DraedonsLab_Hell.csch";
+        internal const string HellLabFilename = "Schematics/Arsenal_Lab_Underworld.csch";
 
         internal const string IceLabKey = "Ice Laboratory";
-        internal const string IceLabFilename = "Schematics/DraedonsLab_Ice.csch";
+        internal const string IceLabFilename = "Schematics/Arsenal_Lab_Ice.csch";
 
         internal const string CavernLabKey = "Cavern Laboratory";
-        internal const string CavernLabFilename = "Schematics/DraedonsLab_Cavern.csch";
+        internal const string CavernLabFilename = "Schematics/Arsenal_Lab_Onyx.csch";
 
         internal const string CorruptionShrineKey = "Corruption Shrine";
         internal const string CorruptionShrineFilename = "Schematics/Shrine_Corruption.csch";
@@ -119,6 +137,12 @@ namespace CalamityMod.Schematics
                 [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
                 [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),
                 [BrimstoneAtriumType3Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType3Filename),
+                [BonescrapperCacheType1Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType1Filename),
+                [BonescrapperCacheType2Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType2Filename),
+                [BonescrapperCacheType3Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType3Filename),
+                [BonescrapperCacheType4Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType4Filename),
+                [BonescrapperCacheType5Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType5Filename),
+                [BonescrapperCacheType6Key] = CalamitySchematicIO.LoadSchematic(BonescrapperCacheType6Filename),
 
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),

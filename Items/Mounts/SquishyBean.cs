@@ -85,7 +85,6 @@ namespace CalamityMod.Items.Mounts
                 player.gravity = 1f;
                 player.maxFallSpeed = 20f;
             }
-            player.noFallDmg = true;
         }
     }
 }

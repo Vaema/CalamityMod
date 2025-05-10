@@ -60,7 +60,6 @@ namespace CalamityMod.Items.Accessories.Wings
             player.fireWalk = true;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
-            player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
             modPlayer.tracersElysian = true;
         }
