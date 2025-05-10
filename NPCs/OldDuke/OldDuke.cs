@@ -42,6 +42,14 @@ namespace CalamityMod.NPCs.OldDuke
     {
         public static Color GlowColor = new Color(55, 255, 25, 0);
 
+        // Old Duke doesn't have a phase 3 in normal mode
+        public const float LifePercentagePhase2_Normal = 0.5f;
+        public const float LifePercentagePhase2_Revenge = 0.7f;
+        public const float LifePercentagePhase2_Death = 0.8f;
+        public const float LifePercentagePhase3_Expert = 0.2f;
+        public const float LifePercentagePhase3_Revenge = 0.35f;
+        public const float LifePercentagePhase3_Death = 0.5f;
+
         public int Phase = 0;
         public float NuclearOverlayVisual = 0f;
 
@@ -146,21 +154,11 @@ namespace CalamityMod.NPCs.OldDuke
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            bool phase2 = lifeRatio <= (death ? 0.8f : revenge ? 0.7f : 0.5f);
-            bool phase3 = lifeRatio <= (death ? 0.5f : (revenge ? 0.35f : 0.2f)) && expertMode;
-
-            if (phase3) Phase = 2;
-            else if (phase2) Phase = 1;
-            else Phase = 0;
-
-            if (Phase == 2 && NPC.Calamity().newAI[1] != 1)
-            {
-                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f);
-            }
-            else
-            {
-                NuclearOverlayVisual = MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
-            }
+            bool phase2 = lifeRatio <= (death ? LifePercentagePhase2_Death : revenge ? LifePercentagePhase2_Revenge : LifePercentagePhase2_Normal);
+            bool phase3 = lifeRatio <= (death ? LifePercentagePhase3_Death : (revenge ? LifePercentagePhase3_Revenge : LifePercentagePhase3_Expert)) && expertMode;
+            
+            Phase = phase3 ? 2 : phase2 ? 1 : 0;
+            NuclearOverlayVisual = (Phase == 2 && NPC.Calamity().newAI[1] != 1) ? MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f) : MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
 
             OldDukeAI.VanillaOldDukeAI(NPC, Mod);
         }
@@ -248,10 +246,8 @@ namespace CalamityMod.NPCs.OldDuke
 
             if (NPC.ai[0] == -1f)
             {
-                if (NPC.ai[2] >= 75)
-                {
+                if (NPC.ai[2] >= 75f)
                     NPC.frame.Y = frameHeight * 6;
-                }
             }
         }
 
@@ -334,9 +330,7 @@ namespace CalamityMod.NPCs.OldDuke
             float afterimageScale = 0f;
 
             if (NPC.ai[0] == -1f)
-            {
                 secondAfterimageAmt = 0;
-            }
 
             if (NPC.ai[0] == 3f || NPC.ai[0] == 8f || NPC.ai[0] == 13f)
             {
@@ -387,10 +381,8 @@ namespace CalamityMod.NPCs.OldDuke
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(overlayDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             float auraOutset = 6f + (float)(Math.Sin(VisualTimerSystem.GlobalVisualTimer / 10f) * 10f);
-            for (float i = 0; i < 360; i+=90)
-            {
+            for (float i = 0f; i < 360f; i += 90f)
                 spriteBatch.Draw(texture2D15, drawLocation + new Vector2(auraOutset, 0).RotatedBy(MathHelper.ToRadians(i)), NPC.frame, NPC.GetAlpha(overlayDrawColor.MultiplyRGBA(new Color(0.4f, 0.4f, 0.4f, 0.4f))), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-            }
 
             if (NPC.ai[0] >= 4f && NPC.Calamity().newAI[1] != 1f)
             {

@@ -20,7 +20,6 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Rarities;
 using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.World;
@@ -29,7 +28,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static tModPorter.ProgressUpdate;
 
 namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 {
@@ -58,8 +56,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             float numberOfAttacksBeforeExhaustion = 12f;
             float exhaustionIncreasePerAttack = exhaustionGateValue * (1f / numberOfAttacksBeforeExhaustion);
             bool exhausted = calamityGlobalNPC.newAI[1] == 1f;
-            bool phase2 = lifeRatio <= (death ? 0.8f : revenge ? 0.7f : 0.5f);
-            bool phase3 = lifeRatio <= (death ? 0.5f : (revenge ? 0.35f : 0.2f)) && expertMode;
+            bool phase2 = lifeRatio <= (death ? OldDuke.OldDuke.LifePercentagePhase2_Death : revenge ? OldDuke.OldDuke.LifePercentagePhase2_Revenge : OldDuke.OldDuke.LifePercentagePhase2_Normal);
+            bool phase3 = lifeRatio <= (death ? OldDuke.OldDuke.LifePercentagePhase3_Death : (revenge ? OldDuke.OldDuke.LifePercentagePhase3_Revenge : OldDuke.OldDuke.LifePercentagePhase3_Expert)) && expertMode;
             bool phase2AI = npc.ai[0] > 4f;
             bool phase3AI = npc.ai[0] > 9f;
 
@@ -462,15 +460,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     SoundEngine.PlaySound(OldDuke.OldDuke.DashSoundP3, npc.Center);
                 }
 
-                if (npc.ai[2] >= 75)
+                if (npc.ai[2] >= 75f)
                 {
-                    float sd = 1f;
-                    if (player.Center.X > npc.Center.X) sd = -1f;
+                    float sd = player.Center.X > npc.Center.X ? -1f : 1f;
 
                     (npc.ModNPC as OldDuke.OldDuke).shake = 2f;
                     npc.rotation = MathHelper.Lerp(MathHelper.WrapAngle(npc.rotation), MathHelper.ToRadians(sd == 1f ? 75f : -75f), 0.2f);
 
-                    if (npc.ai[2] % 5 == 1)
+                    if (npc.ai[2] % 5f == 1f)
                     {
                         Vector2 mouthCenter = npc.Center + new Vector2(-80 * sd, 0).RotatedBy(npc.rotation);
 
@@ -483,7 +480,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 }
 
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= 125)
+                if (npc.ai[2] >= 125f)
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
@@ -653,12 +650,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Spawn dust
                 Vector2 vel = npc.velocity;
                 vel.Normalize();
-                vel *= 55;
+                vel *= 55f;
 
                 DoChargeVisual(npc, phase);
 
-                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(90)), vel / 7, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
-                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(-90)), vel / 7, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(90)), vel / 7f, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(-90)), vel / 7f, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
 
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= chargeTime)
@@ -1656,9 +1653,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             }
 
             if (SoundEngine.TryGetActiveSound(modNPC.RoarSoundSlot, out var roarSound) && roarSound.IsPlaying)
-            {
                 roarSound.Position = npc.Center;
-            }
         }
 
         static Color FireGreen = new Color(155, 255, 55);
@@ -1671,18 +1666,19 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             {
                 for (int i = 0; i < 30; i++)
                 {
-                    float fl = Main.rand.NextFloat(-60, 60);
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + (Vector2.Zero.DirectionTo(npc.velocity) * 20) + new Vector2(0, fl).RotatedBy(Vector2.Zero.AngleTo(npc.velocity)), (-npc.velocity * Main.rand.NextFloat(2f)).RotatedBy(MathHelper.ToRadians(fl)), false, 25, Main.rand.NextFloat(0.3f, 1.2f), FireGreen));
+                    float fl = Main.rand.NextFloat(-60f, 60f);
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + (Vector2.Zero.DirectionTo(npc.velocity) * 20f) + new Vector2(0f, fl).RotatedBy(Vector2.Zero.AngleTo(npc.velocity)), (-npc.velocity * Main.rand.NextFloat(2f)).RotatedBy(MathHelper.ToRadians(fl)), false, 25, Main.rand.NextFloat(0.3f, 1.2f), FireGreen));
                 }
 
-                CalamityUtils.AddScreenshakeAt(npc.Center, 10, 3000);
+                CalamityUtils.AddScreenshakeAt(npc.Center, 10f, 3000f);
 
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, npc.Center);
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3f, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2f, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
             }
         }
+
         static void DoChargeVisual(NPC npc, int phase)
         {
             float progress = npc.ai[2]; 
@@ -1694,13 +1690,13 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (phase > 1)
             {
                 if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f)
-                    GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3f, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
 
                 (npc.ModNPC as OldDuke.OldDuke).NuclearOverlayVisual = 1f;
             }
 
             if (Main.rand.NextBool())
-                GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center - (npc.velocity * 2), npc.velocity / 2, "CalamityMod/Particles/ForwardSmear", false, 10, Main.rand.NextFloat(0.3f, 0.5f), col, new Vector2(1f, Main.rand.NextFloat(1.45f, 1.6f)), fadeIn: true, extraRotation: MathHelper.ToRadians(180f)));
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center - (npc.velocity * 2f), npc.velocity / 2f, "CalamityMod/Particles/ForwardSmear", false, 10, Main.rand.NextFloat(0.3f, 0.5f), col, new Vector2(1f, Main.rand.NextFloat(1.45f, 1.6f)), fadeIn: true, extraRotation: MathHelper.ToRadians(180f)));
         }
     }
 }
