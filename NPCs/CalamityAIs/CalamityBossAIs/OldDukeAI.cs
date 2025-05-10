@@ -17,15 +17,19 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Rarities;
 using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static tModPorter.ProgressUpdate;
 
 namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 {
@@ -58,6 +62,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             bool phase3 = lifeRatio <= (death ? 0.5f : (revenge ? 0.35f : 0.2f)) && expertMode;
             bool phase2AI = npc.ai[0] > 4f;
             bool phase3AI = npc.ai[0] > 9f;
+
+            int phase = (npc.ModNPC as OldDuke.OldDuke).Phase;
+
             bool charging = npc.ai[3] < 10f;
             float pie = (float)Math.PI;
 
@@ -306,8 +313,12 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Set variables for spawn effects
             if (npc.localAI[0] == 0f)
             {
-                npc.localAI[0] = 1f;
                 npc.alpha = 255;
+
+                npc.velocity.Y = -12f;
+                npc.velocity.X = Main.rand.NextFloat(-2f, 2f);
+
+                npc.localAI[0] = 1f;
                 npc.rotation = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -411,6 +422,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Spawn effects
             if (npc.ai[0] == -1f)
             {
+                npc.alpha = (int)MathHelper.Lerp(npc.alpha, 0, 0.2f);
+
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
@@ -429,8 +442,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 // Alpha
                 if (npc.ai[2] > 20f)
                 {
-                    if (npc.Calamity().newAI[3] == 0f)
-                        npc.velocity.Y = -2f;
+                    npc.velocity *= 0.9f;
 
                     npc.alpha -= 5;
                     if (Collision.SolidCollision(npc.position, npc.width, npc.height))
@@ -441,25 +453,37 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.alpha = 150;
                 }
 
-                // Spawn dust and play sound
-                if (npc.ai[2] == attackTimer - 30)
+                if (npc.ai[2] == 75)
                 {
-                    int dustAmt = 36;
-                    for (int i = 0; i < dustAmt; i++)
-                    {
-                        Vector2 dust = (Vector2.Normalize(npc.velocity) * new Vector2(npc.width / 2f, npc.height) * 0.75f * 0.5f).RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt) + npc.Center;
-                        Vector2 vector2 = dust - npc.Center;
-                        int toxicDust = Dust.NewDust(dust + vector2, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, vector2.X * 2f, vector2.Y * 2f, 100, default, 1.4f);
-                        Main.dust[toxicDust].noGravity = true;
-                        Main.dust[toxicDust].noLight = true;
-                        Main.dust[toxicDust].velocity = Vector2.Normalize(vector2) * 3f;
-                    }
-
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
+
+                    CalamityUtils.AddScreenshakeAt(npc.Center, 14);
+                    SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath.WithPitchOffset(-0.5f), npc.Center);
+                    SoundEngine.PlaySound(OldDuke.OldDuke.DashSoundP3, npc.Center);
+                }
+
+                if (npc.ai[2] >= 75)
+                {
+                    float sd = 1f;
+                    if (player.Center.X > npc.Center.X) sd = -1f;
+
+                    (npc.ModNPC as OldDuke.OldDuke).shake = 2f;
+                    npc.rotation = MathHelper.Lerp(MathHelper.WrapAngle(npc.rotation), MathHelper.ToRadians(sd == 1f ? 75f : -75f), 0.2f);
+
+                    if (npc.ai[2] % 5 == 1)
+                    {
+                        Vector2 mouthCenter = npc.Center + new Vector2(-80 * sd, 0).RotatedBy(npc.rotation);
+
+                        float factor = (npc.ai[2] - 75f) / 50f;
+
+                        float a = MathHelper.Lerp(1f, 0f, factor);
+
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(mouthCenter, Vector2.Zero, new Color(55, 55, 55).MultiplyRGBA(new Color(a, a, a, a)), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.08f + (0.15f * factor), 10));
+                    }
                 }
 
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= 75)
+                if (npc.ai[2] >= 125)
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
@@ -537,6 +561,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             Vector2 distanceVector = player.Center + player.velocity * 20f - npc.Center;
                             npc.velocity = Vector2.Normalize(distanceVector) * chargeVelocity;
                             npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X);
+
+                            DoChargeBurst(npc, 0);
 
                             // Direction
                             if (dukeLookAt != 0)
@@ -625,17 +651,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 }
 
                 // Spawn dust
-                int chargeDustAmt = 7;
-                for (int j = 0; j < chargeDustAmt; j++)
-                {
-                    Vector2 arg_E1C_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((j - (chargeDustAmt / 2 - 1)) * pie / chargeDustAmt) + npc.Center;
-                    Vector2 vector4 = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                    int chargeDust = Dust.NewDust(arg_E1C_0 + vector4, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, vector4.X * 2f, vector4.Y * 2f, 100, default, 1.4f);
-                    Main.dust[chargeDust].noGravity = true;
-                    Main.dust[chargeDust].noLight = true;
-                    Main.dust[chargeDust].velocity /= 4f;
-                    Main.dust[chargeDust].velocity -= npc.velocity;
-                }
+                Vector2 vel = npc.velocity;
+                vel.Normalize();
+                vel *= 55;
+
+                DoChargeVisual(npc, phase);
+
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(90)), vel / 7, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + vel + vel.RotatedBy(MathHelper.ToRadians(-90)), vel / 7, false, 20, 0.75f, new Color(155, 155, 155, 55), true));
 
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= chargeTime)
@@ -910,6 +933,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                                 npc.spriteDirection = -npc.direction;
                             }
+
+                            DoChargeBurst(npc, 1);
                         }
 
                         // Set velocity for spin
@@ -1000,18 +1025,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.velocity *= 1.01f;
                 }
 
-                // Spawn dust
-                int phase2ChargeDustAmt = 7;
-                for (int k = 0; k < phase2ChargeDustAmt; k++)
-                {
-                    Vector2 arg_1A97_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((k - (phase2ChargeDustAmt / 2 - 1)) * pie / phase2ChargeDustAmt) + npc.Center;
-                    Vector2 vector9 = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                    int phase2ChargeDust = Dust.NewDust(arg_1A97_0 + vector9, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, vector9.X * 2f, vector9.Y * 2f, 100, default, 1.4f);
-                    Main.dust[phase2ChargeDust].noGravity = true;
-                    Main.dust[phase2ChargeDust].noLight = true;
-                    Main.dust[phase2ChargeDust].velocity /= 4f;
-                    Main.dust[phase2ChargeDust].velocity -= npc.velocity;
-                }
+                DoChargeVisual(npc, phase);
 
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= chargeTime)
@@ -1037,6 +1051,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
 
+                    SoundEngine.PlaySound(OldDuke.OldDuke.VortexSpawnSound, npc.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
                     int damage = npc.GetProjectileDamage(type);
                     Vector2 vortexSpawn = npc.Center + npc.velocity.RotatedBy(MathHelper.PiOver2 * -npc.direction) * spinTime / MathHelper.TwoPi;
@@ -1313,6 +1328,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                                 npc.spriteDirection = -npc.direction;
                             }
+
+                            DoChargeBurst(npc, 2);
                         }
 
                         // Pause
@@ -1403,18 +1420,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.velocity *= 1.01f;
                 }
 
-                // Spawn dust
-                int phase3ChargeDustAmt = 7;
-                for (int m = 0; m < phase3ChargeDustAmt; m++)
-                {
-                    Vector2 arg_2444_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((m - (phase3ChargeDustAmt / 2 - 1)) * pie / phase3ChargeDustAmt) + npc.Center;
-                    Vector2 vector11 = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                    int phase3ChargeDust = Dust.NewDust(arg_2444_0 + vector11, 0, 0, (int)CalamityDusts.SulphurousSeaAcid, vector11.X * 2f, vector11.Y * 2f, 100, default, 1.4f);
-                    Main.dust[phase3ChargeDust].noGravity = true;
-                    Main.dust[phase3ChargeDust].noLight = true;
-                    Main.dust[phase3ChargeDust].velocity /= 4f;
-                    Main.dust[phase3ChargeDust].velocity -= npc.velocity;
-                }
+                DoChargeVisual(npc, phase);
 
                 npc.ai[2] += 1f;
                 if (npc.ai[2] >= chargeTime)
@@ -1451,7 +1457,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (npc.ai[2] == teleportPauseTimer / 2)
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == teleportPauseTimer / 2)
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == teleportPauseTimer - 1f)
                 {
                     // Teleport location
                     if (npc.ai[1] == 0f)
@@ -1576,6 +1582,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     modNPC.RoarSoundSlot = SoundEngine.PlaySound(OldDuke.OldDuke.RoarSound, npc.Center);
 
+                    SoundEngine.PlaySound(OldDuke.OldDuke.VortexSpawnSound, npc.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
                     int damage = npc.GetProjectileDamage(type);
                     Vector2 vortexSpawn = npc.Center + npc.velocity.RotatedBy(MathHelper.PiOver2 * -npc.direction) * spinTime / MathHelper.TwoPi;
@@ -1652,6 +1659,48 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             {
                 roarSound.Position = npc.Center;
             }
+        }
+
+        static Color FireGreen = new Color(155, 255, 55);
+
+        static void DoChargeBurst(NPC npc, int phase)
+        {
+            SoundEngine.PlaySound(phase > 1 ? OldDuke.OldDuke.DashSoundP3 : OldDuke.OldDuke.DashSound, npc.Center);
+
+            if (phase > 1)
+            {
+                for (int i = 0; i < 30; i++)
+                {
+                    float fl = Main.rand.NextFloat(-60, 60);
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(npc.Center + (Vector2.Zero.DirectionTo(npc.velocity) * 20) + new Vector2(0, fl).RotatedBy(Vector2.Zero.AngleTo(npc.velocity)), (-npc.velocity * Main.rand.NextFloat(2f)).RotatedBy(MathHelper.ToRadians(fl)), false, 25, Main.rand.NextFloat(0.3f, 1.2f), FireGreen));
+                }
+
+                CalamityUtils.AddScreenshakeAt(npc.Center, 10, 3000);
+
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, npc.Center);
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, npc.Center);
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 3, FireGreen, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.05f, 0.2f, 20));
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, -npc.velocity / 2, FireGreen, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1.2f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.1f, 0.4f, 20));
+            }
+        }
+        static void DoChargeVisual(NPC npc, int phase)
+        {
+            float progress = npc.ai[2]; 
+            
+            int chargeTime = 36;
+
+            Color col = Color.Lerp(phase > 0 ? FireGreen : new Color(100, 100, 100, 55), new Color(55, 55, 55, 55), progress / chargeTime);
+
+            if (phase > 1)
+            {
+                if (Math.Floor(VisualTimerSystem.GlobalVisualTimer % 6f) < 1f)
+                    GeneralParticleHandler.SpawnParticle(new CustomPulse(npc.Center, npc.velocity / 3, col, "CalamityMod/Particles/DustyCircleHardEdge", new Vector2(0.4f, 1f), Vector2.Zero.AngleTo(npc.velocity) + (Main.rand.NextBool() ? 0 : -MathHelper.Pi), 0.04f, 0.1f, 20));
+
+                (npc.ModNPC as OldDuke.OldDuke).NuclearOverlayVisual = 1f;
+            }
+
+            if (Main.rand.NextBool())
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center - (npc.velocity * 2), npc.velocity / 2, "CalamityMod/Particles/ForwardSmear", false, 10, Main.rand.NextFloat(0.3f, 0.5f), col, new Vector2(1f, Main.rand.NextFloat(1.45f, 1.6f)), fadeIn: true, extraRotation: MathHelper.ToRadians(180f)));
         }
     }
 }
