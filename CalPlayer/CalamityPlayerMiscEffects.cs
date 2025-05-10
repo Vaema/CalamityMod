@@ -225,6 +225,42 @@ namespace CalamityMod.CalPlayer
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
 
+            if ((XykVisualsBlue || XykVisualsOrange))
+            {
+                bool Orange = XykVisualsOrange;
+                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
+
+                float rate = Main.GlobalTimeWrappedHourly * 12;
+                List<Color> eColors = new List<Color>()
+                {
+                    Orange ? new Color(248, 117, 52) : Color.DodgerBlue,
+                    Orange ? Color.Gold : Color.Cyan,
+                    Orange ? Color.Orange : Color.RoyalBlue
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                bool rageOrAdren = (Player.Calamity().rageModeActive || Player.Calamity().adrenalineModeActive);
+                bool rageAndAdren = (Player.Calamity().rageModeActive && Player.Calamity().adrenalineModeActive);
+                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson : effectColor);
+                XykFXColor = Color.Lerp(XykFXColor, attemptColor, rageOrAdren ? 0.05f : 0.25f);
+
+
+                int maxWingPieces = 7;
+                int numOfActiveWings = 0;
+                foreach (Projectile p in Main.ActiveProjectiles)
+                    if (p.type == ModContent.ProjectileType<XykWings>() && p.owner == Player.whoAmI && p.ai[1] == 0)
+                        numOfActiveWings++;
+                bool spawnWings = numOfActiveWings < maxWingPieces && !Player.dead && Player.wingsLogic > 0 && !(Player.wingTime == Player.wingTimeMax && Player.velocity.Y == 0) && Player.wingTime > 0;
+                if (spawnWings)
+                {
+                    int wingCount = numOfActiveWings;
+                    Projectile wings = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykWings>(), 0, 0f, Player.whoAmI, wingCount);
+                }
+            }
+
             // First Frame dash effects
             bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
             int dir = MathF.Sign(Player.velocity.X);
@@ -363,20 +399,6 @@ namespace CalamityMod.CalPlayer
             if (XykVisualsBlue || XykVisualsOrange)
             {
                 bool Orange = XykVisualsOrange;
-                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
-
-                float rate = Main.GlobalTimeWrappedHourly * 22;
-                List<Color> eColors = new List<Color>()
-                {
-                    Orange ? Color.OrangeRed : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
-                };
-
-                int colorIndex = (int)(rate / 2 % eColors.Count);
-                Color currentColor = eColors[colorIndex];
-                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
                 if (dashStart)
                 {
@@ -384,18 +406,18 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(dash with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (Orange ? 0 : 0.2f) }, Player.Center);
                     if (Orange)
                     {
-                        Particle spark1 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0.45f, 0.25f, 47);
+                        Particle spark1 = new CustomPulse(Player.Center, Vector2.Zero, XykFXColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0.45f, 0.25f, 47);
                         GeneralParticleHandler.SpawnParticle(spark1);
 
-                        Particle spark2 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0, 0.8f, 17);
+                        Particle spark2 = new CustomPulse(Player.Center, Vector2.Zero, XykFXColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0, 0.8f, 17);
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                     else
                     {
-                        Particle spark1 = new CustomPulse(Player.Center, Player.velocity * 0.3f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Player.velocity.ToRotation(), 0, 1f, 24);
+                        Particle spark1 = new CustomPulse(Player.Center, Player.velocity * 0.3f, XykFXColor, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Player.velocity.ToRotation(), 0, 1f, 24);
                         GeneralParticleHandler.SpawnParticle(spark1);
 
-                        Particle spark2 = new CustomPulse(Player.Center, Player.velocity * 0.5f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Player.velocity.ToRotation(), 0, 0.75f, 17);
+                        Particle spark2 = new CustomPulse(Player.Center, Player.velocity * 0.5f, XykFXColor, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Player.velocity.ToRotation(), 0, 0.75f, 17);
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                 }
@@ -407,33 +429,35 @@ namespace CalamityMod.CalPlayer
                     if (!Orange)
                     {
                         float sine = (float)Math.Sin(Player.miscCounter * 0.875f / MathHelper.Pi);
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 18f * i;
 
-                        Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 17f;
-
-                        Particle spark1 = new GlowSparkParticle(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(0.8f, 0.3f), true, false, 0.4f);
-                        GeneralParticleHandler.SpawnParticle(spark1);
-                        Particle spark2 = new GlowSparkParticle(Player.Center - offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(1, 0.3f), true, false, 0.4f);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                            Particle spark1 = new CustomSpark(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, "CalamityMod/Particles/BloomCircle", false, 15, 0.3f * sparkscale1, XykFXColor * 0.85f, new Vector2(0.9f, 1.4f), true, true, 0, shrinkSpeed: 0.2f, glowOpacity: 0.85f);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+                        }
                     }
                     else
                     {
                         float sparkscale2 = MathF.Min(Player.velocity.X * dir * 0.07f, 1.1f);
-                        Vector2 SparkVelocity2 = Player.velocity.RotatedBy(dir * 2.5f, default) * 0.1f - Player.velocity / 2f;
-                        Particle spark = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(2f * dir) * 1.5f, SparkVelocity2, false, 10, sparkscale2, effectColor);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        Vector2 SparkVelocity3 = Player.velocity.RotatedBy(dir * -2.5f, default) * 0.1f - Player.velocity / 2f;
-                        Particle spark2 = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(-2f * dir) * 1.5f, SparkVelocity3, false, 10, sparkscale2, effectColor);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * 17f * i;
+
+                            Particle spark1 = new CustomSpark(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, "CalamityMod/Particles/BloomCircle", false, 20, 0.4f * sparkscale1, XykFXColor * 0.95f, new Vector2(0.3f, 1.2f), true, true, 0, shrinkSpeed: 0.2f, glowOpacity: 0.95f);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+                        }
                     }
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 267, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.7f, 1.1f) * sparkscale1);
+                        bool altDust = Main.rand.NextBool(3);
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1,  altDust ? (Orange ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDustHollow>()) : ModContent.DustType<SquashDust>(), SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(1.5f, 1.9f) * sparkscale1);
                         dust.noGravity = true;
-                        dust.color = effectColor;
-
-                        Dust dust2 = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 10, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.9f, 1.4f) * sparkscale1);
-                        dust2.noGravity = true;
+                        dust.color = XykFXColor;
+                        dust.fadeIn = altDust ? 0 : 2;
+                        if (altDust)
+                            dust.scale *= 0.5f;
                     }
                 }
             }

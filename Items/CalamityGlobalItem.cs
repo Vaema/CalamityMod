@@ -224,10 +224,10 @@ namespace CalamityMod.Items
             stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
             stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
 
-            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 11.6 hover stats
+            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 12 hover stats
             stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
-            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 11.6f;
-            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 11.6f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 12f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 12f;
             #endregion
         }
 
