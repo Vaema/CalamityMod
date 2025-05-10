@@ -20,13 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public Player Owner => Main.player[Projectile.owner];
-        public Projectile VoidragonHoldout
-        {
-            get
-            {
-                return Main.projectile[(int)Projectile.ai[0]];
-            }
-        }
+        public Projectile VoidragonHoldout => Main.projectile[(int)Projectile.ai[0]];
         public ref float LaserLength => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
