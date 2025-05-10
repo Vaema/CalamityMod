@@ -117,7 +117,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.Calamity().ashesOnDeath = 10;
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
             int bonusDamage = 10000;
             if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
