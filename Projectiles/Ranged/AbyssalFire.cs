@@ -24,14 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             get
             {
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.identity != Projectile.ai[0] || p.owner != Projectile.owner)
-                        continue;
-
-                    return p;
-                }
-                return null;
+                return Main.projectile[(int)Projectile.ai[0]];
             }
         }
         public ref float LaserLength => ref Projectile.ai[1];
@@ -100,11 +93,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         private Color PrimitiveColorFunction(float completionRatio)
         {
-            Color vibrantColor = Color.Lerp(Color.Indigo, Color.BlueViolet, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
+            Color vibrantColor = Color.Lerp(Color.Indigo, Color.Purple, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.97f, 0.9f, completionRatio, true) *
                 Utils.GetLerpValue(0f, MathHelper.Clamp(15f / LaserLength, 0f, 0.5f), completionRatio, true) *
                 (float)Math.Pow(Utils.GetLerpValue(60f, 270f, LaserLength, true), 3D);
-            return Color.Lerp(vibrantColor, Color.Black, 0.5f) * opacity * 2f;
+            return Color.Lerp(vibrantColor, Color.Violet, 0.5f) * opacity * 2f;
         }
 
         public override bool PreDraw(ref Color lightColor)

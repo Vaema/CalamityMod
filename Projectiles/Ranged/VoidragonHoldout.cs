@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Ranged
                     //Spawn the laser. Change beamTimer to edit its lifetime
                     //I fucking hate this laser by the way
                     if (Main.myPlayer == Projectile.owner && beamTimer == 500)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, 0);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, Projectile.whoAmI);
                     beamTimer--;
                 }
                 else
