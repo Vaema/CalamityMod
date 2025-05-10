@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             float sine = (float)Math.Sin((time * 0.35f * (isFalling ? 3 : (isHovering || isUpBoosting) ? 3.2f : isFlying ? 2f : 1) + wingNum * ((isHovering || isUpBoosting) ? 3f : 2f)) / MathHelper.Pi);
 
-            if (Owner.dashDelay == -1 || isUpBoosting || isHovering || Owner.Calamity().adrenalineModeActive || Owner.Calamity().rageModeActive)
+            if (Owner.dashDelay == -1 || isUpBoosting || isHovering || Owner.Calamity().adrenalineModeActive || Owner.Calamity().rageModeActive || isFalling && Owner.velocity.Y > 16)
             {
                 dashfx = MathHelper.Lerp(dashfx, 1, 0.25f);
                 float bonusScale = 1;
