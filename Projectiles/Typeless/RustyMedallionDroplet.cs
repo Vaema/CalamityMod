@@ -4,11 +4,11 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Typeless
 {
-    public class AcidBarrelDrop : ModProjectile, ILocalizedModType
+    public class RustyMedallionDroplet : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/Environment/AcidDrop";
 
         public override void SetStaticDefaults()
@@ -25,10 +25,11 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = true;
             Projectile.ignoreWater = false;
             Projectile.timeLeft = 840;
+            Projectile.penetrate = 2;
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.DamageType = DamageClass.Generic;
         }
         public override void AI()
         {
@@ -40,17 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.velocity = -Projectile.velocity * 0.4f;
             }
 
-            if (Projectile.ai[0] < 3)
-            {
-                if (Projectile.timeLeft == 839)
-                    Projectile.velocity *= 0.5f;
-                Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
-                if (Projectile.velocity.Y <= 12f)
-                {
-                    Projectile.velocity.Y += 0.15f;
-                }
-                Projectile.tileCollide = Projectile.timeLeft <= 300;
-            }
+            Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
