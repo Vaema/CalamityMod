@@ -65,17 +65,21 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            NPC.damage = 20;
             NPC.width = 116;
             NPC.height = 34;
+            NPC.damage = 20;
             NPC.defense = 5;
             NPC.DR_NERD(0.05f);
             NPC.lifeMax = 200;
+            NPC.scale = 0.85f;
+
             NPC.noGravity = true;
+            NPC.noTileCollide = false;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.knockBackResist = 0.5f;
+
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<EutrophicRayBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -128,9 +132,8 @@ namespace CalamityMod.NPCs.SunkenSea
             else if (NPC.velocity.X < 0.25f)
                 NPC.spriteDirection = -1;
 
-            if (!NPC.wet)
+            if (!NPC.wet && CurrentBehavior != OutOfWaterBehavior)
             {
-                Main.NewText("h");
                 CurrentBehavior = OutOfWaterBehavior;
             } 
 
@@ -138,7 +141,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 hasBeenHit = true;
             }
-
             NPC.chaseable = hasBeenHit;
 
             NPC.rotation = NPC.velocity.X * 0.04f;
@@ -152,7 +154,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (newBehavior == OutOfWaterBehavior)
                 NPC.noGravity = false;
 
-            pathfinding.MinimumPointDistance = newBehavior == AttackBehavior ? 20f : 48f;
+            pathfinding.MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
         }
         private void IdleBehavior()
         {
@@ -172,7 +174,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // Check what specifically the hunted entity is. If there is none, go back to idling.
             AttackingEntity = AttackingEntity is NPC ? CurrentPrey : CurrentPlayer;
-            if (AttackingEntity is null)
+            if (AttackingEntity == null)
             {
                 CurrentBehavior = IdleBehavior;
                 return;
@@ -181,8 +183,9 @@ namespace CalamityMod.NPCs.SunkenSea
             // Set damage while attacking. Clear idle behavior pathfinding to prevent it continuously trying to return to that path when attacking.
             NPC.damage = NPC.defDamage;
             pathfinding.ClearResults();
+            NPC.noTileCollide = true;
 
-            float maxSpeedX = 8f;
+            float maxSpeedX = 8.2f;
             float maxSpeedY = 3.2f;
             float accelX = 0.25f;
             float accelY = 0.3f;
@@ -211,41 +214,41 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // Check what specifically the predator is. If there is none, go back to idling.
             AvoidedEntity = AvoidedEntity is NPC ? CurrentPredator : CurrentPlayer;
-            if (AvoidedEntity is null)
+            if (AvoidedEntity == null)
             {
                 CurrentBehavior = IdleBehavior;
                 return;
             }
 
+            // If you reach the attack threshold, start attacking.
+            if (shouldAttack && AvoidedEntity is Player)
+            {
+                CurrentBehavior = AttackBehavior;
+                AttackingEntity = AvoidedEntity;
+                AvoidedEntity = null;
+                return;
+            }
+
             // Don't deal damage while fleeing. Clear idle behavior pathfinding to prevent it continuously trying to return to that path at the edge of the flee radius.
             NPC.damage = 0;
-            pathfinding.ClearResults();
+            NPC.noTileCollide = true;
 
-            float maxSpeedX = 5f;
-            float maxSpeedY = 2.5f;
-            float accelX = 0.25f;
-            float accelY = 0.3f;
-            int directionX = (NPC.Center.X > AvoidedEntity.Center.X).ToDirectionInt();
-            int directionY = (NPC.Center.Y > AvoidedEntity.Center.Y).ToDirectionInt();
+            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(AvoidedEntity.Center) * 64f).ToTileCoordinates()].IsTileSolid())
+            {
+                NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * pathfinding.Acceleration;
+                pathfinding.ClearResults();
 
-            Vector2 fleeDirection = Utils.DirectionTo(NPC.Center, AvoidedEntity.Center);
-
-            NPC.velocity.X += Math.Min(Math.Abs(fleeDirection.X), accelX) * directionX;
-            if (NPC.velocity.X > maxSpeedX)
-                NPC.velocity.X = maxSpeedX;
-            if (NPC.velocity.X < -maxSpeedX)
-                NPC.velocity.X = -maxSpeedX;
-            NPC.velocity.Y += Math.Min(Math.Abs(fleeDirection.Y), accelY) * directionY;
-            if (NPC.velocity.Y > maxSpeedY)
-                NPC.velocity.Y = maxSpeedY;
-            if (NPC.velocity.Y < -maxSpeedY)
-                NPC.velocity.Y = -maxSpeedY;
-
-            NPC.rotation = NPC.velocity.Y * 0.05f;
-            if (NPC.rotation < -0.1f)
-                NPC.rotation = -0.1f;
-            if (NPC.rotation > 0.1f)
-                NPC.rotation = 0.1f;
+                // Cap the speed if MaxSpeed has been surpassed.
+                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+            }
+            else
+            {
+                float distanceFromAvoided = Vector2.Distance(NPC.Center, AvoidedEntity.Center);
+                Vector2 pathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
+                NPC.netUpdate = true;
+                pathfinding.DoPathfinding(new(NPC.Center, pathPoint, SunkenSeaTileValidity));
+            }
         }
         private void OutOfWaterBehavior()
         {
@@ -259,7 +262,7 @@ namespace CalamityMod.NPCs.SunkenSea
         #endregion
 
         #region Creature Detection and Hit Logic
-        protected override bool PlayerSearchFilter(Player p) => Vector2.DistanceSquared(NPC.Center, p.Center) < 262144f || shouldAttack;
+        protected override bool PlayerSearchFilter(Player p) => (Vector2.DistanceSquared(NPC.Center, p.Center) < 262144f && hasBeenHit) || shouldAttack;
         protected override bool NPCSearchFilter(NPC n) => Vector2.DistanceSquared(NPC.Center, n.Center) < 102400f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
         protected override void OnPreyDetection(NPC prey)
         {
@@ -274,7 +277,7 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override void OnPredatorDetection(NPC predator)
         {
             CurrentBehavior = FleeBehavior;
-            NPC.noTileCollide = true;
+            NPC.noTileCollide = false;
             AvoidedEntity = predator;
         }
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
@@ -293,7 +296,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 CurrentBehavior = FleeBehavior;
                 AvoidedEntity = player;
             }
-            NPC.noTileCollide = true;
+            NPC.noTileCollide = shouldAttack;
         }
         #endregion
 
@@ -311,7 +314,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 vector = NPC.Center - screenPos;
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightBlue);
             SpriteEffects sp = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Main.spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, 1f, sp, 0f);
+            Main.spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
         }
 
         public override bool? CanBeHitByProjectile(Projectile projectile)
