@@ -1300,7 +1300,7 @@ namespace CalamityMod.CalPlayer
                         Player.maxFallSpeed = 20f;
                 }
 
-                if (Player.controlDown && ironBoots)
+                if (Player.controlDown && !Player.controlJump && ironBoots)
                 {
                     Player.maxFallSpeed = 23f; // This is slightly faster than slimy saddle (so it can be viable)
                     if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
@@ -1757,7 +1757,7 @@ namespace CalamityMod.CalPlayer
 
             if (ironBoots)
             {
-                if (Player.controlDown)
+                if (Player.controlDown && !Player.controlJump)
                 {
                     if (Player.gravDir == 1 ? Player.velocity.Y > 0 : Player.velocity.Y < 0)
                         fallingBootVelCheckTimer++;

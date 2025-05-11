@@ -72,7 +72,11 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (p.type == ModContent.ProjectileType<SHPV>() && p.Colliding(p.Hitbox, Projectile.Hitbox))
                         {
-                            AIState = 2f;
+                            if (AIState != 2f)
+                            {
+                                AIState = 2f;
+                                Projectile.ExpandHitboxBy(70);
+                            }
                             ToSuckTowards = p;
                             break;
                         }
@@ -112,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
             // Appearance
             if (Timer % 1 == 0f)
             {
-                SquareParticle trail = new(Projectile.Center, Vector2.Zero, false, 25, 3f, SHPB.FindColorForSoul((int)Projectile.ai[0]), Pickup == 1f ? MathHelper.PiOver4 : 0f);
+                SquareParticle trail = new(Projectile.Center, Vector2.Zero, false, 20, 3f, SHPB.FindColorForSoul((int)Projectile.ai[0]), Pickup == 1f ? MathHelper.PiOver4 : 0f);
                 GeneralParticleHandler.SpawnParticle(trail);
             }
             SquareParticle mainSpot = new(Projectile.Center, Vector2.Zero, false, 2, 1.4f, Color.White, Pickup == 1f ? MathHelper.PiOver4 : 0f);

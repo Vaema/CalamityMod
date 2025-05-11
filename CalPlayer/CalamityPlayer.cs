@@ -2185,6 +2185,9 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
+            // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
+            if (!WarbanneroftheRighteous)
+                cooldowns.Remove(WarbanneroftheRighteousBuff.ID);
             WarbanneroftheRighteous = false;
             warbannerGlow = false;
             ilSpark = false;

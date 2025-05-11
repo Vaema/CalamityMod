@@ -33,16 +33,16 @@ namespace CalamityMod.Backgrounds
         {
             if (!Main.dedServ && Main.LocalPlayer.InModBiome<BiomeManagers.GleamingBurrowsBiome>())
             {
-                for (int i = 0; i < Main.screenWidth / 16; i++)
+                int drawLimitX = Main.screenWidth / 16;
+                int drawLimitY = Main.screenHeight / 16;
+                Point drawPoint = (Main.screenPosition / 16).ToPoint();
+                for (int i = 0; i < drawLimitX; i++)
                 {
-                    for (int j = 0; j < Main.screenWidth / 16; j++)
+                    for (int j = 0; j < drawLimitY; j++)
                     {
-                        Point pos = (Main.screenPosition / 16).ToPoint() + new Point(i, j);
-
+                        Point pos = drawPoint + new Point(i, j);
                         if (Main.tile[pos.X, pos.Y].Slope != SlopeType.Solid)
-                        {
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
-                        }
                     }
                 }
             }
@@ -53,7 +53,6 @@ namespace CalamityMod.Backgrounds
             if (Main.gameMenu || Main.screenPosition.Y + Main.screenHeight < ((int)Main.worldSurface) * 16f)
             {
                 orig(self);
-
                 return;
             }
 
@@ -73,32 +72,29 @@ namespace CalamityMod.Backgrounds
                 Transparency += TransitionSpeed;
 
                 if (Transparency > 1f)
-                {
                     Transparency = 1f;
-                }
             }
             else
             {
-                //make transparency immediately go down so it doesnt look weird, since vanilla underground backgrounds dont have the fade-in effect this background has
+                // Make transparency immediately go down so it doesnt look weird, since vanilla underground backgrounds dont have the fade-in effect this background has.
                 Transparency -= 1f;
 
                 if (Transparency < 0f)
-                {
                     Transparency = 0f;
-                }
             }
 
-            //dont bother running any of the background drawing if the transparency is zero (meaning the background isnt actually active)
-            //also do not run any of the background drawing if you have the vanilla background config option turned off
+            // Don't bother running any of the background drawing if the transparency is zero (meaning the background isnt actually active).
+            // Also do not run any of the background drawing if you have the vanilla background config option turned off.
             if (Transparency > 0f && Main.BackgroundEnabled)
             {
                 Vector2 vector = Main.screenPosition + new Vector2((Main.screenWidth >> 1), (Main.screenHeight >> 1));
                 float num = (Main.GameViewMatrix.Zoom.Y - 1f) * 0.5f * 200f;
                 float Scale = 1.5f;
+                float playerDrawPosition = ((Main.LocalPlayer.Center.Y / 16f) - 90) * 16f;
 
                 for (int Layers = 4; Layers >= 0; Layers--)
                 {
-                    //get each background texture
+                    // Get each background texture.
                     Texture2D BGTexture = ModContent.Request<Texture2D>("CalamityMod/Backgrounds/SunkenSeaBurrowsBG" + Layers).Value;
 
                     Vector2 vector2 = new Vector2(BGTexture.Width, BGTexture.Height) * 0.5f;
@@ -148,7 +144,7 @@ namespace CalamityMod.Backgrounds
                     {
                         for (int j = LoopX - 2; j < LoopX + 4 + (int)(Main.screenWidth / LoopWidth); j++)
                         {
-                            Vector2 drawPosition = (new Vector2(j * Scale * (rectangle.Width / vector3.X), ((Main.LocalPlayer.Center.Y / 16f) - 90) * 16f) + vector2 - vector) * vector3 + vector - Main.screenPosition - vector2 + zero;
+                            Vector2 drawPosition = (new Vector2(j * Scale * (rectangle.Width / vector3.X), playerDrawPosition) + vector2 - vector) * vector3 + vector - Main.screenPosition - vector2 + zero;
 
                             var frame = rectangle;
                             var color = Color.White * Transparency;
