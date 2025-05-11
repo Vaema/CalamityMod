@@ -210,6 +210,13 @@ namespace CalamityMod.Effects
         internal static Effect FlipScreenShader;
         #endregion
 
+        //
+        // All below shaders created by fryzahh
+        //
+        #region fryzahh's Shaders
+        internal static Effect AbyssalFireShader;
+        #endregion
+
         public override void PostSetupContent()
         {
             AssetRepository calAss = CalamityMod.Instance.Assets;
@@ -416,6 +423,11 @@ namespace CalamityMod.Effects
             #region Loading Doze's Shaders
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
+            #endregion
+
+            #region Loading fryzahh's Shaders
+            AbyssalFireShader = LoadShader("AbyssalFireShader");
+            RegisterMiscShader(AbyssalFireShader, "LaserPass", "AbyssalFire");
             #endregion
         }
 
