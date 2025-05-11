@@ -4,15 +4,18 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Animations;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -21,10 +24,8 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class GhostBell : ModNPC
+    public class GhostBell : SunkenSeaNPC
     {
-        public bool hasBeenHit = false;
-
         public static Asset<Texture2D> PinkTexture;
         public static Asset<Texture2D> GreenTexture;
 
@@ -34,6 +35,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float Variant => ref NPC.ai[1];
 
+        public ref float Timer => ref NPC.ai[3];
+
+
+        public enum PhaseType
+        {
+            Idle = 0,
+            Angry = 1,
+            Electrifying = 2
+        }
+
         public enum JellyColor
         {
             Blue = 0,
@@ -41,12 +52,21 @@ namespace CalamityMod.NPCs.SunkenSea
             Pink = 2
         }
 
-        /// <summary>
-        /// The squish of this NPC while drawing.
-        /// </summary>
-        public Vector2 ScaleSquish;
+        public List<List<VerletSimulatedSegment>> tentacles = [];
 
-        public List<List<VerletSimulatedSegment>> tentacles = new List<List<VerletSimulatedSegment>>();
+        protected override List<int> PreyIDs =>
+        [
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<SeaMinnow>(),
+            ModContent.NPCType<SeaMinnowGold>(),
+            ModContent.NPCType<AlphaSeaMinnow>(),
+            ModContent.NPCType<AlphaSeaMinnowGold>(),
+            ModContent.NPCType<PrismaticGuppy>(),
+        ];
+
+        protected override List<int> PredatorIDs => [];
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows | SunkenSeaBiomeFlags.PolypForest;
 
         public override void Load()
         {
@@ -64,14 +84,14 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noGravity = true;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = Main.hardMode ? 75 : 25;
+            NPC.damage = 25;
             NPC.width = 74;
             NPC.height = 58;
-            NPC.defense = Main.hardMode ? 10 : 0;
-            NPC.lifeMax = Main.hardMode ? 400 : 120;
+            NPC.defense = 0;
+            NPC.lifeMax = 120;
             NPC.knockBackResist = 0f;
             NPC.alpha = 100;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -98,44 +118,153 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(NPC.chaseable);
-            writer.Write(hasBeenHit);
-            writer.WriteVector2(ScaleSquish);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.chaseable = reader.ReadBoolean();
-            hasBeenHit = reader.ReadBoolean();
-            ScaleSquish = reader.ReadVector2();
         }
 
         public override void OnSpawn(IEntitySource source)
         {
             Variant = Main.rand.Next(0, 3);
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.1f,
+                MaxSpeed = 1f,
+            };
+            NPC.TargetClosest();
+            if (Phase == (int)PhaseType.Idle)
+            {
+                int jellyAmt = Main.rand.Next(4, 8);
+                if (Main.player[NPC.target].Calamity().ZonePolypForest)
+                {
+                    for (int i = 0; i < jellyAmt; i++)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)(NPC.Center.X + Main.rand.NextFloat(1f, 2f)), (int)(NPC.Center.Y + Main.rand.NextFloat(1f, 2f)), ModContent.NPCType<BabyGhostBell>(), ai0: -1);
+                        }
+                    }
+                    jellyAmt = Main.rand.Next(2, 4);
+                }
+                for (int i = 0; i < jellyAmt; i++)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        NPC.NewNPC(NPC.GetSource_FromThis(), (int)(NPC.Center.X + Main.rand.NextFloat(1f, 2f)), (int)(NPC.Center.Y + Main.rand.NextFloat(1f, 2f)), Type, ai0: -1, ai2: Main.rand.Next(0, 60));
+                    }
+                }
+            }
         }
 
         public override void AI()
         {
             CreateTentacles();
-
             NPC.ai[2]++;
-            Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 1.5f / 255f, (255 - NPC.alpha) * 1.5f / 255f);
-            if (NPC.justHit)
+
+            // Lite
+            Color lightColor = Color.LightBlue;
+            switch (Variant)
             {
-                hasBeenHit = true;
+                case (int)JellyColor.Pink:
+                    lightColor = Color.Pink;
+                    break;
+                case (int)JellyColor.Green:
+                    lightColor = Color.LightGreen;
+                    break;
             }
-            NPC.chaseable = hasBeenHit;
-            if (NPC.wet)
-            {
-                NPC.noGravity = true;
-            }
-            else
-            {
-                NPC.noGravity = false;
-            }
+            Lighting.AddLight(NPC.Center, (lightColor.R - NPC.alpha) * 1f / 255f, (lightColor.G - NPC.alpha) * 1f / 255f, (lightColor.B - NPC.alpha) * 1f / 255f);
+
+            NPC.chaseable = Phase > 0;
+            NPC.noGravity = NPC.wet;
 
             NPC.netUpdate = true;
             NPC.netSpam = 0;
+
+            Entity target = CurrentPrey;
+            if (NPC.target > -1 && (int)Phase >= (int)PhaseType.Angry)
+            {
+                target = Main.player[NPC.target];
+            }
+
+            // Ghost Bells are usually in groups, so make them not overlap
+            float SAImovement = 0.05f;
+            for (int k = 0; k < Main.maxNPCs; k++)
+            {
+                NPC otherFish = Main.npc[k];
+                // Short circuits to make the loop as fast as possible
+                if (!otherFish.active || k == NPC.whoAmI || otherFish.type != ModContent.NPCType<GhostBell>())
+                    continue;
+
+                float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
+                if (taxicabDist < NPC.width * 2f)
+                {
+                    if (NPC.position.X < otherFish.position.X)
+                        NPC.velocity.X -= SAImovement;
+                    else
+                        NPC.velocity.X += SAImovement;
+
+                    if (NPC.position.Y < otherFish.position.Y)
+                        NPC.velocity.Y -= SAImovement;
+                    else
+                        NPC.velocity.Y += SAImovement;
+                }
+            }
+
+            if (Phase <= (int)PhaseType.Idle)
+            {
+                NPC.velocity *= 0.8f;
+            }
+
+            if (target == null || !target.active)
+            {
+                Timer = 0;
+                Phase = (int)PhaseType.Idle;
+                NPC.netUpdate = true;
+                return;
+            }
+
+            // Create an electrifying aura
+            if (Phase == (int)PhaseType.Electrifying)
+            {
+                // Slow down
+                NPC.velocity *= 0.9f;
+                pathfinding.ClearResults();
+                Timer++;
+                // Create the aura
+                if (NPC.ai[3] == 60)
+                {
+                    SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, NPC.Center); 
+                    CustomPulse spark = new CustomPulse(NPC.Center, Vector2.Zero, Color.Cyan, "CalamityMod/Particles/PlasmaExplosion", new Vector2(1, 1), Main.rand.NextFloat(-2f, 2f), 0.05f, Main.rand.NextFloat(0.28f, 0.35f), 14);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                // Reset
+                if (Timer >= 180)
+                {
+                    Timer = -120;
+                    Phase = (int)PhaseType.Angry;
+                    NPC.netUpdate = true;
+                }
+            }
+            // Move towards target
+            else if (target != null)
+            {
+                pathfinding.DoPathfinding(new PathfindingParameters(NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
+                if (Phase == (int)PhaseType.Angry)
+                {
+                    if (target is Player && NPC.Distance(target.Center) < 300)
+                    {
+                        Timer++;
+                    }
+                    if (Timer > 120)
+                    {
+                        Timer = 0;
+                        Phase = (int)PhaseType.Electrifying;
+                        NPC.netUpdate = true;
+                    }
+                }
+            }
         }
 
         public void CreateTentacles()
@@ -151,7 +280,43 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 segments[0].locked = true;
                 tentacles.Add(segments);
-            }        }
+            }
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            GetPissed(player.whoAmI);
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            if (projectile.friendly && projectile.owner > -1)
+            {
+                GetPissed(projectile.owner);
+            }
+        }
+
+        public void GetPissed(int player)
+        {
+            if (Phase <= (int)PhaseType.Idle)
+            {
+                Phase = (int)PhaseType.Angry;
+                NPC.netUpdate = true;
+            }
+            NPC.target = player;
+
+            foreach (NPC n in Main.ActiveNPCs)
+            {
+                if (n.type != Type)
+                    continue;
+                if (n.Distance(NPC.Center) > 1000)
+                    continue;
+                if (n.ModNPC<GhostBell>().Phase <= (int)PhaseType.Idle)
+                    n.ModNPC<GhostBell>().GetPissed(player);
+            }
+        }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -173,14 +338,19 @@ namespace CalamityMod.NPCs.SunkenSea
             };
 
             Vector2 drawOffset = Vector2.Zero; // An added offset that gives the jellyfish a visual bobbing movement
+
             int fullTime = 180; // How long the bob animation lasts
             int localTimer = (int)(NPC.ai[2] % fullTime);
             float goUp = (int)(fullTime * 0.4f); // When should the jellyfish jet upwards
             int height = 30; // The vertical range the jellyfish moves
+
+            int endElectricity = 60;
+
             Vector2 squash = new Vector2(1.1f, 0.9f);
             Vector2 stretch = new Vector2(0.8f, 1.2f);
             Vector2 finalScale;
 
+            // Move up and down while squashing and stretching
             if (localTimer < goUp)
             {
                 drawOffset.Y += MathHelper.Lerp(height, 0, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, goUp - 1, localTimer, true), 1));
@@ -190,6 +360,15 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 drawOffset.Y += MathHelper.Lerp(0, height, CalamityUtils.SineInEasing(Utils.GetLerpValue(goUp, fullTime - 1, localTimer, true), 1));
                 finalScale = Vector2.Lerp(squash, stretch, CalamityUtils.SineInEasing(Utils.GetLerpValue(goUp, fullTime - 1, localTimer, true), 1));
+            }
+            // Use different squash n stretch when electrifying
+            if (Phase == (int)PhaseType.Electrifying)
+            {
+                squash = new Vector2(1.4f, 0.8f);
+                if (Timer < 100)
+                    finalScale = Vector2.Lerp(Vector2.One, squash, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, 60, Timer, true), 1));
+                else
+                    finalScale = Vector2.Lerp(squash, Vector2.One, CalamityUtils.SineInEasing(Utils.GetLerpValue(endElectricity, 120, Timer, true), 1));
             }
             // Keeps the hitbox centered
             drawOffset.Y -= height / 2;
@@ -203,6 +382,17 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 segments[0].oldPosition = segments[0].position;
                 segments[0].position = NPC.Center + new Vector2(MathHelper.Lerp(-20, 20, (i + 1) / (float)tentacles.Count), 10) + drawOffset;
+
+                // While electrifying, flail tentacles around frantically
+                if (Phase == (int)PhaseType.Electrifying && Timer % 5 == 0 && Timer < endElectricity)
+                {
+                    for (int j = 0; j < segments.Count; j++)
+                    {
+                        int randomness = (int)MathHelper.Lerp(6, 18, (1 + j) / segments.Count);
+                        segments[j].oldPosition = segments[j].position;
+                        segments[j].position += Main.rand.NextVector2Circular(randomness, randomness);
+                    }
+                }
 
                 tentacles[i] = VerletSimulatedSegment.SimpleSimulation(segments, 5, loops: 1, gravity: 0.6f);
             }
@@ -225,11 +415,26 @@ namespace CalamityMod.NPCs.SunkenSea
                     float rot = 0f;
                     if (i > 0)
                         rot = seg.position.DirectionTo(segments[i - 1].position).ToRotation();
+                    // Last few segments are a different color
                     Color finalColor = TentacleColor;
                     if (i > segments.Count - 4)
                     {
                         finalColor = Color.Lerp(finalColor, col, Utils.GetLerpValue(segments.Count - 4, segments.Count, i, true));
                     }
+                    // Color eases in and out while angry
+                    if (Phase == (int)PhaseType.Angry)
+                    {
+                        float mod = NPC.ai[2] % 30;
+                        if (mod <= 10)
+                            finalColor = Color.Lerp(finalColor, finalColor * 2, Utils.GetLerpValue(0, 10, mod, true));
+                        else if (mod >= 20)
+                            finalColor = Color.Lerp(finalColor * 2, finalColor, Utils.GetLerpValue(20, 30, mod, true));
+                        else
+                            finalColor *= 2;
+                    }
+                    // Color is at full brightness while electrifying
+                    else if (Phase == (int)PhaseType.Electrifying)
+                        finalColor *= 2;
                     SpriteEffects dir = NPC.Center.X > NPC.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
                     spriteBatch.Draw(TextureAssets.MagicPixel.Value, seg.position - screenPos, new Rectangle(0, 0, 4, 8), finalColor, rot + MathHelper.PiOver2, new Vector2(4, 4), new Vector2(1, dist / 8), dir, 0);
                 }
@@ -244,18 +449,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             Main.EntitySpriteDraw(tex, NPC.Center - screenPos + drawOffset, null, Color.White, NPC.rotation, tex.Size() / 2, finalScale * NPC.scale, 0);
             return false;
-        }
-
-        // Can only hit the target if they're touching the tentacles
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
-        {
-            Vector2 npcCenter = NPC.Center;
-            Rectangle tentacleHitbox = new Rectangle((int)(npcCenter.X - (NPC.width / 4f)), (int)npcCenter.Y, NPC.width / 2, NPC.height / 2);
-
-            Rectangle targetHitbox = target.Hitbox;
-            bool insideTentacleHitbox = targetHitbox.Intersects(tentacleHitbox);
-
-            return insideTentacleHitbox;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
