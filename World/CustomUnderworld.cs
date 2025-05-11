@@ -1098,10 +1098,11 @@ namespace CalamityMod.World
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     }
 
-                    PlaceSchematic<Action<Chest>>(SanctumofOblivionType2Key, sanctumPlacementPoint, anchorType, ref place);
+                    string secondSanctum = WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key;
+                    PlaceSchematic<Action<Chest>>(secondSanctum, sanctumPlacementPoint, anchorType, ref place);
 
                     // Protect the structure
-                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[SanctumofOblivionType2Key], sanctumPlacementPoint, anchorType);
+                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondSanctum], sanctumPlacementPoint, anchorType);
                     CalamityUtils.AddProtectedStructure(sanctumProtectionArea2, 10);
                 }
                 else
@@ -1146,7 +1147,7 @@ namespace CalamityMod.World
                     //
                     // Place sanctums
                     //
-                    // Sanctums 1 and 3 are the large ones
+                    // Sanctums 1 and 2 are the large ones
                     int sanctumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
                     int sanctumGenY = ashIslandDepthLimit + sanctumOffset;
 
@@ -1166,10 +1167,11 @@ namespace CalamityMod.World
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     }
 
-                    PlaceSchematic<Action<Chest>>(SanctumofOblivionType2Key, sanctumPlacementPoint, anchorType, ref place);
+                    string secondSanctum = WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key;
+                    PlaceSchematic<Action<Chest>>(secondSanctum, sanctumPlacementPoint, anchorType, ref place);
 
                     // Protect the structure
-                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[SanctumofOblivionType2Key], sanctumPlacementPoint, anchorType);
+                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondSanctum], sanctumPlacementPoint, anchorType);
                     CalamityUtils.AddProtectedStructure(sanctumProtectionArea2, 10);
                 }
 
@@ -1177,6 +1179,7 @@ namespace CalamityMod.World
                 List<int> caches = new List<int>();
                 int numCaches = largeWorld ? 8 : 4; // THIS NUMBER MUST BE EVEN!!!
                 int cacheTypes = 6;
+                int totalCachePositions = numCaches / 2;
                 do
                 {
                     // Chose a random cache to add to the list
@@ -1187,6 +1190,9 @@ namespace CalamityMod.World
 
                     // Avoid an infinite loop by picking a random duplicate cache if the max is reached
                     bool pickRandomDuplicateCache = caches.Count >= cacheTypes;
+                    if (pickRandomDuplicateCache)
+                        pickRandomDuplicateCache = caches[caches.Count - totalCachePositions] != chosenCache;
+
                     if (!alreadyContainsThisCacheType || pickRandomDuplicateCache)
                         caches.Add(chosenCache);
                 }
@@ -1203,7 +1209,6 @@ namespace CalamityMod.World
                 int maxRandomX = -20;
                 int minRandomY = 0;
                 int maxRandomY = 10;
-                int totalCachePositions = numCaches / 2;
                 for (int cacheIndex = 0; cacheIndex < totalCachePositions; cacheIndex++)
                 {
                     randomAdjustmentX += WorldGen.genRand.Next(minRandomX, maxRandomX + 1);
