@@ -1,13 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Animations;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -20,15 +25,38 @@ namespace CalamityMod.NPCs.SunkenSea
     {
         public bool hasBeenHit = false;
 
-        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> PinkTexture;
+        public static Asset<Texture2D> GreenTexture;
+
+        public Color TentacleColor = new Color(58, 49, 89);
+
+        public ref float Phase => ref NPC.ai[0];
+
+        public ref float Variant => ref NPC.ai[1];
+
+        public enum JellyColor
+        {
+            Blue = 0,
+            Green = 1,
+            Pink = 2
+        }
+
+        /// <summary>
+        /// The squish of this NPC while drawing.
+        /// </summary>
+        public Vector2 ScaleSquish;
+
+        public List<List<VerletSimulatedSegment>> tentacles = new List<List<VerletSimulatedSegment>>();
+
+        public override void Load()
+        {
+            GreenTexture = ModContent.Request<Texture2D>(Texture + "Green");
+            PinkTexture = ModContent.Request<Texture2D>(Texture + "Pink");
+        }
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 6;
-            if (!Main.dedServ)
-            {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-            }
+            Main.npcFrameCount[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -37,8 +65,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = Main.hardMode ? 75 : 25;
-            NPC.width = 54;
-            NPC.height = 76;
+            NPC.width = 74;
+            NPC.height = 58;
             NPC.defense = Main.hardMode ? 10 : 0;
             NPC.lifeMax = Main.hardMode ? 400 : 120;
             NPC.knockBackResist = 0f;
@@ -71,68 +99,59 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             writer.Write(NPC.chaseable);
             writer.Write(hasBeenHit);
+            writer.WriteVector2(ScaleSquish);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             NPC.chaseable = reader.ReadBoolean();
             hasBeenHit = reader.ReadBoolean();
+            ScaleSquish = reader.ReadVector2();
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            Variant = Main.rand.Next(0, 3);
         }
 
         public override void AI()
         {
+            CreateTentacles();
+
+            NPC.ai[2]++;
             Lighting.AddLight(NPC.Center, 0f, (255 - NPC.alpha) * 1.5f / 255f, (255 - NPC.alpha) * 1.5f / 255f);
             if (NPC.justHit)
             {
                 hasBeenHit = true;
             }
             NPC.chaseable = hasBeenHit;
-            if (NPC.localAI[0] == 0f)
-            {
-                NPC.localAI[0] = 1f;
-                NPC.velocity.Y = -6f;
-                NPC.netUpdate = true;
-            }
             if (NPC.wet)
             {
                 NPC.noGravity = true;
-                if (NPC.localAI[2] > 0f)
-                {
-                    NPC.localAI[2] -= 1f;
-                }
-                if (NPC.localAI[2] <= 0f)
-                {
-                    if (NPC.velocity.Y == 0f)
-                    {
-                        NPC.localAI[1] += 1f;
-                    }
-                    else
-                    {
-                        NPC.localAI[1] = 0f;
-                    }
-                    NPC.velocity.Y += 0.1f;
-                    if (NPC.velocity.Y > 3f || NPC.localAI[1] >= 6f)
-                    {
-                        NPC.velocity.Y = -3f;
-                    }
-                }
             }
             else
             {
                 NPC.noGravity = false;
-                NPC.velocity.Y = 2f;
-                NPC.localAI[2] = 75f;
-                NPC.netUpdate = true;
             }
+
+            NPC.netUpdate = true;
+            NPC.netSpam = 0;
         }
 
-        public override void FindFrame(int frameHeight)
+        public void CreateTentacles()
         {
-            NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
-        }
+            if (tentacles == null || tentacles.Count < 6)
+            {
+                int segmentCount = Main.rand.Next(8, 13);
+                List<VerletSimulatedSegment> segments = new List<VerletSimulatedSegment>(segmentCount);
+                for (int i = 0; i < segmentCount; i++)
+                {
+                    VerletSimulatedSegment segment = new VerletSimulatedSegment(NPC.Center - Vector2.UnitY * i * 5);
+                    segments.Add(segment);
+                }
+                segments[0].locked = true;
+                tentacles.Add(segments);
+            }        }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
@@ -143,21 +162,88 @@ namespace CalamityMod.NPCs.SunkenSea
             return 0f;
         }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
+            // Color is based on parent color
+            Color col = Variant switch
             {
-                spriteEffects = SpriteEffects.FlipHorizontally;
+                (int)JellyColor.Green => Color.MintCream,
+                (int)JellyColor.Pink => Color.Pink,
+                _ => Color.Cyan
+            };
+
+            Vector2 drawOffset = Vector2.Zero; // An added offset that gives the jellyfish a visual bobbing movement
+            int fullTime = 180; // How long the bob animation lasts
+            int localTimer = (int)(NPC.ai[2] % fullTime);
+            float goUp = (int)(fullTime * 0.4f); // When should the jellyfish jet upwards
+            int height = 30; // The vertical range the jellyfish moves
+            Vector2 squash = new Vector2(1.1f, 0.9f);
+            Vector2 stretch = new Vector2(0.8f, 1.2f);
+            Vector2 finalScale;
+
+            if (localTimer < goUp)
+            {
+                drawOffset.Y += MathHelper.Lerp(height, 0, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, goUp - 1, localTimer, true), 1));
+                finalScale = Vector2.Lerp(stretch, squash, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, goUp - 1, localTimer, true), 1));
             }
-            Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
-            Vector2 vector = center - screenPos;
-            vector -= new Vector2((float)GlowTexture.Value.Width, (float)(GlowTexture.Value.Height / Main.npcFrameCount[Type])) * 1f / 2f;
-            vector += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
-            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Microsoft.Xna.Framework.Color.LightBlue);
-            Main.spriteBatch.Draw(GlowTexture.Value, vector,
-                new Microsoft.Xna.Framework.Rectangle?(NPC.frame), color, NPC.rotation, halfSizeTexture, 1f, spriteEffects, 0f);
+            else
+            {
+                drawOffset.Y += MathHelper.Lerp(0, height, CalamityUtils.SineInEasing(Utils.GetLerpValue(goUp, fullTime - 1, localTimer, true), 1));
+                finalScale = Vector2.Lerp(squash, stretch, CalamityUtils.SineInEasing(Utils.GetLerpValue(goUp, fullTime - 1, localTimer, true), 1));
+            }
+            // Keeps the hitbox centered
+            drawOffset.Y -= height / 2;
+
+            CreateTentacles();
+
+            // Update the chains
+            for (int i = 0; i < tentacles.Count; i++)
+            {
+                List<VerletSimulatedSegment> segments = tentacles[i];
+
+                segments[0].oldPosition = segments[0].position;
+                segments[0].position = NPC.Center + new Vector2(MathHelper.Lerp(-20, 20, (i + 1) / (float)tentacles.Count), 10) + drawOffset;
+
+                tentacles[i] = VerletSimulatedSegment.SimpleSimulation(segments, 5, loops: 1, gravity: 0.6f);
+            }
+
+            // Draw tentacle chains
+            for (int t = 0; t < tentacles.Count; t++)
+            {
+                List<VerletSimulatedSegment> segments = tentacles[t];
+                for (int i = 0; i < segments.Count - 1; i++)
+                {
+                    VerletSimulatedSegment seg = segments[i];
+                    float dist = i > 0 ? Vector2.Distance(seg.position, segments[i - 1].position) : 0;
+                    if (dist <= 2)
+                        dist = 2;
+                    dist += 4;
+                    if (i == segments.Count - 1)
+                    {
+                        dist = Vector2.Distance(seg.position, NPC.Center) + 2;
+                    }
+                    float rot = 0f;
+                    if (i > 0)
+                        rot = seg.position.DirectionTo(segments[i - 1].position).ToRotation();
+                    Color finalColor = TentacleColor;
+                    if (i > segments.Count - 4)
+                    {
+                        finalColor = Color.Lerp(finalColor, col, Utils.GetLerpValue(segments.Count - 4, segments.Count, i, true));
+                    }
+                    SpriteEffects dir = NPC.Center.X > NPC.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, seg.position - screenPos, new Rectangle(0, 0, 4, 8), finalColor, rot + MathHelper.PiOver2, new Vector2(4, 4), new Vector2(1, dist / 8), dir, 0);
+                }
+            }
+
+            Texture2D tex = Variant switch
+            {
+                (int)JellyColor.Pink => PinkTexture.Value,
+                (int)JellyColor.Green => GreenTexture.Value,
+                _ => TextureAssets.Npc[Type].Value
+            };
+
+            Main.EntitySpriteDraw(tex, NPC.Center - screenPos + drawOffset, null, Color.White, NPC.rotation, tex.Size() / 2, finalScale * NPC.scale, 0);
+            return false;
         }
 
         // Can only hit the target if they're touching the tentacles
