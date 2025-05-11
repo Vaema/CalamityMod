@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,9 +12,6 @@ namespace CalamityMod.Tiles.DraedonStructures
 {
     public class LaboratoryPipePlating : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
-
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -21,7 +19,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             CalamityUtils.MergeWithGeneral(Type);
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 32;
             MinPick = 30;
             AddMapEntry(new Color(91, 64, 56));
