@@ -8,6 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,12 +32,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public Color TentacleColor = new Color(58, 49, 89);
 
+        public static int ElectrifyingPhaseDuration => 180;
+        public static int ElectrifyingPhaseDischarge => 60;
+        public static int ElectrifyingPhaseCooldown => 120;
+
         public ref float Phase => ref NPC.ai[0];
 
         public ref float Variant => ref NPC.ai[1];
 
         public ref float Timer => ref NPC.ai[3];
-
 
         public enum PhaseType
         {
@@ -217,7 +221,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.velocity *= 0.8f;
             }
 
-            if (target == null || !target.active)
+            if (target == null || !target.active || target.Distance(NPC.Center) > 1000)
             {
                 Timer = 0;
                 Phase = (int)PhaseType.Idle;
@@ -233,16 +237,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 pathfinding.ClearResults();
                 Timer++;
                 // Create the aura
-                if (NPC.ai[3] == 60)
+                if (NPC.ai[3] == ElectrifyingPhaseDischarge)
                 {
                     SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, NPC.Center); 
-                    CustomPulse spark = new CustomPulse(NPC.Center, Vector2.Zero, Color.Cyan, "CalamityMod/Particles/PlasmaExplosion", new Vector2(1, 1), Main.rand.NextFloat(-2f, 2f), 0.05f, Main.rand.NextFloat(0.28f, 0.35f), 14);
-                    GeneralParticleHandler.SpawnParticle(spark);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<GhostBellShock>(), (int)(NPC.damage * 0.5f), 0, ai1: NPC.whoAmI + 1);
+                    }
                 }
                 // Reset
-                if (Timer >= 180)
+                if (Timer >= ElectrifyingPhaseDuration)
                 {
-                    Timer = -120;
+                    Timer = -ElectrifyingPhaseCooldown;
                     Phase = (int)PhaseType.Angry;
                     NPC.netUpdate = true;
                 }
@@ -311,7 +317,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (n.type != Type)
                     continue;
-                if (n.Distance(NPC.Center) > 1000)
+                if (n.Distance(NPC.Center) > 400)
                     continue;
                 if (n.ModNPC<GhostBell>().Phase <= (int)PhaseType.Idle)
                     n.ModNPC<GhostBell>().GetPissed(player);
@@ -365,10 +371,10 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Phase == (int)PhaseType.Electrifying)
             {
                 squash = new Vector2(1.4f, 0.8f);
-                if (Timer < 100)
-                    finalScale = Vector2.Lerp(Vector2.One, squash, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, 60, Timer, true), 1));
+                if (Timer < (ElectrifyingPhaseDuration - 80))
+                    finalScale = Vector2.Lerp(Vector2.One, squash, CalamityUtils.CircOutEasing(Utils.GetLerpValue(0, ElectrifyingPhaseDischarge, Timer, true), 1));
                 else
-                    finalScale = Vector2.Lerp(squash, Vector2.One, CalamityUtils.SineInEasing(Utils.GetLerpValue(endElectricity, 120, Timer, true), 1));
+                    finalScale = Vector2.Lerp(squash, Vector2.One, CalamityUtils.SineInEasing(Utils.GetLerpValue(endElectricity, ElectrifyingPhaseDuration, Timer, true), 1));
             }
             // Keeps the hitbox centered
             drawOffset.Y -= height / 2;
