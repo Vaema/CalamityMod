@@ -1434,7 +1434,7 @@ Voidragon: {
 		After firing, the gun unleashes a beam of abyssal fire that erases foes from existence
 		The beam grows more powerful based on the amount of shots hit
 		At maximum damage, abyssal portals rotate around the user that constantly summon creatures from beyond
-		'Fade to black'
+		[c/C843E2: 'Fade to black']
 		'''
 }
 

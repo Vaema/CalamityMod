@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             int beamTimer = VoidragonHoldout.ModProjectile<VoidragonHoldout>().beamTimer;
             if (beamTimer <= 500 && beamTimer >= 425)
                 Projectile.scale += 0.1f;
-            else if (beamTimer <= 75 && beamTimer >= 0 && Projectile.scale > 0f)
+            else if (beamTimer <= 25 && beamTimer >= 0 && Projectile.scale > 0f)
                 Projectile.scale -= 0.1f;
             Projectile.scale = MathHelper.Clamp(Projectile.scale, 0f, 2f);
 

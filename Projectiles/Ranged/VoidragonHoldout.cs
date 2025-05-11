@@ -129,30 +129,12 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (shotCounter == 51 && framesBetweenShots == 0)
             {
-                Main.NewText(beamTimer);
+                //Main.NewText(beamTimer);
                 firingBeam = true;
                 if (firingBeam && beamTimer > 0)
                 {
                     #region Visuals and Sounds
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
-                 
-                    //Extremely WIP visuals for the laser source
-                    float orbScale = 0.2f * Main.rand.NextFloat(0.8f, 1.1f);
-                    Color smokeColor = Color.Lerp(Color.DimGray, Color.DarkGray, Main.rand.NextFloat(0.2f, 0.6f));
-                    Particle orb = new CustomPulse(GunTipPosition, Vector2.Zero, smokeColor * 0.7f, "CalamityMod/ExtraTextures/GreyscaleVortex", new Vector2(1, 1), Projectile.ai[2] * 0.45f, orbScale, orbScale * 1.1f, 6, false);
-                    GeneralParticleHandler.SpawnParticle(orb);
-                    Particle orb3 = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Indigo, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.5f, 0.15f, 6);
-                    GeneralParticleHandler.SpawnParticle(orb3);
-                    Particle orb2 = new CustomPulse(GunTipPosition, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.1f, 0.07f, 6);
-                    GeneralParticleHandler.SpawnParticle(orb2);
-
-                    float offset = Main.rand.NextFloat(MathHelper.TwoPi);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Vector2 velocity = (MathHelper.TwoPi * i / 4f + offset).ToRotationVector2();
-                        Particle cross = new GlowSparkParticle(GunTipPosition, velocity, false, 6, 0.4f, Color.BlueViolet * 0.7f, new Vector2(0.07f, 0.08f), true, false);
-                        GeneralParticleHandler.SpawnParticle(cross);
-                    }
                     #endregion
 
                     //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
