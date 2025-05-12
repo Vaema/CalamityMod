@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Enemy
 {
     public class GhostBellShock : ModProjectile, ILocalizedModType
@@ -89,6 +87,8 @@ namespace CalamityMod.Projectiles.Enemy
             int boltPoints = 12; // How many times can a bolt bend
             int minimumBolts = 6; // Minimum number of bolts
             int maximumBolts = 12; // Maximum number of bolts
+            int minimumSplits = 0; // Minimum number of split bolts
+            int maximumSplits = 2; // Maximum number of split bolts
             points.Clear();
             bolts.Clear();
             for (int i = 0; i < ringPoints; i++)
@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Enemy
                 {
                     List<Vector2> bolt = [];
                     Vector2 start = Projectile.Center;
-                    Vector2 boltEnd = Projectile.Center + end;
+                    Vector2 boltEnd = Projectile.Center + end.RotatedByRandom(MathHelper.PiOver4);
 
                     bolt.Add(start);
                     for (int j = 0; j < boltPoints; j++)
@@ -114,6 +114,22 @@ namespace CalamityMod.Projectiles.Enemy
                         Vector2 dif = dest - start;
                         Vector2 newPoint = start + dif.RotatedByRandom(MathHelper.ToRadians(10));
                         bolt.Add(newPoint);
+
+                        /*if (Main.rand.NextBool(boltPoints / Main.rand.Next(minimumSplits + 1, maximumSplits + 1)) && j > boltPoints / 2)
+                        {
+                            Main.NewText("Made a bolt");
+                            List<Vector2> boltSplit = [];
+                            boltSplit.Add(newPoint);
+                            for (int k = 0; k < boltPoints; k++)
+                            {
+                                Vector2 destSplit = Vector2.Lerp(newPoint, Projectile.Center + end.RotatedBy(MathHelper.PiOver4), (k + 1) / (float)boltPoints);
+                                Vector2 difSplit = destSplit - newPoint;
+                                Vector2 newPointSplit = newPoint + difSplit.RotatedByRandom(MathHelper.ToRadians(10));
+                                boltSplit.Add(newPointSplit);
+                            }
+                            boltSplit.Add(Projectile.Center + end.RotatedBy(MathHelper.PiOver4));
+                            bolts.Add(boltSplit);
+                        }*/
                     }
                     bolt.Add(boltEnd);
                     bolts.Add(bolt);

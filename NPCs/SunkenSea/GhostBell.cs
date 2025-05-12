@@ -257,6 +257,11 @@ namespace CalamityMod.NPCs.SunkenSea
             else if (target != null)
             {
                 pathfinding.DoPathfinding(new PathfindingParameters(NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
+                if (pathfinding.Path.Count > 0)
+                if (pathfinding.Path[^1].Distance(target.Center) > 300)
+                {
+                    pathfinding.ClearResults();
+                }
                 if (Phase == (int)PhaseType.Angry)
                 {
                     if (target is Player && NPC.Distance(target.Center) < 300)
