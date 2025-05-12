@@ -40,6 +40,8 @@ namespace CalamityMod.UI.ResourceSets
         {
             string folder = $"{baseFolder}MP";
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
+            if (modPlayer.ManaBurn)
+                return folder + "ManaBurn";
             if (modPlayer.pHeart)
                 return folder + "PhantomHeart";
             if (modPlayer.eCore)
@@ -92,6 +94,8 @@ namespace CalamityMod.UI.ResourceSets
         // dozezoze - this method is where Chalice's bleed overlay is drawn. This can almost certainly be optimized, but it shouldn't cause problems.
         public override void PostDrawResourceDisplay(PlayerStatsSnapshot snapshot, IPlayerResourcesDisplaySet displaySet, bool drawingLife, Color textColor, bool drawText)
         {
+            if (!Systems.Collections.DebuffsList.Includes(ModContent.BuffType<Buffs.DamageOverTime.ManaBurn>()))
+                Systems.Collections.DebuffsList.List.Add(ModContent.BuffType<Buffs.DamageOverTime.ManaBurn>());
 
             var Player = Main.LocalPlayer;
             var CalPlayer = Player.Calamity();
@@ -224,15 +228,15 @@ namespace CalamityMod.UI.ResourceSets
                         break;
                     case "Default":
                         drawType = 1;
-                        position = new Vector2(Main.screenWidth - 289, 43);
+                        position = new Vector2(Main.screenWidth - 25, 43);
                         break;
                     case "New":
                         drawType = 2;
-                        position = new Vector2(Main.screenWidth - 281, 30);
+                        position = new Vector2(Main.screenWidth - 25, 38);
                         break;
                     case "NewWithText":
                         drawType = 2;
-                        position = new Vector2(Main.screenWidth - 281, 36);
+                        position = new Vector2(Main.screenWidth - 25, 38);
                         break;
                 }
                 if (drawType == -1)
@@ -262,7 +266,7 @@ namespace CalamityMod.UI.ResourceSets
                         var bleedCol = Color.Transparent;
                         if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
                         {
-                            bleedCol = Color.Lerp(barTextureData[((i % 12)+(i/width)*12)],Color.DarkRed,0.25f);
+                            bleedCol = barTextureData[((i % 12)+(i/width)*12)];
                         }
                         textureData[i] = bleedCol;
 
@@ -270,6 +274,30 @@ namespace CalamityMod.UI.ResourceSets
 
                     barOverlay.SetData(textureData);
                     Main.spriteBatch.Draw(barOverlay, position, null, Color.White, 0, new Vector2(width, 0), 1, SpriteEffects.None, 1);
+                }
+                else if (drawType == 1) //default heart
+                {
+                    Texture2D heartTexture = ModContent.Request<Texture2D>(ManaTexturePath() + "Star").Value;
+                    for (int i = 0; i < stars; i++)
+                    {
+                        Vector2 PosOffset = new Vector2(0, 28*i);
+                        var opacity = Math.Clamp(-(i * snapshot.ManaPerSegment - snapshot.Mana) / snapshot.ManaPerSegment, -100, 100);
+                        if ((i) * snapshot.ManaPerSegment > -snapshot.Mana) opacity = 0f;
+                        opacity = Math.Clamp(-((i * snapshot.ManaPerSegment - (float)mana) / snapshot.ManaPerSegment), 0, 1);
+                        Main.spriteBatch.Draw(heartTexture, position + PosOffset, null, Color.White, 0, heartTexture.Size() / 2, 1 * opacity, SpriteEffects.None, 1);
+                    }
+                }
+                else if (drawType == 2) //fancy heart. this is the same as default but with different distances between hearts
+                {
+                    Texture2D heartTexture = ModContent.Request<Texture2D>(ManaTexturePath() + "Star").Value;
+                    for (int i = 0; i < stars; i++)
+                    {
+                        Vector2 PosOffset = new Vector2(0, 22*i);
+                        var opacity = Math.Clamp(-(i * snapshot.ManaPerSegment - snapshot.Mana) / snapshot.ManaPerSegment, -100, 100);
+                        if ((i) * snapshot.ManaPerSegment > -snapshot.Mana) opacity = 0f;
+                        opacity = Math.Clamp(-((i * snapshot.ManaPerSegment - (float)mana) / snapshot.ManaPerSegment), 0, 1);
+                        Main.spriteBatch.Draw(heartTexture, position + PosOffset, null, Color.White, 0, heartTexture.Size() / 2, 1 * opacity, SpriteEffects.None, 1);
+                    }
                 }
             }
 

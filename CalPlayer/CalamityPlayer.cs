@@ -6,6 +6,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -4247,6 +4248,12 @@ namespace CalamityMod.CalPlayer
             if (Player.ZoneDesert && (ZoneAstral || areThereAnyDamnBosses) && Player.HasBuff(BuffID.WindPushed))
             {
                 Player.ClearBuff(BuffID.WindPushed);
+            }
+            if (Player.statMana < 0) 
+            {
+                Player.AddBuff(ModContent.BuffType<ManaBurn>(), 10);
+            } else if (Player.HasBuff(ModContent.BuffType<ManaBurn>())) {
+                Player.ClearBuff(ModContent.BuffType<ManaBurn>());
             }
         }
         #endregion

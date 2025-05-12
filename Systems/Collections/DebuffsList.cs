@@ -86,7 +86,8 @@ namespace CalamityMod.Systems.Collections
                 BuffType<PopoNoselessBuff>(),
                 BuffType<SearingLava>(),
                 BuffType<WeakBrimstoneFlames>(),
-                BuffType<Withered>()
+                BuffType<Withered>(),
+                BuffType<ManaBurn>(),
             ];
         }
 
