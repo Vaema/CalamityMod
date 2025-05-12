@@ -337,6 +337,15 @@ namespace CalamityMod.NPCs.SunkenSea
             return 0f;
         }
 
+        public override void FindFrame(int frameHeight)
+        {
+            // For bestiary animation
+            if (NPC.IsABestiaryIconDummy)
+            {
+                NPC.ai[2]++;
+            }
+        }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             // Color is based on parent color
@@ -382,6 +391,11 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             // Keeps the hitbox centered
             drawOffset.Y -= height / 2;
+
+            if (NPC.IsABestiaryIconDummy)
+            {
+                drawOffset.Y -= 20;
+            }
 
             CreateTentacles();
 
@@ -432,7 +446,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         finalColor = Color.Lerp(finalColor, col, Utils.GetLerpValue(segments.Count - 4, segments.Count, i, true));
                     }
                     // Color eases in and out while angry
-                    if (Phase == (int)PhaseType.Angry)
+                    if (Phase == (int)PhaseType.Angry || NPC.IsABestiaryIconDummy)
                     {
                         float mod = NPC.ai[2] % 30;
                         if (mod <= 10)

@@ -70,7 +70,8 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>()
         {
             ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>()
+            ModContent.NPCType<SandProwlerNested>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
