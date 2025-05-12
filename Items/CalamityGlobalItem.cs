@@ -467,21 +467,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.victideSet)
-            {
-                if ((item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MagicDamageClass>() ||
-                    item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<SummonDamageClass>()) &&
-                    Main.rand.NextBool(10) && !item.channel)
-                {
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
-                        int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
-
-                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
-                    }
-                }
-            }
             if (modPlayer.prismaticRegalia)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)

@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            if (!modPlayer.victideSummoner)
+            if (!modPlayer.victideSnailSet)
             {
                 for (int d = 0; d < 45; d++)
                 {

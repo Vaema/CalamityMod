@@ -1079,8 +1079,12 @@ namespace CalamityMod.CalPlayer
         public bool necroSet = false;
         /// <summary> Calamity's Frost armor set bonus; gives a combined 20% damage boost split between melee and ranged based on distance from the closest enemy. </summary>
         public bool frostSet = false;
-        public bool victideSet = false;
-        public bool victideSummoner = false;
+        public bool victideBarrierSet = false;
+        public bool victideBarrierHead = false;
+        public bool victideBurrowSet = false;
+        public bool victideBurrowHead = false;
+        public bool victideSnailSet = false;
+        public bool victideSnailHead = false;
         public bool sulphurSet = false;
         public bool sulphurJump = false;
         public int sulphurBubbleCooldown = 0;
@@ -2379,8 +2383,12 @@ namespace CalamityMod.CalPlayer
             necroSet = false;
             frostSet = false;
 
-            victideSet = false;
-            victideSummoner = false;
+            victideBarrierSet = false;
+            victideBarrierHead = false;
+            victideBurrowSet = false;
+            victideBurrowHead = false;
+            victideSnailSet = false;
+            victideSnailHead = false;
 
             sulphurSet = false;
 
@@ -3163,7 +3171,11 @@ namespace CalamityMod.CalPlayer
             meteorSet = false;
             necroSet = false;
             frostSet = false;
-            victideSet = false;
+            victideBarrierSet = false;
+            victideBarrierHead = false;
+            victideBurrowSet = false;
+            victideBurrowHead = false;
+            victideSnailHead = false;
             aeroSet = false;
             sulphurSet = false;
             statigelSet = false;
@@ -4426,6 +4438,7 @@ namespace CalamityMod.CalPlayer
             if (!Player.mount.Active)
             {
                 float runAccMult = 1f +
+                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? 0.1f : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
@@ -4448,6 +4461,7 @@ namespace CalamityMod.CalPlayer
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
+                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? 0.1f : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
@@ -4478,6 +4492,12 @@ namespace CalamityMod.CalPlayer
                 // If the timer has hit zero, or you aren't using Momentum Capacitor, you get nothing.
                 else
                     momentumCapacitorBoost = 0f;
+
+                if (victideBarrierHead)
+                {
+                    Player.runAcceleration *= VictideHeadBarrier.RunAccelerationMult;
+                    Player.runSlowdown *= VictideHeadBarrier.RunAccelerationMult;
+                }
 
                 Player.runAcceleration *= runAccMult;
                 Player.maxRunSpeed *= runSpeedMult;

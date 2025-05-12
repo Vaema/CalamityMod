@@ -2912,7 +2912,7 @@ namespace CalamityMod.CalPlayer
                     double breathLossTimeMult = 1D +
                         (Player.gills ? 0.2 : 0D) + // 1.2
                         (oceanCrest ? 0.2 : 0D) + // 1.2
-                        (victideSet ? 0.2 : 0D) + // 1.2
+                        (victideBurrowHead ? 0.2 : 0D) + // 1.2
                         (Player.accDivingHelm ? 0.25 : 0D) + // 1.25
                         (Player.arcticDivingGear ? 0.25 : 0D) + // 1.25
                         (aquaticEmblem ? 0.25 : 0D) + // 1.25
@@ -2986,7 +2986,7 @@ namespace CalamityMod.CalPlayer
                         (Player.arcticDivingGear ? 10D : 0D) + // 30
                         (aquaticEmblem ? 10D : 0D) + // 40
                         (Player.accMerman ? 15D : 0D) + // 55
-                        (victideSet ? 5D : 0D) + // 60
+                        (victideBurrowHead ? 5D : 0D) + // 60
                         ((aquaticHeart && NPC.downedBoss3) ? 15D : 0D) + // 75
                         (abyssalDivingSuit ? 15D : 0D) + // 90
                         externalBreathTickBoost;
