@@ -90,6 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Main.projectile[proj].DamageType = DamageClass.Ranged;
                         Main.projectile[proj].usesLocalNPCImmunity = true;
+                        Main.projectile[proj].usesIDStaticNPCImmunity = false;
                         Main.projectile[proj].localNPCHitCooldown = 30;
                     }
                 }

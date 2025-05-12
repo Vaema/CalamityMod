@@ -195,15 +195,13 @@ namespace CalamityMod.Projectiles.Magic
             float minMult = 0.25f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 1) * damageMult;
+            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 0.8f) * damageMult;
 
             if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn)
             {
                 spawnPlat = true;
                 hasSetPlatSpawn = true;
             }
-            //if (!hasReboundOffPlat)
-                //Projectile.extraUpdates = 10;
         }
         public override bool? CanDamage() => reflecting ? false : null;
         public override bool PreDraw(ref Color lightColor)

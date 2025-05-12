@@ -956,6 +956,7 @@ namespace CalamityMod.CalPlayer
         public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
+        public Color XykFXColor = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
         public bool royalGel = false;
@@ -2183,6 +2184,9 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
+            // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
+            if (!WarbanneroftheRighteous)
+                cooldowns.Remove(WarbanneroftheRighteousBuff.ID);
             WarbanneroftheRighteous = false;
             warbannerGlow = false;
             ilSpark = false;
@@ -4350,6 +4354,17 @@ namespace CalamityMod.CalPlayer
                     if (!Player.HasCooldown(LifeSteal.ID) || (cooldowns[LifeSteal.ID].duration < duration))
                         Player.AddCooldown(LifeSteal.ID, duration);
                 }
+            }
+
+            //Star in a Bottle gives Mana Regeneration instead of it's usual effect when you don't already have Mana Regeneration
+            if (!Player.manaRegenBuff && Player.HasBuff(BuffID.StarInBottle)) 
+            {
+                //Cancel out Star In A Bottle's normal effect
+				Player.manaRegenDelayBonus -= 0.5f;
+				Player.manaRegenBonus -= 10;
+                //Apply Mana Regen Potion effect
+                Player.manaRegenBuff = true;
+                
             }
 
             ForceVariousEffects();

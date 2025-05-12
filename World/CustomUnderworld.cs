@@ -15,6 +15,11 @@ namespace CalamityMod.World
     public class CustomUnderworld
     {
         private const int MaxIslands = 8;
+        private const int SmallWorldIslands = 4;
+        private const int MediumWorldIslands = 6;
+        private const int LargeWorldIslands = MaxIslands;
+        private const int SmallWorldOuterIslands = 1;
+        private const int MediumAndLargeWorldOuterIslands = 2;
 
         public static void NewUnderworld()
         {
@@ -169,6 +174,7 @@ namespace CalamityMod.World
             {
                 // Large = 8, Medium = 6, Small = 4
                 int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
+                bool smallWorld = numIslands == SmallWorldIslands;
 
                 // Total extra distance between islands for lava lakes
                 int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
@@ -181,6 +187,7 @@ namespace CalamityMod.World
                 int distanceBetweenIslands = (ashIslandX2 - ashIslandX) / numIslands;
 
                 // Used for island height randomization
+                int minHeightForOuterIslands = 8;
                 int[] randomHeightAdjustmentLimits = new int[MaxIslands]
                 {
                     28,
@@ -196,6 +203,7 @@ namespace CalamityMod.World
                 // Used for island edge drop off randomization
                 // Taller islands have steeper drop offs
                 // This is also used to decrease the width of the islands
+                int minDropOffForOuterIslands = 11;
                 int[] randomDropOffAdjustmentLimits = new int[MaxIslands]
                 {
                     3,
@@ -220,6 +228,15 @@ namespace CalamityMod.World
 
                     int randomizedIslandDropOffAdjustment = randomDropOffAdjustmentLimits[chosenIslandSize];
                     int randomizedIslandHeightAdjustment = randomHeightAdjustmentLimits[chosenIslandSize];
+
+                    // Islands on the edges are taller in order to have more structures
+                    bool isTallerIsland = smallWorld ? (i == 0 || i == numIslands - SmallWorldOuterIslands) : (i < MediumAndLargeWorldOuterIslands || i >= numIslands - MediumAndLargeWorldOuterIslands);
+                    if (isTallerIsland && randomizedIslandHeightAdjustment > minHeightForOuterIslands)
+                    {
+                        randomizedIslandHeightAdjustment = minHeightForOuterIslands;
+                        randomizedIslandDropOffAdjustment = minDropOffForOuterIslands;
+                    }
+
                     int randomizedAshIslandDepthLimit = ashIslandDepthLimit + randomizedIslandHeightAdjustment;
                     int randomizedAshIslandHeightLimit = ashIslandHeightLimit + randomizedIslandHeightAdjustment;
 
@@ -966,9 +983,9 @@ namespace CalamityMod.World
                 int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
 
                 // Small and medium worlds get less structures
-                bool smallWorld = numIslands == 4;
-                bool mediumWorld = numIslands == 6;
-                bool largeWorld = numIslands == 8;
+                bool smallWorld = numIslands == SmallWorldIslands;
+                bool mediumWorld = numIslands == MediumWorldIslands;
+                bool largeWorld = numIslands == LargeWorldIslands;
 
                 // Total extra distance between islands for lava lakes
                 int totalExtraDistanceBetweenAshIslands = (int)((double)Main.maxTilesX * 0.04);
@@ -984,8 +1001,6 @@ namespace CalamityMod.World
                 int firstIslandWidth = distanceBetweenStructures + (extraDistanceBetweenAshIslands_PerIslandSide * sideAdjustmentMultiplier);
                 int firstStructureDistanceFromIslandEdge = firstIslandWidth / 2;
                 int distanceBetweenStructures_AfterFirstIsland = distanceBetweenStructures;
-
-                // Pick structure types
 
                 // Pick an atrium type
                 // Small worlds get a random single atrium
@@ -1030,11 +1045,15 @@ namespace CalamityMod.World
                 // Offsets for structures
                 int atriumOffset = 9;
                 int cacheOffset = 45;
+                int sanctumOffset = 65;
+                int strongholdOffset = 5;
 
                 // Place schematics
                 if (cragsLocationIsLeft)
                 {
-                    // Place atrium
+                    //
+                    // Place atriums
+                    //
                     // Atrium location is on the crags side
                     // Atrium is placed in the center of an island due to its immense size
                     int atriumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
@@ -1042,7 +1061,6 @@ namespace CalamityMod.World
                     while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                         atriumGenY++;
 
-                    // Place atrium
                     Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
@@ -1052,7 +1070,7 @@ namespace CalamityMod.World
 
                         // Protect the structure
                         Rectangle atriumProtectionArea = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
-                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
+                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 10);
 
                         // Move index further along to keep structures spread apart
                         atriumGenX += distanceBetweenStructures_AfterFirstIsland;
@@ -1073,13 +1091,65 @@ namespace CalamityMod.World
 
                     // Protect the structure
                     Rectangle atriumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
-                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
+                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 10);
 
-                    // Move index further along to keep structures spread apart
-                    atriumGenX += distanceBetweenStructures_AfterFirstIsland;
+                    //
+                    // Place sanctums and strongholds
+                    //
+                    // Sanctums 1 and 2 are the large ones
+                    int sanctumGenX = ashIslandX2 - firstStructureDistanceFromIslandEdge;
+                    int sanctumGenY = ashIslandDepthLimit + sanctumOffset;
 
-                    // Reset the Y index
-                    atriumGenY = ashIslandHeightLimit;
+                    int strongholdGenY = ashIslandHeightLimit;
+                    while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                        strongholdGenY++;
+
+                    Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
+                    Point strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                    if (!smallWorld)
+                    {
+                        PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle sanctumProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[SanctumofOblivionType1Key], sanctumPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(sanctumProtectionArea, 10);
+
+                        PlaceSchematic(HellstoneStrongholdType1Key, strongholdPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                        // Protect the structure
+                        Rectangle strongholdProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[HellstoneStrongholdType1Key], strongholdPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(strongholdProtectionArea, 10);
+
+                        // Move index further along to keep structures spread apart
+                        sanctumGenX -= distanceBetweenStructures_AfterFirstIsland;
+
+                        // Reset the Y index for strongholds
+                        strongholdGenY = ashIslandHeightLimit;
+                        while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                            strongholdGenY++;
+
+                        // Placement point for the second stronghold
+                        strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+
+                        // Placement point for the second sanctum
+                        sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
+                    }
+
+                    // Small worlds only have one sanctum
+                    string secondSanctum = smallWorld ? SanctumofOblivionType1Key : (WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key);
+                    PlaceSchematic<Action<Chest>>(secondSanctum, sanctumPlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondSanctum], sanctumPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(sanctumProtectionArea2, 10);
+
+                    // Small worlds only have one stronghold
+                    string secondStronghold = smallWorld ? HellstoneStrongholdType1Key : HellstoneStrongholdType2Key;
+                    PlaceSchematic(secondStronghold, strongholdPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                    // Protect the structure
+                    Rectangle strongholdProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStronghold], strongholdPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(strongholdProtectionArea2, 10);
                 }
                 else
                 {
@@ -1095,19 +1165,15 @@ namespace CalamityMod.World
                     {
                         PlaceSchematic(BrimstoneAtriumType2Key, atriumPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
 
-                        // Protect the structure
                         Rectangle atriumProtectionArea = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
-                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 30);
+                        CalamityUtils.AddProtectedStructure(atriumProtectionArea, 10);
 
-                        // Move index further along to keep structures spread apart
                         atriumGenX -= distanceBetweenStructures_AfterFirstIsland;
 
-                        // Reset the Y index
                         atriumGenY = ashIslandHeightLimit;
                         while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                             atriumGenY++;
 
-                        // Placement point for the second atrium
                         atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
                     }
 
@@ -1116,21 +1182,59 @@ namespace CalamityMod.World
                     else
                         PlaceSchematic<Action<Chest>>(atriumMapKey, atriumPlacementPoint, anchorType, ref place);
 
-                    // Protect the structure
                     Rectangle atriumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(atriumSchematic, atriumPlacementPoint, anchorType);
-                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 30);
+                    CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 10);
 
-                    // Move index further along to keep structures spread apart
-                    atriumGenX -= distanceBetweenStructures_AfterFirstIsland;
+                    int sanctumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
+                    int sanctumGenY = ashIslandDepthLimit + sanctumOffset;
 
-                    // Reset the Y index
-                    atriumGenY = ashIslandHeightLimit;
+                    int strongholdGenY = ashIslandHeightLimit;
+                    while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                        strongholdGenY++;
+
+                    Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
+                    Point strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                    if (!smallWorld)
+                    {
+                        PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
+
+                        Rectangle sanctumProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[SanctumofOblivionType1Key], sanctumPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(sanctumProtectionArea, 10);
+
+                        PlaceSchematic(HellstoneStrongholdType1Key, strongholdPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                        Rectangle strongholdProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[HellstoneStrongholdType1Key], strongholdPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(strongholdProtectionArea, 10);
+
+                        sanctumGenX += distanceBetweenStructures_AfterFirstIsland;
+
+                        strongholdGenY = ashIslandHeightLimit;
+                        while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                            strongholdGenY++;
+
+                        strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+
+                        sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
+                    }
+
+                    string secondSanctum = smallWorld ? SanctumofOblivionType1Key : (WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key);
+                    PlaceSchematic<Action<Chest>>(secondSanctum, sanctumPlacementPoint, anchorType, ref place);
+
+                    Rectangle sanctumProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondSanctum], sanctumPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(sanctumProtectionArea2, 10);
+
+                    string secondStronghold = smallWorld ? HellstoneStrongholdType1Key : HellstoneStrongholdType2Key;
+                    PlaceSchematic(secondStronghold, strongholdPlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillAtriumChests));
+
+                    Rectangle strongholdProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStronghold], strongholdPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(strongholdProtectionArea2, 10);
                 }
 
                 // Pick cache types
                 List<int> caches = new List<int>();
                 int numCaches = largeWorld ? 8 : 4; // THIS NUMBER MUST BE EVEN!!!
                 int cacheTypes = 6;
+                int totalCachePositions = numCaches / 2;
                 do
                 {
                     // Chose a random cache to add to the list
@@ -1141,12 +1245,17 @@ namespace CalamityMod.World
 
                     // Avoid an infinite loop by picking a random duplicate cache if the max is reached
                     bool pickRandomDuplicateCache = caches.Count >= cacheTypes;
+                    if (pickRandomDuplicateCache)
+                        pickRandomDuplicateCache = caches[caches.Count - totalCachePositions] != chosenCache;
+
                     if (!alreadyContainsThisCacheType || pickRandomDuplicateCache)
                         caches.Add(chosenCache);
                 }
                 while (caches.Count < numCaches);
 
+                //
                 // Place caches
+                //
                 int cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * numAtriums);
                 int cacheGenY = ashIslandDepthLimit + cacheOffset;
                 int randomAdjustmentX = 0;
@@ -1155,7 +1264,6 @@ namespace CalamityMod.World
                 int maxRandomX = -20;
                 int minRandomY = 0;
                 int maxRandomY = 10;
-                int totalCachePositions = numCaches / 2;
                 for (int cacheIndex = 0; cacheIndex < totalCachePositions; cacheIndex++)
                 {
                     randomAdjustmentX += WorldGen.genRand.Next(minRandomX, maxRandomX + 1);
@@ -1202,6 +1310,10 @@ namespace CalamityMod.World
                     else
                         PlaceSchematic<Action<Chest>>(cacheMapKey, cachePlacementPoint, anchorType, ref place);
 
+                    // Protect the structure
+                    Rectangle cacheProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[cacheMapKey], cachePlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(cacheProtectionArea, 5);
+
                     string secondCacheMapKey;
                     switch (caches[cacheIndex + totalCachePositions])
                     {
@@ -1237,6 +1349,10 @@ namespace CalamityMod.World
                         PlaceSchematic(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
                     else
                         PlaceSchematic<Action<Chest>>(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle cacheProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondCacheMapKey], secondCachePlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(cacheProtectionArea2, 5);
 
                     // Reset positions and move cache placement along the X axis
                     cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * (numAtriums + cacheIndex + 1));

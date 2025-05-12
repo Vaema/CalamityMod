@@ -1,5 +1,7 @@
 ﻿using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -28,9 +30,9 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (time == 0)
             {
-                SoundStyle sound = new("CalamityMod/Sounds/Custom/AuricMine", 3);
+                SoundStyle sound = AuricOre.MineSound;
                 SoundEngine.PlaySound(sound with { Volume = 0.9f, Pitch = Main.rand.NextFloat(0.15f, 0.25f), MaxInstances = -1 }, Projectile.Center);
-                SoundStyle sound2 = new("CalamityMod/Sounds/Item/NullHit");
+                SoundStyle sound2 = NullificationPistol.HitSound;
                 SoundEngine.PlaySound(sound2 with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.3f, 0.45f), MaxInstances = -1 }, Projectile.Center);
 
                 for (int i = 0; i < 18; i++)
