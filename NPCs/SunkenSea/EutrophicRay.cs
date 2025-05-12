@@ -116,7 +116,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             pathfinding = new PathfindingManager(NPC)
             {
-                MaxSpeed = 5f,
+                MaxSpeed = 4.85f,
                 Acceleration = 0.5f
             };
             CurrentBehavior = IdleBehavior;
@@ -132,22 +132,20 @@ namespace CalamityMod.NPCs.SunkenSea
             else if (NPC.velocity.X < 0.25f)
                 NPC.spriteDirection = -1;
 
-            if (!NPC.wet && CurrentBehavior != OutOfWaterBehavior)
-            {
+            // If out of water, act like you're out of water.
+            if ((NPC.noTileCollide ? !(Collision.WetCollision(NPC.position, NPC.width, NPC.height) || Collision.SolidCollision(NPC.position, NPC.width, NPC.height)) : !NPC.wet) && CurrentBehavior != OutOfWaterBehavior)
                 CurrentBehavior = OutOfWaterBehavior;
-            } 
 
+            // Used for determining if it should run from players.
             if (NPC.justHit && !hasBeenHit)
-            {
                 hasBeenHit = true;
-            }
             NPC.chaseable = hasBeenHit;
 
             NPC.rotation = NPC.velocity.X * 0.04f;
             if (NPC.rotation < -0.1f)
                 NPC.rotation = -0.1f;
             if (NPC.rotation > 0.1f)
-                NPC.rotation = 0.1f;                
+                NPC.rotation = 0.1f;
         }
         private void OnBehaviorChange(Action newBehavior)
         {
@@ -156,6 +154,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             pathfinding.MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
         }
+
         private void IdleBehavior()
         {
             // Don't deal damage while idling.
@@ -229,10 +228,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
-            // Don't deal damage while fleeing. Clear idle behavior pathfinding to prevent it continuously trying to return to that path at the edge of the flee radius.
+            // Don't deal damage while fleeing.
             NPC.damage = 0;
             NPC.noTileCollide = true;
 
+            // Flee in a straight line if possible, otherwise pathfind away from the attacker.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(AvoidedEntity.Center) * 64f).ToTileCoordinates()].IsTileSolid())
             {
                 NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * pathfinding.Acceleration;
@@ -253,7 +253,8 @@ namespace CalamityMod.NPCs.SunkenSea
         private void OutOfWaterBehavior()
         {
             NPC.damage = 0;
-            if (NPC.wet)
+            NPC.velocity.X *= 0.985f;
+            if (NPC.noTileCollide ? (Collision.WetCollision(NPC.position, NPC.width, NPC.height) || Collision.SolidCollision(NPC.position, NPC.width, NPC.height)) : NPC.wet)
             {
                 NPC.noGravity = true;
                 CurrentBehavior = _previousBehavior;
@@ -317,30 +318,18 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
         }
 
-        public override bool? CanBeHitByProjectile(Projectile projectile)
-        {
-            if (projectile.minion && !projectile.Calamity().overridesMinionDamagePrevention)
-            {
-                return hasBeenHit;
-            }
-            return null;
-        }
-
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs || spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.6f;
             }
             return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < 2; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
-            }
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 15; k++)
