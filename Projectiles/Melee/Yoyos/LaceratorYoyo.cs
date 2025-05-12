@@ -62,8 +62,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 chargeProgress = 1;
             if (chargeProgress > 0)
             {
-                Main.NewText(sawDir);
-                if (Main.player[Projectile.owner].miscCounter % 5 == 0 && Projectile.FinalExtraUpdate() && chargeProgress > 0.15f)
+                if (Main.player[Projectile.owner].miscCounter % 5 == 0 && Projectile.FinalExtraUpdate() && chargeProgress > 0.05f)
                 {
                     spawnedBlood = false;
                     Projectile.position = Projectile.Center;
@@ -99,10 +98,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (sawHit)
             {
                 target.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
-                Vector2 bloodpos = Projectile.Center + Projectile.DirectionTo(target.Center) * 80;
+                Vector2 bloodpos = Projectile.Center + Projectile.DirectionTo(target.Center) * 84;
                 if (!spawnedBlood && Main.rand.NextBool() && chargeProgress > 0.25f && target.Hitbox.Contains(bloodpos.ToPoint()))
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), bloodpos, Projectile.DirectionTo(target.Center).RotatedBy(sawDir * - MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(3f, 5f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), bloodpos, Projectile.DirectionTo(target.Center).RotatedBy(sawDir * MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(3f, 5f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
                     spawnedBlood = true;
                 }
                 return;
@@ -124,7 +123,13 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             if (chargeProgress > 0)
             {
-                circleProgress = 0;
+                
+                var owner = Main.player[Projectile.owner];
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/LaceratorSaw").Value;
+                float rot = MathHelper.TwoPi * 30 * sawDir * (owner.miscCounter / 300f);
+                 Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Red * MathF.Pow(chargeProgress,0.5f)*0.5f, rot, texture.Size() * 0.5f, 1, sawDir == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+
+                /*circleProgress = 0;
                 verticalProgress = 1;
                 goingUp = false;
                 Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
@@ -169,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     innerColor *= intensity;
                     Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * 0.25f, SpriteEffects.None, 0);
                     Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, 0f, lightTexture.Size() * 0.5f, innerScale * 0.25f, SpriteEffects.None, 0);
-                }
+                }*/
             }
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
