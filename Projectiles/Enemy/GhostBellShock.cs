@@ -105,7 +105,8 @@ namespace CalamityMod.Projectiles.Enemy
             {
                 SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Projectile.Center);
             }
-            Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(CurrentRadius, CurrentRadius), DustID.Electric);
+            if (CurrentBabies > 0 || Timer >= impactMoment)
+                Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(CurrentRadius, CurrentRadius), DustID.Electric);
             // Become opaque 
             if (Timer < (40 + impactMoment) && validOwner)
             {
