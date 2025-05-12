@@ -235,15 +235,18 @@ namespace CalamityMod.Projectiles.Enemy
             GameShaders.Misc["CalamityMod:TeslaTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
             float opacity = 0.6f;
             float jellyOpacity = 0.2f;
-            // The aura
-            PrimitiveRenderer.RenderTrail(points, new((float completion) => 4, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-            PrimitiveRenderer.RenderTrail(points, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-            // Bolts inside of the aura
-            for (int i = 0; i < bolts.Count; i++)
+            if (Timer >= GhostBell.ElectrifyingPhaseDischarge)
             {
-                List<Vector2> boltPoints = bolts[i];
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 3, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                // The aura
+                PrimitiveRenderer.RenderTrail(points, new((float completion) => 4, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(points, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                // Bolts inside of the aura
+                for (int i = 0; i < bolts.Count; i++)
+                {
+                    List<Vector2> boltPoints = bolts[i];
+                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 3, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                }
             }
             // Harmless bolts connecting to babies
             for (int i = 0; i < jellyBolts.Count; i++)
