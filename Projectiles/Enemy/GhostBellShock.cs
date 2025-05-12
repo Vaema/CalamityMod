@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.SunkenSea;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -72,6 +73,7 @@ namespace CalamityMod.Projectiles.Enemy
         public override void AI()
         {
             bool validOwner = true;
+            int impactMoment = GhostBell.ElectrifyingPhaseDischarge;
 
             NPC n = Main.npc[(int)Parent - 1];
             if (n == null || !n.active || n.life < 0)
@@ -88,15 +90,24 @@ namespace CalamityMod.Projectiles.Enemy
                 RecalculateLists();
             }
             // Scale the aura size. More babies increases the size of the aura
-            CurrentRadius = MathHelper.Lerp(0, MaxDefaultRadius + (CurrentBabies * RadiusBoostPerBaby), Utils.GetLerpValue(0, 10, Timer, true));
-            Timer++;
-            if (Timer % 10 == 0)
+            CurrentRadius = MathHelper.Lerp(0, MaxDefaultRadius + (CurrentBabies * RadiusBoostPerBaby), Utils.GetLerpValue(impactMoment, impactMoment + 10, Timer, true));
+            if (Timer == 0 && CurrentBabies > 0)
             {
-                SoundEngine.PlaySound(SoundID.DD2_LightningBugZap with { Pitch = 1.1f }, Projectile.Center);
+                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound with { Pitch = 1f }, Projectile.Center);
+            }
+            Timer++;
+            float pitch = (CurrentBabies > 0 && Timer < impactMoment) ? 1f : 0.4f;
+            if (Timer % 10 == 0 && (Timer >= impactMoment || CurrentBabies > 0))
+            {
+                SoundEngine.PlaySound(SoundID.DD2_LightningBugZap with { Pitch = pitch }, Projectile.Center);
+            }
+            if (Timer == impactMoment)
+            {
+                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Projectile.Center);
             }
             Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(CurrentRadius, CurrentRadius), DustID.Electric);
             // Become opaque 
-            if (Timer < 40 && validOwner)
+            if (Timer < (40 + impactMoment) && validOwner)
             {
                 if (Projectile.alpha > 0)
                     Projectile.alpha -= 20;
@@ -237,8 +248,8 @@ namespace CalamityMod.Projectiles.Enemy
             for (int i = 0; i < jellyBolts.Count; i++)
             {
                 List<Vector2> boltPoints = jellyBolts[i];
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 2, (float completion) => Color.Cyan * Projectile.Opacity * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 2, (float completion) => Color.Cyan * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
             }
             Main.spriteBatch.ExitShaderRegion();
             return false;

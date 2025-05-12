@@ -237,9 +237,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 pathfinding.ClearResults();
                 Timer++;
                 // Create the aura
-                if (NPC.ai[3] == ElectrifyingPhaseDischarge)
+                if (NPC.ai[3] == 1)
                 {
-                    SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, NPC.Center); 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<GhostBellShock>(), (int)(NPC.damage * 0.5f), 0, ai1: NPC.whoAmI + 1);
