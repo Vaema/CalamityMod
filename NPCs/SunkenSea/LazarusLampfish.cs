@@ -352,7 +352,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override bool PlayerSearchFilter(Player p)
         {
-            return base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 600f * 600f);
+            return base.PlayerSearchFilter(p) || (p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 600f * 600f);
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
