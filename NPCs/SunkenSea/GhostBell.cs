@@ -30,8 +30,6 @@ namespace CalamityMod.NPCs.SunkenSea
         public static Asset<Texture2D> PinkTexture;
         public static Asset<Texture2D> GreenTexture;
 
-        public Color TentacleColor = new Color(58, 49, 89);
-
         public static int ElectrifyingPhaseDuration => 180;
         public static int ElectrifyingPhaseDischarge => 60;
         public static int ElectrifyingPhaseCooldown => 120;
@@ -172,10 +170,10 @@ namespace CalamityMod.NPCs.SunkenSea
             switch (Variant)
             {
                 case (int)JellyColor.Pink:
-                    lightColor = Color.Pink;
+                    lightColor = Color.LightPink;
                     break;
                 case (int)JellyColor.Green:
-                    lightColor = Color.LightGreen;
+                    lightColor = Color.MediumSpringGreen;
                     break;
             }
             Lighting.AddLight(NPC.Center, (lightColor.R - NPC.alpha) * 1f / 255f, (lightColor.G - NPC.alpha) * 1f / 255f, (lightColor.B - NPC.alpha) * 1f / 255f);
@@ -281,7 +279,17 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (tentacles == null || tentacles.Count < 6)
             {
-                int segmentCount = Main.rand.Next(8, 13);
+                // switches between tentacle indexes to determine how many segments should be on each
+                // aims for a more squid-like distribution, i dont know if it applies to jellyfish too
+
+                // an embarrassing amount of time was spent figuring out these numbers
+                // i forgot they start at 0..
+                int segmentCount = tentacles.Count switch
+                {
+                    0 or 5 => 9,
+                    1 or 4 => 12,
+                    _ => 8
+                };
                 List<VerletSimulatedSegment> segments = new List<VerletSimulatedSegment>(segmentCount);
                 for (int i = 0; i < segmentCount; i++)
                 {
@@ -348,12 +356,19 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            // Color is based on parent color
+            // Underlying tentacle colour based on parent colour
+            Color baseCol = Variant switch
+            { // all of these colours are from the sprites but slightly darkened and desaturated
+                (int)JellyColor.Green => new Color(29, 54, 39), // 27, 61, 40
+                (int)JellyColor.Pink => new Color(79, 39, 53),  // 97, 38, 60
+                _ => new Color(34, 50, 89)                     // 36, 55, 114
+            };
+            // Accent color is also based on parent color
             Color col = Variant switch
-            {
-                (int)JellyColor.Green => Color.MintCream,
-                (int)JellyColor.Pink => Color.Pink,
-                _ => Color.Cyan
+            { // these are also directly from the sprites, with no modifications; similar in luminance for visual consistency
+                (int)JellyColor.Green => new Color(59, 215, 194),
+                (int)JellyColor.Pink => new Color(255, 145, 238),
+                _ => new Color(84, 215, 254)
             };
 
             Vector2 drawOffset = Vector2.Zero; // An added offset that gives the jellyfish a visual bobbing movement
@@ -417,7 +432,6 @@ namespace CalamityMod.NPCs.SunkenSea
                         segments[j].position += Main.rand.NextVector2Circular(randomness, randomness);
                     }
                 }
-
                 tentacles[i] = VerletSimulatedSegment.SimpleSimulation(segments, 5, loops: 1, gravity: 0.6f);
             }
 
@@ -439,12 +453,17 @@ namespace CalamityMod.NPCs.SunkenSea
                     float rot = 0f;
                     if (i > 0)
                         rot = seg.position.DirectionTo(segments[i - 1].position).ToRotation();
-                    // Last few segments are a different color
-                    Color finalColor = TentacleColor;
-                    if (i > segments.Count - 4)
+
+                    // slight gradient to a lighter colour the higher the segment index
+                    Color finalColor = baseCol;
+                    finalColor *= 1 + (i * 0.15f);
+
+                    // Last few segments are way brighter
+                    if (i > segments.Count - 3)
                     {
-                        finalColor = Color.Lerp(finalColor, col, Utils.GetLerpValue(segments.Count - 4, segments.Count, i, true));
+                        finalColor = col * (0.05f + segments.Count * 0.1f);
                     }
+
                     // Color eases in and out while angry
                     if (Phase == (int)PhaseType.Angry || NPC.IsABestiaryIconDummy)
                     {
@@ -459,8 +478,10 @@ namespace CalamityMod.NPCs.SunkenSea
                     // Color is at full brightness while electrifying
                     else if (Phase == (int)PhaseType.Electrifying)
                         finalColor *= 2;
+                    // give the segments variable width (and an offset equal to half of the variance) to create more visual interest
+                    // a side effect of this makes it look wiggly like some jellyfish tentacles are
                     SpriteEffects dir = NPC.Center.X > NPC.Center.X ? SpriteEffects.FlipVertically : SpriteEffects.None;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, seg.position - screenPos, new Rectangle(0, 0, 4, 8), finalColor, rot + MathHelper.PiOver2, new Vector2(4, 4), new Vector2(1, dist / 8), dir, 0);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(seg.position.X - i * 0.1f, seg.position.Y) - screenPos, new Rectangle(0, 0, (int)(3 + i * 0.2), 8), finalColor, rot + MathHelper.PiOver2, new Vector2(4, 4), new Vector2(1, dist / 8), dir, 0);
                 }
             }
 
