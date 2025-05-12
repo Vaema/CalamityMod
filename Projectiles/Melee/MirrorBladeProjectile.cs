@@ -7,6 +7,7 @@ using CalamityMod.Items.Weapons.Melee;
 using Terraria.DataStructures;
 using System;
 using System.Collections.Generic;
+using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -26,6 +27,8 @@ namespace CalamityMod.Projectiles.Melee
         public override bool useMeleeSpeed => true;
 
         public override int swingTime { get; set; } = 8;
+
+        public override SoundStyle? UseSound => SoundID.Item1 with {Volume = 0.7f};
 
         public List<int> reflectedProjectiles = new List<int>() { };
 
@@ -75,6 +78,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         reflectedProjectiles.Add(proj.whoAmI);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), proj.Center, proj.velocity * -1, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+                        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
                     }
                 }
                 
@@ -92,7 +96,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            for (var i = 0; i < 2; i++)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
         }
         public override float trailOffset => 28;
         public override float trailWidth(float completion)

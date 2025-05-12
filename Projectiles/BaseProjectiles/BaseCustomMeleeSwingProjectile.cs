@@ -12,6 +12,7 @@ using Terraria.GameContent.Prefixes;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -159,6 +160,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Defaults to 0.5f
         /// </summary>
         public virtual float RotateInStartup { get; set; } = 0.5f;
+        /// <summary>
+        /// What sound to use when the sword begins the actual swing (after startup frames)
+        /// </summary>
+        public virtual SoundStyle? UseSound {get; set;} = null;
 
         #endregion
 
@@ -375,6 +380,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     oldProjectileRot.RemoveAt(0);
                     oldProjectilePos.RemoveAt(0);
                 }
+            }
+            if (inSwing && swingTimer == 1 && UseSound != null) 
+            {
+                SoundEngine.PlaySound((SoundStyle)UseSound,player.Center);
             }
             var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);

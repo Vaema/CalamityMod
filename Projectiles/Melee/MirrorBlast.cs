@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -40,6 +41,21 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(isShard);
+            writer.Write(hasSpawned);
+            writer.Write(shardNum);
+            writer.Write(shardShield);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            isShard = reader.ReadBoolean();
+            hasSpawned = reader.ReadBoolean();
+            shardNum = reader.Read();
+            shardShield = reader.Read();
+        }
         public override bool? CanDamage()
         {
             return !isShard;
@@ -69,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (isShield)
             {
-                if (shardNum > 10)
+                if (shardNum > 10 || Projectile.timeLeft < 2)
                 {
                     shardShield = 0;
                     isShard = false;

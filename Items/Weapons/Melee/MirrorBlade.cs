@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using CalamityMod.Systems.Collections;
 using System;
 using Terraria.Localization;
+using Terraria.Audio;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override int ProjectileType => ModContent.ProjectileType<MirrorBladeProjectile>();
-        public float damageMultiplier = 1f;
+
 
         public int reflectTimer = 0;
 
@@ -38,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7f;
-            Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -82,8 +82,11 @@ namespace CalamityMod.Items.Weapons.Melee
                                     proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
                                     (proj2.ModProjectile as MirrorBlast).shardShield = 0;
                                     (proj2.ModProjectile as MirrorBlast).shardNum = 11;
+                                    proj2.netUpdate = true;
                                 }
                             }
+                            if (shardCount > 0)
+                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath,player.Center);
                             reflectTimer = 0;
                             return;
                         }
@@ -97,14 +100,21 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             if (player.altFunctionUse == 2)
             {
+                bool alreadyReflecting = reflectTimer > 0;
+                bool hasShard = false;
                 reflectTimer = 60;
                 foreach (var proj in Main.projectile)
                 {
                     if (proj.active && proj.type == ModContent.ProjectileType<MirrorBlast>() && proj.owner == player.whoAmI && (proj.ModProjectile as MirrorBlast).isShard)
                     {
                         (proj.ModProjectile as MirrorBlast).shardShield = 60;
+                        proj.netUpdate = true;
+                        hasShard = true;
                     }
                 }
+                
+                if (!alreadyReflecting && hasShard)
+                    SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy,player.Center);
                 return false;
             }
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
@@ -113,11 +123,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override bool AltFunctionUse(Player player)
         {
             return true;
-        }
-
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
-            //damage *= damageMultiplier;
         }
     }
 }
