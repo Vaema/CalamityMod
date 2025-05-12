@@ -64,8 +64,8 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.penetrate = 1;
                     launched = true;
                 }
-
-                targeted = Projectile.Center.ClosestNPCAt(950);
+                if (targeted == null || targeted.life <= 0)
+                    targeted = Projectile.Center.ClosestNPCAt(950);
                 CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
                 if (time < 550 && targeted == null)
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.4f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.3f);
 
             Player Owner = Main.player[Projectile.owner];
 
