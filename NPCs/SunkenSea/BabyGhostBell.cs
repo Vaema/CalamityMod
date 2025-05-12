@@ -76,6 +76,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.chaseable = false;
+            NPC.dontTakeDamageFromHostiles = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 0;
