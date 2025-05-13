@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (!NPC.wet && !IsExploding)
+            if (!NPC.wet && !IsExploding && CurrentBehavior != OutsideWaterBehavior)
                 CurrentBehavior = OutsideWaterBehavior;
 
 

@@ -49,6 +49,12 @@ namespace CalamityMod.Schematics
         internal const string SanctumofOblivionType3Key = "Sanctum of Oblivion Type 3 Key";
         internal const string SanctumofOblivionType3Filename = "Schematics/Sanctum_of_Oblivion3.csch";
 
+        internal const string HellstoneStrongholdType1Key = "Hellstone Stronghold Type 1 Key";
+        internal const string HellstoneStrongholdType1Filename = "Schematics/Hellstone_Stronghold1.csch";
+
+        internal const string HellstoneStrongholdType2Key = "Hellstone Stronghold Type 2 Key";
+        internal const string HellstoneStrongholdType2Filename = "Schematics/Hellstone_Stronghold2.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -155,6 +161,8 @@ namespace CalamityMod.Schematics
                 [SanctumofOblivionType1Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType1Filename),
                 [SanctumofOblivionType2Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType2Filename),
                 [SanctumofOblivionType3Key] = CalamitySchematicIO.LoadSchematic(SanctumofOblivionType3Filename),
+                [HellstoneStrongholdType1Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType1Filename),
+                [HellstoneStrongholdType2Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType2Filename),
 
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),
