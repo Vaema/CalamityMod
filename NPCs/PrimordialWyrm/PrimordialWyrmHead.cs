@@ -53,6 +53,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             set => NPC.Calamity().newAI[0] = value;
         }
 
+        // Store velocity for use with other segments
+        public static float PWHeadVelocity;
+
         // Base distance from the target for most attacks
         private const float baseDistance = 1000f;
 
@@ -1457,8 +1460,19 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)NPC.velocity.Length(), 6f, 8f);
+            PWHeadVelocity = saneVelocity;
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            // if anyone needs to debug this piece of shit code, i leave this to you
+            //Main.NewText("vec length: " + NPC.velocity.Length());
+            //Main.NewText("sane vel:   " + saneVelocity);
+            //Main.NewText("brightness: " + brightness, new Color(255, 0, brightness * 128)); // this line doesnt even work LMAO
 
             return false;
         }
@@ -1519,7 +1533,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (NPC.Opacity == 1f && hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 1200, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 1200);
         }
     }
 }

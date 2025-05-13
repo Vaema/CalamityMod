@@ -4,7 +4,7 @@ Abaddon: {
 		'''
 		8% increased critical strike chance
 		Critical strikes explode, causing nearby enemies to ignite with Brimstone Flames
-		Greatly reduces the damage taken by the Brimstone Flames debuff
+		Reduces the damage of the Brimstone Flames debuff by 50%
 		'''
 }
 
@@ -73,7 +73,7 @@ AlchemicalFlask: {
 	DisplayName: Alchemical Flask
 	Tooltip:
 		'''
-		All attacks inflict the Plague and reduces damage taken from the Plague
+		All attacks inflict the Plague and reduces damage taken from the Plague by 50%
 		Projectiles spawn plague seekers on enemy hits
 		Releases plague bees when damaged and douses you in honey 
 		'''
@@ -1042,7 +1042,7 @@ LeviathanAmbergris: {
 	DisplayName: Leviathan Ambergris
 	Tooltip:
 		'''
-		200% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
+		120% increased initial dash velocity, 33% faster dash cooldown, and greatly increased dash deceleration
 		Your dashes are empowered by water, knocking back and damaging nearby enemies with viscous currents
 		Visual effects are reduced if visibility is disabled
 		'''
@@ -1068,13 +1068,19 @@ LivingDew: {
 		'''
 }
 
-LumenousAmulet: {
-	DisplayName: Lumenous Amulet
+DiamondOfTheDeep: {
+	DisplayName: Diamond of the Deep
 	Tooltip:
 		'''
-		Attacks inflict Crush Depth, and grants immunity to Crush Depth and Riptide
-		While in the abyss you gain 25% increased max life
-		{$Common.AbyssLightLevel2}
+		Multiplies all water debuff damage by 1.75x
+		Slowly accrue up to three different abyssal spirits
+		Dash to disperse the spirits and have them attack enemies
+		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
+		The spirits appear in order and have different effects based on color:
+		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
+		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 15 temporarily]
+		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
+		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
 
@@ -1402,7 +1408,7 @@ RadiantOoze: {
 
 RaidersTalisman: {
 	DisplayName: Raider's Talisman
-	Tooltip: Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
+	Tooltip: Stealth strikes grant 15% critical strike chance to non-stealth strikes for 10 seconds
 }
 
 RampartofDeities: {
@@ -1463,7 +1469,7 @@ RottenBrain: {
 
 RottenDogtooth: {
 	DisplayName: Rotten Dogtooth
-	Tooltip: Stealth strikes inflict Crumbling and deal 8% more damage
+	Tooltip: Stealth strikes inflict Crumbling for 2.5 seconds and deal 8% more damage
 }
 
 RoverDrive: {
@@ -1835,12 +1841,14 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		15% increased damage
+		10% increased damage
+		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3.5x
 		Most buffs last twice as long, and persist after dying
-		Taking damage inflicts several debuffs on nearby enemies and spawns a dank creeper
+		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
 		After dodging, summon damage and crit chance are boosted by 10%
+		'You have no idea how it's staying together'
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -1911,9 +1919,9 @@ TheSponge: {
 	Tooltip:
 		'''
 		Gain a barrier with 180 health
-		The barrier grants 30 defense and 10% damage reduction while active
+		The barrier grants 20 defense and 10% damage reduction while active
 		[ADREN]
-		Once depleted, the barrier will regenerate 9 seconds after being hit
+		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
 		Getting hit resets the timer
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -1975,8 +1983,11 @@ VampiricTalisman: {
 	Tooltip:
 		'''
 		Rogue critical strikes steal enemy life
-		12% increased rogue damage
+		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
+		Stealth strikes inflict Heavy Bleeding and Armor Crunch, and deal 8% more damage
+		'Possessing the talisman makes you yearn for blood'
 		'''
+	YearningForBlood: THIS ENDLESS HUNGER WON'T END
 }
 
 VeneratedLocket: {
@@ -2010,7 +2021,7 @@ VoidofExtinction: {
 		'''
 		13% increased critical strike chance
 		Critical strikes explode, igniting enemies with Brimstone Flames
-		Partially resist the Brimstone Flames debuff
+		Reduces the damage of the Brimstone Flames debuff by 50%
 		'''
 }
 
@@ -2027,7 +2038,8 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Damage is increased by 20% when close to enemies, but decreased by 40% when none are nearby
+		Grants a scaling damage boost based on how close you are to enemies
+		Maximum damage boost is 20%, minimum damage boost is -30%
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled

@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.UseSound = SoundID.Item33;
+            Item.UseSound = SoundID.Item158;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<UltimaBowProjectile>();
             Item.shootSpeed = 18f;
@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PulseBow).
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
-                AddIngredient<AstralBow>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddIngredient<ExodiumCluster>(15).

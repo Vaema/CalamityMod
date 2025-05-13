@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -8,20 +9,18 @@ namespace CalamityMod.Items.Ammo
 {
     public class HyperiusBullet : ModItem, ILocalizedModType
     {
+        public static float overflowEfficency = 1.2f; // Multiplier applied to overflow damage done by other damage sources
+        public static readonly SoundStyle hit = new("CalamityMod/Sounds/Item/HyperiusOverflow");
         public new string LocalizationCategory => "Items.Ammo";
-
-        public static int SplitBulletBonusDamage = 16;
-
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
         }
-
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 30;
-            Item.damage = 13;
+            Item.damage = 12;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
@@ -35,8 +34,8 @@ namespace CalamityMod.Items.Ammo
 
         public override void AddRecipes()
         {
-            CreateRecipe(150).
-                AddIngredient(ItemID.MusketBall, 150).
+            CreateRecipe(333).
+                AddIngredient(ItemID.MusketBall, 333).
                 AddIngredient<LifeAlloy>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

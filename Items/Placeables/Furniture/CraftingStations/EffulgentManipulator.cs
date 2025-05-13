@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             CreateRecipe().
                 AddIngredient<SilvaCrystal>(10).
                 AddRecipeGroup("AnyGoldBar", 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

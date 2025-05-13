@@ -13,7 +13,6 @@ AquamarineBolt.DisplayName: Aqua Bolt
 ArcticBearPawProj.DisplayName: Arctic Bear Paw
 ArtAttackStar.DisplayName: Artsy Star
 ArtAttackStrike.DisplayName: Art Attack
-Asteroid.DisplayName: Asteroid
 AsteroidMolten.DisplayName: Molten Asteroid
 AstralachneaFang.DisplayName: Astral Fang
 AstralCrystal.DisplayName: Astral Crystal
@@ -201,6 +200,7 @@ SHPB.DisplayName: SHPB
 SHPExplosion.DisplayName: SHPB Explosion
 SHPL.DisplayName: SHPL
 SHPS.DisplayName: SHPS
+SHPV.DisplayName: SHPV
 SilvaBurst.DisplayName: Silva Burst
 SlitheringEelProjectile.DisplayName: Slithering Eel
 SmallSpirit.DisplayName: Small Angry Spirit

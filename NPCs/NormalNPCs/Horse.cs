@@ -109,7 +109,6 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             var weapons = new int[]
             {
-                ModContent.ItemType<Aftershock>(),
                 ModContent.ItemType<EarthenPike>(),
                 ModContent.ItemType<SlagMagnum>(),
             };
@@ -312,7 +311,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 300);
         }
     }
 }

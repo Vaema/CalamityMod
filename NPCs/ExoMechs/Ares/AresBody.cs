@@ -41,6 +41,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     public class AresBody : ModNPC
     {
         // Used for loot
@@ -1606,7 +1607,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             // GFB Broken Water Filter
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<BrokenWaterFilter>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BrokenWaterFilter>()), hideLootReport: true);
             }
 
             // Lore item

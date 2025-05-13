@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AstrumDeus
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(AstrumDeusHead))]
     public class AstrumDeusBody : ModNPC
     {
@@ -25,8 +26,11 @@ namespace CalamityMod.NPCs.AstrumDeus
         public static Asset<Texture2D> TextureGlow2;
         public static Asset<Texture2D> TextureGlow3;
         public static Asset<Texture2D> TextureGlow4;
+        public static Asset<Texture2D> TextureFlash;
+        public static Asset<Texture2D> TextureFlash2;
         public static Asset<Texture2D> TextureAltGlow1;
         public static Asset<Texture2D> TextureAltGlow2;
+        public static Asset<Texture2D> TextureAltFlash;
 
         public override void SetStaticDefaults()
         {
@@ -39,8 +43,11 @@ namespace CalamityMod.NPCs.AstrumDeus
                 TextureGlow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
                 TextureGlow3 = ModContent.Request<Texture2D>(Texture + "Glow3", AssetRequestMode.AsyncLoad);
                 TextureGlow4 = ModContent.Request<Texture2D>(Texture + "Glow4", AssetRequestMode.AsyncLoad);
+                TextureFlash = ModContent.Request<Texture2D>(Texture + "GlowFlash", AssetRequestMode.AsyncLoad);
+                TextureFlash2 = ModContent.Request<Texture2D>(Texture + "GlowFlash2", AssetRequestMode.AsyncLoad);
                 TextureAltGlow1 = ModContent.Request<Texture2D>(Texture + "AltGlow", AssetRequestMode.AsyncLoad);
                 TextureAltGlow2 = ModContent.Request<Texture2D>(Texture + "AltGlow2", AssetRequestMode.AsyncLoad);
+                TextureAltFlash = ModContent.Request<Texture2D>(Texture + "AltGlowFlash", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -118,12 +125,21 @@ namespace CalamityMod.NPCs.AstrumDeus
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool altBodyTextures = NPC.localAI[3] == 1f;
-            bool drawCyan = NPC.Calamity().newAI[3] >= (Main.getGoodWorld ? 300f : 600f);
             bool deathModeEnragePhase = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
+            // Need segment amount to get a smooth transition down the worm based on length
+            int segmentAmt = Main.zenithWorld ? (CalamityWorld.death ? 8 : CalamityWorld.revenge ? 7 : Main.expertMode ? 6 : 5) : (CalamityWorld.death ? 40 : CalamityWorld.revenge ? 35 : Main.expertMode ? 30 : 25);
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
+            float transitionStart = MathHelper.Lerp(cyanThreshold * 0.75f, cyanThreshold * 0.95f, 1f - (NPC.ai[3] / (float)segmentAmt));
+            float transitionEnd = MathHelper.Lerp(cyanThreshold * 0.8f, cyanThreshold, 1f - (NPC.ai[3] / (float)segmentAmt));
+            bool drawCyan = NPC.Calamity().newAI[3] >= transitionEnd && NPC.Calamity().newAI[3] <= cyanThreshold + transitionEnd;
+            bool inColorTrans = doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold >= transitionStart && NPC.Calamity().newAI[3] % cyanThreshold <= transitionEnd;
+
             Texture2D mainWormTex = altBodyTextures ? AltTexture.Value : TextureAssets.Npc[Type].Value;
             Texture2D secondWormTex = TextureGlow2.Value;
+            Texture2D mainFlashTex = altBodyTextures ? TextureAltFlash.Value : TextureFlash.Value;
+            Texture2D otherMainTex, otherSecondTex;
             Vector2 halfSizeTex = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -132,26 +148,50 @@ namespace CalamityMod.NPCs.AstrumDeus
             spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
 
             mainWormTex = altBodyTextures ? TextureAltGlow1.Value : TextureGlow1.Value;
+            float colorOpacity = Utils.GetLerpValue(transitionStart, transitionEnd, NPC.Calamity().newAI[3] % cyanThreshold, true);
             Color phaseColor = drawCyan ? Color.Cyan : Color.Orange;
-            if (doubleWormPhase)
+            Color otherPhaseColor = drawCyan ? Color.Orange : Color.Cyan;
+            if (doubleWormPhase) // otherMainTex and otherSecondTex contain the opposite texture, and are faded in during the transition
             {
                 mainWormTex = drawCyan ? mainWormTex : (altBodyTextures ? TextureAltGlow2.Value : TextureGlow3.Value);
+                otherMainTex = drawCyan ? (altBodyTextures ? TextureAltGlow2.Value : TextureGlow3.Value) : mainWormTex;
                 secondWormTex = drawCyan ? TextureGlow4.Value : secondWormTex;
+                otherSecondTex = drawCyan ? secondWormTex : TextureGlow4.Value;
+            }
+            else
+            {
+                otherMainTex = mainWormTex;
+                otherSecondTex = secondWormTex;
             }
             Color mainWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Cyan, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
             Color secondWormColorLerp = Color.Lerp(Color.White, doubleWormPhase ? phaseColor : Color.Orange, 0.5f) * (deathModeEnragePhase ? 1f : NPC.Opacity);
 
             int timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 1 : 2;
             for (int i = 0; i < timesToDraw; i++)
-                spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, mainWormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+            {
+                spriteBatch.Draw(mainWormTex, drawLocation, NPC.frame, mainWormColorLerp * (inColorTrans ? 1f - colorOpacity : 1f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the new fading in glowmask for the upcoming behavior
+                if (inColorTrans)
+                    spriteBatch.Draw(otherMainTex, drawLocation, NPC.frame, Color.Lerp(Color.White, otherPhaseColor, 0.5f) * colorOpacity, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                // Controls drawing the white flash immediately after swapping behaviors
+                if (doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold < 25f)
+                    spriteBatch.Draw(mainFlashTex, drawLocation, NPC.frame, Color.White * MathHelper.Lerp(1f, 0f, NPC.Calamity().newAI[3] % cyanThreshold / 25f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+            }
 
             if (!altBodyTextures)
             {
                 timesToDraw = deathModeEnragePhase ? 3 : drawCyan ? 2 : 1;
                 for (int i = 0; i < timesToDraw; i++)
-                    spriteBatch.Draw(secondWormTex, drawLocation, NPC.frame, secondWormColorLerp, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                {
+                    spriteBatch.Draw(secondWormTex, drawLocation, NPC.frame, secondWormColorLerp * (inColorTrans ? 1f - colorOpacity : 1f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                    // Controls drawing the new fading in glowmask for the upcoming behavior
+                    if (inColorTrans)
+                        spriteBatch.Draw(otherSecondTex, drawLocation, NPC.frame, Color.Lerp(Color.White, otherPhaseColor, 0.5f) * colorOpacity, NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                    // Controls drawing the white flash immediately after swapping behaviors
+                    if (doubleWormPhase && NPC.Calamity().newAI[3] % cyanThreshold < 25f)
+                        spriteBatch.Draw(TextureFlash2.Value, drawLocation, NPC.frame, Color.White * MathHelper.Lerp(1f, 0f, NPC.Calamity().newAI[3] % cyanThreshold / 25f), NPC.rotation, halfSizeTex, NPC.scale, spriteEffects, 0f);
+                }
             }
-
             return false;
         }
 
@@ -213,7 +253,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 100, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

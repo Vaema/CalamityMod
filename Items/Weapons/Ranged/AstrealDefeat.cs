@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 78;
-            Item.damage = 153;
+            Item.damage = 160;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 20;
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ShadowFlameBow).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<AshesofCalamity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

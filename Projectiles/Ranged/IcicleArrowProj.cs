@@ -118,9 +118,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (falling)
-                modifiers.SourceDamage *= 1.1f;
-
             if (Projectile.numHits > 1 && falling)
                 Projectile.damage = (int)(Projectile.damage * 0.5f);
             if (Projectile.damage < 1)

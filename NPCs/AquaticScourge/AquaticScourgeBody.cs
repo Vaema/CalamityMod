@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AquaticScourge
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(AquaticScourgeHead))]
     public class AquaticScourgeBody : ModNPC
     {

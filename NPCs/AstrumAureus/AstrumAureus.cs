@@ -35,6 +35,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumAureus
 {
     [AutoloadBossHead]
+    [HasPierceResist(singleHitbox: true)]
     public class AstrumAureus : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/AureusHit", 4);
@@ -412,11 +413,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             // Relic
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AstrumAureusRelic>());
 
-            // GFB Crab Banner and Asteroid Staff drop
+            // GFB Crab Banner drop
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.CrabBanner, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<AsteroidStaff>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.CrabBanner, 1, 1, 9999), true);
             }
 
             // Lore
@@ -581,7 +581,7 @@ namespace CalamityMod.NPCs.AstrumAureus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 200, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 360);
         }
     }
 }

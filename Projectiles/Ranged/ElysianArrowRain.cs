@@ -43,6 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override bool? CanDamage() => Projectile.numHits >= 1 ? false : null;

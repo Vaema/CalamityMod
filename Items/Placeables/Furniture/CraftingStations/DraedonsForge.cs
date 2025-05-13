@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
                 AddIngredient(ItemID.LunarCraftingStation).
                 AddIngredient<AuricBar>(15).
                 AddIngredient<ExoPrism>(12).
-                AddIngredient<AscendantSpiritEssence>(25).
+                AddIngredient<AscendantSpiritEssence>(15).
                 Register();
         }
     }

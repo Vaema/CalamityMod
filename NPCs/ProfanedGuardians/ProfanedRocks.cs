@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ProfanedGuardians
 {
+    [HasPierceResist]
     public class ProfanedRocks : ModNPC
     {
         private bool start = true;
@@ -343,7 +344,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 90;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.tileCollide = true;
+            Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.extraUpdates = 2;

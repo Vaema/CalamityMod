@@ -103,5 +103,6 @@ namespace CalamityMod.Projectiles.Ranged
                 dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
             }
         }
+        public override bool? CanHitNPC(NPC target) => target.CanBeChasedBy() ? null : false;
     }
 }

@@ -174,7 +174,7 @@ namespace CalamityMod.Items
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, planteraWeapons));
                     loot.Add(ModContent.ItemType<BlossomFlux>(), 10); // 10% Blossom Flux
                     loot.Add(ModContent.ItemType<BloomStone>(), DropHelper.BagWeaponDropRateFraction);
-                    loot.Add(ModContent.ItemType<LivingShard>(), 1, 30, 35);
+                    loot.Add(ModContent.ItemType<LivingShard>(), 1, 40, 50);
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;

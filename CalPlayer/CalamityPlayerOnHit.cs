@@ -72,7 +72,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
-            target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
             target.Calamity().IncreasedElectricityEffects_Unused = false;
@@ -80,15 +79,16 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
-            target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             target.Calamity().IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            target.Calamity().IncreasedWaterEffects_Amulet2 = false;
+            target.Calamity().IncreasedWaterEffects_Amulet2 = dOfTheDeep;
 
             target.Calamity().IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             target.Calamity().IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            target.Calamity().IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (item.type)
             {
@@ -207,7 +207,6 @@ namespace CalamityMod.CalPlayer
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
 
             cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
-            cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
             cgn.IncreasedElectricityEffects_Unused = false;
@@ -215,15 +214,16 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             cgn.IncreasedHeatEffects_FireBoots = bootLevel;
-            cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
             cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            cgn.IncreasedWaterEffects_Amulet2 = false;
+            cgn.IncreasedWaterEffects_Amulet2 = dOfTheDeep;
 
             cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
             cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
+
+            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
 
             switch (proj.type)
             {
@@ -755,7 +755,7 @@ namespace CalamityMod.CalPlayer
                     for (int l = 0; l < 2; l++)
                     {
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        int leafDamage = (int)(0.25f * proj.damage);
+                        int leafDamage = CalamityUtils.DamageSoftCap((int)(0.25f * proj.damage), 150);
                         int leaf = Projectile.NewProjectile(source, position, velocity, ProjectileID.Leaf, leafDamage, 0f, Player.whoAmI);
                         if (leaf.WithinBounds(Main.maxProjectiles))
                         {
@@ -768,7 +768,7 @@ namespace CalamityMod.CalPlayer
                         for (int projCount = 0; projCount < 2; projCount++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                            int energyDamage = (int)(0.33f * proj.damage);
+                            int energyDamage = CalamityUtils.DamageSoftCap((int)(0.33f * proj.damage), 200);
                             Projectile.NewProjectile(source, proj.Center, velocity, ProjectileType<TarraEnergy>(), energyDamage, 0f, proj.owner);
                         }
                     }
@@ -1099,6 +1099,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+                Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
                     SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, Player.Center);
@@ -1229,6 +1230,14 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<Irradiated>(), 180);
                 }
             }
+            if (amalgam)
+            {
+                target.AddBuff(BuffID.Daybreak, 120);
+                target.AddBuff(BuffType<Nightwither>(), 120);
+                target.AddBuff(BuffType<Plague>(), 120);
+                target.AddBuff(BuffType<VermillionFlux>(), 120);
+                target.AddBuff(BuffType<CrushDepth>(), 120);
+            }
             if (voidOfExtinction)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
             if (frostFlare)
@@ -1241,10 +1250,6 @@ namespace CalamityMod.CalPlayer
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
-            if (lumenousAmulet)
-            {
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<CrushDepth>());
             }
             if (corrosiveSpine)
             {
@@ -1303,11 +1308,19 @@ namespace CalamityMod.CalPlayer
 
                 if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
                 {
-                    int heal = (int)Math.Round(damage * 0.015);
+                    int heal = (int)Math.Round(damage * (Main.zenithWorld ? 0.01 : 0.008));
+                    if (proj.Calamity().stealthStrike)
+                    {
+                        heal /= 2; //stealth strikes heal half due to generally dealing far more dmg
+
+                        if (Main.zenithWorld)
+                            heal *= -2; // IT YEARNS FOR MORE BLOOD
+                    }
                     if (heal > BalancingConstants.LifeStealCap)
                         heal = BalancingConstants.LifeStealCap;
 
-                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile(1f, heal))
+                    // Heals more if the ability is active
+                    if (CalamityGlobalProjectile.CanSpawnLifeStealProjectile((raiderCritLifespan > 0) ? 1.5f : 1f, heal))
                         CalamityGlobalProjectile.SpawnLifeStealProjectile(proj, Player, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
                 }
 

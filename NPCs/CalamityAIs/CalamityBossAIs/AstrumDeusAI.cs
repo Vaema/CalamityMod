@@ -102,6 +102,9 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
                 calamityGlobalNPC.newAI[3] = 0f;
+            // Sound effect for swapping between attack behaviors in phase 2
+            if (doubleWormPhase && calamityGlobalNPC.newAI[3] % aiSwitchTimer == 0f && !(deathModeEnragePhase_Head || deathModeEnragePhase_BodyAndTail))
+                SoundEngine.PlaySound(AstrumDeusHead.SplitSound with { Pitch = -0.2f, Volume = 0.9f }, player.Center);
 
             // Phase for flying at the player
             bool flyAtTarget = calamityGlobalNPC.newAI[3] >= (aiSwitchTimer * 0.5f) && startFlightPhase;
@@ -365,6 +368,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 SyncCalamityNPCAIArrayPacket.Send(Main.npc[lol]);
                             }
 
+                            Main.npc[lol].ai[3] = segments + 1;
                             Main.npc[lol].ai[2] = npc.whoAmI;
                             Main.npc[lol].ai[1] = Previous;
                             Main.npc[Previous].ai[0] = lol;
@@ -864,8 +868,15 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 }
             }
 
+            // Play spawn sound on Deus on the first frame because otherwise the sound wouldn't play properly in multiplayer
+            if (calamityGlobalNPC.newAI[1] == 0f && !doubleWormPhase)
+            {
+                SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, npc.Center);
+                calamityGlobalNPC.newAI[1] = 1f;
+            }
+
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
-            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
+            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
                 calamityGlobalNPC.newAI[1] += 1f;
 
             // Calculate contact damage based on velocity

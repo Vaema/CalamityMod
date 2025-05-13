@@ -140,21 +140,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            // Elysian Wings, Elysian TRACERS?! and SERAPH TRACERS?!
-            if (calamityPlayer.elysianWingsDust && drawInfo.shadow == 0f)
-            {
-                if (!Player.StandingStill() && !Player.mount.Active)
-                {
-                    if (Main.rand.NextBool())
-                    {
-                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust.dustIndex);
-                    }
-                }
-            }
             #endregion
 
             #region Armor Visuals

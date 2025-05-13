@@ -214,8 +214,8 @@ namespace CalamityMod.NPCs.Crabulon
 
             if (NPC.ai[0] < 2f)
             {
-                int mushBombAmt = phase4 ? 12 : phase3 ? 6 : phase2 ? 3 : 1;
-                float fireRate = phase4 ? 6f : phase3 ? 4f : phase2 ? 2f : 1f;
+                int mushBombAmt = phase4 ? 6 : phase3 ? 3 : phase2 ? 2 : 1;
+                float fireRate = phase4 ? 6f : phase3 ? 3f : phase2 ? 2f : 1f;
                 NPC.localAI[3] += fireRate;
                 if (NPC.ai[3] == 0f)
                 {
@@ -239,7 +239,7 @@ namespace CalamityMod.NPCs.Crabulon
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        float yVelocity = death ? 1f : expertMode ? 2.5f : 5f;
+                        float yVelocity = death ? 1f : expertMode ? 2.5f : 4f;
                         Vector2 projectileVelocity = (Vector2.Normalize(player.Center - NPC.Center) * mushBombSpeed) - Vector2.UnitY * yVelocity;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, NPC.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, player.Center.Y);
                     }
@@ -257,12 +257,12 @@ namespace CalamityMod.NPCs.Crabulon
                 if (phase2)
                     NPC.ai[1] += 1f;
                 if (phase3)
-                    NPC.ai[1] += 2f;
+                    NPC.ai[1] += 1f;
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
                 // Gets tired easily in final phase. - Fabsol
-                float idleTime = phase4 ? 480f : death ? 30f : expertMode ? 60f : 120f;
+                float idleTime = phase4 ? 480f : death ? 60f : expertMode ? 90f : 120f;
                 if (NPC.ai[1] >= idleTime)
                 {
                     bool deathModeTripleStomp = Main.rand.NextBool() && death && phase2;
@@ -283,9 +283,9 @@ namespace CalamityMod.NPCs.Crabulon
                 if (phase2)
                     walkingVelocity += 0.5f;
                 if (phase3)
-                    walkingVelocity += 1f;
+                    walkingVelocity += 0.75f;
                 if (phase4)
-                    walkingVelocity += 1.5f;
+                    walkingVelocity += 1f;
                 if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                     walkingVelocity *= 2f;
 
@@ -320,11 +320,11 @@ namespace CalamityMod.NPCs.Crabulon
                     Vector2 collisionCheckPosition = new Vector2(NPC.Center.X - 40, NPC.position.Y + NPC.height - 20);
 
                     bool fallDownOnTopOfTarget = NPC.position.X < player.position.X && NPC.position.X + NPC.width > player.position.X + player.width && NPC.position.Y + NPC.height < player.position.Y + player.height - 16f;
-                    float acceleration = death ? 0.1f : expertMode ? 0.05f : 0.025f;
-                    float acceleration2 = death ? 0.8f : expertMode ? 0.4f : 0.2f;
+                    float acceleration = death ? 0.075f : expertMode ? 0.05f : 0.03f;
+                    float acceleration2 = death ? 0.6f : expertMode ? 0.4f : 0.25f;
                     if (fallDownOnTopOfTarget)
                     {
-                        float fallSpeed = death ? 2f : expertMode ? 1f : 0.5f;
+                        float fallSpeed = death ? 1.5f : expertMode ? 1f : 0.5f;
                         NPC.velocity.Y += fallSpeed;
                     }
                     else if (Collision.SolidCollision(collisionCheckPosition, 80, 20))
@@ -337,7 +337,7 @@ namespace CalamityMod.NPCs.Crabulon
                         else
                             NPC.velocity.Y -= acceleration2;
 
-                        float upwardSpeedCap = death ? 16f : expertMode ? 8f : 4f;
+                        float upwardSpeedCap = death ? 9f : expertMode ? 6f : 4f;
                         if (NPC.velocity.Y < -upwardSpeedCap)
                             NPC.velocity.Y = -upwardSpeedCap;
                     }
@@ -357,7 +357,7 @@ namespace CalamityMod.NPCs.Crabulon
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
-                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 120f * (1f - lifeRatio) : 0f);
+                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
                     NPC.noGravity = false;
@@ -417,7 +417,7 @@ namespace CalamityMod.NPCs.Crabulon
                     }
                     else if (NPC.ai[1] == -1f)
                     {
-                        float maxVelocityXIncrease = death ? 6f : 4f;
+                        float maxVelocityXIncrease = death ? 4f : 3f;
                         float maxVelocityYIncrease = death ? 3f : 2f;
                         float velocityX = 6f + (expertMode ? (maxVelocityXIncrease * (1f - lifeRatio)) : 0f);
                         float velocityY = 12f + (expertMode ? (maxVelocityYIncrease * (1f - lifeRatio)) : 0f);
@@ -531,7 +531,7 @@ namespace CalamityMod.NPCs.Crabulon
                             destination *= projectileVelocity;
 
                             // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
-                            int numProj = bossRush ? 32 : phase4 ? 18 : CalamityWorld.death ? (phase3 ? 12 : 20) : 16;
+                            int numProj = bossRush ? 24 : phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -556,7 +556,7 @@ namespace CalamityMod.NPCs.Crabulon
                                 destination *= projectileVelocity;
 
                                 // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
-                                int numProj = bossRush ? 20 : phase4 ? 10 : (phase3 && death) ? 6 : 10;
+                                int numProj = bossRush ? 16 : phase4 ? 8 : (phase3 && death) ? 6 : 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
                                 {
@@ -636,21 +636,21 @@ namespace CalamityMod.NPCs.Crabulon
 
                     if (NPC.position.X < player.position.X && NPC.position.X + NPC.width > player.position.X + player.width)
                     {
-                        float slowDownMultiplier = death ? 0.84f : expertMode ? 0.92f : 0.96f;
+                        float slowDownMultiplier = death ? 0.9f : expertMode ? 0.93f : 0.96f;
                         NPC.velocity.X *= slowDownMultiplier;
 
-                        float fallSpeedIncrease = phase4 ? 0.36f : death ? 0.24f : expertMode ? 0.12f : 0.06f;
+                        float fallSpeedIncrease = phase4 ? 0.2f : death ? 0.15f : expertMode ? 0.12f : 0.09f;
                         NPC.velocity.Y += fallSpeedIncrease;
                     }
                     else
                     {
-                        float velocityX = (death ? 0.2f : expertMode ? 0.15f : 0.1f) + 0.05f * enrageScale;
+                        float velocityX = (death ? 0.15f : expertMode ? 0.125f : 0.1f) + 0.05f * enrageScale;
                         if (NPC.direction < 0)
                             NPC.velocity.X -= velocityX;
                         else if (NPC.direction > 0)
                             NPC.velocity.X += velocityX;
 
-                        float maxVelocityXIncrease = death ? 6f : 4f;
+                        float maxVelocityXIncrease = death ? 4f : 3f;
                         float maxVelocityX = 6f + (expertMode ? (maxVelocityXIncrease * (1f - lifeRatio)) : 0f);
 
                         if (revenge)
@@ -713,19 +713,21 @@ namespace CalamityMod.NPCs.Crabulon
                         if (!player.dead && player.active && Math.Abs(NPC.Center.X - player.Center.X) / 16f <= despawnDistanceInTiles)
                             center = player.Center;
 
-                        center.Y -= 480f;
+                        center.Y -= 320f + Math.Abs(player.Center.Y - NPC.Center.Y);
                         center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X - NPC.Center.X > 0f) ? 1 : -1);
 
                         NPC.ai[2] = 1f;
                         NPC.ai[3] = NPC.Bottom.Y;
                         NPC.noTileCollide = true;
+
+                        float leapVelocity = bossRush ? 24f : death ? 18f : 16f;
                         NPC.velocity = center - NPC.Center;
                         NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
-                        NPC.velocity *= bossRush ? 24f : death ? 21f : 18f;
+                        NPC.velocity *= leapVelocity;
 
-                        float jumpVelocityMin = -12f;
-                        if (NPC.velocity.Y > jumpVelocityMin)
-                            NPC.velocity.Y = jumpVelocityMin;
+                        float velocityMinY = -leapVelocity;
+                        if (NPC.velocity.Y > velocityMinY)
+                            NPC.velocity.Y = velocityMinY;
 
                         NPC.ForceNetUpdate();
                     }
@@ -757,8 +759,12 @@ namespace CalamityMod.NPCs.Crabulon
                             }
                         }
 
+                        // Collide with tiles if falling and beyond a certain threshold
+                        if (NPC.velocity.Y >= 0f && NPC.Bottom.Y >= NPC.ai[3] - NPC.height)
+                            NPC.noTileCollide = false;
+
                         // Impact and create lines of mushrooms that spread out along the ground (similar to an old Providence attack)
-                        if (NPC.Bottom.Y >= NPC.ai[3] - NPC.height && NPC.velocity.Y >= 0f)
+                        if (NPC.Bottom.Y >= NPC.ai[3] || NPC.velocity.Y == 0f)
                         {
                             SoundEngine.PlaySound(SlamSound, NPC.Center);
 
@@ -766,7 +772,6 @@ namespace CalamityMod.NPCs.Crabulon
                             NPC.ai[1] = 0f;
                             NPC.ai[2] = 0f;
                             NPC.ai[3] = 0f;
-                            NPC.noTileCollide = false;
                             NPC.netUpdate = true;
 
                             int type = ModContent.ProjectileType<MushBombGround>();
@@ -775,7 +780,7 @@ namespace CalamityMod.NPCs.Crabulon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float xVelocity = death ? 2f : 1f;
-                                int numProj = 5;
+                                int numProj = death ? 5 : 3;
                                 Vector2 initialVelocity = Vector2.UnitX * xVelocity;
                                 Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
@@ -821,6 +826,8 @@ namespace CalamityMod.NPCs.Crabulon
                         }
                     }
                 }
+                else
+                    NPC.velocity.X *= 0.8f;
             }
 
             // Stomp three times quickly, creating lines of mushrooms and a column of mushrooms that slowly fall down
@@ -1223,7 +1230,7 @@ namespace CalamityMod.NPCs.Crabulon
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CrabulonRelic>());
 
             // GFB Odd Mushroom drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<OddMushroom>(), 1, 1, 9999, true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<OddMushroom>(), 1, 1, 9999), true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCrabulon, ModContent.ItemType<LoreCrabulon>(), desc: DropHelper.FirstKillText);

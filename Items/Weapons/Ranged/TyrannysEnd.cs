@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 150;
             Item.height = 48;
-            Item.damage = 2000;
+            Item.damage = 2150;
             Item.knockBack = 9.5f;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 60;
@@ -46,9 +46,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GoldenEagle>().
+                AddIngredient<RubicoPrime>().
                 AddIngredient<AntiMaterielRifle>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

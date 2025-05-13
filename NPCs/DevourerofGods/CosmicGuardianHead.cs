@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class CosmicGuardianHead : ModNPC
     {
@@ -450,7 +451,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120, true);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
         }
     }
 }

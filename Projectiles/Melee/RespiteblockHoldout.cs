@@ -1,7 +1,8 @@
 ﻿using System;
-using CalamityMod.Enums;
-using CalamityMod.Particles;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Enums;
+using CalamityMod.NPCs;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class RespiteblockHoldout : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";

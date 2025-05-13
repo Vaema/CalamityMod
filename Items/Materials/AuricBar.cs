@@ -94,7 +94,7 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(5).
                 AddIngredient<AuricOre>(50).
                 AddIngredient<YharonSoulFragment>().
-                AddTile<CosmicAnvil>().
+                AddTile(TileID.AdamantiteForge).
                 Register();
         }
     }

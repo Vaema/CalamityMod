@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             CreateRecipe().
                 AddIngredient<ProfanedRock>(10).
                 AddIngredient<UnholyEssence>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

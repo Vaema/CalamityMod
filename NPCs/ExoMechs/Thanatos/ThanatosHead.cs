@@ -22,6 +22,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Thanatos
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class ThanatosHead : ModNPC
     {
@@ -31,6 +32,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public static readonly SoundStyle VentSound = new("CalamityMod/Sounds/Custom/ExoMechs/ThanatosVent");
 
         public static readonly SoundStyle LaserSound = new("CalamityMod/Sounds/Custom/ExoMechs/THanosLaser");
+
+        public static readonly SoundStyle GFBeam = new("CalamityMod/Sounds/Custom/ExoMechs/THanosGFBeam");
+
 
         public static readonly SoundStyle ThanatosHitSoundOpen = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen", 2) { Volume = 0.5f };
 
@@ -902,7 +906,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                             {
                                 //Commented out in case we decide its better for it to simply play from anywhere in range
                                 //if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
-                                LaserSoundSlot = SoundEngine.PlaySound(LaserSound, NPC.Center);
+                                LaserSoundSlot = SoundEngine.PlaySound((Main.zenithWorld ? GFBeam : LaserSound), NPC.Center);
 
                                 // Create a bunch of lightning bolts in the sky
                                 ExoMechsSky.CreateLightningBolt(12);

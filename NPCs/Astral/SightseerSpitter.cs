@@ -121,9 +121,12 @@ namespace CalamityMod.NPCs.Astral
                 {
                     NPC.ai[1] = 0f;
 
-                    int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPoint.X, (int)spawnPoint.Y, ModContent.NPCType<AstralSeekerSpit>());
-                    Main.npc[n].Center = spawnPoint;
-                    Main.npc[n].velocity = vector * (CalamityWorld.death ? 12f : CalamityWorld.revenge ? 11f : 10f);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int n = NPC.NewNPC(NPC.GetSource_FromAI(), (int)spawnPoint.X, (int)spawnPoint.Y, ModContent.NPCType<AstralSeekerSpit>());
+                        Main.npc[n].Center = spawnPoint;
+                        Main.npc[n].velocity = vector * (CalamityWorld.death ? 12f : CalamityWorld.revenge ? 11f : 10f);
+                    }
                 }
                 else if (NPC.ai[1] >= 140f) //oozin dust at the "mouth"
                 {
@@ -181,7 +184,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
@@ -275,7 +278,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         private void DoKillDust()

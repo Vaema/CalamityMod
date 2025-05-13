@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
             player.statLife -= 3;
             if (player.statLife <= 0)
             {
-                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").Format(player.name)), 1000.0, 0, false);
+                player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ThornBlossom").ToNetworkText(player.name)), 1000.0, 0, false);
             }
             for (int index = 0; index < 3; ++index)
             {
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<UelibloomBar>(10).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

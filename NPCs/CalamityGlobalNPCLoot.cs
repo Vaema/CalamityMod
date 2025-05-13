@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using CalamityMod.Events;
 using CalamityMod.Items;
@@ -97,14 +98,22 @@ namespace CalamityMod.NPCs
                 case NPCID.Werewolf:
                     npcLoot.ChangeDropRate(ItemID.MoonCharm, 1, 20);
                     break;
+
+                // Possessed Armor
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.PossessedArmor:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    break;
                 #endregion
 
                 #region Sky / Space
                 // Harpy
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
+                // Giant Harpy Feather @ 1.25% (0.67% in Vanilla)
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
+                    npcLoot.ChangeDropRate(ItemID.GiantHarpyFeather, 1, 80);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -126,17 +135,41 @@ namespace CalamityMod.NPCs
 
                 #region Underground
                 // Giant Shelly
+                // Giant Shell @ 100% IF Hardmode
+                // OTHERWISE,
                 // Giant Shell @ 14.29% Normal, 25% Expert+
                 case NPCID.GiantShelly:
                 case NPCID.GiantShelly2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<GiantShell>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
                     break;
 
                 // Crawdad
+                // Craw Carapace @ 100% IF Hardmode
+                // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
+                // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<CrawCarapace>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
+                    break;
+
+                // Toxic Sludge
+                // Fast Clock @ 1% Normal, 2% Expert+
+                case NPCID.ToxicSludge:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
+                    break;
+
+                // Medusa
+                // Pocket Mirror @ 10% Normal, 20% Expert+
+                case NPCID.Medusa:
+                    // Remove the vanilla loot rule for Pocket Mirror.
+                    npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.PocketMirror);
+
+                    // Define a replacement rule which has an increased chance.
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 10, 5));
                     break;
 
                 // Tim
@@ -149,6 +182,27 @@ namespace CalamityMod.NPCs
                 // Punch Card @ 100%
                 case NPCID.SkeletonMerchant:
                     npcLoot.Add(ModContent.ItemType<PunchCard>());
+                    break;
+
+                // Skeleton Archer
+                // Magic Quiver @ 5% (2.5% in Vanilla)
+                // Marrow @ 2.5% (0.5% in Vanilla)
+                case NPCID.SkeletonArcher:
+                    npcLoot.ChangeDropRate(ItemID.MagicQuiver, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 40);
+                    break;
+
+                // Armored Skeleton
+                // Beam Sword @ 5% (0.67% in Vanilla)
+                case NPCID.ArmoredSkeleton:
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 20);
+                    break;
+
+                // Black Recluse
+                // Poison Staff @ 5% (2.5% in Vanilla)
+                case NPCID.BlackRecluse:
+                case NPCID.BlackRecluseWall:
+                    npcLoot.ChangeDropRate(ItemID.PoisonStaff, 1, 20);
                     break;
 
                 // Mimic
@@ -218,6 +272,18 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BurntSienna>(), 25, 15));
                     break;
 
+                // Desert Spirit
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.DesertDjinn:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    break;
+
+                // Dreamer Ghoul
+                // Trifold Map @ 1% Normal, 2% Expert+
+                case NPCID.DesertGhoulHallow:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    break;
+
                 // Sand Elemental
                 // Elemental in a Bottle @ 20% Normal, 33.33% Expert+
                 // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
@@ -231,19 +297,39 @@ namespace CalamityMod.NPCs
 
                 #region Ice
 
-                // Ice Bat.
+                // Ice Bat
                 // Frostbat Staff @ 6.67%
                 case NPCID.IceBat:
                     npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
                     break;
 
+                // Undead Viking, Armored Viking
+                // Armor Polish @ 1% Normal, 2% Expert
+                case NPCID.UndeadViking:
+                case NPCID.ArmoredViking:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
+                    break;
+
                 // Icy Merman, Icy Tortoise, Ice Elemental, Wolf
                 // Essence of Eleum @ 100%
                 case NPCID.IcyMerman:
-                case NPCID.IceTortoise:
                 case NPCID.IceElemental:
                 case NPCID.Wolf:
                     npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
+                    break;
+
+                // Modify Frozen Turtle Shell drop rate from 2% to 5%
+                case NPCID.IceTortoise:
+                    npcLoot.Add(ModContent.ItemType<EssenceofEleum>());
+                    List<IItemDropRule> rules = npcLoot.Get(false);
+                    foreach (IItemDropRule rule in rules)
+                    {
+                        if (rule is CommonDrop drop && drop.itemId == ItemID.FrozenTurtleShell)
+                        {
+                            drop.chanceDenominator = 20;
+                            return;
+                        }
+                    }
                     break;
 
                 // Ice Mimic
@@ -316,18 +402,29 @@ namespace CalamityMod.NPCs
                 // Life Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    break;
+
+                // Piranha, Arapaima, Blood Feeder
+                // Adhesive Bandage @ 1% Normal, 2% Expert+
+                case NPCID.Piranha:
+                case NPCID.Arapaima:
+                case NPCID.BloodFeeder:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.AdhesiveBandage, 100, 50));
                     break;
 
                 // Shark
@@ -344,11 +441,43 @@ namespace CalamityMod.NPCs
                 // Jellyfish Necklace @ 1%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 100);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
                     break;
                 #endregion
 
                 #region Corruption, Crimson, Hallow
+                // Face Monster, Devourer
+                // Vitamins @ 1% Normal, 2% Expert+
+                case NPCID.FaceMonster:
+                case NPCID.DevourerHead:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
+                    break;
+
+                // Chaos Elemental
+                // Megaphone @ 1% Normal, 2% Expert+
+                // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
+                case NPCID.ChaosElemental:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
+
+                    // Remove the vanilla loot rule for Rod of Discord.
+                    npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
+
+                    // Define a replacement rule which has an increased chance.
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
+                    break;
+
+                // Illuminant Bat
+                // Trifold Map @ 1% Normal, 2% Expert+
+                case NPCID.IlluminantBat:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    break;
+
+                // Illuminant Slime
+                // Fast Clock @ 1% Normal, 2% Expert+
+                case NPCID.IlluminantSlime:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
+                    break;
+
                 // Gastropod
                 // 5-10 Pink Gel @ 100%
                 case NPCID.Gastropod:
@@ -454,7 +583,7 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<StaffOfNecrosteocytes>(), 15, 10));
                     break;
 
-                //The ectoplasm extra drops got moved to the list section; just like moss hornets
+                // The ectoplasm extra drops got moved to the list section; just like moss hornets
 
                 // Hardmode Dungeon Melee Skeletons
                 // Wisp in a Bottle @ 0.5% INSTEAD OF 0.25%
@@ -487,6 +616,13 @@ namespace CalamityMod.NPCs
                     npcLoot.ChangeDropRate(ItemID.Tabi, 1, 4);
                     break;
 
+                // Necromancers
+                // Nazar @ 1% Normal, 2% Expert+
+                case NPCID.Necromancer:
+                case NPCID.NecromancerArmored:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
+                    break;
+
                 // Paladin
                 // Paladin's Hammer @ 15% INSTEAD OF 6.67%
                 // Paladin's Shield @ 20% INSTEAD OF 9.33%
@@ -498,10 +634,18 @@ namespace CalamityMod.NPCs
 
                 #region Hell
 
-                // Hellbat.
+                // Hellbat
                 // Flarebat Staff @ 4%
+                // Magma Stone @ 1.33% (0.67% in Vanilla)
                 case NPCID.Hellbat:
                     npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 75);
+                    break;
+
+                // Lava Bat
+                // Magma Stone @ 3.33% (2% in Vanilla)
+                case NPCID.Lavabat:
+                    npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 30);
                     break;
 
                 // Fire Imp
@@ -513,10 +657,12 @@ namespace CalamityMod.NPCs
 
                 // Demon, Voodoo Demon
                 // Bladecrest Oathsword @ 2%, 6.67% after defeating EoW/BoC
+                // Demon Scythe @ 5% (2.86% in Vanilla)
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 50);
                     npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 15);
+                    npcLoot.ChangeDropRate(ItemID.DemonScythe, 1, 20);
                     break;
 
                 // Bone Serpent
@@ -546,8 +692,11 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
+                // Nazar and Megaphone @ 1% Normal, 2% Expert
                 case NPCID.Ghost:
                     npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -648,6 +797,13 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateShip:
                     rev.Add(ItemID.FlyingDutchmanMasterTrophy);
                     rev.Add(ItemID.PirateShipMountItem, 4);
+                    break;
+
+                // Pirate's Curse
+                // Nazar and Megaphone @ 1% Normal, 2% Expert
+                case NPCID.PirateGhost:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -1000,7 +1156,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.KingSlimePetItem, 4);
 
                     // GFB Aureus Cell drop
-                    GFB.Add(ModContent.ItemType<AureusCell>(), 1, 45, 55, true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AureusCell>(), 1, 45, 55));
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedSlimeKing, ModContent.ItemType<LoreKingSlime>(), desc: DropHelper.FirstKillText);
@@ -1020,7 +1176,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.EyeOfCthulhuPetItem, 4);
 
                     // GFB Optic Staff drop
-                    GFB.Add(ItemID.OpticStaff, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.OpticStaff), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedBoss1, ModContent.ItemType<LoreEyeofCthulhu>(), desc: DropHelper.FirstKillText);
@@ -1043,7 +1199,9 @@ namespace CalamityMod.NPCs
                     rev.AddIf((info) => info.npc.boss, ItemID.EaterOfWorldsPetItem, 4);
 
                     // GFB Light Disc drop
-                    GFB.AddIf((info) => info.npc.boss, ItemID.LightDisc, hideLootReport: true);
+                    LeadingConditionRule EoWKillGFB = new(DropHelper.If((info) => info.npc.boss));
+                    EoWKillGFB.Add(DropHelper.PerPlayer(ItemID.LightDisc), hideLootReport: true);
+                    npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(EoWKillGFB);
 
                     // Corruption World OR Drunk World: Corruption Lore
                     LeadingConditionRule eowCorruptionLore = new(DropHelper.If((info) => info.npc.boss && (!WorldGen.crimson || WorldGen.drunkWorldGen) && !NPC.downedBoss2, desc: DropHelper.FirstKillText));
@@ -1070,7 +1228,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.BrainOfCthulhuPetItem, 4);
 
                     // GFB Occult Skull Crown drop
-                    GFB.Add(ModContent.ItemType<OccultSkullCrown>(), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<OccultSkullCrown>()), hideLootReport: true);
 
                     // Corruption World OR Drunk World: Corruption Lore
                     LeadingConditionRule bocCorruptionLore = new(DropHelper.If(() => (!WorldGen.crimson || WorldGen.drunkWorldGen) && !NPC.downedBoss2, desc: DropHelper.FirstKillText));
@@ -1147,8 +1305,8 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.QueenBeePetItem, 4);
 
                     // GFB Lavaproof Bug Net and Alchemical Flask drop
-                    GFB.Add(ItemID.FireproofBugNet, hideLootReport: true);
-                    GFB.Add(ModContent.ItemType<AlchemicalFlask>(), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FireproofBugNet), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalFlask>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedQueenBee, ModContent.ItemType<LoreQueenBee>(), desc: DropHelper.FirstKillText);
@@ -1178,7 +1336,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.SkeletronPetItem, 4);
 
                     // GFB Flamethrower drop
-                    GFB.Add(ItemID.Flamethrower, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.Flamethrower), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedBoss3, ModContent.ItemType<LoreSkeletron>(), desc: DropHelper.FirstKillText);
@@ -1260,8 +1418,8 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.WallOfFleshGoatMountItem, 4);
 
                     // GFB Eye of Magnus and Flesh Wall drops
-                    GFB.Add(ModContent.ItemType<EyeofMagnus>(), hideLootReport: true);
-                    GFB.Add(ItemID.FleshBlockWall, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<EyeofMagnus>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FleshBlockWall), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !Main.hardMode, ModContent.ItemType<LoreUnderworld>(), desc: DropHelper.FirstKillText);
@@ -1282,7 +1440,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.QueenSlimePetItem, 4);
 
                     // GFB Bottomless Shimmer Bucket drop
-                    GFB.Add(ItemID.BottomlessShimmerBucket, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.BottomlessShimmerBucket), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedQueenSlime, ModContent.ItemType<LoreQueenSlime>(), desc: DropHelper.FirstKillText);
@@ -1307,7 +1465,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.DestroyerPetItem, 4);
 
                     // GFB Bloodworm drop
-                    GFB.Add(ModContent.ItemType<BloodwormItem>(), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodwormItem>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedMechBoss1, ModContent.ItemType<LoreDestroyer>(), desc: DropHelper.FirstKillText);
@@ -1349,7 +1507,9 @@ namespace CalamityMod.NPCs
                     rev.AddIf((info) => IsLastTwinStanding(info), ItemID.TwinsPetItem, 4);
 
                     // GFB The Eye of Cthulhu drop
-                    GFB.AddIf((info) => IsLastTwinStanding(info), ItemID.TheEyeOfCthulhu, hideLootReport: true);
+                    LeadingConditionRule TwinsKillGFB = new(DropHelper.If((info) => IsLastTwinStanding(info)));
+                    TwinsKillGFB.Add(DropHelper.PerPlayer(ItemID.TheEyeOfCthulhu), hideLootReport: true);
+                    npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(TwinsKillGFB);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer((info) => !NPC.downedMechBoss2 && IsLastTwinStanding(info), ModContent.ItemType<LoreTwins>(), desc: DropHelper.FirstKillText);
@@ -1374,7 +1534,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.SkeletronPrimePetItem, 4);
 
                     // GFB Bone Wings drop
-                    GFB.Add(ItemID.BoneWings, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.BoneWings), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedMechBoss3, ModContent.ItemType<LoreSkeletronPrime>(), desc: DropHelper.FirstKillText);
@@ -1427,7 +1587,7 @@ namespace CalamityMod.NPCs
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<BloomStone>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<BlossomFlux>(), 10);
-                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ModContent.ItemType<LivingShard>(), 1, 25, 30));
+                    npcLoot.AddNormalOnly(DropHelper.PerPlayer(ModContent.ItemType<LivingShard>(), 1, 30, 40));
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1435,7 +1595,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.PlanteraPetItem, 4);
 
                     // GFB Life Fruit drop
-                    GFB.Add(ItemID.LifeFruit, 1, 1, 9999, true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.LifeFruit, 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedPlantBoss, ModContent.ItemType<LorePlantera>(), desc: DropHelper.FirstKillText);
@@ -1493,12 +1653,12 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.GolemPetItem, 4);
 
                     // GFB Vision Potion drop
-                    GFB.Add(ItemID.NightOwlPotion, 1, 1, 9999, true);
-                    GFB.Add(ItemID.ShinePotion, 1, 1, 9999, true);
-                    GFB.Add(ItemID.HunterPotion, 1, 1, 9999, true);
-                    GFB.Add(ItemID.TrapsightPotion, 1, 1, 9999, true);
-                    GFB.Add(ItemID.SpelunkerPotion, 1, 1, 9999, true);
-                    GFB.Add(ModContent.ItemType<PotionofOmniscience>(), 1, 1, 9999, true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.NightOwlPotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.ShinePotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.HunterPotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.TrapsightPotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.SpelunkerPotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<PotionofOmniscience>(), 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedGolemBoss, ModContent.ItemType<LoreGolem>(), desc: DropHelper.FirstKillText);
@@ -1569,9 +1729,9 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-DukeEditFailed:
+                    DukeEditFailed:
 
-// Expert+ drops are also available on Normal
+                    // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
 
                     // Would be in the bag otherwise
@@ -1583,28 +1743,28 @@ DukeEditFailed:
                     rev.Add(ItemID.DukeFishronPetItem, 4);
 
                     // GFB Old Die and Fish drop
-                    GFB.Add(ModContent.ItemType<OldDie>(), hideLootReport: true);
-                    GFB.Add(ItemID.Fish, hideLootReport: true);
-                    GFB.Add(ItemID.FishBowl, hideLootReport: true);
-                    GFB.Add(ItemID.FishCostumeFinskirt, hideLootReport: true);
-                    GFB.Add(ItemID.FishCostumeMask, hideLootReport: true);
-                    GFB.Add(ItemID.FishCostumeShirt, hideLootReport: true);
-                    GFB.Add(ItemID.FishermansGuide, hideLootReport: true);
-                    GFB.Add(ItemID.FisherofSouls, hideLootReport: true);
-                    GFB.Add(ItemID.FishFinder, hideLootReport: true);
-                    GFB.Add(ItemID.FishHook, hideLootReport: true);
-                    GFB.Add(ItemID.FishingBobber, hideLootReport: true);
-                    GFB.Add(ItemID.FishingPotion, 1, 1, 9999, true);
-                    GFB.Add(ItemID.FishingSeaweed, 1, 1, 9999, true);
-                    GFB.Add(ItemID.FishMinecart, hideLootReport: true);
-                    GFB.Add(ItemID.Fishotron, hideLootReport: true);
-                    GFB.Add(ItemID.Fishron, hideLootReport: true);
-                    GFB.Add(ItemID.FishStatue, 1, 1, 9999, true);
-                    GFB.Add(ModContent.ItemType<FishboneBoomerang>(), hideLootReport: true);
-                    GFB.Add(ModContent.ItemType<FishofEleum>(), 1, 1, 9999, true);
-                    GFB.Add(ModContent.ItemType<FishofFlight>(), 1, 1, 9999, true);
-                    GFB.Add(ModContent.ItemType<FishofLight>(), 1, 1, 9999, true);
-                    GFB.Add(ModContent.ItemType<FishofNight>(), 1, 1, 9999, true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDie>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.Fish), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishBowl), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishCostumeFinskirt), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishCostumeMask), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishCostumeShirt), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishermansGuide), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FisherofSouls), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishFinder), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishHook), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishingBobber), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishingPotion, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishingSeaweed, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishMinecart), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.Fishotron), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.Fishron), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.FishStatue, 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishboneBoomerang>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofEleum>(), 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofFlight>(), 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofLight>(), 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofNight>(), 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedFishron, ModContent.ItemType<LoreDukeFishron>(), desc: DropHelper.FirstKillText);
@@ -1656,8 +1816,8 @@ DukeEditFailed:
                     rev.Add(ItemID.FairyQueenPetItem, 4);
 
                     // GFB Cirrus' Vodka and Terraformer drop
-                    GFB.Add(ModContent.ItemType<CirrusVodka>(), 1, 1, 9999, true);
-                    GFB.Add(ItemID.Clentaminator2, hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<CirrusVodka>(), 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.Clentaminator2), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedEmpressOfLight, ModContent.ItemType<LoreEmpressofLight>(), desc: DropHelper.FirstKillText);
@@ -1672,7 +1832,7 @@ DukeEditFailed:
                     npcLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // GFB Luminite Brick drop
-                    GFB.Add(ItemID.LunarBrick, 1, 1, 9999, true);
+                    GFB.Add(DropHelper.PerPlayer(ItemID.LunarBrick, 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedAncientCultist, ModContent.ItemType<LorePrelude>(), desc: DropHelper.FirstKillText);
@@ -1722,7 +1882,7 @@ DukeEditFailed:
                     rev.Add(ItemID.MoonLordPetItem, 4);
 
                     // GFB Calamari's Lament drop
-                    GFB.Add(ModContent.ItemType<CalamarisLament>(), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<CalamarisLament>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedMoonlord, ModContent.ItemType<LoreRequiem>(), desc: DropHelper.FirstKillText);

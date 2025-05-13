@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public bool shotType = true; // true = positive shot, false = negative shot
         public float mult = 0;
+        public static SoundStyle HitSound = new("CalamityMod/Sounds/Item/NullHit");
 
         public override void SetStaticDefaults()
         {

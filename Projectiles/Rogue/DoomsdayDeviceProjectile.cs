@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
+using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class DoomsdayDeviceProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -395,9 +399,9 @@ namespace CalamityMod.Projectiles.Rogue
             hasReachedFullCharge = false;
             if (tileHits == 0)
             {
-                SoundStyle sound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3);
+                SoundStyle sound = CommonCalamitySounds.VoidstoneMine with { Volume = 1 };
                 SoundEngine.PlaySound(sound with { Volume = 0.3f, Pitch = -0.55f, MaxInstances = 6 }, Projectile.Center);
-                SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/RavagerRockPillarHit", 3);
+                SoundStyle sound2 = RockPillar.HitSound;
                 SoundEngine.PlaySound(sound2 with { Volume = 0.4f, Pitch = -0.2f, MaxInstances = 6 }, Projectile.Center);
             }
             tileHits++;

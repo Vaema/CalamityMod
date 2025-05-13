@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120, true);
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -195,7 +195,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 100);
+            npcLoot.Add(ItemID.JellyfishNecklace, 25);
             LeadingConditionRule postDS = npcLoot.DefineConditionalDropSet(DropHelper.PostDS());
             postDS.Add(ModContent.ItemType<VoltaicJelly>(), 5);
         }

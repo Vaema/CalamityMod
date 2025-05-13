@@ -58,6 +58,11 @@ namespace CalamityMod.Items.Accessories
         // Special search radius for coin ricoshots that only applies to DSO targets.
         public static readonly float RicoshotSearchDistance = 2800f;
 
+        /// <summary>
+        /// The maximum amount of extra critical strike chance you can get from this accessory.
+        /// </summary>
+        public static readonly int CritHardCap = 100;
+
         #endregion
 
         public override void SetDefaults()
@@ -115,7 +120,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.spiritOriginCritBoost = currentCritBoost;
 
             // Actually give the crit boost as a direct increase to ranged critical strike chance.
-            player.GetCritChance<RangedDamageClass>() += modPlayer.spiritOriginCritBoost;
+            player.GetCritChance<RangedDamageClass>() += Math.Min(modPlayer.spiritOriginCritBoost, CritHardCap);
 
             // Display the current crit boost on a cooldown.
             if (modPlayer.cooldowns.TryGetValue(DaawnlightSpiritOriginExtraCrit.ID, out var cooldown))
@@ -147,7 +152,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddIngredient<GalacticaSingularity>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

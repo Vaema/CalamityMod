@@ -32,6 +32,7 @@ BossRushTierAnimation.DisplayName: Boss Rush Tier Animation
 ChaoticGeyser.DisplayName: Chaotic Geyser
 ChlorophyteLifePulse.DisplayName: Life Pulse
 ChronoClock.DisplayName: Chrono Clock
+ClaretCannonProj.DisplayName: Claret Round
 CoralBubble.DisplayName: Bubble
 CoralBubbleSmall.DisplayName: Bubble
 CosmicDashExplosion.DisplayName: Cosmic Dash Explosion
@@ -43,6 +44,7 @@ DarkIce.DisplayName: Dark Ice
 DeepseaBlaze.DisplayName: Deepsea Blaze
 DemonshadeRedDevil.DisplayName: Red Devil
 DevourerofCodsBobber.DisplayName: Devourer of Cods Bobber
+DiamondOfTheDeepProjectile.DisplayName: Abyss Spirit
 DirectStrike.DisplayName: Nondescript Damaging Entity
 DragonDust.DisplayName: Dust
 EarlyBloomBobber.DisplayName: Early Bloom Bobber
@@ -58,6 +60,7 @@ ExoTankLaser.DisplayName: Mini Exo Pulse Laser
 ExoTankMissile.DisplayName: Miracle Missile
 ExoTankMuzzleFlash.DisplayName: Mini Exo Flash
 FeralDoubleBobber.DisplayName: Feral Bobber
+FestiveWingsOrnament.DisplayName: Ornament
 FlameLickedBarrage.DisplayName: Flame Licked Barrage
 FlameLickedHellblast.DisplayName: Flame Licked Hellblast
 FlashBolt.DisplayName: The Reminder
@@ -78,6 +81,8 @@ HydrothermalSmoke.DisplayName: Smoke
 HydrothermicFlare.DisplayName: Hydrothermic Flare
 HydrothermicFlareRogue.DisplayName: Hydrothermic Flare
 HydrothermicSphere.DisplayName: Hydrothermic Sphere
+HyperiusDamage.DisplayName: Hyperius Overflow
+HyperiusBleed.DisplayName: Hyperius Bleed
 JewelSpike.DisplayName: Spike
 KelvinCatalystStar.DisplayName: Kelvin Catalyst Star
 LeviAmberDash.DisplayName: Riptide Slam
@@ -109,8 +114,10 @@ RedLabSeeker.DisplayName: Seeking Mechanism
 RelicGuard.DisplayName: Relic Guard
 RetaliationProjectile.DisplayName: Retaliation Shard
 RiftReelerBobber.DisplayName: Chaotic Bobber
+RustyMedallionDroplet.DisplayName: Acid Droplet
 SandCloakVeil.DisplayName: Dust Veil
 SandExplosion.DisplayName: Sand
+SCalAltarArenaVisual.DisplayName: Supreme Calamitas Arena Visual
 Seashell.DisplayName: Seashell
 SepulcherSoul.DisplayName: Tormented Soul
 SerpentsBiteHook.DisplayName: Serpent's Bite
@@ -150,3 +157,4 @@ YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
+XykWings.DisplayName: Xyk Wings

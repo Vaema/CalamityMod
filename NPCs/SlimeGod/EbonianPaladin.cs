@@ -618,7 +618,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (hitboxBotRight < minDist)
                 minDist = hitboxBotRight;
 
-            return minDist <= 65f * NPC.scale;
+            return minDist <= 55f * NPC.scale;
         }
 
         public override Color? GetAlpha(Color drawColor)
@@ -715,7 +715,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 300, true);
+                target.AddBuff(BuffID.Weak, 360);
         }
     }
 }

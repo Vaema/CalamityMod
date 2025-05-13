@@ -81,7 +81,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.FastClock).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddIngredient<EssenceofEleum>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

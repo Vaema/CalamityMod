@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
+using MonoMod.RuntimeDetour;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -12,6 +16,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
+using Terraria.GameInput;
 using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
@@ -92,6 +97,7 @@ namespace CalamityMod.ILEditing
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
+            On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
@@ -189,6 +195,7 @@ namespace CalamityMod.ILEditing
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
+            IL_Player.ItemCheck_Shoot += RemoveForcedInaccuracyFromChainGunAndGatligator;
             IL_Item.TryGetPrefixStatMultipliersForItem += RelaxPrefixRequirements;
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
@@ -207,6 +214,11 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
             On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
+        
+            On_Player.UpdateControlHolds += DelayGravity;
+            On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
+            On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
+            On_Main.DrawInterface += UI_Unflip_End;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

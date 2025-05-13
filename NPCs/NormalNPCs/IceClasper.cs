@@ -293,8 +293,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 180, true);
-                target.AddBuff(BuffID.Chilled, 120, true);
+                target.AddBuff(BuffID.Frostburn, 240);
+                target.AddBuff(BuffID.Chilled, 120);
             }
         }
 

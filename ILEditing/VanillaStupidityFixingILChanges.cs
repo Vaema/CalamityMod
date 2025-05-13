@@ -20,6 +20,8 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Graphics.Effects;
+using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
@@ -122,6 +124,33 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_R4, -1000000f);
         }
         #endregion Reforge Requirement Relaxation
+
+        #region Remove Forced Inaccuracy from Chain Gun and Gatligator
+        private static void RemoveForcedInaccuracyFromChainGunAndGatligator(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Go to the load of the Chain Gun's item ID (1929).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(1929)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Chain Gun.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+
+            // Go to the load of the Gatligator's item ID (2270).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(2270)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Gatligator.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+        }
+        #endregion
 
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
@@ -1152,6 +1181,85 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, npcType, affectionLevel);
+            }
+        }
+        #endregion
+
+        #region Allow disabling gravity swap visual && allow gravity keybind
+        private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
+        {
+            var cplay = Player.Calamity();
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            {
+                if (Player.controlUp && Player.releaseUp) {
+                    Player.gravDir *= -1;
+                }
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                {
+                    Player.gravDir *= -1;
+                    Player.fallStart = (int)(Player.position.Y / 16f);
+                    Player.jump = 0;
+                    SoundEngine.PlaySound(SoundID.Item8, Player.position);
+                }
+
+                if (Player.forcedGravity > 0) {
+				    Player.gravDir = -1f;
+			}   
+            }
+            
+            if (cplay.justChangedGravity) {
+                Player.gravDir = cplay.oldGravDir;
+            }
+            cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
+            
+            cplay.oldGravDir = Player.gravDir;
+            if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            {
+            if (Player.gravDir == -1) {
+                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene.Activate("CalamityMod:FlipScreen");
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+
+                }
+            } else {
+                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+
+                }
+            }
+            }
+            if (cplay.justChangedGravity)
+            {
+                Player.gravDir *= -1;
+            }
+            orig(Player);
+        }
+
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+            orig();
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                var center = Main.screenHeight / 2;
+                Main.mouseY = center - (Main.mouseY - center);
+            };
+        }
+        private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
+        {
+            if (!Main.gameMenu && (Filters.Scene["CalamityMod:FlipScreen"].IsActive() || Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                Main.LocalPlayer.Calamity().tempGravDir = Main.LocalPlayer.gravDir;
+                Main.LocalPlayer.gravDir = 1;
+            }
+            orig(self);
+        }
+        
+        private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
+        {
+            orig(self, gameTime);
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+            {
+                Main.LocalPlayer.gravDir = Main.LocalPlayer.Calamity().tempGravDir;
             }
         }
         #endregion

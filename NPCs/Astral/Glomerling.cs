@@ -43,7 +43,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
             Banner = ModContent.NPCType<Astraglomerate>();
             BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
@@ -159,7 +158,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 25, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
         }
     }
 }

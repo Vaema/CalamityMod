@@ -51,5 +51,9 @@ namespace CalamityMod.Sounds
 
         public static readonly SoundStyle LouderSwingWoosh = new("CalamityMod/Sounds/Custom/LoudSwingWoosh");
 
+        public static readonly SoundStyle VoidstoneMine = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
+
+        public static readonly SoundStyle PlatingMine = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
+
     }
 }

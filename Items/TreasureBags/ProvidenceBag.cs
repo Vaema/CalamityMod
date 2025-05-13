@@ -58,8 +58,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Providence>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 25, 35);
-            itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 30, 40);
+            itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 40, 50);
+            itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 60, 70);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

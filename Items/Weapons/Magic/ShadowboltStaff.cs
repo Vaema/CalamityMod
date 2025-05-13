@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 58;
             Item.height = 56;
-            Item.damage = 260;
+            Item.damage = 230;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 12;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.ShadowbeamStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<ArmoredShell>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
