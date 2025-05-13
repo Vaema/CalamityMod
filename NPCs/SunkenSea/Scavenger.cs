@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Steamworks;
+using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -99,8 +100,8 @@ namespace CalamityMod.NPCs.SunkenSea
             rewards.Add(ModContent.ItemType<Driftwood>(), 0.5f);
             rewards.Add(ModContent.ItemType<BurntSienna>(), 15f);
             rewards.Add(ModContent.ItemType<Runestone>(), 0.2f);
-            rewards.Add(ModContent.ItemType<RuneSand>(), 0.2f);
-            rewards.Add(ModContent.ItemType<AmidiasSpark>(), 15f);
+            rewards.Add(ModContent.ItemType<Dunesand>(), 0.2f);
+            rewards.Add(ModContent.ItemType<IlmerisSpark>(), 15f);
             rewards.Add(ItemID.PalmWoodBreastplate, 10f);
             rewards.Add(ItemID.PalmWoodHelmet, 10f);
             rewards.Add(ItemID.PalmWoodGreaves, 10f);
@@ -172,95 +173,111 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 // Do idle stuff, actual behavior not determined rn
                 case (int)PhaseType.Idle:
+                    {
 
-                    // Decide if it should walk or sit
-                    float movementSpeed = 1f;
-                    if (WalkTimer <= 0)
-                    {
-                        WalkTimer = Main.rand.Next(180, 340);
-                        WalkOrStand = WalkOrStand <= 0 ? 1 : -1;
-                    }
-                    // If it bumps into something, turn around
-                    if (TurnTimer <= 0 && NPC.velocity.X == 0 && WalkOrStand == 1)
-                    {
-                        NPC.direction *= -1;
-                        TurnTimer = 30;
-                    }
-                    // Move
-                    if (!NPC.justHit)
-                    {
-                        if (WalkOrStand == 1)
-                            NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, NPC.direction * movementSpeed, 0.05f);
-                        else if (NPC.velocity.Y == 0)
-                            NPC.velocity.X *= 0.95f;
-                    }
-                    else if (WalkOrStand == -1)
-                    {
-                        WalkTimer = 0;
-                    }
-
-                    StepUp();
-
-                    // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
-                    if (TradeTimer >= 0 && HeldItemIndex <= -1)
-                    {
-                        float curDist = 0;
-                        int currencyRarity = 0;
-                        foreach (Item i in Main.ActiveItems)
+                        // Decide if it should walk or sit
+                        float movementSpeed = 1f;
+                        if (WalkTimer <= 0)
                         {
-                            if (!i.active)
-                                continue;
-                            if (i.beingGrabbed)
-                                continue;
-                            float distance = i.Distance(NPC.Center);
-                            if (distance > 460)
-                                continue;
-
-                            // Check if the item is a valid currency and is the closest possible currency
-                            if (currencies.ContainsKey(i.type))
+                            WalkTimer = Main.rand.Next(180, 340);
+                            WalkOrStand = WalkOrStand <= 0 ? 1 : -1;
+                        }
+                        bool waterCheck = WaterCheck(16);
+                        // If it bumps into something, jump or turn around
+                        if (TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && WalkOrStand == 1)
+                        {
+                            // Jump if there are a couple tiles and a space above
+                            if (!waterCheck && JumpCheck() && NPC.velocity.Y == 0)
                             {
-                                if (distance < curDist || curDist == 0)
-                                {
-                                    HeldItemIndex = i.whoAmI;
-                                    currencyRarity = currencies[i.type];
-                                }
-                                curDist = distance;
+                                NPC.velocity.Y -= 7;
+                                NPC.velocity.X = movementSpeed * NPC.direction;
+                                TurnTimer = 10;
+                            }
+                            // Turn around if it can't jump up or a pit/water is in the way
+                            else
+                            {
+                                NPC.direction *= -1;
+                                TurnTimer = 30;
                             }
                         }
-                        // If an item was found, go after it
-                        if (curDist != 0)
+                        // Move
+                        if (!NPC.justHit)
                         {
-                            NPC.netUpdate = true;
-                            Phase = (int)PhaseType.FoundItem;
-                            TurnTimer = 0;
-                            WalkTimer = 0;
-                            if (NPC.velocity.Y == 0)
-                                NPC.velocity.Y = -5;
-
-                            SoundEngine.PlaySound(SoundID.NPCHit51 with { Pitch = -0.4f }, NPC.Center);
-
-                            EmoteExpressionParticle.EmoteType eType = currencyRarity >= 5 ? EmoteExpressionParticle.EmoteType.DoubleExclamation : EmoteExpressionParticle.EmoteType.Exclamation;
-                            
-                            var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
-                            Particle emote = new EmoteExpressionParticle(
-                                NPC.Center + emoteDirection * 2f,
-                                emoteDirection,
-                                2.2f,
-                                Color.YellowGreen,
-                                Main.rand.Next(30, 46),
-                                eType);
-                            GeneralParticleHandler.SpawnParticle(emote);
+                            if (WalkOrStand == 1)
+                                NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, NPC.direction * movementSpeed, 0.05f);
+                            else if (NPC.velocity.Y == 0)
+                                NPC.velocity.X *= 0.95f;
                         }
+                        else if (WalkOrStand == -1)
+                        {
+                            WalkTimer = 0;
+                        }
+                        CalamityUtils.StepUpBlocks(NPC);
+
+                        // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
+                        if (TradeTimer >= 0 && HeldItemIndex <= -1)
+                        {
+                            float curDist = 0;
+                            int currencyRarity = 0;
+                            foreach (Item i in Main.ActiveItems)
+                            {
+                                if (!i.active)
+                                    continue;
+                                if (i.beingGrabbed)
+                                    continue;
+                                float distance = i.Distance(NPC.Center);
+                                if (distance > 460)
+                                    continue;
+                                if (!NPC.HasSight(i.Center))
+                                    continue;
+                                if (Math.Abs(NPC.Center.Y - i.Center.Y) > 100)
+                                    continue;
+
+                                // Check if the item is a valid currency and is the closest possible currency
+                                if (currencies.ContainsKey(i.type))
+                                {
+                                    if (distance < curDist || curDist == 0)
+                                    {
+                                        HeldItemIndex = i.whoAmI;
+                                        currencyRarity = currencies[i.type];
+                                    }
+                                    curDist = distance;
+                                }
+                            }
+                            // If an item was found, go after it
+                            if (curDist != 0)
+                            {
+                                NPC.netUpdate = true;
+                                Phase = (int)PhaseType.FoundItem;
+                                TurnTimer = 0;
+                                WalkTimer = 0;
+                                if (NPC.velocity.Y == 0)
+                                    NPC.velocity.Y = -5;
+                                NPC.direction = NPC.DirectionTo(Main.item[HeldItemIndex].Center).X.DirectionalSign();
+
+                                SoundEngine.PlaySound(SoundID.NPCHit51 with { Pitch = -0.4f }, NPC.Center);
+
+                                EmoteExpressionParticle.EmoteType eType = currencyRarity >= 5 ? EmoteExpressionParticle.EmoteType.DoubleExclamation : EmoteExpressionParticle.EmoteType.Exclamation;
+
+                                var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
+                                Particle emote = new EmoteExpressionParticle(
+                                    NPC.Center + emoteDirection * 2f,
+                                    emoteDirection,
+                                    2.2f,
+                                    Color.YellowGreen,
+                                    Main.rand.Next(30, 46),
+                                    eType);
+                                GeneralParticleHandler.SpawnParticle(emote);
+                            }
+                        }
+                        // Increment the trade timer back to zero if it is below zero
+                        if (TradeTimer < 0)
+                            TradeTimer++;
                     }
-                    // Increment the trade timer back to zero if it is below zero
-                    if (TradeTimer < 0)
-                        TradeTimer++;
                     break;
                 // Go to the item
                 case (int)PhaseType.FoundItem:
                     {
-                        NPC.direction = NPC.velocity.X.DirectionalSign();
-
                         // If the item is no longer valid, go back to idle behaviour
                         if (HeldItemIndex <= -1)
                         {
@@ -284,38 +301,52 @@ namespace CalamityMod.NPCs.SunkenSea
                             break;
                         }
 
-                        // If it gets stuck, jump
-                        if (NPC.velocity.X == 0)
+                        float movementSpeed = 3;
+                        bool waterCheck = WaterCheck(16);
+                        // If it bumps into something, jump or turn around
+                        if (TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && NPC.velocity.Y == 0)
                         {
-                            WalkTimer--;
-                            if (WalkTimer <= -30 && NPC.velocity.Y == 0)
+                            // Jump if there are a couple tiles and a space above
+                            if (!waterCheck && JumpCheck())
                             {
-                                WalkTimer = 120;
-                                NPC.velocity.Y = -6;
-                                TurnTimer--;
+                                NPC.velocity.Y -= 8;
+                                NPC.velocity.X = movementSpeed * NPC.direction;
+                                TurnTimer = 10;
+                            }
+                            // Turn around if it can't jump up or a pit/water is in the way
+                            else
+                            {
+                                NPC.direction *= -1;
+                                TurnTimer = 30;
+                                NPC.netUpdate = true;
+                                Phase = (int)PhaseType.Idle;
+                                TurnTimer = 0;
+                                WalkTimer = 0;
                             }
                         }
+                        bool itemOnRight = targetItem.Center.X > NPC.Center.X;
+                        if (itemOnRight && NPC.direction == -1)
+                        {
+                            NPC.direction *= -1;
+                        }
+                        else if (!itemOnRight && NPC.direction == 0)
+                        {
+                            NPC.direction *= -1;
+                        }
+                        TurnTimer--;
 
                         // Movement goes here
-                        NPC.velocity.X = NPC.DirectionTo(targetItem.Center).X * 3;
-                        StepUp();
+                        NPC.velocity.X = NPC.direction * 3;
+                        CalamityUtils.StepUpBlocks(NPC);
 
-                        // If 3 jumps fail, give up
-                        if (TurnTimer <= -3)
+                        // Pull the item if close enough
+                        if (targetItem.Distance(NPC.Center) < 120)
                         {
-                            TurnTimer = 0;
-                            WalkTimer = 0;
-                            NPC.netUpdate = true;
-                            HeldItemIndex = -1;
-                            Phase = (int)PhaseType.Idle;
-                            TradeTimer = -CalamityUtils.SecondsToFrames(4);
+                            targetItem.noGrabDelay = 10000;
+                            targetItem.velocity = targetItem.DirectionTo(NPC.Center) * 5;
                         }
-
-                        int grabRangeX = 5;
-                        Rectangle itemGrabHitbox = new Rectangle((int)NPC.position.X - grabRangeX, (int)NPC.Center.Y, (int)NPC.width + grabRangeX * 2, (int)(NPC.height * 0.5f) + 20);
-
                         // Grab the item if close enough
-                        if (itemGrabHitbox.Distance(targetItem.position) < 5)
+                        if (targetItem.Distance(NPC.Center) < 10)
                         {
                             NPC.netUpdate = true;
                             Phase = (int)PhaseType.Bartering;
@@ -373,7 +404,49 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.spriteDirection = NPC.direction;
         }
-        
+
+        // Checks if the horizontal position in front of it has water or is a pit so that the crab can avoid it
+        public bool WaterCheck(int height)
+        {
+            Point startPos = NPC.direction == 1 ? NPC.Right.ToTileCoordinates() : NPC.Left.ToTileCoordinates();
+            for (int i = 1; i < height; i++)
+            {
+                Tile t = CalamityUtils.ParanoidTileRetrieval(startPos.X + NPC.direction, startPos.Y + i);
+                Tile above = CalamityUtils.ParanoidTileRetrieval(startPos.X + NPC.direction, startPos.Y + i - 1);
+                // If there's a tile, wegud
+                if (t.HasTile)
+                    return false;
+                // If there's liquid or a pit, we not gud
+                if (t.LiquidAmount > 0 && !above.HasTile)
+                    return true;
+
+            }
+            return true;
+        }
+
+        // Checks if the horizontal position in front of the crab can be jumped up
+        public bool JumpCheck()
+        {
+            Point startPos = NPC.direction == 1 ? NPC.BottomRight.ToTileCoordinates() : NPC.BottomLeft.ToTileCoordinates();
+            bool canJump = false;
+            int add = NPC.direction == 1 ? 0 : -1;
+            int jumpHeight = 6;
+            for (int i = jumpHeight; i > 0; i--)
+            {
+                Tile t = CalamityUtils.ParanoidTileRetrieval(startPos.X + add, startPos.Y - i);
+                // If there are tiles obfuscating the jump position, return false
+                if (i > (jumpHeight - 2) && t.HasTile)
+                    return false;
+                // If there is a tile to jump on, return true
+                if (t.HasTile)
+                {
+                    canJump = true;
+                    break;
+                }
+            }
+            return canJump;
+        }
+
         public int CalculateReward()
         {
             // Make sure the held item type is valid
