@@ -138,18 +138,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.TargetClosest();
             if (Phase == (int)PhaseType.Idle)
             {
-                int jellyAmt = Main.rand.Next(4, 8);
-                if (Main.player[NPC.target].Calamity().ZonePolypForest)
-                {
-                    for (int i = 0; i < jellyAmt; i++)
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)(NPC.Center.X + Main.rand.NextFloat(1f, 2f)), (int)(NPC.Center.Y + Main.rand.NextFloat(1f, 2f)), ModContent.NPCType<BabyGhostBell>(), ai0: -1);
-                        }
-                    }
-                    jellyAmt = Main.rand.Next(2, 4);
-                }
+                int jellyAmt = Main.player[NPC.target].Calamity().ZonePolypForest ? Main.rand.Next(4, 6) : Main.rand.Next(2, 4);
                 for (int i = 0; i < jellyAmt; i++)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -166,16 +155,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.ai[2]++;
 
             // Lite
-            Color lightColor = Color.LightBlue;
-            switch (Variant)
+            var lightColor = Variant switch
             {
-                case (int)JellyColor.Pink:
-                    lightColor = Color.LightPink;
-                    break;
-                case (int)JellyColor.Green:
-                    lightColor = Color.MediumSpringGreen;
-                    break;
-            }
+                (int)JellyColor.Pink => Color.LightPink,
+                (int)JellyColor.Green => Color.MediumSpringGreen,
+                _ => Color.LightBlue,
+            };
             Lighting.AddLight(NPC.Center, (lightColor.R - NPC.alpha) * 1f / 255f, (lightColor.G - NPC.alpha) * 1f / 255f, (lightColor.B - NPC.alpha) * 1f / 255f);
 
             NPC.chaseable = Phase > 0;
