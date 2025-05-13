@@ -275,46 +275,57 @@ namespace CalamityMod.World
                             {
                                 // More randomized terrain depending on island type
                                 // Lower islands have smoother terrain
-                                switch (chosenIslandSize)
+                                // Islands on the edges have smoother terrain
+                                if (isTallerIsland)
                                 {
-                                    default:
-                                    case 0:
-                                    case 1:
-                                        if (WorldGen.genRand.NextBool(4))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                        else if (WorldGen.genRand.NextBool(8))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                                        break;
+                                    if (WorldGen.genRand.NextBool(4))
+                                        ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                    else if (WorldGen.genRand.NextBool(8))
+                                        ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                }
+                                else
+                                {
+                                    switch (chosenIslandSize)
+                                    {
+                                        default:
+                                        case 0:
+                                        case 1:
+                                            if (WorldGen.genRand.NextBool(4))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                            else if (WorldGen.genRand.NextBool(8))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                            break;
 
-                                    case 2:
-                                    case 3:
-                                        if (WorldGen.genRand.NextBool(3))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                        else if (WorldGen.genRand.NextBool(6))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                                        else if (WorldGen.genRand.NextBool(9))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
-                                        break;
+                                        case 2:
+                                        case 3:
+                                            if (WorldGen.genRand.NextBool(3))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                            else if (WorldGen.genRand.NextBool(6))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                            else if (WorldGen.genRand.NextBool(9))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                            break;
 
-                                    case 4:
-                                    case 5:
-                                        if (WorldGen.genRand.NextBool())
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                        else if (WorldGen.genRand.NextBool(4))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                                        else if (WorldGen.genRand.NextBool(6))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
-                                        break;
+                                        case 4:
+                                        case 5:
+                                            if (WorldGen.genRand.NextBool())
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                            else if (WorldGen.genRand.NextBool(4))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                            else if (WorldGen.genRand.NextBool(6))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                            break;
 
-                                    case 6:
-                                    case 7:
-                                        if (WorldGen.genRand.NextBool())
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
-                                        else if (WorldGen.genRand.NextBool(3))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
-                                        else if (WorldGen.genRand.NextBool(4))
-                                            ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
-                                        break;
+                                        case 6:
+                                        case 7:
+                                            if (WorldGen.genRand.NextBool())
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-1, 2);
+                                            else if (WorldGen.genRand.NextBool(3))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-2, 3);
+                                            else if (WorldGen.genRand.NextBool(4))
+                                                ashIslandGenLimiter += WorldGen.genRand.Next(-3, 4);
+                                            break;
+                                    }
                                 }
                             }
 
@@ -1043,25 +1054,28 @@ namespace CalamityMod.World
                 var atriumSchematic = TileMaps[atriumMapKey];
 
                 // Offsets for structures
-                int atriumOffset = 9;
-                int cacheOffset = 45;
-                int sanctumOffset = 65;
-                int strongholdOffset = 5;
+                int atriumOffsetY = 8;
+                int cacheOffsetY = 45;
+                int sanctumOffsetY = 65;
+                int strongholdOffsetX = cragsLocationIsLeft ? 40 : 20;
+                int strongholdOffsetY = 3;
+                int secondStrongholdOffsetY = 5;
+                int dungeonOffsetX = cragsLocationIsLeft ? 30 : 50;
+                int dungeonOffsetY = 4;
 
-                // Place schematics
+                // Place structures
                 if (cragsLocationIsLeft)
                 {
                     //
                     // Place atriums
                     //
                     // Atrium location is on the crags side
-                    // Atrium is placed in the center of an island due to its immense size
                     int atriumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
                     int atriumGenY = ashIslandHeightLimit;
                     while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                         atriumGenY++;
 
-                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffsetY);
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
                     if (!smallWorld)
@@ -1081,7 +1095,7 @@ namespace CalamityMod.World
                             atriumGenY++;
 
                         // Placement point for the second atrium
-                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffsetY);
                     }
 
                     if (atriumMapKey == BrimstoneAtriumType2Key)
@@ -1094,18 +1108,23 @@ namespace CalamityMod.World
                     CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 10);
 
                     //
-                    // Place sanctums and strongholds
+                    // Place sanctums, strongholds, and dungeons
                     //
-                    // Sanctums 1 and 2 are the large ones
+                    // All of these structures are on the demonic side
                     int sanctumGenX = ashIslandX2 - firstStructureDistanceFromIslandEdge;
-                    int sanctumGenY = ashIslandDepthLimit + sanctumOffset;
+                    int sanctumGenY = ashIslandDepthLimit + sanctumOffsetY;
 
                     int strongholdGenY = ashIslandHeightLimit;
-                    while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                    while (!Main.tile[sanctumGenX + strongholdOffsetX, strongholdGenY].HasTile)
                         strongholdGenY++;
 
+                    int dungeonGenY = ashIslandHeightLimit;
+                    while (!Main.tile[sanctumGenX - dungeonOffsetX, dungeonGenY].HasTile)
+                        dungeonGenY++;
+
                     Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
-                    Point strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                    Point strongholdPlacementPoint = new Point(sanctumGenX + strongholdOffsetX, strongholdGenY + strongholdOffsetY);
+                    Point dungeonPlacementPoint = new Point(sanctumGenX - dungeonOffsetX, dungeonGenY + dungeonOffsetY);
                     if (!smallWorld)
                     {
                         PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
@@ -1120,16 +1139,30 @@ namespace CalamityMod.World
                         Rectangle strongholdProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[HellstoneStrongholdType1Key], strongholdPlacementPoint, anchorType);
                         CalamityUtils.AddProtectedStructure(strongholdProtectionArea, 10);
 
+                        PlaceSchematic<Action<Chest>>(DemonicDungeonType1Key, dungeonPlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle dungeonProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[DemonicDungeonType1Key], dungeonPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(dungeonProtectionArea, 10);
+
                         // Move index further along to keep structures spread apart
                         sanctumGenX -= distanceBetweenStructures_AfterFirstIsland;
 
                         // Reset the Y index for strongholds
                         strongholdGenY = ashIslandHeightLimit;
-                        while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                        while (!Main.tile[sanctumGenX + strongholdOffsetX, strongholdGenY].HasTile)
                             strongholdGenY++;
 
                         // Placement point for the second stronghold
-                        strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                        strongholdPlacementPoint = new Point(sanctumGenX + strongholdOffsetX, strongholdGenY + secondStrongholdOffsetY);
+
+                        // Reset the Y index for dungeons
+                        dungeonGenY = ashIslandHeightLimit;
+                        while (!Main.tile[sanctumGenX - dungeonOffsetX, dungeonGenY].HasTile)
+                            dungeonGenY++;
+
+                        // Placement point for the second dungeon
+                        dungeonPlacementPoint = new Point(sanctumGenX - dungeonOffsetX, dungeonGenY + dungeonOffsetY);
 
                         // Placement point for the second sanctum
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
@@ -1150,6 +1183,14 @@ namespace CalamityMod.World
                     // Protect the structure
                     Rectangle strongholdProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStronghold], strongholdPlacementPoint, anchorType);
                     CalamityUtils.AddProtectedStructure(strongholdProtectionArea2, 10);
+
+                    // Small worlds only have one dungeon
+                    string secondDungeon = smallWorld ? DemonicDungeonType1Key : DemonicDungeonType2Key;
+                    PlaceSchematic<Action<Chest>>(secondDungeon, dungeonPlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle dungeonProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondDungeon], dungeonPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(dungeonProtectionArea2, 10);
                 }
                 else
                 {
@@ -1158,7 +1199,7 @@ namespace CalamityMod.World
                     while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                         atriumGenY++;
 
-                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
+                    Point atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffsetY);
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
                     if (!smallWorld)
@@ -1174,7 +1215,7 @@ namespace CalamityMod.World
                         while (!Main.tile[atriumGenX, atriumGenY].HasTile)
                             atriumGenY++;
 
-                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffset);
+                        atriumPlacementPoint = new Point(atriumGenX, atriumGenY + atriumOffsetY);
                     }
 
                     if (atriumMapKey == BrimstoneAtriumType2Key)
@@ -1186,14 +1227,19 @@ namespace CalamityMod.World
                     CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 10);
 
                     int sanctumGenX = ashIslandX + firstStructureDistanceFromIslandEdge;
-                    int sanctumGenY = ashIslandDepthLimit + sanctumOffset;
+                    int sanctumGenY = ashIslandDepthLimit + sanctumOffsetY;
 
                     int strongholdGenY = ashIslandHeightLimit;
-                    while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                    while (!Main.tile[sanctumGenX - strongholdOffsetX, strongholdGenY].HasTile)
                         strongholdGenY++;
 
+                    int dungeonGenY = ashIslandHeightLimit;
+                    while (!Main.tile[sanctumGenX + dungeonOffsetX, dungeonGenY].HasTile)
+                        dungeonGenY++;
+
                     Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
-                    Point strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                    Point strongholdPlacementPoint = new Point(sanctumGenX - strongholdOffsetX, strongholdGenY + strongholdOffsetY);
+                    Point dungeonPlacementPoint = new Point(sanctumGenX + dungeonOffsetX, dungeonGenY + dungeonOffsetY);
                     if (!smallWorld)
                     {
                         PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
@@ -1206,13 +1252,24 @@ namespace CalamityMod.World
                         Rectangle strongholdProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[HellstoneStrongholdType1Key], strongholdPlacementPoint, anchorType);
                         CalamityUtils.AddProtectedStructure(strongholdProtectionArea, 10);
 
+                        PlaceSchematic<Action<Chest>>(DemonicDungeonType1Key, dungeonPlacementPoint, anchorType, ref place);
+
+                        Rectangle dungeonProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[DemonicDungeonType1Key], dungeonPlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(dungeonProtectionArea, 10);
+
                         sanctumGenX += distanceBetweenStructures_AfterFirstIsland;
 
                         strongholdGenY = ashIslandHeightLimit;
-                        while (!Main.tile[sanctumGenX, strongholdGenY].HasTile)
+                        while (!Main.tile[sanctumGenX - strongholdOffsetX, strongholdGenY].HasTile)
                             strongholdGenY++;
 
-                        strongholdPlacementPoint = new Point(sanctumGenX, strongholdGenY + strongholdOffset);
+                        strongholdPlacementPoint = new Point(sanctumGenX - strongholdOffsetX, strongholdGenY + secondStrongholdOffsetY);
+
+                        dungeonGenY = ashIslandHeightLimit;
+                        while (!Main.tile[sanctumGenX + dungeonOffsetX, dungeonGenY].HasTile)
+                            dungeonGenY++;
+
+                        dungeonPlacementPoint = new Point(sanctumGenX + dungeonOffsetX, dungeonGenY + dungeonOffsetY);
 
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     }
@@ -1228,6 +1285,12 @@ namespace CalamityMod.World
 
                     Rectangle strongholdProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStronghold], strongholdPlacementPoint, anchorType);
                     CalamityUtils.AddProtectedStructure(strongholdProtectionArea2, 10);
+
+                    string secondDungeon = smallWorld ? DemonicDungeonType1Key : DemonicDungeonType2Key;
+                    PlaceSchematic<Action<Chest>>(secondDungeon, dungeonPlacementPoint, anchorType, ref place);
+
+                    Rectangle dungeonProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondDungeon], dungeonPlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(dungeonProtectionArea2, 10);
                 }
 
                 // Pick cache types
@@ -1253,17 +1316,34 @@ namespace CalamityMod.World
                 }
                 while (caches.Count < numCaches);
 
+                // Chose random caches to not place
+                // 1 is not placed in a small/medium world
+                // 3 are not placed in a large world
+                List<int> cachesToNotPlace = new List<int>();
+                int numCachesToNotPlace = largeWorld ? 3 : 1;
+                do
+                {
+                    // Chose a random cache to add to the list
+                    int chosenCache = WorldGen.genRand.Next(numCaches);
+
+                    // Don't choose the same cache twice
+                    bool alreadyContainsThisCacheType = cachesToNotPlace.Contains(chosenCache);
+                    if (!alreadyContainsThisCacheType)
+                        cachesToNotPlace.Add(chosenCache);
+                }
+                while (cachesToNotPlace.Count < numCachesToNotPlace);
+
                 //
                 // Place caches
                 //
                 int cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * numAtriums);
-                int cacheGenY = ashIslandDepthLimit + cacheOffset;
+                int cacheGenY = ashIslandDepthLimit + cacheOffsetY;
                 int randomAdjustmentX = 0;
                 int randomAdjustmentY = 0;
                 int minRandomX = -30;
                 int maxRandomX = -20;
-                int minRandomY = 0;
-                int maxRandomY = 10;
+                int minRandomY = 10;
+                int maxRandomY = 20;
                 for (int cacheIndex = 0; cacheIndex < totalCachePositions; cacheIndex++)
                 {
                     randomAdjustmentX += WorldGen.genRand.Next(minRandomX, maxRandomX + 1);
@@ -1304,15 +1384,39 @@ namespace CalamityMod.World
                     SchematicAnchor anchorType = SchematicAnchor.Center;
                     bool place = true;
 
-                    // Cache types 2, 3, and 6 have chests
-                    if (cacheMapKey == BonescrapperCacheType2Key || cacheMapKey == BonescrapperCacheType3Key || cacheMapKey == BonescrapperCacheType6Key)
-                        PlaceSchematic(cacheMapKey, cachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
-                    else
-                        PlaceSchematic<Action<Chest>>(cacheMapKey, cachePlacementPoint, anchorType, ref place);
+                    bool canPlaceEvenCache = true;
+                    switch (cacheIndex)
+                    {
+                        default:
+                        case 0:
+                            canPlaceEvenCache = !cachesToNotPlace.Contains(0);
+                            break;
 
-                    // Protect the structure
-                    Rectangle cacheProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[cacheMapKey], cachePlacementPoint, anchorType);
-                    CalamityUtils.AddProtectedStructure(cacheProtectionArea, 5);
+                        case 1:
+                            canPlaceEvenCache = !cachesToNotPlace.Contains(2);
+                            break;
+
+                        case 2:
+                            canPlaceEvenCache = !cachesToNotPlace.Contains(4);
+                            break;
+
+                        case 3:
+                            canPlaceEvenCache = !cachesToNotPlace.Contains(6);
+                            break;
+                    }
+
+                    // Cache types 2, 3, and 6 have chests
+                    if (canPlaceEvenCache)
+                    {
+                        if (cacheMapKey == BonescrapperCacheType2Key || cacheMapKey == BonescrapperCacheType3Key || cacheMapKey == BonescrapperCacheType6Key)
+                            PlaceSchematic(cacheMapKey, cachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
+                        else
+                            PlaceSchematic<Action<Chest>>(cacheMapKey, cachePlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle cacheProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[cacheMapKey], cachePlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(cacheProtectionArea, 5);
+                    }
 
                     string secondCacheMapKey;
                     switch (caches[cacheIndex + totalCachePositions])
@@ -1343,20 +1447,44 @@ namespace CalamityMod.World
                             break;
                     }
 
-                    // Place second cache to the right of the first
-                    Point secondCachePlacementPoint = cachePlacementPoint + new Point(WorldGen.genRand.Next(60, 76), 0);
-                    if (secondCacheMapKey == BonescrapperCacheType2Key || secondCacheMapKey == BonescrapperCacheType3Key || secondCacheMapKey == BonescrapperCacheType6Key)
-                        PlaceSchematic(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
-                    else
-                        PlaceSchematic<Action<Chest>>(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place);
+                    bool canPlaceOddCache = true;
+                    switch (cacheIndex)
+                    {
+                        default:
+                        case 0:
+                            canPlaceOddCache = !cachesToNotPlace.Contains(1);
+                            break;
 
-                    // Protect the structure
-                    Rectangle cacheProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondCacheMapKey], secondCachePlacementPoint, anchorType);
-                    CalamityUtils.AddProtectedStructure(cacheProtectionArea2, 5);
+                        case 1:
+                            canPlaceOddCache = !cachesToNotPlace.Contains(3);
+                            break;
+
+                        case 2:
+                            canPlaceOddCache = !cachesToNotPlace.Contains(5);
+                            break;
+
+                        case 3:
+                            canPlaceOddCache = !cachesToNotPlace.Contains(7);
+                            break;
+                    }
+
+                    // Place second cache to the right of the first
+                    if (canPlaceOddCache)
+                    {
+                        Point secondCachePlacementPoint = cachePlacementPoint + new Point(WorldGen.genRand.Next(60, 76), 0);
+                        if (secondCacheMapKey == BonescrapperCacheType2Key || secondCacheMapKey == BonescrapperCacheType3Key || secondCacheMapKey == BonescrapperCacheType6Key)
+                            PlaceSchematic(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place, new Action<Chest, int, bool>(FillCacheChests));
+                        else
+                            PlaceSchematic<Action<Chest>>(secondCacheMapKey, secondCachePlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle cacheProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondCacheMapKey], secondCachePlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(cacheProtectionArea2, 5);
+                    }
 
                     // Reset positions and move cache placement along the X axis
                     cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * (numAtriums + cacheIndex + 1));
-                    cacheGenY = ashIslandDepthLimit + cacheOffset;
+                    cacheGenY = ashIslandDepthLimit + cacheOffsetY;
                 }
             }
 
