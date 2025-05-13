@@ -138,12 +138,14 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.TargetClosest();
             if (Phase == (int)PhaseType.Idle)
             {
-                int jellyAmt = Main.player[NPC.target].Calamity().ZonePolypForest ? Main.rand.Next(4, 6) : Main.rand.Next(2, 4);
+                int jellyAmt = Main.player[NPC.target].Calamity().ZonePolypForest ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
                 for (int i = 0; i < jellyAmt; i++)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         NPC.NewNPC(NPC.GetSource_FromThis(), (int)(NPC.Center.X + Main.rand.NextFloat(1f, 2f)), (int)(NPC.Center.Y + Main.rand.NextFloat(1f, 2f)), Type, ai0: -1, ai2: Main.rand.Next(0, 60));
+                        int bebe = NPC.NewNPC(NPC.GetSource_FromThis(), (int)(NPC.Center.X + Main.rand.NextFloat(1f, 2f)), (int)(NPC.Center.Y + Main.rand.NextFloat(1f, 2f)), ModContent.NPCType<BabyGhostBell>(), ai0: -1);
+                        Main.npc[bebe].rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
                     }
                 }
             }
