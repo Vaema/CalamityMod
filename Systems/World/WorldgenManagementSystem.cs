@@ -44,6 +44,23 @@ namespace CalamityMod.Systems
                 CustomUnderworld.NewUnderworld();
             });
 
+            // Better Underworld structures after the world has been smoothed
+            int UnderworldStructuresIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Smooth World"));
+            tasks.Insert(UnderworldStructuresIndex + 1, new PassLegacy("Underworld Structures", (progress, config) =>
+            {
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
+                CustomUnderworld.NewUnderworldStructures();
+
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldPillars").Value;
+                CustomUnderworld.NewUnderworldPillars();
+
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
+                CustomUnderworld.AshTreesAndGrass();
+
+                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldGeyserTraps").Value;
+                CustomUnderworld.PlaceGeyserTraps();
+            }));
+
             // Evil Floating Island
             int islandIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Floating Island Houses"));
             if (islandIndex != -1)

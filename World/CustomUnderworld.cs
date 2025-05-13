@@ -14,12 +14,24 @@ namespace CalamityMod.World
 {
     public class CustomUnderworld
     {
+        // Ash island variables
+        private const double AshIslandGenStart = 0.36;
+        private const double AshIslandGenStart_Remix = 0.38;
+        private const double AshIslandGenEnd = 0.64;
+        private const double AshIslandGenEnd_Remix = 0.62;
+        private const int AshIslandDepthMaxAboveTheUnderworldFloor = 135;
+        private const int AshIslandHeightMaxAboveTheUnderworldFloor = 160;
         private const int MaxIslands = 8;
         private const int SmallWorldIslands = 4;
         private const int MediumWorldIslands = 6;
         private const int LargeWorldIslands = MaxIslands;
         private const int SmallWorldOuterIslands = 1;
         private const int MediumAndLargeWorldOuterIslands = 2;
+
+        // Pillar variables
+        private const int MaxPillarHeight = 68;
+        private const int RandomizedPillarSectionHeight = 4;
+        private const int MaxPillarDepthAboveTheUnderworldFloor = 40;
 
         public static void NewUnderworld()
         {
@@ -160,14 +172,14 @@ namespace CalamityMod.World
             // Remix world stuff, the Ash islands in the middle
 
             // Start generating islands at this point
-            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.38 : 0.36));
+            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? AshIslandGenStart_Remix : AshIslandGenStart));
 
             // Stop generating islands at this point
-            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.62 : 0.64));
+            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? AshIslandGenEnd_Remix : AshIslandGenEnd));
 
             // Ash island gen limits
-            int ashIslandDepthLimit = Main.maxTilesY - 135;
-            int ashIslandHeightLimit = Main.maxTilesY - 160;
+            int ashIslandDepthLimit = Main.maxTilesY - AshIslandDepthMaxAboveTheUnderworldFloor;
+            int ashIslandHeightLimit = Main.maxTilesY - AshIslandHeightMaxAboveTheUnderworldFloor;
 
             // Multiple islands in non-remix
             if (!WorldGen.remixWorldGen)
@@ -419,11 +431,11 @@ namespace CalamityMod.World
             }
 
             // Generate a line of background walls from the approximate underworld lava line and down
-            int maxWallHeight = 68;
-            int randomizedWallSectionsHeight = 4;
+            int maxWallHeight = MaxPillarHeight;
+            int randomizedWallSectionsHeight = RandomizedPillarSectionHeight;
             int maxWallTypes = 4;
             int newWallTypeStart = maxWallHeight / maxWallTypes;
-            int maxWallDepth = Main.maxTilesY - 40;
+            int maxWallDepth = Main.maxTilesY - MaxPillarDepthAboveTheUnderworldFloor;
             int smoulderingStoneWallStartDepth = maxWallDepth - maxWallHeight;
             int cinderWallStartDepth = smoulderingStoneWallStartDepth + newWallTypeStart;
             int emberWallStartDepth = cinderWallStartDepth + newWallTypeStart;
@@ -636,356 +648,20 @@ namespace CalamityMod.World
                 }
             }
 
-            // Obsidian and hellstone towers and schematics...
+            // Obsidian and hellstone towers...
             AddHellHouses();
-
-            // Place ash trees
-            for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
-            {
-                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 30; y++)
-                {
-                    if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
-                        WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
-                }
-            }
-
-            // Generate after houses to avoid complications
-            // Place pillars of walls to show that the roof of the underworld is being held up
-            // Do not place any pillars in the Brimstone Crags
-            bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
-            int brimstoneCragsSize = Main.maxTilesX / 5;
-            int brimstoneCragsLocationStart = cragsLocationIsLeft ? (25 + brimstoneCragsSize) : ((Main.maxTilesX - brimstoneCragsSize) - 25);
-            int pillarDistanceFromCragsLimit = 160;
-            int pillarIndexStartX = (cragsLocationIsLeft ? brimstoneCragsLocationStart : 0) + pillarDistanceFromCragsLimit;
-            int pillarIndexEndX = (cragsLocationIsLeft ? Main.maxTilesX : brimstoneCragsLocationStart) - pillarDistanceFromCragsLimit;
-            int pillarIndexStarY = Main.maxTilesY - 200;
-            int pillarIndexEndY = smoulderingStoneWallStartDepth + randomizedWallSectionsHeight;
-            int pillarMidPointY = pillarIndexStarY + (pillarIndexEndY - pillarIndexStarY) / 2;
-            int pillarCutOffCheckStart = pillarMidPointY - 10;
-            int pillarMinWidth = 6;
-            int pillarMinWidthPerSide = pillarMinWidth / 2;
-            int pillarMinStartingWidth = 18;
-            int pillarMaxWidth = 24;
-            int pillarMaxWidthPerSide = pillarMaxWidth / 2;
-            int pillarY = 0;
-            int pillarLeftSize = 0;
-            int pillarRightSize = 0;
-            int topTileSectionSize = 10;
-            int pillarTopTileSectionCutOff = pillarIndexStarY + topTileSectionSize;
-            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
-            ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
-
-            // Use the x tile index to find pillar locations
-            for (int x = pillarIndexStartX; x < pillarIndexEndX; x += WorldGen.genRand.Next(80, pillarDistanceFromCragsLimit + 1))
-            {
-                int pillarStartingWidth = WorldGen.genRand.Next(pillarMinStartingWidth, pillarMaxWidth + 1);
-                pillarLeftSize = pillarStartingWidth / 2;
-                pillarRightSize = pillarStartingWidth / 2;
-                if (pillarStartingWidth % 2 != 0)
-                {
-                    if (WorldGen.genRand.NextBool())
-                        pillarLeftSize++;
-                    else
-                        pillarRightSize++;
-                }
-
-                int startOfPillarX = x - pillarMaxWidthPerSide;
-                int endOfPillarX = x + pillarMaxWidthPerSide;
-                int wallsDetected = 0;
-                bool tooManyWallsToPlacePillarRow = false;
-
-                // Start the pillar at the top of the underworld and extend down to the hellstone wall
-                for (int y = pillarIndexStarY; y <= pillarIndexEndY; y++)
-                {
-                    // The amount of walls required to stop generating the pillar when it's deeper than pillarCutoffCheckStart
-                    int pillarCutOffSize = pillarLeftSize + pillarRightSize + 2;
-
-                    // Get the amount of empty space on the left and right of the pillar's X mid point
-                    int emptySpaceOnLeft = pillarMaxWidthPerSide - pillarLeftSize;
-                    int emptySpaceOnRight = pillarMaxWidthPerSide - pillarRightSize;
-
-                    // Used for wall cleanup around top tile section
-                    int topTileSectionWallCleanupLeft = startOfPillarX + emptySpaceOnLeft + 1;
-                    int topTileSectionWallCleanupRight = endOfPillarX - emptySpaceOnRight - 1;
-
-                    // Create sections of pillar
-                    for (int x2 = startOfPillarX; x2 <= endOfPillarX; x2++)
-                    {
-                        // Check if there are too many walls in a line (this ends the current pillar generation and moves to the next)
-                        if (Main.tile[x2, y].WallType != WallID.None)
-                        {
-                            // Only try to kill further pillar gen if the gen is beyond the pillar's mid point minus 10 tiles
-                            if (y > pillarCutOffCheckStart)
-                                wallsDetected++;
-
-                            if (wallsDetected > pillarCutOffSize)
-                            {
-                                tooManyWallsToPlacePillarRow = true;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (x2 >= startOfPillarX + emptySpaceOnLeft && x2 <= endOfPillarX - emptySpaceOnRight)
-                            {
-                                Main.tile[x2, y].WallType = pillarWallID;
-
-                                // Blocks on top to hold the pillars
-                                if (y < pillarTopTileSectionCutOff)
-                                {
-                                    // Clean up walls at the top so it doesn't look ugly
-                                    if (x2 <= topTileSectionWallCleanupLeft || x2 >= topTileSectionWallCleanupRight || y == pillarIndexStarY)
-                                        Main.tile[x2, y].WallType = WallID.None;
-
-                                    Main.tile[x2, y].Get<TileWallWireStateData>().HasTile = true;
-                                    Main.tile[x2, y].TileType = pillarTileID;
-                                }
-                            }
-                        }
-                    }
-
-                    // Break out if too many walls are already in place
-                    if (tooManyWallsToPlacePillarRow)
-                        break;
-                    else
-                        wallsDetected = 0;
-
-                    if (y < pillarMidPointY)
-                    {
-                        // Becomes more likely to become thinner the further down the pillar is before the mid point
-                        pillarY++;
-                        int chance = pillarY / 3;
-                        if (chance < 2)
-                            chance = 2;
-
-                        if (!WorldGen.genRand.NextBool(chance))
-                        {
-                            switch (WorldGen.genRand.Next(4))
-                            {
-                                default:
-                                    break;
-
-                                case 0:
-                                    pillarLeftSize--;
-                                    break;
-
-                                case 1:
-                                    pillarRightSize--;
-                                    break;
-
-                                case 2:
-                                    pillarLeftSize--;
-                                    pillarRightSize--;
-                                    break;
-                            }
-
-                            // Cap the min width of each side of the pillar
-                            if (pillarLeftSize < pillarMinWidthPerSide)
-                                pillarLeftSize = pillarMinWidthPerSide;
-                            if (pillarRightSize < pillarMinWidthPerSide)
-                                pillarRightSize = pillarMinWidthPerSide;
-                        }
-                    }
-                    else
-                    {
-                        // Becomes more likely to become thicker the further down the pillar is beyond the mid point
-                        pillarY -= 2;
-                        int chance = pillarY;
-                        if (chance < 2)
-                            chance = 2;
-
-                        if (WorldGen.genRand.NextBool(chance))
-                        {
-                            switch (WorldGen.genRand.Next(4))
-                            {
-                                default:
-                                    break;
-
-                                case 0:
-                                    pillarLeftSize++;
-                                    break;
-
-                                case 1:
-                                    pillarRightSize++;
-                                    break;
-
-                                case 2:
-                                    pillarLeftSize++;
-                                    pillarRightSize++;
-                                    break;
-                            }
-
-                            // Cap the max width of each side of the pillar
-                            if (pillarLeftSize > pillarMaxWidthPerSide)
-                                pillarLeftSize = pillarMaxWidthPerSide;
-                            if (pillarRightSize > pillarMaxWidthPerSide)
-                                pillarRightSize = pillarMaxWidthPerSide;
-                        }
-                    }
-                }
-            }
-
-            // Drunk world ash grass and trees
-            if (WorldGen.drunkWorldGen)
-            {
-                for (int x = 25; x < Main.maxTilesX - 25; x++)
-                {
-                    for (int y = Main.maxTilesY - 300; y < Main.maxTilesY - 100 + WorldGen.genRand.Next(-1, 2); y++)
-                    {
-                        if (Main.tile[x, y].TileType == TileID.Ash && Main.tile[x, y].HasTile &&
-                            (!Main.tile[x - 1, y - 1].HasTile || !Main.tile[x, y - 1].HasTile ||
-                            !Main.tile[x + 1, y - 1].HasTile || !Main.tile[x - 1, y].HasTile ||
-                            !Main.tile[x + 1, y].HasTile || !Main.tile[x - 1, y + 1].HasTile ||
-                            !Main.tile[x, y + 1].HasTile || !Main.tile[x + 1, y + 1].HasTile))
-                            Main.tile[x, y].TileType = TileID.AshGrass;
-                    }
-                }
-
-                for (int x = 25; x < Main.maxTilesX - 25; x++)
-                {
-                    for (int y = Main.maxTilesY - 200; y < Main.maxTilesY - 50; y++)
-                    {
-                        if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
-                            WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
-                    }
-                }
-            }
-
-            // Place Geyser Traps on ash islands
-            if (!WorldGen.remixWorldGen)
-            {
-                // Small = 12.6 Medium = 19.2 Large = 25.2
-                double trapFrequency = (double)Main.maxTilesX * 0.003;
-                if (WorldGen.noTrapsWorldGen)
-                    trapFrequency = ((!WorldGen.tenthAnniversaryWorldGen && !WorldGen.notTheBees) ? (trapFrequency * 100D) : (trapFrequency * 5D));
-                else if (WorldGen.getGoodWorldGen)
-                    trapFrequency *= 1.5;
-
-                if (Main.starGame)
-                    trapFrequency *= Main.starGameMath(0.2);
-
-                int maxTrapPlacementAttempts = 1150;
-                for (int trapIndex = 0; (double)trapIndex < trapFrequency; trapIndex++)
-                {
-                    for (int trapIndex2 = 0; trapIndex2 < maxTrapPlacementAttempts; trapIndex2++)
-                    {
-                        int trapPlacementX = WorldGen.genRand.Next(ashIslandX, ashIslandX2);
-                        int trapPlacementY = WorldGen.genRand.Next(Main.maxTilesY - 160, Main.maxTilesY - 100);
-
-                        if (GeyserTraps(trapPlacementX, trapPlacementY))
-                            break;
-                    }
-                }
-            }
         }
 
-        private static bool GeyserTraps(int geyserX, int geyserY)
+        public static void NewUnderworldStructures()
         {
-            int geyserPlacementY = geyserY;
-
-            while (!WorldGen.SolidTile(geyserX, geyserPlacementY))
-            {
-                geyserPlacementY++;
-                if (geyserPlacementY > Main.maxTilesY - 10)
-                    return false;
-            }
-
-            geyserPlacementY--;
-
-            if (!WorldGen.InWorld(geyserX, geyserPlacementY, 3))
-                return false;
-
-            if (Main.tile[geyserX, geyserPlacementY].HasUnactuatedTile ||
-                Main.tile[geyserX - 1, geyserPlacementY].HasUnactuatedTile ||
-                Main.tile[geyserX + 1, geyserPlacementY].HasUnactuatedTile ||
-                Main.tile[geyserX, geyserPlacementY - 1].HasUnactuatedTile ||
-                Main.tile[geyserX - 1, geyserPlacementY - 1].HasUnactuatedTile ||
-                Main.tile[geyserX + 1, geyserPlacementY - 1].HasUnactuatedTile ||
-                Main.tile[geyserX, geyserPlacementY - 2].HasUnactuatedTile ||
-                Main.tile[geyserX - 1, geyserPlacementY - 2].HasUnactuatedTile ||
-                Main.tile[geyserX + 1, geyserPlacementY - 2].HasUnactuatedTile)
-                return false;
-
-            if (Main.tile[geyserX + 1, geyserPlacementY].HasTile)
-                return false;
-
-            // Only place on ash grass to avoid placing in the schematics
-            if (Main.tile[geyserX, geyserPlacementY + 1].TileType != TileID.AshGrass ||
-                Main.tile[geyserX + 1, geyserPlacementY + 1].TileType != TileID.AshGrass)
-                return false;
-
-            for (int k = geyserX; k <= geyserX + 1; k++)
-            {
-                int j2 = geyserPlacementY + 1;
-                if (!WorldGen.SolidTile(k, j2))
-                    return false;
-            }
-
-            int geyserPlacementY2 = WorldGen.genRand.Next(2);
-            for (int l = 0; l < 2; l++)
-            {
-                Main.tile[geyserX + l, geyserPlacementY].Get<TileWallWireStateData>().HasTile = true;
-                Main.tile[geyserX + l, geyserPlacementY].TileType = TileID.GeyserTrap;
-                Main.tile[geyserX + l, geyserPlacementY].TileFrameX = (short)(18 * l + 36 * geyserPlacementY2);
-                Main.tile[geyserX + l, geyserPlacementY].TileFrameY = 0;
-            }
-
-            return true;
-        }
-
-        private static void AddHellHouses()
-        {
-            // Original tower gen area was the outer quarters of the underworld
-            // New tower gen area is the outer thirds of the underworld
-            int towerGenArea = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.25 : 0.33));
-
-            // Generate towers
-            for (int i = 100; i < Main.maxTilesX - 100; i++)
-            {
-                if (i > towerGenArea && i < Main.maxTilesX - towerGenArea)
-                    continue;
-
-                int hellFortGenY = Main.maxTilesY - 40;
-                while (Main.tile[i, hellFortGenY].HasTile || Main.tile[i, hellFortGenY].LiquidAmount > 0)
-                    hellFortGenY--;
-
-                if (Main.tile[i, hellFortGenY + 1].HasTile)
-                {
-                    ushort hellFortTileType = (ushort)WorldGen.genRand.Next(TileID.ObsidianBrick, TileID.HellstoneBrick + 1);
-                    ushort wallType = WallID.HellstoneBrickUnsafe;
-                    if (WorldGen.genRand.Next(5) > 0)
-                        hellFortTileType = TileID.ObsidianBrick;
-
-                    if (hellFortTileType == TileID.ObsidianBrick)
-                        wallType = WallID.ObsidianBrickUnsafe;
-
-                    if (WorldGen.getGoodWorldGen)
-                        hellFortTileType = TileID.HellstoneBrick;
-
-                    // Place tower
-                    WorldGen.HellFort(i, hellFortGenY, hellFortTileType, (byte)wallType);
-
-                    // Move index further along to keep towers spread apart
-                    // Original min and max values were, respectively, 30 and 130
-                    // New min and max values are, respectively, 30 and 60
-                    i += WorldGen.genRand.Next(30, WorldGen.remixWorldGen ? 130 : 60);
-
-                    // Randomly add more distance between towers
-                    // Original max value was 200
-                    // New max value is 50
-                    if (WorldGen.genRand.NextBool(10))
-                        i += WorldGen.genRand.Next(WorldGen.remixWorldGen ? 200 : 50);
-                }
-            }
-
             if (!WorldGen.remixWorldGen)
             {
                 // Generate some structures on the ash islands
-                int ashIslandX = (int)((double)Main.maxTilesX * 0.36);
-                int ashIslandX2 = (int)((double)Main.maxTilesX * 0.64);
+                int ashIslandX = (int)((double)Main.maxTilesX * AshIslandGenStart);
+                int ashIslandX2 = (int)((double)Main.maxTilesX * AshIslandGenEnd);
                 bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
-                int ashIslandDepthLimit = Main.maxTilesY - 135;
-                int ashIslandHeightLimit = Main.maxTilesY - 160;
+                int ashIslandDepthLimit = Main.maxTilesY - AshIslandDepthMaxAboveTheUnderworldFloor;
+                int ashIslandHeightLimit = Main.maxTilesY - AshIslandHeightMaxAboveTheUnderworldFloor;
 
                 // Keep track of world size to adjust house distances
                 float houseDistanceMult = Main.maxTilesX / 4200f;
@@ -1485,6 +1161,380 @@ namespace CalamityMod.World
                     // Reset positions and move cache placement along the X axis
                     cacheGenX = ashIslandX + firstStructureDistanceFromIslandEdge + (distanceBetweenStructures_AfterFirstIsland * (numAtriums + cacheIndex + 1));
                     cacheGenY = ashIslandDepthLimit + cacheOffsetY;
+                }
+            }
+        }
+
+        public static void NewUnderworldPillars()
+        {
+            int maxWallHeight = MaxPillarHeight;
+            int randomizedWallSectionsHeight = RandomizedPillarSectionHeight;
+            int maxWallDepth = Main.maxTilesY - MaxPillarDepthAboveTheUnderworldFloor;
+            int smoulderingStoneWallStartDepth = maxWallDepth - maxWallHeight;
+
+            // Generate after houses to avoid complications
+            // Place pillars of walls to show that the roof of the underworld is being held up
+            // Do not place any pillars in the Brimstone Crags
+            bool cragsLocationIsLeft = GenVars.dungeonLocation < Main.maxTilesX / 2;
+            int brimstoneCragsSize = Main.maxTilesX / 5;
+            int brimstoneCragsLocationStart = cragsLocationIsLeft ? (25 + brimstoneCragsSize) : ((Main.maxTilesX - brimstoneCragsSize) - 25);
+            int pillarDistanceFromCragsLimit = 160;
+            int pillarIndexStartX = (cragsLocationIsLeft ? brimstoneCragsLocationStart : 0) + pillarDistanceFromCragsLimit;
+            int pillarIndexEndX = (cragsLocationIsLeft ? Main.maxTilesX : brimstoneCragsLocationStart) - pillarDistanceFromCragsLimit;
+            int pillarIndexStarY = Main.maxTilesY - 200;
+            int pillarIndexEndY = smoulderingStoneWallStartDepth + randomizedWallSectionsHeight;
+            int pillarMidPointY = pillarIndexStarY + (pillarIndexEndY - pillarIndexStarY) / 2;
+            int pillarCutOffCheckStart = pillarMidPointY - 10;
+            int pillarMinWidth = 6;
+            int pillarMinWidthPerSide = pillarMinWidth / 2;
+            int pillarMinStartingWidth = 18;
+            int pillarMaxWidth = 24;
+            int pillarMaxWidthPerSide = pillarMaxWidth / 2;
+            int pillarY = 0;
+            int pillarLeftSize = 0;
+            int pillarRightSize = 0;
+            int topTileSectionSize = 10;
+            int pillarTopTileSectionCutOff = pillarIndexStarY + topTileSectionSize;
+            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
+            ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
+
+            // Use the x tile index to find pillar locations
+            for (int x = pillarIndexStartX; x < pillarIndexEndX; x += WorldGen.genRand.Next(80, pillarDistanceFromCragsLimit + 1))
+            {
+                int pillarStartingWidth = WorldGen.genRand.Next(pillarMinStartingWidth, pillarMaxWidth + 1);
+                pillarLeftSize = pillarStartingWidth / 2;
+                pillarRightSize = pillarStartingWidth / 2;
+                if (pillarStartingWidth % 2 != 0)
+                {
+                    if (WorldGen.genRand.NextBool())
+                        pillarLeftSize++;
+                    else
+                        pillarRightSize++;
+                }
+
+                int startOfPillarX = x - pillarMaxWidthPerSide;
+                int endOfPillarX = x + pillarMaxWidthPerSide;
+                int wallsDetected = 0;
+                bool tooManyWallsToPlacePillarRow = false;
+
+                // Start the pillar at the top of the underworld and extend down to the hellstone wall
+                for (int y = pillarIndexStarY; y <= pillarIndexEndY; y++)
+                {
+                    // The amount of walls required to stop generating the pillar when it's deeper than pillarCutoffCheckStart
+                    int pillarCutOffSize = pillarLeftSize + pillarRightSize + 2;
+
+                    // Get the amount of empty space on the left and right of the pillar's X mid point
+                    int emptySpaceOnLeft = pillarMaxWidthPerSide - pillarLeftSize;
+                    int emptySpaceOnRight = pillarMaxWidthPerSide - pillarRightSize;
+
+                    // Used for wall cleanup around top tile section
+                    int topTileSectionWallCleanupLeft = startOfPillarX + emptySpaceOnLeft + 1;
+                    int topTileSectionWallCleanupRight = endOfPillarX - emptySpaceOnRight - 1;
+
+                    // Create sections of pillar
+                    for (int x2 = startOfPillarX; x2 <= endOfPillarX; x2++)
+                    {
+                        // Check if there are too many walls in a line (this ends the current pillar generation and moves to the next)
+                        if (Main.tile[x2, y].WallType != WallID.None)
+                        {
+                            // Only try to kill further pillar gen if the gen is beyond the pillar's mid point minus 10 tiles
+                            if (y > pillarCutOffCheckStart)
+                                wallsDetected++;
+
+                            if (wallsDetected > pillarCutOffSize)
+                            {
+                                tooManyWallsToPlacePillarRow = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (x2 >= startOfPillarX + emptySpaceOnLeft && x2 <= endOfPillarX - emptySpaceOnRight)
+                            {
+                                Main.tile[x2, y].WallType = pillarWallID;
+
+                                // Blocks on top to hold the pillars
+                                if (y < pillarTopTileSectionCutOff)
+                                {
+                                    // Clean up walls at the top so it doesn't look ugly
+                                    if (x2 <= topTileSectionWallCleanupLeft || x2 >= topTileSectionWallCleanupRight || y == pillarIndexStarY)
+                                        Main.tile[x2, y].WallType = WallID.None;
+
+                                    Main.tile[x2, y].Get<TileWallWireStateData>().HasTile = true;
+                                    Main.tile[x2, y].TileType = pillarTileID;
+                                }
+                            }
+                        }
+                    }
+
+                    // Break out if too many walls are already in place
+                    if (tooManyWallsToPlacePillarRow)
+                        break;
+                    else
+                        wallsDetected = 0;
+
+                    if (y < pillarMidPointY)
+                    {
+                        // Becomes more likely to become thinner the further down the pillar is before the mid point
+                        pillarY++;
+                        int chance = pillarY / 3;
+                        if (chance < 2)
+                            chance = 2;
+
+                        if (!WorldGen.genRand.NextBool(chance))
+                        {
+                            switch (WorldGen.genRand.Next(4))
+                            {
+                                default:
+                                    break;
+
+                                case 0:
+                                    pillarLeftSize--;
+                                    break;
+
+                                case 1:
+                                    pillarRightSize--;
+                                    break;
+
+                                case 2:
+                                    pillarLeftSize--;
+                                    pillarRightSize--;
+                                    break;
+                            }
+
+                            // Cap the min width of each side of the pillar
+                            if (pillarLeftSize < pillarMinWidthPerSide)
+                                pillarLeftSize = pillarMinWidthPerSide;
+                            if (pillarRightSize < pillarMinWidthPerSide)
+                                pillarRightSize = pillarMinWidthPerSide;
+                        }
+                    }
+                    else
+                    {
+                        // Becomes more likely to become thicker the further down the pillar is beyond the mid point
+                        pillarY -= 2;
+                        int chance = pillarY;
+                        if (chance < 2)
+                            chance = 2;
+
+                        if (WorldGen.genRand.NextBool(chance))
+                        {
+                            switch (WorldGen.genRand.Next(4))
+                            {
+                                default:
+                                    break;
+
+                                case 0:
+                                    pillarLeftSize++;
+                                    break;
+
+                                case 1:
+                                    pillarRightSize++;
+                                    break;
+
+                                case 2:
+                                    pillarLeftSize++;
+                                    pillarRightSize++;
+                                    break;
+                            }
+
+                            // Cap the max width of each side of the pillar
+                            if (pillarLeftSize > pillarMaxWidthPerSide)
+                                pillarLeftSize = pillarMaxWidthPerSide;
+                            if (pillarRightSize > pillarMaxWidthPerSide)
+                                pillarRightSize = pillarMaxWidthPerSide;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void AshTreesAndGrass()
+        {
+            // Start generating islands at this point
+            int ashIslandX = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? AshIslandGenStart_Remix : AshIslandGenStart));
+
+            // Stop generating islands at this point
+            int ashIslandX2 = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? AshIslandGenEnd_Remix : AshIslandGenEnd));
+
+            // Ash island gen limits
+            int ashIslandDepthLimit = Main.maxTilesY - AshIslandDepthMaxAboveTheUnderworldFloor;
+
+            // Place ash trees
+            for (int x = ashIslandX; x < ashIslandX2 + 15; x++)
+            {
+                for (int y = Main.maxTilesY - 200; y < ashIslandDepthLimit + 30; y++)
+                {
+                    if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
+                        WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
+                }
+            }
+
+            // Drunk world ash grass and trees
+            if (WorldGen.drunkWorldGen)
+            {
+                for (int x = 25; x < Main.maxTilesX - 25; x++)
+                {
+                    for (int y = Main.maxTilesY - 300; y < Main.maxTilesY - 100 + WorldGen.genRand.Next(-1, 2); y++)
+                    {
+                        if (Main.tile[x, y].TileType == TileID.Ash && Main.tile[x, y].HasTile &&
+                            (!Main.tile[x - 1, y - 1].HasTile || !Main.tile[x, y - 1].HasTile ||
+                            !Main.tile[x + 1, y - 1].HasTile || !Main.tile[x - 1, y].HasTile ||
+                            !Main.tile[x + 1, y].HasTile || !Main.tile[x - 1, y + 1].HasTile ||
+                            !Main.tile[x, y + 1].HasTile || !Main.tile[x + 1, y + 1].HasTile))
+                            Main.tile[x, y].TileType = TileID.AshGrass;
+                    }
+                }
+
+                for (int x = 25; x < Main.maxTilesX - 25; x++)
+                {
+                    for (int y = Main.maxTilesY - 200; y < Main.maxTilesY - 50; y++)
+                    {
+                        if (Main.tile[x, y].TileType == TileID.AshGrass && Main.tile[x, y].HasTile && !Main.tile[x, y - 1].HasTile && WorldGen.genRand.NextBool(3))
+                            WorldGen.TryGrowingTreeByType(TileID.TreeAsh, x, y);
+                    }
+                }
+            }
+        }
+
+        public static void PlaceGeyserTraps()
+        {
+            // Place Geyser Traps on ash islands
+            // These are only generated in the no-man's land central islands
+            if (!WorldGen.remixWorldGen)
+            {
+                // Large = 8, Medium = 6, Small = 4
+                // No-man's land islands: Large = 4, Medium = 2, Small = 2
+                int numIslands = (int)(Main.maxTilesX / 4200f * 4f);
+                bool mediumWorld = numIslands == MediumWorldIslands;
+
+                // Start generating traps at this point
+                int ashIslandX = (int)((double)Main.maxTilesX * (mediumWorld ? 0.453 : 0.43));
+
+                // Stop generating traps at this point
+                int ashIslandX2 = (int)((double)Main.maxTilesX * (mediumWorld ? 0.546 : 0.57));
+
+                // Small = 12.6 Medium = 19.2 Large = 25.2
+                double trapFrequency = (double)Main.maxTilesX * 0.003;
+                if (WorldGen.noTrapsWorldGen)
+                    trapFrequency = ((!WorldGen.tenthAnniversaryWorldGen && !WorldGen.notTheBees) ? (trapFrequency * 100D) : (trapFrequency * 5D));
+                else if (WorldGen.getGoodWorldGen)
+                    trapFrequency *= 1.5;
+
+                if (Main.starGame)
+                    trapFrequency *= Main.starGameMath(0.2);
+
+                int maxTrapPlacementAttempts = 1150;
+                for (int trapIndex = 0; (double)trapIndex < trapFrequency; trapIndex++)
+                {
+                    for (int trapIndex2 = 0; trapIndex2 < maxTrapPlacementAttempts; trapIndex2++)
+                    {
+                        int trapPlacementX = WorldGen.genRand.Next(ashIslandX, ashIslandX2);
+                        int trapPlacementY = WorldGen.genRand.Next(Main.maxTilesY - AshIslandHeightMaxAboveTheUnderworldFloor, Main.maxTilesY - 100);
+
+                        if (GeyserTraps(trapPlacementX, trapPlacementY))
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static bool GeyserTraps(int geyserX, int geyserY)
+        {
+            int geyserPlacementY = geyserY;
+
+            while (!WorldGen.SolidTile(geyserX, geyserPlacementY))
+            {
+                geyserPlacementY++;
+                if (geyserPlacementY > Main.maxTilesY - 10)
+                    return false;
+            }
+
+            geyserPlacementY--;
+
+            if (!WorldGen.InWorld(geyserX, geyserPlacementY, 3))
+                return false;
+
+            if (Main.tile[geyserX, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 1].HasUnactuatedTile ||
+                Main.tile[geyserX, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX - 1, geyserPlacementY - 2].HasUnactuatedTile ||
+                Main.tile[geyserX + 1, geyserPlacementY - 2].HasUnactuatedTile)
+                return false;
+
+            if (Main.tile[geyserX + 1, geyserPlacementY].HasTile)
+                return false;
+
+            // Only place on ash grass to avoid placing in the schematics
+            if (Main.tile[geyserX, geyserPlacementY + 1].TileType != TileID.AshGrass ||
+                Main.tile[geyserX + 1, geyserPlacementY + 1].TileType != TileID.AshGrass)
+                return false;
+
+            for (int k = geyserX; k <= geyserX + 1; k++)
+            {
+                int j2 = geyserPlacementY + 1;
+                if (!WorldGen.SolidTile(k, j2))
+                    return false;
+            }
+
+            int geyserPlacementY2 = WorldGen.genRand.Next(2);
+            for (int l = 0; l < 2; l++)
+            {
+                Main.tile[geyserX + l, geyserPlacementY].Get<TileWallWireStateData>().HasTile = true;
+                Main.tile[geyserX + l, geyserPlacementY].TileType = TileID.GeyserTrap;
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameX = (short)(18 * l + 36 * geyserPlacementY2);
+                Main.tile[geyserX + l, geyserPlacementY].TileFrameY = 0;
+            }
+
+            return true;
+        }
+
+        private static void AddHellHouses()
+        {
+            // Original tower gen area was the outer quarters of the underworld
+            // New tower gen area is the outer thirds of the underworld
+            int towerGenArea = (int)((double)Main.maxTilesX * (WorldGen.remixWorldGen ? 0.25 : 0.33));
+
+            // Generate towers
+            for (int i = 100; i < Main.maxTilesX - 100; i++)
+            {
+                if (i > towerGenArea && i < Main.maxTilesX - towerGenArea)
+                    continue;
+
+                int hellFortGenY = Main.maxTilesY - 40;
+                while (Main.tile[i, hellFortGenY].HasTile || Main.tile[i, hellFortGenY].LiquidAmount > 0)
+                    hellFortGenY--;
+
+                if (Main.tile[i, hellFortGenY + 1].HasTile)
+                {
+                    ushort hellFortTileType = (ushort)WorldGen.genRand.Next(TileID.ObsidianBrick, TileID.HellstoneBrick + 1);
+                    ushort wallType = WallID.HellstoneBrickUnsafe;
+                    if (WorldGen.genRand.Next(5) > 0)
+                        hellFortTileType = TileID.ObsidianBrick;
+
+                    if (hellFortTileType == TileID.ObsidianBrick)
+                        wallType = WallID.ObsidianBrickUnsafe;
+
+                    if (WorldGen.getGoodWorldGen)
+                        hellFortTileType = TileID.HellstoneBrick;
+
+                    // Place tower
+                    WorldGen.HellFort(i, hellFortGenY, hellFortTileType, (byte)wallType);
+
+                    // Move index further along to keep towers spread apart
+                    // Original min and max values were, respectively, 30 and 130
+                    // New min and max values are, respectively, 30 and 60
+                    i += WorldGen.genRand.Next(30, WorldGen.remixWorldGen ? 130 : 60);
+
+                    // Randomly add more distance between towers
+                    // Original max value was 200
+                    // New max value is 50
+                    if (WorldGen.genRand.NextBool(10))
+                        i += WorldGen.genRand.Next(WorldGen.remixWorldGen ? 200 : 50);
                 }
             }
 

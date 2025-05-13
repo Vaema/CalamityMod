@@ -589,8 +589,11 @@ Lecherous: {
 
 Disenchant: Disenchant
 // Worldgen Tasks
-BetterUnderworld: Creating a smoother underworld
-AshIslandLavaRemoval: Removing lava from ash island
+BetterUnderworld: Creating a smoother Underworld
+UnderworldStructures: Remnants of an Azafurian and Demonic war
+UnderworldPillars: Constructing Underworld pillars
+UnderworldTreesAndGrass: Growing Underworld flora
+UnderworldGeyserTraps: Adding an Underworld minefield
 EvilIslandCorrupt: Adding a putrid floating island
 EvilIslandCrimson: Adding a grotesque floating island
 AstralChest: Placing an astral chest
