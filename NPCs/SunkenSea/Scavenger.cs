@@ -1,15 +1,13 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,7 +26,7 @@ using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Scavenger : ModNPC
+    public class Scavenger : SunkenSeaNPC
     {
         public record ScavengerItem(int itemID, int minimum, int maximum, Func<bool> condition);
 
@@ -46,6 +44,13 @@ namespace CalamityMod.NPCs.SunkenSea
             { ItemID.GalaxyPearl, new WeightedRandom<ScavengerItem>() },
             { ModContent.ItemType<GiantPearl>(), new WeightedRandom<ScavengerItem>() },
         };
+
+        public enum PhaseType
+        {
+            Idle = 0,
+            FoundItem = 1,
+            Bartering = 2
+        }
 
         // The in world index of the item the crab is going after
         public int HeldItemIndex
@@ -85,16 +90,22 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public bool ShouldUseGivingFrames => Phase == (int)PhaseType.Bartering && TradeTimer >= 80;
 
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.TimelessShores;
 
-        public enum PhaseType
+        protected override List<int> PreyIDs => new List<int>
         {
-            Idle = 0,
-            FoundItem = 1,
-            Bartering = 2
-        }
+
+        };
+
+        protected override List<int> PredatorIDs => new List<int>
+        {
+            ModContent.NPCType<Stormlion>(),
+            ModContent.NPCType<StormlionSentry>()
+        };
 
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             Main.npcFrameCount[NPC.type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             Main.npcFrameCount[Type] = 7;
@@ -132,7 +143,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(white, ItemID.WoodenCrateHard, 1, () => Main.hardMode, 0.1f);
             AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode, 0.05f);
             AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode, 0.05f);
-            AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, () => Main.hardMode, 0.075f);
+            AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, 0.075f);
             AddScavengerItem(white, ModContent.ItemType<StormlionMandible>(), 1, 0.1f);
             AddScavengerItem(white, ModContent.ItemType<PrismShard>(), 1, 0.1f);
             AddScavengerItem(white, ItemID.ScarabBomb, 3, 10, 0.1f);
@@ -158,6 +169,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             AddScavengerItem(black, ModContent.ItemType<EutrophicCrate>(), 1, () => !Main.hardMode, 0.1f);
             AddScavengerItem(black, ModContent.ItemType<PrismCrate>(), 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ItemID.PirateMap, 1, () => Main.hardMode, 0.05f);
             AddScavengerItem(black, ItemID.IronCrate, 1, () => !Main.hardMode, 0.1f);
             AddScavengerItem(black, ItemID.IronCrateHard, 1, () => Main.hardMode, 0.1f);
             AddScavengerItem(black, ItemID.GoldenCrate, 1, () => !Main.hardMode, 0.02f);
@@ -253,6 +265,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.damage = 20;
             NPC.width = 48;
             NPC.height = 48;
@@ -324,29 +337,34 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Do idle stuff, actual behavior not determined rn
                 case (int)PhaseType.Idle:
                     {
-
                         // Decide if it should walk or sit
-                        float movementSpeed = 1f;
+                        float movementSpeed = CurrentPrey != null || CurrentPredator != null ? 2 : 1;
                         bool startMovement = false;
                         if (WalkTimer <= 0)
                         {
                             WalkTimer = Main.rand.Next(180, 340);
                             WalkOrStand = WalkOrStand <= 0 ? 1 : -1;
-                            if (WalkOrStand == 1 && Main.rand.NextBool())
+                            if (WalkOrStand == 1 && Main.rand.NextBool() && CurrentPrey == null)
                             {
                                 NPC.direction *= -1;
                             }
+                            if (CurrentPrey != null)
+                            {
+                                NPC.direction = (int)(CurrentPrey.Center.X - NPC.Center.X);
+                            }
                             startMovement = true;
                         }
+                        bool lookingAtPredator = CurrentPredator != null && NPC.direction == Math.Sign(CurrentPredator.Center.X - NPC.Center.X);
                         bool waterCheck = WaterCheck(16);
                         // If it bumps into something, jump or turn around
-                        if (!startMovement && TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && WalkOrStand == 1)
+                        if ((!startMovement && TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && WalkOrStand == 1) || lookingAtPredator)
                         {
                             // Jump if there are a couple tiles and a space above
-                            if (!waterCheck && JumpCheck() && NPC.velocity.Y == 0)
+                            if (!waterCheck && JumpCheck() && NPC.velocity.Y == 0 && !lookingAtPredator)
                             {
                                 NPC.velocity.Y -= 7;
                                 NPC.velocity.X = movementSpeed * NPC.direction;
+                                WalkOrStand = 1;
                                 TurnTimer = 10;
                             }
                             // Turn around if it can't jump up or a pit/water is in the way
@@ -367,6 +385,11 @@ namespace CalamityMod.NPCs.SunkenSea
                         else if (WalkOrStand == -1)
                         {
                             WalkTimer = 0;
+                            if (CurrentPredator != null)
+                            {
+                                WalkOrStand = 1;
+                                WalkTimer = Main.rand.Next(180, 340);
+                            }
                         }
                         CalamityUtils.StepUpBlocks(NPC);
 
@@ -435,10 +458,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)PhaseType.FoundItem:
                     {
                         // If the item is no longer valid, go back to idle behaviour
-                        if (HeldItemIndex <= -1)
+                        if (HeldItemIndex <= -1 || CurrentPredator != null)
                         {
                             NPC.netUpdate = true;
                             Phase = (int)PhaseType.Idle;
+                            HeldItemIndex = -1;
                             TurnTimer = 0;
                             WalkTimer = 0;
                             return;
@@ -536,6 +560,34 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Ponder the held item then give a reward back
                 case (int)PhaseType.Bartering:
                     {
+                        if (CurrentPredator != null)
+                        {
+                            Item.NewItem(NPC.GetSource_FromThis(), NPC.getRect(), HeldItemType);
+
+                            NPC.netUpdate = true;
+                            HeldItemIndex = -1;
+                            Phase = (int)PhaseType.Idle;
+                            TurnTimer = 0;
+                            WalkTimer = 0;
+                            OldItemType = 0;
+                            StackMin = 0;
+                            StackMax = 0;
+
+                            SoundEngine.PlaySound(SoundID.NPCHit51 with { Pitch = -0.3f }, NPC.Center);
+
+                            EmoteExpressionParticle.EmoteType eType = EmoteExpressionParticle.EmoteType.Exclamation;
+
+                            var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
+                            Particle emote = new EmoteExpressionParticle(
+                                NPC.Center + emoteDirection * 2f,
+                                emoteDirection,
+                                2.2f,
+                                Color.Red,
+                                Main.rand.Next(30, 46),
+                                eType);
+                            GeneralParticleHandler.SpawnParticle(emote);
+                            return;
+                        }
                         NPC.velocity.X *= NPC.velocity.Y != 0 ? 0.96f : 0.9f;
                         TradeTimer++;
                         // Calculate the reward
@@ -584,7 +636,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             }
                             HeldItemType = 0;
                             OldItemType = 0;
-                            StackMax = 0;
+                            StackMin = 0;
                             StackMax = 0;
                         }
                     }
@@ -763,6 +815,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.frameCounter = 0;
             }
         }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
