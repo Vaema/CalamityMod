@@ -270,9 +270,11 @@ namespace CalamityMod.Projectiles.Melee
             targetoffset = target.position;
             float x = Utils.GetLerpValue(1000f, 6000f, damageDone, true);
             int x1 = (int)(20 * (x) * (Projectile.extraUpdates + 1));
-            if (damageDone > 5) hitstop = x1;
+            if (damageDone > 5) {
+                hitstop = x1;
+                Projectile.damage = (int)(Projectile.damage * 0.9f);
+            }
             target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 240);
-            Projectile.damage = (int)(Projectile.damage * 0.9f);
             //Violence's normal hit code
 
             if (Main.netMode != NetmodeID.Server)
