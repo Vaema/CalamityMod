@@ -385,16 +385,19 @@ namespace CalamityMod.NPCs.HiveMind
                     switch (choice)
                     {
                         case 0:
-                        case 1:
-                            type = NPC.CountNPCS(NPCID.EaterofSouls) < 2 ? NPCID.EaterofSouls : 0;
+                            type = !NPC.AnyNPCs(NPCID.EaterofSouls) ? NPCID.EaterofSouls : 0;
                             break;
 
-                        case 2:
+                        case 1:
                             type = !NPC.AnyNPCs(NPCID.DevourerHead) ? NPCID.DevourerHead : 0;
                             break;
 
-                        case 3:
+                        case 2:
                             type = !NPC.AnyNPCs(ModContent.NPCType<DankCreeper>()) ? ModContent.NPCType<DankCreeper>() : 0;
+                            break;
+
+                        case 3:
+                            type = (!NPC.AnyNPCs(NPCID.Corruptor) && death) ? NPCID.Corruptor : 0;
                             break;
 
                         default:
@@ -1114,13 +1117,6 @@ namespace CalamityMod.NPCs.HiveMind
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
-                                if (Main.netMode != NetmodeID.MultiplayerClient && Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height))
-                                {
-                                    int maxEaters = revenge ? 2 : 1;
-                                    if (NPC.CountNPCS(NPCID.EaterofSouls) < maxEaters && NPC.Distance(Main.player[NPC.target].Center) > 80f)
-                                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
-                                }
-
                                 if (NPC.ai[0] == 6f)
                                 {
                                     NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
