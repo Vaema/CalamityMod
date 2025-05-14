@@ -1,10 +1,13 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Critters;
+using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -13,6 +16,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -26,20 +30,22 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class Scavenger : ModNPC
     {
+        public record ScavengerItem(int itemID, int minimum, int maximum, Func<bool> condition);
+
         public static Asset<Texture2D> walkTexture;
 
         public static Asset<Texture2D> inspectTexture;
 
         public static Asset<Texture2D> giveTexture;
 
-        // Items that can be given to the Scavenger
-        public static Dictionary<int, int> currencies = new Dictionary<int, int>();
-
-        // Items that can be received form the Scavenger
-        public static Dictionary<int, float> rewards = new Dictionary<int, float>();
-
-        // Ditto the above but in a different format that allows for clean rng rolls
-        public static WeightedRandom<int> rewardsRoll = new WeightedRandom<int>();
+        public static Dictionary<int, WeightedRandom<ScavengerItem>> ScavengerLoot = new Dictionary<int, WeightedRandom<ScavengerItem>>()
+        {
+            { ItemID.WhitePearl, new WeightedRandom<ScavengerItem>() },
+            { ItemID.BlackPearl, new WeightedRandom<ScavengerItem>() },
+            { ItemID.PinkPearl, new WeightedRandom<ScavengerItem>() },
+            { ItemID.GalaxyPearl, new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<GiantPearl>(), new WeightedRandom<ScavengerItem>() },
+        };
 
         // The in world index of the item the crab is going after
         public int HeldItemIndex
@@ -67,6 +73,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float WalkOrStand => ref NPC.Calamity().newAI[2];
 
+        public ref float StackMin => ref NPC.localAI[0];
+
+        public ref float StackMax => ref NPC.localAI[1];
+
+        public ref float OldItemType => ref NPC.localAI[2];
+
         public bool ShouldUseWalkingFrames => NPC.velocity.X != 0 && ((WalkOrStand == 1 && Phase == (int)PhaseType.Idle) || (Phase == (int)PhaseType.FoundItem));
 
         public bool ShouldUseInspectionFrames => Phase == (int)PhaseType.Bartering && TradeTimer < 80;
@@ -87,29 +99,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             Main.npcFrameCount[Type] = 7;
 
-            // Fill the currency list
-            // The key is the item type, the value is how many rolls the item provides
-            currencies.Add((int)ItemID.WhitePearl, 1);
-            currencies.Add((int)ItemID.BlackPearl, 2);
-            currencies.Add((int)ItemID.PinkPearl, 5);
-
-            // Fill the rewards list
-            // The key is the item type, the value is the item's rarity
-            rewards.Add(ModContent.ItemType<Driftwood>(), 0.5f);
-            rewards.Add(ModContent.ItemType<BurntSienna>(), 15f);
-            rewards.Add(ModContent.ItemType<Runestone>(), 0.2f);
-            rewards.Add(ModContent.ItemType<Dunesand>(), 0.2f);
-            rewards.Add(ModContent.ItemType<IlmerisSpark>(), 15f);
-            rewards.Add(ItemID.PalmWoodBreastplate, 10f);
-            rewards.Add(ItemID.PalmWoodHelmet, 10f);
-            rewards.Add(ItemID.PalmWoodGreaves, 10f);
-
-            // Fill the drop pool
-            foreach (var v in rewards)
-            {
-                // Have the value act as a divisor since WeightedRandom prioritizes higher values
-                rewardsRoll.Add(v.Key, 1 / v.Value);
-            }
+            InitializeScavengerLoot();
 
             if (!Main.dedServ)
             {
@@ -118,6 +108,148 @@ namespace CalamityMod.NPCs.SunkenSea
                 giveTexture = ModContent.Request<Texture2D>(Texture + "Giving");
             }
         }
+
+        #region Trades
+
+        public static void InitializeScavengerLoot()
+        {
+            int white = ItemID.WhitePearl;
+            int black = ItemID.BlackPearl;
+            int pink = ItemID.PinkPearl;
+            int minBlock = 6;
+            int maxBlock = 17;
+            float coralBlockChance = 0.1f;
+
+            AddScavengerItem(white, ModContent.ItemType<Driftwood>(), minBlock, maxBlock);
+            AddScavengerItem(white, ModContent.ItemType<Navystone>(), minBlock, maxBlock);
+            AddScavengerItem(white, ModContent.ItemType<EutrophicSand>(), minBlock, maxBlock);
+            AddScavengerItem(white, ModContent.ItemType<MagentaCoral>(), minBlock, maxBlock, coralBlockChance);
+            AddScavengerItem(white, ModContent.ItemType<CyanCoral>(), minBlock, maxBlock, coralBlockChance);
+            AddScavengerItem(white, ModContent.ItemType<LimeCoral>(), minBlock, maxBlock, coralBlockChance);
+            AddScavengerItem(white, ModContent.ItemType<YellowCoral>(), minBlock, maxBlock, coralBlockChance);
+            AddScavengerItem(white, ModContent.ItemType<OrangeCoral>(), minBlock, maxBlock, coralBlockChance);
+            AddScavengerItem(white, ItemID.WoodenCrate, 1, () => !Main.hardMode, 0.1f);
+            AddScavengerItem(white, ItemID.WoodenCrateHard, 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode, 0.05f);
+            AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode, 0.05f);
+            AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, () => Main.hardMode, 0.075f);
+            AddScavengerItem(white, ModContent.ItemType<StormlionMandible>(), 1, 0.1f);
+            AddScavengerItem(white, ModContent.ItemType<PrismShard>(), 1, 0.1f);
+            AddScavengerItem(white, ItemID.ScarabBomb, 3, 10, 0.1f);
+            AddScavengerItem(white, ItemID.Coral, 3, 10, 0.2f);
+            AddScavengerItem(white, ItemID.Starfish, 3, 10, 0.2f);
+            AddScavengerItem(white, ItemID.Seashell, 3, 10, 0.2f);
+            // Critters. Golds, Radiants, Pearlpods and any Basalt Gully/Timeless Shore critters are to be excluded
+            AddScavengerItem(white, ModContent.ItemType<PrismaticGuppyPinkItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<PrismaticGuppyGreenItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<PrismaticGuppyBlueItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<SeaMinnowItem>(), 1, 0.05f);
+            AddScavengerItem(white, ModContent.ItemType<AlphaSeaMinnowItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<PolypPanaseaItem>(), 1, 0.01f);
+            AddScavengerItem(white, ModContent.ItemType<PolypPanaseaGreenItem>(), 1, 0.01f);
+            AddScavengerItem(white, ModContent.ItemType<PolypPanaseaPurpleItem>(), 1, 0.01f);
+            AddScavengerItem(white, ModContent.ItemType<PolypPanaseaTurquoiseItem>(), 1, 0.01f);
+            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellRedItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellGreenItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<SlugbunItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<SlugbunBurrowsItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<SlugbunPolypItem>(), 1, 0.02f);
+
+            AddScavengerItem(black, ModContent.ItemType<EutrophicCrate>(), 1, () => !Main.hardMode, 0.1f);
+            AddScavengerItem(black, ModContent.ItemType<PrismCrate>(), 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ItemID.IronCrate, 1, () => !Main.hardMode, 0.1f);
+            AddScavengerItem(black, ItemID.IronCrateHard, 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ItemID.GoldenCrate, 1, () => !Main.hardMode, 0.02f);
+            AddScavengerItem(black, ItemID.GoldenCrateHard, 1, () => Main.hardMode, 0.02f);
+            AddScavengerItem(black, ItemID.WaterWalkingBoots, 1, 0.05f);
+            AddScavengerItem(black, ItemID.JellyfishNecklace, 1, 0.05f);
+            //AddScavengerItem(black, ItemID.Nachos, 1, 0.05f); insert food item
+            AddScavengerItem(black, ModContent.ItemType<SeaRemains>(), 1, () => DownedBossSystem.downedDesertScourge, 0.3f);
+            AddScavengerItem(black, ModContent.ItemType<SeaPrism>(), 1, () => DownedBossSystem.downedDesertScourge, 0.3f);
+            AddScavengerItem(black, ModContent.ItemType<SuspiciousScrap>(), 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ModContent.ItemType<InkBomb>(), 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ModContent.ItemType<SeaSpiritAmulet>(), 1, () => Main.hardMode, 0.1f);
+            AddScavengerItem(black, ItemID.FinWings, 1, () => Main.hardMode, 0.1f);
+
+            AddScavengerItem(pink, ModContent.ItemType<BurntSienna>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<BurntBow>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<BurntBook>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<BurntStaff>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<BurntDagger>(), 1);
+            AddScavengerItem(pink, ModContent.ItemType<EnchantedPearl>(), 1);
+            AddScavengerItem(pink, ModContent.ItemType<SpiritGlyph>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<ScavengerHelmet>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<ScavengerChestplate>(), 1);
+            //AddScavengerItem(pink, ModContent.ItemType<ScavengerBoots>(), 1);
+
+            ScavengerLoot[ItemID.GalaxyPearl] = ScavengerLoot[white]; // Gives 1-2x the amount of white items
+            ScavengerLoot[ModContent.ItemType<GiantPearl>()] = ScavengerLoot[pink]; // Gives 2 pink items
+
+        }
+
+        #region Loot adding methods
+        /// <summary>
+        /// Adds an item to the Scavenger's loot pool
+        /// </summary>
+        /// <param name="currency">The item type required to be traded</param>
+        /// <param name="itemID">The loot item</param>
+        /// <param name="min">The minimum amount to drop</param>
+        /// <param name="max">The maximum amount to drop</param>
+        /// <param name="weight">The weight of the item drop. Lower numbers means lower chances</param>
+        public static void AddScavengerItem(int currency, int itemID, int min, int max, float weight = 1)
+        {
+            AddScavengerItem(currency, itemID, min, max, () => true, weight);
+        }
+
+        /// <summary>
+        /// Adds an item to the Scavenger's loot pool
+        /// </summary>
+        /// <param name="currency">The item type required to be traded</param>
+        /// <param name="itemID">The loot item</param>
+        /// <param name="amount">How much should drop</param>
+        /// <param name="weight">The weight of the item drop. Lower numbers means lower chances</param>
+        public static void AddScavengerItem(int currency, int itemID, int amount, float weight = 1)
+        {
+            AddScavengerItem(currency, itemID, amount, amount, () => true, weight);
+        }
+
+        /// <summary>
+        /// Adds an item to the Scavenger's loot pool
+        /// </summary>
+        /// <param name="currency">The item type required to be traded</param>
+        /// <param name="itemID">The loot item</param>
+        /// <param name="amount">How much should drop</param>
+        /// <param name="condition">A condition</param>
+        /// <param name="weight">The weight of the item drop. Lower numbers means lower chances</param>
+        public static void AddScavengerItem(int currency, int itemID, int amount, Func<bool> condition, float weight = 1)
+        {
+            AddScavengerItem(currency, itemID, amount, amount, condition, weight);
+        }
+
+        /// <summary>
+        /// Adds an item to the Scavenger's loot pool
+        /// </summary>
+        /// <param name="currency">The item type required to be traded</param>
+        /// <param name="itemID">The loot item</param>
+        /// <param name="min">The minimum amount to drop</param>
+        /// <param name="max">The maximum amount to drop</param>
+        /// <param name="condition">A condition</param>
+        /// <param name="weight">The weight of the item drop. Lower numbers means lower chances</param>
+        public static void AddScavengerItem(int currency, int itemID, int min, int max, Func<bool> condition, float weight = 1)
+        {
+            if (ScavengerLoot.ContainsKey(currency))
+            {
+                ScavengerLoot[currency].Add(new ScavengerItem(itemID, min, max, condition), weight);
+            }
+            else
+            {
+                ScavengerLoot.Add(currency, new WeightedRandom<ScavengerItem>());
+                ScavengerLoot[currency].Add(new ScavengerItem(itemID, min, max, condition), weight);
+            }
+        }
+        #endregion
+        #endregion
 
         public override void SetDefaults()
         {
@@ -148,6 +280,26 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Scavenger")
             });
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.localAI[0] = reader.ReadSingle();
+            NPC.localAI[1] = reader.ReadSingle();
+            NPC.localAI[2] = reader.ReadSingle();
+            NPC.Calamity().newAI[0] = reader.ReadSingle();
+            NPC.Calamity().newAI[1] = reader.ReadSingle();
+            NPC.Calamity().newAI[2] = reader.ReadSingle();
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(NPC.localAI[0]);
+            writer.Write(NPC.localAI[1]);
+            writer.Write(NPC.localAI[2]);
+            writer.Write(NPC.Calamity().newAI[0]);
+            writer.Write(NPC.Calamity().newAI[1]);
+            writer.Write(NPC.Calamity().newAI[2]);
         }
 
         public override void AI()
@@ -222,7 +374,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (TradeTimer >= 0 && HeldItemIndex <= -1)
                         {
                             float curDist = 0;
-                            int currencyRarity = 0;
+                            bool superRare = false;
                             foreach (Item i in Main.ActiveItems)
                             {
                                 if (!i.active)
@@ -238,12 +390,12 @@ namespace CalamityMod.NPCs.SunkenSea
                                     continue;
 
                                 // Check if the item is a valid currency and is the closest possible currency
-                                if (currencies.ContainsKey(i.type))
+                                if (ScavengerLoot.ContainsKey(i.type))
                                 {
                                     if (distance < curDist || curDist == 0)
                                     {
                                         HeldItemIndex = i.whoAmI;
-                                        currencyRarity = currencies[i.type];
+                                        superRare = i.type > ItemID.PinkPearl ? true : false;
                                     }
                                     curDist = distance;
                                 }
@@ -261,7 +413,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                                 SoundEngine.PlaySound(SoundID.NPCHit51 with { Pitch = -0.4f }, NPC.Center);
 
-                                EmoteExpressionParticle.EmoteType eType = currencyRarity >= 5 ? EmoteExpressionParticle.EmoteType.DoubleExclamation : EmoteExpressionParticle.EmoteType.Exclamation;
+                                EmoteExpressionParticle.EmoteType eType = superRare ? EmoteExpressionParticle.EmoteType.DoubleExclamation : EmoteExpressionParticle.EmoteType.Exclamation;
 
                                 var emoteDirection = -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(2f, 3f);
                                 Particle emote = new EmoteExpressionParticle(
@@ -294,7 +446,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         
                         // If the item is suddenly no longer valid for some reason, go back to idle behaviur
                         Item targetItem = Main.item[HeldItemIndex];
-                        if (!targetItem.active || !currencies.ContainsKey(targetItem.type))
+                        if (!targetItem.active || !ScavengerLoot.ContainsKey(targetItem.type))
                         {
                             NPC.netUpdate = true;
                             HeldItemIndex = -1;
@@ -390,7 +542,10 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (TradeTimer == 132)
                         {
                             NPC.netUpdate = true;
-                            HeldItemType = CalculateReward();
+                            OldItemType = HeldItemType;
+                            HeldItemType = CalculateReward(out int min, out int max);
+                            StackMin = min;
+                            StackMax = max;
                         }
 
                         // After some time, spit out a reward and go back to idle with a cooldown
@@ -406,10 +561,31 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Spawn the reward
                             if (HeldItemType > 0)
                             {
-                                int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X + NPC.direction * 20, (int)NPC.Center.Y - 20, NPC.width, NPC.height), HeldItemType);
-                                Main.item[i].velocity = new Vector2(NPC.direction * 4, -1);
+                                float stackMult = 1;
+                                int dropAmt = 1;
+                                if (ContentSamples.ItemsByType[HeldItemType].maxStack > 1)
+                                {
+                                    if (OldItemType == ModContent.ItemType<GiantPearl>())
+                                        stackMult *= 2;
+                                    if (OldItemType == ItemID.GalaxyPearl)
+                                        stackMult *= Main.rand.NextFloat(1.2f, 2f);
+                                }
+                                else
+                                {
+                                    if (OldItemType == ModContent.ItemType<GiantPearl>())
+                                        dropAmt *= 2;
+                                    if (OldItemType == ItemID.GalaxyPearl)
+                                        dropAmt *= 2;
+                                }
+                                for (int i = 0; i < dropAmt; i++)
+                                {
+                                    SpawnItem(HeldItemType, stackMult);
+                                }
                             }
                             HeldItemType = 0;
+                            OldItemType = 0;
+                            StackMax = 0;
+                            StackMax = 0;
                         }
                     }
                     break;
@@ -422,6 +598,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 TurnTimer--;
 
             NPC.spriteDirection = NPC.direction;
+        }
+
+        public void SpawnItem(int ID, float stackMult = 1f)
+        {
+            int stack = 1;
+            if (NPC.localAI[0] != NPC.localAI[1])
+            {
+                stack = Main.rand.Next((int)NPC.localAI[0], (int)NPC.localAI[1] + 1);
+            }
+            stack = (int)(stack * stackMult);
+            int i = Item.NewItem(NPC.GetSource_FromThis(), new Rectangle((int)NPC.Center.X + NPC.direction * 20, (int)NPC.Center.Y - 20, NPC.width, NPC.height), ID, Stack: stack);
+            Main.item[i].velocity = new Vector2(NPC.direction * Main.rand.NextFloat(3.7f, 4.3f), -Main.rand.NextFloat(-1.2f, 0.8f));
         }
 
         // Checks if the horizontal position in front of it has water or is a pit so that the crab can avoid it
@@ -466,35 +654,30 @@ namespace CalamityMod.NPCs.SunkenSea
             return canJump;
         }
 
-        public int CalculateReward()
+        public int CalculateReward(out int min, out int max)
         {
+            min = 0;
+            max = 0;
             // Make sure the held item type is valid
-            if (currencies.TryGetValue(HeldItemType, out int value))
+            if (ScavengerLoot.TryGetValue(HeldItemType, out WeightedRandom<ScavengerItem> value))
             {
                 // If the held item has no roll value, immediately return
-                if (value == 0)
+                if (value == null)
                     return 0;
 
-                // The reward's item type
-                int currentItem = 0;
-                // The rarity value of the reward
-                float currentValue = 0;
-
-                // Roll based on the held item's roll value
-                for (int i = 0; i < value; i++)
+                int tries = 100;
+                for (int i = 0; i < tries; i++)
                 {
-                    // Grab an item from the pool and its value
-                    int newItem = rewardsRoll.Get();
-                    float newValue = rewards[newItem];
-                    // If the rarity of the reward is larger than the current reward, have it take priority
-                    // This also applies if currentValue is at its default
-                    if (newValue > currentValue || currentValue == 0)
+                    var v = value.Get();
+                    if (v.condition.Invoke())
                     {
-                        currentValue = newValue;
-                        currentItem = newItem;
+                        min = v.minimum;
+                        max = v.maximum;
+                        return v.itemID;
                     }
                 }
-                return currentItem;
+
+                return 0;
             }
             else
             {
