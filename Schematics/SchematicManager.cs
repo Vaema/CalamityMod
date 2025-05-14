@@ -61,6 +61,18 @@ namespace CalamityMod.Schematics
         internal const string DemonicDungeonType2Key = "Demonic Dungeon Type 2 Key";
         internal const string DemonicDungeonType2Filename = "Schematics/Demonic_Dungeon2.csch";
 
+        internal const string BarbedStockadeType1Key = "Barbed Stockade Type 1 Key";
+        internal const string BarbedStockadeType1Filename = "Schematics/Barbed_Stockade1.csch";
+
+        internal const string BarbedStockadeType2Key = "Barbed Stockade Type 2 Key";
+        internal const string BarbedStockadeType2Filename = "Schematics/Barbed_Stockade2.csch";
+
+        internal const string BarbedStockadeType3Key = "Barbed Stockade Type 3 Key";
+        internal const string BarbedStockadeType3Filename = "Schematics/Barbed_Stockade3.csch";
+
+        internal const string BarbedStockadeType4Key = "Barbed Stockade Type 4 Key";
+        internal const string BarbedStockadeType4Filename = "Schematics/Barbed_Stockade4.csch";
+
         internal const string RustedWorkshopKey = "Rusted Workshop";
         internal const string RustedWorkshopFilename = "Schematics/RustedWorkshop.csch";
 
@@ -171,6 +183,10 @@ namespace CalamityMod.Schematics
                 [HellstoneStrongholdType2Key] = CalamitySchematicIO.LoadSchematic(HellstoneStrongholdType2Filename),
                 [DemonicDungeonType1Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType1Filename),
                 [DemonicDungeonType2Key] = CalamitySchematicIO.LoadSchematic(DemonicDungeonType2Filename),
+                [BarbedStockadeType1Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType1Filename),
+                [BarbedStockadeType2Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType2Filename),
+                [BarbedStockadeType3Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType3Filename),
+                [BarbedStockadeType4Key] = CalamitySchematicIO.LoadSchematic(BarbedStockadeType4Filename),
 
                 // Draedon's Arsenal world gen structures
                 [RustedWorkshopKey] = CalamitySchematicIO.LoadSchematic(RustedWorkshopFilename),

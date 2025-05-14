@@ -729,15 +729,65 @@ namespace CalamityMod.World
                 }
                 var atriumSchematic = TileMaps[atriumMapKey];
 
+                // Pick stockade types
+                List<int> stockades = new List<int>();
+                int numStockades = largeWorld ? 2 : 1;
+                int stockadeTypes = 4;
+                do
+                {
+                    // Chose a random stockade to add to the list
+                    int chosenStockade = WorldGen.genRand.Next(stockadeTypes);
+
+                    // Don't choose the same stockade twice
+                    bool alreadyContainsThisStockadeType = stockades.Contains(chosenStockade);
+
+                    if (!alreadyContainsThisStockadeType)
+                        stockades.Add(chosenStockade);
+                }
+                while (stockades.Count < numStockades);
+
+                string[] stockadesToGenerate = new string[numStockades];
+                for (int stockadeIndex = 0; stockadeIndex < numStockades; stockadeIndex++)
+                {
+                    switch (stockades[stockadeIndex])
+                    {
+                        default:
+                        case 0:
+                            stockadesToGenerate[stockadeIndex] = BarbedStockadeType1Key;
+                            break;
+
+                        case 1:
+                            stockadesToGenerate[stockadeIndex] = BarbedStockadeType2Key;
+                            break;
+
+                        case 2:
+                            stockadesToGenerate[stockadeIndex] = BarbedStockadeType3Key;
+                            break;
+
+                        case 3:
+                            stockadesToGenerate[stockadeIndex] = BarbedStockadeType4Key;
+                            break;
+                    }
+                }
+
                 // Offsets for structures
                 int atriumOffsetY = 8;
+
                 int cacheOffsetY = 45;
+
                 int sanctumOffsetY = 65;
+
                 int strongholdOffsetX = cragsLocationIsLeft ? 40 : 20;
                 int strongholdOffsetY = 3;
                 int secondStrongholdOffsetY = 5;
+
                 int dungeonOffsetX = cragsLocationIsLeft ? 30 : 50;
                 int dungeonOffsetY = 4;
+
+                int stockadeOffsetX = largeWorld ? strongholdOffsetX : 0;
+                int secondStockadeOffsetX = dungeonOffsetX;
+                int stockadeOffsetY = stockadesToGenerate[0] == BarbedStockadeType4Key ? -7 : 8;
+                int secondStockadeOffsetY = stockadesToGenerate[1] == BarbedStockadeType4Key ? -7 : 8;
 
                 // Place structures
                 if (cragsLocationIsLeft)
@@ -784,7 +834,7 @@ namespace CalamityMod.World
                     CalamityUtils.AddProtectedStructure(atriumProtectionArea2, 10);
 
                     //
-                    // Place sanctums, strongholds, and dungeons
+                    // Place sanctums, strongholds, dungeons, and stockades
                     //
                     // All of these structures are on the demonic side
                     int sanctumGenX = ashIslandX2 - firstStructureDistanceFromIslandEdge;
@@ -798,9 +848,31 @@ namespace CalamityMod.World
                     while (!Main.tile[sanctumGenX - dungeonOffsetX, dungeonGenY].HasTile)
                         dungeonGenY++;
 
+                    int stockadeGenX = sanctumGenX - (smallWorld ? distanceBetweenStructures_AfterFirstIsland : distanceBetweenStructures_AfterFirstIsland * 2);
+                    int stockadeGenY = ashIslandHeightLimit;
+                    while (!Main.tile[stockadeGenX + stockadeOffsetX, stockadeGenY].HasTile)
+                        stockadeGenY++;
+
                     Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     Point strongholdPlacementPoint = new Point(sanctumGenX + strongholdOffsetX, strongholdGenY + strongholdOffsetY);
                     Point dungeonPlacementPoint = new Point(sanctumGenX - dungeonOffsetX, dungeonGenY + dungeonOffsetY);
+                    Point stockadePlacementPoint = new Point(stockadeGenX + stockadeOffsetX, stockadeGenY + stockadeOffsetY);
+                    if (largeWorld)
+                    {
+                        PlaceSchematic<Action<Chest>>(stockadesToGenerate[0], stockadePlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle stockadeProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[stockadesToGenerate[0]], stockadePlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(stockadeProtectionArea, 10);
+
+                        // Reset the Y index for stockades
+                        stockadeGenY = ashIslandHeightLimit;
+                        while (!Main.tile[stockadeGenX - secondStockadeOffsetX, stockadeGenY].HasTile)
+                            stockadeGenY++;
+
+                        // Placement point for the second stockade
+                        stockadePlacementPoint = new Point(stockadeGenX - secondStockadeOffsetX, stockadeGenY + secondStockadeOffsetY);
+                    }
                     if (!smallWorld)
                     {
                         PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
@@ -843,6 +915,14 @@ namespace CalamityMod.World
                         // Placement point for the second sanctum
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     }
+
+                    // Large worlds have two stockades
+                    string secondStockade = largeWorld ? stockadesToGenerate[1] : stockadesToGenerate[0];
+                    PlaceSchematic<Action<Chest>>(secondStockade, stockadePlacementPoint, anchorType, ref place);
+
+                    // Protect the structure
+                    Rectangle stockadeProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStockade], stockadePlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(stockadeProtectionArea2, 10);
 
                     // Small worlds only have one sanctum
                     string secondSanctum = smallWorld ? SanctumofOblivionType1Key : (WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key);
@@ -913,9 +993,31 @@ namespace CalamityMod.World
                     while (!Main.tile[sanctumGenX + dungeonOffsetX, dungeonGenY].HasTile)
                         dungeonGenY++;
 
+                    int stockadeGenX = sanctumGenX + (smallWorld ? distanceBetweenStructures_AfterFirstIsland : distanceBetweenStructures_AfterFirstIsland * 2);
+                    int stockadeGenY = ashIslandHeightLimit;
+                    while (!Main.tile[stockadeGenX - stockadeOffsetX, stockadeGenY].HasTile)
+                        stockadeGenY++;
+
                     Point sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     Point strongholdPlacementPoint = new Point(sanctumGenX - strongholdOffsetX, strongholdGenY + strongholdOffsetY);
                     Point dungeonPlacementPoint = new Point(sanctumGenX + dungeonOffsetX, dungeonGenY + dungeonOffsetY);
+                    Point stockadePlacementPoint = new Point(stockadeGenX - stockadeOffsetX, stockadeGenY + stockadeOffsetY);
+                    if (largeWorld)
+                    {
+                        PlaceSchematic<Action<Chest>>(stockadesToGenerate[0], stockadePlacementPoint, anchorType, ref place);
+
+                        // Protect the structure
+                        Rectangle stockadeProtectionArea = CalamityUtils.GetSchematicProtectionArea(TileMaps[stockadesToGenerate[0]], stockadePlacementPoint, anchorType);
+                        CalamityUtils.AddProtectedStructure(stockadeProtectionArea, 10);
+
+                        // Reset the Y index for stockades
+                        stockadeGenY = ashIslandHeightLimit;
+                        while (!Main.tile[stockadeGenX + secondStockadeOffsetX, stockadeGenY].HasTile)
+                            stockadeGenY++;
+
+                        // Placement point for the second stockade
+                        stockadePlacementPoint = new Point(stockadeGenX + secondStockadeOffsetX, stockadeGenY + secondStockadeOffsetY);
+                    }
                     if (!smallWorld)
                     {
                         PlaceSchematic<Action<Chest>>(SanctumofOblivionType1Key, sanctumPlacementPoint, anchorType, ref place);
@@ -949,6 +1051,12 @@ namespace CalamityMod.World
 
                         sanctumPlacementPoint = new Point(sanctumGenX, sanctumGenY);
                     }
+
+                    string secondStockade = largeWorld ? stockadesToGenerate[1] : stockadesToGenerate[0];
+                    PlaceSchematic<Action<Chest>>(secondStockade, stockadePlacementPoint, anchorType, ref place);
+
+                    Rectangle stockadeProtectionArea2 = CalamityUtils.GetSchematicProtectionArea(TileMaps[secondStockade], stockadePlacementPoint, anchorType);
+                    CalamityUtils.AddProtectedStructure(stockadeProtectionArea2, 10);
 
                     string secondSanctum = smallWorld ? SanctumofOblivionType1Key : (WorldGen.genRand.NextBool() ? SanctumofOblivionType2Key : SanctumofOblivionType3Key);
                     PlaceSchematic<Action<Chest>>(secondSanctum, sanctumPlacementPoint, anchorType, ref place);
@@ -1018,7 +1126,7 @@ namespace CalamityMod.World
                 int randomAdjustmentY = 0;
                 int minRandomX = -30;
                 int maxRandomX = -20;
-                int minRandomY = 10;
+                int minRandomY = 15;
                 int maxRandomY = 20;
                 for (int cacheIndex = 0; cacheIndex < totalCachePositions; cacheIndex++)
                 {
