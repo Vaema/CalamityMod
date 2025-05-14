@@ -214,8 +214,7 @@ namespace CalamityMod.Effects
         // All below shaders were created by fryzahh
         //
         #region fryzahh's Shaders
-        // Primarily used in the custom drawing done for the Sunken Sea's backgrounds to give them an underwater distorted effect.
-        // Can be utilized in maany other areas as well.
+        // A simple shader which distorts an image using a provided texture of choice. 
         internal static Effect BasicTextureDistortionShader;
         #endregion
 

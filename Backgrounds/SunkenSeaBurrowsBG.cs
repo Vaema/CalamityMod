@@ -13,9 +13,9 @@ namespace CalamityMod.Backgrounds
 {
     public class SunkenSeaBurrowsBG : ModSystem
     {
-        private static bool CurrentlyRendering = false;
-
         private static ManagedRenderTarget WaterDistortionTarget;
+
+        private static bool CurrentlyRendering { get; set; }
 
         public override void Load()
         {
@@ -27,7 +27,7 @@ namespace CalamityMod.Backgrounds
             On_Main.CheckMonoliths += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
 
-            WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+            Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
         }
 
         /// <summary>
@@ -69,14 +69,9 @@ namespace CalamityMod.Backgrounds
             CurrentlyRendering = true;
             WaterDistortionTarget.SwapTo();
 
-            // Transformation matrix for backgrounds.
-            Matrix backgroundMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
-            Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
-            backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
-
             // 13MAY2025: fryzahh: Note that when other Sunken Sea backgrounds are implemented they should use this same system.
-            // Leaving this here for other programmers  in case I don't get to doing this myself.
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, backgroundMatrix);
+            // Leaving this here for other programmers, in case I don't get to doing this myself.
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
             DrawBurrowsBG();
 
@@ -106,26 +101,21 @@ namespace CalamityMod.Backgrounds
             }
             else
             {
-                // Transformation matrix for backgrounds.
-                Matrix backgroundMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
-                Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
-                backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
-
                 MiscShaderData distortionShader = GameShaders.Misc["CalamityMod:BasicTextureDistortion"];
-                Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/BlobbyNoise");
+                Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls");
 
                 // Apply a distortion shader to the Sunken Sea backgrounds to give them an underwater ripple-like effect.
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, distortionShader.Shader, backgroundMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, distortionShader.Shader, CalamityUtils.BackgroundMatrix);
 
                 distortionShader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
                 distortionShader.Shader.Parameters["distortionXSpeed"].SetValue(-0.012f);
                 distortionShader.Shader.Parameters["distortionYSpeed"].SetValue(0.02f);
-                distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.055f);
-                distortionShader.Shader.Parameters["noiseScale"].SetValue(0.044f);
+                distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.035f);
+                distortionShader.Shader.Parameters["noiseScale"].SetValue(0.075f);
                 distortionShader.SetShaderTexture(distortionTexture);
 
-                Main.spriteBatch.Draw(WaterDistortionTarget.Target, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+                Main.spriteBatch.Draw(WaterDistortionTarget.Target, new Rectangle(16, 16, Main.screenWidth, Main.screenHeight), Color.White);
             }
         }
 
