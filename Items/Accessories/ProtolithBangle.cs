@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public static int cooldown = 420;
-        public static int damage = 140;
+        public static int damage = 65;
         public override void SetDefaults()
         {
             Item.width = 34;
