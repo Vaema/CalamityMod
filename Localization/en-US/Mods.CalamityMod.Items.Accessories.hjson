@@ -1362,6 +1362,15 @@ ProfanedSoulCrystal: {
 		'''
 }
 
+ProtolithBangle: {
+	DisplayName: Protolith Bangle
+	Tooltip:
+		'''
+		Ranged enemy hits create a marble blast that always critically strikes and can hit multiple enemies
+		This effect has a 7 second cooldown, but is halved if the blast kills the first enemy it hits
+		'''
+}
+
 QuiverofNihility: {
 	DisplayName: Quiver of Nihility
 	Tooltip:

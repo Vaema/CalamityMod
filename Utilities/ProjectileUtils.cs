@@ -649,7 +649,8 @@ namespace CalamityMod
             Color backAfterimageColor = backglowColor * projectile.Opacity;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
 
             for (int i = 0; i < 10; i++)
             {
@@ -692,9 +693,10 @@ namespace CalamityMod
             Vector2 origin = frame.Value.Size() * 0.5f;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame);
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, spriteEffects, xPos, yPos);
             Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
         }
 
