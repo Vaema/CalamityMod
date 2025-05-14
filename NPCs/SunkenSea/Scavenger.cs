@@ -141,9 +141,6 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(white, ModContent.ItemType<OrangeCoral>(), minBlock, maxBlock, coralBlockChance);
             AddScavengerItem(white, ItemID.WoodenCrate, 1, () => !Main.hardMode, 0.1f);
             AddScavengerItem(white, ItemID.WoodenCrateHard, 1, () => Main.hardMode, 0.1f);
-            AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode, 0.05f);
-            AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode, 0.05f);
-            AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, 0.075f);
             AddScavengerItem(white, ModContent.ItemType<StormlionMandible>(), 1, 0.1f);
             AddScavengerItem(white, ModContent.ItemType<PrismShard>(), 1, 0.1f);
             AddScavengerItem(white, ItemID.ScarabBomb, 3, 10, 0.1f);
@@ -176,6 +173,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(black, ItemID.GoldenCrateHard, 1, () => Main.hardMode, 0.02f);
             AddScavengerItem(black, ItemID.WaterWalkingBoots, 1, 0.05f);
             AddScavengerItem(black, ItemID.JellyfishNecklace, 1, 0.05f);
+            AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, 0.05f);
             //AddScavengerItem(black, ItemID.Nachos, 1, 0.05f); insert food item
             AddScavengerItem(black, ModContent.ItemType<SeaRemains>(), 1, () => DownedBossSystem.downedDesertScourge, 0.3f);
             AddScavengerItem(black, ModContent.ItemType<SeaPrism>(), 1, () => DownedBossSystem.downedDesertScourge, 0.3f);
@@ -194,6 +192,8 @@ namespace CalamityMod.NPCs.SunkenSea
             //AddScavengerItem(pink, ModContent.ItemType<ScavengerHelmet>(), 1);
             //AddScavengerItem(pink, ModContent.ItemType<ScavengerChestplate>(), 1);
             //AddScavengerItem(pink, ModContent.ItemType<ScavengerBoots>(), 1);
+            AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode);
+            AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode);
 
             ScavengerLoot[ItemID.GalaxyPearl] = ScavengerLoot[white]; // Gives 1-2x the amount of white items
             ScavengerLoot[ModContent.ItemType<GiantPearl>()] = ScavengerLoot[pink]; // Gives 2 pink items
