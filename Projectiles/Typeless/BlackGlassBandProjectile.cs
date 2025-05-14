@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Accessories;
+﻿using System;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Tiles.Ores;
@@ -13,6 +14,7 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public int time = 0;
+        public Player Owner => Main.player[Projectile.owner];
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -30,10 +32,8 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (time == 0)
             {
-                SoundStyle sound = AuricOre.MineSound;
-                SoundEngine.PlaySound(sound with { Volume = 0.9f, Pitch = Main.rand.NextFloat(0.15f, 0.25f), MaxInstances = -1 }, Projectile.Center);
-                SoundStyle sound2 = NullificationPistol.HitSound;
-                SoundEngine.PlaySound(sound2 with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.3f, 0.45f), MaxInstances = -1 }, Projectile.Center);
+                SoundStyle sound = new("CalamityMod/Sounds/Item/BlackGlassBandSound");
+                SoundEngine.PlaySound(sound with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);
 
                 for (int i = 0; i < 18; i++)
                 {
@@ -59,12 +59,18 @@ namespace CalamityMod.Projectiles.Typeless
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.SetCrit();
+            float critDamage = Math.Min(Owner.GetTotalCritChance(AverageDamageClass.Instance) * 0.01f, 1f);
+            modifiers.SourceDamage *= (1 + critDamage);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player Owner = Main.player[Projectile.owner];
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Owner.Calamity().bGlassbandCooldown > BlackGlassBand.cooldown / 2)
-                Owner.Calamity().bGlassbandCooldown = BlackGlassBand.cooldown / 2;
+            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Owner.Calamity().generalBandCooldown > BlackGlassBand.cooldown / 2)
+                Owner.Calamity().generalBandCooldown -= BlackGlassBand.cooldown / 2;
+        }
+        public override bool? CanDamage()
+        {
+            return null;
         }
     }
 }

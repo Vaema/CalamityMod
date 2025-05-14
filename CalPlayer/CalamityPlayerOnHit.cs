@@ -146,14 +146,36 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
-            if (bGlassBand && bGlassbandCooldown == 0)
+
+
+            if (generalBandCooldown == 0)
             {
-                var source = item.GetSource_FromThis();
-                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
-                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
-                bGlassbandCooldown = BlackGlassBand.cooldown;
+                int cooldown = 0;
+                if (bGlassBand)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                    Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    if (cooldown < BlackGlassBand.cooldown)
+                        cooldown = BlackGlassBand.cooldown;
+                }
+                if (protolithBangle && item.DamageType == DamageClass.Ranged)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
+                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    if (cooldown < ProtolithBangle.cooldown)
+                        cooldown = ProtolithBangle.cooldown;
+                }
+
+                if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
+                {
+                    generalBandCooldown = cooldown;
+                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                }
             }
+
             if (luxorsGift)
                 luxorHit = true;
 
@@ -316,14 +338,35 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
-            if (bGlassBand && bGlassbandCooldown == 0)
+
+            if (generalBandCooldown == 0)
             {
-                var source = proj.GetSource_FromThis();
-                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
-                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
-                bGlassbandCooldown = BlackGlassBand.cooldown;
+                int cooldown = 0;
+                if (bGlassBand)
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                    Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    if (cooldown < BlackGlassBand.cooldown)
+                        cooldown = BlackGlassBand.cooldown;
+                }
+                if (protolithBangle && proj.DamageType == DamageClass.Ranged)
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
+                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    if (cooldown < ProtolithBangle.cooldown)
+                        cooldown = ProtolithBangle.cooldown;
+                }
+
+                if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
+                {
+                    generalBandCooldown = cooldown;
+                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                }
             }
+
             if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
                 luxorHit = true;
 
