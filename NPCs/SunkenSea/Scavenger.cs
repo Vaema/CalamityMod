@@ -394,7 +394,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         CalamityUtils.StepUpBlocks(NPC);
 
                         // If the trade timer is 0 and the crab isn't looking ofr an item, look for an item
-                        if (TradeTimer >= 0 && HeldItemIndex <= -1)
+                        if (TradeTimer >= 0 && HeldItemIndex <= -1 && CurrentPredator == null)
                         {
                             float curDist = 0;
                             bool superRare = false;
@@ -473,6 +473,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (!targetItem.active || !ScavengerLoot.ContainsKey(targetItem.type))
                         {
                             NPC.netUpdate = true;
+                            targetItem.noGrabDelay = 0;
                             HeldItemIndex = -1;
                             NPC.velocity = Vector2.Zero;
                             Phase = (int)PhaseType.Idle;
@@ -502,6 +503,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                     NPC.direction *= -1;
                                     TurnTimer = 30;
                                     NPC.netUpdate = true;
+                                    targetItem.noGrabDelay = 0;
                                     HeldItemIndex = -1;
                                     Phase = (int)PhaseType.Idle;
                                     TurnTimer = 0;
