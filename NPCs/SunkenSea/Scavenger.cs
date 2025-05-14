@@ -8,20 +8,18 @@ using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Steamworks;
 using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -177,14 +175,20 @@ namespace CalamityMod.NPCs.SunkenSea
 
                         // Decide if it should walk or sit
                         float movementSpeed = 1f;
+                        bool startMovement = false;
                         if (WalkTimer <= 0)
                         {
                             WalkTimer = Main.rand.Next(180, 340);
                             WalkOrStand = WalkOrStand <= 0 ? 1 : -1;
+                            if (WalkOrStand == 1 && Main.rand.NextBool())
+                            {
+                                NPC.direction *= -1;
+                            }
+                            startMovement = true;
                         }
                         bool waterCheck = WaterCheck(16);
                         // If it bumps into something, jump or turn around
-                        if (TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && WalkOrStand == 1)
+                        if (!startMovement && TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && WalkOrStand == 1)
                         {
                             // Jump if there are a couple tiles and a space above
                             if (!waterCheck && JumpCheck() && NPC.velocity.Y == 0)
@@ -301,43 +305,58 @@ namespace CalamityMod.NPCs.SunkenSea
                             break;
                         }
 
-                        float movementSpeed = 3;
-                        bool waterCheck = WaterCheck(16);
-                        // If it bumps into something, jump or turn around
-                        if (TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && NPC.velocity.Y == 0)
+                        // Once the jump anim is done, go to the pearl
+                        if (WalkTimer > 0)
                         {
-                            // Jump if there are a couple tiles and a space above
-                            if (!waterCheck && JumpCheck())
+                            float movementSpeed = 3;
+                            bool waterCheck = WaterCheck(16);
+                            // If it bumps into something, jump or turn around
+                            if (TurnTimer <= 0 && (NPC.velocity.X == 0 || waterCheck) && NPC.velocity.Y == 0)
                             {
-                                NPC.velocity.Y -= 8;
-                                NPC.velocity.X = movementSpeed * NPC.direction;
-                                TurnTimer = 10;
+                                // Jump if there are a couple tiles and a space above
+                                if (!waterCheck && JumpCheck())
+                                {
+                                    NPC.velocity.Y -= 8;
+                                    NPC.velocity.X = movementSpeed * NPC.direction;
+                                    TurnTimer = 10;
+                                }
+                                // Turn around if it can't jump up or a pit/water is in the way
+                                else
+                                {
+                                    NPC.direction *= -1;
+                                    TurnTimer = 30;
+                                    NPC.netUpdate = true;
+                                    HeldItemIndex = -1;
+                                    Phase = (int)PhaseType.Idle;
+                                    TurnTimer = 0;
+                                    WalkTimer = 0;
+                                }
                             }
-                            // Turn around if it can't jump up or a pit/water is in the way
-                            else
+                            // Change direction if the item position changed
+                            bool itemOnRight = targetItem.Center.X > NPC.Center.X;
+                            if (itemOnRight && NPC.direction == -1)
                             {
                                 NPC.direction *= -1;
-                                TurnTimer = 30;
-                                NPC.netUpdate = true;
-                                Phase = (int)PhaseType.Idle;
-                                TurnTimer = 0;
-                                WalkTimer = 0;
                             }
+                            else if (!itemOnRight && NPC.direction == 0)
+                            {
+                                NPC.direction *= -1;
+                            }
+                            TurnTimer--;
+                            
+                            NPC.velocity.X = NPC.direction * movementSpeed;
+                            CalamityUtils.StepUpBlocks(NPC);
                         }
-                        bool itemOnRight = targetItem.Center.X > NPC.Center.X;
-                        if (itemOnRight && NPC.direction == -1)
+                        // While the jump animation is occurring, slow down horizontally
+                        else
                         {
-                            NPC.direction *= -1;
+                            NPC.velocity.X *= 0.95f;
                         }
-                        else if (!itemOnRight && NPC.direction == 0)
+                        // Marks if the jump animation is finished
+                        if (NPC.velocity.Y == 0)
                         {
-                            NPC.direction *= -1;
+                            WalkTimer++;
                         }
-                        TurnTimer--;
-
-                        // Movement goes here
-                        NPC.velocity.X = NPC.direction * 3;
-                        CalamityUtils.StepUpBlocks(NPC);
 
                         // Pull the item if close enough
                         if (targetItem.Distance(NPC.Center) < 120)
@@ -396,7 +415,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
             }
 
-            if (WalkTimer > 0)
+            if (Phase != (int)PhaseType.FoundItem && WalkTimer > 0)
                 WalkTimer--;
 
             if (TurnTimer > 0)
@@ -564,9 +583,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            Tile tile = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY);
-
-            return !spawnInfo.Player.Calamity().clamity && tile.WallType == WallID.CrimstoneUnsafe ? 0.05f : 0f;
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.Cavern.Chance * 0.4f;
+            }
+            return 0f;
 
             //fuck this
             //if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>())
