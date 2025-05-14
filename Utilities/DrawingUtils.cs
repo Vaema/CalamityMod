@@ -412,9 +412,8 @@ namespace CalamityMod
         {
             Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f);
 
-            Color color = new Color(250, 250, 250, item.alpha);
-            if (item.type == ModContent.ItemType<GrandGuardian>())
-                color = Color.White;
+            Color color = Color.White * MathHelper.Lerp(0f, 1f, item.alpha / 255f);
+            color = Color.White;
 
             spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
         }
