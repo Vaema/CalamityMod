@@ -11,7 +11,8 @@ namespace CalamityMod.Projectiles.Melee
     public class Cyclone : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public int dustvortex = 0;
+        public int dustVortex = 0;
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 6;
@@ -36,33 +37,65 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            Projectile.ai[0]++;
-            Projectile.ai[1]++;
+            // Only begin colliding with tiles when the projectile is not inside tiles
+            if (!Projectile.tileCollide)
+            {
+                bool canCollide = true;
+                Vector2 tilePosition;
+                Point tilePositionPoint;
+                Tile tileSafely;
+                float increment = 16f;
+                float offset = increment * 2f;
+                float startIndexX = Projectile.position.X - increment;
+                float endIndexX = startIndexX + offset + Projectile.width;
+                float startIndexY = Projectile.position.Y - increment;
+                float endIndexY = Projectile.position.Y + offset + Projectile.height;
+                for (float i = startIndexX; i < endIndexX; i += increment)
+                {
+                    if (!canCollide)
+                        break;
 
-            //Code so it doesnt collide on tiles instantly
-            if (Projectile.ai[0] >= 12)
-                Projectile.tileCollide = true;
+                    for (float j = startIndexY; j < endIndexY; j += increment)
+                    {
+                        tilePosition.X = i;
+                        tilePosition.Y = j;
+                        tilePositionPoint = tilePosition.ToTileCoordinates();
+                        tileSafely = Framing.GetTileSafely(tilePositionPoint);
+                        bool isInSolidTile = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
+                        if (isInSolidTile)
+                        {
+                            canCollide = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (canCollide)
+                    Projectile.tileCollide = true;
+            }
 
             Projectile.rotation += 2.5f;
+
             Projectile.alpha -= 5;
+            Projectile.ai[1] += 1f;
             if (Projectile.alpha < 50)
             {
                 Projectile.alpha = 50;
-                if (Projectile.ai[1] >= 15)
+                if (Projectile.ai[1] >= 15f)
                 {
-
                     for (int i = 1; i <= 6; i++)
                     {
-                        Vector2 dustspeed = new Vector2(3f, 3f).RotatedBy(MathHelper.ToRadians(dustvortex));
+                        Vector2 dustspeed = new Vector2(3f, 3f).RotatedBy(MathHelper.ToRadians(dustVortex));
                         int d = Dust.NewDust(Projectile.Center, Projectile.width / 2, Projectile.height / 2, 31, dustspeed.X, dustspeed.Y, 200, new Color(232, 251, 250, 200), 1.3f);
                         Main.dust[d].noGravity = true;
                         Main.dust[d].velocity = dustspeed;
-                        dustvortex += 60;
+                        dustVortex += 60;
                     }
-                    dustvortex -= 355;
-                    Projectile.ai[1] = 0;
+                    dustVortex -= 355;
+                    Projectile.ai[1] = 0f;
                 }
             }
+
             float num472 = Projectile.Center.X;
             float num473 = Projectile.Center.Y;
             float num474 = 600f;
@@ -77,30 +110,20 @@ namespace CalamityMod.Projectiles.Melee
                     if (num478 < num474)
                     {
                         if (npc.position.X < num472)
-                        {
                             npc.velocity.X += 0.05f;
-                        }
                         else
-                        {
                             npc.velocity.X -= 0.05f;
-                        }
+
                         if (npc.position.Y < num473)
-                        {
                             npc.velocity.Y += 0.05f;
-                        }
                         else
-                        {
                             npc.velocity.Y -= 0.05f;
-                        }
                     }
                 }
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return new Color(204, 255, 255, Projectile.alpha);
-        }
+        public override Color? GetAlpha(Color lightColor) => new Color(204, 255, 255, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {
