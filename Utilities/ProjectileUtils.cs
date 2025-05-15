@@ -107,6 +107,50 @@ namespace CalamityMod
         public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
         public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
 
+        /// <summary>
+        /// Prevents a projectile from colliding with tiles until it's no longer inside tiles.<br />
+        /// Useful for large projectiles that would otherwise collide with tiles instantly after spawning.<br />
+        /// Make sure to set Projectile.tileCollide = false; in the projectile's SetDefaults before calling this function in the projectile's AI.
+        /// </summary>
+        public static void PreventTileCollisionUntilHitboxIsOutsideOfTiles(Projectile projectile)
+        {
+            if (!projectile.tileCollide)
+            {
+                bool canCollide = true;
+                Vector2 tilePosition;
+                Point tilePositionPoint;
+                Tile tileSafely;
+                float increment = 16f;
+                float offset = increment * 2f;
+                float startIndexX = projectile.position.X - increment;
+                float endIndexX = startIndexX + offset + projectile.width;
+                float startIndexY = projectile.position.Y - increment;
+                float endIndexY = projectile.position.Y + offset + projectile.height;
+                for (float i = startIndexX; i < endIndexX; i += increment)
+                {
+                    if (!canCollide)
+                        break;
+
+                    for (float j = startIndexY; j < endIndexY; j += increment)
+                    {
+                        tilePosition.X = i;
+                        tilePosition.Y = j;
+                        tilePositionPoint = tilePosition.ToTileCoordinates();
+                        tileSafely = Framing.GetTileSafely(tilePositionPoint);
+                        bool isInSolidTile = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
+                        if (isInSolidTile)
+                        {
+                            canCollide = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canCollide)
+                    projectile.tileCollide = true;
+            }
+        }
+
         public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia)
         {
             if (!projectile.friendly)

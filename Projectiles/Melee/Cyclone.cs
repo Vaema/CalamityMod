@@ -38,41 +38,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             // Only begin colliding with tiles when the projectile is not inside tiles
-            if (!Projectile.tileCollide)
-            {
-                bool canCollide = true;
-                Vector2 tilePosition;
-                Point tilePositionPoint;
-                Tile tileSafely;
-                float increment = 16f;
-                float offset = increment * 2f;
-                float startIndexX = Projectile.position.X - increment;
-                float endIndexX = startIndexX + offset + Projectile.width;
-                float startIndexY = Projectile.position.Y - increment;
-                float endIndexY = Projectile.position.Y + offset + Projectile.height;
-                for (float i = startIndexX; i < endIndexX; i += increment)
-                {
-                    if (!canCollide)
-                        break;
-
-                    for (float j = startIndexY; j < endIndexY; j += increment)
-                    {
-                        tilePosition.X = i;
-                        tilePosition.Y = j;
-                        tilePositionPoint = tilePosition.ToTileCoordinates();
-                        tileSafely = Framing.GetTileSafely(tilePositionPoint);
-                        bool isInSolidTile = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
-                        if (isInSolidTile)
-                        {
-                            canCollide = false;
-                            break;
-                        }
-                    }
-                }
-                
-                if (canCollide)
-                    Projectile.tileCollide = true;
-            }
+            CalamityUtils.PreventTileCollisionUntilHitboxIsOutsideOfTiles(Projectile);
 
             Projectile.rotation += 2.5f;
 
