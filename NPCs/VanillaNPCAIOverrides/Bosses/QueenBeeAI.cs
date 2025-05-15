@@ -319,15 +319,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[0] = 0f;
                     float chargeVelocityX = (phase4 ? 24f : phase2 ? 20f : 16f) + 8f * enrageScale;
                     float chargeVelocityY = (phase4 ? 18f : phase2 ? 15f : 12f) + 6f * enrageScale;
-                    float chargeAccelerationX = (phase4 ? 0.9f : phase2 ? 0.7f : 0.5f) + 0.25f * enrageScale;
-                    float chargeAccelerationY = (phase4 ? 0.45f : phase2 ? 0.35f : 0.25f) + 0.125f * enrageScale;
+                    float chargeAccelerationX = (phase4 ? 0.7f : phase2 ? 0.6f : 0.5f) + 0.25f * enrageScale;
+                    float chargeAccelerationY = (phase4 ? 0.35f : phase2 ? 0.3f : 0.25f) + 0.125f * enrageScale;
 
                     if (death)
                     {
                         chargeVelocityX += 2f;
                         chargeVelocityY += 4f;
-                        chargeAccelerationX += 0.15f;
-                        chargeAccelerationY += 0.3f;
+                        chargeAccelerationX += 0.1f;
+                        chargeAccelerationY += 0.2f;
                     }
 
                     // Velocity calculations
