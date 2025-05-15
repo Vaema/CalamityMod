@@ -171,8 +171,8 @@ namespace CalamityMod.NPCs.Perforator
 
             // Spit attack in Rev
             // Spit ichor blobs in Death
-            float spitDistance = 800f;
-            float tooCloseToSpitDistance = 160f;
+            float spitDistance = 960f;
+            float tooCloseToSpitDistance = 320f;
             bool canSpit = (NPC.Distance(player.Center) <= spitDistance && NPC.Distance(player.Center) > tooCloseToSpitDistance &&
                 (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation() &&
                 Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height)) || NPC.Calamity().newAI[1] == 1f;
@@ -180,7 +180,7 @@ namespace CalamityMod.NPCs.Perforator
             if (canSpit)
             {
                 NPC.Calamity().newAI[0] += 1f;
-                float spitGateValue = 180f;
+                float spitGateValue = 150f;
                 bool spit = NPC.Calamity().newAI[0] >= spitGateValue;
                 float telegraphSpitGateValue = spitGateValue - 30f;
                 bool telegraphSpit = NPC.Calamity().newAI[0] >= telegraphSpitGateValue;
@@ -188,14 +188,13 @@ namespace CalamityMod.NPCs.Perforator
                 if (telegraphSpit)
                 {
                     NPC.Calamity().newAI[1] = 1f;
-                    Vector2 dustVelocity = spitLocation - spitLocation;
                     int dustType = Main.rand.NextBool() ? DustID.Ichor : DustID.Blood;
                     for (int k = 0; k < 10; k++)
                     {
-                        int dust = Dust.NewDust(spitLocation, 0, 0, dustType);
+                        int dust = Dust.NewDust(spitLocation, 1, 1, dustType);
                         Main.dust[dust].position = spitLocation + Main.rand.NextVector2CircularEdge(25f, 25f);
-                        Main.dust[dust].velocity = spitLocation - Main.dust[dust].position;
-                        Main.dust[dust].scale = dustType == DustID.Ichor ? 1f : 3f;
+                        Main.dust[dust].velocity = (spitLocation - Main.dust[dust].position).SafeNormalize(Vector2.UnitY) * 2f;
+                        Main.dust[dust].scale = dustType == DustID.Ichor ? 1f : 2f;
                         Main.dust[dust].noGravity = true;
                     }
                 }
@@ -210,7 +209,7 @@ namespace CalamityMod.NPCs.Perforator
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int spitProjectileAmount = 8;
-                        float spitProjectileBaseVelocity = 12f;
+                        float spitProjectileBaseVelocity = 16f;
                         float spitProjectileRandomVelocityLimit = 3f;
                         for (int i = 0; i < spitProjectileAmount; i++)
                         {
