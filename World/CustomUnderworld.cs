@@ -787,7 +787,6 @@ namespace CalamityMod.World
                 int stockadeOffsetX = largeWorld ? strongholdOffsetX : 0;
                 int secondStockadeOffsetX = dungeonOffsetX;
                 int stockadeOffsetY = stockadesToGenerate[0] == BarbedStockadeType4Key ? -7 : 8;
-                int secondStockadeOffsetY = stockadesToGenerate[1] == BarbedStockadeType4Key ? -7 : 8;
 
                 // Place structures
                 if (cragsLocationIsLeft)
@@ -871,6 +870,7 @@ namespace CalamityMod.World
                             stockadeGenY++;
 
                         // Placement point for the second stockade
+                        int secondStockadeOffsetY = stockadesToGenerate[1] == BarbedStockadeType4Key ? -7 : 8;
                         stockadePlacementPoint = new Point(stockadeGenX - secondStockadeOffsetX, stockadeGenY + secondStockadeOffsetY);
                     }
                     if (!smallWorld)
@@ -1016,6 +1016,7 @@ namespace CalamityMod.World
                             stockadeGenY++;
 
                         // Placement point for the second stockade
+                        int secondStockadeOffsetY = stockadesToGenerate[1] == BarbedStockadeType4Key ? -7 : 8;
                         stockadePlacementPoint = new Point(stockadeGenX + secondStockadeOffsetX, stockadeGenY + secondStockadeOffsetY);
                     }
                     if (!smallWorld)

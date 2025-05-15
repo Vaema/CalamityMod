@@ -401,21 +401,24 @@ namespace CalamityMod.NPCs.Perforator
                 return;
             }
 
+            // Side mouth starts spitting when it opens
+            if (phase3)
+            {
+                NPC.localAI[2] += 1f;
+                if (NPC.frame.Y / (TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type]) == 5 && NPC.localAI[2] >= 0f)
+                {
+                    // Ensure it only spits once
+                    NPC.localAI[2] = -10f;
+
+                    Vector2 centerOffset = new Vector2(NPC.direction == 1 ? 46f : -46f, -4f);
+                    Vector2 mouthLocation = NPC.Center + centerOffset;
+
+                    SoundEngine.PlaySound(SoundID.Item17, mouthLocation);
+                }
+            }
+
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                // Side mouth starts spitting when it opens (WIP)
-                if (phase3)
-                {
-                    NPC.localAI[2] += 1f;
-                    if (NPC.frame.Y / (TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type]) == 5 && NPC.localAI[2] >= 0f)
-                    {
-                        // Ensure it only spits once
-                        NPC.localAI[2] = -10f;
-
-                        //SoundEngine.PlaySound(SoundID.Item17, );
-                    }
-                }
-
                 NPC.localAI[0] += 1f;
                 if (NPC.localAI[0] >= (revenge ? 200f : 250f) + wormsAlive * 150f && NPC.position.Y + NPC.height < player.position.Y && Vector2.Distance(player.Center, NPC.Center) > 80f)
                 {
