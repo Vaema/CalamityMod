@@ -10,7 +10,10 @@ namespace CalamityMod.Projectiles.Boss
     public class QueenBeenade : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.Beenade}";
+
+        private const int TimeLeft = 180;
 
         public override void SetDefaults()
         {
@@ -19,7 +22,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.height = 22;
             Projectile.hostile = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 180;
+            Projectile.timeLeft = TimeLeft;
         }
 
         public override void AI()
@@ -47,7 +50,8 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.velocity.Y = 16f;
         }
 
-        public override bool? CanDamage() => Projectile.timeLeft <= 0;
+        // Using 1 just in case
+        public override bool? CanDamage() => Projectile.timeLeft <= 1;
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -58,6 +62,25 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.velocity.Y = oldVelocity.Y * -0.5f;
 
             return false;
+        }
+
+        public override Color? GetAlpha(Color lightColor)
+        {
+            int timer = TimeLeft - Projectile.timeLeft;
+            float startWarningColorGateValue = 60f;
+            float timeToReachFullIntensity = 120f;
+            float timeToReachExplosion = startWarningColorGateValue + timeToReachFullIntensity;
+            Color initialColor = lightColor;
+            Color finalColor = Color.Lerp(new Color(125, 0, 0), Color.Red, (float)Math.Abs(Math.Sin((timer - startWarningColorGateValue) * (MathHelper.Pi / 45f))));
+            finalColor.A = (byte)(255 - Projectile.alpha);
+            if (timer > startWarningColorGateValue)
+            {
+                float colorTransitionRatio = (timer - startWarningColorGateValue) / timeToReachFullIntensity;
+                Color explodeColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
+                return explodeColor;
+            }
+            else
+                return initialColor;
         }
 
         public override void OnKill(int timeLeft)

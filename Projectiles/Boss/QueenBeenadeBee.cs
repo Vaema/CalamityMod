@@ -34,12 +34,12 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Animation
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
+            if (Projectile.frameCounter >= 3)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame > 4)
+            if (Projectile.frame >= 3)
                 Projectile.frame = 0;
 
             // Direction and rotation
@@ -59,6 +59,8 @@ namespace CalamityMod.Projectiles.Boss
             if (distanceFromTarget.Length() < stopHomingDistance || Projectile.ai[0] == 1f || Projectile.timeLeft < 120)
             {
                 Projectile.ai[0] = 1f;
+
+                Projectile.tileCollide = true;
 
                 if (Projectile.velocity.Length() < Projectile.ai[2])
                     Projectile.velocity *= 1.05f;
