@@ -114,6 +114,7 @@ namespace CalamityMod.NPCs.Perforator
             writer.Write(small);
             writer.Write(medium);
             writer.Write(large);
+            writer.Write(NPC.localAI[2]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -123,6 +124,7 @@ namespace CalamityMod.NPCs.Perforator
             small = reader.ReadBoolean();
             medium = reader.ReadBoolean();
             large = reader.ReadBoolean();
+            NPC.localAI[2] = reader.ReadSingle();
         }
 
         public override void AI()
@@ -413,7 +415,8 @@ namespace CalamityMod.NPCs.Perforator
                 if (NPC.frame.Y / (TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type]) == 5 && NPC.localAI[2] >= 0f)
                 {
                     // Ensure it only spits once
-                    NPC.localAI[2] = -10f;
+                    // Spits half as much while the medium worm is alive
+                    NPC.localAI[2] = mediumWormAlive ? -70f : -10f;
 
                     Vector2 centerOffset = new Vector2(NPC.direction == 1 ? 52f : -52f, -4f);
                     Vector2 mouthLocation = NPC.Center + centerOffset;
