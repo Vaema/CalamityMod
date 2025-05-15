@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
                 player.itemAnimation = player.itemAnimationMax = player.itemTime = player.itemTimeMax = 60;
-                Projectile.NewProjectile(source, position, velocity*1.6666f, type, (int)(damage * 20.4), knockback, player.whoAmI, 0f, velocity.ToRotation(), 0);
+                Projectile.NewProjectile(source, position, velocity*1.6666f, type, (int)(damage * 20), knockback, player.whoAmI, 0f, velocity.ToRotation(), 0);
             }
             else
                 Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, velocity.ToRotation(), 1);

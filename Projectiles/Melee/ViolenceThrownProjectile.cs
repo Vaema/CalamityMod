@@ -128,7 +128,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (target.Organic())
                 {
                     if (Projectile.FinalExtraUpdate())
-                        SoundEngine.PlaySound(SoundID.NPCHit18 with {Volume = 0.33f}, Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.NPCHit18 with { Volume = 0.2f }, Projectile.Center);
                     for (int i = 0; i < 1; i++)
                     {
                         int bloodLifetime = Main.rand.Next(22, 36);
@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Melee
                             SparkParticle spark = new SparkParticle(impactPoint, sparkVelocity, true, sparkLifetime, sparkScale, sparkColor);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
-                        SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact with {Volume = 0.5f}, Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.NPCHit18 with { Volume = 0.2f }, Projectile.Center);
                     }
                 }
 
@@ -195,40 +195,17 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.damage = 0;
                 Time = 60;
             }
+             Lighting.AddLight(Projectile.Center + (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.45f, Color.Red.ToVector3() * 0.4f);
         }
         public bool JavelinPreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.EnterShaderRegion();
-            var TrailTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes", (AssetRequestMode)2);
-            Vector2 trailOffset = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() + Projectile.Size * 0.5f;
-            /*GameShaders.Misc["CalamityMod:ExobladePierce"].SetShaderTexture(TrailTexture);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseImage2("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(new Color(100, 0, 0));
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(new Color(100, 0, 0));
-            GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-            */
-
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
 
             // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
             // and thus causes it to be consistently added over and over, which is not intended behavior.
             Vector2[] drawPoints = (Vector2[])Projectile.oldPos.Clone();
             Vector2 aimAheadDirection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
-
-
-            if (true)//(Time > Projectile.oldPos.Length)
-            {
-                // Violence trakcs 36 positions in oldPos.
-                // Provide all 36 points for smoothing, but only render 24.
-                //int numPointsRendered = Projectile.oldPos.Take(60).ToArray();
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(60).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 25);
-            }
-
-            //var positionsToUse = Projectile.oldPos.Take(60).ToArray();
-            //PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 25);
-            Main.spriteBatch.ExitShaderRegion();
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(60).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 25);
             return true;
         }
         public void JavelinSetDefaults()
@@ -247,14 +224,6 @@ namespace CalamityMod.Projectiles.Melee
             NormalVelocity = Projectile.velocity;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathF.PI / 4;
         }
-        public float trailWidth(float comp)
-        {
-            return MathHelper.Lerp(20, 0, comp);
-        }
-        public Color trailColor(float comp)
-        {
-            return new Color(100, 0, 0);
-        }
         public void JavelinModifyDamageHitbox(ref Rectangle hitbox)
         {
             var center = hitbox.Center.ToVector2();
@@ -270,12 +239,13 @@ namespace CalamityMod.Projectiles.Melee
             targetoffset = target.position;
             float x = Utils.GetLerpValue(1000f, 6000f, damageDone, true);
             int x1 = (int)(20 * (x) * (Projectile.extraUpdates + 1));
-            if (damageDone > 5) {
+            if (damageDone > 5)
+            {
                 hitstop = x1;
                 Projectile.damage = (int)(Projectile.damage * 0.9f);
             }
             target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 240);
-            //Violence's normal hit code
+
 
             if (Main.netMode != NetmodeID.Server)
             {
@@ -299,7 +269,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         #endregion
 
-        //These methods are the original Violence functionality made to work with this projectile
+        //These methods are the original Violence "Yoyo" functionality
         #region Yoyo Methods
         public void YoyoSetDefaults()
         {
@@ -447,6 +417,44 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(impactParticle);
             }
         }
+        public bool YoyoPreDraw(ref Color lightColor)
+        {
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+
+            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+
+            // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
+            // and thus causes it to be consistently added over and over, which is not intended behavior.
+            Vector2[] drawPoints = (Vector2[])Projectile.oldPos.Clone();
+            Vector2 aimAheadDirection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
+
+            if (Owner.channel || isJavelin)
+            {
+                drawPoints[0] += aimAheadDirection * -12f;
+                drawPoints[1] = drawPoints[0] - (Projectile.rotation + MathHelper.PiOver4).ToRotationVector2() * Vector2.Distance(drawPoints[0], drawPoints[1]);
+            }
+            for (int i = 0; i < drawPoints.Length; i++)
+                drawPoints[i] -= (Projectile.oldRot[i] + MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.5f;
+
+            int numPointsRendered = (int)Math.Min(24, Time);
+            PrimitiveRenderer.RenderTrail(drawPoints.Take((int)Math.Min(Time, 36)).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 24);
+
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            for (int i = 0; i < 6; i++)
+            {
+                float rotation = Projectile.oldRot[i] - MathHelper.PiOver2;
+                if (Owner.channel)
+                    rotation += 0.2f;
+
+                Color afterimageColor = Color.Lerp(lightColor, Color.Transparent, 1f - (float)Math.Pow(Utils.GetLerpValue(0, 6, i), 1.4D)) * Projectile.Opacity;
+                Main.EntitySpriteDraw(spearProjectile, drawPosition, null, afterimageColor, rotation, spearProjectile.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
+            }
+
+            return false;
+        }
+        #endregion
+
+        #region Shared Methods
 
         internal float PrimitiveWidthFunction(float completionRatio)
         {
@@ -468,47 +476,6 @@ namespace CalamityMod.Projectiles.Melee
             Color backFade = new Color(255, 145, 115);
 
             return Color.Lerp(frontFade, backFade, (float)Math.Pow(completionRatio, 1.2D)) * (float)Math.Pow(1f - completionRatio, 1.1D) * Projectile.Opacity;
-        }
-
-        public bool YoyoPreDraw(ref Color lightColor)
-        {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-
-            Texture2D spearProjectile = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-
-            // Not cloning the points causes the below operations to be applied to the original oldPos value by reference
-            // and thus causes it to be consistently added over and over, which is not intended behavior.
-            Vector2[] drawPoints = (Vector2[])Projectile.oldPos.Clone();
-            Vector2 aimAheadDirection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
-
-            if (Owner.channel || isJavelin)
-            {
-                drawPoints[0] += aimAheadDirection * -12f;
-                drawPoints[1] = drawPoints[0] - (Projectile.rotation + MathHelper.PiOver4).ToRotationVector2() * Vector2.Distance(drawPoints[0], drawPoints[1]);
-            }
-            for (int i = 0; i < drawPoints.Length; i++)
-                drawPoints[i] -= (Projectile.oldRot[i] + MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.5f;
-
-            if (true)//(Time > Projectile.oldPos.Length)
-            {
-                // Violence trakcs 36 positions in oldPos.
-                // Provide all 36 points for smoothing, but only render 24.
-                int numPointsRendered = (int)Math.Min(24, Time);
-                PrimitiveRenderer.RenderTrail(drawPoints.Take((int)Math.Min(Time, 36)).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 24);
-            }
-
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            for (int i = 0; i < 6; i++)
-            {
-                float rotation = Projectile.oldRot[i] - MathHelper.PiOver2;
-                if (Owner.channel)
-                    rotation += 0.2f;
-
-                Color afterimageColor = Color.Lerp(lightColor, Color.Transparent, 1f - (float)Math.Pow(Utils.GetLerpValue(0, 6, i), 1.4D)) * Projectile.Opacity;
-                Main.EntitySpriteDraw(spearProjectile, drawPosition, null, afterimageColor, rotation, spearProjectile.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
-            }
-
-            return false;
         }
         #endregion
     }
