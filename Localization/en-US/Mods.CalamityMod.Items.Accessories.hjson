@@ -345,7 +345,7 @@ BloomStone: {
 	DisplayName: Bloom Stone
 	Tooltip:
 		'''
-		Grants between +1 HP/s and +3 HP/s life regen depending on time of day
+		Grants between +1 HP/s and +3 HP/s life regen while grounded, depending on time of day
 		Accelerates life regen based on time of day
 		Both of these effects are maximized from noon to sunset
 		Flowers grow on the grass you walk on
