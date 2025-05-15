@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,6 +39,15 @@ namespace CalamityMod.Systems
         public override void Unload()
         {
             Difficulties = null;
+        }
+
+        // Makes the world automatically convert to Death if in Master, or out of Death if not in Master
+        public override void PostUpdateWorld()
+        {
+            if (!Main.masterMode && CalamityWorld.death)
+                ModeIndicatorUI.SwitchToDifficulty(new RevengeanceDifficulty());
+            if (Main.masterMode && CalamityWorld.revenge)
+                ModeIndicatorUI.SwitchToDifficulty(new DeathDifficulty());
         }
 
         public static DifficultyMode GetCurrentDifficulty
