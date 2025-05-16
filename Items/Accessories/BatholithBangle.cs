@@ -1,20 +1,19 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Ranged;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class ProtolithBangle : ModItem, ILocalizedModType
+    public class BatholithBangle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public static int cooldown = 420;
-        public static int damage = 68;
+        public static int cooldown = 600;
+        public static int damage = 225;
         public override void SetDefaults()
         {
-            Item.width = 34;
-            Item.height = 34;
+            Item.width = 36;
+            Item.height = 28;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
             Item.accessory = true;
@@ -22,17 +21,17 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.protolithBangle = true;
-            modPlayer.protolithBangleVisual = !hideVisual;
+            modPlayer.batholithBangle = true;
+            modPlayer.batholithBangleVisual = !hideVisual;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<BlackGlassBand>().
                 AddRecipeGroup("Boss2Material", 15).
-                AddIngredient(ItemID.Marble, 45).
-                AddIngredient(ItemID.Ruby, 3).
-                AddIngredient(ItemID.Lens, 5).
+                AddIngredient(ItemID.Granite, 45).
+                AddIngredient(ItemID.Amber, 3).
+                AddIngredient(ItemID.FallenStar, 5).
                 AddTile(TileID.Anvils).
                 Register();
         }

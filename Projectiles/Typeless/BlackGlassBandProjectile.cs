@@ -14,6 +14,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public int time = 0;
         public Player Owner => Main.player[Projectile.owner];
+        public bool visual => Owner.Calamity().bGlassBandVisual;
         public override void SetDefaults()
         {
             Projectile.width = 2;
@@ -31,25 +32,29 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (time == 0)
             {
+                float visMult = (visual ? 1 : 0.3f);
                 SoundStyle sound = new("CalamityMod/Sounds/Item/BlackGlassBandSound");
-                SoundEngine.PlaySound(sound with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, Projectile.Center);
+                if (visual)
+                {
+                    SoundEngine.PlaySound(sound with { Volume = 1f, MaxInstances = -1 }, Projectile.Center);
 
+                    float randRot = Main.rand.NextFloat(0, MathHelper.Pi);
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        Vector2 position = Projectile.Center + (Vector2.UnitX * 20 * i).RotatedBy(randRot);
+                        Particle spark = new CustomSpark(position, Vector2.UnitY.RotatedBy(randRot) * 0.001f, "CalamityMod/Particles/GlowSpark", false, 15, 0.03f, Color.DarkSlateBlue, new Vector2(7f, 0.2f), true, shrinkSpeed: 0.55f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        Vector2 position = Projectile.Center + (Vector2.UnitY * 20 * i).RotatedBy(randRot);
+                        Particle spark = new CustomSpark(position, Vector2.UnitX.RotatedBy(randRot) * 0.001f, "CalamityMod/Particles/GlowSpark", false, 15, 0.03f, Color.DarkSlateBlue, new Vector2(7f, 0.2f), true, shrinkSpeed: 0.55f);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
                 for (int i = 0; i < 18; i++)
                 {
-                    Particle spark = new CustomSpark(Projectile.Center, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f), "CalamityMod/Particles/GlowOrbParticle", true, 35, Main.rand.NextFloat(0.6f, 0.8f), Main.rand.NextBool() ? Color.DarkSlateBlue : Color.MediumPurple, new Vector2(0.8f, 1.2f), false);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                float randRot = Main.rand.NextFloat(0, MathHelper.Pi);
-                for (int i = -1; i <= 1; i += 2)
-                {
-                    Vector2 position = Projectile.Center + (Vector2.UnitX * 20 * i).RotatedBy(randRot);
-                    Particle spark = new CustomSpark(position, Vector2.UnitY.RotatedBy(randRot) * 0.001f, "CalamityMod/Particles/GlowSpark", false, 15, 0.03f, Color.DarkSlateBlue, new Vector2(7f, 0.2f), true, shrinkSpeed: 0.55f);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                }
-                for (int i = -1; i <= 1; i += 2)
-                {
-                    Vector2 position = Projectile.Center + (Vector2.UnitY * 20 * i).RotatedBy(randRot);
-                    Particle spark = new CustomSpark(position, Vector2.UnitX.RotatedBy(randRot) * 0.001f, "CalamityMod/Particles/GlowSpark", false, 15, 0.03f, Color.DarkSlateBlue, new Vector2(7f, 0.2f), true, shrinkSpeed: 0.55f);
+                    Particle spark = new CustomSpark(Projectile.Center, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f), "CalamityMod/Particles/GlowOrbParticle", true, 35, Main.rand.NextFloat(0.6f, 0.8f), (Main.rand.NextBool() ? Color.DarkSlateBlue : Color.MediumPurple) * visMult, new Vector2(0.8f, 1.2f), false);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
             }

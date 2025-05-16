@@ -10,7 +10,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
@@ -26,12 +25,10 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -164,9 +161,19 @@ namespace CalamityMod.CalPlayer
                 {
                     var source = item.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
-                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Ranged;
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
+                }
+                if (batholithBangle && item.DamageType == DamageClass.Magic)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Magic;
+                    if (cooldown < BatholithBangle.cooldown)
+                        cooldown = BatholithBangle.cooldown;
                 }
 
                 if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
@@ -342,12 +349,14 @@ namespace CalamityMod.CalPlayer
             if (generalBandCooldown == 0)
             {
                 int cooldown = 0;
-                if (bGlassBand)
+                // NOTE: Apparently Pulse Pistol/Pulse Rifle projectiles will set spawned projectiles here to inherit the proj ID???
+                // No clue why this happens or how to fix it, but it just breaks using multiple band types together on these two weapons
+                if (bGlassBand) 
                 {
                     var source = proj.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
                     Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
                     if (cooldown < BlackGlassBand.cooldown)
                         cooldown = BlackGlassBand.cooldown;
                 }
@@ -355,9 +364,19 @@ namespace CalamityMod.CalPlayer
                 {
                     var source = proj.GetSource_FromThis();
                     int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
-                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Ranged;
                     if (cooldown < ProtolithBangle.cooldown)
                         cooldown = ProtolithBangle.cooldown;
+                }
+                if (batholithBangle && proj.DamageType == DamageClass.Magic)
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Magic;
+                    if (cooldown < BatholithBangle.cooldown)
+                        cooldown = BatholithBangle.cooldown;
                 }
 
                 if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
