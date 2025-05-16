@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.homeTileY = (int)npc.ai[3];
 
             // Spawn Shadow Hands if the player enters the shadows
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            if (Main.netMode != NetmodeID.MultiplayerClient && hasTargetBeenInRange)
                 SpawnBorderShadowHands(npc, lifeRatio, shadowHand, shadowHandDamage, death);
 
             // AI states
@@ -598,7 +598,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // This only happens if the player is triggering Deerclops' increased DR
                 float minShadowHandSpawnDistanceFromPlayer = 360f;
                 float playerDistanceFromDeerclops = Vector2.Distance(npc.Center, player.Center);
-                if (playerDistanceFromDeerclops >= IncreaseDRTriggerDistance)
+                if (playerDistanceFromDeerclops >= IncreaseDRTriggerDistance && playerDistanceFromDeerclops <= MaxDRIncreaseDistance)
                 {
                     Vector2 spawnPosition = npc.Center + (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * (playerDistanceFromDeerclops + minShadowHandSpawnDistanceFromPlayer);
                     float shadowHandVelocity = death ? 6f : 5f;
