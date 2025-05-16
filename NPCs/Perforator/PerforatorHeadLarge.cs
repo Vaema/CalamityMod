@@ -173,17 +173,26 @@ namespace CalamityMod.NPCs.Perforator
             // Spit ichor blobs in Death
             float spitDistance = 960f;
             float tooCloseToSpitDistance = 320f;
-            bool canSpit = (NPC.Distance(player.Center) <= spitDistance && NPC.Distance(player.Center) > tooCloseToSpitDistance &&
-                (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation() &&
-                Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height)) || NPC.Calamity().newAI[1] == 1f;
+            bool isInRangeToSpit = NPC.Distance(player.Center) <= spitDistance && NPC.Distance(player.Center) > tooCloseToSpitDistance;
+            bool headIsTurnedTowardsTarget = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation();
+            bool canHitTarget = Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
+            bool alwaysAbleToSpit = NPC.Calamity().newAI[1] == 1f;
+            bool canSpit = (isInRangeToSpit && headIsTurnedTowardsTarget && canHitTarget) || alwaysAbleToSpit;
 
             if (canSpit)
             {
-                NPC.Calamity().newAI[0] += 1f;
-                float spitGateValue = 150f;
-                bool spit = NPC.Calamity().newAI[0] >= spitGateValue;
+                float spitGateValue = 120f;
+                if (NPC.Calamity().newAI[0] < spitGateValue)
+                    NPC.Calamity().newAI[0] += 1f;
+
+                // Only spit if all the conditions are met, in order to make the attack actually dangerous
+                bool spit = NPC.Calamity().newAI[0] >= spitGateValue && isInRangeToSpit && headIsTurnedTowardsTarget && canHitTarget;
+
+                // Telegraph for half a second, or for however long it takes for the spit conditions to be met
                 float telegraphSpitGateValue = spitGateValue - 30f;
                 bool telegraphSpit = NPC.Calamity().newAI[0] >= telegraphSpitGateValue;
+
+                // Spit from the mouth hole thing...yeah
                 Vector2 spitLocation = NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 20f;
                 if (telegraphSpit)
                 {

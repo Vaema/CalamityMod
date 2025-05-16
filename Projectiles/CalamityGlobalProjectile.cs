@@ -2089,9 +2089,9 @@ namespace CalamityMod.Projectiles
                     float dustVelocityMultiplier = 0.75f;
                     int numDust = 5;
                     int numDust2 = 5;
-                    int fadeInTime = 10;
-                    int fadeOutGateValue = masterMode ? 80 : death ? 50 : 25;
-                    float killGateValue = masterMode ? 90f : death ? 60f : 35f;
+                    int fadeInTime = 50;
+                    int fadeOutGateValue = masterMode ? 120 : death ? 90 : 65;
+                    float killGateValue = masterMode ? 130f : death ? 100f : 75f;
                     int maxFrames = 5;
 
                     bool fadeIn = projectile.ai[0] < (float)fadeInTime;
@@ -2124,7 +2124,7 @@ namespace CalamityMod.Projectiles
 
                     if (fadeIn)
                     {
-                        projectile.Opacity += 0.1f;
+                        projectile.Opacity += 0.02f;
                         if (projectile.Opacity > 1f)
                             projectile.Opacity = 1f;
 
@@ -4291,8 +4291,8 @@ namespace CalamityMod.Projectiles
                 case ProjectileID.DeerclopsIceSpike:
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
-                        float fadeInTime = 10f;
-                        float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
+                        float fadeInTime = 50f;
+                        float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
                     break;
@@ -4473,9 +4473,9 @@ namespace CalamityMod.Projectiles
                 Vector2 origin12 = new Vector2(16f, value26.Height / 2);
                 Color alpha5 = projectile.GetAlpha(lightColor);
                 Vector2 vector39 = new Vector2(projectile.scale);
-                float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
-                float killGateValue = masterMode ? 90f : death ? 60f : 35f;
-                float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 10f, projectile.ai[0], clamped: true);
+                float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
+                float killGateValue = masterMode ? 130f : death ? 100f : 75f;
+                float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 50f, projectile.ai[0], clamped: true);
                 vector39.Y *= lerpValue5;
                 Vector4 vector40 = lightColor.ToVector4();
                 Vector4 vector41 = new Color(67, 17, 17).ToVector4();
