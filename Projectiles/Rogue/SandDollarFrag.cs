@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Projectile.velocity.Y += 0.09f;
+            Projectile.velocity.Y += 0.11f;
             if (Projectile.velocity.Y > 16f)
                 Projectile.velocity.Y = 16f;
             Projectile.rotation += Projectile.velocity.X * 0.025f;

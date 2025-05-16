@@ -81,6 +81,12 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft)
         {
+            for (int s = 0; s < 8; s++)
+            {
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Scale: 0.9f);
+                dust.noGravity = true;
+            }
+
             if (BounceCheck > 0f && Main.myPlayer == Projectile.owner)
             {
                 for (int i = 1; i <= 3; i++)
