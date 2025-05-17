@@ -584,7 +584,7 @@ namespace CalamityMod.Systems
             if (NPC.AnyNPCs(NPCID.SkeletronHead))
                 return;
 
-            int oldMan = NPC.NewNPC(NPC.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, 37);
+            int oldMan = NPC.NewNPC(NPC.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, NPCID.OldMan);
             Main.npc[oldMan].homeless = false;
             Main.npc[oldMan].homeTileX = Main.dungeonX;
             Main.npc[oldMan].homeTileY = Main.dungeonY;
