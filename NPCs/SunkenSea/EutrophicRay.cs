@@ -52,7 +52,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            //Main.npcFrameCount[Type] = 5;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.Position.X += 24f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -65,8 +65,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            NPC.width = 116;
-            NPC.height = 34;
+            NPC.width = 54;
+            NPC.height = 68;
             NPC.damage = 20;
             NPC.defense = 5;
             NPC.DR_NERD(0.05f);
@@ -141,11 +141,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 hasBeenHit = true;
             NPC.chaseable = hasBeenHit;
 
-            NPC.rotation = NPC.velocity.X * 0.04f;
-            if (NPC.rotation < -0.1f)
-                NPC.rotation = -0.1f;
-            if (NPC.rotation > 0.1f)
-                NPC.rotation = 0.1f;
+            NPC.rotation = NPC.velocity.ToRotation() + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0);
         }
         private void OnBehaviorChange(Action newBehavior)
         {
@@ -301,21 +297,24 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         #endregion
 
-        /*public override void FindFrame(int frameHeight)
+        public override void FindFrame(int frameHeight)
         {
-            NPC.frameCounter += (hasBeenHit || NPC.IsABestiaryIconDummy) ? 0.15f : 0f;
+            NPC.frameCounter += 0.15f;
             NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
-        }*/
+        }
 
-        public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
+            Texture2D tex = TextureAssets.Npc[NPC.type].Value;
+            Vector2 halfSizeTexture = new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[Type]);
             Vector2 vector = NPC.Center - screenPos;
-            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.LightBlue);
+            Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0);
             SpriteEffects sp = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Main.spriteBatch.Draw(tex, vector, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
             Main.spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
+            return false;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
