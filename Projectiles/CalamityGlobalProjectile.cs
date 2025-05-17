@@ -4375,7 +4375,8 @@ namespace CalamityMod.Projectiles
                 float homingTime = ((Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f);
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
-                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : lightColor;
+
+                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : new Color(255, 255, 255, (int)Utils.WrappedLerp(0f, 255f, (float)(projectile.timeLeft % 40) / 40f));
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)

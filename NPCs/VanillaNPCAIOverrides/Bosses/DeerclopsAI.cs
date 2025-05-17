@@ -210,9 +210,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // This also takes into account the ice spike limit
                     float rubbleAttackLimit = 3f;
                     bool doNotUseRubble = calamityGlobalNPC.newAI[1] >= rubbleAttackLimit;
+                    float rubbleGateValue = death ? 160f : 200f;
                     if (!doNotUseRubble)
                     {
-                        float rubbleGateValue = 160f;
                         bool useRubbleAttack = npc.ai[1] >= rubbleGateValue;
                         if (npc.velocity.Y == 0f && npc.velocity.X != 0f && useRubbleAttack)
                         {
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    float shadowHandGateValue = 60f;
+                    float shadowHandGateValue = death ? 60f : 75f;
                     bool useShadowHandAttack = npc.ai[1] >= shadowHandGateValue;
                     if (npc.velocity.Y == 0f && npc.velocity.X == 0f && useShadowHandAttack)
                     {
@@ -246,7 +246,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // This replaced the slow debuff infliction
                     // Must use 4 different attacks before being able to use this attack again
                     float secondShadowHandAttackCooldown = 4f;
-                    float secondShadowHandGateValue = 80f;
+                    float secondShadowHandGateValue = death ? 80f : 100f;
                     bool useSecondShadowHandAttack = npc.ai[1] >= secondShadowHandGateValue;
                     if (npc.velocity.Y == 0f && useSecondShadowHandAttack && Math.Abs(distanceFromTarget2.X) > 100f && calamityGlobalNPC.newAI[0] <= 0f)
                     {
@@ -261,7 +261,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     // If Deerclops has been taking a while to attack, stop moving on the X axis to force a shadow hand attack
-                    float haltMovementGateValue = doNotUseRubble ? 120f : doNotUseIceSpikes ? 180f : 240f;
+                    float haltMovementGateValue = doNotUseRubble ? (secondShadowHandGateValue + 20f) : doNotUseIceSpikes ? (rubbleGateValue + 20f) : 240f;
                     if (distanceFromTarget2.Length() < IncreaseDRTriggerDistance)
                         haltMovement = npc.ai[1] >= haltMovementGateValue;
 
