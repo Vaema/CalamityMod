@@ -68,7 +68,9 @@ namespace CalamityMod.Systems
 
             // Handle Acid Rain update logic.
             if (AcidRainEvent.AcidRainEventIsOngoing)
+            {
                 AcidRainEvent.Update();
+            }
             else
             {
                 if (AcidRainEvent.TimeSinceEventStarted != 0)
@@ -112,6 +114,9 @@ namespace CalamityMod.Systems
                 CalamityGlobalNPC.AttemptToSpawnLabCritters(p);
                 CalamityGlobalNPC.AttemptToSpawnLavaNPCs(p);
             }
+
+            // Spawn the Old Man if Skeletron hasn't been defeated and there is no Old Man, it takes too fucking long otherwise.
+            TrySpawnOldMan();
 
             // Make the cultist countdown happen much more quickly.
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -564,6 +569,25 @@ namespace CalamityMod.Systems
             }
 
             return usingCorrectPlanterBox;
+        }
+        #endregion
+
+        #region Handle Old Man Spawn
+        public static void TrySpawnOldMan()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient || NPC.downedBoss3 || Main.dayTime)
+                return;
+
+            if (NPC.AnyNPCs(NPCID.OldMan))
+                return;
+
+            if (NPC.AnyNPCs(NPCID.SkeletronHead))
+                return;
+
+            int oldMan = NPC.NewNPC(NPC.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, 37);
+            Main.npc[oldMan].homeless = false;
+            Main.npc[oldMan].homeTileX = Main.dungeonX;
+            Main.npc[oldMan].homeTileY = Main.dungeonY;
         }
         #endregion
 
