@@ -143,9 +143,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         public bool obeyGravity => !(Player.miscEquips[4].type == ItemID.AntiGravityHook);
-        
         public bool strongerReel => Player.miscEquips[4].type == ItemID.StaticHook;
-
         public Vector2 CurrentPosition;
         public Vector2 OldPosition;
         public List<VerletSimulatedSegment> Segments;
