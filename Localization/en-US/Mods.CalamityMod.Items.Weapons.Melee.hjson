@@ -1286,11 +1286,13 @@ Terratomere: {
 
 TerrorBlade: {
 	DisplayName: Terror Blade
+	GFBName: TERROR BLADD4
 	Tooltip:
 		'''
 		Fires a terror beam that bounces off tiles
-		On every bounce it emits an explosion
+		On every bounce it emits an explosion[STATUS]
 		'''
+	GFB: "'Ignore my spelling.'"
 }
 
 TheBurningSky: {
