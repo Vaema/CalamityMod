@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Point tilePos = Projectile.Center.ToTileCoordinates();
                 Tile tile = Main.tile[tilePos];
-                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo() || Owner.IsBlacklistedForGrappling(tilePos))
+                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                     State = HookState.Retracting;
 
                 Projectile.velocity = Vector2.Zero;
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     Tile tile = Main.tile[tilePos];
 
-                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo() || Owner.IsBlacklistedForGrappling(tilePos))
+                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                         continue;
                     if (Main.myPlayer != Owner.whoAmI)
                         continue;
@@ -178,6 +178,9 @@ namespace CalamityMod.Projectiles.Typeless
             //Hook onto the tile
             Projectile.velocity = Vector2.Zero;
             State = HookState.Grappling;
+
+            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
+                Owner.DoQueenSlimeHookTeleport(grapplePos);
             Projectile.Center = grapplePos + Vector2.One * 8f;
             //effects
             WorldGen.KillTile(x, y, fail: true, effectOnly: true);

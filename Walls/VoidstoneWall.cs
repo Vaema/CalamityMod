@@ -70,10 +70,6 @@ namespace CalamityMod.Walls
                 brightness = MathHelper.Clamp(brightness, 0f, 1f);            
                 Color glowColor = drawcolor *= brightness;
 
-                if (lightColor.R > glowColor.R) glowColor.R = lightColor.R;
-                if (lightColor.G > glowColor.G) glowColor.G = lightColor.G;
-                if (lightColor.B > glowColor.B) glowColor.B = lightColor.B;
-
                 if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
                     return;
 
