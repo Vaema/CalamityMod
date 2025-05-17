@@ -4096,13 +4096,13 @@ namespace CalamityMod.Projectiles
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
+                speed *= 1.5f;
         }
 
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
+                speed *= 1.5f;
         }
         #endregion
 
