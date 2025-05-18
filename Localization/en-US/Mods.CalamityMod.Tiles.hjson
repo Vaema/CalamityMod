@@ -32,6 +32,8 @@ SpineTree.MapEntry: Giant Spine
 InactivePowerCellFactory.MapEntry: Inactive Power Cell Factory
 OnyxExcavatorTile.MapEntry: Onyx Excavator
 CodebreakerTile.MapEntry: The Codebreaker
+// Sunken Sea
+WhisperingPearl: "{$Items.Placeables.SunkenSea.WhisperingPearl.DisplayName}"
 // Ores
 AerialiteOre.MapEntry: Aerialite
 AerialiteOreDisenchanted.MapEntry: Disenchanted Aerialite

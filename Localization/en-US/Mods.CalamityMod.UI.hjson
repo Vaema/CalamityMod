@@ -588,6 +588,127 @@ Lecherous: {
 	Description: Spawns a resilient brimstone monster that stays between you and your mouse that interferes with your homing weapons. It releases a bunch of hearts on death.
 }
 
+// Moving text to a new line inserts a paragraph break. Two blank newlines separate pages. 
+WhisperingPearl: {
+	Basic:
+		'''
+		    Something about clams
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	Red:
+		'''
+		    Something about red clams
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	Orange:
+		'''
+		    Something about orange clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	Yellow:
+		'''
+		    Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
+            Like yknow those shellfish? Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	LightGreen:
+		'''
+		    Something about light green clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	LightBlue:
+		'''
+		    Something about light blue clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	DarkBlue:
+		'''
+		    Something about dark blue clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	Purple:
+		'''
+		    Something about purple clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	DarkGreen:
+		'''
+		    Something about dark green clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+	Black:
+		'''
+		    Something about black clams
+
+		    Like yknow those shellfish?
+
+
+		    By the way I ate curry today
+
+
+		    MMM....
+		'''
+}
+
 Disenchant: Disenchant
 // Worldgen Tasks
 BetterUnderworld: Creating a smoother Underworld
