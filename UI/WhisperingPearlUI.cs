@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Typeless;
@@ -81,28 +82,44 @@ namespace CalamityMod.UI
                 }
 
                 // Cut the page even further down into individual lines
-                string[] wrapped = Utils.WordwrapString(separated[currentPage], FontAssets.MouseText.Value, 600, 100000, out int lineAmt);
+                string[] wrapped = Utils.WordwrapString(separated[currentPage], FontAssets.MouseText.Value, 600, 100, out int lineAmt);
                 string combined = "";
 
-                // Combine them back together with newlines separating them
+                string colorCode = "";
+                // Combine them back together with newlines separating them as well as getting the color code
                 for (int i = 0; i < wrapped.Length; i++)
                 {
                     if (wrapped[i] != null)
                     {
+                        if (i == 0)
+                        {
+                            wrapped[i] = wrapped[i].TrimStart();
+                            colorCode = wrapped[i].Substring(0, 6);
+                            wrapped[i] = wrapped[i].Remove(0, 7);
+                        }
                         combined += '\n' + wrapped[i];
                     }
                 }
 
-                // Remove the newlines from every line except the last which doesn't have one
+                // Chat sounds
+                if ((int)textTimer % Main.rand.Next(2, 8) == 0 && textTimer < maxTextTime)
+                {
+                    SoundEngine.PlaySound(SoundID.MenuTick);
+                }
+
+                // System.Drawing use?????? you'd be dead to see it
+                System.Drawing.Color col = System.Drawing.ColorTranslator.FromHtml("#" + colorCode);
+                Color lineColor = new Color(col.R, col.G, col.B);
+
                 maxTextTime = combined.Length;
+
                 Vector2 size = FontAssets.MouseText.Value.MeasureString(combined);
                 // Shave off text based on the timer
                 combined = combined.Remove((int)textTimer, (combined.Length - (int)textTimer));
 
                 // How much further the BOTTOM of the text should be drawn above the pearl
                 float yOffset = 40;
-
-                Utils.DrawBorderString(sb, combined, position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), Color.White, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
+                Utils.DrawBorderString(sb, combined, position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), lineColor, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
 
                 // Increment the text timer
                 // 0.33 means that it takes 3ish frames for 1 letter to appear

@@ -588,124 +588,127 @@ Lecherous: {
 	Description: Spawns a resilient brimstone monster that stays between you and your mouse that interferes with your homing weapons. It releases a bunch of hearts on death.
 }
 
-// Moving text to a new line inserts a paragraph break. Two blank newlines separate pages. 
+// Newlines separate pages. Add color codes to the beginning or else
 WhisperingPearl: {
 	Basic:
 		'''
-		    Something about clams
-		    Like yknow those shellfish?
+		    a0edf2 Amidias: “My Goddess... Are you sure of the course of action? We could all flee, we have the resources left for a full evacuation.”
 
+		    daf0ad Otonilou: “No matter to where we flee, the Godseeker and his troops will always be one step away. Even if we hid beneath the deepest of waters, nothing will stop the wrath soon approaching.”
 
-		    By the way I ate curry today
+		    a0edf2 Amidias: “Can't we erase any trail? Hide until his ultimate passing? Fake your death?!”
 
+		    daf0ad Otonilou: “...Oh, Amidias. I couldn't have wished for a better king. But the truth is..."
 
-		    MMM....
+		    a0edf2 Amidias: “Please, don't tell me you believe him.”
+
+		    daf0ad Otonilou: “...In his deathbed, Vetrasyl confessed to me. Of his weakness in the face of danger and shame of his escape. Despite his pleas to carry on his will, his sureness that he was entrusting the right woman, I knew that once I consumed his Soul, I would be a sinner.”
+
+		    a0edf2 Amidias: “...Otonilou, I will not..."
+
+		    f76d6d Otonilou: “But none of you are.”
+
+		    daf0ad Otonilou: “I have bared my sin for longer than that man's wretched walk upon our planet, but my people were never sinners! None of you deserve this fate, to be erased from memory! And on this day, Amidias...”
+
+		    daf0ad Otonilou: “If I am a sinner, then my death shall wash away the sins of all who call themselves Ilmerans. I shall burn with our nation so that those who yet live may rise from its ashes, all free from the sin of your Gods!”
+
+		    a0edf2 Amidias: “My Goddess, I... I...”
+
+		    daf0ad Otonilou: "Shed not a tear, Amidias. I know this is a tall order, but I wouldn't be giving it to you if I did not trust in your resolve. So heed me... When the time comes, guide our people. To a new home, where the sun shines even in the deepest of waters."
+
+		    a0edf2 Amidias: “...It shall be done, my Goddess. I shall not perish, not until a future for our kind is secured. This, I promise."
+
+		    a0edf2 Amidias: “It was an honor to serve you, Otonilou.”
+
+		    daf0ad Otonilou: “And it was an honor to have met you, my king.”
 		'''
 	Red:
 		'''
-		    Something about red clams
-		    Like yknow those shellfish?
+		    000000 Something about red clams
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	Orange:
 		'''
-		    Something about orange clams
+		    000000 Something about orange clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	Yellow:
 		'''
-		    Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
-            Like yknow those shellfish? Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
+		    000000 Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
+		    000000 Like yknow those shellfish? Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams Something about yellow clams
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	LightGreen:
 		'''
-		    Something about light green clams
+		    000000 Something about light green clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	LightBlue:
 		'''
-		    Something about light blue clams
+		    000000 Something about light blue clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	DarkBlue:
 		'''
-		    Something about dark blue clams
+		    000000 Something about dark blue clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	Purple:
 		'''
-		    Something about purple clams
+		    000000 Something about purple clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	DarkGreen:
 		'''
-		    Something about dark green clams
+		    000000 Something about dark green clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 	Black:
 		'''
-		    Something about black clams
+		    000000 Something about black clams
 
-		    Like yknow those shellfish?
+		    000000 Like yknow those shellfish?
 
+		    000000 By the way I ate curry today
 
-		    By the way I ate curry today
-
-
-		    MMM....
+		    000000 MMM....
 		'''
 }
 
