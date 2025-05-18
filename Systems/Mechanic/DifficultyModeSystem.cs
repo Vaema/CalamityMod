@@ -48,9 +48,9 @@ namespace CalamityMod.Systems
         {
             if (!Main.expertMode)
                 ModeIndicatorUI.SwitchToDifficulty(NoDifficulty.Instance);
-            if (Main.expertMode && !Main.masterMode && CalamityWorld.death)
+            if (Main.expertMode && !Main.masterMode && GetCurrentDifficulty == DeathDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
-            if (Main.masterMode && CalamityWorld.revenge)
+            if (Main.masterMode && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
         }
 
