@@ -652,7 +652,8 @@ namespace CalamityMod.ILEditing
                 if (modPlayer is null)
                     return;
 
-                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D)
+                // CIT 17MAY2025: Bleedout clear has a special interaction with Bloom Stone handled elsewhere; do not run this if wearing Bloom Stone
+                if (modPlayer.chaliceOfTheBloodGod && modPlayer.chaliceBleedoutBuffer > 0D && !modPlayer.bloomStone)
                 {
                     // 20FEB2024: Ozzatron: to prevent abuse, buffer clearing is now 50% of the potion instead of 50% of your buffer
                     float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * player.GetHealLife(potion, true);

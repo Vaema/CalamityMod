@@ -219,6 +219,9 @@ namespace CalamityMod.Projectiles
         /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
+        /// <summary> If true, this projectile is a hook which has spawned a flower on it from Bloom Stone. Used to prevent spawning multiple flowers. </summary>
+        public bool hookCanSpawnFlower = false;
+
         /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
@@ -4011,6 +4014,17 @@ namespace CalamityMod.Projectiles
                 TransformerTimer--;
             }
 
+            // Spawn Bloom Stone flower on landed hooks
+            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook, no pollen exists
+            if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.ai[0] == 2f &&
+                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower &&
+                !CalamityUtils.AnyOwnedProjectiles(ProjectileType<BloomStoneFlower>(), projectile.owner))
+            {
+                hookCanSpawnFlower = true;
+                if (Main.myPlayer == projectile.owner)
+                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
+            }
+
             // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
             // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
             // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
@@ -4093,16 +4107,38 @@ namespace CalamityMod.Projectiles
         #endregion
 
         #region Grappling Hooks
+        public override void UseGrapple(Player player, ref int type)
+        {
+            if (player.Calamity().bloomStoneHookVisuals)
+            {
+                // Insert vine effect when spawning a hook
+            }
+        }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
+            float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
-        }
+                mult += 0.5f;
+            if (player.Calamity().bloomStone)
+                mult += 0.5f;
+            speed *= mult;
 
+            // Visual flowers while being pulled
+            if (player.Calamity().bloomStoneHookVisuals && player.miscCounter % 5 == 0 && player.velocity.Length() > 2f)
+            {
+                Vector2 spawnPos = player.Center + Main.rand.NextVector2Circular(20f, 20f);
+                CustomSprite flowey = new(spawnPos, Vector2.Zero, 12, "CalamityMod/Projectiles/Magic/GleamingBolt", 0.425f, Color.White * 0.75f, 0f, false);
+                GeneralParticleHandler.SpawnParticle(flowey);
+            }
+        }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
+            float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
+                mult += 0.5f;
+            if (player.Calamity().bloomStone)
+                mult += 0.5f;
+            speed *= mult;
         }
         #endregion
 
@@ -4263,7 +4299,7 @@ namespace CalamityMod.Projectiles
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
             if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
                 return;
-            
+
             // Get the set of shared static iframe projectile types.
             // If it's empty, then do nothing.
             IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
@@ -4691,8 +4727,8 @@ namespace CalamityMod.Projectiles
                     new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
                     position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
                     frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-                }
             }
+        }
         #endregion
 
         #region Pre Kill

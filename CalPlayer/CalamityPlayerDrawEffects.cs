@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -325,6 +326,20 @@ namespace CalamityMod.CalPlayer
                 {
                     Particle Plus = new HealingPlus(Player.Center, Main.rand.NextFloat(0.7f, 1.4f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.DarkSeaGreen, Color.DarkSeaGreen, Main.rand.Next(10, 15));
                     GeneralParticleHandler.SpawnParticle(Plus);
+                }
+            }
+            if (calamityPlayer.bloomStoneDR > 0 && drawInfo.shadow == 0f)
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    MediumMistParticle pollenCloud = new(Player.Center, Main.rand.NextVector2Circular(1f, 1f), Color.Yellow, Color.Gold, 0.85f, 100f);
+                    GeneralParticleHandler.SpawnParticle(pollenCloud);
+                }
+                if (Main.rand.NextBool(4))
+                {
+                    Dust pollenDust = Dust.NewDustDirect(Player.position, Player.width, Player.height, ModContent.DustType<LightDust>(), newColor: Color.Gold, Scale: 0.4f);
+                    pollenDust.noLightEmittence = true;
+                    pollenDust.noGravity = true;
                 }
             }
             if (calamityPlayer.bloodfinBoost && drawInfo.shadow == 0f)

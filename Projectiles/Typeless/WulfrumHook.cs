@@ -179,8 +179,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.velocity = Vector2.Zero;
             State = HookState.Grappling;
 
-            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
-                Owner.DoQueenSlimeHookTeleport(grapplePos);
             Projectile.Center = grapplePos + Vector2.One * 8f;
             //effects
             WorldGen.KillTile(x, y, fail: true, effectOnly: true);
@@ -193,7 +191,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Owner.grapCount++;
                 //Owner.velocity = Vector2.Zero;
             }
-
+            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
+                Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
             mp.SwingLength = (Owner.Center - Projectile.Center).Length();
             mp.OldPosition = Owner.Center - Owner.velocity;
             mp.SetSegments(Projectile.Center);
