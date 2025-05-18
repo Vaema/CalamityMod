@@ -805,6 +805,12 @@ namespace CalamityMod.CalPlayer
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
         public int transformerStoredKills = 0;
+        public bool bloomStone = false;
+        public bool bloomStoneHookVisuals = false;
+        public int bloomStoneHealInc = 0;
+        public int bloomStoneTotalHeal = 0;
+        public int bloomStoneHealTimer = 0;
+        public int bloomStoneDR = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -2194,6 +2200,8 @@ namespace CalamityMod.CalPlayer
             ilSpark = false;
             transformer = false;
             transformerVisual = false;
+            bloomStone = false;
+            bloomStoneHookVisuals = false;
             hideOfDeus = false;
             dAmulet = false;
             rampartOfDeities = false;
@@ -2851,6 +2859,10 @@ namespace CalamityMod.CalPlayer
             auralisAurora = 0;
             necroReviveCounter = -1;
             hideOfDeusTimer = 0;
+            bloomStoneHealInc = 0;
+            bloomStoneTotalHeal = 0;
+            bloomStoneHealTimer = 0;
+            bloomStoneDR = 0;
             murasamaHitCooldown = 0;
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
@@ -4535,6 +4547,8 @@ namespace CalamityMod.CalPlayer
         public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
         {
             healValue = (int)(healValue * healingPotionMultiplier);
+            if (bloomStone)
+                healValue = 0;
         }
         #endregion
 

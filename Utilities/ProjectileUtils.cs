@@ -38,6 +38,20 @@ namespace CalamityMod
 
             return false;
         }
+        public static bool AnyOwnedProjectiles(int projectileID, int ownerID)
+        {
+            // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
+            // checks per iteration.
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type != projectileID || p.owner != ownerID)
+                    continue;
+
+                return true;
+            }
+
+            return false;
+        }
 
         public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
         public static int CountOwnedProjectiles(int projectileID, int ownerID) => Main.projectile.Count(proj => proj.active && proj.type == projectileID && proj.owner == ownerID);
