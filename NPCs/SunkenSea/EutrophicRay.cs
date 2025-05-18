@@ -145,7 +145,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float newRot = NPC.velocity.ToRotation() + MathHelper.Pi;
             if (Math.Abs(MathHelper.WrapAngle(curRot) - MathHelper.WrapAngle(newRot)) > MathHelper.PiOver4)
             {
-                NPC.rotation = MathHelper.Lerp(curRot, newRot, 0.1f);
+                NPC.rotation = Utils.AngleLerp(curRot, newRot, 0.1f);
             }
             else
             {
