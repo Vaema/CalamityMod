@@ -46,6 +46,8 @@ namespace CalamityMod.Systems
         // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
+            if (!Main.expertMode)
+                ModeIndicatorUI.SwitchToDifficulty(NoDifficulty.Instance);
             if (Main.expertMode && !Main.masterMode && CalamityWorld.death)
                 ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
             if (Main.masterMode && CalamityWorld.revenge)
