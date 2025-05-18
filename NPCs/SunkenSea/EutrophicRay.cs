@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
@@ -20,6 +21,8 @@ namespace CalamityMod.NPCs.SunkenSea
     public class EutrophicRay : SunkenSeaNPC
     {
         public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> TailTexture;
+        public static Asset<Texture2D> TailGlowTexture;
         #region Fields
         protected override List<int> PreyIDs => [];
         protected override List<int> PredatorIDs =>
@@ -50,16 +53,18 @@ namespace CalamityMod.NPCs.SunkenSea
         private Action _previousBehavior;
         #endregion
 
+        public override void Load()
+        {
+            GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow");
+            TailTexture = ModContent.Request<Texture2D>(Texture + "Tail");
+            TailGlowTexture = ModContent.Request<Texture2D>(Texture + "TailGlow");
+        }
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 7;
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
-            value.Position.X += 24f;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            if (!Main.dedServ)
-            {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-            }
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = 15;
             base.SetStaticDefaults();
         }
 
@@ -127,11 +132,6 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             CurrentBehavior?.Invoke();
 
-            if (NPC.velocity.X > 0.25f)
-                NPC.spriteDirection = 1;
-            else if (NPC.velocity.X < 0.25f)
-                NPC.spriteDirection = -1;
-
             // If out of water, act like you're out of water.
             if ((NPC.noTileCollide ? !(Collision.WetCollision(NPC.position, NPC.width, NPC.height) || Collision.SolidCollision(NPC.position, NPC.width, NPC.height)) : !NPC.wet) && CurrentBehavior != OutOfWaterBehavior)
                 CurrentBehavior = OutOfWaterBehavior;
@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 hasBeenHit = true;
             NPC.chaseable = hasBeenHit;
 
-            NPC.rotation = NPC.velocity.ToRotation() + (NPC.spriteDirection == -1 ? MathHelper.Pi : 0);
+            NPC.rotation = NPC.velocity.ToRotation() + MathHelper.Pi;
         }
         private void OnBehaviorChange(Action newBehavior)
         {
@@ -198,12 +198,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.velocity.Y = maxSpeedY;
             if (NPC.velocity.Y < -maxSpeedY)
                 NPC.velocity.Y = -maxSpeedY;
-
-            NPC.rotation = NPC.velocity.Y * 0.05f;
-            if (NPC.rotation < -0.1f)
-                NPC.rotation = -0.1f;
-            if (NPC.rotation > 0.1f)
-                NPC.rotation = 0.1f;
         }
         private void FleeBehavior()
         {
@@ -311,9 +305,65 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 halfSizeTexture = new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[Type]);
             Vector2 vector = NPC.Center - screenPos;
             Color color = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0);
-            SpriteEffects sp = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Main.spriteBatch.Draw(tex, vector, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
-            Main.spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, sp, 0f);
+            spriteBatch.Draw(tex, vector, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, 0, 0f);
+            spriteBatch.Draw(GlowTexture.Value, vector, NPC.frame, color, NPC.rotation, halfSizeTexture, NPC.scale, 0, 0f);
+
+            // Position where the tail starts
+            Vector2 tailOffset = Vector2.UnitX.RotatedBy(NPC.rotation) * (tex.Width / 2 - 4);
+
+            if (NPC.IsABestiaryIconDummy)
+            {
+                for (int i = 0; i < NPC.oldRot.Length; i++)
+                {
+                    NPC.oldRot[i] = 0;
+                }
+                for (int i = 0; i < NPC.oldPos.Length; i++)
+                {
+                    NPC.oldPos[i] = Vector2.UnitX.RotatedBy(NPC.rotation) * ((tex.Width / 2 - 4) + i * 8);
+                }
+            }
+
+            float currentSegmentRotation = NPC.rotation;
+            List<Vector2> tailDrawPositions = new List<Vector2>();
+            int segAmt = 7;
+            int tailLength = 40;
+            for (int i = 0; i < segAmt; i++)
+            {
+                float tailCompletionRatio = i / (float)segAmt;
+                float wrappedAngularOffset = MathHelper.WrapAngle(NPC.oldRot[i + 1] - currentSegmentRotation) * 0.6f;
+                float segmentRotationOffset = MathHelper.Clamp(wrappedAngularOffset, -0.24f, 0.24f);
+
+                Vector2 Offset = Vector2.UnitX.RotatedBy(NPC.rotation);
+                Vector2 tailSegmentOffset = Vector2.UnitX.RotatedBy(currentSegmentRotation) * tailCompletionRatio * tailLength + Offset;
+                tailDrawPositions.Add(NPC.Center + tailSegmentOffset + tailOffset);
+
+                currentSegmentRotation += segmentRotationOffset;
+            }
+            for (int i = 0; i < tailDrawPositions.Count; i++)
+            {
+                Vector2 pos = tailDrawPositions[i];
+                float rot = pos.DirectionTo(NPC.Center + Vector2.UnitX.RotatedBy(NPC.rotation)).ToRotation();
+                if (i > 0)
+                {
+                    Vector2 oldPos = tailDrawPositions[i - 1];
+                    rot = pos.DirectionTo(oldPos).ToRotation();
+                }
+                int frame = i switch
+                {
+                    1 => 10,
+                    5 => 20,
+                    6 => 32,
+                    _ => 0
+                };
+                int height = 8;
+                if (i == 6)
+                    height = 10;
+                rot += MathHelper.PiOver2;
+
+                spriteBatch.Draw(TailTexture.Value, pos - screenPos, new Rectangle(0, frame, 10, height), NPC.GetAlpha(drawColor), rot, new Vector2(6, 4), NPC.scale, 0, 0f);
+                spriteBatch.Draw(TailGlowTexture.Value, pos - screenPos, new Rectangle(0, frame, 10, height), color, rot, new Vector2(6, 4), NPC.scale, 0, 0f);
+            }
+
             return false;
         }
 
