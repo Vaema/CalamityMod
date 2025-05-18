@@ -141,7 +141,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 hasBeenHit = true;
             NPC.chaseable = hasBeenHit;
 
-            NPC.rotation = NPC.velocity.ToRotation() + MathHelper.Pi;
+            float curRot = NPC.rotation;
+            float newRot = NPC.velocity.ToRotation() + MathHelper.Pi;
+            if (Math.Abs(MathHelper.WrapAngle(curRot) - MathHelper.WrapAngle(newRot)) > MathHelper.PiOver4)
+            {
+                NPC.rotation = MathHelper.Lerp(curRot, newRot, 0.1f);
+            }
+            else
+            {
+                NPC.rotation = newRot;
+            }
         }
         private void OnBehaviorChange(Action newBehavior)
         {
