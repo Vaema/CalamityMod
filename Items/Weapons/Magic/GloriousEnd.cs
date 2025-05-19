@@ -30,6 +30,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.Calamity().donorItem = true;
         }
 
+        public override bool? CanAutoReuseItem(Player player) => false;
+
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
