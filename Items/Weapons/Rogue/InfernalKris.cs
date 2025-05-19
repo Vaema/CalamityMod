@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.HellstoneBar, 10).
-                AddIngredient(ItemID.Obsidian, 9).
+                AddIngredient(ItemID.AshWood, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }
