@@ -216,6 +216,9 @@ namespace CalamityMod.Effects
         #region fryzahh's Shaders
         // A simple shader which distorts an image using a provided texture of choice. 
         internal static Effect BasicTextureDistortionShader;
+
+        // The underwater rays seen at the top of the Sunken Sea Mod Menu.
+        internal static Effect UnderwaterRaysShader;
         #endregion
 
         public override void PostSetupContent()
@@ -429,6 +432,9 @@ namespace CalamityMod.Effects
             #region Loading fryzahh's Shaders
             BasicTextureDistortionShader = LoadShader("BasicTextureDistortionShader");
             RegisterMiscShader(BasicTextureDistortionShader, "DistortionPass", "BasicTextureDistortion");
+
+            UnderwaterRaysShader = LoadShader("UnderwaterRaysShader");
+            RegisterMiscShader(UnderwaterRaysShader, "UnderwaterRayPass", "UnderwaterRays");
             #endregion
         }
 

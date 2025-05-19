@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Default;
@@ -55,12 +56,12 @@ namespace CalamityMod.MainMenu
         // Before drawing the logo, draw the entire Calamity background. This way, the typical parallax background is skipped entirely.
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/SunkenMenuBackground").Value;
+            Texture2D backgroundTexture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/SunkenMenuBackground").Value;
 
             // Calculate the draw position offset and scale in the event that someone is using a non-16:9 monitor
             Vector2 drawOffset = Vector2.Zero;
-            float xScale = (float)Main.screenWidth / texture.Width;
-            float yScale = (float)Main.screenHeight / texture.Height;
+            float xScale = (float)Main.screenWidth / backgroundTexture.Width;
+            float yScale = (float)Main.screenHeight / backgroundTexture.Height;
             float scale = xScale;
 
             // if someone's monitor isn't in wacky dimensions, no calculations need to be performed at all
@@ -71,15 +72,54 @@ namespace CalamityMod.MainMenu
                 if (yScale > xScale)
                 {
                     scale = yScale;
-                    drawOffset.X -= (texture.Width * scale - Main.screenWidth) * 0.5f;
+                    drawOffset.X -= (backgroundTexture.Width * scale - Main.screenWidth) * 0.5f;
                 }
                 else
                     // The opposite is true if someone's monitor is widescreen
-                    drawOffset.Y -= (texture.Height * scale - Main.screenHeight) * 0.5f;
+                    drawOffset.Y -= (backgroundTexture.Height * scale - Main.screenHeight) * 0.5f;
             }
+
+            // Distort the background slightly to make it appear as if it's properly underwater.
+            MiscShaderData distortionShader = GameShaders.Misc["CalamityMod:BasicTextureDistortion"];
+            Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls");
+
             spriteBatch.End(); //                            BLESS THIS.
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+
+            distortionShader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+            distortionShader.Shader.Parameters["distortionXSpeed"].SetValue(-0.012f);
+            distortionShader.Shader.Parameters["distortionYSpeed"].SetValue(0.015f);
+            distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.02f);
+            distortionShader.Shader.Parameters["noiseScale"].SetValue(0.75f);
+            distortionShader.SetShaderTexture(distortionTexture);
+            distortionShader.Apply();
+
+            spriteBatch.Draw(backgroundTexture, drawOffset, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            spriteBatch.End(); 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            spriteBatch.Draw(texture, drawOffset, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            // Draw rays shining down from the top of the screen.
+            MiscShaderData underwaterRaysShader = GameShaders.Misc["CalamityMod:UnderwaterRays"];
+            Asset<Texture2D> underwaterRayTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles");
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+
+            underwaterRaysShader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+            underwaterRaysShader.Shader.Parameters["fadeOutMargin"].SetValue(0.58f);
+            underwaterRaysShader.Shader.Parameters["overallOpacity"].SetValue(1f);
+            underwaterRaysShader.Shader.Parameters["pixelationAmount"].SetValue(Main.screenWidth * 0.5f);
+            underwaterRaysShader.Shader.Parameters["scrollSpeedX"].SetValue(0.013f);
+            underwaterRaysShader.Shader.Parameters["scrollSpeedY"].SetValue(0.006f);
+            underwaterRaysShader.Shader.Parameters["noiseScale"].SetValue(new Vector2(1.25f, 0.25f));
+            underwaterRaysShader.Shader.Parameters["rayColor"].SetValue(Color.LightSkyBlue.ToVector3());
+            underwaterRaysShader.Apply();
+
+            spriteBatch.Draw(underwaterRayTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
 
             static Color selectBubbleColor()
             {
