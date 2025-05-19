@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
@@ -51,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.MaxUpdates = MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6 * MaxUpdates;
-            
+
         }
 
         public override void AI()
@@ -83,8 +84,18 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     Projectile.width = 16;
                     Projectile.height = 16;
                     Projectile.Center = Projectile.position;
+
                 }
-                chargeProgress -= 0.003f/Projectile.extraUpdates;
+                if (chargeProgress > 0.05f)
+                {
+                    float particleSize = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 60f * MathHelper.TwoPi);
+                    particleSize *= 0.5f;
+                    var particlePos = Projectile.Center + new Vector2(0, 84).RotatedByRandom(MathHelper.TwoPi);
+                    var particleVel = particlePos.DirectionTo(Projectile.Center).RotatedBy(-sawDir * MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(15f, 25f);
+                    Particle blood = new CustomSpark(particlePos, particleVel, "CalamityMod/Particles/PearlParticleGlow", false, (int)MathHelper.Lerp(7, 17, chargeProgress), particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
+                    GeneralParticleHandler.SpawnParticle(blood);
+                }
+                chargeProgress -= 0.003f / Projectile.extraUpdates;
                 if (chargeProgress < 0)
                     chargeProgress = 0;
             }
@@ -99,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             {
                 target.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
                 Vector2 bloodpos = Projectile.Center + Projectile.DirectionTo(target.Center) * 84;
-                if (!spawnedBlood && Main.rand.NextBool() && chargeProgress > 0.25f && target.Hitbox.Contains(bloodpos.ToPoint()))
+                if (!spawnedBlood && Main.rand.NextBool() && chargeProgress > 0.2f && target.Hitbox.Contains(bloodpos.ToPoint()))
                 {
                     Projectile.NewProjectile(Projectile.GetSource_OnHit(target), bloodpos, Projectile.DirectionTo(target.Center).RotatedBy(sawDir * MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(3f, 5f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
                     spawnedBlood = true;
@@ -109,12 +120,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             var baseYoyo = Main.projectile.First(x => x.active && x.type == ModContent.ProjectileType<LaceratorYoyo>() && x.owner == Projectile.owner);
             baseYoyo.ModProjectile<LaceratorYoyo>().chargeProgress += (Main.player[Projectile.owner].yoyoGlove ? 0.05f : 0.1f);
             target.AddBuff(ModContent.BuffType<Laceration>(), 180);
-
-            if (Main.player[Projectile.owner].moonLeech)
-                return;
-
-            Player player = Main.player[Projectile.owner];
-            player.lifeRegenTime += 2;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Laceration>(), 180);
@@ -123,58 +128,16 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             if (chargeProgress > 0)
             {
-                
                 var owner = Main.player[Projectile.owner];
                 Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/LaceratorSaw").Value;
+                Texture2D WindTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/BlazingPhantomBlade").Value;
                 float rot = MathHelper.TwoPi * 30 * sawDir * (owner.miscCounter / 300f);
-                 Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.Red * MathF.Pow(chargeProgress,0.5f)*0.5f, rot, texture.Size() * 0.5f, 1, sawDir == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
-
-                /*circleProgress = 0;
-                verticalProgress = 1;
-                goingUp = false;
-                Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
-                for (int i = 0; i < (CircleRes + VertRes * (SpikeCount+2))*Projectile.MaxUpdates; i++)
-                {
-                    if (!goingUp)
-                    {
-                        circleProgress += 1f / (CircleRes * Projectile.MaxUpdates);
-                        verticalProgress -= 1f / (CircleRes * Projectile.MaxUpdates) * SpikeCount;
-                        if (verticalProgress <= 0)
-                        {
-                            goingUp = true;
-                            //verticalProgress = 0;
-                            circleProgress = MathF.Floor(circleProgress * SpikeCount) / SpikeCount;
-                        }
-                    }
-                    else
-                    {
-                        verticalProgress += 1f / (VertRes * Projectile.MaxUpdates);
-                        if (verticalProgress >= 1)
-                        {
-                            goingUp = false;
-                            //verticalProgress = 1;
-                        }
-                    }
-
-                    Color color = new Color(131,0,0);
-                    color.A = 255;
-                    color *= 0.75f;
-                    var center = Projectile.Center;
-                    var owner = Main.player[Projectile.owner];
-                    Vector2 position = center + new Vector2(0, 64 + 32 * verticalProgress).RotatedBy((MathHelper.TwoPi * sawDir * circleProgress - (MathHelper.TwoPi * 3) * sawDir * (owner.miscCounter / 300f)));
-                    Vector2 drawPosition = position + lightTexture.Size() * 0.5f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY) + new Vector2(-32.5f, -32.5f); //Last vector is to offset the circle so that it is displayed where the hitbox actually is, instead of a bit down and to the right.
-                    Color outerColor = color;
-                    Color innerColor = color * 0.5f;
-                    innerColor.A = 0;
-                    float intensity = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly * MathHelper.TwoPi);
-                    intensity *= MathHelper.Lerp(0.15f, 1f, chargeProgress);
-                    Vector2 outerScale = new Vector2(1f) * Projectile.scale * intensity;
-                    Vector2 innerScale = new Vector2(1f) * Projectile.scale * intensity * 0.7f;
-                    outerColor *= intensity;
-                    innerColor *= intensity;
-                    Main.EntitySpriteDraw(lightTexture, drawPosition, null, outerColor, 0f, lightTexture.Size() * 0.5f, outerScale * 0.25f, SpriteEffects.None, 0);
-                    Main.EntitySpriteDraw(lightTexture, drawPosition, null, innerColor, 0f, lightTexture.Size() * 0.5f, innerScale * 0.25f, SpriteEffects.None, 0);
-                }*/
+                var color = new Color(200, 200, 200);
+                var frame = WindTexture.Frame(1, 4, 0, 0);
+                Main.EntitySpriteDraw(WindTexture, Projectile.Center - Main.screenPosition + rot.ToRotationVector2() * 30, frame, color * MathF.Pow(chargeProgress, 0.5f) * 0.33f, rot - 0.2f * sawDir, new Vector2(frame.Width, frame.Height) * 0.5f, 1, sawDir == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(WindTexture, Projectile.Center - Main.screenPosition + (rot + MathHelper.Pi).ToRotationVector2() * 30, frame, color * MathF.Pow(chargeProgress, 0.5f) * 0.33f, (rot + MathHelper.Pi) - 0.2f * sawDir, new Vector2(frame.Width, frame.Height) * 0.5f, 1, sawDir == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None, 0);
+                color = new Color(255, 10, 10);
+                Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, color * MathF.Pow(chargeProgress, 0.5f) * 1f, rot, texture.Size() * 0.5f, 1, sawDir == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
             }
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
