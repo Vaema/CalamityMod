@@ -6468,7 +6468,7 @@ namespace CalamityMod.NPCs
         {
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
             {
@@ -6664,7 +6664,7 @@ namespace CalamityMod.NPCs
             }
 
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;

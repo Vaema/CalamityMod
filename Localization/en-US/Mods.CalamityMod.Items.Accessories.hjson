@@ -1891,7 +1891,7 @@ TheCamper: {
 	DisplayName: The Camper
 	Tooltip:
 		'''
-		You deal 90% less damage unless stationary
+		You deal 50% less damage unless stationary
 		Standing still grants buffs depending on held item, and creates a damaging aura around you
 		While moving, you regenerate health as if standing still
 		{$Common.AbyssLightLevel1}
