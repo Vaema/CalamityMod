@@ -298,7 +298,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(12).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddIngredient<EnergyCore>().
                 AddTile(TileID.Anvils).
                 Register();
