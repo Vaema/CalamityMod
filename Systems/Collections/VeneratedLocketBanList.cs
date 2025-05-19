@@ -16,7 +16,6 @@ namespace CalamityMod.Systems.Collections
         {
             List =
             [
-                ItemType<SkyStabber>(),
                 ItemType<GodsParanoia>(),
                 ItemType<SlickCane>(),
                 ItemType<Mycoroot>(),

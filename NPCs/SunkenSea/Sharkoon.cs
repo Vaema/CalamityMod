@@ -249,11 +249,13 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (!NPC.wet && !IsExploding)
+            if (!NPC.wet && !IsExploding && CurrentBehavior != OutsideWaterBehavior)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Reset any squish that is done to the Sharkoon.
+
+            // Reset any squish that is done to the Sharkoon, and clamps its upper limit to prevent it from becoming too tall
             if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
                 ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 

@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Ammo
             CreateRecipe(100).
                 AddIngredient(ItemID.EmptyBullet, 100).
                 AddIngredient(ItemID.HallowedBar).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

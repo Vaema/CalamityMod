@@ -165,7 +165,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2));
+            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
             int afterimageAmt = 5;
 
             Vector2 drawLocation = NPC.Center - screenPos;

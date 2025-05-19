@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
@@ -77,6 +78,7 @@ using Terraria.GameContent.Events;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
 
@@ -140,9 +142,6 @@ namespace CalamityMod.CalPlayer
 
             // Limits
             Limits();
-
-            // This is used to increase horizontal velocity based on the player's movement speed stat.
-            moveSpeedBonus = Player.moveSpeed - 1f;
 
             // Potions (Quick Buff && Potion Sickness)
             HandlePotions();
@@ -227,9 +226,50 @@ namespace CalamityMod.CalPlayer
             if (WulfrumHat.PowerModeEngaged(Player, out _))
                 Player.moveSpeed *= 0.8f;
 
+            if ((XykVisualsBlue || XykVisualsOrange))
+            {
+                bool Orange = XykVisualsOrange;
+                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
+
+                float rate = Main.GlobalTimeWrappedHourly * 12;
+                List<Color> eColors = new List<Color>()
+                {
+                    Orange ? new Color(248, 117, 52) : Color.DodgerBlue,
+                    Orange ? Color.Gold : Color.Cyan,
+                    Orange ? Color.Orange : Color.RoyalBlue
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                bool rageOrAdren = (Player.Calamity().rageModeActive || Player.Calamity().adrenalineModeActive);
+                bool rageAndAdren = (Player.Calamity().rageModeActive && Player.Calamity().adrenalineModeActive);
+                Color attemptColor = (rageAndAdren ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) : Player.Calamity().adrenalineModeActive ? Color.MediumSpringGreen : Player.Calamity().rageModeActive ? Color.Crimson : effectColor);
+                XykFXColor = Color.Lerp(XykFXColor, attemptColor, rageOrAdren ? 0.05f : 0.25f);
+
+
+                int maxWingPieces = 7;
+                int numOfActiveWings = 0;
+                foreach (Projectile p in Main.ActiveProjectiles)
+                    if (p.type == ModContent.ProjectileType<XykWings>() && p.owner == Player.whoAmI && p.ai[1] == 0)
+                        numOfActiveWings++;
+                bool spawnWings = numOfActiveWings < maxWingPieces && !Player.dead && Player.wingsLogic > 0 && !(Player.wingTime == Player.wingTimeMax && Player.velocity.Y == 0) && Player.wingTime > 0;
+                if (spawnWings)
+                {
+                    int wingCount = numOfActiveWings;
+                    Projectile wings = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykWings>(), 0, 0f, Player.whoAmI, wingCount);
+                }
+            }
+
             // First Frame dash effects
             bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
             int dir = MathF.Sign(Player.velocity.X);
+
+            if (dashStart)
+            {
+                lastDashWasTabi = false;
+            }
 
             if (((gShell && giantShellPostHit == 0) || (tortShell && tortShellPostHit == 0)) && dashStart)
             {
@@ -237,14 +277,30 @@ namespace CalamityMod.CalPlayer
             }
 
             // Tabi/Master Ninja Gear dash change
-            if (Player.dashType == 1)
+            if (lastDashWasTabi)
+            {
+                Player.dashType = 1;
+            }
+            if (Player.dashType == 1 && !Player.Calamity().statisNinjaBelt && !Player.Calamity().statisVoidSash)
             {
                 if (dashStart)
+                {
                     Player.velocity.X *= 3.5f;
+                    lastDashWasTabi = true;
+                }
                 if (Player.dashDelay == -1)
                 {
                     Player.velocity.X *= 0.9f;
                 }
+            }
+            
+            if (Player.Calamity().statisNinjaBelt)
+            {
+                Player.Calamity().DashID = StatisNinjaBeltDash.ID;
+            }
+            if (Player.Calamity().statisVoidSash)
+            {
+                Player.Calamity().DashID = StatisVoidSashDash.ID;
             }
 
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
@@ -344,20 +400,6 @@ namespace CalamityMod.CalPlayer
             if (XykVisualsBlue || XykVisualsOrange)
             {
                 bool Orange = XykVisualsOrange;
-                Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
-
-                float rate = Main.GlobalTimeWrappedHourly * 22;
-                List<Color> eColors = new List<Color>()
-                {
-                    Orange ? Color.OrangeRed : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
-                };
-
-                int colorIndex = (int)(rate / 2 % eColors.Count);
-                Color currentColor = eColors[colorIndex];
-                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-                effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
                 if (dashStart)
                 {
@@ -365,18 +407,18 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(dash with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (Orange ? 0 : 0.2f) }, Player.Center);
                     if (Orange)
                     {
-                        Particle spark1 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0.45f, 0.25f, 47);
+                        Particle spark1 = new CustomPulse(Player.Center, Vector2.Zero, XykFXColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0.45f, 0.25f, 47);
                         GeneralParticleHandler.SpawnParticle(spark1);
 
-                        Particle spark2 = new CustomPulse(Player.Center, Vector2.Zero, effectColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0, 0.8f, 17);
+                        Particle spark2 = new CustomPulse(Player.Center, Vector2.Zero, XykFXColor, "CalamityMod/Particles/GlowSquareParticleBig", Vector2.One, MathHelper.PiOver4, 0, 0.8f, 17);
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                     else
                     {
-                        Particle spark1 = new CustomPulse(Player.Center, Player.velocity * 0.3f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Player.velocity.ToRotation(), 0, 1f, 24);
+                        Particle spark1 = new CustomPulse(Player.Center, Player.velocity * 0.3f, XykFXColor, "CalamityMod/Particles/BloomRing", new Vector2(0.4f, 1f), Player.velocity.ToRotation(), 0, 1f, 24);
                         GeneralParticleHandler.SpawnParticle(spark1);
 
-                        Particle spark2 = new CustomPulse(Player.Center, Player.velocity * 0.5f, effectColor, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Player.velocity.ToRotation(), 0, 0.75f, 17);
+                        Particle spark2 = new CustomPulse(Player.Center, Player.velocity * 0.5f, XykFXColor, "CalamityMod/Particles/BloomRing", new Vector2(0.5f, 1f), Player.velocity.ToRotation(), 0, 0.75f, 17);
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                 }
@@ -388,33 +430,35 @@ namespace CalamityMod.CalPlayer
                     if (!Orange)
                     {
                         float sine = (float)Math.Sin(Player.miscCounter * 0.875f / MathHelper.Pi);
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 18f * i;
 
-                        Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 17f;
-
-                        Particle spark1 = new GlowSparkParticle(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(0.8f, 0.3f), true, false, 0.4f);
-                        GeneralParticleHandler.SpawnParticle(spark1);
-                        Particle spark2 = new GlowSparkParticle(Player.Center - offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, false, 25, 0.04f * sparkscale1, effectColor * 0.9f, new Vector2(1, 0.3f), true, false, 0.4f);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                            Particle spark1 = new CustomSpark(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, "CalamityMod/Particles/BloomCircle", false, 15, 0.3f * sparkscale1, XykFXColor * 0.85f, new Vector2(0.9f, 1.4f), true, true, 0, shrinkSpeed: 0.2f, glowOpacity: 0.85f);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+                        }
                     }
                     else
                     {
                         float sparkscale2 = MathF.Min(Player.velocity.X * dir * 0.07f, 1.1f);
-                        Vector2 SparkVelocity2 = Player.velocity.RotatedBy(dir * 2.5f, default) * 0.1f - Player.velocity / 2f;
-                        Particle spark = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(2f * dir) * 1.5f, SparkVelocity2, false, 10, sparkscale2, effectColor);
-                        GeneralParticleHandler.SpawnParticle(spark);
-                        Vector2 SparkVelocity3 = Player.velocity.RotatedBy(dir * -2.5f, default) * 0.1f - Player.velocity / 2f;
-                        Particle spark2 = new LineParticle(Player.Center + (Player.velocity.SafeNormalize(Vector2.UnitX) * 15).RotatedBy(-2f * dir) * 1.5f, SparkVelocity3, false, 10, sparkscale2, effectColor);
-                        GeneralParticleHandler.SpawnParticle(spark2);
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 offset = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * 17f * i;
+
+                            Particle spark1 = new CustomSpark(Player.Center + offset + SparkVelocity1, SparkVelocity1 * 2 * sparkscale1, "CalamityMod/Particles/BloomCircle", false, 20, 0.4f * sparkscale1, XykFXColor * 0.95f, new Vector2(0.3f, 1.2f), true, true, 0, shrinkSpeed: 0.2f, glowOpacity: 0.95f);
+                            GeneralParticleHandler.SpawnParticle(spark1);
+                        }
                     }
 
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 267, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.7f, 1.1f) * sparkscale1);
+                        bool altDust = Main.rand.NextBool(3);
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1,  altDust ? (Orange ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDustHollow>()) : ModContent.DustType<SquashDust>(), SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(1.5f, 1.9f) * sparkscale1);
                         dust.noGravity = true;
-                        dust.color = effectColor;
-
-                        Dust dust2 = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, 10, SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(0.9f, 1.4f) * sparkscale1);
-                        dust2.noGravity = true;
+                        dust.color = XykFXColor;
+                        dust.fadeIn = altDust ? 0 : 2;
+                        if (altDust)
+                            dust.scale *= 0.5f;
                     }
                 }
             }
@@ -433,6 +477,17 @@ namespace CalamityMod.CalPlayer
                 IsFirstDashFrame = false;
             else
                 IsFirstDashFrame = true;
+                
+            // THIS MUST BE NEAR THE END OF PostUpdateMiscEffects SO ALL OTHER RUN SPEED IS DONE FIRST. DO NOT PUT ANY RUN SPEED AFTER THIS
+            
+            // Multiplies movement speed by 1.5x so that you don't feel like a snail in the early game.
+            // This applies to movement speed boosts as well as base speed to ensure they are actually worth their listed value compared to base speed
+            // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
+            if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
+                Player.moveSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
+
+            // This is used to increase horizontal velocity based on the player's movement speed stat.
+            moveSpeedBonus = Player.moveSpeed - 1f;
         }
         #endregion
 
@@ -736,10 +791,10 @@ namespace CalamityMod.CalPlayer
                     if (Player.velocity.Length() == 0f)
                         return;
 
-                    Dust dust = Dust.NewDustDirect(Player.Center, 16, 16, DustID.Firefly, 0.23255825f, 10f, 0, new Color(117, 55, 15), 1.5116279f);
+                    Dust dust = Dust.NewDustDirect(Player.Center, 16, 16, DustID.Firefly, 0.2f, 0f, 0, new Color(117, 55, 15), Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                     dust.noLight = true;
-                    dust.fadeIn = 2.5813954f;
+                    dust.fadeIn = 2.5f;
                 }
 
                 // Ores below here
@@ -1246,7 +1301,7 @@ namespace CalamityMod.CalPlayer
                         Player.maxFallSpeed = 20f;
                 }
 
-                if (Player.controlDown && ironBoots)
+                if (Player.controlDown && !Player.controlJump && ironBoots)
                 {
                     Player.maxFallSpeed = 23f; // This is slightly faster than slimy saddle (so it can be viable)
                     if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
@@ -1284,10 +1339,16 @@ namespace CalamityMod.CalPlayer
             }
             else
             {
-                if (Player.mount.Type == MountID.Slime || Player.mount.Type == MountID.PogoStick)
+                if (Player.mount.Type == MountID.Slime)
                     Player.velocity.X *= 0.91f;
                 else if (Player.mount.Type == MountID.QueenSlime)
                     Player.velocity.X *= 0.95f;
+                else if (Player.mount.Type == MountID.PogoStick)
+                {
+                    if (Player.velocity.X > 10 || Player.velocity.X < -10)
+                        Player.velocity.X *= 0.99f; //Stops infinite high-speed movement, but allows fun pogo movement tech still
+                    Player.maxFallSpeed *= 0.75f; // 1.5x fall speed instead of 2x to counterbalance
+                }
             }
 
             // Increase Rope climb velocities, if enabled
@@ -1703,7 +1764,7 @@ namespace CalamityMod.CalPlayer
 
             if (ironBoots)
             {
-                if (Player.controlDown)
+                if (Player.controlDown && !Player.controlJump)
                 {
                     if (Player.gravDir == 1 ? Player.velocity.Y > 0 : Player.velocity.Y < 0)
                         fallingBootVelCheckTimer++;
@@ -1998,12 +2059,8 @@ namespace CalamityMod.CalPlayer
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
-            if (bGlassbandCooldown > 0)
-                bGlassbandCooldown--;
-            if (batholithBangleCooldown > 0)
-                batholithBangleCooldown--;
-            if (protolithBangleCooldown > 0)
-                protolithBangleCooldown--;
+            if (generalBandCooldown > 0)
+                generalBandCooldown--;
             if (AlchFlaskCooldown > 0)
                 AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
@@ -2022,6 +2079,43 @@ namespace CalamityMod.CalPlayer
                 jetPackDash--;
             if (theBeeCooldown > 0)
                 theBeeCooldown--;
+
+            if (bloomStoneHealTimer > 0)
+            {
+                if (bloomStone && bloomStoneHealTimer % 40 == 0)
+                {
+                    Player.HealPlayer(Math.Min(bloomStoneHealInc, bloomStoneTotalHeal));
+                    // Special specifically programmed interaction with Chalice of the Blood God: Healing over time clears bits of the bleedout buffer.
+                    if (chaliceOfTheBloodGod && chaliceBleedoutBuffer > 0D)
+                    {
+                        float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * bloomStoneHealInc;
+                        chaliceBleedoutBuffer -= amountOfBleedToClear;
+                        // Display text indicating that healing was applied to the bleedout buffer.
+                        if (!Main.dedServ)
+                        {
+                            string text = $"(+{amountOfBleedToClear})";
+                            Rectangle location = new Rectangle((int)Player.position.X + 4, (int)Player.position.Y - 3, Player.width - 4, Player.height - 4);
+                            CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+                        }
+                    }
+
+                    bloomStoneTotalHeal -= bloomStoneHealInc;
+                    if (bloomStoneTotalHeal < 0)
+                        bloomStoneTotalHeal = 0;
+                }
+                bloomStoneHealTimer--;
+            }
+            else
+            {
+                bloomStoneTotalHeal = 0;
+                bloomStoneHealInc = 0;
+            }
+            if (bloomStoneDR > 0)
+            { 
+                Player.endurance += bloomStoneHealTimer > 0 ? 0.12f : 0.06f;
+                bloomStoneDR--;
+            }
+
             if (summonProjCooldown > 0f)
                 summonProjCooldown -= 1f;
             if (ataxiaDmg > 0f)
@@ -2209,7 +2303,7 @@ namespace CalamityMod.CalPlayer
                 MiniSwarmerCooldown--;
 
             // God Slayer Armor dash debuff immunity
-            if (DashID == GodSlayerDash.ID && Player.dashDelay < 0)
+            if (LastUsedDashID == GodslayerArmorDash.ID && Player.dashDelay < 0)
             {
                 foreach (int debuff in DebuffsList.List)
                     Player.buffImmune[debuff] = true;
@@ -3418,10 +3512,6 @@ namespace CalamityMod.CalPlayer
                 --bloodflareCoreRemainingHealOverTime;
             }
 
-            // Multiplies base movement speed by 1.5x so that you don't feel like a snail in the early game
-            // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
-                Player.maxRunSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
 
             // Reduce how slow Chilled makes the player, because it's cancerous right now
             // The moveSpeed multiplier for Chilled in vanilla is 0.75, so we just multiply by 1.166667 here to make it 0.875, effectively cutting the reduction in half

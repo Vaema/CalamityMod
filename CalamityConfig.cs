@@ -59,6 +59,10 @@ namespace CalamityMod
 
         #region Graphics Changes
         [Header("Graphics")]
+        
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool DisableGravityScreenSwap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -71,6 +75,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool EnableVanillaTextureEdits { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SunkenSeaBackgroundDistortion { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;

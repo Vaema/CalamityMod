@@ -29,11 +29,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 235f / 400f;
-            g = 146f / 400f;
-            b = 146f / 400f;
+            r = 0.588f;
+            g = 0.365f;
+            b = 0.365f;
         }
     }
 
@@ -58,11 +59,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 235f / 400f;
-            g = 146f / 400f;
-            b = 146f / 400f;
+            r = 0.588f;
+            g = 0.365f;
+            b = 0.365f;
         }
     }
     public class FryCoral3 : ModTile
@@ -86,11 +88,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 235f / 400f;
-            g = 146f / 400f;
-            b = 146f / 400f;
+            r = 0.588f;
+            g = 0.365f;
+            b = 0.365f;
         }
     }
 }

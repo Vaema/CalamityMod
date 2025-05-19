@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<DarkPlasma>(10).
                 AddIngredient<RuinousSoul>(20).
                 AddIngredient<DivineGeode>(30).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -662,7 +662,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
             else if (!shouldFly)
             {
-                NPC.velocity.Y += 0.15f;
+                NPC.velocity.Y += (death ? 0.125f : 0.1f);
                 if (NPC.Center.Y - player.Center.Y < -180f)
                 {
                     NPC.velocity.Y += 0.05f;

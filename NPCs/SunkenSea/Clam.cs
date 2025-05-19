@@ -308,7 +308,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage / 2, 1);
                             }
                             for (int i = 0; i < 9; i++)
                             {

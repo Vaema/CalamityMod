@@ -199,7 +199,7 @@ namespace CalamityMod.Items.Accessories
             }
             list.FindAndReplace("[ITEMS]", stats2);
 
-            float moveSpeedBoost = player.moveSpeed - 1f;
+            float moveSpeedBoost = CalamityServerConfig.Instance.FasterBaseSpeed ? (player.moveSpeed / BalancingConstants.DefaultMoveSpeedBoost) - 1f  : player.moveSpeed - 1f;
             float wingFlightTime = player.wingTimeMax;
             // Does not use NormalizedLuck. Presents the player's luck exactly as it is used by the game engine.
             // NormalizedLuck is only used in one place: the Wizard's luck report. Which is entirely obsoleted by this Meter.

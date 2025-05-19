@@ -47,6 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.DamageType = DamageClass.Magic;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

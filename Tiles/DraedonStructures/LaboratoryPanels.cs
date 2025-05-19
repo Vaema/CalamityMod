@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,9 +11,6 @@ namespace CalamityMod.Tiles.DraedonStructures
 {
     public class LaboratoryPanels : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
-
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -21,7 +19,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.SetMerge(Type, ModContent.TileType<HazardChevronPanels>());
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 109;
             MinPick = 30;
             AddMapEntry(new Color(36, 35, 37));

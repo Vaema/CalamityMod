@@ -56,7 +56,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient<LifeAlloy>(10).
                 AddIngredient<EffulgentFeather>(15).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.FrogFlipper).
                 AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
 
             CreateRecipe().
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient(ItemID.FrogGear).
                 AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

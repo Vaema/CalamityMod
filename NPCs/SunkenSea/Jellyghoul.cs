@@ -1,12 +1,14 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -31,6 +33,13 @@ namespace CalamityMod.NPCs.SunkenSea
 
 
         public static SoundStyle JellyGhoulScream = SoundID.NPCDeath51 with { Pitch = -1, Volume = 0.2f, MaxInstances = 0 };
+
+        public static Asset<Texture2D> tentacleTexture;
+
+        public override void Load()
+        {
+            tentacleTexture = ModContent.Request<Texture2D>(Texture + "Tentacle");
+        }
 
         public override void SetStaticDefaults()
         {
@@ -207,9 +216,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (NPC.IsABestiaryIconDummy)
-                return true;
-
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
@@ -221,13 +227,16 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 afterimageOffset = new Vector2((float)Math.Cos(Main.GlobalTimeWrappedHourly * afterimageRotationSpeed) + NPC.localAI[1], (float)Math.Sin(Main.GlobalTimeWrappedHourly * afterimageRotationSpeed) + NPC.localAI[1]) * afterimageDistance;
 
             // Spooky glowey aura effect
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
+            if (!NPC.IsABestiaryIconDummy)
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
 
-            spriteBatch.Draw(bloom, NPC.Center - Main.screenPosition + afterimageOffset, null, FinalColor * 0.45f, 0f, bloom.Size() / 2f, 0.6f, SpriteEffects.None, 0);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Draw(bloom, NPC.Center - screenPos + afterimageOffset, null, FinalColor * 0.45f, 0f, bloom.Size() / 2f, 0.6f, SpriteEffects.None, 0);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            }
 
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
@@ -238,6 +247,55 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+
+            // Tentacles
+            Texture2D tentacle = tentacleTexture.Value;
+            for (int i = 0; i < 4; i++)
+            {
+                // Is the tentacle on the outside?
+                bool outerTentacle = i == 0 || i == 3;
+                // Is the tentacle one of the left ones?
+                int leftTentacle = i < 2 ? -1 : 1;
+                // Start position x offset
+                int xOffset = outerTentacle ? 4 : 2;
+                // How much the end position is rotated by
+                int endDeg = outerTentacle ? 20 : 5;
+                // Length of each tentacle
+                int tentacleLength = outerTentacle ? 60 : 50;
+                // A psuedo randomness value between tentacles and the NPC's index used to desync tentacles from each other
+                int randomness = i % 2 + NPC.whoAmI;
+                // Start position of the tentacle
+                Vector2 anchor = npcOffset + afterimageOffset + new Vector2(leftTentacle * xOffset, 10);
+                // End position of the tentacle
+                Vector2 end = npcOffset + afterimageOffset + Vector2.UnitY.RotatedBy(MathHelper.ToRadians(endDeg * -leftTentacle)).RotatedBy(MathHelper.ToRadians(MathF.Sin(Main.GlobalTimeWrappedHourly * 4) * 5 * -leftTentacle)) * tentacleLength;
+
+                // Store the previous tentacle's location
+                Vector2 prevTentacle = npcOffset + afterimageOffset;
+                int segmentCount = 10;
+                Vector2 direction = anchor.DirectionTo(end).RotatedBy(MathHelper.PiOver2);
+                BezierCurve curve = new BezierCurve(anchor, anchor + (end - anchor) * 0.33f + direction * MathF.Sin(Main.GlobalTimeWrappedHourly * 4 + randomness) * 8, anchor + (end - anchor) * 0.66f + direction * MathF.Cos(Main.GlobalTimeWrappedHourly * 4 + randomness) * 16, end);
+                List<Vector2> points = curve.GetPoints(segmentCount);
+                for (int j = 0; j < segmentCount; j++)
+                {
+                    // Which texture variant the tentacle uses is based on the horizontal position on its sheet
+                    int texX = i == 0 ? 0 : i == (segmentCount - 1) ? 16 : 8;
+                    // Which segment type.
+                    // The first segment (0 is invisible) uses the first frame
+                    // The final segment uses the last frame
+                    // The rest alternate between frames 2 and 3
+                    int texY = j % 2 == 0 ? 16 : 8;
+                    if (j == 1)
+                        texY = 0;
+                    else if (j == segmentCount - 1)
+                        texY = 24;
+
+                    int segHeight = (j == segmentCount - 1) ? 8 : 6;
+
+                    if (j != 0)
+                        spriteBatch.Draw(tentacle, points[j], new Rectangle(texX, texY, 6, segHeight), FinalColor * NPC.Opacity, points[j].DirectionTo(prevTentacle).ToRotation() + MathHelper.PiOver2, new Vector2(2), NPC.scale, spriteEffects, 0);
+                    prevTentacle = points[j];
+                }
+            }
 
             // Draws transparent clones around itself to look woozy
             int cloneAmt = 4;

@@ -72,7 +72,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
             }
             player.wingTimeMax = 180;
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()

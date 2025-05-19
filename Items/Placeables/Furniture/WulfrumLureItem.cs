@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             CreateRecipe().
             AddIngredient<WulfrumMetalScrap>(5).
-            AddIngredient<WulfrumBattery>().
+            AddIngredient<EnergyCore>().
             AddTile(TileID.Anvils).
             Register();
         }

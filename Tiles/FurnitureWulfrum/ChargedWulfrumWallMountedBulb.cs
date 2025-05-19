@@ -11,13 +11,12 @@ using Terraria.ObjectData;
 using Terraria.Audio;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework.Graphics;
+using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class ChargedWulfrumWallMountedBulb : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -25,7 +24,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 299;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);

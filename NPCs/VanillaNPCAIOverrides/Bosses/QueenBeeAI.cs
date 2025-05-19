@@ -207,13 +207,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     while (phase == npc.ai[1] || phase == 1 || (phase == 2 && phase4) || (death && phase6 && phase == 3));
 
                     bool charging = phase == 0;
+                    bool stingerArcs = phase == 4;
+                    bool beenadeVomit = phase == 5;
 
                     // 5 is stinger arc and charge
-                    if (phase == 4)
+                    if (stingerArcs)
                         phase = 5;
 
                     // 6 is beenade vomit
-                    if (phase == 5)
+                    if (beenadeVomit)
                         phase = 6;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
@@ -317,15 +319,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[0] = 0f;
                     float chargeVelocityX = (phase4 ? 24f : phase2 ? 20f : 16f) + 8f * enrageScale;
                     float chargeVelocityY = (phase4 ? 18f : phase2 ? 15f : 12f) + 6f * enrageScale;
-                    float chargeAccelerationX = (phase4 ? 0.9f : phase2 ? 0.7f : 0.5f) + 0.25f * enrageScale;
-                    float chargeAccelerationY = (phase4 ? 0.45f : phase2 ? 0.35f : 0.25f) + 0.125f * enrageScale;
+                    float chargeAccelerationX = (phase4 ? 0.7f : phase2 ? 0.6f : 0.5f) + 0.25f * enrageScale;
+                    float chargeAccelerationY = (phase4 ? 0.35f : phase2 ? 0.3f : 0.25f) + 0.125f * enrageScale;
 
                     if (death)
                     {
                         chargeVelocityX += 2f;
                         chargeVelocityY += 4f;
-                        chargeAccelerationX += 0.15f;
-                        chargeAccelerationY += 0.3f;
+                        chargeAccelerationX += 0.1f;
+                        chargeAccelerationY += 0.2f;
                     }
 
                     // Velocity calculations
@@ -925,11 +927,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.direction = playerLocation < 0 ? 1 : -1;
                 npc.spriteDirection = npc.direction;
 
-                float beenadeAttackSpeed = 20f + 4f * enrageScale;
-                float beenadeAttackAccel = 0.75f;
-                Vector2 targetVector = Main.player[npc.target].Center + Vector2.UnitY * 240f;
+                float beenadeAttackSpeed = 16f + 4f * enrageScale;
+                float beenadeAttackAccel = 0.5f;
+                Vector2 targetVector = Main.player[npc.target].Center - Vector2.UnitY * 240f;
 
-                if (npc.Distance(targetVector) > 80f)
+                if (npc.Distance(targetVector) > 160f)
                     npc.SimpleFlyMovement(npc.SafeDirectionTo(targetVector) * beenadeAttackSpeed, beenadeAttackAccel);
                 else
                     npc.velocity *= 0.8f;

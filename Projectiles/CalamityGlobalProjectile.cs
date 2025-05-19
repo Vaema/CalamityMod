@@ -219,6 +219,9 @@ namespace CalamityMod.Projectiles
         /// <summary> A temporary flat amount subtracted from the projectile's damage when hitting the player. Resets to 0 if <see cref="flatDRTimer"/> drops to 0. </summary>
         public int flatDR = 0;
 
+        /// <summary> If true, this projectile is a hook which has spawned a flower on it from Bloom Stone. Used to prevent spawning multiple flowers. </summary>
+        public bool hookCanSpawnFlower = false;
+
         /// <summary> If true, allows hostile projectiles to deal defense damage to the player. Used mostly for hard-hitting bosses. </summary>
         public bool DealsDefenseDamage = false;
 
@@ -2089,9 +2092,9 @@ namespace CalamityMod.Projectiles
                     float dustVelocityMultiplier = 0.75f;
                     int numDust = 5;
                     int numDust2 = 5;
-                    int fadeInTime = 10;
-                    int fadeOutGateValue = masterMode ? 80 : death ? 50 : 25;
-                    float killGateValue = masterMode ? 90f : death ? 60f : 35f;
+                    int fadeInTime = 50;
+                    int fadeOutGateValue = masterMode ? 120 : death ? 90 : 65;
+                    float killGateValue = masterMode ? 130f : death ? 100f : 75f;
                     int maxFrames = 5;
 
                     bool fadeIn = projectile.ai[0] < (float)fadeInTime;
@@ -2124,7 +2127,7 @@ namespace CalamityMod.Projectiles
 
                     if (fadeIn)
                     {
-                        projectile.Opacity += 0.1f;
+                        projectile.Opacity += 0.02f;
                         if (projectile.Opacity > 1f)
                             projectile.Opacity = 1f;
 
@@ -4011,6 +4014,17 @@ namespace CalamityMod.Projectiles
                 TransformerTimer--;
             }
 
+            // Spawn Bloom Stone flower on landed hooks
+            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook, no pollen exists
+            if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.ai[0] == 2f &&
+                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower &&
+                !CalamityUtils.AnyOwnedProjectiles(ProjectileType<BloomStoneFlower>(), projectile.owner))
+            {
+                hookCanSpawnFlower = true;
+                if (Main.myPlayer == projectile.owner)
+                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
+            }
+
             // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
             // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
             // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
@@ -4093,16 +4107,38 @@ namespace CalamityMod.Projectiles
         #endregion
 
         #region Grappling Hooks
+        public override void UseGrapple(Player player, ref int type)
+        {
+            if (player.Calamity().bloomStoneHookVisuals)
+            {
+                // Insert vine effect when spawning a hook
+            }
+        }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
+            float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
-        }
+                mult += 0.5f;
+            if (player.Calamity().bloomStone)
+                mult += 0.5f;
+            speed *= mult;
 
+            // Visual flowers while being pulled
+            if (player.Calamity().bloomStoneHookVisuals && player.miscCounter % 5 == 0 && player.velocity.Length() > 2f)
+            {
+                Vector2 spawnPos = player.Center + Main.rand.NextVector2Circular(20f, 20f);
+                CustomSprite flowey = new(spawnPos, Vector2.Zero, 12, "CalamityMod/Projectiles/Magic/GleamingBolt", 0.425f, Color.White * 0.75f, 0f, false);
+                GeneralParticleHandler.SpawnParticle(flowey);
+            }
+        }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
+            float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                speed *= 1.1f;
+                mult += 0.5f;
+            if (player.Calamity().bloomStone)
+                mult += 0.5f;
+            speed *= mult;
         }
         #endregion
 
@@ -4118,14 +4154,14 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
-                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula.
+                // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
                 float vanillaVelocityDamageMultiplier = 0.1f + player.velocity.Length() / 7f * 0.9f;
                 float baseVelocityDamageMultiplier = 0.01f + player.velocity.Length() * 0.002f;
                 float calamityVelocityDamageMultiplier = 100f * (1f - (1f / (1f + baseVelocityDamageMultiplier)));
                 modifiers.SourceDamage *= calamityVelocityDamageMultiplier / vanillaVelocityDamageMultiplier;
             }
 
-            // Adamantite Throwing Axe's lightning has damage falloff.
+            // Adamantite Throwing Axe's lightning has damage falloff
             if (projectile.type == ProjectileID.CultistBossLightningOrbArc && projectile.ai[2] == 1f)
             {
                 if (projectile.numHits > 0)
@@ -4134,15 +4170,23 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
-            // Stardust Wings buff the Stardust Guardian's damage.
+            // Heat Ray damage falloff
+            if (projectile.type == ProjectileID.HeatRay && projectile.numHits > 0)
+            {
+                projectile.damage = (int)(projectile.damage * 0.9f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
+            // Stardust Wings buff the Stardust Guardian's damage
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
 
-            // If applicable, use ricoshot bonus damage.
+            // If applicable, use ricoshot bonus damage
             if (totalRicoshotDamageBonus > 0f)
                 modifiers.ScalingBonusDamage += totalRicoshotDamageBonus;
 
-            // If this projectile is forced to crit, simply set the crit bool.
+            // If this projectile is forced to crit, simply set the crit bool
             if (forcedCrit)
                 modifiers.SetCrit();
 
@@ -4226,9 +4270,8 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (BloodstoneOrbValue > 0)
-            {
-                                Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
-            }
+                Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
+
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {
@@ -4237,6 +4280,7 @@ namespace CalamityMod.Projectiles
                     damage = damageDone - target.Calamity().hyperiusDamage;
                 else
                     damage = damageDone;
+
                 target.Calamity().hyperiusDamage -= damage;
 
                 // Spawn overflow hit
@@ -4255,7 +4299,7 @@ namespace CalamityMod.Projectiles
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
             if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
                 return;
-            
+
             // Get the set of shared static iframe projectile types.
             // If it's empty, then do nothing.
             IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
@@ -4283,8 +4327,8 @@ namespace CalamityMod.Projectiles
                 case ProjectileID.DeerclopsIceSpike:
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
-                        float fadeInTime = 10f;
-                        float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
+                        float fadeInTime = 50f;
+                        float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
                     break;
@@ -4367,7 +4411,8 @@ namespace CalamityMod.Projectiles
                 float homingTime = ((Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f);
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
-                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : lightColor;
+
+                return projectile.ai[1] >= homingTime ? new Color(184, 140, 255, projectile.alpha) : new Color(255, 255, 255, (int)Utils.WrappedLerp(0f, 255f, (float)(projectile.timeLeft % 40) / 40f));
             }
 
             if (projectile.type == ProjectileID.BloodNautilusShot)
@@ -4465,9 +4510,9 @@ namespace CalamityMod.Projectiles
                 Vector2 origin12 = new Vector2(16f, value26.Height / 2);
                 Color alpha5 = projectile.GetAlpha(lightColor);
                 Vector2 vector39 = new Vector2(projectile.scale);
-                float fadeOutGateValue = masterMode ? 80f : death ? 50f : 25f;
-                float killGateValue = masterMode ? 90f : death ? 60f : 35f;
-                float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 10f, projectile.ai[0], clamped: true);
+                float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
+                float killGateValue = masterMode ? 130f : death ? 100f : 75f;
+                float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 50f, projectile.ai[0], clamped: true);
                 vector39.Y *= lerpValue5;
                 Vector4 vector40 = lightColor.ToVector4();
                 Vector4 vector41 = new Color(67, 17, 17).ToVector4();
@@ -4682,8 +4727,8 @@ namespace CalamityMod.Projectiles
                     new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
                     position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
                     frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-                }
             }
+        }
         #endregion
 
         #region Pre Kill
