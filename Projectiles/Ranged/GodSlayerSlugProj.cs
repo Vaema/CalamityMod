@@ -28,10 +28,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 TextureBlue = Mod.Assets.Request<Texture2D>("Projectiles/Ranged/GodSlayerSlugBlue", AssetRequestMode.ImmediateLoad).Value;
         }
 
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
 
             // Reduce damage, but remove piercing. Reset local iframes so the bullet, turned blue, may always strike again. Reset the point blank timer.
-            Projectile.damage = (int)(0.28f * Projectile.damage);
+            Projectile.damage = (int)(0.23f * Projectile.damage);
             Projectile.penetrate = 1;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             for (int i = 0; i < Main.maxNPCs; i++)
@@ -119,6 +119,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.netUpdate = true;
             Projectile.tileCollide = false;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+
             // Step 1 of the warp: Place the bullet behind the player, opposite the mouse cursor.
             Vector2 playerToMouseVec = CalamityUtils.SafeDirectionTo(Main.LocalPlayer, Main.MouseWorld, -Vector2.UnitY);
             float warpDist = Main.rand.NextFloat(70f, 96f);
@@ -135,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Set all old positions to the bullet's warp position so that there aren't weird afterimages.
             // If an old position is uninitialized (0,0 aka never used), then don't change it.
-            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Projectile.type]; ++i)
+            for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; ++i)
             {
                 Vector2 oldPosElem = Projectile.oldPos[i];
                 if (!(oldPosElem == Vector2.Zero))

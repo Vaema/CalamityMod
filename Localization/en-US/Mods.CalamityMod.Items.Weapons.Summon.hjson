@@ -158,7 +158,8 @@ CindersOfLament: {
 	Calamitas:
 		'''
 		'My brothers perished in Azafure. I found their bodies near the center of the city, after they left for an expedition.
-		Before my power was what it is now, they were always alongside me and didn't allow anyone to harm me. It may have been a problem sometimes, but they were surprisingly obedient.
+		Before my power was what it is now, they were always alongside me and didn't allow anyone to harm me.
+		It may have been a problem sometimes, but they were surprisingly obedient.
 		And even after all that's happened, and even in death, they still look out for me. Isn't that sweet of them?'
 		'''
 }
@@ -250,7 +251,14 @@ DankStaff: {
 
 DazzlingStabberStaff: {
 	DisplayName: Dazzling Stabber Staff
-	Tooltip: Summons a holy blade to fight for you
+	Tooltip:
+		'''
+		Summons three holy daggers made of profaned materials to fight for you
+		Holy flame daggers gallantly turn all that oppose them to ashes
+		Crystalline daggers gracefully carve foes to ribbons
+		Profane daggers brutishtly splinter and reform eternally
+		'Ever onward, towards Her future'
+		'''
 }
 
 DeathstareRod: {
@@ -284,7 +292,8 @@ DragonbloodDisgorger: {
 	Tooltip:
 		'''
 		Summons a skeletal dragon and her two children
-		Baby spits passively heal the player
+		Baby spits burst into blood orbs upon hitting an enemy
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
 		Requires 6 minion slots to be summoned
 		There can only be one family at a time
 		'''
@@ -580,9 +589,10 @@ Perdition: {
 	DisplayName: Perdition
 	Tooltip:
 		'''
+		{$CommonItemTooltip.Sentry}
 		Summons a beacon at the position of the mouse
 		When a target is manually selected via right click it releases torrents of souls from below onto the target
-		Requires 5 minion slots to summon and only one beacon may exist at a time
+		Requires one sentry slot to summon, and only one beacon may exist at a time
 		'''
 }
 
@@ -633,7 +643,10 @@ SanctifiedSpark: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.Sentry}
-		Summons a friendly immolator to fire holy sparks at your enemies
+		Summons a friendly immolator that will float towards you
+		Immolators rapidly fire homing flares at nearby enemies, before continuing to float near you again
+		After firing, Immolators will fire one healing bolt at you for every 4 summon slots you have
+		'They might be a bit clingy, but at least they're warm'
 		'''
 }
 
@@ -656,6 +669,17 @@ SarosPossession: {
 ScabRipper: {
 	DisplayName: Scab Ripper
 	Tooltip: Summons a baby blood crawler to protect you
+}
+
+SeashineHilt: {
+	DisplayName: Seashine Hilt
+	Tooltip:
+		'''
+		Summons a brilliant sea prism blade to slice your enemies
+		Blades will charge up while you hold this item
+		Pressing <right> will order all fully charged blades to swipe at your cursor
+		Each sword only consumes half a minion slot
+		'''
 }
 
 ShellfishStaff: {
@@ -905,5 +929,15 @@ FrostbatStaff: {
 		'''
 		Summons a bat construct of pure ice to fight for you
 		Swoops towards foes with slow and precise maneuvers
+		'''
+}
+
+AmphibiansGuitar: {
+	DisplayName: Amphibian's Guitar
+	Tooltip:
+		'''
+		Summons up to 8 guitars that spin around you and shoot notes at the target, ocasianally firing spread shots
+		If all 8 guitars are present some notes become empowered dealing extra damage
+		"I'll show you suffering!"
 		'''
 }

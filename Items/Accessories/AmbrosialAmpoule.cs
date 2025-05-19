@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -37,12 +38,22 @@ namespace CalamityMod.Items.Accessories
                 Lighting.AddLight(player.Center, new Vector3(1.2f, 1.2f, 0.72f));
         }
 
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            var player = Main.LocalPlayer;
+            if (player != null)
+            {
+                list.FindAndReplace("[REGEN]", (player.Calamity().ambrosialAmpouleRegen + player.Calamity().alwaysHoneyRegenAmount).ToString("0.##"));
+            }
+        }
+
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<LivingDew>().
                 AddIngredient<RadiantOoze>().
                 AddIngredient<LifeAlloy>(3).
+                AddIngredient(ItemID.FragmentSolar, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

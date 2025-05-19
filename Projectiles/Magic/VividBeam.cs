@@ -125,15 +125,11 @@ namespace CalamityMod.Projectiles.Magic
                     break;
 
                 case 2f:
-                    float spread = 30f * 0.01f * MathHelper.PiOver2;
-                    double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                    double deltaAngle = spread / 8f;
-                    double offsetAngle;
-                    for (int i = 0; i < 4; i++)
+                    float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+                    for (int i = 0; i < 8; i++)
                     {
-                        offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                        Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        Projectile.NewProjectile(source, Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - offset).ToRotationVector2() * 4f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<VividLaser2>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                     break;
             }

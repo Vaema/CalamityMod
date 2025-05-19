@@ -33,7 +33,7 @@ namespace CalamityMod.Items
                     npc.life = 0;
                     npc.active = false;
 
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                 }
             }
@@ -104,6 +104,7 @@ namespace CalamityMod.Items
             r = Recipe.Create(ItemID.TargetDummy);
             r.AddIngredient<SuperDummy>();
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.TargetDummy);
         }
     }
 }

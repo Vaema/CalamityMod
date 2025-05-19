@@ -27,7 +27,7 @@ namespace CalamityMod
 
             if (Main.netMode == NetmodeID.SinglePlayer)
                 Main.NewText(Language.GetTextValue(key), textColor.Value);
-            else if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.MultiplayerClient)
+            else if (Main.dedServ || Main.netMode == NetmodeID.MultiplayerClient)
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key), textColor.Value);
         }
 
@@ -139,7 +139,7 @@ namespace CalamityMod
 
             if (soundPos.X == -1f || soundPos.Y == -1f)
                 volume = 1f;
-            else if (WorldGen.gen || Main.dedServ || Main.netMode == NetmodeID.Server)
+            else if (WorldGen.gen || Main.dedServ || Main.dedServ)
                 volume = 0f;
             else
             {
@@ -205,6 +205,7 @@ namespace CalamityMod
 
         public static int SecondsToFrames(int seconds) => seconds * 60;
         public static int SecondsToFrames(float seconds) => (int)(seconds * 60);
+        public static int MinutesToFrames(int minutes) => minutes * 3600;
 
         public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;
 

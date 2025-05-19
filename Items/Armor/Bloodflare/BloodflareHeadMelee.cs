@@ -53,7 +53,8 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(11).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<BloodflareHeadMagic>()).
                 Register();
         }
     }

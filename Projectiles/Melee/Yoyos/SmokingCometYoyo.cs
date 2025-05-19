@@ -16,12 +16,12 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = 21f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 320f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 20f;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = SmokingComet.Duration;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = SmokingComet.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = SmokingComet.Speed;
 
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 Main.spriteBatch.Draw(stringTexture, new Vector2(vector.X - Main.screenPosition.X + (float)ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/SmokingCometChain").Width() * 0.5f, vector.Y - Main.screenPosition.Y + (float)ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/SmokingCometChain").Height() * 0.5f) - new Vector2(6f, 0f), new Rectangle(0, 0, ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/SmokingCometChain").Width(), (int)chainWidth), Color.White, stringHelper, new Vector2((float)ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/SmokingCometChain").Width() * 0.5f, 0f), 1f, SpriteEffects.None, 0f);
             }
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

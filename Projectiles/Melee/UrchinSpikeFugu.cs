@@ -17,8 +17,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -45,6 +45,13 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 idealVelocity = Projectile.SafeDirectionTo(potentialTarget.Center) * 12f;
                 Projectile.velocity = (Projectile.velocity * 20f + idealVelocity) / 21f;
                 Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 2f);
+            }
+
+            if (Main.rand.NextBool(8))
+            {
+                Dust offTrail = Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2Circular(0.2f, 0.2f));
+                offTrail.noGravity = true;
+                offTrail.scale = Main.rand.NextFloat(0.6f, 1.2f);
             }
         }
 

@@ -17,9 +17,9 @@ namespace CalamityMod.Projectiles.Magic
         public const float FadeinTime = 40f;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 12;
-            Main.projFrames[Projectile.type] = 3;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -42,14 +42,14 @@ namespace CalamityMod.Projectiles.Magic
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter % 4 == 3)
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D cometTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D cometTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(cometTexture,
                              Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition,
-                             cometTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             cometTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              Color.White * Projectile.Opacity,
                              Projectile.rotation,
                              cometTexture.Size() * 0.5f,

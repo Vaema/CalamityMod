@@ -11,10 +11,10 @@ namespace CalamityMod.Projectiles.Pets
         public new string LocalizationCategory => "Projectiles.Pets";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            Main.projPet[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
 
-            ProjectileID.Sets.CharacterPreviewAnimations[Projectile.type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Projectile.type], 6)
+            ProjectileID.Sets.CharacterPreviewAnimations[Type] = ProjectileID.Sets.SimpleLoop(0, Main.projFrames[Type], 6)
             .WithOffset(-12f, -18).WithSpriteDirection(-1).WhenNotSelected(0, 0);
         }
 
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Pets
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 6)
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
         }

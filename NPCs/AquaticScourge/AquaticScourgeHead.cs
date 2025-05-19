@@ -5,7 +5,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
@@ -34,6 +34,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AquaticScourge
 {
     [AutoloadBossHead]
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class AquaticScourgeHead : ModNPC
     {
@@ -65,7 +66,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
                 NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 40, 0, 0);
+            NPC.value = Item.buyPrice(0, 16, 0, 0);
             NPC.behindTiles = true;
             NPC.chaseable = false;
             NPC.noGravity = true;
@@ -144,8 +145,8 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 scaledDraw = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 scaledDraw = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
@@ -263,7 +264,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AquaticScourgeRelic>());
 
             // GFB troll drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<SupremeBaitTackleBoxFishingStation>(), hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<SupremeBaitTackleBoxFishingStation>()), hideLootReport: true);
 
             // Lore
             bool firstASKill() => !DownedBossSystem.downedAquaticScourge;
@@ -279,13 +280,11 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SEAHOE>() }, DownedBossSystem.downedAquaticScourge);
-
             // If Aquatic Scourge has not yet been killed, notify players of buffed Acid Rain
             if (!DownedBossSystem.downedAquaticScourge)
             {
-                if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active)
-                    SoundEngine.PlaySound(Mauler.RoarSound, Main.player[Main.myPlayer].Center);
+                if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
+                    SoundEngine.PlaySound(Mauler.RoarSound, Main.LocalPlayer.Center);
 
                 string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
@@ -317,7 +316,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 for (int k = 0; k < 15; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ASHead").Type, NPC.scale);
                 }

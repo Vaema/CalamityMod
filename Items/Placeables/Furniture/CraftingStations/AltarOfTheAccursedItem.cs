@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -29,7 +30,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
                 AddIngredient<BrimstoneSlag>(30).
                 AddIngredient<AuricBar>(5).
                 AddIngredient<CoreofCalamity>().
-                AddTile<CosmicAnvil>().
+                //Not Cosmic Anvil so if people *really* want do do Scal pre-moon lord it is possible.
+                AddTile(TileID.MythrilAnvil). 
                 Register();
         }
     }

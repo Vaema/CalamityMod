@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class LionfishProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -24,6 +26,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.alpha = 255;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.timeLeft = CalamityUtils.SecondsToFrames(20f);
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -79,7 +83,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (Projectile.spriteDirection == -1)
                 spriteEffects = SpriteEffects.FlipHorizontally;

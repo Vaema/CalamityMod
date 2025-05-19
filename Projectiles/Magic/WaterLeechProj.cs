@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,12 +11,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class WaterLeechProj : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -25,6 +27,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
             Projectile.timeLeft = 540;
             Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -35,7 +39,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -70,8 +74,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;
@@ -85,8 +89,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int height = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int height = texture.Height / Main.projFrames[Type];
             int drawStart = height * Projectile.frame;
             Vector2 origin = Projectile.Size / 2;
             SpriteEffects spriteEffects = SpriteEffects.None;

@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class CryonicShield : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -17,7 +18,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public override void SetDefaults()

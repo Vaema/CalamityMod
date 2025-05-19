@@ -56,9 +56,9 @@ namespace CalamityMod.Projectiles.Magic
                 idleSoundOut.Volume = Math.Clamp((Timer / 30f) + 0.001f, 0f, 1f) * 100f;
             }
 
-
             Projectile.timeLeft = 2;
             Projectile.Center = Owner.MountedCenter;
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.One);
 
             if (Main.rand.NextBool(6))

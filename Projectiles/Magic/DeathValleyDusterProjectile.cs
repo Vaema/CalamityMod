@@ -21,9 +21,9 @@ namespace CalamityMod.Projectiles.Magic
         public List<bool> buffList = new List<bool>(new bool[Main.maxPlayers]);
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 240);
+                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 600);
 
                             int Dusts = 12;
                             float radians = MathHelper.TwoPi / Dusts;
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             if (Projectile.timeLeft > 50)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.4f * Projectile.Opacity, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.4f * Projectile.Opacity, 1);
             return true;
         }
     }

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -23,8 +23,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<SeaPrism>());
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<SeaPrism>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<CyanCoral>());
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<CyanCoral>(), Type, 0);
 
             base.SetStaticDefaults();
         }
@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = BasaltGullyWater.Type;
+                Main.SceneMetrics.ActiveFountainColor = SunkenSeaBurrowsWater.Type;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -42,9 +42,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.3f;
-            g = 0.75f;
-            b = 0.75f;
+            r = 225f / 255f;
+            g = 255f / 255f;
+            b = 255f / 255f;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -7,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class BonebreakerProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -60,7 +63,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
@@ -89,14 +92,14 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.BoneJavelin, 180);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             target.AddBuff(BuffID.Venom, 90);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.BoneJavelin, 180);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             target.AddBuff(BuffID.Venom, 90);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
         }

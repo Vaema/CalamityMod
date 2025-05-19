@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class PhotonRipperProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -43,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D glowmaskTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/PhotonRipperGlowmask").Value;
             Rectangle glowmaskRectangle = glowmaskTexture.Frame(1, 6, 0, Projectile.frame);
             Vector2 origin = texture.Size() * 0.5f;
@@ -155,6 +157,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void HandleChannelMovement(Vector2 playerRotatedPosition)
         {
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 idealAimDirection = (Main.MouseWorld - playerRotatedPosition).SafeNormalize(Vector2.UnitX * Owner.direction);
 
             float angularAimVelocity = 0.15f;
@@ -216,6 +219,7 @@ namespace CalamityMod.Projectiles.Melee
             // This means that projectile speed boosts will improve the range of the chainsaw.
             shootReach *= Owner.ActiveItem().shootSpeed;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, the result is separately capped
             float distanceFromMouse = Owner.Distance(Main.MouseWorld);
 
             // If the distance to the mouse is less than the base reach, reach only to mouse.

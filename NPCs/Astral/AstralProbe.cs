@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetDefaults()
         {
-            NPC.damage = 0; // 0 contact damage, laser damage in handled separately
+            NPC.damage = 0; // 0 contact damage, laser damage is handled separately
             NPC.width = 30; //324
             NPC.height = 30; //216
             NPC.defense = 10;
@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.95f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -241,8 +241,8 @@ namespace CalamityMod.NPCs.Astral
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
             Vector2 drawPosition = NPC.Center - screenPos;
             drawPosition -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
             drawPosition += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
@@ -288,7 +288,7 @@ namespace CalamityMod.NPCs.Astral
                     Main.dust[cosmos].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Vector2 goreSource = NPC.Center;
                     int goreAmt = 3;
@@ -350,12 +350,6 @@ namespace CalamityMod.NPCs.Astral
                 return 0.1f;
             }
             return 0f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
     }
 }

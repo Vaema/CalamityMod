@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/OmegaBlue/OmegaBlueHelmet_HeadMadness", EquipType.Head, name: "OmegaBlueTransformation");
             }
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
             var equipSlotHead = EquipLoader.GetEquipSlot(Mod, "OmegaBlueTransformation", EquipType.Head);
             ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
@@ -70,7 +70,6 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
 
             var mp = player.Calamity();
-            player.GetArmorPenetration<GenericDamageClass>() += 15;
             player.maxMinions += 2;
             mp.wearingRogueArmor = true;
             mp.omegaBlueSet = true;
@@ -93,7 +92,8 @@ namespace CalamityMod.Items.Armor.OmegaBlue
                 AddIngredient<ReaperTooth>(3).
                 AddIngredient<DepthCells>(12).
                 AddIngredient<RuinousSoul>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<OmegaBlueChestplate>()).
                 Register();
         }
     }

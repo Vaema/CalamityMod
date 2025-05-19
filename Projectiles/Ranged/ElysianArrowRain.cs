@@ -26,8 +26,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
             // While this projectile doesn't have afterimages, it keeps track of old positions for its primitive drawcode.
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 21;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 21;
         }
 
         public override void SetDefaults()
@@ -43,6 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override bool? CanDamage() => Projectile.numHits >= 1 ? false : null;

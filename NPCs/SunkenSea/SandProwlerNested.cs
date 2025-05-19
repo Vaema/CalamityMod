@@ -17,10 +17,11 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.Enums;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SandProwlerNested : ModNPC
+    public class SandProwlerNested : SunkenSeaNPC
     {
         public bool PeekingOut;
         public bool HasChosenSpotToHideIn => SpotToHideIn != Vector2.Zero;
@@ -52,15 +53,29 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float InitialSnapDirection => ref NPC.localAI[1];
         public ref float CurrentSnapDirection => ref NPC.localAI[2];
         public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler";
+        protected override List<int> PreyIDs => new List<int>()
+        {
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<PrismaticGuppy>(),
+            ModContent.NPCType<Slugbun>(),
+        };
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
 
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 0;
-            NPCID.Sets.TrailCacheLength[NPC.type] = 60;
-            NPCID.Sets.UsesNewTargetting[NPC.type] = true;
+            NPCID.Sets.TrailingMode[Type] = 0;
+            NPCID.Sets.TrailCacheLength[Type] = 60;
+            NPCID.Sets.UsesNewTargetting[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             Main.npcFrameCount[Type] = 11;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -69,7 +84,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 30;
             NPC.height = 30; //32
             NPC.defense = 10;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -188,16 +203,8 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (NPC.life > NPC.lifeMax * 0.99f)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
-                    {
-                        NPC n = Main.npc[i];
-                        if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
-                            continue;
-                        if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
-                        {
-                            target = n;
-                        }
-                    }
+                    if (CurrentPrey != null)
+                        target = CurrentPrey;
                 }
                 // If you've pissed it off, it now goes after YOU
                 else
@@ -439,6 +446,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             return false;
         }
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return Vector2.DistanceSquared(NPC.Center, n.Center) < 200f * 200f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
@@ -447,7 +460,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaPolyp && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
+            if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
                 return SpawnCondition.CaveJellyfish.Chance * 0.3f;
 
             return 0f;
@@ -461,7 +474,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0 && Main.netMode != NetmodeID.Server)
+            if (NPC.life <= 0 && !Main.dedServ)
             {
                 for (int k = 0; k < 10; k++)
                 {

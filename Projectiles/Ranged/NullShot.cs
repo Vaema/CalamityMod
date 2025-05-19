@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
@@ -20,13 +21,13 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public ref float time => ref Projectile.ai[0];
-        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+        public Color baseColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
         public int sineDir = 1;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 25;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 25;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -86,14 +87,14 @@ namespace CalamityMod.Projectiles.Ranged
                     float scale = Main.rand.NextFloat(0.8f, 1.1f);
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + offset * sineDir, ModContent.DustType<VoidDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust2.noGravity = true;
                         dust2.scale = scale;
                         dust2.color = baseColor;
                     }
                     if (Main.rand.NextBool(2))
                     {
-                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, /*Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : */ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                        Dust dust3 = Dust.NewDustPerfect(Projectile.Center - offset * sineDir, ModContent.DustType<VoidDustInverted>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                         dust3.noGravity = true;
                         dust3.scale = scale;
                         dust3.color = baseColor;
@@ -101,7 +102,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else if (Main.rand.NextBool(13))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10), Projectile.ai[1] == 5 ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.8f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.05f, 1.65f);
                     dust.color = baseColor;
@@ -117,12 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
                 NPC targetedNPC = Projectile.Center.ClosestNPCAt(700);
                 if (targetedNPC != null && time > 30 && Projectile.numHits < 1 && Vector2.Distance(targetedNPC.Center, Projectile.Center) < 700)
                 {
-                    Vector2 position = targetedNPC.Center;
-                    Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 8 - (Utils.GetLerpValue(150, 0, Projectile.timeLeft, true) * 2))
-                        Projectile.velocity += moveToMouse * (0.42f + Utils.GetLerpValue(300, 150, Projectile.timeLeft, true));
-                    else
-                        Projectile.velocity *= 0.9f;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targetedNPC, true, 0.2f, 8, 0.97f, accelerate: true);
                 }
             }
             else
@@ -152,7 +148,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Projectile.ai[1] == 5 ? ModContent.DustType<VoidDust>() : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Projectile.ai[1] == 5 ? (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()) : ModContent.DustType<LightDust>(), (Projectile.velocity * 3).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust.color = baseColor;
@@ -172,41 +168,73 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-            SoundStyle fire = new("CalamityMod/Sounds/Item/NullHit");
+            SoundStyle fire = NullificationPistol.HitSound;
             SoundEngine.PlaySound(fire with { Volume = (Projectile.ai[1] == 5 ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (Projectile.ai[1] == 5 ? 3 : 1) }, Projectile.Center);
             if (Main.zenithWorld)
             {
                 #region NPC Nullification
-                int nullBuff = Main.rand.Next(8);
-                switch (nullBuff)
+                if (Projectile.ai[1] == 5)
                 {
-                    case 0:
-                        if (target.type != ModContent.NPCType<SuperDummyNPC>())
-                            target.damage += 10;
-                        break;
-                    case 1:
-                        target.damage -= 10;
-                        break;
-                    case 2:
-                        target.knockBackResist = 0f;
-                        break;
-                    case 3:
-                        target.knockBackResist = 1f;
-                        break;
-                    case 4:
-                        target.defense += 5;
-                        break;
-                    case 5:
-                        target.defense -= 5;
-                        break;
-                    case 6:
-                        target.scale *= 2f;
-                        break;
-                    case 7:
-                        target.scale *= 0.5f;
-                        break;
-                    default:
-                        break;
+                    // Enemies tend to float away when corrupted, this helps with that
+                    if (Utils.Distance(Main.player[Projectile.owner].Center, target.Center) > 1000)
+                        target.velocity = Utils.DirectionTo(target.Center, Main.player[Projectile.owner].Center);
+
+                    int nullCorrupt = Main.rand.Next(4);
+                    switch (nullCorrupt)
+                    {
+                        case 0:
+                            target.ai[0] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[0] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 1:
+                            target.ai[1] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[1] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 2:
+                            target.ai[2] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[2] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        case 3:
+                            target.ai[3] = Main.rand.Next(0, 100 + 1);
+                            target.localAI[3] = Main.rand.Next(0, 100 + 1);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    int nullBuff = Main.rand.Next(8);
+                    switch (nullBuff)
+                    {
+                        case 0:
+                            if (target.type != ModContent.NPCType<SuperDummyNPC>())
+                                target.damage += Main.rand.Next(5, 40 + 1);
+                            break;
+                        case 1:
+                            target.damage -= Main.rand.Next(5, 40 + 1);
+                            break;
+                        case 2:
+                            target.knockBackResist = 0f;
+                            break;
+                        case 3:
+                            target.knockBackResist = Main.rand.Next(1, 3 + 1);
+                            break;
+                        case 4:
+                            target.defense += Main.rand.Next(5, 30 + 1);
+                            break;
+                        case 5:
+                            target.defense -= Main.rand.Next(5, 30 + 1);
+                            break;
+                        case 6:
+                            target.scale *= 2f;
+                            break;
+                        case 7:
+                            target.scale *= 0.5f;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 #endregion
             }
@@ -225,8 +253,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLineBloom");
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Particles/DrainLine");
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], baseColor with { A = 0 } * 0.35f, 1, tex.Value);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Projectile.ai[1] == 5 ? Color.Black : Color.Lerp(baseColor, Color.White, 0.5f), 1, tex2.Value, true, true);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], baseColor with { A = 0 } * 0.35f, 1, tex.Value);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Projectile.ai[1] == 5 ? Color.Black : Color.Lerp(baseColor, Color.White, 0.5f), 1, tex2.Value, true, true);
             return false;
         }
     }

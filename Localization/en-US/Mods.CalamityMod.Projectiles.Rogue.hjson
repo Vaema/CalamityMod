@@ -1,8 +1,10 @@
 AbyssalMirrorProjectile.DisplayName: Lumenyl Fluid
-AcidBarrelDrop.DisplayName: Barrel Acid Drop
-AcidShrapnel.DisplayName: Acidic Shrapnel
 AdamantiteThrowingAxeProjectile.DisplayName: Adamantite Throwing Axe
+AntlionSkewerProj.DisplayName: Antlion on a Stick
+AntlionSkewerSandBlast.DisplayName: Antlion Blast
+AntlionSkewerSandCloud.DisplayName: Dense Sand Cloud
 AntumbraShardProjectile.DisplayName: Antumbra Shard
+ApoctolithExplosion.DisplayName: Apoctolith Boom
 ApoctolithProj.DisplayName: Apoctolith
 ApoctolithShard.DisplayName: Apoctolith Shard
 AshenStalactiteDebris.DisplayName: Ashen Debris
@@ -22,12 +24,13 @@ BlueFlamePillar.DisplayName: Flame Pillar
 BlunderBoosterLightning.DisplayName: Blunder Bolt
 BouncingEyeballProjectile.DisplayName: Bouncy Eyeball
 BouncingEyeballProjectileStealthStrike.DisplayName: Bouncy Eyeball
-BouncyBol.DisplayName: Bouncy Ball
 Brick.DisplayName: Brick
 BrickFragment.DisplayName: Brick Fragment
 Brimblade2.DisplayName: Brimblade
 BrimbladeProj.DisplayName: Brimblade
+BurningStrifeExplosion.DisplayName: Shadow Flame Explosion
 BurningStrifeProj.DisplayName: Shadow Flame Spiky Ball
+BurningTentacle.DisplayName: Strife Tentacle
 ButcherKnife.DisplayName: Butcher Knife
 CarvingFork.DisplayName: Carving Fork
 CelestialReaperAfterimage.DisplayName: Celestial Reaper
@@ -41,7 +44,7 @@ CobaltEnergy.DisplayName: Cobalt Energy
 CobaltKunaiProjectile.DisplayName: Cobalt Kunai
 ConsecratedWaterProjectile.DisplayName: Consecrated Water
 ContaminatedBileFlask.DisplayName: Contaminated Bile
-CorpusAvertorClone.DisplayName: Corpus Avertor
+CorpusAvertorClone.DisplayName: Corpus Avertor Clone
 CorpusAvertorProj.DisplayName: Corpus Avertor
 CorpusAvertorStealth.DisplayName: Corpus Avertor
 Corrocloud1.DisplayName: Corrocloud
@@ -98,8 +101,6 @@ ExecutionersBladeProj.DisplayName: Executioner's Blade
 ExecutionersBladeStealthProj.DisplayName: Executioner's Blade
 ExorcismProj.DisplayName: Exorcism
 ExorcismShockwave.DisplayName: Exorcism Shockwave
-ExorcismStar.DisplayName: Exorcism Star
-ExplosiveSun.DisplayName: Explosive Sun
 FantasyTalismanProj.DisplayName: Talisman
 FantasyTalismanStealth.DisplayName: Talisman
 FeatherKnifeProjectile.DisplayName: Feather Knife
@@ -127,12 +128,10 @@ GleamingDaggerProj.DisplayName: Gleaming Dagger
 GodsParanoiaDart.DisplayName: God's Paranoia Dart
 GodsParanoiaProj.DisplayName: God's Paranoia
 GraveGrimreaverProjectile.DisplayName: Grave Grimreaver
-GreenDonkeyKongReference.DisplayName: Acidic Rain Barrel
 GrimreaverBat.DisplayName: Grim Bat
 GrimreaverSkull.DisplayName: Grim Skull
 HeavenfallenEnergy.DisplayName: Heavenfallen Energy
 HeavenfallenStardiskBoomerang.DisplayName: Heavenfallen Stardisk
-HellsSunProj.DisplayName: Hell's Sun
 Honeycomb.DisplayName: Honeycomb
 HoneycombFragment.DisplayName: Honeycomb Fragment
 HypothermiaChunk.DisplayName: Ice Chunk
@@ -146,8 +145,6 @@ InfernalKrisProjectile.DisplayName: Infernal Kris
 InfestedClawmerangProj.DisplayName: Shroomerang
 InkBombProjectile.DisplayName: Ink Bomb
 InkCloud.DisplayName: Ink Cloud
-InkCloud2.DisplayName: Ink Cloud
-InkCloud3.DisplayName: Ink Cloud
 IronFranciscaProj.DisplayName: Iron Francisca
 JawsProjectile.DisplayName: Reaper Tooth
 JawsShockwave.DisplayName: Reaper Tooth Shockwave
@@ -174,10 +171,8 @@ MangroveChakramProjectile.DisplayName: Mangrove Chakram
 MetalChunk.DisplayName: Metal Chunk
 MetalShard.DisplayName: Metal Shard
 MeteorFistProj.DisplayName: Meteor Fist Gud For A Lot Of Shtuff
-MeteorFistStealth.DisplayName: Meteor Fist Gud For A Lot Of Shtuff
+MeteorFistMeteorite.DisplayName: Meteorite REALLY Gud For A Lot Of Shtuff
 MoltenAmputatorProj.DisplayName: Molten Amputator
-MoltenBlobThrown.DisplayName: Molten Blob
-MonkeyDart.DisplayName: Monkey Dart
 MoonSigil.DisplayName: Moon Sigil
 MycorootProj.DisplayName: Mycoroot
 MythrilKnifeProjectile.DisplayName: Mythril Knife
@@ -190,8 +185,6 @@ NiceCock.DisplayName: Kitchen Fire
 NightsGazeProjectile.DisplayName: Night's Gaze
 NightsGazeSpark.DisplayName: Night's Gaze Spark
 NightsGazeStar.DisplayName: Night's Gaze Star
-NychthemeronOrb.DisplayName: Nychthemeron Orb
-NychthemeronProjectile.DisplayName: Nychthemeron
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
 PanSpark.DisplayName: Pan Spark
@@ -204,7 +197,6 @@ PhantasmalSoulBlue.DisplayName: Blue Spirit
 PlaguedFuelPackCloud.DisplayName: Plagued Cloud
 PlaguenadeBee.DisplayName: Plague Bee
 PlaguenadeProj.DisplayName: Plaguenade
-PoisonBol.DisplayName: Poison Ball
 Prismalline2.DisplayName: Prismalline
 Prismalline3.DisplayName: Prismalline
 PrismallineProj.DisplayName: Prismalline
@@ -215,6 +207,8 @@ ProfanedPartisanSpear.DisplayName: Profaned Spear
 RadiantExplosion.DisplayName: Radiant Explosion
 RadiantStar2.DisplayName: Radiant Star
 RadiantStarKnife.DisplayName: Radiant Star
+RadiationBurst.DisplayName: Radiation Burst
+RadiationRain.DisplayName: Radiation Rain
 RealityRuptureLance.DisplayName: Lance of Reality
 RealityRuptureMini.DisplayName: Reality Shard
 RealityRuptureStealth.DisplayName: Ruptured Reality
@@ -222,14 +216,17 @@ ReaperProjectile.DisplayName: The Old Reaper
 ReboundingRainbowProj.DisplayName: Rebounding Rainbow
 ReboundingRainbowSplit.DisplayName: Rebounding Rainbow
 RefractionRotorProjectile.DisplayName: Prism Shuriken
+RefractionRotorSlashCreator.DisplayName: Refraction Rotor Slash Creator
+RefractionSlash.DisplayName: Refraction Slash
 RegulusEnergy.DisplayName: Regulus Energy
 RegulusRiotProj.DisplayName: Regulus Riot
 RotBallProjectile.DisplayName: Rot Ball
 SacrificeProjectile.DisplayName: Sacrificial Dagger
 SamsaraSlicerProjectile.DisplayName: Samsara Slicer
 SamsaraSlicerSmallDisk.DisplayName: Samsara Slicer
+SandDollarFrag.DisplayName: Sand Dollar Frag
 SandDollarProj.DisplayName: Sand Dollar
-SandDollarStealth.DisplayName: Sand Dollar
+SandDollarStealth.DisplayName: Sand Dollar Duststorm
 ScarletBlast.DisplayName: Scarlet Blast
 ScarletDevilBullet.DisplayName: Gungnir Bullet
 ScarletDevilProjectile.DisplayName: Spear the Gungnir
@@ -247,18 +244,17 @@ SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam
 SeraphimDagger.DisplayName: Seraphim
 SeraphimProjectile.DisplayName: Seraphim
-ShatteredExplosion.DisplayName: Shattered Sun Blast
-ShatteredSunKnife.DisplayName: Shattered Sun
-ShatteredSunScorchedBlade.DisplayName: Scorched Blade
+ShatteredExplosion.DisplayName: Shattered Dawn Blast
+ShatteredDawnKnife.DisplayName: Shattered Dawn
+ShatteredDawnScorchedBlade.DisplayName: Scorched Blade
 ShinobiBladeProjectile.DisplayName: Shinobi Blade
-ShockGrenadeBolt.DisplayName: Shock Grenade Bolt
-ShockGrenadeExplosion.DisplayName: Shock Grenade Explosion
-ShockGrenadeProjectile.DisplayName: Shock Grenade
+ShockBolt.DisplayName: Shock Bolt
+ShockExplosion.DisplayName: Shock Explosion
+DoomsdayDeviceProjectile.DisplayName: Doomsday Device
 ShockTeslaAura.DisplayName: Electrifying Aura
 ShroomerangSpore.DisplayName: Infested Spore
 SkyBomberGas.DisplayName: Irradiated Cloud
 SkyfinNuke.DisplayName: Skyfin Nuke
-SkyStabberProj.DisplayName: Sky Stabber
 SludgeSplotchProj1.DisplayName: Sludge Splotch
 SludgeSplotchProj2.DisplayName: Sludge Splotch
 SnapClamProj.DisplayName: Snap Clam
@@ -272,11 +268,12 @@ SphereBladed.DisplayName: Bladed Sphere
 SphereBlue.DisplayName: Blue Thruster Sphere
 SphereSpiked.DisplayName: Spiked Sphere
 SphereYellow.DisplayName: Yellow Thruster Sphere
+SporeKnifeBud.DisplayName: Spore Knife Bud
+SporeKnifeProj.DisplayName: Spore Knife
 StealthNimbus.DisplayName: Nimbus
 StealthNimbusCloud.DisplayName: Nimbus
 StealthRain.DisplayName: Rain
 StellarKnifeProj.DisplayName: Stellar Knife
-StickyBol.DisplayName: Sticky Bol
 StormfrontLightning.DisplayName: Stormfront Lightning
 StormfrontRazorProjectile.DisplayName: Stormfront Razor
 Stormfrontspark.DisplayName: Stormfront Spark
@@ -309,6 +306,7 @@ TurbulanceProjectile.DisplayName: Turbulance
 TurbulanceWindSlash.DisplayName: Wind Slash
 TwistingThunderProj.DisplayName: Twisting Thunder
 UmbraphileBoom.DisplayName: Umbra Blast
+UrchinIrradiation.DisplayName: Irradiation
 UrchinStingerProj.DisplayName: Urchin Stinger
 ValariBoomerang.DisplayName: Frostcrush Valari
 Valaricicle.DisplayName: Valaricicle
@@ -324,7 +322,3 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
-RadiationBurst.DisplayName: Radiation Burst
-RadiationRain.DisplayName: Radiation Rain
-RefractionRotorSlashCreator.DisplayName: Refraction Rotor Slash Creator
-RefractionSlash.DisplayName: Refraction Slash

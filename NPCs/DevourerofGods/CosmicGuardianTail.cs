@@ -13,6 +13,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(CosmicGuardianHead))]
     public class CosmicGuardianTail : ModNPC
     {
@@ -161,8 +162,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / 2));
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[Type].Value.Width / 2), (float)(TextureAssets.Npc[Type].Value.Height / 2));
 
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2((float)texture2D15.Width, (float)(texture2D15.Height)) * NPC.scale / 2f;
@@ -187,7 +188,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float randomSpread = Main.rand.Next(-200, 201) / 100f;
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity * randomSpread * Main.rand.NextFloat(), Mod.Find<ModGore>("DoT2").Type, 1f);

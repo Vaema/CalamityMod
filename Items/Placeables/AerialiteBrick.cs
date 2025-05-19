@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe().
                 AddIngredient<AerialiteBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

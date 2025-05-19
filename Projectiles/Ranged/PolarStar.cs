@@ -29,11 +29,12 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.penetrate = -1; // Only hits once, "pierces" so that it can last a bit after hitting
             Projectile.extraUpdates = 2;
-            Projectile.timeLeft = 40;
+            Projectile.timeLeft = 60;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.tileCollide = true;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override void AI()
@@ -84,15 +85,15 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.01f, 0.045f);
             }
 
-            if (Projectile.timeLeft % 2 == 0 && Time > 4 && DoSlowdown) // Particle trail
+            if (Time > 4 && DoSlowdown) // Particle trail
             {
-                PointParticle spark = new PointParticle(Projectile.Center - Projectile.velocity * 1f, -Projectile.velocity * 0.01f, false, 7, 2f, EffectsColor * 0.6f);
+                Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity * 3f, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomLineFade", false, 6, 0.04f, EffectsColor * 0.8f, new Vector2(0.8f, 1), shrinkSpeed: 0.4f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
             if (Projectile.timeLeft <= 2 && DoSlowdown)
             {
-                Projectile.timeLeft = Main.zenithWorld ? 3 : 7; // Adds extra projectile time on hit so that you can only fire faster if you're quite close
+                Projectile.timeLeft = 7;
                 Projectile.velocity = Vector2.Zero;
                 DoSlowdown = false;
             }
@@ -109,7 +110,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (DoSlowdown)
             {
-                Projectile.timeLeft = Main.zenithWorld ? 3 : 7; // Adds extra projectile time on hit so that you can only fire faster if you're quite close
+                Projectile.timeLeft = 7;
                 Projectile.velocity = Vector2.Zero;
                 DoSlowdown = false;
             }
@@ -123,8 +124,10 @@ namespace CalamityMod.Projectiles.Ranged
             for (int k = 0; k < points; k++)
             {
                 Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f);
-                PointParticle spark = new PointParticle((Projectile.Center + velocity * 7.5f) + addedPlacement, velocity * 2.5f, false, 13, 1.2f, EffectsColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                //PointParticle spark = new PointParticle((Projectile.Center + velocity * 7.5f) + addedPlacement, velocity * 2.5f, false, 13, 1.2f, EffectsColor);
+                //GeneralParticleHandler.SpawnParticle(spark);
+                Particle spark3 = new CustomSpark((Projectile.Center + velocity * 7.5f) + addedPlacement, velocity * 2.5f, "CalamityMod/Particles/BloomLineFade", false, 13, 0.02f, EffectsColor * 0.8f, new Vector2(2.8f, 1), shrinkSpeed: 0.5f);
+                GeneralParticleHandler.SpawnParticle(spark3);
             }
         }
         public override bool? CanDamage() => Projectile.numHits > 1 ? false : null;

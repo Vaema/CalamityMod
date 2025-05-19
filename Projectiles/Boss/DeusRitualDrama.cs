@@ -42,18 +42,11 @@ namespace CalamityMod.Projectiles.Boss
             Time++;
             if (Time == TotalRitualTime - PulseTime)
             {
-                int idx = NPC.NewNPC(Projectile.GetSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y - (int)MaxUpwardRise, ModContent.NPCType<AstrumDeusHead>(), 1);
-                if (idx != -1)
+                if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, Projectile.Center);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
+                    int idx = NPC.NewNPC(Projectile.GetSource_FromThis(), (int)Projectile.Center.X, (int)Projectile.Center.Y - (int)MaxUpwardRise, ModContent.NPCType<AstrumDeusHead>(), 1);
+                    if (idx != -1)
                         CalamityUtils.BossAwakenMessage(idx);
-                    }
-                    else
-                    {
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, idx);
-                    }
                 }
             }
         }
@@ -118,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void DrawStars(SpriteBatch spriteBatch, Vector2 offset)
         {
-            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D starTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             for (int i = 0; i < 6; i++)
             {
                 float angle = MathHelper.TwoPi * i / 6f + Time / 15f;

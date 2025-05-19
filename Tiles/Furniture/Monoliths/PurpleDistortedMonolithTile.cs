@@ -23,11 +23,12 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
         public override int AnimationFrameCount => 6;
         public override int AnimationDelay => 8;
         public override int CursorItemType => ModContent.ItemType<PurpleDistortedMonolith>();
-
+        public override string HighlightTexture => "CalamityMod/Tiles/Furniture/Monoliths/BlueDistortedMonolithTile_Highlight";
         public override void SetStaticDefaults()
         {
             RegisterItemDrop(ModContent.ItemType<PurpleDistortedMonolith>());
             Main.tileFrameImportant[Type] = true;
+            TileID.Sets.HasOutlines[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.Width = 5;
             TileObjectData.newTile.Height = 5;

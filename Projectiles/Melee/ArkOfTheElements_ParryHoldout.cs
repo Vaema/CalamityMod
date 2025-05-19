@@ -39,6 +39,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
@@ -109,13 +111,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = (int)MaxTime;
                 SoundEngine.PlaySound(SoundID.Item84 with { Volume = SoundID.Item84.Volume * 0.3f }, Projectile.Center);
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 Projectile.velocity.Normalize();
                 Projectile.rotation = Projectile.velocity.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation

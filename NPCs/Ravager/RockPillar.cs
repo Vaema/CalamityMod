@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.Ravager
             if (hurtInfo.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 240, true);
+            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 240);
             SoundEngine.PlaySound(SoundID.Item14, NPC.Center);
             NPC.ai[0] = 0f;
 
@@ -178,7 +178,7 @@ namespace CalamityMod.NPCs.Ravager
                     Main.dust[rockDust2].velocity *= 2f;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     float y = NPC.height / 6f;
                     float randomVelocityScale = 0.25f;

@@ -31,12 +31,12 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 38;
             Item.height = 34;
-            Item.useAnimation = 30;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = UseSound;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = UseSound;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 36);
+            Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
@@ -74,8 +74,8 @@ namespace CalamityMod.Items.PermanentBoosters
             CreateRecipe().
                 AddIngredient(ItemID.LifeFruit, 5).
                 AddIngredient<UelibloomBar>(10).
-                AddIngredient<DivineGeode>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<DivineGeode>(8).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

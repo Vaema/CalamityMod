@@ -1,6 +1,5 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Critters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -11,16 +10,14 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
 using Terraria.DataStructures;
-using CalamityMod.Particles;
-using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class LostShoal : ModNPC
     {
-        public static Texture2D RedTexture;
-        public static Texture2D BlueTexture;
-        public static Texture2D GoldTexture;
+        public static Asset<Texture2D> RedTexture;
+        public static Asset<Texture2D> BlueTexture;
+        public static Asset<Texture2D> GoldTexture;
 
         public float RandomOpacityOffset;
         public ref float Variant => ref NPC.ai[1];
@@ -35,18 +32,20 @@ namespace CalamityMod.NPCs.SunkenSea
             Gold = 3
         }
 
+        public override void Load()
+        {
+            RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed");
+            BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue");
+            GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold");
+        }
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
-            if (!Main.dedServ)
-            {
-                RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalRed", AssetRequestMode.ImmediateLoad).Value;
-                BlueTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalBlue", AssetRequestMode.ImmediateLoad).Value;
-                GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/LostShoalGold", AssetRequestMode.ImmediateLoad).Value;
-            }
-            NPCID.Sets.CountsAsCritter[NPC.type] = true;
+            Main.npcFrameCount[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
+            NPCID.Sets.CountsAsCritter[Type] = true;
         }
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
@@ -88,6 +87,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
                 NPC.catchItem = ItemID.GoldCoin;
+                NPC.value = 10000;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);
@@ -239,7 +239,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 //GeneralParticleHandler.SpawnParticle(ash);
 
                 Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, dustid, Scale: 1.5f);
-                dust.noGravity = true;
                 dust.velocity = Vector2.Zero;
             }
             if (Variant == (int)ShoalColor.Gold)
@@ -328,14 +327,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.2f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Player.Calamity().clamity && !NPC.AnyNPCs(Type))
             {
                 return 0.125f;
             }
@@ -369,6 +368,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            if (NPC.IsABestiaryIconDummy)
+                return true;
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
@@ -396,20 +397,20 @@ namespace CalamityMod.NPCs.SunkenSea
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
             // Regular stuff for drawing the actual fish and its afterimages
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (Variant)
             {
                 case (int)ShoalColor.Blue:
-                    texture = BlueTexture;
+                    texture = BlueTexture.Value;
                     break;
                 case (int)ShoalColor.Red:
-                    texture = RedTexture;
+                    texture = RedTexture.Value;
                     break;
                 case (int)ShoalColor.Gold:
-                    texture = GoldTexture;
+                    texture = GoldTexture.Value;
                     break;
             }
-            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[NPC.type] / 2));
+            Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
             Color white = Color.White;
             float colorLerpAmt = 0.5f;
             int afterimageAmt = 7;
@@ -423,7 +424,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 offset = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    offset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     offset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, offset, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
                 }
@@ -432,7 +433,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float sine = MathF.Sin(Main.GlobalTimeWrappedHourly * 3f + RandomOpacityOffset) / 2f + 0.5f;
 
             Vector2 npcOffset = NPC.Center - screenPos;
-            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            npcOffset -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, npcOffset, NPC.frame, drawColor * MathHelper.Lerp(0.4f, 0.8f, sine), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 

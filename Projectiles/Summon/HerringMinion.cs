@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 8;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 8;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -33,6 +33,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.minion = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -77,7 +79,7 @@ namespace CalamityMod.Projectiles.Summon
         public void DoAnimation()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 8 % Main.projFrames[Type];
         }
 
         public void PointInRightDirection(Projectile origin, NPC target)

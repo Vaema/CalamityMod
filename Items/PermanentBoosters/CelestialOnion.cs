@@ -14,45 +14,36 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 28;
             Item.height = 28;
-            Item.rare = ItemRarityID.Red;
-            Item.maxStack = 9999;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item4;
             Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item4;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Red;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            return !Main.masterMode && !modPlayer.extraAccessoryML;
-        }
+        public override bool CanUseItem(Player player) => !(Main.masterMode && player.extraAccessory) && !player.Calamity().extraAccessoryML;
 
         public override bool? UseItem(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
+            // In Master Mode, will enable Demon Heart's accessory slot if for whatever reason you don't have that yet
+            if (Main.masterMode)
+            {
+                if (player.itemAnimation > 0 && !player.extraAccessory && player.itemTime == 0)
+                {
+                    player.itemTime = Item.useTime;
+                    player.extraAccessory = true;
+                }
+            }
+
+            else if (player.itemAnimation > 0 && !modPlayer.extraAccessoryML && player.itemTime == 0)
             {
                 player.itemTime = Item.useTime;
                 modPlayer.extraAccessoryML = true;
             }
             return true;
         }
-    }
-
-    public class CelestialOnionAccessorySlot : ModAccessorySlot
-    {
-        // Celestial Onion does not work in Master Mode.
-        public override bool IsEnabled()
-        {
-            // GetModPlayer will throw an index error in this step of the loading process for whatever reason
-            // We prematurely stop it from getting to that point
-            if (!Player.active || Main.masterMode)
-                return false;
-
-            return Player.Calamity().extraAccessoryML;
-        }
-        public override bool IsHidden() => IsEmpty && !IsEnabled();
     }
 }

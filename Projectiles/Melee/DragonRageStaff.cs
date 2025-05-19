@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DragonRageStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();
@@ -59,6 +61,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Projectile.ai[0] += 1f;
             Projectile.rotation += MathHelper.TwoPi * 2f / spinCycleTime * (float)direction;
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             int expectedDirection = (player.SafeDirectionTo(Main.MouseWorld).X > 0f).ToDirectionInt();
             if (Projectile.ai[0] % spinCycleTime > spinCycleTime * 0.5f && expectedDirection != Projectile.velocity.X)
             {
@@ -251,7 +254,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPos = Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
             Rectangle rectangle = new Rectangle(0, 0, tex.Width, tex.Height);
             Vector2 origin = tex.Size() / 2f;

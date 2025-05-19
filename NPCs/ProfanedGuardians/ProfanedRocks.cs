@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ProfanedGuardians
 {
+    [HasPierceResist]
     public class ProfanedRocks : ModNPC
     {
         private bool start = true;
@@ -29,7 +30,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 for (int i = 0; i < 6; i++)
@@ -325,12 +326,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Rectangle frame = new Rectangle(0, 0, texture.Width, texture.Height);
 
-            Color col = Color.Orange;
-
-            if (!Main.dayTime) col = Color.LightBlue;
-
             if (!NPC.dontTakeDamage)
-                NPC.DrawBackglow(col.MultiplyRGBA(new Color(255, 255, 255, 0)), 4f, SpriteEffects.None, frame, screenPos, texture);
+                NPC.DrawBackglow(Color.Orange.MultiplyRGBA(new Color(255, 255, 255, 0)), 4f, SpriteEffects.None, frame, screenPos, texture);
 
             spriteBatch.Draw(texture, drawPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, drawOrigin, NPC.scale, SpriteEffects.None, 0f);
 
@@ -347,7 +344,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 80, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 120);
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -379,7 +376,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     int npcType = (int)NPC.ai[2];
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ProfanedRocksGore" + npcType.ToString()).Type, NPC.scale);

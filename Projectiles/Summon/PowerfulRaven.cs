@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Summon
         public const float SeparationAnxietyDistance = 2000f;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 5;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                     if (Projectile.ai[1] % 45f >= 28f)
                     {
-                        Projectile.frame = Main.projFrames[Projectile.type] - 1;
+                        Projectile.frame = Main.projFrames[Type] - 1;
                         Lighting.AddLight(Projectile.Center, 1f, 1f, 1f);
                     }
                     else
@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Summon
                             Projectile.frame++;
                             Projectile.frameCounter = 0;
                         }
-                        if (Projectile.frame >= Main.projFrames[Projectile.type] - 1)
+                        if (Projectile.frame >= Main.projFrames[Type] - 1)
                         {
                             Projectile.frame = 0;
                         }
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.frame++;
                     Projectile.frameCounter = 0;
                 }
-                if (Projectile.frame >= Main.projFrames[Projectile.type] - 1)
+                if (Projectile.frame >= Main.projFrames[Type] - 1)
                 {
                     Projectile.frame = 0;
                 }

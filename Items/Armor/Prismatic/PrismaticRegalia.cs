@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.Prismatic
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -52,7 +52,8 @@ namespace CalamityMod.Items.Armor.Prismatic
                 AddIngredient<ExodiumCluster>(5).
                 AddIngredient<DivineGeode>(8).
                 AddIngredient(ItemID.Nanites, 300).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<PrismaticGreaves>()).
                 Register();
         }
     }

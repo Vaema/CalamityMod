@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Armor.Umbraphile
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 8; //36
+            Item.defense = 10;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Armor.Umbraphile
                 AddIngredient<SolarVeil>(12).
                 AddIngredient(ItemID.HallowedBar, 8).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<UmbraphileBoots>()).
                 Register();
         }
     }

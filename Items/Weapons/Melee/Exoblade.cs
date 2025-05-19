@@ -121,8 +121,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         continue;
 
                     p.timeLeft = LungeCooldown;
-                    p.netUpdate = true;
-                    p.netSpam = 0;
+                    p.ForceNetUpdate();
                 }
             }
 

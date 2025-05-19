@@ -247,7 +247,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 2;
             DoGravity();
             DoAnimation();
-            NetUpdate();
+            Projectile.ForceNetUpdate();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -521,16 +521,6 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.frame = 0;
             }
         }
-
-        /// <summary>
-        /// A covenient way to do a <see cref="Projectile.netUpdate"/> while also handling <see cref="Projectile.netSpam"/>.
-        /// </summary>
-        public void NetUpdate()
-        {
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
-        }
-
         #endregion
 
         #region Other Overrides

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -46,7 +47,8 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 SoundEngine.PlaySound(SoundID.Item14, target.Center);
                 int onHitDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage);
-                player.ApplyDamageToNPC(target, onHitDamage, 0f, 0, false);
+                Projectile blast = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, player.whoAmI, target.whoAmI);
+                blast.DamageType = Item.DamageType;
                 for (int i = 0; i < 10; i++)
                 {
                     int plagueDust = Dust.NewDust(new Vector2(target.position.X, target.position.Y), target.width, target.height, DustID.GemEmerald, 0f, 0f, 100, default, 2f);

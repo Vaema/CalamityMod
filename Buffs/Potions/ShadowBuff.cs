@@ -1,10 +1,14 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Potions
 {
     public class ShadowBuff : ModBuff
     {
+        public override LocalizedText Description => base.Description.WithFormatArgs(ShadowPotion.StealthRegenBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

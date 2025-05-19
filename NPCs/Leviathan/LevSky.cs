@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.Leviathan
                 float x = 0f;
                 if (LevIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[LevIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[LevIndex].Center);
                 }
 
                 float spawnAnimationTimer = 180f;

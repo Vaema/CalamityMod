@@ -20,13 +20,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
         {
             Item.width = 60;
             Item.height = 30;
-            Item.damage = 115;
+            Item.damage = 135;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 25;
@@ -46,11 +46,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             shotReturn = !shotReturn;
-            if (Main.rand.NextFloat() > 0.60f)
+            if (Main.rand.NextFloat() > 0.20f)
                 player.statLife -= 1;
             if (player.statLife <= 0)
             {
-                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).Format(player.name));
+                PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodBoiler" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
                 player.KillMe(pdr, 1000.0, 0, false);
                 return false;
             }
@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

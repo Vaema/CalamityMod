@@ -244,23 +244,17 @@ namespace CalamityMod.Projectiles.Summon
             SyncVariables();
         }
 
-        private void SyncVariables()
-        {
-            Projectile.netUpdate = true;
-            if (Projectile.netSpam >= 10)
-                Projectile.netSpam = 9;
-        }
-
+        private void SyncVariables() => Projectile.ForceNetUpdate(false);
         #endregion
 
-        public override bool? CanDamage() => (State == AIState.Dashing) ? null : false;
+        public override bool MinionContactDamage() => State == AIState.Dashing;
 
         // The minion while dashing does 1.25x more damge.
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= 1.25f;
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;

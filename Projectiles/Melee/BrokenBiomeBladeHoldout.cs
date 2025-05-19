@@ -120,28 +120,21 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(BrokenBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
 
             Attunement attunement = AttunementSystem.FindOrNull(AttunementID.Default);
 
-            if (desert || hell)
+            if (hotAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Hot);
             }
-            if (snow)
+            if (coldAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Cold);
             }
-            if (jungle || ocean)
-            {
-                attunement = AttunementSystem.FindOrNull(AttunementID.Tropical);
-            }
-            if (evil)
+            if (evilAttune)
             {
                 attunement = AttunementSystem.FindOrNull(AttunementID.Evil);
             }
@@ -183,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

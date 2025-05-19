@@ -1,10 +1,12 @@
 ﻿using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -14,7 +16,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SandProwler : ModNPC
+    public class SandProwler : SunkenSeaNPC
     {
         public const int maxLength = 14;
         public float speed = 3f;
@@ -47,6 +49,20 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentFrame => ref NPC.localAI[0];
 
         public ref float BlinkTimer => ref NPC.localAI[2];
+        protected override List<int> PreyIDs => new List<int>()
+        {
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<PrismaticGuppy>(),
+            ModContent.NPCType<Slugbun>(),
+        };
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
 
         public override void SetStaticDefaults()
         {
@@ -72,6 +88,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 TailSprite = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/SandProwler9", AssetRequestMode.AsyncLoad);
             }
             Main.npcFrameCount[Type] = 11;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -80,7 +97,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 30;
             NPC.height = 24; 
             NPC.defense = 10;
-            NPC.lifeMax = 3000;
+            NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -218,40 +235,53 @@ namespace CalamityMod.NPCs.SunkenSea
             float currentSpeed = speed;
             float currentTurnSpeed = turnSpeed;
             Vector2 segmentPosition = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
-            float targetXDist = Main.player[NPC.target].position.X + (float)(Main.player[NPC.target].width / 2);
-            float targetYDist = Main.player[NPC.target].position.Y + (float)(Main.player[NPC.target].height / 2);
+            Entity targ = CurrentPrey != null ? CurrentPrey : Main.player[NPC.target];
+            float targetXDist = targ.position.X + (float)(targ.width / 2);
+            float targetYDist = targ.position.Y + (float)(targ.height / 2);
             bool coinTarget = false;
-            // Look for silver and gold coins to eat
-            for (int i = 0; i < Main.maxItems; i++)
+            // fucking run if it notices a predator
+            if (CurrentPredator != null)
             {
-                Item item = Main.item[i];
-                // continue if not an active silver or gold coin
-                if (item == null || !item.active || (item.type != ItemID.SilverCoin && item.type != ItemID.GoldCoin))
-                    continue;
-                // can only look for coins in a 75 tile radius
-                if (item.Distance(NPC.Center) > 1200)
-                    continue;
-                // if its head touches the coin, eat it
-                if (item.getRect().Intersects(NPC.getRect()))
+                Vector2 dirToPred = NPC.DirectionTo(CurrentPredator.Center);
+                targetXDist = -dirToPred.X * 300;
+                targetYDist = -dirToPred.Y * 300;
+                currentSpeed *= 2f;
+                currentTurnSpeed *= 11.5f;
+            }
+            else
+            {
+                // Look for silver and gold coins to eat
+                for (int i = 0; i < Main.maxItems; i++)
                 {
-                    SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
-                    SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
-                    int dustType = item.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
-                    for (int j = 0; j < 4; j++)
+                    Item item = Main.item[i];
+                    // continue if not an active silver or gold coin
+                    if (item == null || !item.active || (item.type != ItemID.SilverCoin && item.type != ItemID.GoldCoin))
+                        continue;
+                    // can only look for coins in a 75 tile radius
+                    if (item.Distance(NPC.Center) > 1200)
+                        continue;
+                    // if its head touches the coin, eat it
+                    if (item.getRect().Intersects(NPC.getRect()))
                     {
-                        Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                        SoundEngine.PlaySound(SoundID.Item2 with { Pitch = 1.2f, Volume = 0.8f }, NPC.Center);
+                        SoundEngine.PlaySound(SoundID.CoinPickup, NPC.Center);
+                        int dustType = item.type == ItemID.SilverCoin ? DustID.SilverCoin : DustID.GoldCoin;
+                        for (int j = 0; j < 4; j++)
+                        {
+                            Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
+                        }
+                        item.active = false;
+                        break;
                     }
-                    item.active = false;
+                    // if it isn't touching the coin, go to it
+                    targetXDist = item.Center.X;
+                    targetYDist = item.Center.Y;
+                    coinTarget = true;
                     break;
                 }
-                // if it isn't touching the coin, go to it
-                targetXDist = item.Center.X;
-                targetYDist = item.Center.Y;
-                coinTarget = true;
-                break;
             }
             // aggro on coins takes priority over players
-            if (NPC.life > NPC.lifeMax * 0.99 && !coinTarget)
+            if (CurrentPredator == null && (NPC.life > NPC.lifeMax * 0.99 && targ is Player) && !coinTarget)
             {
                 targetYDist += 300;
                 if (Math.Abs(NPC.Center.X - Main.player[NPC.target].Center.X) < 250f)
@@ -273,7 +303,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     BlinkTimer = Main.rand.NextBool(4) ? 48 : 24;
                 }
             }
-            else
+            else if (CurrentPredator == null)
             {
                 currentSpeed *= 1.5f;
                 currentTurnSpeed *= 1.5f;
@@ -306,7 +336,7 @@ namespace CalamityMod.NPCs.SunkenSea
             float timeToReachTarget = currentSpeed / targetDistance;
             targetXDist *= timeToReachTarget;
             targetYDist *= timeToReachTarget;
-            if (targetDistance < 128 && (NPC.life <= NPC.lifeMax * 0.99 || coinTarget))
+            if (targetDistance < 128 && targ is NPC || (NPC.life <= NPC.lifeMax * 0.99 && targ is Player) || coinTarget)
             {
                 CurrentAnimation = (int)AnimType.Bite;
             }
@@ -542,7 +572,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (Main.hardMode && spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water &&
+            if (Main.hardMode && spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water &&
                 !NPC.AnyNPCs(ModContent.NPCType<SandProwler>()) && !spawnInfo.Player.Calamity().clamity && !spawnInfo.PlayerSafe)
                 return SpawnCondition.CaveJellyfish.Chance * 0.3f;
 
@@ -550,6 +580,23 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override bool CheckActive()
+        {
+            return IsHead;
+        }
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            float huntRange = 600f;
+            float avoidRange = 200f;
+            bool preyFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < huntRange * huntRange && PreyIDs.Contains(n.type);
+            bool predFilter = Vector2.DistanceSquared(NPC.Center, n.Center) < avoidRange * avoidRange && PredatorIDs.Contains(n.type);
+            bool hidingGuppy = n.type == ModContent.NPCType<PrismaticGuppy>() && n.alpha > 0;
+            return !hidingGuppy && (preyFilter || predFilter);
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override bool CanHitNPC(NPC target)
         {
             return IsHead;
         }
@@ -573,7 +620,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, 1f);
                 }

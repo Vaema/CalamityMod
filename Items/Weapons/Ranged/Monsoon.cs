@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 46;
             Item.height = 78;
-            Item.damage = 152;
+            Item.damage = 156;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<FlarewingBow>().
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<DepthCells>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

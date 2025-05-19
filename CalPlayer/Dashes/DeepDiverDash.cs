@@ -100,9 +100,8 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = DeepDiver.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = DeepDiver.ShieldSlamDamage;
             hitContext.damageClass = DamageClass.Melee;
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseDamage = DeepDiver.ShieldSlamDamage;
             hitContext.BaseKnockback = DeepDiver.ShieldSlamKnockback;
         }
     }

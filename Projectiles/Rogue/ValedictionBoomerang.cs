@@ -16,8 +16,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -115,19 +115,19 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
             OnHitEffects();
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+            target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 180);
             OnHitEffects();
         }
 

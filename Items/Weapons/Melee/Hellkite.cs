@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.BaseItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -23,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static readonly SoundStyle HitSoundBig = new("CalamityMod/Sounds/Item/HellkiteBigHit", 2);
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Item/HellkiteCharge");
         public static readonly SoundStyle FullChargeSound = new("CalamityMod/Sounds/Item/HellkiteFullCharge");
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         public override void SetDefaults()
         {
             Item.width = 124;
@@ -45,18 +42,14 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override bool AltFunctionUse(Player player) => true;
         public override bool MeleePrefix() => true;
-        public override void HoldItem(Player player)
-        {
-            return;
-        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            if (player.Calamity().mouseRight)
             {
-                Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 5);
+                Projectile.NewProjectile(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 5);
             }
             else
-                Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 0);
+                Projectile.NewProjectile(source, player.MountedCenter, Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, 0);
             return false;
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

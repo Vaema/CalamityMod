@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
 
@@ -314,7 +314,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float laserSpeed = 3f + 1.5f * enrageScale;
+                                float laserSpeed = 6f + 1.5f * enrageScale;
                                 int type = ModContent.ProjectileType<FoveanatorLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
 
@@ -478,7 +478,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            float projectileSpeed = shootLaser ? (3f + 1.5f * enrageScale) : 16f;
+                            float projectileSpeed = shootLaser ? (6f + 1.5f * enrageScale) : 16f;
+                            float ai0 = shootLaser ? 0f : (death ? 1f : 0f);
                             Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                             int numProj = shootLaser ? 4 : 2;
                             int spread = shootLaser ? 15 : 30;
@@ -486,7 +487,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, ai0);
                             }
                         }
                     }
@@ -504,7 +505,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
 
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             for (int i = 0; i < 2; i++)
                             {
@@ -737,7 +738,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.velocity.SafeNormalize(Vector2.UnitY) * 60f, Vector2.Zero, type, damage, 0f, Main.myPlayer, death ? 2f : 1f);
                             }
                         }
 
@@ -837,7 +838,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 60f, perturbedSpeed, type, damage, 0f, Main.myPlayer, death ? 1f : 0f);
                                 }
                             }
 
@@ -863,7 +864,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                                         damage = (int)(damage * secondMechMultiplier);
                                 }
 
-                                float projectileSpeed = 4f + 2f * enrageScale;
+                                float projectileSpeed = 8f + 2f * enrageScale;
                                 Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                                 int numProj = 4;
                                 int spread = 40;
@@ -905,7 +906,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
 
             Texture2D glowTexture = GlowTexture.Value;
             spriteBatch.Draw(glowTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, Color.White, NPC.rotation, NPC.frame.Size() / 2, NPC.scale, spriteEffects, 0f);
@@ -926,7 +927,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < 150; i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -952,7 +953,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Main.dust[dust].velocity *= 3f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int gore = Gore.NewGore(NPC.GetSource_Death(), NPC.position, default, Main.rand.Next(61, 64));
                 Main.gore[gore].velocity *= 0.4f;

@@ -21,8 +21,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            Main.npcFrameCount[NPC.type] = 4;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 4;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/PlaguebringerGoliath/PlagueHomingMissileGlow", AssetRequestMode.AsyncLoad);
@@ -164,8 +164,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2((float)(TextureAssets.Npc[NPC.type].Value.Width / 2), (float)(TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2));
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
             int afterimageAmt = 5;
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -185,13 +185,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (float)(afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
-            drawLocation -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+            drawLocation -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
@@ -206,7 +206,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     secondAfterimageColor = Color.Lerp(secondAfterimageColor, Color.White, 0.5f);
                     secondAfterimageColor *= (float)(afterimageAmt - j) / 15f;
                     Vector2 secondAfterimagePos = NPC.oldPos[j] + new Vector2((float)NPC.width, (float)NPC.height) / 2f - screenPos;
-                    secondAfterimagePos -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[NPC.type])) * NPC.scale / 2f;
+                    secondAfterimagePos -= new Vector2((float)texture.Width, (float)(texture.Height / Main.npcFrameCount[Type])) * NPC.scale / 2f;
                     secondAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture, secondAfterimagePos, NPC.frame, secondAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -220,7 +220,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -262,11 +262,11 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 if (Main.zenithWorld) // it is the plague, you get very sick.
                 {
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240, true);
-                    target.AddBuff(BuffID.Poisoned, 240, true);
-                    target.AddBuff(BuffID.Venom, 240, true);
+                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 240);
+                    target.AddBuff(BuffID.Poisoned, 240);
+                    target.AddBuff(BuffID.Venom, 240);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 120, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
             }
         }
 

@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
-            Main.projFrames[Projectile.type] = 20;
+            Main.projFrames[Type] = 20;
         }
 
         public override void SetDefaults()
@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Enemy
         {
             Lighting.AddLight(Projectile.Center, 1f * Projectile.Opacity, 0.1f * Projectile.Opacity, 0.1f);
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 4 % Main.projFrames[Type];
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60);
         }
 
         public override void OnKill(int timeLeft)
@@ -88,8 +88,8 @@ namespace CalamityMod.Projectiles.Enemy
 
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
-            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int projFrame = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height / Main.projFrames[Projectile.type];
+            Texture2D texture2D13 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int projFrame = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height / Main.projFrames[Type];
             int y6 = projFrame * Projectile.frame;
 
             /*Main.spriteBatch.EnterShaderRegion(BlendState.Additive);

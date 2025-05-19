@@ -29,8 +29,8 @@ namespace CalamityMod.Projectiles.Ranged
         public Vector2 oldPos = Vector2.Zero;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 36;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 36;
         }
 
         public override void SetDefaults()

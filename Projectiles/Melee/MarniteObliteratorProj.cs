@@ -36,6 +36,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.hide = true;
             Projectile.ownerHitCheck = true;
             Projectile.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool ShouldUpdatePosition() => false;
@@ -73,6 +75,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, result is clamped later
                     Vector2 newVelocity = Owner.Calamity().mouseWorld - Owner.MountedCenter;
 
                     if (Main.tile[Player.tileTargetX, Player.tileTargetY].HasTile)
@@ -179,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = new Vector2(9f, tex.Height / 2f);
             SpriteEffects effect = SpriteEffects.None;
             if (Owner.direction * Owner.gravDir < 0)

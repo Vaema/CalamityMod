@@ -3,10 +3,8 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,10 +23,9 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 4;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 4;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 24;
@@ -52,24 +49,20 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.extraUpdates ++;
             if (time == 0)
             {
-                chosenTarget = Owner.Calamity().mouseWorld.ClosestNPCAt(2000);
+                chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(700);
                 if (chosenTarget != null)
                     Projectile.velocity = (chosenTarget.Center - Projectile.Center + chosenTarget.velocity * 8).SafeNormalize(Vector2.UnitX) * 3;
                 else
+                {
+                    // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Projectile.velocity = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 3;
+                }
             }
             if (Projectile.numHits < 1)
             {
                 if (chosenTarget == null || chosenTarget.life <= 0)
-                    chosenTarget = Owner.Calamity().mouseWorld.ClosestNPCAt(700);
-                if (chosenTarget != null)
-                {
-                    Vector2 moveTotarget = (chosenTarget.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 5)
-                        Projectile.velocity += moveTotarget * 0.15f;
-                    else
-                        Projectile.velocity *= 0.8f;
-                }
+                    chosenTarget = Owner.ClampedMouseWorld().ClosestNPCAt(700);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, chosenTarget, true, 0.09f, 5, 0.99f, accelerate: true);
             }
 
             if (targetDist < 1400f)
@@ -104,21 +97,21 @@ namespace CalamityMod.Projectiles.Melee
             {
                 spawnMet = false;
                 Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.White, 1, tex);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White, 1, tex);
             return false;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.2f;
-            int hitsToMinMult = 4;
+            int hitsToMinMult = 6;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 
@@ -133,13 +126,13 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.ai[2] > 0 && spawnMet)
             {
                 Vector2 spawnSpot = Owner.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0, Projectile.ai[2] - 1);
             }
 
             if (Projectile.owner == Main.myPlayer)
             {
                 Projectile.damage = (int)(Projectile.damage * 0.3f);
-                Projectile.ExpandHitboxBy((int)(228f * Projectile.scale));
+                Projectile.ExpandHitboxBy((int)(285f * Projectile.scale));
                 Projectile.penetrate = -1;
                 Projectile.Damage();
             }
@@ -161,5 +154,6 @@ namespace CalamityMod.Projectiles.Melee
             Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White * 0.7f, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 0.3f, 25, true);
             GeneralParticleHandler.SpawnParticle(blastRing2);
         }
+        public override bool? CanCutTiles() => false;
     }
 }

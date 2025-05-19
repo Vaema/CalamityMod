@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -142,20 +142,15 @@ namespace CalamityMod.Projectiles.Rogue
                     int splitProj = ModContent.ProjectileType<ReboundingRainbowSplit>();
                     if (Projectile.owner == Main.myPlayer && Main.player[Projectile.owner].ownedProjectileCounts[splitProj] < 16)
                     {
-                        float spread = 45f * 0.0174f;
-                        double startAngle = Math.Atan2(Projectile.velocity.X, Projectile.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
-                        double offsetAngle;
-                        for (int i = 0; i < 4; i++)
+                        for (int i = 0; i < 8; i++)
                         {
-                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
-                            int disk = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), splitProj, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                            int disk2 = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), splitProj, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Vector2 velocity = ((MathHelper.TwoPi * i / 8f) - (MathHelper.ToRadians(67.5f) - Projectile.velocity.ToRotation())).ToRotationVector2() * 4f;
+                            Projectile split = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, splitProj, Projectile.damage, Projectile.knockBack, Projectile.owner);
                             if (Projectile.Calamity().stealthStrike)
                             {
-                                Main.projectile[disk].idStaticNPCHitCooldown = Main.projectile[disk2].idStaticNPCHitCooldown = 8;
-                                Main.projectile[disk].usesIDStaticNPCImmunity = Main.projectile[disk2].usesIDStaticNPCImmunity = true;
-                                Main.projectile[disk].timeLeft = Main.projectile[disk2].timeLeft = 60;
+                                split.idStaticNPCHitCooldown = 8;
+                                split.usesIDStaticNPCImmunity = true;
+                                split.timeLeft = 60;
                             }
                         }
                     }
@@ -191,7 +186,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
     }

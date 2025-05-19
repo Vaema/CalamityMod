@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.Astral
             CalamityUtils.SetMerge(Type, TileID.CrimsonGrass);
 
             DustType = ModContent.DustType<AstralBasic>();
-            RegisterItemDrop(ModContent.ItemType<Items.Placeables.AstralDirt>());
+            RegisterItemDrop(ModContent.ItemType<Items.Placeables.Astral.AstralDirt>());
 
             AddMapEntry(new Color(133, 109, 140));
 
@@ -58,7 +58,7 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(20) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
@@ -74,7 +74,7 @@ namespace CalamityMod.Tiles.Astral
                 up.TileFrameX = (short)(WorldGen.genRand.Next(23) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }

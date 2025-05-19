@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.knockBackResist = 0f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 8, 30);
+            NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.TargetClosest(false);
 
-            if (NPC.velocity.Y == 0f && LaserShootCountdown <= 0f && !Target.npcTypeNoAggro[NPC.type])
+            if (NPC.velocity.Y == 0f && LaserShootCountdown <= 0f && !Target.npcTypeNoAggro[Type])
             {
                 NPC.velocity.X *= 0.8f;
 
@@ -182,7 +182,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             // Randomly prepare to shoot a laser.
             if (Main.netMode != NetmodeID.MultiplayerClient && Math.Abs(Target.Center.X - NPC.Center.X) < 250f && Target.Center.X < NPC.Center.X &&
-                LaserShootCountdown == 0f && Main.rand.NextBool(110) && !Target.npcTypeNoAggro[NPC.type])
+                LaserShootCountdown == 0f && Main.rand.NextBool(110) && !Target.npcTypeNoAggro[Type])
             {
                 LaserShootCountdown = 600f;
                 NPC.netUpdate = true;
@@ -197,7 +197,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 for (int k = 0; k < 20; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GammaSlimeGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("GammaSlimeGore2").Type, NPC.scale);

@@ -10,14 +10,14 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.CanBePlacedOnWeaponRacks[Item.type] = true;
+            ItemID.Sets.CanBePlacedOnWeaponRacks[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 36;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(gold: 10);
             Item.rare = ItemRarityID.Orange;
         }

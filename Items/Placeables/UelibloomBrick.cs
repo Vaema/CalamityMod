@@ -21,14 +21,16 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe(50).
                 AddRecipeGroup("AnyStoneBlock", 50).
                 AddIngredient<UelibloomOre>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<UelibloomBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<BotanicPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

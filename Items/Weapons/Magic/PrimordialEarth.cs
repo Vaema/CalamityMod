@@ -1,10 +1,10 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic
@@ -12,11 +12,16 @@ namespace CalamityMod.Items.Weapons.Magic
     public class PrimordialEarth : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
+        public static int BuffDefenseBoost = 12;
+        public static float BuffDamageBoost = 0.12f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDefenseBoost, BuffDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 36;
             Item.height = 42;
-            Item.damage = 210;
+            Item.damage = 300;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 48;
             Item.useTime = 68;
@@ -45,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient<DeathValleyDuster>().
                 AddIngredient(ItemID.Amber, 5).
-                AddIngredient<CoreofSunlight>(6).
+                AddIngredient(ItemID.Ectoplasm, 5).
                 AddTile(TileID.Bookcases).
                 Register();
         }

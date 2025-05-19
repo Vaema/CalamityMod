@@ -2,6 +2,10 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Microsoft.Xna.Framework;
+using Terraria.Localization;
+using System.Collections.Generic;
+using System;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -14,7 +18,6 @@ namespace CalamityMod.Items.Accessories
             Item.height = 56;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 4; // This should have less defense due to the regen it provides
             Item.accessory = true;
         }
 
@@ -22,18 +25,13 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.regenator = true;
+            player.longInvince = true; // Gives better iframes because god help you if you end up getting hit twice
+        }
 
-            //Hard-lock the player's health to 50%.
-            //No lifesteal, no regen, no healing pots
-            if (player.statLife >= (int)(player.statLifeMax2 * 0.5f))
-            {
-                player.statLife = (int)(player.statLifeMax2 * 0.5f);
-                player.moonLeech = true;
-                modPlayer.healingPotionMultiplier = 0;
-
-                if (player.lifeRegenCount > 0)
-                    player.lifeRegenCount = 0;
-            }
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (Main.LocalPlayer != null)
+                list.FindAndReplace("[DAMAGE]", (Main.LocalPlayer.Calamity().regenatorDamage).ToPercent());
         }
     }
 }

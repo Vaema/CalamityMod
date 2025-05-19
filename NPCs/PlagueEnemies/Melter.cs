@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers();
             value.PortraitPositionYOverride = -32f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 90, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Plague, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Melter").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Melter2").Type, 1f);

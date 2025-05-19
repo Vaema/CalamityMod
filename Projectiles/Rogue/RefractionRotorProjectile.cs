@@ -19,13 +19,14 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public const int EnergyShotCount = 6;
+        public const int StealthEnergyShotCount = 4;
         private static float RotationIncrement = 0.5f;
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/RefractionRotor";
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 16;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 16;
         }
 
         public override void SetDefaults()
@@ -39,7 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -108,14 +109,15 @@ namespace CalamityMod.Projectiles.Rogue
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            if (CalamityUtils.CountProjectiles(shootType) > 24)
+            if (CalamityUtils.CountOwnedProjectiles(shootType, Projectile.owner) > 24)
                 return;
 
-            int energyDamage = (int)(Projectile.damage * 0.495);
+            int energyDamage = (int)(Projectile.damage * 0.5f);
+            int shotAmt = Projectile.Calamity().stealthStrike ? StealthEnergyShotCount : EnergyShotCount;
             float baseDirectionRotation = Main.rand.NextFloat(MathHelper.TwoPi);
-            for (int i = 0; i < EnergyShotCount; i++)
+            for (int i = 0; i < shotAmt; i++)
             {
-                Vector2 shootVelocity = (MathHelper.TwoPi * i / EnergyShotCount + baseDirectionRotation).ToRotationVector2() * 9f;
+                Vector2 shootVelocity = (MathHelper.TwoPi * i / shotAmt + baseDirectionRotation).ToRotationVector2() * 9f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + shootVelocity, shootVelocity, shootType, energyDamage, Projectile.knockBack, Projectile.owner);
             }
         }

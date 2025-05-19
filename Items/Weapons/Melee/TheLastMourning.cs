@@ -76,11 +76,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BalefulHarvester>().
+                AddIngredient(ItemID.TheHorsemansBlade).
                 AddIngredient(ItemID.SoulofNight, 30).
                 AddIngredient<ReaperTooth>(5).
                 AddIngredient<RuinousSoul>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<Necroplasm>(5).
                 AddIngredient<Navyplate>(25).
                 AddIngredient<ExodiumCluster>(25).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

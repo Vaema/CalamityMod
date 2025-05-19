@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
@@ -26,9 +27,11 @@ namespace CalamityMod.Items.Placeables.FurnitureSilva
             CreateRecipe().
                 AddIngredient<SilvaWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<SilvaPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

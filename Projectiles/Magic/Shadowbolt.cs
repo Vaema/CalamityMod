@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
         public override void SetDefaults()
         {
@@ -90,6 +90,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 chosenTarget = Projectile.Center.ClosestNPCAt(2000);
 
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 if (chosenTarget == null)
                     targetCenter = Owner.Calamity().mouseWorld;
                 else
@@ -102,6 +103,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (!spawnPlat && reflecting && targetCenter != Vector2.Zero)
             {
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 if (chosenTarget == null)
                     targetCenter = Owner.Calamity().mouseWorld;
                 else
@@ -193,15 +195,13 @@ namespace CalamityMod.Projectiles.Magic
             float minMult = 0.25f;
             int hitsToMinMult = 7;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 1) * damageMult;
+            modifiers.SourceDamage *= (hasReboundOffPlat ? 2.5f : 0.8f) * damageMult;
 
             if (!hasReboundOffPlat && Projectile.numHits == 0 && !hasSetPlatSpawn)
             {
                 spawnPlat = true;
                 hasSetPlatSpawn = true;
             }
-            //if (!hasReboundOffPlat)
-                //Projectile.extraUpdates = 10;
         }
         public override bool? CanDamage() => reflecting ? false : null;
         public override bool PreDraw(ref Color lightColor)

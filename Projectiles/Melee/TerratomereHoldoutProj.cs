@@ -160,6 +160,7 @@ namespace CalamityMod.Projectiles.Melee
             bool createBeams = Time == (int)(Terratomere.SwingTime * RecoveryCompletionRatio) + 5f;
             if (Main.myPlayer == Projectile.owner && Time == (int)(Terratomere.SwingTime * (SwingCompletionRatio + 0.34f)))
             {
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Vector2 bigSlashVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed / 2f;
                 if (bigSlashVelocity.AngleBetween(InitialRotation.ToRotationVector2()) > 1.456f)
                     bigSlashVelocity = InitialRotation.ToRotationVector2() * bigSlashVelocity.Length();
@@ -254,7 +255,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public void DrawBlade(Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Vector2 origin = texture.Size() * Vector2.UnitY;
             if (Projectile.spriteDirection == -1)
@@ -283,7 +284,7 @@ namespace CalamityMod.Projectiles.Melee
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);

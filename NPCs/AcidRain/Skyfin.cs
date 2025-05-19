@@ -3,12 +3,10 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +20,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 5;
+            Main.npcFrameCount[Type] = 5;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Rotation = MathHelper.Pi
@@ -56,7 +54,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.DR_NERD(0.05f);
             }
 
-            NPC.value = Item.buyPrice(0, 0, 3, 65);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -173,7 +171,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y >= Main.npcFrameCount[NPC.type] * frameHeight)
+                if (NPC.frame.Y >= Main.npcFrameCount[Type] * frameHeight)
                     NPC.frame.Y = 0;
             }
         }
@@ -181,8 +179,6 @@ namespace CalamityMod.NPCs.AcidRain
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
-            LeadingConditionRule postAS = npcLoot.DefineConditionalDropSet(DropHelper.PostAS());
-            postAS.Add(ModContent.ItemType<SkyfinBombers>(), 20);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -191,7 +187,7 @@ namespace CalamityMod.NPCs.AcidRain
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkyfinGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkyfinGore2").Type, NPC.scale);

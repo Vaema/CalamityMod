@@ -21,9 +21,9 @@ namespace CalamityMod.Items.Armor.GodSlayer
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += 0.05f;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.GetCritChance<GenericDamageClass>() += 10;
+            player.moveSpeed += 0.1f;
+            player.GetDamage<GenericDamageClass>() += 0.11f;
+            player.GetCritChance<GenericDamageClass>() += 11;
         }
 
         public override void AddRecipes()

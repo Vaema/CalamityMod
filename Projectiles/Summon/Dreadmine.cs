@@ -11,7 +11,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -202,7 +202,7 @@ namespace CalamityMod.Projectiles.Summon
                 Main.dust[dust2].velocity *= 2f;
             }
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;

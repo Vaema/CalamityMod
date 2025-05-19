@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Armor.Silva
         public override void UpdateEquip(Player player)
         {
             player.statLifeMax2 += 80;
-            player.GetDamage<GenericDamageClass>() += 0.12f;
+            player.GetDamage<GenericDamageClass>() += 0.11f;
             player.GetCritChance<GenericDamageClass>() += 8;
         }
 

@@ -72,6 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Main.myPlayer == Projectile.owner)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * SubsumingVortex.ReleaseSpeed;
                         Projectile.damage = (int)(Projectile.damage * SubsumingVortex.ReleaseDamageFactor);
                         HasBeenReleased = true;
@@ -82,6 +83,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Main.myPlayer == Projectile.owner)
                     {
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                         Projectile.velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * SubsumingVortex.ReleaseSpeed;
                         Projectile.damage = (int)(Projectile.damage * (1f + Time * 0.0152f));
                         HasBeenReleased = true;
@@ -163,12 +165,11 @@ namespace CalamityMod.Projectiles.Magic
                 // Smoothly approach a sinusoidal offset as time goes on.
                 float verticalOffset = Utils.Remap(Time, 0f, 90f, -30f, (float)Math.Cos(Projectile.timeLeft / 32f) * 30f);
                 Vector2 hoverDestination = Owner.Top + new Vector2(Owner.direction * Projectile.scale * 30f, verticalOffset);
-                hoverDestination += (Main.MouseWorld - hoverDestination) * SubsumingVortex.GiantVortexMouseDriftFactor;
+                hoverDestination += (Owner.ClampedMouseWorld() - hoverDestination) * SubsumingVortex.GiantVortexMouseDriftFactor;
 
                 Vector2 idealVelocity = Vector2.Zero.MoveTowards(hoverDestination - Projectile.Center, 32f);
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, idealVelocity, 0.04f);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
 
             // Re-determine the hitbox size.

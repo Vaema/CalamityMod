@@ -1,3 +1,4 @@
+AnahitaTelegraph.DisplayName: Anahita Telegraph
 ApolloChargeTelegraph.DisplayName: Apollo Charge Telegraph
 ApolloFireball.DisplayName: Volatile Plasma Blast
 ApolloRocket.DisplayName: High Explosive Plasma Rocket
@@ -40,6 +41,8 @@ CirrusBlaster.DisplayName: Cirrus Mushroom
 CirrusPhotonRipperPrismTooth.DisplayName: Cirrus Photon Ripper Tooth
 CirrusPhotonRipperProjectile.DisplayName: Cirrus Photon Ripper
 CirrusVolatileVodkaBottle.DisplayName: Volatile Vodka Bottle
+CrimulanSpike.DisplayName: Crimulan Spike
+CursedFire.DisplayName: Eye Fire
 DarkEnergyBall.DisplayName: Dark Energy
 DarkEnergyBall2.DisplayName: Dark Energy
 DarkOrb.DisplayName: Dark Orb
@@ -56,6 +59,7 @@ DoGDeathBoom.DisplayName: Cosmic Explosion
 DoGFire.DisplayName: Death Fire
 DoGP1EndPortal.DisplayName: Portal
 DoGTeleportRift.DisplayName: Rift
+DoGWingdings.DisplayName: Ramblings of Wing DoGster
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
 DyingSun.DisplayName: Dying Sun
 EssenceDust.DisplayName: Cosmic Dust
@@ -70,7 +74,6 @@ FoveanatorFlamethrower.DisplayName: Nebulous Flames
 FrostMist.DisplayName: Frost Mist
 GooglyEye.DisplayName: Googly Eye
 GreatSandBlast.DisplayName: Great Sand Blast
-HealOrbProv.DisplayName: Heal
 HellfireExplosion.DisplayName: Brimstone Hellfire Explosion
 HiveBombGoliath.DisplayName: Hive Bomb
 HolyAura.DisplayName: Holy Aura
@@ -101,6 +104,7 @@ MoltenBlast.DisplayName: Molten Blast
 MoltenBlob.DisplayName: Molten Blob
 MushBomb.DisplayName: Mushroom Shot
 MushBombFall.DisplayName: Falling Mushroom
+MushBombGround.DisplayName: Mushroom Shot
 OldDukeGore.DisplayName: Sulphurous Gore
 OldDukeSummonDrop.DisplayName: Acid
 OldDukeToothBallSpike.DisplayName: Spike
@@ -121,6 +125,8 @@ ProfanedSpear.DisplayName: Profaned Spear
 ProvidenceCrystal.DisplayName: Holy Crystal
 ProvidenceCrystalShard.DisplayName: Holy Crystal Shard
 ProvidenceHolyRay.DisplayName: Holy Ray
+QueenBeenade.DisplayName: Queen Beenade
+QueenBeenadeBee.DisplayName: Queen Beenade Bee
 RavagerBlast.DisplayName: Ravaging Laser
 RavagerBlaster.DisplayName: Ravager Blaster
 RavagerFlame.DisplayName: Blue Flame

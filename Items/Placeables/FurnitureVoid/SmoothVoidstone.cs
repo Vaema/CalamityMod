@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureVoid
@@ -22,9 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
             CreateRecipe().
                 AddIngredient<SmoothVoidstoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<SmoothVoidstonePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

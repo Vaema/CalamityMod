@@ -23,14 +23,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Lightmask", AssetRequestMode.AsyncLoad);
             }
         }
 
         public override void SetDefaults()
         {
             NPC.damage = 100;
-            NPC.width = 60;
+            NPC.width = 110;
             NPC.height = 88;
             NPC.defense = 0;
             NPC.LifeMaxNERB(2500000, 3000000);
@@ -167,16 +167,22 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
             Vector2 center = NPC.Center - screenPos;
-            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)PrimordialWyrmHead.PWHeadVelocity, 6f, 8f);
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             return false;
         }
@@ -190,9 +196,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                 for (int k = 0; k < 10; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm3").Type, 1f);
+                    Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm4").Type, 1f);
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
         public static readonly SoundStyle RumbleSound = new("CalamityMod/Sounds/Custom/LeviathanRumble");
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.timeLeft == 45)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     WaterShaderData ripple = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                     Vector2 ripplePos = Projectile.Center;
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public void CreateVisuals()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             WorldUtils.Find((Projectile.Center - Vector2.UnitY * 1200f).ToTileCoordinates(), Searches.Chain(new Searches.Down(150), new CustomConditions.IsWater()), out Point waterTop);

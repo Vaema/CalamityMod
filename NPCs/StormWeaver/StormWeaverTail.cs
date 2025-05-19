@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(StormWeaverHead))]
     public class StormWeaverTail : ModNPC
     {
@@ -26,7 +27,7 @@ namespace CalamityMod.NPCs.StormWeaver
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 Phase2Texture = ModContent.Request<Texture2D>(Texture + "Naked", AssetRequestMode.AsyncLoad);
@@ -130,7 +131,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.Calamity().VulnerableToCold = true;
                     NPC.Calamity().VulnerableToSickness = true;
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWArmorTail1").Type, NPC.scale);
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWArmorTail2").Type, NPC.scale);
@@ -272,7 +273,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / 2);
             float chargeTelegraphTime = 120f;
             float chargeTelegraphGateValue = chargePhaseGateValue - chargeTelegraphTime;
@@ -316,9 +317,9 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            int buffDuration = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] >= chargePhaseGateValue ? 60 : 30;
+            int buffDuration = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] >= chargePhaseGateValue ? 120 : 60;
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Electrified, buffDuration, true);
+                target.AddBuff(BuffID.Electrified, buffDuration);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -328,7 +329,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeTail1").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeTail2").Type, NPC.scale);

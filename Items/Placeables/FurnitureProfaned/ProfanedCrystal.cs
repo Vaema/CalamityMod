@@ -19,11 +19,12 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
             CreateRecipe(50).
                 AddIngredient(ItemID.Glass, 50).
                 AddIngredient<UnholyEssence>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<ProfanedCrystalWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

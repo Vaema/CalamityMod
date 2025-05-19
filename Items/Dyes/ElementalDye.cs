@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Dyes
                 AddIngredient(ItemID.VortexDye).
                 AddIngredient(ItemID.NebulaDye).
                 AddIngredient(ItemID.StardustDye).
-                AddIngredient<GalacticaSingularity>().
+                AddIngredient<MeldDye>().
                 AddTile(TileID.DyeVat).
                 Register();
         }

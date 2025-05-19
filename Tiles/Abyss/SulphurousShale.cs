@@ -103,7 +103,7 @@ namespace CalamityMod.Tiles.Abyss
                             Main.tile[vineX, vineY].TileType = (ushort)ModContent.TileType<SulphurousVines>();
                             Main.tile[vineX, vineY].Get<TileWallWireStateData>().HasTile = true;
                             WorldGen.SquareTileFrame(vineX, vineY, true);
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                                 NetMessage.SendTileSquare(-1, vineX, vineY, 3, TileChangeType.None);
                         }
                         Main.tile[i, j].Get<TileWallWireStateData>().Slope = SlopeType.Solid;
@@ -117,7 +117,7 @@ namespace CalamityMod.Tiles.Abyss
             Tile up2 = Main.tile[i, j - 2];
 
             // Place sulphur tentacle corals
-            if (WorldGen.genRand.NextBool(10)&& !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            if (WorldGen.genRand.NextBool(10) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
                 up.TileType = (ushort)ModContent.TileType<SulphurTentacleCorals>();
                 up.HasTile = true;
@@ -127,7 +127,7 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(22) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
         }

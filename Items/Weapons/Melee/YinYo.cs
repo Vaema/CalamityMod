@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
@@ -7,11 +8,16 @@ namespace CalamityMod.Items.Weapons.Melee
     public class YinYo : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+
+        public static float Reach = 400f;
+        public static float Speed = 32f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Yoyo[Item.type] = true;
-            ItemID.Sets.GamepadExtraRange[Item.type] = 15;
-            ItemID.Sets.GamepadSmartQuickReach[Item.type] = true;
+            ItemID.Sets.Yoyo[Type] = true;
+            ItemID.Sets.GamepadExtraRange[Type] = 15;
+            ItemID.Sets.GamepadSmartQuickReach[Type] = true;
         }
 
         public override void SetDefaults()
@@ -41,8 +47,11 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient(ItemID.Valor).
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
+                AddIngredient(ItemID.SoulofLight, 7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -7,6 +7,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
@@ -14,9 +15,13 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
+using Terraria.GameContent.Personalities;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Graphics.Effects;
+using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
@@ -120,6 +125,33 @@ namespace CalamityMod.ILEditing
         }
         #endregion Reforge Requirement Relaxation
 
+        #region Remove Forced Inaccuracy from Chain Gun and Gatligator
+        private static void RemoveForcedInaccuracyFromChainGunAndGatligator(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Go to the load of the Chain Gun's item ID (1929).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(1929)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Chain Gun.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+
+            // Go to the load of the Gatligator's item ID (2270).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(2270)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Gatligator.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+        }
+        #endregion
+
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
@@ -127,24 +159,6 @@ namespace CalamityMod.ILEditing
                 orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
-
-        #region Remove Feral Bite Random Debuffs
-        private static void RemoveFeralBiteRandomDebuffs(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
-            {
-                LogFailure("Remove Feral Bite Random Debuffs", "Could not locate the Feral Bite random debuff duration multiplier.");
-                return;
-            }
-
-            // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0f);
-        }
-        #endregion
 
         #region Remove Expert Brain of Cthulhu Random Debuffs
         private static void RemoveExpertBrainRandomDebuffs(ILContext il)
@@ -269,6 +283,15 @@ namespace CalamityMod.ILEditing
                 pickPower = 65;
 
             return orig(self, x, y, pickPower, hitBufferIndex, tileTarget);
+        }
+        #endregion
+
+        #region Remove Flail Throw Velocity Being Affected By Player Velocity
+        private static void FlailsNoLongerAffectedByPlayerVelocity(On_Projectile.orig_AI_015_Flails orig, Projectile self)
+        {
+            orig(self);
+            if (self.ai[0] == 1f && self.ai[1] == 0f)
+                self.velocity -= Main.player[self.owner].velocity;
         }
         #endregion
 
@@ -629,7 +652,7 @@ namespace CalamityMod.ILEditing
 
                 case 17:
                     item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
+                    item.SetDefaults(ItemID.LavaFishingHook);
                     rewardItems.Add(item);
                     break;
 
@@ -653,7 +676,7 @@ namespace CalamityMod.ILEditing
 
                 case 21:
                     item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
+                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
                     rewardItems.Add(item);
                     break;
 
@@ -837,7 +860,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Honey Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 17)
+            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 21)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.SuperAbsorbantSponge);
@@ -893,7 +916,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Lavaproof Fishing Hook
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 21)
+            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 17)
             {
                 item = new Item();
                 item.SetDefaults(ItemID.LavaFishingHook);
@@ -1055,7 +1078,7 @@ namespace CalamityMod.ILEditing
 
         #endregion Make Magma Stone & Fire Gauntlet Dust Toggleable
 
-        #region Remove Lihzahrd Power Cells Requiring Plantera Defeated
+        #region Vanilla Non-Linearity Fixes
         private static void RemovePowerCellPlanteraLock(ILContext il)
         {
             // Remove the check requiring Plantera to be defeated to use Lihzahrd Power Cells at the Altar.
@@ -1072,13 +1095,13 @@ namespace CalamityMod.ILEditing
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
-        #endregion
 
-        #region Celestial Sigil Non-Linearity Change
-        private static bool RemoveCelestialSigilUseLock(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
+        private static bool RemoveUseLocks(On_Player.orig_ItemCheck_CheckCanUse orig, Player self, Item sItem)
         {
             if (sItem.type == ItemID.CelestialSigil)
                 return !NPC.AnyNPCs(NPCID.MoonLordCore) && !BossRushEvent.BossRushActive;
+            if (sItem.type == ItemID.SolarTablet)
+                return Main.dayTime && !Main.eclipse && (Main.hardMode || NPC.downedMechBossAny || NPC.downedPlantBoss);
 
             return orig(self, sItem);
         }
@@ -1100,6 +1123,144 @@ namespace CalamityMod.ILEditing
             }
             else
                 orig(self, sItem);
+        }
+        #endregion
+
+        #region Remove NPC.damage Condition from Radar
+        private static void RemoveDamageConditionFromRadar(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            Func<Instruction, bool>[] searchFor =
+            [
+                (x => x.MatchLdfld<NPC>(nameof(NPC.damage))),
+                (x => x.MatchLdcI4(out var comp) && comp == 0),
+                (x => x.MatchBle(out _)) //ble.s
+            ];
+
+            if (!cursor.TryGotoNext(MoveType.After, searchFor))
+            {
+                LogFailure("Radar Condition", "Unable to locate condition for NPC.damage > 0");
+                return;
+            }
+
+            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            cursor.Prev.OpCode = OpCodes.Nop;
+
+            // After that we pop NPC.damage and 0 from stack
+            cursor.EmitPop();
+            cursor.EmitPop();
+        }
+        #endregion
+
+        #region Multiple NPC Happiness support for Cirrus
+        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        {
+            FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
+            NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
+
+            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            {
+                MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                FieldInfo happinessField = typeof(ShopHelper).GetField("_currentPriceAdjustment", BindingFlags.Instance | BindingFlags.NonPublic);
+                float currentPriceAdjustment = (float)happinessField.GetValue(self);
+
+                if (affectionLevel != 0 && Enum.IsDefined(affectionLevel))
+                {
+                    // Add a suffix to the localization key which specifies the NPC's name
+                    addReportField.Invoke(self, [ $"{affectionLevel}NPC_" + NPCID.Search.GetName(npcType),  new
+                    {
+                        NPCName = NPC.GetFullnameByID(npcType)
+                    }, 0]);
+                    currentPriceAdjustment *= NPCHappiness.AffectionLevelToPriceMultiplier[affectionLevel];
+                    happinessField.SetValue(self, currentPriceAdjustment);
+                }
+            }
+            else
+            {
+                orig(self, npcType, affectionLevel);
+            }
+        }
+        #endregion
+
+        #region Allow disabling gravity swap visual && allow gravity keybind
+        private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
+        {
+            var cplay = Player.Calamity();
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            {
+                if (Player.controlUp && Player.releaseUp) {
+                    Player.gravDir *= -1;
+                }
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                {
+                    Player.gravDir *= -1;
+                    Player.fallStart = (int)(Player.position.Y / 16f);
+                    Player.jump = 0;
+                    SoundEngine.PlaySound(SoundID.Item8, Player.position);
+                }
+
+                if (Player.forcedGravity > 0) {
+				    Player.gravDir = -1f;
+			}   
+            }
+            
+            if (cplay.justChangedGravity) {
+                Player.gravDir = cplay.oldGravDir;
+            }
+            cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
+            
+            cplay.oldGravDir = Player.gravDir;
+            if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            {
+            if (Player.gravDir == -1) {
+                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene.Activate("CalamityMod:FlipScreen");
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+
+                }
+            } else {
+                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+
+                }
+            }
+            }
+            if (cplay.justChangedGravity)
+            {
+                Player.gravDir *= -1;
+            }
+            orig(Player);
+        }
+
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+            orig();
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                var center = Main.screenHeight / 2;
+                Main.mouseY = center - (Main.mouseY - center);
+            };
+        }
+        private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
+        {
+            if (!Main.gameMenu && (Filters.Scene["CalamityMod:FlipScreen"].IsActive() || Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                Main.LocalPlayer.Calamity().tempGravDir = Main.LocalPlayer.gravDir;
+                Main.LocalPlayer.gravDir = 1;
+            }
+            orig(self);
+        }
+        
+        private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
+        {
+            orig(self, gameTime);
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+            {
+                Main.LocalPlayer.gravDir = Main.LocalPlayer.Calamity().tempGravDir;
+            }
         }
         #endregion
 

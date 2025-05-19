@@ -13,8 +13,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.extraUpdates = 1;
+            Projectile.extraUpdates = 3;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.Bullet;
         }
@@ -65,7 +65,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

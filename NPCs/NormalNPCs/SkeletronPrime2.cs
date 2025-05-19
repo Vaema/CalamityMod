@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
             if (!Main.dedServ)
@@ -59,7 +59,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.boss = true;
-            NPC.value = 200000f;
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -226,7 +225,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Main.npc[spazmatism].localAI[3] = 1f;
                         Main.npc[spazmatism].SyncVanillaLocalAI();
                         string typeName = Main.npc[spazmatism].TypeName;
-                        if (Main.netMode == NetmodeID.Server && spazmatism < Main.maxNPCs)
+                        if (Main.dedServ && spazmatism < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spazmatism);
 
                         AchievementsHelper.CheckMechaMayhem();
@@ -876,7 +875,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_1").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SkeletronPrime2_2").Type, NPC.scale);

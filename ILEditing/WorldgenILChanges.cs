@@ -181,6 +181,8 @@ namespace CalamityMod.ILEditing
 
             // Emit our new string "Mods.CalamityMod.UI.SmallWorldWarning".
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
+
+
         }
         #endregion
 

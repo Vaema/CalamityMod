@@ -45,6 +45,7 @@ using CalamityMod.Projectiles.Ranged;
 using Steamworks;
 using CalamityMod.Particles;
 using Terraria.Utilities.Terraria.Utilities;
+using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -241,8 +242,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 21;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 21;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -269,7 +270,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.width = NPC.height = 44;
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
-            NPC.value = Item.buyPrice(30, 0, 0, 0);
+            NPC.value = Item.buyPrice(3, 0, 0, 0);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
@@ -291,6 +292,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
+                new MoonLordPortraitBackgroundProviderBestiaryInfoElement(), // Gives black background
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.SupremeCalamitas")
             });
         }
@@ -666,7 +668,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 Main.tile[i + xoffset, j + yoffset].TileType = (ushort)ModContent.TileType<Tiles.ArenaTile>();
                                 Main.tile[i + xoffset, j + yoffset].Get<TileWallWireStateData>().HasTile = true;
                             }
-                            if (Main.netMode == NetmodeID.Server)
+                            if (Main.dedServ)
                             {
                                 NetMessage.SendTileSquare(-1, i + xoffset, j + yoffset, 1, TileChangeType.None);
                             }
@@ -792,7 +794,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                             // Make the town NPC spawn.
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<FAP>() : ModContent.NPCType<WITCH>());
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
                         }
 
                         NPC.active = false;
@@ -1611,7 +1613,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = CalamityLists.debuffList.Contains(buffID);
+                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;
@@ -1716,10 +1718,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (!canDespawn)
                                 NPC.velocity.X *= 0.965f;
 
-                            if (DownedBossSystem.downedCalamitas && !bossRush)
+                            if (DownedBossSystem.downedCalamitas || bossRush)
                             {
                                 if (giveUpCounter == 720)
                                 {
+                                    if (bossRush)
+                                    {
+                                        NPC.chaseable = true;
+                                        NPC.dontTakeDamage = false;
+                                        return;
+                                    }
+
                                     for (int i = 0; i < 24; i++)
                                     {
                                         Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
@@ -1750,13 +1759,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                             if (giveUpCounter <= 0)
                             {
-                                if (bossRush)
-                                {
-                                    NPC.chaseable = true;
-                                    NPC.dontTakeDamage = false;
-                                    return;
-                                }
-
                                 for (int i = 0; i < 24; i++)
                                 {
                                     Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
@@ -2265,7 +2267,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                 {
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
@@ -2284,7 +2286,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                 {
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
@@ -2306,7 +2308,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                         GeneralParticleHandler.SpawnParticle(orb);
                                     }
 
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                     {
                                         float projectileVelocityToPass = projectileVelocity.Length() * 1.3f;
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
@@ -3445,7 +3447,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             // Spawn the SCal NPC directly where the boss was
             if (!BossRushEvent.BossRushActive)
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<FAP>() : ModContent.NPCType<WITCH>());
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
 
             // Mark Calamitas as defeated
             DownedBossSystem.downedCalamitas = true;
@@ -3501,7 +3503,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             // GFB Slurper Pole drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<SlurperPole>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SlurperPole>()), hideLootReport: true);
             }
 
             // Legendary seed pony on a stick upgrade          
@@ -3554,7 +3556,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             float _ = 0f;
             bool collidingWithShield = Collision.CheckAABBvLineCollision(target.TopLeft, target.Size, shieldTop, shieldBottom, 64f, ref _) && shieldOpacity > 0.55f;
-            return collidingWithShield || NPC.Hitbox.Intersects(target.Hitbox);
+            // CIT 16MAY2025: SCal must have contact damage set on the first frame to preserve difficulty mode stat scaling, sometimes leading to people getting hit if on top of her.
+            // Thus, also check if the arena has spawned, since that will not be true on the first frame.
+            return (collidingWithShield || NPC.Hitbox.Intersects(target.Hitbox)) && spawnArena;
         }
 
         public override void FindFrame(int frameHeight)
@@ -3608,18 +3612,18 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture2D15 = DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive ? TextureAssets.Npc[NPC.type].Value : HoodedTexture.Value;
+            Texture2D texture2D15 = DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive ? TextureAssets.Npc[Type].Value : HoodedTexture.Value;
             Texture2D pony = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/AlicornMount_Front").Value;
             bool inPhase2 = NPC.ai[0] >= 3f && (NPC.life > NPC.lifeMax * 0.01 || cirrus);
 
             if (cirrus)
                 texture2D15 = inPhase2 ? CirrusTexture2.Value : CirrusTexture.Value;
 
-            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type] / 2f);
+            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type] / 2f);
             Vector2 ponyOrigin = new Vector2(pony.Width / 2f, pony.Height / 30f);
             int afterimageAmt = 7;
 
-            Rectangle frame = texture2D15.Frame(2, Main.npcFrameCount[NPC.type], NPC.frame.Y / Main.npcFrameCount[NPC.type], NPC.frame.Y % Main.npcFrameCount[NPC.type]);
+            Rectangle frame = texture2D15.Frame(2, Main.npcFrameCount[Type], NPC.frame.Y / Main.npcFrameCount[Type], NPC.frame.Y % Main.npcFrameCount[Type]);
             Rectangle ponyFrame = pony.Frame(1, 15, 0, alicornFrame);
             Vector2 ponyPos = NPC.Center - screenPos;
             ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
@@ -3634,14 +3638,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             if (!(cirrus && NPC.ai[1] == 2f))
@@ -3877,7 +3881,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         target.AddBuff(ModContent.BuffType<EvergreenGinBuff>(), MaxCirrusAlcoholDebuffDuration);
                         break;
                     case 5:
-                        target.AddBuff(ModContent.BuffType<FabsolVodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
+                        target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
                         break;
                     case 6:
                         target.AddBuff(ModContent.BuffType<FireballBuff>(), MaxCirrusAlcoholDebuffDuration);

@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -46,6 +46,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
                 AddIngredient<PlantyMush>(10).
                 AddIngredient<DepthCells>(5).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<FathomSwarmerBoots>()).
                 Register();
         }
     }

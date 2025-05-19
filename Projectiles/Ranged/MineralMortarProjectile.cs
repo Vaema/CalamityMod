@@ -55,11 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Multiplayer syncing every second.
             if (Projectile.timeLeft % 60 == 0)
-            {
-                Projectile.netUpdate = true;
-                if (Projectile.netSpam >= 10)
-                    Projectile.netSpam = 9;
-            }
+                Projectile.ForceNetUpdate(false);
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -172,7 +168,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 position = Projectile.Center - Main.screenPosition;
             float rotation = Projectile.rotation + MathHelper.PiOver2;
             Vector2 origin = texture.Size() * 0.5f;

@@ -24,14 +24,16 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient(ItemID.Silk, 10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<OtherworldlyStoneWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<OtherworldlyPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

@@ -19,8 +19,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 9;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 9;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -103,5 +103,6 @@ namespace CalamityMod.Projectiles.Ranged
                 dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
             }
         }
+        public override bool? CanHitNPC(NPC target) => target.CanBeChasedBy() ? null : false;
     }
 }

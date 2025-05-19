@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -65,11 +65,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (targeted != null)
                 {
-                    Vector2 moveTotarget = (targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < MathHelper.Clamp(25 - Projectile.ai[0] * 0.1f, 10, 25))
-                        Projectile.velocity += moveTotarget * (0.35f + Projectile.ai[0] * 0.03f);
-                    else
-                        Projectile.velocity *= 0.9f;
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.6f, 25, 0.98f);
                 }
                 else
                     Projectile.Kill();
@@ -91,7 +87,11 @@ namespace CalamityMod.Projectiles.Melee
                 dust.noGravity = true;
             }
         }
-
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (targeted != null && target != targeted)
+                modifiers.SourceDamage *= 0.3f;
+        }
         public override bool? CanHitNPC(NPC target)
         {
             if (Projectile.ai[0] <= 42f)
@@ -134,8 +134,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Gold with { A = 0 } * 0.5f, 1, texture, true, true);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Gold with { A = 0 } * 0.5f, 1, texture, true, true);
 
             return false;
         }

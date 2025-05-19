@@ -21,19 +21,19 @@ namespace CalamityMod.Packets
 
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(providence);
-            packet.Write(providence.hasTakenDaytimeDamage);
+            packet.Write(providence.hasBeenGivenFullPower);
             packet.Send(toClient, ignoreClient);
         }
 
         public override void HandlePacket(in BinaryReader packet, int sender)
         {
             var providence = packet.ReadModNPC<Providence>();
-            var hasTakenDaytimeDmg = packet.ReadBoolean();
+            var hasBeenEnraged = packet.ReadBoolean();
 
             if (providence is null)
                 return;
 
-            providence.hasTakenDaytimeDamage = hasTakenDaytimeDmg;
+            providence.hasBeenGivenFullPower = hasBeenEnraged;
         }
     }
 }

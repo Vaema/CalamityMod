@@ -17,8 +17,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 2;
             Projectile.timeLeft = 300;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -114,7 +116,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 // If this is a stealth strike, make the blade glow orange
                 Color glowColour = new Color(255, 215, 100, 100);
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], glowColour, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], glowColour, 1);
 
                 float minScale = 1.9f;
                 float maxScale = 2.5f;
@@ -123,7 +125,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             }
             return false;
         }

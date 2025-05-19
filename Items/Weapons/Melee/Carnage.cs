@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -37,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
         // Carnage's on-hits only occur on valid enemies. Specifically won't trigger on statues.
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             if (target.life > 0 || !target.IsAnEnemy(false))
                 return;
             OnHitEffects(player, target, hit.Knockback);

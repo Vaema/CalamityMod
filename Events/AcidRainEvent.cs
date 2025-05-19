@@ -181,7 +181,7 @@ namespace CalamityMod.Events
         /// </summary>
         public static void TryStartEvent(bool forceRain = false)
         {
-            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge) || BossRushEvent.BossRushActive)
+            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge && !DownedBossSystem.downedPolterghast) || BossRushEvent.BossRushActive || Terraria.GameContent.Creative.CreativePowerManager.Instance.GetPower<Terraria.GameContent.Creative.CreativePowers.FreezeRainPower>().Enabled)
                 return;
 
             int playerCount = Main.CurrentFrameFlags.ActivePlayersCount;
@@ -337,7 +337,7 @@ namespace CalamityMod.Events
 
                 // Flow: 2024/09/06 
                 // Salute for the one who wrote 3 if conditional block after experiencing immeasurable torment with packet generations
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                 {
                     AcidRainSyncPacket.Send();
                     AcidRainOldDukeSummonSyncPacket.Send();

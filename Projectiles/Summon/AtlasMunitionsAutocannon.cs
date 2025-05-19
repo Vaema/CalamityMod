@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Summon
             // Handle frames.
             bool frameChangeInterval = Projectile.frameCounter % 6 == 5;
             Projectile.frameCounter++;
-            if (frameChangeInterval && Projectile.frame < Main.projFrames[Projectile.type] - 1)
+            if (frameChangeInterval && Projectile.frame < Main.projFrames[Type] - 1)
                 Projectile.frame++;
 
             // Handle turret frames.

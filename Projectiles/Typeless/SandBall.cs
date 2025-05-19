@@ -1,4 +1,7 @@
 ﻿using System;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.SunkenSea;
@@ -13,32 +16,32 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallAstral";
         public override bool Fired => false;
-        public override int TileType => ModContent.TileType<AstralSand>();
-        public override int ItemType => ModContent.ItemType<Items.Placeables.AstralSand>();
+        public override int TileType => ModContent.TileType<Tiles.AstralDesert.AstralSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.Astral.AstralSand>();
         public override int DustType => 108;
     }
 
     public class AstralSandBallGun : SandBall
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallAstral";
-        public override int TileType => ModContent.TileType<AstralSand>();
-        public override int ItemType => ModContent.ItemType<Items.Placeables.AstralSand>();
+        public override int TileType => ModContent.TileType<Tiles.AstralDesert.AstralSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.Astral.AstralSand>();
         public override int DustType => 108;
     }
 
     public class EutrophicSandBallGun : SandBall
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallEutrophic";
-        public override int TileType => ModContent.TileType<EutrophicSand>();
-        public override int ItemType => ModContent.ItemType<Items.Placeables.EutrophicSand>();
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.EutrophicSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>();
         public override int DustType => 108; // Weirdly same dusts as Astral
     }
 
     public class SulphurousSandBallGun : SandBall
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallSulphurous";
-        public override int TileType => ModContent.TileType<SulphurousSand>();
-        public override int ItemType => ModContent.ItemType<Items.Placeables.SulphurousSand>();
+        public override int TileType => ModContent.TileType<Tiles.Abyss.SulphurousSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.Abyss.SulphurousSand>();
         // Uses normal sand dust
     }
 
@@ -62,6 +65,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             if (Fired)
             {

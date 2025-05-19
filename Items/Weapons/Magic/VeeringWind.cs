@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<FrostBolt>().
+                AddIngredient(ItemID.IceBlock, 30).
                 AddIngredient(ItemID.Feather, 3).
                 AddIngredient(ItemID.FallenStar, 5).
                 AddIngredient(ItemID.Cloud, 10).

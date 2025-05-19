@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -61,9 +62,13 @@ namespace CalamityMod.Items.Weapons.Rogue
                     if (!HasHoveredOverNameInGFB)
                     {
                         HasHoveredOverNameInGFB = true;
-                        string firstWord = this.GetLocalizedValue("GFBFirstWord" + Main.rand.Next(1, 12 + 1).ToString());
-                        string lastWord = this.GetLocalizedValue("GFBLastWord" + Main.rand.Next(1, 10 + 1).ToString());
-                        Item.SetNameOverride(firstWord + " " + lastWord);
+                        string[] firstWords = this.GetLocalizedValue("GFBFirstWords").Split('\n', '\r').Select(str => str.Trim()).ToArray();
+                        string[] lastWords = this.GetLocalizedValue("GFBLastWords").Split('\n', '\r').Select(str => str.Trim()).ToArray();
+
+                        string firstWord = firstWords[Main.rand.Next(firstWords.Length)];
+                        string lastWord = lastWords[Main.rand.Next(lastWords.Length)];
+                        string separator = this.GetLocalizedValue("GFBWordSeparator");
+                        Item.SetNameOverride(firstWord + separator + lastWord);
                     }
                 }
                 else
@@ -75,12 +80,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 300);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 300);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 300);
         }
     }
 }

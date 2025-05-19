@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -14,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class StellarStrikerHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<StellarStriker>();
@@ -42,12 +44,13 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-        public override void OnSpawn(IEntitySource source)
+        public override void WhenSpawned()
         {
             Projectile.knockBack = 0;
             Projectile.scale = 1;
             Projectile.ai[1] = -1;
-            base.OnSpawn(source);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, it does not influence Stellar Striker's projectile spawning
             mousePos = Owner.Calamity().mouseWorld;
             aimVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitX) * 65;
             useAnim = Owner.itemAnimationMax;
@@ -198,12 +201,8 @@ namespace CalamityMod.Projectiles.Melee
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/MagicRockSound");
             SoundEngine.PlaySound(fire2 with { Volume = 0.55f, Pitch = 0.6f }, Projectile.Center);
 
-            if (target.CanBeMoved(true))
-            {
-                // Launch
-                Vector2 launchVel = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -17;
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
+            Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
+            target.MoveNPC(launchVel, 17, true);
 
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
@@ -221,7 +220,7 @@ namespace CalamityMod.Projectiles.Melee
             if (spawnBoom)
             {
                 Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), (int)(Projectile.damage * 1.3f), Projectile.knockBack, Projectile.owner, 0, 0, 6);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<StellarStrikerMeteor>(), (int)(Projectile.damage * 2.25f), Projectile.knockBack, Projectile.owner, 0, 0, 7);
                 spawnBoom = false;
             }
 
@@ -243,14 +242,14 @@ namespace CalamityMod.Projectiles.Melee
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 25; i++)
                 {
-                    Color auraColor = Color.Lerp(Color.Turquoise, Color.PaleTurquoise, Utils.GetLerpValue(0, 5, i)) * 0.4f * fadeIn;
                     Texture2D centerTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/StellarStrikerGhost").Value;
-                    Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 30f).ToRotationVector2();
-                    rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 30f) * 0.5f + 0.6f);
-                    Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + rotationalDrawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
+                    Color auraColor = Color.Turquoise with { A = 0 } * 0.15f * fadeIn;
+                    Vector2 drawOffset = (MathHelper.TwoPi * i / 25f).ToRotationVector2() * 6 * fadeIn;
+                    Main.EntitySpriteDraw(centerTexture, Projectile.Center - Main.screenPosition + drawOffset + new Vector2(0, Owner.gfxOffY), centerTexture.Frame(1, FrameCount, 0, Frame), auraColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
                 }
+
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(0, Owner.gfxOffY), tex.Frame(1, FrameCount, 0, Frame), lightColor, Projectile.rotation + RotationOffset + r, FlipAsSword ? new Vector2(tex.Width() - SpriteOrigin.X, SpriteOrigin.Y) : SpriteOrigin, Projectile.scale, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
             }
             return false;

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -6,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class SacrificeProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -16,8 +18,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/Sacrifice";
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -57,17 +59,14 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
 
-                        if (Main.player[Main.myPlayer].lifeSteal <= 0f)
+                        if (Main.LocalPlayer.lifeSteal <= 0f)
                         {
                             Projectile.Kill();
                             return;
                         }
 
-                        Main.player[Main.myPlayer].lifeSteal -= heal;
-                        Owner.HealEffect(heal);
-                        Owner.statLife += heal;
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
+                        Main.LocalPlayer.lifeSteal -= heal;
+                        Owner.HealPlayer(heal);
                     }
 
                     Projectile.Kill();
@@ -105,7 +104,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor);
             return false;
         }
 

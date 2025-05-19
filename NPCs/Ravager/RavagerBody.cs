@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.Ravager
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.width = 332;
             NPC.height = 214;
             NPC.defense = 55;
-            NPC.value = Item.buyPrice(0, 75, 0, 0);
+            NPC.value = Item.buyPrice(0, 30, 0, 0);
             NPC.DR_NERD(0.35f);
             NPC.LifeMaxNERB(45000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.damage = (int)(NPC.damage * 1.5);
                 NPC.defense *= 2;
                 NPC.lifeMax *= 4;
-                NPC.value *= 1.5f;
+                NPC.value *= 3f;
             }
             NPC.knockBackResist = 0f;
             AIType = -1;
@@ -140,7 +140,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.Opacity = 1f;
 
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -229,20 +229,20 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.dontTakeDamage = true;
                 if (bossRush)
                 {
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
-                        if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && revenge)
-                            Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                     }
                 }
             }
             else
             {
                 NPC.dontTakeDamage = false;
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
-                    if (!Main.player[Main.myPlayer].dead && Main.player[Main.myPlayer].active && revenge)
-                        Main.player[Main.myPlayer].AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
+                        Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                 }
             }
 
@@ -666,7 +666,7 @@ namespace CalamityMod.NPCs.Ravager
                             Main.dust[stompDust].velocity *= 0.2f;
                         }
 
-                        if (Main.netMode != NetmodeID.Server)
+                        if (!Main.dedServ)
                         {
                             int stompGore = Gore.NewGore(NPC.GetSource_FromAI(), new Vector2(stompDustArea - 30, NPC.position.Y + NPC.height - 12f), default, Main.rand.Next(61, 64), 1f);
                             Main.gore[stompGore].velocity *= 0.4f;
@@ -845,12 +845,7 @@ namespace CalamityMod.NPCs.Ravager
                 if (Vector2.Distance(NPC.Center, player.Center) > distanceFromTarget)
                 {
                     NPC.active = false;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
             }
         }
@@ -878,9 +873,9 @@ namespace CalamityMod.NPCs.Ravager
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
             Vector2 center = new Vector2(NPC.Center.X, NPC.Center.Y);
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
             Vector2 glowmaskPosition = center - screenPos;
-            glowmaskPosition -= new Vector2(GlowTexture.Value.Width, GlowTexture.Value.Height / Main.npcFrameCount[NPC.type]) * 1f / 2f;
+            glowmaskPosition -= new Vector2(GlowTexture.Value.Width, GlowTexture.Value.Height / Main.npcFrameCount[Type]) * 1f / 2f;
             glowmaskPosition += halfSizeTexture * 1f + new Vector2(0f, 4f + NPC.gfxOffY);
             Color glowmaskColor = new Color(127 - NPC.alpha, 127 - NPC.alpha, 127 - NPC.alpha, 0).MultiplyRGBA(Color.Blue);
             spriteBatch.Draw(GlowTexture.Value, glowmaskPosition,
@@ -925,7 +920,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerBody").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerBody2").Type, 1f);
@@ -1011,7 +1006,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480, true);
+                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480);
         }
 
         public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.GreaterHealingPotion;
@@ -1071,10 +1066,10 @@ namespace CalamityMod.NPCs.Ravager
             // GFB Sans drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.Skull, hideLootReport: true);
-                GFBOnly.Add(ItemID.Bone, 1, 1, 9999, true);
-                GFBOnly.Add(ItemID.Hotdog, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Skull), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Bone, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.Hotdog, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AncientBoneDust>(), 1, 1, 9999), true);
             }
 
             // Lore

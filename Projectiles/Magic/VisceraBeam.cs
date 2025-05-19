@@ -10,6 +10,7 @@ using Terraria.Audio;
 using CalamityMod.Balancing;
 using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -20,8 +21,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -93,15 +94,13 @@ namespace CalamityMod.Projectiles.Magic
                     dust.noGravity = true;
                 }
             }
+            if (Projectile.ai[2] < 1){ 
+            for (int i = 0; i < 2; i++) {
+                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(0.5f) * Main.rand.NextFloat(3, 5), ModContent.ProjectileType<BloodstoneHealOrb>(), 5, 0f, Projectile.owner);
+            }
+            Projectile.ai[2]++;
+            }
 
-            int heal = (int)Math.Round(hit.Damage * 0.05);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
-
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
 
         public override void AI()

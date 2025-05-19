@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -125,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<RuinousSoul>(4).
                 AddIngredient(ItemID.SoulofNight, 15).
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

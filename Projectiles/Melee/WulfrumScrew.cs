@@ -24,8 +24,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 60;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public static int Lifetime = 950;
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (!screwRegained && Main.netMode != NetmodeID.Server)
+            if (!screwRegained && !Main.dedServ)
             {
                 Gore screwGore = Gore.NewGorePerfect(Projectile.GetSource_Death(), Projectile.position, -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(4f, 6f) + Projectile.velocity * 0.7f, Mod.Find<ModGore>("WulfrumScrewGore").Type);
                 screwGore.timeLeft = 20;
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(CommonCalamitySounds.WulfrumNPCDeathSound, Projectile.Center);
 
             SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore screwGore = Gore.NewGorePerfect(Projectile.GetSource_Death(), Projectile.position, -Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(1f, 3f) + Projectile.velocity * 0.7f, Mod.Find<ModGore>("WulfrumScrewGore").Type);
                 screwGore.timeLeft = 20;
@@ -151,8 +151,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
 
+            // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             float distanceFromAim = Projectile.Center.ShortestDistanceToLine(Owner.MountedCenter, Main.MouseWorld);
             float distanceFromPlayerAcrossSightLine = (Owner.MountedCenter - Projectile.Center.ClosestPointOnLine(Owner.MountedCenter, Main.MouseWorld)).Length();
 

@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.IsRangedSpecialistWeapon[Item.type] = true;
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
         }
         public override void SetDefaults()
         {
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PiranhaGun).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.SharkFin, 2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -9,11 +9,11 @@ namespace CalamityMod.Projectiles.Ranged
     public class TyphoonBubble : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Melee/BrinyTyphoonBubble";
+        public override string Texture => "Terraria/Images/Projectile_385";
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
+            Main.projFrames[Type] = 3;
         }
 
         public override void SetDefaults()
@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.alpha = 255;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

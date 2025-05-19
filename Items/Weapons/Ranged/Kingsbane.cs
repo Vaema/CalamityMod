@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 92;
             Item.height = 44;
-            Item.damage = 245;
+            Item.damage = 249;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 3;
@@ -41,6 +41,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
+
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }
@@ -50,6 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient<P90>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

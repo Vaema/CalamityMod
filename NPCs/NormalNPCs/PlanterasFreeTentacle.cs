@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers bestiaryData = new NPCID.Sets.NPCBestiaryDrawModifiers() { Hide = true };
             NPCID.Sets.NPCBestiaryDrawOffset.Add(Type, bestiaryData);
         }
@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.frame.Y += frameHeight;
                 NPC.frameCounter = 0.0;
             }
-            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[NPC.type])
+            if (NPC.frame.Y >= frameHeight * Main.npcFrameCount[Type])
                 NPC.frame.Y = 0;
         }
 
@@ -196,7 +196,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 120);
+                target.AddBuff(BuffID.Poisoned, 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -212,7 +212,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             for (int i = 0; i < 150; i++)
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Plantera_Green, 2 * hit.HitDirection, -2f);
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 388, NPC.scale);
                 Gore.NewGore(NPC.GetSource_Death(), new Vector2(NPC.position.X + (float)Main.rand.Next(NPC.width), NPC.position.Y + (float)Main.rand.Next(NPC.height)), NPC.velocity, 389, NPC.scale);

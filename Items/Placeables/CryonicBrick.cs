@@ -24,6 +24,7 @@ namespace CalamityMod.Items.Placeables
             CreateRecipe().
                 AddIngredient<CryonicBrickWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

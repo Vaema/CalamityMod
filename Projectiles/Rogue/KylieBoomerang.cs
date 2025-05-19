@@ -16,8 +16,7 @@ namespace CalamityMod.Projectiles.Rogue
         public ref float State => ref Projectile.ai[0];
         public ref float Timer => ref Projectile.ai[1];
 
-        //This variable will be used for the stealth strike
-        public const float ReboundTime = 35f;
+        // Used for the stealth strike
         public int TileBounceDelay = 0;
         public override void SetDefaults()
         {
@@ -60,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (TileBounceDelay > 0)
                     TileBounceDelay--;
 
-                Vector2 mousePos = Owner.Calamity().mouseWorld;
+                Vector2 mousePos = Owner.ClampedMouseWorld();
                 if (Vector2.Distance(Projectile.Center, mousePos) > 115f && TileBounceDelay == 0)
                 {
                     float accelerationFactor = 12f; // Higher number = Takes longer to turn around.
@@ -92,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Timer == 3f)
                         Projectile.tileCollide = true;
 
-                    if (Timer >= ReboundTime)
+                    if (Timer >= 35f) // Return to the player
                     {
                         State = 1f;
                         Timer = 0f;

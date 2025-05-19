@@ -1,11 +1,12 @@
-﻿using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Items.Accessories;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -63,6 +64,34 @@ namespace CalamityMod.Items.Armor.Auric
             player.GetCritChance<ThrowingDamageClass>() += 20;
             player.moveSpeed += 0.05f;
         }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            ref var holdingShift = ref AuricTeslaBodyArmor.holdingShift;
+            ref var setBonusTooltipNumber = ref AuricTeslaBodyArmor.setBonusTooltipNumber;
+            if (Main.keyState.PressingShift())
+            {
+                if (!holdingShift)
+                {
+                    holdingShift = true;
+                    setBonusTooltipNumber++;
+                    if (setBonusTooltipNumber > 3) setBonusTooltipNumber = 1;
+                }
+                foreach (TooltipLine line in tooltips)
+                {
+                    if (line.Name == "SetBonus")
+                    {
+                        Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipGodslayerColor };
+                        var LocalizedText = CalamityUtils.GetTextFromModItem(Type, $"SetBonus{setBonusTooltipNumber}");
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString(), GodslayerArmorDash.GodslayerCooldown) : setBonusTooltipNumber == 2 ? LocalizedText.Format() : LocalizedText.Format(CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString()));
+                        line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
+                    }
+                }
+            }
+            else
+            {
+                holdingShift = false;
+            }
+        }
 
         public override void AddRecipes()
         {
@@ -72,6 +101,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<TarragonHeadRogue>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaBodyArmor>()).
                 Register();
         }
     }

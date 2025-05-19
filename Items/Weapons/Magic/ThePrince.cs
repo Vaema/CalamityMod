@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public const int FlameSplitCount = 6;
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<ArchAmaryllis>().
                 AddIngredient<DivineGeode>(15).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

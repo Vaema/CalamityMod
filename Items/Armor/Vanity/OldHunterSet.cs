@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Armor.Vanity
 
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Vanity/OldHunterShirt_Back", EquipType.Back, this);
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);

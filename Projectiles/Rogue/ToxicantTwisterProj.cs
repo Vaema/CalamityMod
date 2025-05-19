@@ -21,8 +21,8 @@ namespace CalamityMod.Projectiles.Rogue
         public float circleSpeed = 1;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
@@ -31,8 +31,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 5;
-            Projectile.extraUpdates = 1;
+            Projectile.penetrate = -1;
+            Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 300;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
@@ -42,19 +42,25 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
+
+            if (Owner.dead || !Owner.active)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             if (Projectile.Calamity().stealthStrike)
             {
-                Projectile.penetrate = -1;
-                Projectile.extraUpdates = 2;
+                Projectile.MaxUpdates = 3;
                 if (Projectile.ai[1] == 0)
                 {
                     Projectile.timeLeft = 600;
                     circleRange *= 5;
                     circleSpeed *= 3;
                 }
-                if (Projectile.timeLeft % 30 == 0)
+                if (Projectile.timeLeft % 50 == 0)
                 {
-                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.4), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
+                    Projectile dustProjectile = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.1f) * -0.6f, ModContent.ProjectileType<ToxicantTwisterDust>(), (int)(Projectile.damage * 0.4f), 0f, Projectile.owner, 0, 0, Projectile.ai[2]);
                     dustProjectile.timeLeft = 240;
                 }
             }
@@ -81,7 +87,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[1] > 20f)
             {
-                Vector2 position = (Owner.Calamity().mouseWorld + ((new Vector2(0, circleRange).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
+                Vector2 position = (Owner.ClampedMouseWorld() + ((new Vector2(0, circleRange).RotatedBy(Projectile.rotation * 0.2f)).RotatedBy(MathHelper.ToRadians(90f) * Projectile.ai[2])));
                 Vector2 moveToMouse = (position - Projectile.Center).SafeNormalize(Vector2.UnitX);
                 if (Projectile.velocity.Length() < 18)
                     Projectile.velocity += moveToMouse * circleSpeed;
@@ -126,13 +132,15 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset, null, auraColor with { A = 0 } * Utils.GetLerpValue(255, 0, Projectile.alpha), Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             }
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor * 0.3f, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.3f, 2);
             return true;
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 180);
+            if (target.Calamity().unbreakableDR)
+                modifiers.SourceDamage *= MathHelper.Clamp((float)Math.Pow(0.9f, Projectile.numHits - 1), 0.1f, 1f);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 55, targetHitbox);
     }

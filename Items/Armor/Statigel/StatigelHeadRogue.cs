@@ -40,7 +40,6 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().rogueAmmoCost *= 0.66f;
             player.GetDamage<ThrowingDamageClass>() += 0.1f;
             player.GetCritChance<ThrowingDamageClass>() += 7;
             player.moveSpeed += 0.05f;
@@ -52,6 +51,7 @@ namespace CalamityMod.Items.Armor.Statigel
                 AddIngredient<PurifiedGel>(5).
                 AddIngredient<BlightedGel>(5).
                 AddTile<StaticRefiner>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelArmor>()).
                 Register();
         }
     }

@@ -32,7 +32,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public float Size = 2.2f;
         public bool SoundOnce = true;
 
-        public override float CalculateDashSpeed(Player player) => 40f;
+        public override float CalculateDashSpeed(Player player) => 32f;
 
         public override void OnDashEffects(Player player)
         {
@@ -110,7 +110,7 @@ namespace CalamityMod.CalPlayer.Dashes
             }
 
             // Dash at a much, much faster speed than the default value.
-            dashSpeed = 40f;
+            dashSpeed = 32f;
             runSpeedDecelerationFactor = 0.8f;
 
             // Cooldown for God Slayer Armor dash.
@@ -140,9 +140,8 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = AsgardianAegis.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = 3000;
             hitContext.damageClass = player.GetBestClass();
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseDamage = 3000;
             hitContext.BaseKnockback = 15f;
 
             // God Slayer Dash intentionally does not use the vanilla function for collision attack iframes.

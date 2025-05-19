@@ -2,16 +2,18 @@
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.NormalNPCs
 {
     public class EbonianBlightSlime : ModNPC
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -25,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 165;
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.RainbowSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.alpha = 105;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -89,6 +91,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ItemID.Gel, 1, 10, 14);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
             npcLoot.Add(ModContent.ItemType<BlightedGel>(), 1, 15, 21);
         }
     }

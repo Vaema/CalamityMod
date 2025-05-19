@@ -1,11 +1,13 @@
 ﻿using System;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class ApotheosisEnergy : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -13,8 +15,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -28,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 210;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 1;
+            Projectile.localNPCHitCooldown = 4;
         }
 
         public override void AI()
@@ -82,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
-                if (Collision.CheckAABBvAABBCollision(Projectile.oldPos[i], projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+                if (Collision.CheckAABBvAABBCollision(Projectile.oldPos[i], projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                     return true;
             }
             return false;

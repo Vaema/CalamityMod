@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item73, Projectile.Center);
                 for (int i = 0; i < 20; i++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(position.X + (-600 + i * 60), position.Y - 800), new Vector2(0f, 2.5f), ModContent.ProjectileType<ExecutionersBladeStealthProj>(), Projectile.damage * 4, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), new Vector2(position.X + (-600 + i * 60), position.Y - 800), new Vector2(0f, 2.5f), ModContent.ProjectileType<ExecutionersBladeStealthProj>(), (int)(Projectile.damage * 2.4f), Projectile.knockBack, Projectile.owner);
                 }
             }
         }
@@ -28,8 +28,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 2;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
     }

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Items.Placeables.Walls;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
@@ -24,9 +25,11 @@ namespace CalamityMod.Items.Placeables.FurnitureAshen
             CreateRecipe().
                 AddIngredient<SmoothBrimstoneSlagWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<AshenPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

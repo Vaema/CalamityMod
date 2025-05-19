@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Magic
         public static int ClockChance = 30;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             Projectile.soundDelay--;
@@ -81,6 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (Owner.ActiveItem().shoot == Projectile.type)
                         scaleFactor6 = Owner.ActiveItem().shootSpeed * Projectile.scale;
 
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);
                     slashDirection.Normalize();
                     if (slashDirection.HasNaNs())
@@ -102,6 +103,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 velocity = Projectile.Center.DirectionTo(Main.MouseWorld) * IcicleSpeed + new Vector2(Main.rand.NextFloat(-IcicleVariance, IcicleVariance), Main.rand.NextFloat(-IcicleVariance, IcicleVariance));
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ChronoIcicleSmall>(), (int)(Projectile.damage * IcicleDamageMultiplier), Projectile.knockBack, Projectile.owner);
                 }

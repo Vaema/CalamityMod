@@ -91,7 +91,7 @@ namespace CalamityMod.NPCs.ExoMechs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 12;
+            Main.npcFrameCount[Type] = 12;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionYOverride = 40f,
@@ -101,8 +101,8 @@ namespace CalamityMod.NPCs.ExoMechs
             };
             value.Position.Y += 45f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            NPCID.Sets.ShouldBeCountedAsBoss[NPC.type] = true;
-            NPCID.Sets.MustAlwaysDraw[NPC.type] = true;
+            NPCID.Sets.ShouldBeCountedAsBoss[Type] = true;
+            NPCID.Sets.MustAlwaysDraw[Type] = true;
             if (!Main.dedServ)
             {
                 Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glowmask", AssetRequestMode.AsyncLoad);
@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     SummonExoMech();
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     SoundEngine.PlaySound(CommonCalamitySounds.FlareSound with { Volume = CommonCalamitySounds.FlareSound.Volume * 1.55f }, PlayerToFollow.Center);
                     if (!exoMechdusa)
@@ -741,7 +741,7 @@ namespace CalamityMod.NPCs.ExoMechs
 
             int xFrame = NPC.frame.X / NPC.frame.Width;
             int yFrame = NPC.frame.Y / frameHeight;
-            int frame = xFrame * Main.npcFrameCount[NPC.type] + yFrame;
+            int frame = xFrame * Main.npcFrameCount[Type] + yFrame;
 
             // Prepare to stand up if called for and not already doing so.
             if (ShouldStartStandingUp && frame > 23)
@@ -771,8 +771,8 @@ namespace CalamityMod.NPCs.ExoMechs
                 NPC.frameCounter = 0;
             }
 
-            NPC.frame.X = frame / Main.npcFrameCount[NPC.type] * NPC.frame.Width;
-            NPC.frame.Y = frame % Main.npcFrameCount[NPC.type] * frameHeight;
+            NPC.frame.X = frame / Main.npcFrameCount[Type] * NPC.frame.Width;
+            NPC.frame.Y = frame % Main.npcFrameCount[Type] * frameHeight;
 
             // Handle framing for the projector
             ProjFrameChangeCounter++;
@@ -794,7 +794,7 @@ namespace CalamityMod.NPCs.ExoMechs
             if (NPC.life > 0)
                 return;
 
-            if (Main.netMode != NetmodeID.Server && !HasBeenKilled)
+            if (!Main.dedServ && !HasBeenKilled && HologramEffectTimer > 0f)
             {
                 for (int i = 1; i <= 4; i++)
                 {
@@ -841,7 +841,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 spriteBatch.EnterShaderRegion();
             bool holo = HasBeenKilled && KillReappearDelay <= 0;
             bool leaving = HasBeenKilled && DefeatTimer > DelayBeforeDefeatStandup + TalkDelay * 8f + 200f;
-            Texture2D texture = HasBeenKilled && KillReappearDelay <= 0f ? HoloTexture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = HasBeenKilled && KillReappearDelay <= 0f ? HoloTexture.Value : TextureAssets.Npc[Type].Value;
             Texture2D glowmask = Texture_Glow.Value;
             Texture2D projector = ProjectorTexture.Value;
             Texture2D projectorglow = ProjectorTexture_Glow.Value;
@@ -871,7 +871,7 @@ namespace CalamityMod.NPCs.ExoMechs
                 GameShaders.Misc["CalamityMod:TeleportDisplacement"].UseOpacity(MathHelper.Clamp(1f - HologramEffectTimer / HologramFadeinTime, 0f, 1f) * 0.38f);
                 GameShaders.Misc["CalamityMod:TeleportDisplacement"].UseSecondaryColor(color);
                 GameShaders.Misc["CalamityMod:TeleportDisplacement"].UseSaturation(color.A / 255f);
-                GameShaders.Misc["CalamityMod:TeleportDisplacement"].Shader.Parameters["frameCount"].SetValue(new Vector2(16f, Main.npcFrameCount[NPC.type]));
+                GameShaders.Misc["CalamityMod:TeleportDisplacement"].Shader.Parameters["frameCount"].SetValue(new Vector2(16f, Main.npcFrameCount[Type]));
                 GameShaders.Misc["CalamityMod:TeleportDisplacement"].Apply();
             }
 

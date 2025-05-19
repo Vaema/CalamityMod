@@ -1,34 +1,12 @@
-﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Summon;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class FieryDraconidBuff : ModBuff
+    public class FieryDraconidBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<FieryDraconid>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<FieryDraconid>()] > 0)
-            {
-                modPlayer.aChicken = true;
-            }
-            if (!modPlayer.aChicken)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.aChicken;
     }
 }

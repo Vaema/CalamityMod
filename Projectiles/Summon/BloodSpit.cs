@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 3;
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
+            Main.projFrames[Type] = 3;
+            ProjectileID.Sets.MinionShot[Type] = true;
         }
 
         public override void SetDefaults()
@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.Calamity().BloodstoneOrbValue = 20; //Bloodstone Orb lifesteal. May want to go back to regular lifesteal.
         }
 
         public override void AI()
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
             if (Projectile.frameCounter++ > 4)
             {
-                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Projectile.type];
+                Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
                 Projectile.frameCounter = 0;
             }
         }
@@ -49,15 +50,6 @@ namespace CalamityMod.Projectiles.Summon
                 blood.velocity = Main.rand.NextVector2Circular(1f, 2f);
                 blood.noGravity = true;
             }
-
-            int heal = (int)Math.Round(hit.Damage * 0.01);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
-
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
         }
     }
 }

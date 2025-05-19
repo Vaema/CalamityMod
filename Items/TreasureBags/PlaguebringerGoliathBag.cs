@@ -24,14 +24,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.TreasureBags
 
             // Materials
             itemLoot.Add(ModContent.ItemType<PlagueCellCanister>(), 1, 25, 30);
-            itemLoot.Add(ModContent.ItemType<InfectedArmorPlating>(), 1, 30, 35);
+            itemLoot.Add(ModContent.ItemType<InfectedArmorPlating>(), 1, 40, 50);
             itemLoot.Add(ItemID.Stinger, 1, 4, 8);
 
             // Weapons

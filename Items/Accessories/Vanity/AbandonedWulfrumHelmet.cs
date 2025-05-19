@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,7 +25,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public new string LocalizationCategory => "Items.Accessories";
         public override void Load()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_HeadSet", EquipType.Head, name: "WulfrumOldSetHead");
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/AbandonedWulfrumHelmet_Body", EquipType.Body, this);
@@ -35,7 +36,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "WulfrumOldSetHead", EquipType.Head);
@@ -102,6 +103,28 @@ namespace CalamityMod.Items.Accessories.Vanity
                 Player.body = EquipLoader.GetEquipSlot(Mod, "AbandonedWulfrumHelmet", EquipType.Body);
 
                 Player.HideAccessories();
+            }
+        }
+
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            if (forceHelmetOn || transformationActive)
+            {
+                drawInfo.drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "WulfrumOldSetHead", EquipType.Head);
+                drawInfo.headGlowMask = -1;
+                drawInfo.helmetOffset = Vector2.Zero;
+                drawInfo.drawPlayer.face = -1;
+            }
+
+            if (transformationActive)
+            {
+                drawInfo.drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbandonedWulfrumHelmet", EquipType.Legs);
+                drawInfo.legsGlowMask = -1;
+                drawInfo.legsOffset = Vector2.Zero;
+                drawInfo.drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbandonedWulfrumHelmet", EquipType.Body);
+                drawInfo.bodyGlowMask = -1;
+
+                drawInfo.drawPlayer.HideAccessories();
             }
         }
     }

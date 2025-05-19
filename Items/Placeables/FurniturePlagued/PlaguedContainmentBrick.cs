@@ -29,9 +29,11 @@ namespace CalamityMod.Items.Placeables.FurniturePlagued
             CreateRecipe().
                 AddIngredient<PlaguedPlateWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<PlaguedPlatePlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

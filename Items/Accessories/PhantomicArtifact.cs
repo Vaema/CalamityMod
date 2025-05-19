@@ -15,6 +15,12 @@ namespace CalamityMod.Items.Accessories
     public class PhantomicArtifact : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int RegenBoost = 2;
+        public static int DefenseBoost = 10;
+        public static float DamageReductionBoost = 0.05f;
+        public static float SummonDamageBoost = 0.1f;
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 7));
@@ -39,7 +45,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<Onyxplate>(25).
                 AddIngredient<ExodiumCluster>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

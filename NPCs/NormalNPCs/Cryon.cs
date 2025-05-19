@@ -13,7 +13,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.DR_NERD(0.1f);
             NPC.lifeMax = 375;
             NPC.knockBackResist = 0.4f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 3, 0);
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
             Banner = NPC.type;
@@ -101,8 +101,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 120, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
+                target.AddBuff(BuffID.Frostburn, 180);
+                target.AddBuff(BuffID.Chilled, 90);
             }
         }
 

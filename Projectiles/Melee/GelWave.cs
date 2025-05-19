@@ -10,16 +10,19 @@ namespace CalamityMod.Projectiles.Melee
     public class GelWave : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/GeliticBladeWave");
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 164;
-            Projectile.height = 164;
+            Projectile.width = 42;
+            Projectile.height = 84;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Melee;
@@ -34,11 +37,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
+                SoundEngine.PlaySound(UseSound with { Volume = 3f, PitchVariance = 0.25f }, Projectile.position);
                 Projectile.localAI[0] += 1f;
             }
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.velocity.ToRotation();
             if (Main.rand.NextBool(10))
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
@@ -62,11 +65,13 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
+
         public override bool? CanDamage() => (Projectile.alpha == 0 ? null : false);
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 2);
             return false;
         }
 

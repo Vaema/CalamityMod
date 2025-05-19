@@ -23,8 +23,8 @@ namespace CalamityMod.NPCs.Crags
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
+            NPCID.Sets.TrailingMode[Type] = 1;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -248,7 +248,7 @@ namespace CalamityMod.NPCs.Crags
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2((float)(texture.Width / 2), (float)(texture.Height / 2));
             int afterimageAmt = 5;
 
@@ -306,12 +306,6 @@ namespace CalamityMod.NPCs.Crags
             postProv.Add(ModContent.ItemType<Bloodstone>(), 4);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60, true);
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
@@ -320,7 +314,7 @@ namespace CalamityMod.NPCs.Crags
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SoulSlurper").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SoulSlurper2").Type, NPC.scale);

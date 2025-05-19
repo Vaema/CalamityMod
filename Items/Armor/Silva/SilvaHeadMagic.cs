@@ -1,6 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
@@ -56,6 +56,7 @@ namespace CalamityMod.Items.Armor.Silva
                 AddIngredient<EffulgentFeather>(5).
                 AddIngredient<AscendantSpiritEssence>(2).
                 AddTile<CosmicAnvil>().
+                SortBeforeFirstRecipesOf(ModContent.ItemType<SilvaArmor>()).
                 Register();
         }
     }

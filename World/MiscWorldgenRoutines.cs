@@ -144,41 +144,6 @@ namespace CalamityMod.World
         }
         #endregion
 
-        #region Place Rox Shrine
-        public static void PlaceRoxShrine()
-        {
-            while (!CalamityWorld.roxShrinePlaced)
-            {
-                CalamityWorld.roxShrinePlaced = true;
-                for (int x = 0; x < Main.maxTilesX; x++)
-                {
-                    for (int y = 0; y < Main.maxTilesY; y++)
-                    {
-                        if (Main.tile[x, y] != null && Main.tile[x, y].TileType == TileID.LargePiles)
-                        {
-                            if ((Main.tile[x, y].TileFrameX == 18 && Main.tile[x, y].TileFrameY == 0) || (Main.tile[x, y].TileFrameX == 45 && Main.tile[x, y].TileFrameY == 0))
-                            {
-                                if (WorldGen.genRand.NextBool(3))
-                                {
-                                    for (int dx = -1; dx < 2; dx++)
-                                    {
-                                        for (int dy = -1; dy < 2; dy++)
-                                            Main.tile[x + dx, y + dy].Get<TileWallWireStateData>().HasTile = false;
-                                    }
-
-                                    WorldGen.PlaceTile(x, y + 1, ModContent.TileType<RoxTile>());
-                                    return;
-                                }
-                                else
-                                    CalamityWorld.roxShrinePlaced = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
-
         #region Chasm Generator
         public static void ChasmGenerator(int i, int j, int steps, bool ocean = false)
         {

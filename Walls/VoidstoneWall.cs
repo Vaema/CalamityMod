@@ -46,8 +46,7 @@ namespace CalamityMod.Walls
             int yPos = tile.WallFrameY;
 
             Rectangle frame = new Rectangle(xPos, yPos, xLength, 32);
-            Color drawcolor;
-            drawcolor = WorldGen.paintColor(tile.WallColor);
+            Color drawcolor = WorldGen.paintColor(tile.WallColor);
             drawcolor.A = 255;
             Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
 
@@ -63,15 +62,17 @@ namespace CalamityMod.Walls
             {
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
-                brightness *= MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                brightness *= MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                drawcolor *= brightness;
-                Color glowColor = drawcolor * 0.4f;
+                brightness *= (float)MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
+                brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
 
-                // For now checking for glowing frames greatly reducing the bottleneck
-                // But maybe we could squeeze bit more by removing the loop
+                brightness = MathHelper.Clamp(brightness, 0f, 1f);            
+                Color glowColor = drawcolor *= brightness;
+
+                if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
+                    return;
+
                 for (int k = 0; k < 3; k++)
                 {
                     Vector2 offset = new Vector2(Main.rand.NextFloat(-1, 1f), Main.rand.NextFloat(-1, 1f)) * 0.2f * k;

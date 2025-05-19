@@ -68,6 +68,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/FatesRevealGlow").Value;
             else if (itemType == ModContent.ItemType<GreatswordofJudgement>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GreatswordofJudgementGlow").Value;
+            else if (itemType == ModContent.ItemType<GalactusBlade>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/GalactusBladeGlow").Value;
             else if (itemType == ModContent.ItemType<LegionofCelestia>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/LegionofCelestiaGlow").Value;
             else if (itemType == ModContent.ItemType<NecroplasmicBeacon>())
@@ -90,12 +92,14 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortexSmallGlow").Value;
             else if (itemType == ModContent.ItemType<TerrorBlade>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TerrorBladeGlow").Value;
-            else if (itemType == ModContent.ItemType<TheEnforcer>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TheEnforcerGlow").Value;
             else if (itemType == ModContent.ItemType<VernalBolter>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/VernalBolterGlow").Value;
             else if (itemType == ModContent.ItemType<VividClarity>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/VividClarityGlow").Value;
+            else if (itemType == ModContent.ItemType<TelluricGlare>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/TelluricGlareGlow").Value;
+            else if (itemType == ModContent.ItemType<BlissfulBombardier>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/BlissfulBombardierGlow").Value;
 
             if (glowMask == default)
                 return;

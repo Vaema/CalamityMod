@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.4f,
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.1f;
             AIType = -1;
             NPC.lavaImmune = true;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(0, 0, 75, 0);
             NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ScornEaterBanner>();
@@ -189,7 +189,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity)
+            if (spawnInfo.PlayerSafe || !NPC.downedMoonlord || spawnInfo.Player.Calamity().ZoneCalamity || Main.pumpkinMoon || Main.snowMoon || Main.eclipse)
             {
                 return 0f;
             }
@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 120, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -223,7 +223,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.ProfanedFire, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScornEater").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScornEater2").Type, 1f);

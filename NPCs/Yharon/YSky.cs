@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.Yharon
                 float x = 0f;
                 if (this.YIndex != -1)
                 {
-                    x = Vector2.Distance(Main.player[Main.myPlayer].Center, Main.npc[this.YIndex].Center);
+                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[this.YIndex].Center);
                 }
                 return (1f - Utils.SmoothStep(3000f, 6000f, x)) * intensity * 0.66f;
             }

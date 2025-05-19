@@ -1,6 +1,7 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 using Terraria.ID;
+using CalamityMod.Items.Placeables.SunkenSea;
 
 namespace CalamityMod.Items.Placeables.Walls
 {
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Placeables.Walls
 
         public override void AddRecipes()
         {
-            CreateRecipe(4).
+            CreateRecipe().
             AddIngredient<Driftwood>().
             AddTile(TileID.WorkBenches).
             Register();

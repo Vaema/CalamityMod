@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,6 +32,7 @@ namespace CalamityMod.Items.Placeables.Plates
             CreateRecipe().
                 AddIngredient<NavyplateWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

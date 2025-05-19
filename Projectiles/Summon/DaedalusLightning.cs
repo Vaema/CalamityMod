@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.MinionShot[Projectile.type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.MinionShot[Type] = true;
+            ProjectileID.Sets.TrailCacheLength[Type] = 100;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.extraUpdates = 20;
             Projectile.timeLeft = 45 * Projectile.extraUpdates;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             // Readjust the velocity magnitude the moment this projectile is created
             // to make velocity setting outside the scope of this projectile less irritating

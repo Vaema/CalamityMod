@@ -33,6 +33,8 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 80;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
@@ -55,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool(4) && !fading)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), ModContent.DustType<VoidDust>(), Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(2.3f, 5.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(2.3f, 5.8f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.3f, 2.15f);
                     dust.color = baseColor;
@@ -83,7 +85,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 30; i++)
             {
                 float dustPower = Main.rand.NextFloat(0.2f, 1f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<VoidDust>(), (Projectile.velocity * 15 * (dustPower * dustPower)).RotatedByRandom(1f - dustPower * dustPower) * Main.rand.NextFloat(0.9f, 1f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, (Main.rand.NextBool() ? ModContent.DustType<VoidDustInverted>() : ModContent.DustType<VoidDust>()), (Projectile.velocity * 15 * (dustPower * dustPower)).RotatedByRandom(1f - dustPower * dustPower) * Main.rand.NextFloat(0.9f, 1f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(2.15f, 3.45f) * dustPower;
                 dust.color = baseColor;

@@ -31,9 +31,9 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 4;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void PerformInitializationEffects()
         {
-            int totalHeads = CalamityUtils.CountProjectiles(Projectile.type);
+            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
             CurrentPositionOffset = IdealPositionOffset = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
             Projectile.netUpdate = true;
 
@@ -136,8 +136,8 @@ namespace CalamityMod.Projectiles.Summon
 
             // Open the mouth prior to firing.
             if (Time % canisterShootRate > canisterShootRate - 20)
-                Projectile.frame = (int)(Main.projFrames[Projectile.type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
-            Projectile.frame %= Main.projFrames[Projectile.type];
+                Projectile.frame = (int)(Main.projFrames[Type] * Utils.GetLerpValue(canisterShootRate - 20, canisterShootRate - 4, Time % canisterShootRate, true));
+            Projectile.frame %= Main.projFrames[Type];
 
             Vector2 spawnPosition = Projectile.Center;
             float shootSpeed = MathHelper.Lerp(8f, 29f, Utils.GetLerpValue(90f, 850f, target.Distance(spawnPosition), true));
@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 9f + Projectile.SafeDirectionTo(returnPosition) * flySpeed) / 10f;
             }
 
-            int totalHeads = CalamityUtils.CountProjectiles(Projectile.type);
+            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
             int moveRate = 40 + totalHeads * 4;
 
             // Reset the ideal offset from time to time.
@@ -251,10 +251,10 @@ namespace CalamityMod.Projectiles.Summon
                                  0);
             }
 
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(headTexture,
                              Projectile.Center - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY,
-                             headTexture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame),
+                             headTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame),
                              lightColor,
                              Projectile.rotation,
                              Projectile.Size * 0.5f,

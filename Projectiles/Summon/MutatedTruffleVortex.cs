@@ -66,8 +66,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnSpawn(IEntitySource source)
         {
             Projectile.scale = 0f;
-            Projectile.netUpdate = true;
-            Projectile.netSpam = 0;
+            Projectile.ForceNetUpdate();
         }
 
         public override bool? CanDamage()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -19,6 +20,8 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Particles;
+using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -37,18 +40,36 @@ namespace CalamityMod.NPCs.OldDuke
     [AutoloadBossHead]
     public class OldDuke : ModNPC
     {
+        public static Color GlowColor = new Color(55, 255, 25, 0);
+
+        // Old Duke doesn't have a phase 3 in normal mode
+        public const float LifePercentagePhase2_Normal = 0.5f;
+        public const float LifePercentagePhase2_Revenge = 0.7f;
+        public const float LifePercentagePhase2_Death = 0.8f;
+        public const float LifePercentagePhase3_Expert = 0.2f;
+        public const float LifePercentagePhase3_Revenge = 0.35f;
+        public const float LifePercentagePhase3_Death = 0.5f;
+
+        public int Phase = 0;
+        public float NuclearOverlayVisual = 0f;
+
         public static readonly SoundStyle HuffSound = new("CalamityMod/Sounds/Custom/OldDukeHuff");
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/OldDukeRoar");
         public static readonly SoundStyle VomitSound = new("CalamityMod/Sounds/Custom/OldDukeVomit");
+        public static readonly SoundStyle VortexSpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortexSpawn");
+        public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/OldDukeDash");
+        public static readonly SoundStyle DashSoundP3 = new("CalamityMod/Sounds/Custom/OldDukeDashP3");
 
         public SlotId RoarSoundSlot;
 
         public static Asset<Texture2D> GlowTexture;
 
+        public float shake = 0f;
+
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 7;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = 7;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -65,6 +86,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetDefaults()
         {
+            NPC.alpha = 255;
             NPC.width = 150;
             NPC.height = 100;
             NPC.aiStyle = -1;
@@ -79,7 +101,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.npcSlots = 15f;
             NPC.HitSound = SoundID.NPCHit14;
             NPC.DeathSound = SoundID.NPCDeath20;
-            NPC.value = Item.buyPrice(4, 0, 0, 0);
+            NPC.value = Item.buyPrice(2, 0, 0, 0);
             NPC.boss = true;
             NPC.netAlways = true;
             NPC.timeLeft = NPC.activeTime * 30;
@@ -123,6 +145,21 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void AI()
         {
+            shake = MathHelper.Lerp(shake, 0f, 0.1f);
+
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || bossRush;
+            bool revenge = CalamityWorld.revenge || bossRush;
+            bool death = CalamityWorld.death || bossRush;
+
+            bool phase2 = lifeRatio <= (death ? LifePercentagePhase2_Death : revenge ? LifePercentagePhase2_Revenge : LifePercentagePhase2_Normal);
+            bool phase3 = lifeRatio <= (death ? LifePercentagePhase3_Death : (revenge ? LifePercentagePhase3_Revenge : LifePercentagePhase3_Expert)) && expertMode;
+            
+            Phase = phase3 ? 2 : phase2 ? 1 : 0;
+            NuclearOverlayVisual = (Phase == 2 && NPC.Calamity().newAI[1] != 1) ? MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f) : MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
+
             OldDukeAI.VanillaOldDukeAI(NPC, Mod);
         }
 
@@ -206,17 +243,30 @@ namespace CalamityMod.NPCs.OldDuke
                         NPC.frame.Y = frameHeight * 6;
                 }
             }
+
+            if (NPC.ai[0] == -1f)
+            {
+                if (NPC.ai[2] >= 75f)
+                    NPC.frame.Y = frameHeight * 6;
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            Color finalDrawColor = Color.Lerp(drawColor, Color.White, NuclearOverlayVisual);
+            Color overlayDrawColor = Color.Lerp(Color.Transparent, Color.LimeGreen.MultiplyRGBA(new Color(255, 255, 255, 0)), NuclearOverlayVisual);
+            finalDrawColor = Color.Lerp(finalDrawColor, Color.LimeGreen.MultiplyRGBA(new Color(255, 255, 255, 0)), NuclearOverlayVisual);
+
+            finalDrawColor = Color.Lerp(finalDrawColor, Color.Transparent, (float)NPC.alpha / 255f);
+            overlayDrawColor = Color.Lerp(overlayDrawColor, Color.Transparent, (float)NPC.alpha / 255f);
+
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
             }
-            Texture2D texture2D15 = TextureAssets.Npc[NPC.type].Value;
-            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture2D15 = TextureAssets.Npc[Type].Value;
+            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / Main.npcFrameCount[Type] / 2);
             Color color = drawColor;
             Color drawLerpColor = Color.White;
             float drawLerpValue = 0f;
@@ -265,10 +315,11 @@ namespace CalamityMod.NPCs.OldDuke
                 {
                     Color afterimageColor = color;
                     afterimageColor = Color.Lerp(afterimageColor, drawLerpColor, drawLerpValue);
+                    afterimageColor = Color.Lerp(afterimageColor, overlayDrawColor, NuclearOverlayVisual);
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
@@ -279,9 +330,7 @@ namespace CalamityMod.NPCs.OldDuke
             float afterimageScale = 0f;
 
             if (NPC.ai[0] == -1f)
-            {
                 secondAfterimageAmt = 0;
-            }
 
             if (NPC.ai[0] == 3f || NPC.ai[0] == 8f || NPC.ai[0] == 13f)
             {
@@ -314,24 +363,26 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 for (int j = 0; j < secondAfterimageAmt; j++)
                 {
-                    Color secondAfterimageColor = drawColor;
-                    secondAfterimageColor = Color.Lerp(secondAfterimageColor, drawLerpColor, drawLerpValue);
-                    secondAfterimageColor = NPC.GetAlpha(secondAfterimageColor);
-                    secondAfterimageColor *= 1f - afterimageOpacity;
+                    Color secondAfterimageColor = Color.Lerp(finalDrawColor, Color.Transparent, (float)j / (float)secondAfterimageAmt);
                     Vector2 secondAfterimagePos = NPC.Center + (j / (float)secondAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * afterimageOpacity - screenPos;
-                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    secondAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     secondAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(texture2D15, secondAfterimagePos, NPC.frame, secondAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                 }
             }
 
-            Color finalDrawColor = drawColor;
-            finalDrawColor = Color.Lerp(finalDrawColor, drawLerpColor, drawLerpValue);
-            finalDrawColor = NPC.GetAlpha(finalDrawColor);
             Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, (NPC.ai[0] > 9f ? finalDrawColor : NPC.GetAlpha(drawColor)), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            drawLocation += new Vector2(Main.rand.NextFloat(-shake, shake), Main.rand.NextFloat(-shake, shake));
+
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(finalDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            
+            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(overlayDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+            float auraOutset = 6f + (float)(Math.Sin(VisualTimerSystem.GlobalVisualTimer / 10f) * 10f);
+            for (float i = 0f; i < 360f; i += 90f)
+                spriteBatch.Draw(texture2D15, drawLocation + new Vector2(auraOutset, 0).RotatedBy(MathHelper.ToRadians(i)), NPC.frame, NPC.GetAlpha(overlayDrawColor.MultiplyRGBA(new Color(0.4f, 0.4f, 0.4f, 0.4f))), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             if (NPC.ai[0] >= 4f && NPC.Calamity().newAI[1] != 1f)
             {
@@ -374,7 +425,7 @@ namespace CalamityMod.NPCs.OldDuke
                         yellowAfterimageColor = Color.Lerp(yellowAfterimageColor, drawLerpColor, drawLerpValue);
                         yellowAfterimageColor *= (afterimageAmt - k) / 15f;
                         Vector2 yellowAfterimagePos = NPC.oldPos[k] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                        yellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        yellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         yellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, yellowAfterimagePos, NPC.frame, yellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
@@ -386,7 +437,7 @@ namespace CalamityMod.NPCs.OldDuke
                         secondYellowAfterimageColor = NPC.GetAlpha(secondYellowAfterimageColor);
                         secondYellowAfterimageColor *= 1f - afterimageOpacity;
                         Vector2 secondYellowAfterimagePos = NPC.Center + (l / (float)secondAfterimageAmt * MathHelper.TwoPi + NPC.rotation).ToRotationVector2() * afterimageScale * afterimageOpacity - screenPos;
-                        secondYellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                        secondYellowAfterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                         secondYellowAfterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                         spriteBatch.Draw(texture2D15, secondYellowAfterimagePos, NPC.frame, secondYellowAfterimageColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
                     }
@@ -411,7 +462,7 @@ namespace CalamityMod.NPCs.OldDuke
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SEAHOE>() }, DownedBossSystem.downedBoomerDuke);
+            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SeaKing>() }, DownedBossSystem.downedBoomerDuke);
 
             // Mark Old Duke as dead
             DownedBossSystem.downedBoomerDuke = true;
@@ -456,7 +507,7 @@ namespace CalamityMod.NPCs.OldDuke
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<OldDukeRelic>());
 
             // GFB Shattered Community drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<ShatteredCommunity>(), hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<ShatteredCommunity>()), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedBoomerDuke, ModContent.ItemType<LoreOldDuke>(), desc: DropHelper.FirstKillText);
@@ -473,6 +524,7 @@ namespace CalamityMod.NPCs.OldDuke
             if (hurtInfo.Damage > 0)
             {
                 target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
                 if (Main.zenithWorld)
                 {
                     target.AddBuff(BuffID.Rabies, Main.rand.Next(180, 601));
@@ -484,12 +536,6 @@ namespace CalamityMod.NPCs.OldDuke
         {
             if (NPC.life > 0)
             {
-                int onHitDust = 0;
-                while (onHitDust < hit.Damage / NPC.lifeMax * 100.0)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
-                    onHitDust++;
-                }
             }
             else
             {
@@ -498,7 +544,7 @@ namespace CalamityMod.NPCs.OldDuke
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, 2 * hit.HitDirection, -2f, 0, default, 1f);
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center + Vector2.UnitX * 20f * NPC.direction, NPC.velocity, Mod.Find<ModGore>("OldDukeGore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.Center + Vector2.UnitX * 20f * NPC.direction, NPC.velocity, Mod.Find<ModGore>("OldDukeGore2").Type, NPC.scale);

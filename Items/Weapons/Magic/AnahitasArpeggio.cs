@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public float RotationOffset;
-        public static int MusicNoteAmt = 0;
 
         public static readonly SoundStyle CapSound = new("CalamityMod/Sounds/Item/HarpLV6");
         public static readonly SoundStyle EndSound = new("CalamityMod/Sounds/Item/HarpEnd");
@@ -25,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 77;
+            Item.damage = 127;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 22;
@@ -48,7 +47,16 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             // Max music note check is in Shoot instead of CanUseItem so that the weapon can still be visually played while at the cap
             int musicNoteCap = Main.zenithWorld ? 7 : 6;
-            if (MusicNoteAmt >= musicNoteCap)
+
+            int nonReleasedMusicNotes = 0;
+            foreach (var proj in Main.ActiveProjectiles)
+            {
+                if (proj.type != Item.shoot || proj.owner != player.whoAmI || proj.ai[1] == 2f)
+                    continue;
+                nonReleasedMusicNotes++;
+            }
+
+            if (nonReleasedMusicNotes >= musicNoteCap)
             {
                 Main.musicPitch = -0.5f;
                 SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
@@ -56,12 +64,11 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             else
             {
-                if (MusicNoteAmt <= 0)
+                if (nonReleasedMusicNotes <= 0)
                     RotationOffset = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 
-                int note = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 0f, RotationOffset);
-                Main.projectile[note].localAI[1] = MusicNoteAmt;
-                MusicNoteAmt++;
+                Projectile note = Projectile.NewProjectileDirect(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI, ai2: nonReleasedMusicNotes);
+                note.ModProjectile<AnahitasArpeggioNote>()._randomReleaseRotationOffset = RotationOffset;
                 return false;
             }
         }
@@ -77,7 +84,8 @@ namespace CalamityMod.Items.Weapons.Magic
         // Consume much less mana while the maximum number of notes are present
         public override void ModifyManaCost(Player player, ref float reduce, ref float mult)
         {
-            if (MusicNoteAmt >= 6)
+            int nonReleasedMusicNotes = Main.projectile.Count(proj => proj.type == Item.shoot && Main.myPlayer == proj.owner && proj.active && proj.ai[1] != 2f);
+            if (nonReleasedMusicNotes >= 6)
                 mult *= 0.25f;
         }
 

@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.MainMenu
 {
+    // Intentionally masquerades over the previous main menu, which is now the Classic main menu.
     public class CalamityMainMenu : ModMenu
     {
         public class Cinder
@@ -39,7 +40,8 @@ namespace CalamityMod.MainMenu
             internal set;
         } = new();
 
-        public override string DisplayName => "Calamity Style";
+        public float remixLogoRotation = 0f;
+        public override string DisplayName => CalamityUtils.GetTextValue("UI.MainMenu");
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Logo");
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");
@@ -52,7 +54,7 @@ namespace CalamityMod.MainMenu
         // Before drawing the logo, draw the entire Calamity background. This way, the typical parallax background is skipped entirely.
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/MenuBackground").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/ModernMenuBackground").Value;
 
             // Calculate the draw position offset and scale in the event that someone is using a non-16:9 monitor
             Vector2 drawOffset = Vector2.Zero;
@@ -75,14 +77,13 @@ namespace CalamityMod.MainMenu
                     drawOffset.Y -= (texture.Height * scale - Main.screenHeight) * 0.5f;
             }
 
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
             spriteBatch.Draw(texture, drawOffset, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
             static Color selectCinderColor()
             {
-                if (Main.rand.NextBool(3))
-                    return Color.Lerp(Color.DarkGray, Color.LightGray, Main.rand.NextFloat());
-
-                return Color.Lerp(Color.Red, Color.Yellow, Main.rand.NextFloat(0.9f));
+                return Color.Lerp(Color.Lerp(Color.Crimson, Color.PaleVioletRed, 0.3f), Color.Lerp(Color.PaleGoldenrod, Color.LightSalmon, Main.rand.NextFloat()), Main.rand.NextFloat());
             }
 
             // Randomly add cinders.
@@ -135,11 +136,24 @@ namespace CalamityMod.MainMenu
             Main.time = 27000;
             Main.dayTime = true;
 
+            // Adjust rotation based on secret seeds; only Drunk world and Remix touch this, with GFB leeching off those two
+            // Standard rotation is none; Drunk world makes it spin out, so it can use the vanilla rotation due to disappearing
+            // Remix makes it flip upside down, and in GFB it will spin forever 
+            if (WorldGen.remixWorldGen)
+            {
+                remixLogoRotation += MathHelper.Pi / 50f;
+                if (remixLogoRotation >= MathHelper.Pi && !WorldGen.everythingWorldGen)
+                    remixLogoRotation = MathHelper.Pi;
+            }
+            else
+                remixLogoRotation = 0f;
+            float rotationSecretSeedAdjusted = WorldGen.remixWorldGen ? remixLogoRotation : WorldGen.drunkWorldGen ? logoRotation : 0f;
+
             // Draw the logo using a different spritebatch blending setting so it doesn't have a horrible yellow glow
             Vector2 drawPos = new Vector2(Main.screenWidth / 2f, 100f);
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, logoRotation, Logo.Value.Size() * 0.5f, logoScale, SpriteEffects.None, 0f);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
             return false;

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
         }
 
@@ -92,9 +92,9 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe(5).
-                AddIngredient<AuricOre>(60).
+                AddIngredient<AuricOre>(50).
                 AddIngredient<YharonSoulFragment>().
-                AddTile<CosmicAnvil>().
+                AddTile(TileID.AdamantiteForge).
                 Register();
         }
     }

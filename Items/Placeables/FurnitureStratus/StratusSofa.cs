@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
             CreateRecipe().
                 AddIngredient<StratusBricks>(5).
                 AddIngredient(ItemID.Silk, 2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

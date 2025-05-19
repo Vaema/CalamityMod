@@ -25,6 +25,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.extraUpdates = 1;
             Projectile.coldDamage = true;
             Projectile.npcProj = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

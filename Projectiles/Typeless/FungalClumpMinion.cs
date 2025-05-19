@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class FungalClumpMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -16,9 +18,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -67,7 +69,7 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.frame = 0;
             }
@@ -238,7 +240,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (heal > BalancingConstants.LifeStealCap)
                 heal = BalancingConstants.LifeStealCap;
 
-            if (Main.player[Main.myPlayer].lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
+            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
                 return;
 
             CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<FungalHeal>(), BalancingConstants.LifeStealRange, BalancingConstants.LifeStealAccessoryCooldownMultiplier);

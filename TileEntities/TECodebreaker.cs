@@ -3,6 +3,7 @@ using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.DraedonSummoner;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -39,17 +40,16 @@ namespace CalamityMod.TileEntities
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return 0;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
                     return 500;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
                     return 950;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
                     return 1750;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
                     return 5000;
 
                 return 0;
@@ -72,17 +72,16 @@ namespace CalamityMod.TileEntities
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return false;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
                     return ContainsDecryptionComputer;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
                     return ContainsDecryptionComputer && ContainsSensorArray;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
                     return ContainsDecryptionComputer && ContainsSensorArray && ContainsAdvancedDisplay;
-                if (schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
                     return ContainsDecryptionComputer && ContainsSensorArray && ContainsAdvancedDisplay && ContainsVoltageRegulationSystem;
 
                 return false;
@@ -94,15 +93,14 @@ namespace CalamityMod.TileEntities
             get
             {
                 // You can't decrypt nothing.
-                if (HeldSchematicID == 0 || !CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+                if (HeldSchematicID == 0 || !EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                     return string.Empty;
 
-                int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-                if (schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicJungle>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicHell>()
-                || schematicType == ModContent.ItemType<EncryptedSchematicIce>())
-                    return CalamityUtils.GetTextValueFromModItem(schematicType, "Content");
+                if (schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicHell>()
+                || schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
+                    return CalamityUtils.GetTextValueFromModItem(schematicItemType, "Content");
 
                 return string.Empty;
             }
@@ -155,8 +153,8 @@ namespace CalamityMod.TileEntities
             if (ContainsCoolingCell)
                 Item.NewItem(source, x * 16, y * 16, 32, 32, ModContent.ItemType<AuricQuantumCoolingCell>());
 
-            if (CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
-                Item.NewItem(source, x * 16, y * 16, 32, 32, CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID]);
+            if (EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
+                Item.NewItem(source, x * 16, y * 16, 32, 32, schematicItemType);
 
             while (InputtedCellCount > 0)
             {
@@ -217,7 +215,7 @@ namespace CalamityMod.TileEntities
                     InitialCellCountBeforeDecrypting = 0;
 
                     LearnFromHeldSchematic(out bool anythingChanged);
-                    if (Main.netMode == NetmodeID.Server)
+                    if (Main.dedServ)
                     {
                         SyncDecryptCountdown();
                         SyncContainedStuff();
@@ -233,33 +231,31 @@ namespace CalamityMod.TileEntities
             anythingChanged = false;
 
             // Do nothing if no valid schematic is inputted at the moment.
-            if (!CalamityLists.EncryptedSchematicIDRelationship.ContainsKey(HeldSchematicID))
+            if (!EncryptedSchematicIDRelationshipDict.TryGet(HeldSchematicID, out var schematicItemType))
                 return;
 
-            int schematicType = CalamityLists.EncryptedSchematicIDRelationship[HeldSchematicID];
-
-            if (!RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
+            if (!RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicPlanetoid>())
             {
                 RecipeUnlockHandler.HasUnlockedT2ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicJungle>())
+            if (!RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicJungle>())
             {
                 RecipeUnlockHandler.HasUnlockedT3ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicHell>())
+            if (!RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicHell>())
             {
                 RecipeUnlockHandler.HasUnlockedT4ArsenalRecipes = true;
                 anythingChanged = true;
             }
-            if (!RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes && schematicType == ModContent.ItemType<EncryptedSchematicIce>())
+            if (!RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes && schematicItemType == ModContent.ItemType<EncryptedSchematicIce>())
             {
                 RecipeUnlockHandler.HasUnlockedT5ArsenalRecipes = true;
                 anythingChanged = true;
             }
 
-            if (Main.netMode == NetmodeID.Server && anythingChanged)
+            if (Main.dedServ && anythingChanged)
                 CalamityNetcode.SyncWorld();
         }
 

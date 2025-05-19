@@ -1,21 +1,22 @@
-// Recipe Groups
+# Recipe Groups
+# {$LegacyMisc.37} is the vanilla localization used in recipe groups, that reads "Any" in English.
 RecipeGroup: {
-	HardmodeAnvil: Any Hardmode Anvil
-	HardmodeForge: Any Hardmode Forge
-	AnyLargeGem: Any Large Gem
-	AnyFood: Any Food Item
-	AnyEvilBar: Any Evil Bar
-	AnyEvilPowder: Any Evil Powder
+	HardmodeAnvil: "{$LegacyMisc.37} Hardmode Anvil"
+	HardmodeForge: "{$LegacyMisc.37} Hardmode Forge"
+	AnyLargeGem: "{$LegacyMisc.37} Large Gem"
+	AnyFood: "{$LegacyMisc.37} Food Item"
+	AnyEvilBar: "{$LegacyMisc.37} Evil Bar"
+	AnyEvilPowder: "{$LegacyMisc.37} Evil Powder"
 	Boss2Material: Shadow Scale or Tissue Sample
 	CursedFlameIchor: Cursed Flame or Ichor
-	AnyEvilWater: Any Evil Water
-	AnyEvilFlask: Any Evil Flask
-	AnyEvilBlock: Any Evil Block
-	AnyGoodBlock: Any Good Block
-	LunarPickaxe: Any Lunar Pickaxe
-	LunarHamaxe: Any Lunar Hamaxe
-	AnyQuiver: Any Quiver
-	AnyWings: Any Wings
+	AnyEvilWater: "{$LegacyMisc.37} Evil Water"
+	AnyEvilFlask: "{$LegacyMisc.37} Evil Flask"
+	AnyEvilBlock: "{$LegacyMisc.37} Evil Block"
+	AnyGoodBlock: "{$LegacyMisc.37} Good Block"
+	LunarPickaxe: "{$LegacyMisc.37} Lunar Pickaxe"
+	LunarHamaxe: "{$LegacyMisc.37} Lunar Hamaxe"
+	AnyQuiver: "{$LegacyMisc.37} Quiver"
+	AnyWings: "{$LegacyMisc.37} Wings"
 }
 
 // Status
@@ -33,6 +34,14 @@ PlanetoidSchematicRecipeCondition: Place a schematic from the lab in the large p
 JungleSchematicRecipeCondition: Place a schematic from the lab deep within the jungle in your inventory at least once
 UnderworldSchematicRecipeCondition: Place a schematic from the lab near the edges of the underworld in your inventory at least once
 IceSchematicRecipeCondition: Place a schematic from the lab within the frozen caverns in your inventory at least once
+// Schematic Knowledge tooltips
+SchematicKnowledgeTooltip: You don't have sufficient knowledge to create this yet
+SchematicKnowledgeTooltip2: A specific schematic must be deciphered first
+Tier1KnowledgeTooltip: The Sunken Sea schematic must be deciphered first
+Tier2KnowledgeTooltip: The Planetoid schematic must be deciphered first
+Tier3KnowledgeTooltip: The Jungle schematic must be deciphered first
+Tier4KnowledgeTooltip: The Underworld schematic must be deciphered first
+Tier5KnowledgeTooltip: The Ice biome schematic must be deciphered first
 // Other CombatText uses and Item Messages
 ShiftToExpand: Hold SHIFT to see an expanded description
 LearnedSchematic: You learned how to create new things!
@@ -42,6 +51,7 @@ NoComputer: No decryption computer installed
 ArkParry: Parry!
 BurningSeaBurn: It burns...
 LightsWarning: I've gotta give you a flashing lights warning on this one
+NotSafe: Y O U  A R E  N O T  S A F E
 HecBoop: boop!
 ClockworkTick: Tick
 ClockworkTock: Tock
@@ -60,10 +70,23 @@ EtherealCoreText: You have already used an Ethereal Core. Your brain would escap
 PhantomHeartText: You have already used a Phantom Heart. The voices are telling you it's a bad idea to use it again.
 SulphurSwitchLeft: The Sulphurous Sea is now on the left side of the world.
 SulphurSwitchRight: The Sulphurous Sea is now on the right side of the world.
+Polaris0: Too much love...
 Polaris1: You give Polaris belly rubs
 Polaris2: You give Polaris a small treat
 Polaris3: You tell Polaris she's a good girl
 Polaris4: You let Polaris cuddle your arm
 Polaris5: You pet Polaris
+Empress1: A fine day for mana consumption.
+Empress2: That's quite enough mana...
+Empress3: OH GREAT HEAVENS!
+Empress4: A
 // Point Blank
 PointBlank: Does extra damage to enemies shot at point-blank range
+// Charge
+Charge: Current Charge: {0}%
+//GFB Rogue Keys
+GFBRogueUppercase: Rogue
+GFBRougeUppercase: Rouge
+GFBRogueLowercase: rogue
+GFBRougeLowercase: rouge
+HotkeyNotBound: "[None]"

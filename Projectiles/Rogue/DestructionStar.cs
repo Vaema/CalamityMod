@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,6 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override void AI()
         {
+
             if (setRot)
             {
                 rotDirection = Main.rand.NextBool() ? 1 : -1;
@@ -52,22 +54,32 @@ namespace CalamityMod.Projectiles.Rogue
             rot += (Utils.Remap(Projectile.timeLeft, 0, 240, 0.02f, 0.0015f)) * rotDirection;
 
             Player Owner = Main.player[Projectile.owner];
-            Vector2 moveToMouse = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
+            Vector2 moveToMouse = (Owner.ClampedMouseWorld() - Projectile.Center).SafeNormalize(Vector2.UnitX);
             if (Projectile.numHits == 0 || Projectile.Calamity().stealthStrike)
             {
-                if (Projectile.velocity.Length() < (Projectile.Calamity().stealthStrike ? 18 : 13) && time > 8)
-                    Projectile.velocity += moveToMouse * (Projectile.Calamity().stealthStrike ? 0.8f : 0.4f);
-                else if (time > 8)
-                    Projectile.velocity *= 0.9f;
+                if (time > 8)
+                {
+                    if (Projectile.velocity.Length() < (Projectile.Calamity().stealthStrike ? 20 : 13))
+                        Projectile.velocity += moveToMouse * (Projectile.Calamity().stealthStrike ? 1f : 0.4f);
+                    else
+                        Projectile.velocity *= 0.9f;
+                }
 
-                if (Projectile.velocity.Length() > 3 && Main.rand.NextBool())
+                if (Projectile.velocity.Length() > 3)
                 {
                     Vector2 placement = Projectile.Center + Main.rand.NextVector2Circular(70, 70);
-                    float speed = Main.rand.NextFloat(0.9f, 1.9f);
-                    Particle spark = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 11, 0.8f, Color.Black, false, false, false);
-                    GeneralParticleHandler.SpawnParticle(spark);
-                    Particle spark2 = new GlowOrbParticle(placement, -Projectile.velocity * speed, false, 11, 0.5f, Color.LightGreen, true, false, true);
-                    GeneralParticleHandler.SpawnParticle(spark2);
+                    float speed = Main.rand.NextFloat(0.6f, 0.9f);
+                    if (Main.rand.NextBool())
+                    {
+                        int dustStyle = ModContent.DustType<VoidDustInverted>();
+                        Dust dust = Dust.NewDustPerfect(placement, dustStyle);
+                        dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
+                        dust.velocity = -Projectile.velocity * speed;
+                        dust.noGravity = true;
+                        dust.color = Color.LightGreen;
+                    }
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center + Main.rand.NextVector2Circular(20, 20), -Projectile.velocity * speed, Color.Black, 22, Main.rand.NextFloat(-0.2f, 0.2f) + speed, 0.4f, Main.rand.NextFloat(-0.05f, 0.05f), false);
+                    GeneralParticleHandler.SpawnParticle(smoke);
                 }
 
                 fade = MathHelper.Lerp(fade, 0, 0.088f);
@@ -93,7 +105,6 @@ namespace CalamityMod.Projectiles.Rogue
                 if (time == 8)
                     Projectile.Kill();
             }
-            //if (Projectile.Calamity().stealthStrike)
 
             time++;
             if (stealthHitCooldown > 0)
@@ -137,35 +148,45 @@ namespace CalamityMod.Projectiles.Rogue
             Particle orb7 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 3, 0f, 12, false);
             GeneralParticleHandler.SpawnParticle(orb7);
         }
-        public override void OnKill(int timeLeft)
-        {
-            if (!Projectile.Calamity().stealthStrike)
-                Explode(false);
-            else
-                Explode(true);
-
-        }
+        public override void OnKill(int timeLeft) => Explode(Projectile.Calamity().stealthStrike);
 
         internal void Explode(bool big)
         {
-            float sizeBonus = big ? 2 : 1;
-            float bigExplosionDamage = 1f;
+
+
+            float sizeBonus = big ? Main.zenithWorld ? 6 : 2 : 1;
+            float bigExplosionDamage = 3f;
             Player Owner = Main.player[Projectile.owner];
             Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen with { A = 0 }, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.82f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb);
             Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.74f * sizeBonus, 11);
             GeneralParticleHandler.SpawnParticle(orb2);
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionExplosion>(), (int)(Projectile.damage * (big ? bigExplosionDamage : Projectile.Calamity().stealthStrike ? 0.4f : 0.8f)), Projectile.knockBack * 1.5f, Projectile.owner);
-            SoundStyle explo = new("CalamityMod/Sounds/Item/MeldExplosion");
-            SoundEngine.PlaySound(explo with { Volume = 0.9f }, Projectile.Center);
+
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DestructionExplosion>(), (int)(Projectile.damage * (big ? Main.zenithWorld ? bigExplosionDamage * 4f : bigExplosionDamage : Projectile.Calamity().stealthStrike ? 0.25f : 1f)), Projectile.knockBack * 1.5f, Projectile.owner);
+
+            if (!Main.zenithWorld || !big)
+            {
+                SoundStyle explo = new("CalamityMod/Sounds/Item/MeldExplosion");
+                SoundEngine.PlaySound(explo with { Volume = 0.9f }, Projectile.Center);
+            }
+            else
+            {
+                SoundStyle gfbExplosion = new("CalamityMod/Sounds/Custom/ExoMechs/AresGaussNukeExplosion");
+                SoundEngine.PlaySound(gfbExplosion with { Volume = 1f, Pitch = -0.5f }, Projectile.Center);
+            }
+
             if (big)
             {
-                SoundStyle explo2 = new("CalamityMod/Sounds/Item/EarthMeteor");
-                SoundEngine.PlaySound(explo2 with { Volume = 0.9f, Pitch = -0.2f }, Projectile.Center);
+                if (!Main.zenithWorld)
+                {
+                    SoundStyle explo2 = new("CalamityMod/Sounds/Item/EarthMeteor");
+                    SoundEngine.PlaySound(explo2 with { Volume = 0.9f, Pitch = -0.2f }, Projectile.Center);
 
-                SoundStyle explo3 = new("CalamityMod/Sounds/Item/ExobladeDashImpact");
-                SoundEngine.PlaySound(explo3 with { Volume = 0.9f, Pitch = -0.2f }, Projectile.Center);
+                    SoundStyle explo3 = new("CalamityMod/Sounds/Item/ExobladeDashImpact");
+                    SoundEngine.PlaySound(explo3 with { Volume = 0.9f, Pitch = -0.2f }, Projectile.Center);
+                }
+
             }
 
             Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.LightGreen, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 2.56f * 1.3f * sizeBonus, 18);
@@ -182,12 +203,14 @@ namespace CalamityMod.Projectiles.Rogue
                 Particle orb7 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Black, "CalamityMod/Particles/SmallBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), (2.2f + i * 0.5f) * sizeBonus, 0f, 80, false);
                 GeneralParticleHandler.SpawnParticle(orb7);
             }
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < (19 * sizeBonus); i++)
             {
-                Particle spark3 = new GlowOrbParticle(Projectile.Center, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f) * sizeBonus, false, 25, Main.rand.NextFloat(0.8f, 1.5f) * sizeBonus, Color.LightGreen, true, false, false);
-                GeneralParticleHandler.SpawnParticle(spark3);
-                Particle spark4 = new GlowOrbParticle(Projectile.Center, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f) * sizeBonus, false, 25, Main.rand.NextFloat(0.8f, 1.5f) * sizeBonus, Color.Black, false, false, false);
-                GeneralParticleHandler.SpawnParticle(spark4);
+                int dustStyle = ModContent.DustType<VoidDustInverted>();
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle);
+                dust.scale = Main.rand.NextFloat(1.4f, 2.2f) * sizeBonus;
+                dust.velocity = new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1f) * sizeBonus;
+                dust.noGravity = true;
+                dust.color = Color.LightGreen;
             }
             for (int i = 0; i < (25 * sizeBonus); i++)
             {
@@ -210,18 +233,10 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Main.EntitySpriteDraw(portal.Value, Projectile.Center - Main.screenPosition, null, Color.LightGreen with { A = 0 } * Utils.GetLerpValue(45, 0, stealthHitCooldown), 0, portal.Size() * 0.5f, 1.1f * Utils.GetLerpValue(45, 0, stealthHitCooldown), SpriteEffects.None);
             }
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 15; i++)
             {
-                Color auraColor = Color.Black;
-                Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
-                rotationalDrawOffset *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f) * 0.5f);
-                Vector2 rotationalDrawOffset2 = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 17f).ToRotationVector2();
-                rotationalDrawOffset2 *= MathHelper.Lerp(3f, 5.25f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f) * 0.5f - 2);
-                Main.EntitySpriteDraw(tex2.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset, null, auraColor, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
-                for (int b = 0; b < 2; b++)
-                {
-                    Main.EntitySpriteDraw(tex2.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset2, null, Color.LightGreen with { A = 0 }, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
-                }
+                Vector2 rotationalDrawOffset2 = (MathHelper.TwoPi * i / 15f).ToRotationVector2() * 5 * (fade + 0.2f);
+                Main.EntitySpriteDraw(tex2.Value, Projectile.Center - Main.screenPosition + rotationalDrawOffset2, null, Color.LightGreen with { A = 0 } * 0.4f, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
             }
 
             Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);

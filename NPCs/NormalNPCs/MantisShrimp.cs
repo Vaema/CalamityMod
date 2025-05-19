@@ -4,6 +4,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -14,7 +15,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 SpriteDirection = 1
@@ -104,12 +105,16 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), target.Center, Vector2.Zero, ProjectileID.SolarWhipSwordExplosion, 0, 0f, Main.myPlayer);
+
+            // Ouch, don't get hit twice in a row :)
+            if (hurtInfo.Damage > 0)
+                target.AddBuff(BuffID.BrokenArmor, 300, true);
         }
 
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -125,6 +130,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.AddIf(() => NPC.downedPlantBoss, ModContent.ItemType<MantisClaws>(), 5);
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -139,7 +145,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MantisShrimp").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("MantisShrimp2").Type, 1f);

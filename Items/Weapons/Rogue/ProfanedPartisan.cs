@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 56;
             Item.height = 56;
-            Item.damage = 322;
+            Item.damage = 222;
             Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
@@ -51,10 +51,9 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<CrystalPiercer>(500).
-                AddIngredient<DivineGeode>(4).
+                AddIngredient<SpearofPaleolith>().
                 AddIngredient<UnholyEssence>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

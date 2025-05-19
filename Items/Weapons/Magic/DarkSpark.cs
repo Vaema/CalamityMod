@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<DarkSparkPrism>();
             Item.shootSpeed = 30f;
 
-            Item.UseSound = SoundID.Item13;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.channel = true;
             Item.noMelee = true;
@@ -49,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<DarkPlasma>(10).
                 AddIngredient<RuinousSoul>(20).
                 AddIngredient<DivineGeode>(30).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

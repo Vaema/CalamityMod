@@ -14,14 +14,14 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 24;
-            Item.damage = 45;
+            Item.damage = 48;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 32;
@@ -68,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<FrostbiteBlaster>().
                 AddIngredient<BulletFilledShotgun>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

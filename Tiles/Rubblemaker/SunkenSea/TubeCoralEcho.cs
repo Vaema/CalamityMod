@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
@@ -26,8 +26,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(36, 61, 111));
-            RegisterItemDrop(ModContent.ItemType<Navystone>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
 
             base.SetStaticDefaults();
         }

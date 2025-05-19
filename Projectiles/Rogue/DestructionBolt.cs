@@ -49,8 +49,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (time == 180 + timerOffset)
             {
-                MouseX = Owner.Calamity().mouseWorld.X;
-                MouseY = Owner.Calamity().mouseWorld.Y;
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                MouseX = mouse.X;
+                MouseY = mouse.Y;
             }
             else if (time < 180)
             {
@@ -121,7 +122,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Asset<Texture2D> tex2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/DestructionBoltGhost");
             Asset<Texture2D> tex3 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
             float fading = Utils.GetLerpValue(180, 90, time, true);

@@ -1,6 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Balancing;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -8,28 +10,22 @@ namespace CalamityMod.Items.PermanentBoosters
     public class ElectrolyteGelPack : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"{LocalizationCategory}.AdrenalineBoosterTooltip").WithFormatArgs(BalancingConstants.AdrenalineDamagePerBooster.ToPercent(), BalancingConstants.AdrenalineDRPerBooster.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 20;
             Item.height = 20;
-            Item.useAnimation = 30;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.UseSound = SoundID.Item122;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.UseSound = SoundID.Item122;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.SetRevExclusive();
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.adrenalineBoostOne)
-            {
-                return false;
-            }
-            return true;
-        }
+        public override bool CanUseItem(Player player) => !player.Calamity().adrenalineBoostOne;
 
         public override bool? UseItem(Player player)
         {

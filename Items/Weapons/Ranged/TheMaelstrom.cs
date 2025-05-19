@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ReaperTooth>(3).
                 AddIngredient<DivineGeode>(20).
                 AddIngredient<Voidstone>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

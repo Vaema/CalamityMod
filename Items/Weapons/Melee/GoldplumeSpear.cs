@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             CreateRecipe().
                 AddIngredient<AerialiteBar>(10).
                 AddIngredient(ItemID.SunplateBlock, 4).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

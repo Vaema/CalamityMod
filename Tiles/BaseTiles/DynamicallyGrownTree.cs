@@ -66,7 +66,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 MaxCutoffBranchesPerBranch = MaxCutoffBranchesPerBranch
             };
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 BranchDrawer.BarkTexture = ModContent.Request<Texture2D>(Texture, AssetRequestMode.ImmediateLoad).Value;
         }
 
@@ -132,6 +132,9 @@ namespace CalamityMod.Tiles.BaseTiles
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             Tile t = CalamityUtils.ParanoidTileRetrieval(i, j);
             if (t.TileFrameX != 0 || t.TileFrameY != ((int)Math.Ceiling(DistanceUsedForTrunk / 16) - 1) * 18)
                 return false;

@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -17,12 +18,15 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
+        //Used by Arterial Assault
+        public bool DisableEffects = false;
+
         public override string Texture => "CalamityMod/Items/Ammo/BloodfireArrow";
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -33,7 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 6;
+            Projectile.extraUpdates = 9;
             Projectile.timeLeft = 1200;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
@@ -46,13 +50,22 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.localAI[0] == 0)
             {
-                player.statLife -= 1;
-                if (player.statLife <= 0)
+                if (DisableEffects)
                 {
-                    PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).Format(player.name));
-                    player.KillMe(pdr, 1000.0, 0, false);
+
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
+                } else
+                {
+                    Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
+                    player.statLife -= 1;
+                    if (player.statLife <= 0)
+                    {
+                        PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
+                        player.KillMe(pdr, 1000.0, 0, false);
+                    }
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
                 }
-                Projectile.velocity *= 0.4f;
+
             }
 
             Player Owner = Main.player[Projectile.owner];
@@ -73,27 +86,34 @@ namespace CalamityMod.Projectiles.Ranged
                     if (dust.type == 130)
                         dust.scale = Main.rand.NextFloat(0.25f, 0.45f);
                 }
-                PointParticle spark = new PointParticle(Projectile.Center - Projectile.velocity, -Projectile.velocity * 0.01f, false, 2, 1.2f, Color.Firebrick);
-                GeneralParticleHandler.SpawnParticle(spark);
+                if (Projectile.localAI[0] % 2 == 0)
+                {
+                    Particle spark = new CustomSpark(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomLineFade", false, 6, 0.025f, Color.Firebrick, new Vector2(1, 1), true, true, shrinkSpeed: 1.4f, glowOpacity: 0.4f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
             }
         }
 
         public override void OnKill(int timeLeft)
         {
-            for (int b = 0; b < 9; b++)
+            for (int b = 0; b < 6; b++)
             {
-                int dustType = Main.rand.NextBool() ? 303 : 90;
+                int dustType = ModContent.DustType<DiamondDust>();
                 float velMulti = Main.rand.NextFloat(0.1f, 0.75f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, new Vector2(4, 4).RotatedByRandom(100) * velMulti);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, (Projectile.velocity * 2).RotatedByRandom(0.3) * velMulti);
                 dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.75f, 1.35f);
-                if (dust.type == 303)
-                    dust.color = Color.Firebrick;
+                dust.scale = Main.rand.NextFloat(0.75f, 0.95f);
+                dust.color = Color.Firebrick;
+                dust.noLightEmittence = true;
+                dust.noLight = true;
+                dust.fadeIn = 15;
             }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (DisableEffects)
+                return;
             Player player = Main.player[Projectile.owner];
             player.lifeRegenTime += 2;
 
@@ -119,7 +139,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 2);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White, 2);
             return false;
         }
     }

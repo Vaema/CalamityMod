@@ -19,6 +19,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresGaussNuke : ModNPC
     {
         public enum Phase
@@ -76,8 +77,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -231,6 +232,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     NPC.Opacity = 0f;
             }
 
+            // Global timer used for passive movement
+            NPC.Calamity().newAI[3]++;
+            if (NPC.Calamity().newAI[3] >= 240f)
+                NPC.Calamity().newAI[3] = 0f;
+
             // Predictiveness
             float predictionAmt = bossRush ? 20f : death ? 15f : revenge ? 13.75f : expertMode ? 12.5f : 10f;
             if (nerfedAttacks)
@@ -301,10 +307,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Default vector to fly to
-            float offsetX = 560f;
-            float offsetY = 0f;
-            float offsetX2 = 540f;
-            float offsetY2 = 540f;
+            Vector2 offset = new Vector2(560f, 20f * (float)Math.Sin(NPC.Calamity().newAI[3] * MathHelper.Pi / 120f));
+            Vector2 offset2 = new Vector2(540f, 540f);
             switch ((int)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3])
             {
                 case 0:
@@ -315,12 +319,11 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case 1:
                 case 2:
                 case 5:
-                    offsetX *= -1f;
-                    offsetX2 *= -1f;
-                    offsetY2 *= -1f;
+                    offset.X *= -1f;
+                    offset2 *= -1f;
                     break;
             }
-            Vector2 destination = calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX2, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY2) : new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY);
+            Vector2 destination = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center + (calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? offset2 : offset);
 
             // Velocity and acceleration values
             float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
@@ -420,8 +423,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             {
                                 int type = ModContent.ProjectileType<AresGaussNukeProjectile>();
                                 int damage = NPC.GetProjectileDamage(type);
-                                float offset = 40f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * offset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
+                                float nukeOffset = 40f;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * nukeOffset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
                             }
 
                             // Recoil
@@ -546,7 +549,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
             Color afterimageBaseColor = Main.npc[(int)NPC.ai[2]].localAI[1] == (float)AresBody.Enraged.Yes ? Color.Red : Color.White;
@@ -682,7 +685,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresGaussNuke1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresGaussNuke2").Type, 1f);

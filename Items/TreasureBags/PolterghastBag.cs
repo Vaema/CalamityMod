@@ -25,14 +25,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 32;
             Item.height = 34;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Polterghast>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 10, 20);
+            itemLoot.Add(ModContent.ItemType<RuinousSoul>(), 1, 25, 30);
             itemLoot.Add(ModContent.ItemType<Necroplasm>(), 1, 40, 50);
 
             // Weapons

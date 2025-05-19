@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Magic
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 7;
+            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = Main.projFrames[Projectile.type] * 5;
+            Projectile.timeLeft = Main.projFrames[Type] * 5;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 35;
             Projectile.tileCollide = false;

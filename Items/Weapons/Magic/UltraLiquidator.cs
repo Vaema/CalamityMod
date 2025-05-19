@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -59,6 +59,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 }
                 f = Main.rand.NextFloat() * MathHelper.TwoPi;
             }
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 velocityReal = Main.MouseWorld - source;
             Vector2 upperVelocityLimit = new Vector2(xVec, yVec).SafeNormalize(Vector2.UnitY) * speed;
             velocityReal = velocityReal.SafeNormalize(upperVelocityLimit) * speed;
@@ -74,7 +75,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.AquaScepter).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -11,18 +11,12 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class TarragonThrowingDart : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 34;
             Item.height = 34;
             Item.damage = 380;
             Item.noMelee = true;
-            Item.consumable = true;
             Item.noUseGraphic = true;
             Item.useAnimation = 11;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -30,8 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.maxStack = 9999;
-            Item.value = Item.sellPrice(copper: 30);
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.shoot = ModContent.ProjectileType<TarragonThrowingDartProjectile>();
             Item.shootSpeed = 15f;
             Item.DamageType = RogueDamageClass.Instance;
@@ -52,9 +45,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void AddRecipes()
         {
-            CreateRecipe(333).
-                AddIngredient<UelibloomBar>().
-                AddTile(TileID.LunarCraftingStation).
+            CreateRecipe().
+                AddIngredient<UelibloomBar>(12).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

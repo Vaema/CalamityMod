@@ -101,6 +101,9 @@ namespace CalamityMod.Tiles.DraedonStructures
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Tile trackTile = Main.tile[i, j];
+            if (trackTile.IsTileActuallyInvisible())
+                return false;
+
             int time = (int)(Main.GlobalTimeWrappedHourly * 60);
 
             TELabHologramProjector hologramTileEntity = CalamityUtils.FindTileEntity<TELabHologramProjector>(i, j, Width, Height, SheetSquare);

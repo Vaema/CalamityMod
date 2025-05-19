@@ -12,6 +12,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -23,7 +24,7 @@ namespace CalamityMod.NPCs.Abyss
         public static Asset<Texture2D> GlowTexture;
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.8f,
@@ -45,7 +46,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 300;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 4, 0);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
@@ -164,7 +165,7 @@ namespace CalamityMod.NPCs.Abyss
             else
             {
                 NPC.frameCounter += 0.15f;
-                NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+                NPC.frameCounter %= Main.npcFrameCount[Type];
                 int frame = (int)NPC.frameCounter;
                 NPC.frame.Y = frame * frameHeight;
             }
@@ -187,6 +188,7 @@ namespace CalamityMod.NPCs.Abyss
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 3, 4, 6));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Bezoar, 100, 50));
         }
 
         public override void HitEffect(NPC.HitInfo hit)

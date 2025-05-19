@@ -25,10 +25,10 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             if (!Main.dedServ)
                 glowmask = ModContent.Request<Texture2D>("CalamityMod/NPCs/Astral/AstraglomerateGlow", AssetRequestMode.AsyncLoad);
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 600;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
@@ -153,16 +153,10 @@ namespace CalamityMod.NPCs.Astral
             return 0f;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
-        }
-
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<StarblightSoot>(), 1, 1, 3, 1, 4));
-            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<HivePod>(), 7);
+            npcLoot.AddIf(() => DownedBossSystem.downedAstrumAureus, ModContent.ItemType<HivePod>(), 10);
         }
     }
 }

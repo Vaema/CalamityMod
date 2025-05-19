@@ -27,8 +27,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 60;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 60;
         }
         public override void SetDefaults()
         {
@@ -82,8 +82,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.rand.NextBool(5))
             {
                 Projectile.velocity = Projectile.velocity.RotatedByRandom(0.9f);
-                Projectile.netSpam = 0;
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
             }
         }
 
@@ -114,11 +113,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                 Vector2 start = oldPositions[i] + Projectile.Size * 0.5f - Main.screenPosition;
                 Vector2 end = oldPositions[i + 1] + Projectile.Size * 0.5f - Main.screenPosition;
-                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Type].Value, start, end, new Vector2(OuterLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
 
                 DelegateMethods.f_1 = InnerLightningOpacity;
                 DelegateMethods.c_1 = InnerLightningColor;
-                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
+                Utils.DrawLaser(Main.spriteBatch, Terraria.GameContent.TextureAssets.Projectile[Type].Value, start, end, new Vector2(InnerLightningScale), new Utils.LaserLineFraming(DelegateMethods.LightningLaserDraw));
             }
             return false;
         }

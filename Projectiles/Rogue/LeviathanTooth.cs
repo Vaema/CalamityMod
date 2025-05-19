@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class LeviathanTooth : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -35,8 +37,8 @@ namespace CalamityMod.Projectiles.Rogue
         public bool chomping = true;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -237,7 +239,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target == chosenTarget || Projectile.Calamity().stealthStrike)
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             if (!stuckInTarget && canStick && !Projectile.Calamity().stealthStrike)
             {
                 if (Projectile.timeLeft < 400)
@@ -256,7 +258,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (Projectile.ai[1] == 2)
                 tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/LeviathanTooth2").Value;
             if (Projectile.ai[1] == 3)

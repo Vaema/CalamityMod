@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<Acidwood>(10).
                 AddRecipeGroup("Boss2Material", 8).
                 AddIngredient(ItemID.Deathweed, 2).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

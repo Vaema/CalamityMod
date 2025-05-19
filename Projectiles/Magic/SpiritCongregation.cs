@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Graphics.Metaballs;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class SpiritCongregation : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -46,8 +48,8 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void SetDefaults()
@@ -103,7 +105,8 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 previousVelocity = Projectile.velocity;
 
                 // If not sufficiently close to the mouse, move towards it.
-                if (!Projectile.WithinRange(Main.MouseWorld, 80f))
+                Vector2 mouse = Owner.ClampedMouseWorld();
+                if (!Projectile.WithinRange(mouse, 80f))
                     MoveTowardsMouse();
 
                 // Otherwise slow down to a point.
@@ -112,10 +115,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Sync velocity if it changed from what it was before.
                 if (previousVelocity != Projectile.velocity)
-                {
-                    Projectile.netSpam = 0;
-                    Projectile.netUpdate = true;
-                }
+                    Projectile.ForceNetUpdate();
             }
 
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Magic
             // Make inertia become more significant the more power the congregation has, due to growing size.
             float inertia = MathHelper.Lerp(18f, 40f, CurrentPower);
 
-            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Main.MouseWorld + HoverOffset);
+            Vector2 directionToMouseOffset = Projectile.SafeDirectionTo(Owner.ClampedMouseWorld() + HoverOffset);
             Vector2 directionToOwner = Projectile.SafeDirectionTo(Owner.Center);
             Vector2 idealVelocity = Vector2.Lerp(directionToMouseOffset, directionToOwner, 0.25f) * MovementSpeed;
 
@@ -269,7 +269,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             if (CurrentPower > LargeMouthPowerLowerBound)
                 texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/SpiritCongregationBig").Value;
 

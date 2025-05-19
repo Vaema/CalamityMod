@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerHead : ModNPC
     {
         public static readonly SoundStyle MissileSound = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileLaunch");
@@ -17,7 +18,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.NeedsExpertScaling[NPC.type] = true;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
         public override void SetDefaults()

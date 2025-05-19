@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Armor.Astral
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<GenericDamageClass>() += 0.05f;
-            player.GetCritChance<GenericDamageClass>() += 15;
+            player.GetCritChance<GenericDamageClass>() += 10;
         }
 
         public override void AddRecipes()
@@ -53,6 +53,7 @@ namespace CalamityMod.Items.Armor.Astral
                 AddIngredient<AstralBar>(8).
                 AddIngredient(ItemID.MeteoriteBar, 6).
                 AddTile(TileID.LunarCraftingStation).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AstralBreastplate>()).
                 Register();
         }
     }

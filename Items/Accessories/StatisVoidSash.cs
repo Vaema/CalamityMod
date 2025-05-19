@@ -6,6 +6,7 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -17,6 +18,9 @@ namespace CalamityMod.Items.Accessories
     public class StatisVoidSash : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static SoundStyle VoidDash = new ("CalamityMod/Sounds/Item/VoidDash");
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 3));
@@ -35,14 +39,21 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
+
+            modPlayer.voidSashVisuals = !hideVisual;
+
             player.autoJump = true;
             player.jumpSpeedBoost += 1.6f;
+            player.moveSpeed += 0.2f;
             player.noFallDmg = true;
             player.blackBelt = true;
             modPlayer.DashID = StatisVoidSashDash.ID;
             player.dashType = 0;
             player.spikedBoots = 2;
             player.accFlipper = true;
+            player.Calamity().statisVoidSash = true;
+
+            player.MountedCenter.ToTileCoordinates();
         }
 
         public override void AddRecipes()

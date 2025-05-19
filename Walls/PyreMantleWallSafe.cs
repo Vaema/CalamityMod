@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -12,7 +13,7 @@ namespace CalamityMod.Walls
         {
             DustType = 33;
             Main.wallHouse[Type] = true;
-            AddMapEntry(new Color(6, 10, 54));
+            AddMapEntry(new Color(33, 30, 30));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;

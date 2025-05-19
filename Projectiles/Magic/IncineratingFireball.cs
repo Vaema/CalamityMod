@@ -25,8 +25,8 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Timer => ref Projectile.ai[0];
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 5;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 5;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
 
             bool canUseMana = Owner.CheckMana(Owner.ActiveItem());
             // Use different behavior depending on if the player is channeling or not.
-            if (Owner.CantUseHoldout() || !canUseMana || Projectile.timeLeft <= 40)
+            if (Owner.CantUseHoldout() || !canUseMana || Projectile.timeLeft <= (int)BurningSea.FizzleOutTime)
             {
                 Released = true;
 
@@ -79,8 +79,9 @@ namespace CalamityMod.Projectiles.Magic
                 if (Main.myPlayer == Projectile.owner)
                 {
                     Vector2 projLocation = Owner.Center;
-                    float mouseDist = Vector2.Distance(Main.MouseWorld, projLocation);
-                    Vector2 mouseDiff = Main.MouseWorld - projLocation;
+                    Vector2 mouse = Owner.ClampedMouseWorld();
+                    float mouseDist = Vector2.Distance(mouse, projLocation);
+                    Vector2 mouseDiff = mouse - projLocation;
                     if (mouseDist > 128f)
                     {
                         mouseDiff.Normalize();
@@ -90,6 +91,8 @@ namespace CalamityMod.Projectiles.Magic
 
                     Vector2 orbAttemptedVelocity = Vector2.Zero.MoveTowards(projLocation - Projectile.Center, 25f);
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, orbAttemptedVelocity, 0.08f);
+
+                    Projectile.netUpdate = true;
                 }
 
                 // Slowly increase in size as the fireball is charged up.
@@ -100,17 +103,26 @@ namespace CalamityMod.Projectiles.Magic
                 if (Timer % 15 == 0f)
                     Owner.CheckMana(Owner.ActiveItem(), -1, true);
 
-                // If channeled for a while, turns red (handled in PreDraw) and starts emitting smoke as a warning.
-                // The smoke only starts once the fireball is completely red.
-                if (Timer > BurningSea.BurnOutTime - 60f)
+                // Spawn little spark effects around the fireball when fully charged.
+                if (Timer > BurningSea.ChargeTime && Timer < BurningSea.BurnOutTime)
                 {
-                    for (int s = 0; s < 2; s++)
+                    for (int s = 0; s < 6; s++)
                     {
-                        Vector2 smokeLocation = Projectile.Center + Vector2.UnitX.RotatedByRandom(MathHelper.Pi) * 237f;
-                        Vector2 smokeVel = smokeLocation - Projectile.Center;
-                        smokeVel.Normalize();
-                        smokeVel *= 5f;
-                        HeavySmokeParticle burningUp = new(smokeLocation, smokeVel, new Color(192, 192, 192), 10, 1f, 0.6f);
+                        float sparkRotation = Main.GlobalTimeWrappedHourly * -5.75f + (MathHelper.TwoPi / 6f * s);
+                        Vector2 sparkLocation = Projectile.Center + Vector2.UnitX.RotatedBy(sparkRotation) * 220f;
+                        Vector2 sparkVelocity = Vector2.Normalize(sparkLocation - Projectile.Center).RotatedBy(MathHelper.ToRadians(70)) * 2f;
+                        AltLineParticle spark = new(sparkLocation, sparkVelocity, false, 8, 0.8f, Color.Lerp(Color.Red, Color.Orange, Main.rand.NextFloat(0.3f)));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
+                // If channeled for a while, turns red (handled in PreDraw) and starts emitting smoke as a warning.
+                if (Timer > BurningSea.BurnOutTime - 90f)
+                {
+                    for (int s = 0; s < 3; s++)
+                    {
+                        Vector2 smokeLocation = Projectile.Center + Main.rand.NextVector2Circular(220f, 220f);
+                        Vector2 smokeVel = -Vector2.UnitY * Main.rand.NextFloat(7f, 13f);
+                        HeavySmokeParticle burningUp = new(smokeLocation, smokeVel, new Color(192, 192, 192), 10, 0.7f, 0.6f);
                         GeneralParticleHandler.SpawnParticle(burningUp);
                     }
                 }
@@ -122,7 +134,7 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), Owner.Center);
                     CombatText.NewText(Owner.Hitbox, new Color(192, 0, 0), CalamityUtils.GetTextValue("Misc.BurningSeaBurn"), true);
 
-                    Owner.AddBuff(ModContent.BuffType<BrimstoneFlames>(), (int)BurningSea.FizzleOutTime);
+                    Owner.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
                     TriggeredBurnOut = true;
                 }
             }
@@ -175,12 +187,16 @@ namespace CalamityMod.Projectiles.Magic
             // Big fucking fireball
             for (int i = 0; i < 6; i++)
             {
-                float direction = (i % 2f == 0f).ToDirectionInt();
+                float direction = (i % 2 == 0).ToDirectionInt();
+                float offsetDist = 0f;
                 Color fireballColor = Color.Lerp(new Color(255, 200, 200), new Color(255, 30, 30), MathHelper.Clamp(Timer / BurningSea.ChargeTime, 0f, 1f));
                 if (Timer > BurningSea.BurnOutTime - 120f)
+                {
                     fireballColor = Color.Lerp(new Color(255, 30, 30), Color.Red, MathHelper.Clamp((Timer - BurningSea.BurnOutTime + 120f) / 60f, 0f, 1f));
+                    offsetDist = MathHelper.Lerp(5f, 40f, (Timer - BurningSea.BurnOutTime + 120f) / 120f);
+                }
 
-                Main.spriteBatch.Draw(TheodoreJNoise, Projectile.Center - Main.screenPosition, null, fireballColor, direction * rotation, TheodoreJNoise.Size() / 2f, drawScale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(TheodoreJNoise, Projectile.Center - Main.screenPosition + Main.rand.NextVector2Circular(offsetDist, offsetDist), null, fireballColor, direction * rotation, TheodoreJNoise.Size() / 2f, drawScale, SpriteEffects.None, 0f);
             }
 
             Main.spriteBatch.ExitShaderRegion();

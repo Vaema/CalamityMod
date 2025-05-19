@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Rogue
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 8;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
@@ -72,13 +72,13 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.ai[0] == 0f)
             {
-                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife1);
+                Texture2D knife1 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3, knife1);
             }
             else if (Projectile.ai[0] == 1f)
             {
                 Texture2D knife2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/VeneratedKnife2").Value;
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 3, knife2);
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 3, knife2);
             }
             return false;
         }

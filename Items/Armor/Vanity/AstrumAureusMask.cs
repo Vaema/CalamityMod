@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Vanity
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawHead[Item.headSlot] = false;
         }
 
@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.width = 30;
             Item.height = 28;
             Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(silver: 75);
             Item.vanity = true;
         }
     }

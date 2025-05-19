@@ -1,7 +1,13 @@
 ﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,39 +20,43 @@ namespace CalamityMod.Projectiles.Ranged
         public float dustAngle = 0f;
         public bool growing = false;
         public bool dustWave = false;
-        public float variance;
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-        }
-
+        public float variance = 0.8f;
+        public Vector2 lastPos;
+        public int slowdownTime = 7;
+        public bool tileTouched = false;
         public override void SetDefaults()
         {
-            Projectile.width = 6;
-            Projectile.height = 6;
+            Projectile.width = 15;
+            Projectile.height = 15;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 1200;
-            Projectile.extraUpdates = 7;
+            Projectile.extraUpdates = 25;
+            Projectile.tileCollide = false;
             AIType = ProjectileID.Bullet;
             Projectile.ignoreWater = true;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
             float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-
-            variance = Main.rand.NextFloat(0.3f, 1.7f);
+            float timeleftFade = (float)Math.Pow(Utils.GetLerpValue(0, slowdownTime * Projectile.extraUpdates, Projectile.timeLeft, true), 1);
             if (currentColor == Color.Black)
             {
-                dustWave = Main.rand.NextBool();
+                slowdownTime = Main.rand.Next(6, 9 + 1);
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 20;
+                variance = Main.rand.NextFloat(0.7f, 1f);
+                dustAngle = Main.rand.NextFloat(-0.43f, 0.43f);
+                dustWave = Math.Sign(dustAngle) == 1;
                 Projectile.scale = 1.5f;
                 Projectile.velocity *= 0.3f;
+                lastPos = Projectile.velocity;
                 switch (Main.rand.Next(0, 4 +1))
                 {
                     case 4: // Yellow shot
@@ -76,75 +86,87 @@ namespace CalamityMod.Projectiles.Ranged
             }
             dustAngle += (growing ? 0.07f * variance : -0.07f * variance);
 
-            Projectile.localAI[0] += 1f;
-            if (Projectile.localAI[0] > 12f && targetDist < 1200f)
+            if (Collision.SolidCollision(Projectile.Center, 4, 4) && !tileTouched && Projectile.numHits == 0)
             {
-                GlowOrbParticle orb = new GlowOrbParticle((Projectile.Center + Projectile.velocity.RotatedBy((dustWave ? 1 : -1) * dustAngle) * 4.5f) - Projectile.velocity * 5, Vector2.Zero, false, 5, 0.55f + MathF.Abs(dustAngle * 0.5f), currentColor, true, true);
+                tileTouched = true;
+                OnHitEffects(null);
+            }
+            if (Projectile.numHits > 0 || tileTouched)
+            {
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5 * Math.Max(timeleftFade, 0.01f);
+                if (Projectile.timeLeft > slowdownTime * Projectile.extraUpdates)
+                    Projectile.timeLeft = slowdownTime * Projectile.extraUpdates;
+            }
+
+            Projectile.ai[2]++;
+            Vector2 orbPos = Projectile.Center + (Projectile.velocity.RotatedBy((dustWave ? 1 : -1) * dustAngle) * 4.5f - Projectile.velocity * 5);
+            if (Projectile.ai[2] > 15 && targetDist < 1200f)
+            {
+                CustomSpark orb = new CustomSpark(orbPos - Utils.DirectionTo(lastPos, orbPos) * timeleftFade, Utils.DirectionTo(lastPos, orbPos) * 0.1f, "CalamityMod/Particles/BloomCircle", false, 5, (0.55f + MathF.Abs(dustAngle * 0.65f)) * 0.15f * timeleftFade, currentColor, new Vector2(1 - MathF.Abs(dustAngle * 0.2f), 2 - (1 - MathF.Abs(dustAngle))), true, true, 0, false, false, 0.8f - MathF.Abs(dustAngle * 0.6f), 0.7f, 0.8f);
                 GeneralParticleHandler.SpawnParticle(orb);
 
-                PointParticle spark = new PointParticle(Projectile.Center + Projectile.velocity * 3.5f, Projectile.velocity, false, 2, 0.6f, currentColor);
-                GeneralParticleHandler.SpawnParticle(spark);
+                if (Main.rand.NextBool(8))
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity.RotatedByRandom(0.15f) * Main.rand.NextFloat(0.9f, 1.8f));
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(1.2f, 1.9f) * timeleftFade;
+                    dust.color = currentColor;
+                    dust.noLightEmittence = true;
+                    dust.fadeIn = 1.4f;
+                }
+            }
+            lastPos = orbPos;
+        }
+        public override bool? CanHitNPC(NPC target)
+        {
+            return (Projectile.numHits > 0 ? false : null);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            CalamityGlobalNPC modNPC = target.Calamity();
+
+            if (!modNPC.hyperiusMarked)
+                modNPC.hyperiusMarked = true;
+                
+            Player Owner = Main.player[Projectile.owner];
+            // Hits can crit and the collapse damage will take that into account
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Projectile.DamageType);
+            modNPC.hyperiusDamage += Math.Max(Projectile.damage * (crit ? 2 : 1) - 1, 1);
+            
+            modifiers.DisableCrit();
+            modifiers.SourceDamage *= 0;
+            modifiers.FinalDamage.Flat = 0.1f;
+            modifiers.HideCombatText();
+
+            OnHitEffects(target);
+        }
+        private void OnHitEffects(NPC target)
+        {
+            if (Projectile.owner == Main.myPlayer)
+            {
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/ShadowboltWallHit") with { Volume = 0.25f, Pitch = Main.rand.NextFloat(0.6f, 1f), MaxInstances = -1 }, Projectile.Center);
+                for (int b = 0; b < 2; b++)
+                {
+                    Vector2 velocity = (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7 * (tileTouched ? -1 : 1)).RotatedByRandom(0.5f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)Math.Max(Projectile.originalDamage * 0.05f, 1), 0, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
+                }
             }
         }
-
-        // This projectile is always fullbright.
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return currentColor;
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Projectile.localAI[0] > 25f)
+            Asset<Texture2D> orb = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark");
+            int startTime = 9;
+            int endTime = 35;
+            float timeleftFade = (float)Math.Pow(Utils.GetLerpValue(0, slowdownTime * Projectile.extraUpdates, Projectile.timeLeft, true), 1);
+
+            for (int i = 0; i < 4; i++)
             {
-                CalamityUtils.DrawAfterimagesFromEdge(Projectile, 0, lightColor);
+                Vector2 squash = new Vector2(Utils.Remap(Projectile.ai[2], startTime, endTime, 0.2f, 0.6f + i * 0.2f), Utils.Remap(Projectile.ai[2], startTime, endTime, 1f, 3f - i * 0.4f));
+                Color orbColor = Color.Lerp(currentColor, Color.White, i * 0.2f) with { A = 0 } * 0.9f;
+                Vector2 scale = Projectile.scale * timeleftFade * squash * (0.05f - i * 0.008f) * 0.3f;
+                Main.EntitySpriteDraw(orb.Value, Projectile.Center - Main.screenPosition + Projectile.velocity * i * 1.3f, null, orbColor, Projectile.rotation, orb.Size() * 0.5f, scale, SpriteEffects.None);
             }
             return false;
-        }
-
-        public override bool OnTileCollide(Vector2 oldVelocity)
-        {
-            if (Projectile.owner == Main.myPlayer)
-            {
-                for (int b = 0; b < 3; b++)
-                {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -oldVelocity.RotatedByRandom(0.5f) * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)(Projectile.damage * 0.1), 0f, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
-                }
-            }
-            return true;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            OnHitEffects(target.Center);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            OnHitEffects(target.Center);
-        }
-
-        private void OnHitEffects(Vector2 targetPos)
-        {
-            if (Projectile.owner == Main.myPlayer)
-            {
-                for (int b = 0; b < 3; b++)
-                {
-                    Vector2 velocity = Projectile.velocity.RotatedByRandom(0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * 0.7f, ModContent.ProjectileType<HyperiusSplit>(), (int)(Projectile.damage * 0.1), Projectile.knockBack * 2f, Projectile.owner, 0f, 0f, Main.rand.Next(0, 4 + 1));
-                }
-            }
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            for (int b = 0; b < 4; b++)
-            {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 66, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
-                dust.noGravity = true;
-                dust.scale = Main.rand.NextFloat(0.7f, 1.4f);
-                dust.color = currentColor;
-                dust.fadeIn = 0;
-            }
         }
     }
 }

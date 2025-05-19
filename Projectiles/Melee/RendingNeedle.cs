@@ -19,8 +19,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         const float MaxTime = 30;
@@ -34,6 +34,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = (int)MaxTime;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

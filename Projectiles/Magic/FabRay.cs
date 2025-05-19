@@ -18,8 +18,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 54;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 54;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (Projectile.hostile)
-                target.AddBuff(ModContent.BuffType<FabsolVodkaBuff>(), 54000);
+                target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), 54000);
         }
     }
 }

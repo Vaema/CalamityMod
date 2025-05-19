@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,16 +21,19 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
             TileObjectData.addAlternate(1);
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Shellstone>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0);
 
             base.SetStaticDefaults();
         }
@@ -46,5 +49,15 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             frameXOffset = xPos * subsheetWidth;
             frameYOffset = yPos * subsheetHeight;
         }
+    }
+
+    public class TableCoralEcho2 : TableCoralEcho
+    {
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral2";
+    }
+
+    public class TableCoralEcho3 : TableCoralEcho
+    {
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral3";
     }
 }

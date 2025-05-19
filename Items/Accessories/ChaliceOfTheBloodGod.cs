@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
@@ -51,6 +52,12 @@ namespace CalamityMod.Items.Accessories
             player.pStone = true;
             player.lifeRegen += 4;
 
+            //All of Blood Pact's immunities + Laceration
+            player.buffImmune[BuffID.Bleeding] = true;
+            player.buffImmune[ModContent.BuffType<BurningBlood>()] = true;
+            player.buffImmune[ModContent.BuffType<HeavyBleeding>()] = true;
+            player.buffImmune[ModContent.BuffType<Laceration>()] = true;
+
             // This applies the +25% health boost and the bleedout buffer effect.
             // Health boost intentionally stacks with Blood Pact.
             // This accessory's bleedout buffer clearing effect intentionally stacks with Blood Pact's healing potion boost.
@@ -92,7 +99,7 @@ namespace CalamityMod.Items.Accessories
                     // If this reduces the player's health to zero, make sure they actually die.
                     if (player.statLife <= 0)
                     {
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ChaliceOfTheBloodGod" + Main.rand.Next(1, 18 + 1)).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 
@@ -130,7 +137,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         // Death message changes depending on whether it was the last few drips of an "honored" bleed, or attempting to cheat by removing the accessory.
                         string deathMessageKey = modPlayer.chaliceOfTheBloodGod ? "Status.Death.ChaliceOfTheBloodGodClose" : "Status.Death.ChaliceOfTheBloodGodUnequip";
-                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).Format(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
+                        player.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText(deathMessageKey).ToNetworkText(player.name)), modPlayer.chaliceBleedoutBuffer, 0, false);
                     }
                 }
 

@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions.Alcohol
@@ -8,33 +10,32 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class GrapeBeer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
+
+        public static float DefenseLossPercent = 0.03f;
+        public static int SecondDuration = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), SecondDuration);
+
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 5;
+            Item.ResearchUnlockCount = 30;
+            ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
+                new Color(36, 2, 41),
+                new Color(56, 0, 64),
+                new Color(82, 10, 92)
+            };
         }
 
         public override void SetDefaults()
         {
-            Item.width = 28;
-            Item.height = 18;
-            Item.useTurn = true;
-            Item.maxStack = 9999;
-            Item.rare = ItemRarityID.LightRed;
-            Item.useAnimation = 17;
-            Item.useTime = 17;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
-            Item.UseSound = SoundID.Item3;
-            Item.healLife = 100;
-            Item.healMana = 100;
-            Item.consumable = true;
-            Item.potion = true;
+            Item.DefaultToHealingPotion(12, 28, 100);
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 3);
+            Item.rare = ItemRarityID.LightRed;
         }
 
         public override void OnConsumeItem(Player player)
         {
-            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), 900);
+            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
         }
     }
 }

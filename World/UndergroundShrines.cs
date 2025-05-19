@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Schematics;
+using CalamityMod.Tiles;
+using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureVoid;
 using CalamityMod.Tiles.SunkenSea;
@@ -42,8 +45,8 @@ namespace CalamityMod.World
             {
                 return true;
             }
-            if (tile.TileType == TileType<Navystone>() ||
-            tile.TileType == TileType<EutrophicSand>() ||
+            if (tile.TileType == TileType<Tiles.SunkenSea.Navystone>() ||
+            tile.TileType == TileType<Tiles.SunkenSea.EutrophicSand>() ||
             tile.WallType == WallType<NavystoneWall>() ||
             tile.WallType == WallType<EutrophicSandWall>())
             {
@@ -98,7 +101,7 @@ namespace CalamityMod.World
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.15f), (int)(Main.maxTilesY * 0.5f));
+                int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface, (int)(Main.maxTilesY * 0.5f));
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0) / 2, TileMaps[mapKey].GetLength(1)); //Fooling the system into thinking the shrine is smaller than it actually is so it fits into chasms
@@ -189,7 +192,7 @@ namespace CalamityMod.World
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.05f), (int)(Main.maxTilesX * 0.95f));
-                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.15f), (int)(Main.maxTilesY * 0.5f));
+                int placementPositionY = WorldGen.genRand.Next((int)Main.worldSurface, (int)(Main.maxTilesY * 0.5f));
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
 
                 Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
@@ -243,7 +246,7 @@ namespace CalamityMod.World
             List<ChestItem> contents = new List<ChestItem>()
             {
                 new ChestItem(ItemType<LuxorsGift>(), 1),
-                new ChestItem(ItemType<Items.Placeables.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+                new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
@@ -256,7 +259,7 @@ namespace CalamityMod.World
                 contents = new List<ChestItem>()
                 {
                 new ChestItem(ItemType<LuxorsGift>(), 1),
-                new ChestItem(ItemType<Items.Placeables.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
+                new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
@@ -875,6 +878,69 @@ namespace CalamityMod.World
         }
         #endregion
 
+        #region Roxcalibur Shrine
+        public static void PlaceRoxShrine(StructureMap structures)
+        {
+            int tries = 0;
+            string mapKey = Main.rand.NextBool() ?  RoxcaliburShrineKey1 : RoxcaliburShrineKey2;
+
+            do
+            {
+                int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
+                // Ensure that the shrine doesn't generate too close to the center of the world
+                    do
+                    {
+                        placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
+                    }
+                    while (placementPositionX > (int)(Main.maxTilesX * 0.4f) && placementPositionX < (int)(Main.maxTilesX * 0.6f));
+                
+                int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.75f), Main.UnderworldLayer-50); //Lava layer
+                
+                Point placementPoint = new Point(placementPositionX, placementPositionY);
+
+                Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
+                int extraArea = 0; 
+                int yExtraArea = 10;
+                bool canGenerateInLocation = true;
+
+                for (int x = placementPoint.X - extraArea; x < placementPoint.X + schematicSize.X + extraArea; x++)
+                {
+                    for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y + yExtraArea; y++)
+                    {
+                        Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
+
+                        //Avoid shacks, jungle and mushroom biomes
+                        if (tile.TileType == TileID.WoodBlock || tile.TileType == TileID.Mud || tile.TileType == ModContent.TileType<VernalSoil>())
+                            canGenerateInLocation = false;
+
+                        //Try to not be in a place with lava on the top half or above the shrine
+                        if (ShouldAvoidLocation(new Point(x, y-20), true))
+                            canGenerateInLocation = false;
+
+                        //Check for the rest of the structure
+                        if (ShouldAvoidLocation(new Point(x, y), false))
+                            canGenerateInLocation = false;
+
+                    }
+                }
+                if ((!canGenerateInLocation || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y))) && !Main.remixWorld)
+                {
+                    tries++;
+                }
+                else
+                {
+                    bool _ = false;
+                    //added those first things so it stops complaining, there's no easter bunny, there's no tooth fairy and there is no chest
+                    PlaceSchematic<Action<Chest>>(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _);
+                    //Do not get eaten by other structures or Fargo's instabridge
+                    CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 4);
+                    break;
+                }
+            } while (tries <= 100000);
+            CalamityMod.Instance.Logger.Debug("Rox Shrine failed to generate");
+        }
+        #endregion
+
         #region Abyss Shrine
         public static void PlaceAbyssShrine(int chestLeftX, int chestTopY)
         {
@@ -943,7 +1009,7 @@ namespace CalamityMod.World
             {
                 new ChestItem(ItemType<Terminus>(), 1),
                 new ChestItem(dropType, 1),
-                new ChestItem(ItemType<AbyssTorch>(), WorldGen.genRand.Next(100, 110 + 1)),
+                new ChestItem(ItemType<VoidTorch>(), WorldGen.genRand.Next(100, 110 + 1)),
                 new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
                 new ChestItem(ItemType<HadalStew>(), WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),

@@ -7,6 +7,9 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
@@ -22,10 +25,12 @@ using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
+using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
+using CalamityMod.ExtraJumps;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -44,15 +49,25 @@ namespace CalamityMod.Items
         public override bool InstancePerEntity => true;
 
         // TODO -- split out a separate GlobalItem for rogue behavior?
+        /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
         internal float StealthStrikePrefixBonus;
 
         #region Chargeable Item Variables
+        /// <summary>
+        /// If set to true, this item will consume <see cref="Charge"/> on use.<br/>
+        /// Be sure to also set <see cref="MaxCharge"/> and <see cref="ChargePerUse"/>.
+        /// </summary>
         public bool UsesCharge = false;
+        /// <summary> The current charge value of this item. </summary>
         public float Charge = 0f;
+        /// <summary> The maximum charge value of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
         public float MaxCharge = 1f;
+        /// <summary> The charge consumed on each use of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
         public float ChargePerUse = 0f;
-        // If left at the default value of -1, ChargePerUse is automatically used for alt fire.
-        // If you want a different amount of charge used for alt fire, then set a different value here.
+        /// <summary>
+        /// By default, the right-click use of an item will use <see cref="ChargePerUse"/> to determine how much charge to consume.<br/>
+        /// Set to a value other than -1 to make the right-click use a different amount of charge.
+        /// </summary>
         public float ChargePerAltUse = -1f;
         public float ChargeRatio
         {
@@ -65,8 +80,14 @@ namespace CalamityMod.Items
         #endregion
 
         #region Enchantment Variables
+        /// <summary> If set to true, this item cannot receive enchantments from the Brimstone Witch. </summary>
         public bool CannotBeEnchanted = false;
+        /// <summary> Stores the current enchantment placed on this item. If set to null, this item has no enchantment. </summary>
         public Enchantment? AppliedEnchantment = null;
+        /// <summary>
+        /// Stores the "exhaustion" value of this item for the Ephemeral enchantment.<br/>
+        /// The ratio of this value to the maximum value is used as a lerp value for the damage multiplier.
+        /// </summary>
         public float DischargeEnchantExhaustion = 0;
         public float DischargeExhaustionRatio
         {
@@ -76,16 +97,39 @@ namespace CalamityMod.Items
                 return float.IsNaN(ratio) || float.IsInfinity(ratio) ? 0f : MathHelper.Clamp(ratio, 0f, 1f);
             }
         }
+        /// <summary> Constant value storing the maximum value for the Ephemeral enchantment's "exhaustion" value. </summary>
         public const float DischargeEnchantExhaustionCap = 1600f;
+        /// <summary> The minimum damage multiplier for weapons with the Ephemeral enchantment. </summary>
         public const float DischargeEnchantMinDamageFactor = 0.77f;
+        /// <summary> The maximum damage multiplier for weapons with the Ephemeral enchantment. </summary>
         public const float DischargeEnchantMaxDamageFactor = 1.26f;
         #endregion
 
         // Miscellaneous stuff
+        /// <summary>
+        /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
+        /// Adds "Revengeance" to the bottom of the item's tooltip.
+        /// </summary>
         public bool revengeanceItem = false;
+        /// <summary>
+        /// Set to true if this item is dedicated to a Patreon donator.<br/>
+        /// Adds "- Donor Item -" to the bottom of the item's tooltip.
+        /// </summary>
         public bool donorItem = false;
+        /// <summary>
+        /// Set to true if this item is dedicated to a Calamity developer.<br/>
+        /// Adds "- Dev Item -" to the bottom of the item's tooltip.
+        /// </summary>
         public bool devItem = false;
+        /// <summary>
+        /// If true, this item can fire projectiles with point-blank damage.<br/>
+        /// Also adds a tooltip line to the bottom of the item's tooltip.
+        /// </summary>
         public bool canFirePointBlankShots = false;
+        /// <summary>
+        /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
+        /// Used by coin items spawned from hitting ricoshot coins.
+        /// </summary>
         public float grabRangeMultiplier = 1f;
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
@@ -137,22 +181,53 @@ namespace CalamityMod.Items
             SetStaticDefaults_ShimmerRecipes();
 
             #region Vanilla Wing Tweaks
-            // 170 -> 240 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings] = new WingStats(240, 7.5f, 1f);
+            // Shorthand to make looking at this easier
+            WingStats[] stats = ArmorIDs.Wing.Sets.Stats;
 
-            // (Empress Wings) 150 -> 100 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings] = new WingStats(100, 8f, 2f);
+            // 130 -> 160 flight time, 6.75 -> 7.5 horizontal speed
+            stats[(int)VanillaWingID.HarpyWings].FlyTime = 160;
+            stats[(int)VanillaWingID.HarpyWings].AccRunSpeedOverride = 7.5f;
+            // 6.75 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.FrozenWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.FrozenWings].AccRunAccelerationMult = 1.5f;
+            // 160 -> 130 flight time
+            stats[(int)VanillaWingID.FlameWings].FlyTime = 130;
+            // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
+            stats[(int)VanillaWingID.BatWings].FlyTime = 180;
+            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+            // 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.ButterflyWings].AccRunAccelerationMult = 1.5f;
+
+            // 170 -> 240 flight time
+            stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
+            stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
+
+            // 170 -> 210 flight time
+            stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
+            // 180 -> 210 flight time
+            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 210;
+            // (Empress Wings) 150 -> 120 flight time
+            stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
             // 12 -> 10.8 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f); // (Lazure)
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings] = new WingStats(150, 6f, 1f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings] = new WingStats(150, 7f, 2.5f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex] = new WingStats(180, 6.5f, 1.5f, true, 10.8f, 10.8f);
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula] = new WingStats(180, 6.5f, 1.5f, true, 10.8f, 10.8f);
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
 
-            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 11.6 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings] = new WingStats(180, 8f, 2.75f, true, 11.6f, 11.6f);
+            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 12 hover stats
+            stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 12f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 12f;
             #endregion
         }
 
@@ -177,6 +252,10 @@ namespace CalamityMod.Items
             // Soaring Insignia is post-Golem so it should use the yellow rarity.
             if (item.type == ItemID.EmpressFlightBooster)
                 item.rare = ItemRarityID.Yellow;
+
+            // Zenith rarity
+            if (item.type == ItemID.Zenith)
+                item.rare = ModContent.RarityType<Violet>();
 
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
@@ -214,7 +293,7 @@ namespace CalamityMod.Items
             }
 
             // Increase how much health Mushrooms heal.
-            if (item.type == ItemID.Mushroom && item.healLife == 15)
+            if (item.type == ItemID.Mushroom && item.healLife < 25)
                 item.healLife = 25;
 
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
@@ -254,12 +333,15 @@ namespace CalamityMod.Items
         public override bool Shoot(Item item, Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)
         {
             CalamityPlayer modPlayer = player.Calamity();
+            var playerSource = player.GetSource_FromThis();
+            Vector2 mouse = player.ClampedMouseWorld();
+
             if (Main.myPlayer == player.whoAmI && player.Calamity().cursedSummonsEnchant)
             {
                 if (NPC.CountNPCS(ModContent.NPCType<CalamitasEnchantDemon>()) < 2)
                 {
-                    CalamityNetcode.NewNPC_ClientSide(Main.MouseWorld, ModContent.NPCType<CalamitasEnchantDemon>(), player);
-                    SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, Main.MouseWorld);
+                    CalamityNetcode.NewNPC_ClientSide(mouse, ModContent.NPCType<CalamitasEnchantDemon>(), player);
+                    SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, mouse);
                 }
             }
 
@@ -278,93 +360,13 @@ namespace CalamityMod.Items
                 int monsterDamage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(remainingMana * damagePerManaConsumed);
 
                 // Spawn the Mana Monster
-                Vector2 shootVelocity = player.SafeDirectionTo(Main.MouseWorld, -Vector2.UnitY).RotatedByRandom(0.07f) * Main.rand.NextFloat(4f, 5f);
+                Vector2 shootVelocity = player.SafeDirectionTo(mouse, -Vector2.UnitY).RotatedByRandom(0.07f) * Main.rand.NextFloat(4f, 5f);
                 Projectile.NewProjectile(source, player.Center + shootVelocity, shootVelocity, ModContent.ProjectileType<ManaMonster>(), monsterDamage, 0f, player.whoAmI);
 
                 // Set the player's mana to zero.
                 player.statMana = 0;
             }
 
-            if (modPlayer.luxorsGift && !item.channel)
-            {
-                // useTime 9 = 0.9 useTime 2 = 0.2
-                float damageMult = 1f;
-                if (item.useTime < 10)
-                    damageMult -= (10 - item.useTime) / 10f;
-
-                float newDamage = damage * damageMult;
-
-                if (player.whoAmI == Main.myPlayer)
-                {
-                    if (item.CountsAsClass<MeleeDamageClass>())
-                    {
-                        int meleeDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.25f);
-
-                        if (meleeDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(source, position, velocity * 0.5f, ModContent.ProjectileType<LuxorsGiftMelee>(), (int)meleeDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<ThrowingDamageClass>())
-                    {
-                        int throwingDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.2f);
-
-                        if (throwingDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LuxorsGiftRogue>(), (int)throwingDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<RangedDamageClass>())
-                    {
-                        // This projectile is channeled and has no cooldown unless the gun fires
-                        // The damage of the projectile is also always the max damage of the weapon, and the shot damage is calculated based off of that
-                        // You can see how this may cause issues
-                        // The projectile is fired inside of the scope's code instead
-                        if (type != ModContent.ProjectileType<TitaniumRailgunScope>())
-                        {
-                            int rangedDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.15f);
-
-                            if (rangedDamage >= 1)
-                            {
-                                int projectile = Projectile.NewProjectile(source, position, velocity * 1.5f, ModContent.ProjectileType<LuxorsGiftRanged>(), (int)rangedDamage, 0f, player.whoAmI);
-                                if (projectile.WithinBounds(Main.maxProjectiles))
-                                    Main.projectile[projectile].DamageType = DamageClass.Generic;
-                            }
-                        }
-                    }
-                    else if (item.CountsAsClass<MagicDamageClass>())
-                    {
-                        int magicDamage = player.ApplyArmorAccDamageBonusesTo(newDamage * 0.3f);
-
-                        if (magicDamage >= 1)
-                        {
-                            int projectile = Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LuxorsGiftMagic>(), (int)magicDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                        }
-                    }
-                    else if (item.CountsAsClass<SummonDamageClass>() && player.ownedProjectileCounts[ModContent.ProjectileType<LuxorsGiftSummon>()] < 1)
-                    {
-                        if (damage >= 1)
-                        {
-                            // 08DEC2023: Ozzatron: Luxor Summons spawned with Old Fashioned active will retain their bonus damage indefinitely. Oops. Don't care.
-                            int baseDamage = player.ApplyArmorAccDamageBonusesTo(item.damage);
-                            int summonDamage = baseDamage;
-
-                            int projectile = Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<LuxorsGiftSummon>(), summonDamage, 0f, player.whoAmI);
-                            if (projectile.WithinBounds(Main.maxProjectiles))
-                            {
-                                Main.projectile[projectile].DamageType = DamageClass.Generic;
-                                Main.projectile[projectile].originalDamage = baseDamage;
-                            }
-                        }
-                    }
-                }
-            }
             if (modPlayer.bloodflareMage && modPlayer.canFireBloodflareMageProjectile)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && !item.channel)
@@ -374,9 +376,8 @@ namespace CalamityMod.Items
                     {
                         // Bloodflare Mage Bolt: 130%, soft cap starts at 2000 base damage
                         int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * 1.3, 2600);
-                        bloodflareBoltDamage = player.ApplyArmorAccDamageBonusesTo(bloodflareBoltDamage);
 
-                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
                     }
                 }
             }
@@ -390,9 +391,8 @@ namespace CalamityMod.Items
                         // Bloodflare Ranged Bloodsplosion: 80%, soft cap starts at 150 base damage
                         // This is intentionally extremely low because this effect can be grossly overpowered with sniper rifles and the like.
                         int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * 0.8, 120);
-                        bloodsplosionDamage = player.ApplyArmorAccDamageBonusesTo(bloodsplosionDamage);
 
-                        Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -403,7 +403,7 @@ namespace CalamityMod.Items
                     modPlayer.tarraCrits = 0;
                     // Tarragon Mage Leaves: (8-10) x 20%, soft cap starts at 200 base damage
                     int leafAmt = 8 + Main.rand.Next(3); // 8, 9, or 10
-                    int leafDamage = player.ApplyArmorAccDamageBonusesTo(damage * 0.2f);
+                    int leafDamage = (int)(damage * 0.2f);
 
                     for (int l = 0; l < leafAmt; l++)
                     {
@@ -414,7 +414,7 @@ namespace CalamityMod.Items
                         speed = item.shootSpeed / speed;
                         xDiff *= speed;
                         yDiff *= speed;
-                        int projectile = Projectile.NewProjectile(source, position, new Vector2(xDiff, yDiff), ProjectileID.Leaf, leafDamage, knockBack, player.whoAmI);
+                        int projectile = Projectile.NewProjectile(playerSource, position, new Vector2(xDiff, yDiff), ProjectileID.Leaf, leafDamage, knockBack, player.whoAmI);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
@@ -427,8 +427,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        int ataxiaFlareDamage = player.ApplyArmorAccDamageBonusesTo(damage * 0.25f);
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
+                        int ataxiaFlareDamage = (int)(damage * 0.25f);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -441,9 +441,8 @@ namespace CalamityMod.Items
                     {
                         // God Slayer Ranged Shrapnel: 100%, soft cap starts at 800 base damage
                         int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage, 800);
-                        shrapnelRoundDamage = player.ApplyArmorAccDamageBonusesTo(shrapnelRoundDamage);
 
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -456,20 +455,14 @@ namespace CalamityMod.Items
 
                     // Hydrothermic Rogue Flares: 6 x (50 + 15%), soft cap starts at 90 base damage
                     int flareDamage = CalamityUtils.DamageSoftCap(50 + damage * 0.15, 90);
-                    flareDamage = player.ApplyArmorAccDamageBonusesTo(flareDamage);
 
                     if (player.whoAmI == Main.myPlayer)
                     {
                         SoundEngine.PlaySound(SoundID.Item20, player.Center);
-                        float spread = 60f * 0.0174f;
-                        double startAngle = Math.Atan2(player.velocity.X, player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 6f;
-                        double offsetAngle;
-                        for (int i = 0; i < 3; i++)
+                        for (int i = 0; i < 6; i++)
                         {
-                            offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 30f * i;
-                            Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
-                            Projectile.NewProjectile(source, player.Center.X, player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), flareID, flareDamage, 1f, player.whoAmI);
+                            Vector2 circleVel = (MathHelper.TwoPi * i / 6f + velocity.ToRotation()).ToRotationVector2() * 5f;
+                            Projectile.NewProjectile(playerSource, player.Center, circleVel, flareID, flareDamage, 1f, player.whoAmI);
                         }
                     }
                 }
@@ -484,9 +477,8 @@ namespace CalamityMod.Items
                     {
                         // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
                         int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
-                        seashellDamage = player.ApplyArmorAccDamageBonusesTo(seashellDamage);
 
-                        Projectile.NewProjectile(source, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
                     }
                 }
             }
@@ -501,7 +493,7 @@ namespace CalamityMod.Items
                             if (i != 0)
                             {
                                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                                int rocket = Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
+                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ModContent.ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
                                 //First extra value is rocket type which I just used 0 to get the default, second is the velocity I went with my gut feeling and got quite close to Scorpio's velocity with Rockets I
                                 if (rocket.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[rocket].DamageType = DamageClass.Generic;
@@ -510,40 +502,77 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.harpyWingBoost && (modPlayer.harpyRing || modPlayer.angelTreads))
+
+            // 23APR2025: Ozzatron: make late game vanilla guns significantly more accurate
+            // Currently applies to Gatligator, Tactical Shotgun and Chain Gun
+            #region Vanilla Item Shoot Overrides
+            if (item.type == ItemID.Gatligator)
             {
-                if (Main.rand.NextBool(5) && modPlayer.harpyWingFeatherCooldown == 0 && !item.channel)
+                // Vanilla  Gatligator: X/Y velocity += -2 to 2 in steps of 0.05 (-40 to 40 x 0.05)
+                // Calamity Gatligator: Velocity gets randomly rotated by up to 0.05 radians and multiplied by 0.87 to 1.13
+                // This logic is lifted from Onyxia
+                //
+                // Gatligator has an additional inaccuracy effect where bullets have a 1 in 3 chance to have their velocity totally fucked
+                // When this happens, the X and Y components of the velocity are multiplied by 0.4 to 1.6, with separate random calls for each
+                // This has been replicated by giving bullets a 1 in 3 chance to go much faster, but be more inaccurate
+                //
+                // Vanilla Gatligator gets additional hardcoded inaccuracy to produce the gun jittering visual
+                // Extra inaccuracy: X/Y velocity += -1.5 to 1.5 in steps of 0.03 (-50 to 50 x 0.03)
+                // This is IL edited out
+
+                Vector2 spreadVel;
+                if (Main.rand.NextBool(3)) // Xtra Inaccurate
                 {
-                    modPlayer.harpyWingFeatherCooldown = 20;
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        float spreadX = velocity.X + Main.rand.NextFloat(-0.75f, 0.75f);
-                        float spreadY = velocity.Y + Main.rand.NextFloat(-0.75f, 0.75f);
-                        int feather = Projectile.NewProjectile(source, position, new Vector2(spreadX, spreadY) * 1.25f, ModContent.ProjectileType<TradewindsProjectile>(), (int)(damage * 0.3), 2f, player.whoAmI);
-                        if (feather.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[feather].usesLocalNPCImmunity = true;
-                            Main.projectile[feather].localNPCHitCooldown = 10;
-                            Main.projectile[feather].DamageType = DamageClass.Generic;
-                        }
-                    }
+                    float radianInaccuracy = 0.09f;
+                    float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
+                    float randVelMultiplier = Main.rand.NextFloat(1.3f, 1.63f);
+                    spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
                 }
+                else
+                {
+                    float radianInaccuracy = 0.05f;
+                    float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
+                    float randVelMultiplier = Main.rand.NextFloat(0.87f, 1.13f);
+                    spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
+                }
+
+                Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
+                return false;
             }
-            if (item.type == ItemID.PearlwoodBow)
+
+            if (item.type == ItemID.TacticalShotgun)
             {
-                foreach (Projectile p in Main.ActiveProjectiles)
+                // Vanilla  Tactical Shotgun: X/Y velocity += -2 to 2 in steps of 0.05 (-40 to 40 x 0.05)
+                // Calamity Tactical Shotgun: Velocity gets a random vector of magnitude 0-1 added to it, anywhere on the unit circle
+
+                int tacticalShotgunNumBullets = 6;
+                for (int i = 0; i < tacticalShotgunNumBullets; i++)
                 {
-                    if ((p.type == ModContent.ProjectileType<RainbowFront>() || p.type == ModContent.ProjectileType<RainbowTrail>()) && p.owner == player.whoAmI)
-                    {
-                        p.Kill();
-                    }
+                    Vector2 spreadVel = velocity + Main.rand.NextVector2Circular(0.5f, 0.5f);
+                    Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
                 }
-                for (int i = -8; i <= 8; i += 8)
-                {
-                    Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                    Projectile.NewProjectile(source, position, perturbedSpeed, ModContent.ProjectileType<RainbowFront>(), damage, 0f, player.whoAmI);
-                }
+                return false;
             }
+
+            if (item.type == ItemID.ChainGun)
+            {
+                // Vanilla  Chain Gun: X/Y velocity += -1.2 to 1.2 in steps of 0.03 (-40 to 40 x 0.03)
+                // Calamity Chain Gun: Velocity gets randomly rotated by up to 0.035 radians and multiplied by 0.92 to 1.08
+                // This logic is lifted from Onyxia
+                //
+                // Vanilla Chain Gun gets additional hardcoded accuracy to produce the gun jittering visual
+                // Extra inaccuracy: X/Y velocity += -1.5 to 1.5 in steps of 0.03 (-50 to 50 x 0.03)
+                // This is IL edited out
+
+                float radianInaccuracy = 0.035f;
+                float randAngle = Main.rand.NextFloat(-radianInaccuracy, radianInaccuracy);
+                float randVelMultiplier = Main.rand.NextFloat(0.92f, 1.08f);
+                Vector2 spreadVel = velocity.RotatedBy(randAngle) * randVelMultiplier;
+                Projectile.NewProjectile(source, position, spreadVel, type, damage, knockBack, player.whoAmI);
+                return false;
+            }
+            #endregion
+
             return true;
         }
         #endregion
@@ -609,25 +638,43 @@ namespace CalamityMod.Items
         #endregion
 
         #region Pickup Item Changes
+        public override bool CanPickup(Item item, Player player)
+        {
+            // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
+            if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
+            {
+                if (player.ActiveItem().type == ModContent.ItemType<IonBlaster>() || player.ActiveItem().type == ModContent.ItemType<ApoctosisArray>())
+                    return false;
+            }
+            return base.CanPickup(item, player);
+        }
+
         public override bool OnPickup(Item item, Player player)
         {
-            if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane)
+            if (item.type == ItemID.Heart || item.type == ItemID.CandyApple || item.type == ItemID.CandyCane) // On heart pickup
             {
-                bool boostedHeart = player.Calamity().photosynthesis;
-                if (boostedHeart)
-                {
-                    player.statLife += 5;
-                    if (Main.myPlayer == player.whoAmI)
-                        player.HealEffect(5, true);
-                }
+                if (player.Calamity().photosynthesis)
+                    player.HealPlayer(PhotosynthesisPotion.IncreasedHeartHeal);
             }
             return true;
         }
         #endregion
 
         #region Use Item Changes
+        public override void HoldItem(Item item, Player player)
+        {
+            // Clear Evil Smasher buffs if not holding Evil Smasher
+            if (player.Calamity().evilSmasherBoost > 0)
+            {
+                if (item.type != ModContent.ItemType<EvilSmasher>())
+                    player.Calamity().evilSmasherBoost = 0;
+            }
+        }
+
         public override bool? UseItem(Item item, Player player)
         {
+            var modPlayer = player.Calamity();
+
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
             {
                 if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
@@ -636,24 +683,22 @@ namespace CalamityMod.Items
                     player.AddBuff(ModContent.BuffType<NOU>(), 3600 * 60);
                 }
             }
-            if (player.Calamity().evilSmasherBoost > 0)
-            {
-                if (item.type != ModContent.ItemType<EvilSmasher>())
-                    player.Calamity().evilSmasherBoost = 0;
-            }
-
-            if (player.HasBuff(BuffID.ParryDamageBuff))
-            {
-                if (item.type != ItemID.DD2SquireDemonSword && item.type != ItemID.BouncingShield)
-                {
-                    player.parryDamageBuff = false;
-                    player.ClearBuff(BuffID.ParryDamageBuff);
-                }
-            }
 
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
+
+            // Trigger Bloom Stone's heal over time from healing items
+            if (item.healLife > 0 && modPlayer.bloomStone)
+            {
+                // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
+                modPlayer.bloomStone = false;
+                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStone = true;
+
+                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
+                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
+            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
@@ -709,6 +754,7 @@ namespace CalamityMod.Items
                         if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
                         {
                             p.rotation = MathHelper.PiOver2 + MathHelper.PiOver4;
+                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                             p.velocity = p.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 22f;
                             p.rotation += p.velocity.ToRotation();
                             p.ai[0] = 180f;
@@ -757,7 +803,8 @@ namespace CalamityMod.Items
                 }
                 if (canContinue && count > 0)
                 {
-                    NPC unluckyTarget = CalamityUtils.MinionHoming(Main.MouseWorld, 1000f, player);
+                    Vector2 mouse = player.ClampedMouseWorld();
+                    NPC unluckyTarget = CalamityUtils.MinionHoming(mouse, 1000f, player);
                     if (unluckyTarget != null)
                     {
                         int pointyThingyAmount = count;
@@ -770,7 +817,7 @@ namespace CalamityMod.Items
                             if (Main.projectile.Length == Main.maxProjectiles)
                                 break;
                             int GlacialEmbraceDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(80);
-                            int projj = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
+                            int projj = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
                             Main.projectile[projj].originalDamage = 80;
 
                             angle += angleVariance;
@@ -802,6 +849,11 @@ namespace CalamityMod.Items
             {
                 return false; // Don't use weapons if you're charging with a spear
             }
+
+            // If the player if using the Drill Containment Unit, ignore all this.
+            // It will start to check for everything below EVERY FRAME, including attacking with PSC or using Charge
+            if (player.mount.Type == MountID.Drill)
+                return base.CanUseItem(item, player);
 
             // Conversion for Andromeda
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GiantIbanRobotOfDoom>()] > 0)
@@ -860,7 +912,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || CalamityLists.spearAutoreuseList.Contains(item.type))
+            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.Includes(item.type))
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
@@ -953,6 +1005,40 @@ namespace CalamityMod.Items
         }
         #endregion
 
+        #region Hit NPC
+        public override void ModifyHitNPC(Item item, Player player, NPC target, ref NPC.HitModifiers modifiers)
+        {
+            // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
+            if (player.Calamity().oldFashioned)
+                modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
+        }
+
+        public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Hyperius Overflow
+            if (target.Calamity().hyperiusMarked)
+            {
+                int damage = 0;
+                if (target.Calamity().hyperiusDamage < damageDone)
+                    damage = damageDone - target.Calamity().hyperiusDamage;
+                else
+                    damage = damageDone;
+                target.Calamity().hyperiusDamage -= damage;
+
+                // Spawn overflow hit
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                overflow.DamageType = item.DamageType;
+                overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
+
+                if (target.Calamity().hyperiusDamage <= 0)
+                {
+                    target.Calamity().hyperiusDamage = 0;
+                    target.Calamity().hyperiusMarked = false;
+                }
+            }
+        }
+        #endregion
+
         #region Armor Set Changes
         public override string IsArmorSet(Item head, Item body, Item legs)
         {
@@ -972,8 +1058,6 @@ namespace CalamityMod.Items
                 return "HuntressTier2";
             if (head.type == ItemID.ApprenticeHat && body.type == ItemID.ApprenticeRobe && legs.type == ItemID.ApprenticeTrousers)
                 return "ApprenticeTier2";
-            if (head.type == ItemID.MonkAltHead && body.type == ItemID.MonkAltShirt && legs.type == ItemID.MonkAltPants)
-                return "MonkTier3";
             if (head.type == ItemID.SquireAltHead && body.type == ItemID.SquireAltShirt && legs.type == ItemID.SquireAltPants)
                 return "SquireTier3";
             if (head.type == ItemID.HuntressAltHead && body.type == ItemID.HuntressAltShirt && legs.type == ItemID.HuntressAltPants)
@@ -1024,23 +1108,15 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier2")
             {
-                player.GetDamage<SummonDamageClass>() += 0.05f;
-                player.GetCritChance<MagicDamageClass>() += 15;
+                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetCritChance<MagicDamageClass>() += 10;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
-            }
-            else if (set == "MonkTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.3f;
-                player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
-                player.GetDamage<MeleeDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.MonkTier3")}";
             }
             else if (set == "SquireTier3")
             {
                 player.lifeRegen += 6;
                 player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
+                player.GetCritChance<MeleeDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier3")}";
             }
             else if (set == "HuntressTier3")
@@ -1051,7 +1127,7 @@ namespace CalamityMod.Items
             }
             else if (set == "ApprenticeTier3")
             {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
+                player.GetDamage<SummonDamageClass>() += 0.15f;
                 player.GetCritChance<MagicDamageClass>() += 15;
                 player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier3")}";
             }
@@ -1122,7 +1198,7 @@ namespace CalamityMod.Items
                     player.lifeRegen -= 3;
                     break;
                 case ItemID.SquirePlating:
-                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
                     break;
                 case ItemID.SquireGreaves:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
@@ -1131,43 +1207,56 @@ namespace CalamityMod.Items
 
                 case ItemID.HuntressJerkin:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    player.GetCritChance<RangedDamageClass>() += 5;
+                    break;
+                case ItemID.HuntressPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
+                case ItemID.ApprenticeHat:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeRobe:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeTrousers:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     player.GetCritChance<MagicDamageClass>() -= 15;
                     break;
 
+                case ItemID.SquireAltHead:
+                    player.GetDamage<MeleeDamageClass>() += 0.05f;
+                    player.GetDamage<SummonDamageClass>() += 0.05f;
+                    break;
                 case ItemID.SquireAltShirt:
                     player.lifeRegen -= 6;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
                     break;
                 case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
-                    break;
-
-                case ItemID.MonkAltHead:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<MeleeDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.MonkAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.MonkAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
+                    player.GetCritChance<MeleeDamageClass>() -= 20;
                     break;
 
                 case ItemID.HuntressAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.1f;
+                    player.GetDamage<SummonDamageClass>() -= 0.15f;
+                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    break;
+                case ItemID.HuntressAltPants:
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    player.GetCritChance<RangedDamageClass>() -= 5;
                     break;
 
+                case ItemID.ApprenticeAltHead:
+                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    break;
+                case ItemID.ApprenticeAltShirt:
+                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    break;
                 case ItemID.ApprenticeAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MagicDamageClass>() -= 15;
+                    player.GetCritChance<MagicDamageClass>() -= 25;
                     break;
 
                 case ItemID.SolarFlareHelmet:
@@ -1232,10 +1321,16 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
 
+            
+            if (item.type == ItemID.EyeoftheGolem) 
+            {
+                player.Calamity().critDamage += 0.2f;
+            }
             if (item.type == ItemID.SniperScope)
             {
-                player.GetDamage<RangedDamageClass>() -= 0.03f;
-                player.GetCritChance<RangedDamageClass>() -= 3;
+                player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
+                player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
+                player.Calamity().critDamage += 0.2f;
             }
 
             if (item.type == ItemID.MagicQuiver)
@@ -1324,269 +1419,77 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.MoonStone)
             {
-                if (!Main.dayTime)
+                if (!Main.dayTime || Main.eclipse)
                     player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
-            if (item.type == ItemID.CelestialStone)
+            if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
             {
                 player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-            }
-
-            if (item.type == ItemID.CelestialShell)
-            {
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            //Moon Charm and Moon Shell melee speed removal
-
-            if (item.type == ItemID.MoonCharm)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
-            }
-
-            if (item.type == ItemID.MoonShell)
-            {
-                if (!Main.dayTime)
-                    player.GetAttackSpeed<MeleeDamageClass>() -= 0.051f;
             }
 
             if (item.type == ItemID.TerrasparkBoots)
                 player.buffImmune[BuffID.OnFire] = true;
 
-            if (item.type == ItemID.AngelWings) // Boost to max life, defense, and life regen
+            if (item.type == ItemID.GravityGlobe)
             {
-                player.statLifeMax2 += 20;
-                player.statDefense += 10;
-                player.lifeRegen += 2;
-                player.noFallDmg = true;
+                player.GetJumpState<GravityJump>().Enable();
+                if (player.Calamity().justChangedGravity) {
+                    player.GetJumpState<GravityJump>().Available = true;
+                }
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8) {
+                    player.maxRunSpeed = 5f;
+                }
+                player.jumpSpeedBoost += 1.6f;
+                if (player.controlDown)
+                    player.maxFallSpeed *= 1.5f;
+                else
+                    player.maxFallSpeed *= 1.2f;
             }
-            else if (item.type == ItemID.DemonWings) // Boost to all damage and crit
+
+            if (item.type == ItemID.DemonWings && !player.mount.Active)
+                player.maxFallSpeed *= 1.3f;
+
+            if (item.type == ItemID.BeeWings && !player.mount.Active && !player.controlDown)
             {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.GetCritChance<GenericDamageClass>() += 5;
-                player.noFallDmg = true;
+                player.gravity *= 0.6f;
+                player.maxFallSpeed *= 0.6f;
             }
-            else if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
-            {
-                if (player.IsUnderwater())
-                    player.gills = true;
+
+            if (item.type == ItemID.FinWings)
                 player.ignoreWater = true;
-                player.noFallDmg = true;
-                if (!player.mount.Active)
-                {
-                    if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-                        player.maxFallSpeed = 12f;
-                }
-            }
-            else if (item.type == ItemID.BeeWings) // Honey buff
+
+            // Spawns ornaments which refreshes flight time upon pickup
+            else if (item.type == ItemID.FestiveWings)
             {
-                player.AddBuff(BuffID.Honey, 2);
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.ButterflyWings) // Boost to magic stats
-            {
-                player.statManaMax2 += 20;
-                player.GetDamage<MagicDamageClass>() += 0.05f;
-                player.manaCost *= 0.95f;
-                player.GetCritChance<MagicDamageClass>() += 5;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.FairyWings) // Boost to max life
-            {
-                player.statLifeMax2 += 60;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.BatWings) // Stronger at night
-            {
-                player.noFallDmg = true;
-                if (!Main.dayTime || Main.eclipse)
-                {
-                    player.GetDamage<GenericDamageClass>() += 0.07f;
-                    player.GetCritChance<GenericDamageClass>() += 3;
-                }
-            }
-            else if (item.type == ItemID.HarpyWings)
-            {
-                modPlayer.harpyWingBoost = true;
-                player.moveSpeed += 0.2f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.MothronWings) // Spawn baby mothrons over time to attack enemies, max of 3
-            {
-                player.statDefense += 5;
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.FrozenWings) // Bonus to melee and ranged stats while wearing frost armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.FrostHelmet && player.body == ArmorIDs.Body.FrostBreastplate && player.legs == ArmorIDs.Legs.FrostLeggings)
-                {
-                    player.GetDamage<MeleeDamageClass>() += 0.04f;
-                    player.GetDamage<RangedDamageClass>() += 0.04f;
-                    player.Calamity().frozenWingsCold = true;
-                }
-            }
-            else if (item.type == ItemID.FlameWings) // Bonus to melee stats
-            {
-                player.GetDamage<MeleeDamageClass>() += 0.05f;
-                player.GetCritChance<MeleeDamageClass>() += 5;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.GhostWings) // Bonus to mage stats while wearing spectre armor
-            {
-                player.noFallDmg = true;
-                if (player.body == ArmorIDs.Body.SpectreRobe && player.legs == ArmorIDs.Legs.SpectrePants)
-                {
-                    if (player.head == ArmorIDs.Head.SpectreHood)
-                    {
-                        player.statDefense += 10;
-                        player.endurance += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.SpectreMask)
-                    {
-                        player.GetDamage<MagicDamageClass>() += 0.05f;
-                        player.GetCritChance<MagicDamageClass>() += 5;
-                    }
-                }
-            }
-            else if (item.type == ItemID.BeetleWings) // Boosted defense and melee stats while wearing beetle armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.BeetleHelmet && player.legs == ArmorIDs.Legs.BeetleLeggings)
-                {
-                    if (player.body == ArmorIDs.Body.BeetleShell)
-                    {
-                        player.statDefense += 10;
-                        player.endurance += 0.05f;
-                    }
-                    else if (player.body == ArmorIDs.Body.BeetleScaleMail)
-                    {
-                        player.GetDamage<MeleeDamageClass>() += 0.05f;
-                        player.GetCritChance<MeleeDamageClass>() += 5;
-                    }
-                }
-            }
-            else if (item.type == ItemID.Hoverboard) // Boosted ranged stats while wearing shroomite armor
-            {
-                player.noFallDmg = true;
-                if (player.body == ArmorIDs.Body.ShroomiteBreastplate && player.legs == ArmorIDs.Legs.ShroomiteLeggings)
-                {
-                    if (player.head == ArmorIDs.Head.ShroomiteHeadgear) //arrows
-                    {
-                        player.arrowDamage += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.ShroomiteMask) //bullets
-                    {
-                        player.bulletDamage += 0.05f;
-                    }
-                    else if (player.head == ArmorIDs.Head.ShroomiteHelmet) //specialists (non-arrow/bullet)
-                    {
-                        player.specialistDamage += 0.05f;
-                    }
-                }
-            }
-            else if (item.type == ItemID.LeafWings) // Bonus to defensive stats while wearing tiki armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.TikiMask && player.body == ArmorIDs.Body.TikiShirt && player.legs == ArmorIDs.Legs.TikiPants)
-                {
-                    player.statDefense += 5;
-                    player.endurance += 0.05f;
-                    player.AddBuff(BuffID.DryadsWard, 5, true); // Dryad's Blessing
-                }
-            }
-            else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
-            {
-                player.noFallDmg = true;
-                player.statLifeMax2 += 40;
-                if (modPlayer.icicleCooldown <= 0)
+                if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
                     {
-                        int ornamentDamage = (int)player.GetBestClassDamage().ApplyTo(50);
-                        int p = Projectile.NewProjectile(source, player.Center, Vector2.UnitY * 2f, ProjectileID.OrnamentFriendly, ornamentDamage, 5f, player.whoAmI);
+                        Vector2 ornamentPos = player.Center + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(105f)) * Main.rand.NextFloat(-512f, -320f);
+
+                        int p = Projectile.NewProjectile(source, ornamentPos, Vector2.Zero, ModContent.ProjectileType<FestiveWingsOrnament>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[p].DamageType = DamageClass.Generic;
-                            Main.projectile[p].Calamity().lineColor = 1;
-                            modPlayer.icicleCooldown = 15;
-                        }
+                            modPlayer.wingProjectileCooldown = 90;
                     }
                 }
             }
-            else if (item.type == ItemID.SpookyWings) // Bonus to summon stats while wearing spooky armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.SpookyHelmet && player.body == ArmorIDs.Body.SpookyBreastplate && player.legs == ArmorIDs.Legs.SpookyLeggings)
-                {
-                    player.GetKnockback(DamageClass.Summon) += 2f;
-                    player.GetDamage<SummonDamageClass>() += 0.05f;
-                }
-            }
+            // Leaves a trail of black fairy dust which reduces flight time to any player that touches it
             else if (item.type == ItemID.TatteredFairyWings)
             {
-                player.GetDamage<GenericDamageClass>() += 0.05f;
-                player.GetCritChance<GenericDamageClass>() += 5;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.SteampunkWings)
-            {
-                player.statDefense += 8;
-                player.GetDamage<GenericDamageClass>() += 0.04f;
-                player.GetCritChance<GenericDamageClass>() += 2;
-                player.moveSpeed += 0.1f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.WingsSolar) // Bonus to melee stats while wearing solar flare armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.SolarFlareHelmet && player.body == ArmorIDs.Body.SolarFlareBreastplate && player.legs == ArmorIDs.Legs.SolarFlareLeggings)
+                if (modPlayer.wingProjectileCooldown <= 0)
                 {
-                    player.GetDamage<MeleeDamageClass>() += 0.07f;
-                    player.GetCritChance<MeleeDamageClass>() += 3;
+                    var source = player.GetSource_Accessory(item);
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
+                    {
+                        Vector2 fairyDustVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.08f, 0.2f);
+
+                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), 0, 0f, player.whoAmI);
+                        if (p.WithinBounds(Main.maxProjectiles))
+                            modPlayer.wingProjectileCooldown = 8;
+                    }
                 }
-            }
-            else if (item.type == ItemID.WingsVortex) // Bonus to ranged stats while wearing vortex armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.VortexHelmet && player.body == ArmorIDs.Body.VortexBreastplate && player.legs == ArmorIDs.Legs.VortexLeggings)
-                {
-                    player.GetDamage<RangedDamageClass>() += 0.03f;
-                    player.GetCritChance<RangedDamageClass>() += 7;
-                }
-            }
-            else if (item.type == ItemID.WingsNebula) // Bonus to magic stats while wearing nebula armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.NebulaHelmet && player.body == ArmorIDs.Body.NebulaBreastplate && player.legs == ArmorIDs.Legs.NebulaLeggings)
-                {
-                    player.GetDamage<MagicDamageClass>() += 0.05f;
-                    player.GetCritChance<MagicDamageClass>() += 5;
-                    player.statManaMax2 += 20;
-                    player.manaCost *= 0.95f;
-                }
-            }
-            else if (item.type == ItemID.WingsStardust) // Bonus to summon stats while wearing stardust armor
-            {
-                player.noFallDmg = true;
-                if (player.head == ArmorIDs.Head.StardustHelmet && player.body == ArmorIDs.Body.StardustPlate && player.legs == ArmorIDs.Legs.StardustLeggings)
-                    player.GetDamage<SummonDamageClass>() += 0.1f;
-            }
-            else if (item.type == ItemID.FishronWings || item.type == ItemID.BetsyWings || item.type == ItemID.Yoraiz0rWings ||
-                item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings || item.type == ItemID.LokisWings ||
-                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.BejeweledValkyrieWing ||
-                item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings ||
-                item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings || item.type == ItemID.CreativeWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings || item.type == ItemID.RainbowWings || item.type == ItemID.LongRainbowTrailWings)
-            {
-                player.noFallDmg = true;
             }
 
             if (item.type == ItemID.JellyfishNecklace || item.type == ItemID.JellyfishDivingGear || item.type == ItemID.ArcticDivingGear)
@@ -1613,10 +1516,10 @@ namespace CalamityMod.Items
         public override void HorizontalWingSpeeds(Item item, Player player, ref float speed, ref float acceleration)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.1f;
+            float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.06f;
 
             float flightSpeedMult = 1f +
-                (modPlayer.soaring ? 0.1f : 0f) +
+                (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
                 (modPlayer.reaverSpeed ? 0.1f : 0f) +
                 moveSpeedBoost;
 
@@ -1627,6 +1530,36 @@ namespace CalamityMod.Items
 
             flightAccMult = MathHelper.Clamp(flightAccMult, 0.5f, 1.5f);
             acceleration *= flightAccMult;
+        }
+
+        public override void VerticalWingSpeeds(Item item, Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            switch (item.type)
+            {
+                case ItemID.AngelWings:
+                    maxAscentMultiplier *= 1.3f;
+                    constantAscend *= 1.5f;
+                    break;
+                case ItemID.DemonWings:
+                    ascentWhenFalling *= 2f;
+                    ascentWhenRising *= 2f;
+                    maxCanAscendMultiplier *= 2f;
+                    break;
+                case ItemID.FlameWings:
+                    maxAscentMultiplier *= 1.2f;
+                    constantAscend *= 1.35f;
+                    break;
+                case ItemID.ButterflyWings:
+                    maxAscentMultiplier *= 0.9f;
+                    constantAscend *= 5f;
+                    break;
+                case ItemID.GhostWings:
+                    maxAscentMultiplier *= 0.904f;
+                    constantAscend *= 5f;
+                    break;
+                default:
+                    break;
+            }
         }
         #endregion
 
@@ -1641,6 +1574,10 @@ namespace CalamityMod.Items
             // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
                 grabRange += 246;
+
+            // Nebula boosters have greater pickup range while using Nebula Mantle.
+            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
+                grabRange *= 2;
         }
         #endregion
 
@@ -1736,7 +1673,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (CalamityLists.forceItemList?.Contains(item.type) ?? false)
+            if (ItemsForcedInsideWorldList.Includes(item.type))
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion
@@ -1760,7 +1697,7 @@ namespace CalamityMod.Items
 
             // Draw all particles.
             float currentPower = 0f;
-            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<WITCH>());
+            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (calamitasNPCIndex != -1)
                 currentPower = Utils.GetLerpValue(11750f, 1000f, Main.LocalPlayer.Distance(Main.npc[calamitasNPCIndex].Center), true);
 
@@ -1824,7 +1761,7 @@ namespace CalamityMod.Items
         {
             storedPrefix = -1;
             // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(ModContent.NPCType<THIEF>()))
+            if (NPC.AnyNPCs(ModContent.NPCType<Bandit>()))
             {
                 // Calculate the item's reforge cost.
                 int value = item.value;

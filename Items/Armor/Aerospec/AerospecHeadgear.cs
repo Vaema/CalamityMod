@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Aerospec
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
         {
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
         }
 
@@ -59,7 +59,8 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient<AerialiteBar>(5).
                 AddIngredient(ItemID.SunplateBlock, 3).
                 AddIngredient(ItemID.Feather).
-                AddTile(TileID.SkyMill).
+                AddTile(TileID.Anvils).
+                SortAfterFirstRecipesOf(ModContent.ItemType<AerospecHat>()).
                 Register();
         }
     }

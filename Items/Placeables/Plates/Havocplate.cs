@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Placeables.Plates
             CreateRecipe().
                 AddIngredient<HavocplateWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

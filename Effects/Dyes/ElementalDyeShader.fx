@@ -25,21 +25,23 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
 {
     float2 framedCoords = (coords * uImageSize0 - uSourceRect.xy) / uSourceRect.zw;
     float4 color = tex2D(uImage0, coords);
-    float time = (sin(uTime + framedCoords.x * sin(uTime + 3.141 * framedCoords.x) + 1.5707 * framedCoords.y) * 0.5 + 0.5) * 6;
+    float time = (sin(uTime + framedCoords.x * sin(uTime + 3.141 * framedCoords.x) + 1.5707 * framedCoords.y) * 0.5 + 0.5) * 8;
     float timeFloored = floor(time);
     
-    float3 colors[6] =
+    float3 colors[8] =
     {
         float3(241, 149, 49), // Solar
         float3(88, 201, 169), // Vortex
         float3(102, 200, 249), // Stardust
+        float3(226, 76, 239) * 0.7, // Nebula
+        float3(201, 22, 112), // Rogue
         float3(226, 76, 239) * 0.7, // Nebula
         float3(102, 200, 249), // Stardust
         float3(88, 201, 169) // Vortex
     };
     
     // Use a multi-lerp to fade between colors and then base them on a trig-based time step.
-    color.rgb *= lerp(colors[timeFloored] / 255.0, colors[(timeFloored + 1) % 6] / 255.0, time / 6) * 1.6;
+    color.rgb *= lerp(colors[timeFloored] / 255.0, colors[(timeFloored + 1) % 8] / 255.0, time / 8) * 1.6;
     return color * sampleColor;
 }
 technique Technique1

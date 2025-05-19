@@ -172,16 +172,19 @@ namespace CalamityMod.UI.CalamitasEnchants
             if (CurrentlyHeldItem.IsAir)
                 return 0;
 
-            int cost = CurrentlyHeldItem.value * 4;
+            int cost = CurrentlyHeldItem.value * 2;
 
             // Increase the cost of enchanting significantly if doing so would upgrade the item directly.
             if (SelectedEnchantment.HasValue && SelectedEnchantment.Value.Name == CalamityUtils.GetText(EnchantmentManager.ExhumedNamePath))
             {
-                cost = (int)MathHelper.Min(cost, Item.buyPrice(5)) * 5;
+                cost = (int)MathHelper.Min(cost, Item.buyPrice(5)) * 2;
 
                 // 29SEP2024: Ozzatron: exhuming stackable items scales the cost with the stack size
                 cost *= CurrentlyHeldItem.stack;
             }
+
+            // Calamitas' happiness also affects the cost
+            cost = (int)(cost * Main.LocalPlayer.currentShoppingSettings.PriceAdjustment);
 
             // Make it 20% cheaper if the player has the Discount Card or Greedy Ring
             if (Main.LocalPlayer.discountAvailable)

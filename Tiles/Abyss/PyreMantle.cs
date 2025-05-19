@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CalamityMod.Sounds;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class PyreMantle : ModTile
     {
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -25,10 +19,10 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithAbyss(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = MineSound;
+            HitSound = CommonCalamitySounds.VoidstoneMine;
             MineResist = 10f;
             MinPick = 180;
-            AddMapEntry(new Color(19, 20, 32));
+            AddMapEntry(new Color(43, 40, 40));
 
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
@@ -63,7 +57,7 @@ namespace CalamityMod.Tiles.Abyss
                 up.TileFrameX = (short)(WorldGen.genRand.Next(16) * 18);
                 WorldGen.SquareTileFrame(i, j - 1, true);
 
-                if (Main.netMode == NetmodeID.Server)
+                if (Main.dedServ)
                     NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
             }
         }

@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.AcidRain
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
             {
@@ -76,17 +76,18 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.damage = 66;
             NPC.lifeMax = 4000;
             NPC.defense = 25;
+            NPC.value = Item.buyPrice(0, 2, 0, 0);
 
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.damage = 160;
                 NPC.lifeMax = 80630;
                 NPC.defense = 80;
+                NPC.value *= 10f;
             }
 
             NPC.behindTiles = true;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 3, 60, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -120,7 +121,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (InPhase2 && !HasMadeShellBreakGore)
             {
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, NPC.Center);
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, -Vector2.UnitY.RotatedByRandom(0.4f) * 4f, Mod.Find<ModGore>("CragmawMireP1Gore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, -Vector2.UnitY.RotatedByRandom(0.4f) * 4f, Mod.Find<ModGore>("CragmawMireP1Gore2").Type, NPC.scale);
@@ -288,7 +289,7 @@ namespace CalamityMod.NPCs.AcidRain
 
                     // Register ground collision from the slam.
                     // Once it has been hit a nuke explosion projectile is created on the ground, along with homing nuclear drops.
-                    if ((NPC.Bottom.Y > Target.Bottom.Y && Collision.SolidCollision(NPC.BottomLeft, NPC.width, 1)) || AttackTimer > 180f)
+                    if ((NPC.Bottom.Y > Target.Bottom.Y && Collision.SolidCollision(NPC.BottomLeft, NPC.width, 1) || Collision.WetCollision(NPC.BottomLeft, NPC.width, 1)) || AttackTimer > 180f)
                     {
                         NPC.velocity = Vector2.Zero;
 
@@ -494,7 +495,7 @@ namespace CalamityMod.NPCs.AcidRain
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.SulphurousSeaAcid, hit.HitDirection, -1f, 0, default, 1f);
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, -Vector2.UnitY.RotatedByRandom(0.4f) * 4f, Mod.Find<ModGore>("CragmawMireP2Gore").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, -Vector2.UnitY.RotatedByRandom(0.4f) * 4f, Mod.Find<ModGore>("CragmawMireP2Gore2").Type, NPC.scale);

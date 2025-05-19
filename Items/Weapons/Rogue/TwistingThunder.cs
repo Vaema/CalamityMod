@@ -58,9 +58,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<StormfrontRazor>().
                 AddIngredient<UnholyEssence>(15).
-                AddIngredient<CoreofSunlight>(5).
                 AddIngredient<ArmoredShell>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

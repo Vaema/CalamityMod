@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class YharimsCrystalBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -174,7 +176,7 @@ namespace CalamityMod.Projectiles.Magic
                 ProduceBeamDust(beamColor);
 
                 // If the game is rendering (i.e. isn't a dedicated server), make the beam disturb water.
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     WaterShaderData wsd = (WaterShaderData)Filters.Scene["WaterDistortion"].GetShader();
                     // A universal time-based sinusoid which updates extremely rapidly. GlobalTimeWrappedHourly is 0 to 3600, measured in seconds.
@@ -221,7 +223,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.velocity == Vector2.Zero)
                 return false;
 
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float beamLength = Projectile.localAI[1];
             Vector2 centerFloored = Projectile.Center.Floor() + Projectile.velocity * Projectile.scale * BeamRenderTileOffset;
             Vector2 scaleVec = new Vector2(Projectile.scale);

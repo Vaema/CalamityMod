@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
-            ItemID.Sets.Torches[Item.type] = true;
+            ItemID.Sets.Torches[Type] = true;
             ItemID.Sets.SingleUseInGamepad[Type] = true;
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.ShimmerTorch;
         }
@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Placeables.Furniture
             Vector2 position = player.RotatedRelativePoint(new Vector2(player.itemLocation.X + 12f * player.direction + player.velocity.X, player.itemLocation.Y - 14f + player.velocity.Y), true);
 
             if (!killTorch)
-                Lighting.AddLight(position, 0.9f, 1.2f, 0.3f);
+                Lighting.AddLight(position, 0.5f, 0.75f, 1.2f);
         }
 
         public override void PostUpdate()
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             CreateRecipe(3).
             AddIngredient(ItemID.Torch, 3).
-            AddIngredient<Items.Placeables.ScorchedBone>().
+            AddIngredient<Items.Placeables.Crags.ScorchedBone>().
             Register();
         }
     }

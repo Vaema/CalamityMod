@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.Spears[Item.type] = true;
+            ItemID.Sets.Spears[Type] = true;
         }
 
         public override void SetDefaults()

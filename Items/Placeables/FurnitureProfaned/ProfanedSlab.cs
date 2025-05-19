@@ -17,11 +17,12 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
         {
             CreateRecipe(5).
                 AddIngredient<ProfanedRock>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<ProfanedSlabWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

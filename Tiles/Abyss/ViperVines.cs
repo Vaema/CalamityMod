@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,6 +21,12 @@ namespace CalamityMod.Tiles.Abyss
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
             DustType = 2;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Main.instance.TilesRenderer.CrawlToTopOfVineAndAddSpecialPoint(j, i);
+            return false;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -61,39 +69,39 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override void RandomUpdate(int i, int j)
-		{
-			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-			if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
+        {
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-				bool PlaceVine = false;
-				int Test = j;
-				while (Test > j - 10) 
+                bool PlaceVine = false;
+                int Test = j;
+                while (Test > j - 10)
                 {
-					Tile testTile = Framing.GetTileSafely(i, Test);
-					if (testTile.BottomSlope) 
+                    Tile testTile = Framing.GetTileSafely(i, Test);
+                    if (testTile.BottomSlope)
                     {
-						break;
-					}
-					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>()) 
+                        break;
+                    }
+                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>())
                     {
-						Test--;
-						continue;
-					}
-					PlaceVine = true;
-					break;
-				}
-				
-				if (PlaceVine) 
+                        Test--;
+                        continue;
+                    }
+                    PlaceVine = true;
+                    break;
+                }
+
+                if (PlaceVine)
                 {
-					tileBelow.TileType = Type;
-					tileBelow.HasTile = true;
-					WorldGen.SquareTileFrame(i, j + 1, true);
-					if (Main.netMode == NetmodeID.Server) 
+                    tileBelow.TileType = Type;
+                    tileBelow.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.dedServ)
                     {
-						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-					}
-				}
-			}
-		}
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
+        }
     }
 }

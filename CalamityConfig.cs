@@ -59,14 +59,26 @@ namespace CalamityMod
 
         #region Graphics Changes
         [Header("Graphics")]
+        
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool DisableGravityScreenSwap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool Photosensitivity { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool EnableVanillaTextureEdits { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SunkenSeaBackgroundDistortion { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
@@ -277,6 +289,14 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FasterFallHotkey { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool StutterFix { get; set; }
         #endregion
     }
 
@@ -322,10 +342,6 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool PotionSelling { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(false)]
         public bool TownNPCsSpawnAtNight { get; set; }
 
         private const int MinTownNPCSpawnMultiplier = 1;
@@ -378,10 +394,6 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool FasterRopeClimbSpeed { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool HigherJumpHeight { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

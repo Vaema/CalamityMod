@@ -112,6 +112,7 @@ namespace CalamityMod
 
             // This is the hardcoded value to "do nothing", and is thus the default choice.
             int prefix = -1;
+            bool supportsLegendary = PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix());
 
             // ACCESSORIES
             if (item.accessory)
@@ -139,7 +140,8 @@ namespace CalamityMod
             }
 
             // MELEE (includes tools and whips)
-            else if (item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MeleeRangedHybridDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>())
+            // Melee-ranged hybrid weapons prioritize Legendary if available, otherwise go for Unreal
+            else if ((item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()) && !(item.CountsAsClass<MeleeRangedHybridDamageClass>() && !supportsLegendary))
             {
                 // Terrarian (has its own special "Legendary" for marketing reasons)
                 // Other items that want to use Legendary2 are also compatible
@@ -156,7 +158,7 @@ namespace CalamityMod
                 }
 
                 // Swords, Whips, Tools, other items that support the Legendary modifier
-                else if (PrefixLegacy.ItemSets.SwordsHammersAxesPicks[item.type] || (item.ModItem != null && item.ModItem.MeleePrefix()))
+                else if (supportsLegendary)
                 {
                     int[][] meleeReforgeTiers = new int[][]
                     {
@@ -185,12 +187,15 @@ namespace CalamityMod
                 // Spears actually work fine with Legendary, but vanilla doesn't give it to them, so we won't either.
                 else
                 {
+                    // 14MAR2025: Ozzatron: Add support for allowing Ruthless over Godly if the player has more than 100% crit chance of the appropriate class
+                    bool has100Crit = Main.LocalPlayer.GetTotalCritChance(item.DamageType) >= 100;
+
                     int[][] meleeNoSpeedReforgeTiers = new int[][]
                     {
                         /* 0 */ new int[] { PrefixID.Keen, PrefixID.Forceful, PrefixID.Strong },
                         /* 1 */ new int[] { PrefixID.Hurtful, PrefixID.Ruthless, PrefixID.Zealous },
                         /* 2 */ new int[] { PrefixID.Superior, PrefixID.Demonic },
-                        /* 3 */ new int[] { PrefixID.Godly }
+                        /* 3 */ has100Crit ? new int[] { PrefixID.Godly, PrefixID.Ruthless } : new int[] { PrefixID.Godly }
                     };
                     prefix = IteratePrefix(rand, meleeNoSpeedReforgeTiers, currentPrefix);
                 }
@@ -299,7 +304,7 @@ namespace CalamityMod
 
             List<string> keys = mhk.GetAssignedKeys();
             if (keys.Count == 0)
-                return "[NONE]";
+                return GetText("Misc.HotkeyNotBound").Value;
             else
             {
                 StringBuilder sb = new StringBuilder(16);
@@ -433,7 +438,7 @@ namespace CalamityMod
 
         public static Rectangle FixSwingHitbox(float hitboxWidth, float hitboxHeight)
         {
-            Player player = Main.player[Main.myPlayer];
+            Player player = Main.LocalPlayer;
             Item item = player.ActiveItem();
             float hitbox_X, hitbox_Y;
             float mountOffsetY = player.mount.PlayerOffsetHitbox;
@@ -652,7 +657,7 @@ namespace CalamityMod
                         healAmt = 0;
                 }
 
-                player.statLife += healAmt;
+                player.HealPlayer(healAmt, healAmt > 0 ? Enums.HealTextType.Broadcast : Enums.HealTextType.None);
                 player.statMana += item.healMana;
                 if (player.statMana > player.statManaMax2)
                 {
@@ -666,8 +671,6 @@ namespace CalamityMod
                     player.AddBuff(BuffID.ManaSickness, Player.manaSickTime, true);
                 if (Main.myPlayer == player.whoAmI)
                 {
-                    if (healAmt > 0)
-                        player.HealEffect(healAmt, true);
                     if (item.healMana > 0)
                         player.ManaEffect(item.healMana);
                 }

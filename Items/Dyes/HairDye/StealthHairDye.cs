@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Dyes.HairDye
             Item.useStyle = ItemUseStyleID.DrinkLiquid;
             Item.useTurn = true;
             Item.consumable = true;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
 
             Item.value = Item.buyPrice(gold: 5); // Sold by Stylist
             Item.rare = ItemRarityID.Green;

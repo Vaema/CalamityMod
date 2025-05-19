@@ -11,6 +11,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FlowersOfMortality : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+
         public override void SetDefaults()
         {
             Item.width = 36;
@@ -49,8 +52,8 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<WitherBlossomsStaff>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
-                AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient(ItemID.FragmentStardust, 5).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

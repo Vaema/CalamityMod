@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAbyss
@@ -22,9 +23,11 @@ namespace CalamityMod.Items.Placeables.FurnitureAbyss
             CreateRecipe().
                 AddIngredient<SmoothAbyssGravelWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
             CreateRecipe().
                 AddIngredient<SmoothAbyssGravelPlatform>(2).
+                DisableDecraft().
                 Register();
         }
     }

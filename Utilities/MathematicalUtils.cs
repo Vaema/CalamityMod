@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using Microsoft.Xna.Framework;
 using ReLogic.Threading;
 using Terraria;
@@ -224,6 +225,43 @@ namespace CalamityMod
         /// <param name="x">The input value.</param>
         public static int DirectionalSign(this float x) => (x > 0f).ToDirectionInt();
 
+        public static List<Point> GetIntersectingPointsInLine(Point start, Point end)
+        {
+            List<Point> intersectingCells = [];
+
+            int dx = Math.Abs(end.X - start.X);
+            int dy = Math.Abs(end.Y - start.Y);
+            int sx = start.X < end.X ? 1 : -1;
+            int sy = start.Y < end.Y ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                // Add the current cell to the list
+                intersectingCells.Add(start);
+
+                // Check if we've reached the end point
+                if (start == end)
+                    break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    start.X += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    start.Y += sy;
+                }
+            }
+
+            return intersectingCells;
+        }
+
+        public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
+
         #region Easings
         /// <summary>
         /// Gets a value from 0 to 1 and returns an eased value.
@@ -360,193 +398,6 @@ namespace CalamityMod
                 break;
             }
             return ratio;
-        }
-
-        #endregion
-
-        #region Pathfinding Algorithm
-
-        /// <summary>
-        /// Creates a grid with the desired nodes/points to use the pathfinding algorithm.
-        /// </summary>
-        /// <param name="center">The center of the grid.</param>
-        /// <param name="gridSize">The grid is a square, so this is the side's lenght in tiles.</param>
-        /// <param name="tileValidation">A method for extra validation that takes each tile coordinate and returns a bool value stating if this tile's valid for the grid.</param>
-        /// <returns>A list of tile coordiantes which represents all the valid points on the grid.</returns>
-        public static List<Point> MakeGenericGrid(this Vector2 center, int gridSize, Func<Point, bool> tileValidation = null)
-        {
-            // To calculate the corners of the grid we'll use the half-length of the square's side.
-            gridSize /= 2;
-
-            Point topLeftCorner = ToSafeTileCoordinates(center + new Vector2(-gridSize, -gridSize));
-            Point bottomRightCorner = ToSafeTileCoordinates(center + new Vector2(gridSize, gridSize));
-
-            List<Point> grid = new();
-            for (int coordX = topLeftCorner.X; coordX < bottomRightCorner.X; coordX++)
-            {
-                for (int coordY = topLeftCorner.Y; coordY < bottomRightCorner.Y; coordY++)
-                {
-                    Point point = new(coordX, coordY);
-
-                    if (Main.tile[point].IsTileSolid())
-                        continue;
-
-                    if (tileValidation is not null && !tileValidation.Invoke(point))
-                        continue;
-
-                    grid.Add(point);
-                }
-            }
-
-            return grid;
-        }
-
-        /// <summary>
-        /// A quick method to see if an enemy fits in a path on the grid.
-        /// </summary>
-        public static bool DoesEntityFitInPath(this Entity entity, Point point, int fluffX = 0, int fluffY = 0)
-        {
-            Rectangle hitbox = entity.Hitbox;
-            Vector2 worldCoordinatePoint = point.ToWorldCoordinates();
-            hitbox.Inflate(fluffX, fluffY);
-
-            bool doesFit = true;
-            FastParallel.For((int)(worldCoordinatePoint.X - hitbox.Width / 2), (int)(worldCoordinatePoint.X + hitbox.Width / 2), (start, end, _) =>
-            {
-                for (int coordX = start; coordX < end; coordX++)
-                {
-                    for (int coordY = (int)(worldCoordinatePoint.Y - hitbox.Height / 2); coordY < worldCoordinatePoint.Y + hitbox.Height / 2; coordY++)
-                    {
-                        Point point = new Vector2(coordX, coordY).ToTileCoordinates();
-                        if (Main.tile[point].IsTileSolid())
-                        {
-                            doesFit = false;
-                            break;
-                        }
-                    }
-                }
-            });
-
-            return doesFit;
-        }
-
-        public static List<Vector2> DoPathfinding(this Vector2 start, Vector2? goal = null, Func<Point, bool> tileValidation = null)
-        {
-            var grid = start.MakeGenericGrid(640, tileValidation);
-
-            Point randomGoal = new();
-            if (goal is null)
-                randomGoal = grid[Main.rand.Next(grid.Count)];
-
-            var pathfinding = new AStar(grid, start.ToTileCoordinates(), goal is null ? randomGoal : ((Vector2)goal).ToTileCoordinates());
-            return pathfinding.FindPath();
-        }
-
-        public static List<Vector2> DoPathfinding(this Point start, Point? goal = null, Func<Point, bool> tileValidation = null)
-        {
-            var grid = start.ToWorldCoordinates().MakeGenericGrid(640, tileValidation);
-
-            Point randomGoal = new();
-            if (goal is null)
-                randomGoal = grid[Main.rand.Next(grid.Count)];
-
-            var pathfinding = new AStar(grid, start, goal is null ? randomGoal : (Point)goal);
-            return pathfinding.FindPath();
-        }
-
-        public class Node(Point position, Node parent = null)
-        {
-            public Point Position { get; set; } = position;
-
-            /// <summary>
-            /// Cost from start to the current node.
-            /// </summary>
-            public int Cost { get; set; }
-
-            /// <summary>
-            /// Heuristic cost from the current node to the goal.
-            /// </summary>
-            public int HeuristicCost { get; set; }
-
-            public int TotalCost => Cost + HeuristicCost;
-
-            public Node Parent { get; set; } = parent;
-
-            public override bool Equals(object obj) => obj is Node node && Position == node.Position;
-
-            public override int GetHashCode() => Position.X.GetHashCode() ^ Position.Y.GetHashCode();
-        }
-
-        public class AStar(List<Point> grid, Point start, Point goal)
-        {
-            private List<Point> grid = grid;
-            private Node goal = new(goal);
-            private List<Node> openList = new() { new(start) };
-            private HashSet<Node> closedList = new();
-
-            public List<Vector2> FindPath()
-            {
-                while (openList.Count > 0)
-                {
-                    var currentNode = openList.OrderBy(node => node.TotalCost).First();
-
-                    if (currentNode.Equals(goal))
-                        return ReconstructPath(currentNode);
-
-                    openList.Remove(currentNode);
-                    closedList.Add(currentNode);
-
-                    foreach (var neighbor in GetNeighbors(currentNode))
-                    {
-                        // Ignore the neighbor which is already evaluated.
-                        if (closedList.Contains(neighbor))
-                            continue;
-
-                        int tentativeScore = currentNode.Cost + currentNode.Position.ManhattanDistance(neighbor.Position);
-
-                        // Discover a new node.
-                        if (!openList.Contains(neighbor))
-                            openList.Add(neighbor);
-
-                        // This is not a better path.
-                        else if (tentativeScore >= neighbor.Cost)
-                            continue;
-
-                        neighbor.Parent = currentNode;
-                        neighbor.Cost = tentativeScore;
-                        neighbor.HeuristicCost = neighbor.Position.ManhattanDistance(goal.Position);
-                    }
-                }
-
-                return null;
-            }
-
-            private static List<Vector2> ReconstructPath(Node node)
-            {
-                var path = new List<Vector2>();
-                while (node != null)
-                {
-                    path.Add(node.Position.ToWorldCoordinates());
-                    node = node.Parent;
-                }
-                path.Reverse();
-                return path;
-            }
-
-            private List<Node> GetNeighbors(Node node)
-            {
-                var neighbors = new List<Node>();
-
-                foreach (var direction in Directions)
-                {
-                    Point newPoint = new(node.Position.X + (int)direction.X, node.Position.Y + (int)direction.Y);
-
-                    if (!Main.tile[newPoint].IsTileSolid() && grid.Contains(newPoint))
-                        neighbors.Add(new Node(newPoint, node));
-                }
-
-                return neighbors;
-            }
         }
 
         #endregion

@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 15;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
+            Main.projFrames[Type] = 6;
+            ProjectileID.Sets.TrailCacheLength[Type] = 15;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.arrow = true;
             Projectile.penetrate = 1;
+            Projectile.extraUpdates = 1;
             Projectile.Opacity = 0f;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
@@ -36,7 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Projectile.frameCounter++;
-            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Projectile.type];
+            Projectile.frame = Projectile.frameCounter / 5 % Main.projFrames[Type];
 
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.spriteDirection = (Math.Cos(Projectile.rotation) > 0f).ToDirectionInt();
@@ -69,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             // Create death effects for the shark, including a death sound, gore, and some blood.
             SoundEngine.PlaySound(SoundID.NPCDeath1, Projectile.Center);
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("MaelstromReaperShark1").Type, Projectile.scale);
                 Gore.NewGore(Projectile.GetSource_Death(), Projectile.position, Projectile.velocity, Mod.Find<ModGore>("MaelstromReaperShark2").Type, Projectile.scale);
@@ -91,8 +92,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            Rectangle frame = texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;

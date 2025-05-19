@@ -5,7 +5,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
@@ -53,6 +53,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             set => NPC.Calamity().newAI[0] = value;
         }
 
+        // Store velocity for use with other segments
+        public static float PWHeadVelocity;
+
         // Base distance from the target for most attacks
         private const float baseDistance = 1000f;
 
@@ -88,11 +91,12 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                Scale = 0.50f,
-                PortraitScale = 0.6f,
+                Scale = 0.5f,
+                PortraitScale = 0.5f,
                 PortraitPositionXOverride = 40,
             };
             value.Position.X += 55;
@@ -100,7 +104,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             if (!Main.dedServ)
             {
-                GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
+                GlowTexture = ModContent.Request<Texture2D>(Texture + "_Lightmask", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -109,14 +113,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 50f;
             NPC.GetNPCDamage();
-            NPC.width = 254;
+            NPC.width = 230;
             NPC.height = 138;
             NPC.LifeMaxNERB(2500000, 3000000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(10, 0, 0, 0);
+            NPC.value = Item.buyPrice(5, 0, 0, 0);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -220,8 +224,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Play spawn sound
             if (!TailSpawned && NPC.ai[0] == 0f)
             {
-                if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                    SoundEngine.PlaySound(SpawnSound, Main.player[Main.myPlayer].Center);
+                if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                    SoundEngine.PlaySound(SpawnSound, Main.LocalPlayer.Center);
             }
 
             // Spawn segments
@@ -470,23 +474,31 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     SoundEngine.PlaySound(SoundID.Item117, player.Center);
 
-                    for (int i = 0; i < 20; i++)
+                    for (int i = 0; i < 40; i++)
                     {
-                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 2f);
-                        Main.dust[dust].velocity *= 0.6f;
+                        // Dust that moves in the opposite direction of the player
+                        Dust dust = Dust.NewDustDirect(player.position, player.width, player.height, DustID.MushroomSpray, -player.velocity.X, -player.velocity.Y, 1, Color.SkyBlue, 1);
+                        dust.velocity.Normalize();
+                        dust.velocity *= Main.rand.Next(20);
+                        dust.noGravity = true;
+
                         if (Main.rand.NextBool())
                         {
-                            Main.dust[dust].scale = 0.5f;
-                            Main.dust[dust].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
+                            dust.scale = 0.5f;
+                            dust.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
                         }
                     }
 
                     for (int j = 0; j < 30; j++)
                     {
-                        int dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 3f);
-                        Main.dust[dust].noGravity = true;
-                        dust = Dust.NewDust(new Vector2(player.position.X, player.position.Y), player.width, player.height, DustID.FrostHydra, 0f, 0f, 100, default, 2f);
-                        Main.dust[dust].velocity *= 0.2f;
+                        // Dust that moves in the direction of PW
+                        Vector2 velocityToNPC = player.DirectionTo(NPC.Center) * Main.rand.Next(40);
+                        Dust dust = Dust.NewDustDirect(player.position, player.width, player.height, DustID.Flare, velocityToNPC.X * 5, velocityToNPC.Y * 5, 1, default, 3);
+                        dust.noGravity = true;
+                        // Dust that emanataes outward from the player's position
+                        dust = Dust.NewDustDirect(player.position, player.width, player.height, DustID.Flare, Main.rand.Next(5), Main.rand.Next(5), 1, default, 1);
+                        dust.fadeIn = 1f + Main.rand.Next(8) * 0.1f;
+                        dust.noGravity = true;
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -505,7 +517,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     if (calamityGlobalNPC.newAI[2] >= chargePhaseGateValue)
                     {
-                        ChargeDust(7, (float)Math.PI);
+                        ChargeDust();
 
                         // Use a lerp to smoothly scale up velocity and turn speed
                         chargeVelocityScalar += chargeVelocityScalarIncrement;
@@ -537,8 +549,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -597,8 +609,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                     {
                         if (calamityGlobalNPC.newAI[2] % 30f == 0f && calamityGlobalNPC.newAI[2] < lightningRainDuration)
                         {
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.player[Main.myPlayer].Center);
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.LocalPlayer.Center);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -693,7 +705,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     if (calamityGlobalNPC.newAI[2] >= chargePhaseGateValue)
                     {
-                        ChargeDust(7, (float)Math.PI);
+                        ChargeDust();
 
                         // Use a lerp to smoothly scale up velocity and turn speed
                         chargeVelocityScalar += chargeVelocityScalarIncrement;
@@ -725,8 +737,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -805,7 +817,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     if (calamityGlobalNPC.newAI[2] >= chargePhaseGateValue)
                     {
-                        ChargeDust(7, (float)Math.PI);
+                        ChargeDust();
 
                         // Use a lerp to smoothly scale up velocity and turn speed
                         chargeVelocityScalar += chargeVelocityScalarIncrement;
@@ -837,8 +849,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == chargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -1085,7 +1097,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
                     if (calamityGlobalNPC.newAI[2] >= lightningChargePhaseGateValue)
                     {
-                        ChargeDust(7, (float)Math.PI);
+                        ChargeDust();
 
                         // Use a lerp to smoothly scale up velocity and turn speed
                         chargeVelocityScalar += chargeVelocityScalarIncrement;
@@ -1117,8 +1129,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             {
                                 if (calamityGlobalNPC.newAI[2] == lightningChargePhaseGateValue + 1f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(ChargeSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(ChargeSound, Main.LocalPlayer.Center);
                                 }
 
                                 // Lock into the charge phase and use this for a charge time check
@@ -1130,8 +1142,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                 // Lightning barrage
                                 if (NPC.localAI[3] == 0f)
                                 {
-                                    if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                        SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.player[Main.myPlayer].Center);
+                                    if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                        SoundEngine.PlaySound(CommonCalamitySounds.LightningSound, Main.LocalPlayer.Center);
 
                                     NPC.localAI[3] = 1f;
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1186,8 +1198,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                     {
                         if (!NPC.AnyNPCs(ModContent.NPCType<Eidolist>()))
                         {
-                            if (Main.player[Main.myPlayer].active && !Main.player[Main.myPlayer].dead && Vector2.Distance(Main.player[Main.myPlayer].Center, NPC.Center) < soundDistance)
-                                SoundEngine.PlaySound(Eidolist.DeathSound, Main.player[Main.myPlayer].Center);
+                            if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
+                                SoundEngine.PlaySound(Eidolist.DeathSound, Main.LocalPlayer.Center);
 
                             // Spawn Eidolists randomly around the target
                             for (int i = 0; i < maxEidolists; i++)
@@ -1369,18 +1381,23 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             }
         }
 
-        private void ChargeDust(int dustAmt, float pie)
+        private void ChargeDust()
         {
-            for (int num1474 = 0; num1474 < dustAmt; num1474++)
+            for (int dustCount = 0; dustCount < 5; dustCount++)
             {
-                Vector2 dustRotation = Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f;
-                dustRotation = dustRotation.RotatedBy((num1474 - (dustAmt / 2 - 1)) * (double)pie / (float)dustAmt) + NPC.Center;
-                Vector2 dustVelocity = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
-                int chargeDust = Dust.NewDust(dustRotation + dustVelocity, 0, 0, DustID.DungeonWater, dustVelocity.X * 2f, dustVelocity.Y * 2f, 100, default, 1.4f);
-                Main.dust[chargeDust].noGravity = true;
-                Main.dust[chargeDust].noLight = true;
-                Main.dust[chargeDust].velocity /= 4f;
-                Main.dust[chargeDust].velocity -= NPC.velocity;
+                // 184 and 77 offsets are for outer horns, 119 and 47 for inner
+                //outer left horn
+                Dust dust = Dust.NewDustPerfect(new Vector2(NPC.Center.X - 184, NPC.Center.Y + 77).RotatedBy(NPC.rotation, NPC.Center), DustID.MushroomSpray, -NPC.velocity, 1, Color.SkyBlue, 1f);
+                dust.velocity.Normalize();
+                //outer right horn
+                dust = Dust.NewDustPerfect(new Vector2(NPC.Center.X + 184, NPC.Center.Y + 77).RotatedBy(NPC.rotation, NPC.Center), DustID.MushroomSpray, -NPC.velocity, 1, Color.SkyBlue, 1f);
+                dust.velocity.Normalize();
+                //inner left horn
+                dust = Dust.NewDustPerfect(new Vector2(NPC.Center.X - 119, NPC.Center.Y + 47).RotatedBy(NPC.rotation, NPC.Center), DustID.MushroomSpray, -NPC.velocity, 1, Color.SkyBlue, 0.7f);
+                dust.velocity.Normalize();
+                //inner right horn
+                dust = Dust.NewDustPerfect(new Vector2(NPC.Center.X + 119, NPC.Center.Y + 47).RotatedBy(NPC.rotation, NPC.Center), DustID.MushroomSpray, -NPC.velocity, 1, Color.SkyBlue, 0.7f);
+                dust.velocity.Normalize();
             }
         }
 
@@ -1428,23 +1445,34 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             if (NPC.IsABestiaryIconDummy)
             {
                 NPC.Opacity = 1f;
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBody>()].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBodyAlt>()].Value, 3, 18, 0.4f, new Vector2(130, 60), 3, 10);
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureAssets.Npc[Type].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBody>()].Value, TextureAssets.Npc[ModContent.NPCType<PrimordialWyrmBodyAlt>()].Value, 3, 36, 0.2f, new Vector2(130, 60), 3, 10);
             }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
-            Vector2 vector = new Vector2(TextureAssets.Npc[NPC.type].Value.Width / 2, TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type] / 2);
+            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Vector2 vector = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type] / 2);
 
             Vector2 center = NPC.Center - screenPos;
-            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            center -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)NPC.velocity.Length(), 6f, 8f);
+            PWHeadVelocity = saneVelocity;
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            // if anyone needs to debug this piece of shit code, i leave this to you
+            //Main.NewText("vec length: " + NPC.velocity.Length());
+            //Main.NewText("sane vel:   " + saneVelocity);
+            //Main.NewText("brightness: " + brightness, new Color(255, 0, brightness * 128)); // this line doesnt even work LMAO
 
             return false;
         }
@@ -1452,6 +1480,13 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void BossLoot(ref string name, ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
+        }
+
+        public override void OnKill()
+        {
+            // Mark Primordial Wyrm as dead
+            DownedBossSystem.downedPrimordialWyrm = true;
+            CalamityNetcode.SyncWorld();
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
@@ -1462,16 +1497,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             npcLoot.Add(ModContent.ItemType<AbyssShellFossil>());
             npcLoot.Add(ModContent.ItemType<Voidstone>(), 1, 80, 100);
             npcLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-
-            var postLevi = npcLoot.DefineConditionalDropSet(() => DownedBossSystem.downedLeviathan);
-            postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 50, 108, 65, 135));
-            postLevi.Add(ItemID.Ectoplasm, 1, 21, 32);
+            npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<Lumenyl>(), 1, 50, 108, 65, 135));
+            npcLoot.Add(ItemID.Ectoplasm, 1, 21, 32);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
         {
             // Create gore and dust hit effects.
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             for (int k = 0; k < 15; k++)
@@ -1483,6 +1516,8 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, default, 1f);
 
                 Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm").Type, 1f);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrimordialWyrm2").Type, 1f);
+
             }
         }
 
@@ -1505,7 +1540,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (NPC.Opacity == 1f && hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 1200, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 1200);
         }
     }
 }

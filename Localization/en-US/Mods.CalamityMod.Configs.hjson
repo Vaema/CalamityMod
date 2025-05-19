@@ -46,6 +46,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	CalamityArmorSetBonusDoubleTap: {
+		Label: "[i:CalamityMod/DesertProwlerHat] Calamity Armor Set Bonuses Can Use Vanilla Hotkey"
+		Tooltip:
+			'''
+			Allows Calamity armor set bonuses to be triggered by the vanilla double-tap DOWN hotkey (or UP depending on your settings).
+			Also allows vanilla armor set bonuses to be triggered by Calamity's armor set bonus hotkey.
+			'''
+	}
+
 	ChargeMeter: {
 		Label: "[i:CalamityMod/DraedonPowerCell] Display Charge Meter"
 		Tooltip:
@@ -90,6 +99,15 @@ CalamityClientConfig: {
 	DevourerofGodsEulogy: {
 		Label: "[i:CalamityModMusic/DevourerofGodsEulogyMusicBox] Eulogy for the Ego"
 		Tooltip: Plays Calamity Mod OST - "Scourge of the Universe (Eulogy for the Ego)", after the Devourer of Gods has been defeated.
+	}
+
+	DisableGravityScreenSwap: {
+		Label: Disable Gravity Screen Flip
+		Tooltip:
+			'''
+			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
+			Enable this if the screen-flipping is distracting or induces motion sickness.
+			'''
 	}
 
 	EnableVanillaTextureEdits: {
@@ -180,6 +198,16 @@ CalamityClientConfig: {
 			Particles are separate from dust and gores.
 			Turn down to improve performance.
 			[c/F05A5A:Turning this below 1000 may cause some things to not display correctly.]
+			'''
+	}
+
+	Photosensitivity: {
+		Label: "[i:DiscoBall] Photosensitivity Mode"
+		Tooltip:
+			'''
+			Reduces or disables the brightness and/or flashiness of certain visual effects.
+			Also disables all screenshake effects.
+			Highly recommended if you are photosensitive.
 			'''
 	}
 
@@ -290,6 +318,17 @@ CalamityClientConfig: {
 			'''
 	}
 
+	StutterFix: {
+		Label: "[i:TrifoldMap] Enable Stutter Fix"
+		Tooltip:
+			'''
+			         When enabled, upon entering a world, the entire world will be loaded at once.
+			         This config causes Terraria to stop responding while the world is being loaded, do NOT close the game while this is occurring.
+			         Once the game starts responding again, you will enter the world and be able to play without random stutters.
+			         This config option is only recommended for players who can't stand random stutters while playing.
+			'''
+	}
+
 	SulphuricWaterMeterPosX: {
 		Label: "[i:LaserRuler] Sulphuric Water Poison Meter X Position"
 		Tooltip:
@@ -308,11 +347,21 @@ CalamityClientConfig: {
 			'''
 	}
 
+	SunkenSeaBackgroundDistortion: {
+		Label: "[i:CalamityMod/SeaRemains] Sunken Sea Background Distortion"
+		Tooltip:
+			'''
+			Whether or not the Sunken Sea's custom backgrounds should have an additional distortion shader applied to them to give the
+			illusion of underwater distortion.         
+			[c/FF232C:Note that this will ONLY work if your "Wave Quality" setting is turned off.] 
+			'''
+	}
+
 	VanillaCooldownDisplay: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
 			'''
-			Adds the vanilla debuffs Potion Sickness and Chaos State to the Cooldown Rack.
+			Adds the vanilla effects Potion Sickness, Chaos State, and Holy Protection to the Cooldown Rack.
 			The debuffs will still appear in the buffs array, but this may help make them more visible.
 			'''
 	}
@@ -454,15 +503,6 @@ CalamityServerConfig: {
 			'''
 	}
 
-	HigherJumpHeight: {
-		Label: "[i:ShinyRedBalloon] Increase Base Jump Height"
-		Tooltip:
-			'''
-			Increases the player's base jump height by 10% so that they can jump 7 tiles.
-			Calamity is balanced around this setting being enabled.
-			'''
-	}
-
 	NerfExpertDebuffs: {
 		Label: "[i:AnkhCharm] Remove Increased Debuff Duration"
 		Tooltip:
@@ -483,15 +523,6 @@ CalamityServerConfig: {
 			'''
 			Removes randomness from the Goblin Tinkerer's reforges for both weapons and accessories.
 			Disable this if using mods that change reforging on their own to prevent conflicts.
-			'''
-	}
-
-	PotionSelling: {
-		Label: "[i:SpelunkerPotion] Town NPC Potion Selling"
-		Tooltip:
-			'''
-			Allows town NPCs to sell various potions.
-			Certain potions are sold after specific bosses have been defeated.
 			'''
 	}
 

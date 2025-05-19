@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Potions;
 using CalamityMod.Tiles.Astral;
 using Terraria;
@@ -22,8 +23,8 @@ namespace CalamityMod.Items.Placeables.Furniture
             CreateRecipe().
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(20).
-                AddIngredient<AstralStone>(30).
-                AddTile(TileID.LunarCraftingStation).
+                AddIngredient<Items.Placeables.Astral.AstralStone>(30).
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

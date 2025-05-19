@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
         public override void SetStaticDefaults()
         {
 
-            if (Main.netMode != NetmodeID.Server)
+            if (!Main.dedServ)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
                 ArmorIDs.Face.Sets.PreventHairDraw[equipSlot] = true;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<Laudanum>().
                 AddIngredient<StressPills>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

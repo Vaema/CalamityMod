@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.SailfishBoots;
             AddMapEntry(new Color(36, 61, 111));
 
             base.SetStaticDefaults();
@@ -31,9 +31,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (Main.gamePaused)
-            {
                 return;
-            }
+
             if (closer)
             {
                 if (Main.rand.NextBool(300))
@@ -45,6 +44,17 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                         {
                             if (Main.tile[i, tileLocationY].LiquidAmount == 255 && Main.tile[i, tileLocationY - 1].LiquidAmount == 255 && Main.tile[i, tileLocationY - 2].LiquidAmount == 255)
                             {
+                                for (int t = 0; t < 5; t++)
+                                {
+                                    Dust dust = Dust.NewDustDirect(new Vector2(i, j + 0.5f) * 16, 16, 16, DustID.BlueTorch, 0, 0, 1, default, 1.5f);
+                                    dust.velocity *= 0.2f;
+                                    dust.noGravity = true;
+                                    dust.noLight = true;
+                                    dust.noLightEmittence = true;
+                                }
+                                Dust dust2 = Dust.NewDustDirect(new Vector2(i, j + 0.5f) * 16, 16, 16, DustID.MagicMirror, 0, 0, 1, Color.LightSkyBlue, 0.5f);
+                                dust2.velocity *= 0.2f;
+
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                     Projectile.NewProjectile(new EntitySource_WorldEvent(), i * 16 + 16, tileLocationY * 16 + 16, 0f, -0.1f, ModContent.ProjectileType<CoralBubbleSmall>(), 0, 1f, Main.myPlayer);
                             }

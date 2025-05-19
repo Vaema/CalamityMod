@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetStaticDefaults()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
                 AddIngredient<ReaperTooth>(4).
                 AddIngredient<DepthCells>(15).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

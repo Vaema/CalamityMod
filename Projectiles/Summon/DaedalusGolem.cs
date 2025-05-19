@@ -25,9 +25,9 @@ namespace CalamityMod.Projectiles.Summon
         public ref float StuckJumpSpeed => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 18;
-            ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+            Main.projFrames[Type] = 18;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Summon
         #region AI
         public override void AI()
         {
-            Main.projFrames[Projectile.type] = 16;
+            Main.projFrames[Type] = 16;
             bool isCorrectProjectile = Projectile.type == ModContent.ProjectileType<DaedalusGolem>();
             Owner.AddBuff(ModContent.BuffType<DaedalusGolemBuff>(), 3600);
             if (isCorrectProjectile)
@@ -221,21 +221,19 @@ namespace CalamityMod.Projectiles.Summon
                     !Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, Owner.position, Owner.width, Owner.height))
                 {
                     Projectile.velocity.Y = -12f - StuckJumpSpeed;
-                    Projectile.netSpam -= 10;
                     StuckJumpSpeed += 3.5f;
                     StuckJumpSpeed = Utils.Clamp(StuckJumpSpeed, 0f, 14f);
 
                     StuckWalkThroughWallsTimer += 10f;
 
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else if (tilesSearchedAhead > 0)
                 {
                     Projectile.velocity.X = 7f;
 
                     Projectile.velocity.Y = -(5f + tilesSearchedAhead * 2f);
-                    Projectile.netSpam -= 10;
-                    Projectile.netUpdate = true;
+                    Projectile.ForceNetUpdate();
                 }
                 else
                 {

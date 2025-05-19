@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, Main.myPlayer);
+                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, Main.myPlayer);
                 if (Main.projectile.IndexInRange(p))
                     Main.projectile[p].originalDamage = Item.damage;
             }

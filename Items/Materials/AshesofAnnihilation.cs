@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.width = 54;
             Item.height = 56;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(gold: 6, silver: 66, copper: 66);
             Item.rare = ModContent.RarityType<Violet>();
         }
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Materials
             for (int i = 0; i < 4; i++)
             {
                 Vector2 drawPosition = baseDrawPosition + (MathHelper.TwoPi * i / 4f).ToRotationVector2() * outwardness - drawPositionOffset;
-                spriteBatch.Draw(TextureAssets.Item[Item.type].Value, drawPosition, frame, drawColor, velocity, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(TextureAssets.Item[Type].Value, drawPosition, frame, drawColor, velocity, origin, scale, SpriteEffects.None, 0f);
             }
         }
 
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Materials
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            Rectangle frame = Main.itemAnimations[Item.type].GetFrame(TextureAssets.Item[Item.type].Value);
+            Rectangle frame = Main.itemAnimations[Type].GetFrame(TextureAssets.Item[Type].Value);
             DrawPulsingAfterimage(spriteBatch, Item.position - Main.screenPosition + frame.Size() * 0.5f, frame, scale);
             return true;
         }

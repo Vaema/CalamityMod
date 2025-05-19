@@ -15,16 +15,16 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 60;
-            Item.damage = 188;
+            Item.damage = 190;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 60;
+            Item.mana = 80;
             Item.useTime = 3;
             Item.useAnimation = 45;
             Item.reuseDelay = 75;
@@ -41,10 +41,10 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectileDirect(source, position + velocity * 13, velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.8f, 1.1f), ModContent.ProjectileType<PhantasmalFuryProj>(), damage, 0, player.whoAmI, 0f, 0f);
+            Projectile.NewProjectile(source, position + velocity * 13, velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.8f, 1.1f), ModContent.ProjectileType<PhantasmalFuryProj>(), damage, 0, player.whoAmI);
             for (int i = 0; i < 2; i++)
             {
-                Projectile.NewProjectileDirect(source, position + velocity * 13, velocity.RotatedByRandom(0.4f), ModContent.ProjectileType<Phantom>(), damage / 2, 0, player.whoAmI, 0f, 0f);
+                Projectile.NewProjectile(source, position + velocity * 13, velocity.RotatedByRandom(0.4f), ModContent.ProjectileType<Phantom>(), damage / 2, 0, player.whoAmI);
             }
             for (int i = 0; i < 2; i++)
             {
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.SpectreStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

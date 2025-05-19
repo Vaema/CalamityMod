@@ -185,7 +185,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScourgeNuisanceTail").Type, NPC.scale);
 
                 for (int k = 0; k < 10; k++)
@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 30, true);
+                target.AddBuff(BuffID.Bleeding, 60);
         }
 
         public override Color? GetAlpha(Color drawColor)

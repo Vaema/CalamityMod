@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<StatisBlessing>().
                 AddIngredient<TheFirstShadowflame>().
-                AddIngredient(ItemID.FragmentStardust, 10).
+                AddIngredient(ItemID.FragmentStardust, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

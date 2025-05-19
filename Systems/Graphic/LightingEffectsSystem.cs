@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.Skies;

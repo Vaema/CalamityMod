@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Astral
             value.Position.X += 40f;
             value.Position.Y -= 6f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            Main.npcFrameCount[NPC.type] = 4;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override void SetDefaults()
@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 500;
             NPC.defense = 12;
             NPC.DR_NERD(0.15f);
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.knockBackResist = 0.8f;
             NPC.behindTiles = true;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
@@ -128,9 +128,6 @@ namespace CalamityMod.NPCs.Astral
                 // Move towards the target and lunge at them, releasing meteors.
                 if (attemptingToAttackTarget)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     NPC.TargetClosest(true);
                     NPC.velocity += new Vector2(NPC.direction, NPC.directionY) * 0.15f;
                     NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -6f, 6f);
@@ -170,9 +167,6 @@ namespace CalamityMod.NPCs.Astral
                 }
                 else
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     // Rebound on collision.
                     if (NPC.collideX)
                     {
@@ -218,9 +212,6 @@ namespace CalamityMod.NPCs.Astral
             }
             else
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (NPC.velocity.Y == 0f)
                 {
                     // Search for any potential closer targets if attempting to attack.
@@ -274,7 +265,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 6; i++)
                     {
@@ -293,7 +284,7 @@ namespace CalamityMod.NPCs.Astral
                 drawColor = Color.White;
 
             //draw shark
-            spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - screenPos + offset, NPC.frame, drawColor, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
 
             //draw glowmask
             spriteBatch.Draw(glowmask.Value, NPC.Center - screenPos + offset, NPC.frame, Color.White * 0.6f, NPC.rotation, origin, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
@@ -317,7 +308,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

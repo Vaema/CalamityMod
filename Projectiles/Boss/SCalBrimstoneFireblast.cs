@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Boss
         public bool setLifetime = false;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 5;
+            Main.projFrames[Type] = 5;
         }
 
         public override void SetDefaults()
@@ -159,8 +159,8 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
-            int frameHeight = texture.Height / Main.projFrames[Projectile.type];
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            int frameHeight = texture.Height / Main.projFrames[Type];
             int drawStart = frameHeight * Projectile.frame;
             lightColor.R = (byte)(255 * Projectile.Opacity);
 

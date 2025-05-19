@@ -14,7 +14,7 @@ namespace CalamityMod.World.Planets
 
         public static void GenerateAllBasePlanetoids(GenerationProgress progress, GameConfiguration config)
         {
-            progress.Message = "Enriching low Terraria orbit";
+            progress.Message = CalamityUtils.GetTextValue("UI.Planetoids");
             var config2 = WorldGenConfiguration.FromEmbeddedPath("Terraria.GameContent.WorldBuilding.Configuration.json");
 
             int GrassPlanetoidCount = Main.maxTilesX / 750;
@@ -103,19 +103,12 @@ namespace CalamityMod.World.Planets
 
         public static bool InvalidSkyPlacementArea(Rectangle area)
         {
-            Mod varia = ExternalMods.varia;
             for (int i = area.Left; i < area.Right; i++)
             {
                 for (int j = area.Top; j < area.Bottom; j++)
                 {
                     if (Main.tile[i, j].TileType == TileID.Cloud || Main.tile[i, j].TileType == TileID.RainCloud || Main.tile[i, j].TileType == TileID.Sunplate)
                         return false;
-
-                    if (varia != null &&
-                        (Main.tile[i, j].TileType == varia.Find<ModTile>("StarplateBrick").Type || Main.tile[i, j].TileType == varia.Find<ModTile>("ForgottenCloud").Type))
-                    {
-                        return false;
-                    }
                 }
             }
             return true;

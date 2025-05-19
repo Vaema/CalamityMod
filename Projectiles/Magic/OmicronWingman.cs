@@ -127,8 +127,7 @@ namespace CalamityMod.Projectiles.Magic
             time++;
             Projectile.soundDelay--;
 
-            Projectile.netSpam = 0;
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
         }
 
         private void ManagePlayerProjectileMembers(Vector2 ownerToMouse)
@@ -155,6 +154,7 @@ namespace CalamityMod.Projectiles.Magic
 
         private void Shoot(bool isGrenade)
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 shootDirection = (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX);
 
             // The position of the tip of the gun.
@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile bomb = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<WingmanGrenade>(), Projectile.damage * 14, Projectile.knockBack * 5, Projectile.owner, 0, 2);
                     bomb.timeLeft = 530;
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * 1.2f, ModContent.ProjectileType<WingmanGrenade>(), Projectile.damage * 14, Projectile.knockBack * 5, Projectile.owner, 0, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity * 1.2f, ModContent.ProjectileType<WingmanGrenade>(), Projectile.damage * 14, Projectile.knockBack * 5, Projectile.owner, 0, 2);
                 }
             }
             else
@@ -179,9 +179,9 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity.RotatedBy(-0.05) * 0.85f, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), tipPosition, firingVelocity.RotatedBy(0.05) * 0.85f, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity.RotatedBy(-0.05) * 0.85f, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity.RotatedBy(0.05) * 0.85f, ModContent.ProjectileType<WingmanShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 2);
                 }
             }
 
@@ -258,7 +258,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.spriteDirection == -1 ? MovingUp : !MovingUp)
                 flipSprite |= SpriteEffects.FlipVertically;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.Lerp(StaticEffectsColor, Color.White, 0.5f) * 0.2f, 1, texture);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(StaticEffectsColor, Color.White, 0.5f) * 0.2f, 1, texture);
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
 
             return false;

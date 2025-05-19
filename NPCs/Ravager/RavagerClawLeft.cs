@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.World;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerClawLeft : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
@@ -309,7 +311,16 @@ namespace CalamityMod.NPCs.Ravager
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 240, true);
+            {
+                if (DownedBossSystem.downedProvidence)
+                {
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 240);
+                }
+                else
+                {
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
+                }
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -325,7 +336,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerClawLeft").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ScavengerClawLeft2").Type, 1f);

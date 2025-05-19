@@ -27,9 +27,9 @@ namespace CalamityMod.Projectiles.Rogue
         }*/
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
+            ProjectileID.Sets.TrailCacheLength[Type] = 50;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
         public override void SetDefaults()
         {
@@ -43,6 +43,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 10;
             Projectile.timeLeft = 60 * Projectile.extraUpdates;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
 
             // Readjust the velocity magnitude the moment this projectile is created
             // to make velocity setting outside the scope of this projectile less irritating

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories
         public const float ShieldSlamKnockback = 15f;
         public const int ShieldSlamIFrames = 12;
 
-        public const int RamExplosionDamage = 1000;
+        public const int RamExplosionDamage = 300;
         public const float RamExplosionKnockback = 20f;
 
         public override void SetDefaults()
@@ -63,6 +63,8 @@ namespace CalamityMod.Items.Accessories
             player.buffImmune[ModContent.BuffType<ArmorCrunch>()] = true; // "Stronger" Broken Armor
             player.buffImmune[ModContent.BuffType<BrainRot>()] = true; // Counterpart to Burning Blood
             player.buffImmune[ModContent.BuffType<BurningBlood>()] = true; // "Stronger" Bleeding
+            player.buffImmune[ModContent.BuffType<HeavyBleeding>()] = true;
+            player.buffImmune[ModContent.BuffType<Laceration>()] = true;
             player.buffImmune[BuffID.Venom] = true; // "Stronger" Poisoned
             player.buffImmune[ModContent.BuffType<SulphuricPoisoning>()] = true; // "Stronger" Poisoned
             player.buffImmune[BuffID.Webbed] = true; // "Stronger" Slow

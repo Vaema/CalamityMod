@@ -15,9 +15,9 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.YoyosLifeTimeMultiplier[Projectile.type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Projectile.type] = 480f;
-            ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 36f / MaxUpdates;
+            ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = Quagmire.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = Quagmire.Speed / MaxUpdates;
         }
 
         public override void SetDefaults()
@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     Projectile spore = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f) + Vector2.UnitX.RotatedByRandom(MathHelper.Pi), ProjectileID.SporeGas + Main.rand.Next(3), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
                     spore.DamageType = DamageClass.MeleeNoSpeed;
                     spore.usesLocalNPCImmunity = true;
+                    spore.usesIDStaticNPCImmunity = false;
                     spore.localNPCHitCooldown = 30;
                 }
             }
@@ -54,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }

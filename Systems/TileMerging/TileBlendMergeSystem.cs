@@ -1,28 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Graphics;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.AstralDesert;
-using CalamityMod.Tiles.AstralSnow;
-using CalamityMod.Tiles.SunkenSea;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoMod.Utils;
-using Newtonsoft.Json.Linq;
-using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Drawing;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -33,26 +11,64 @@ namespace CalamityMod.Systems
         private static bool[,] _TileBlendable; // dimension: [TileTypeCount, AllBlendTextureCount]
         private static bool[,] _TileBlendLooselyFillDiagonal; // dimension: [TileTypeCount, AllBlendTextureCount]
         private static byte[] _TileTypeToBlendTextureSlot; // dimension: [TileTypeCount]
+        private static bool _IDSetsInitialized = false;
 
         #region Load/Unload
         public override void OnModLoad()
         {
-            var tileCount = TileLoader.TileCount;
-            var blendTextureCount = TileBlendTextureLoader.Count;
-            _TileBlendable = new bool[tileCount, blendTextureCount];
-            _TileBlendLooselyFillDiagonal = new bool[tileCount, blendTextureCount];
-            _TileTypeToBlendTextureSlot = new byte[tileCount];
-
-            Array.Fill(_TileTypeToBlendTextureSlot, (byte)TileBlendTextureLoader.EmptySlot);
-
-            for (int i = 0; i<blendTextureCount; i++)
-            {
-                var blendTexture = TileBlendTextureLoader.Registry[i];
-                _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)i;
-            }
-
             // Draw Code
             On_TileDrawing.DrawSingleTile += OnDrawSingleTile;
+            ResizeArrayHook.OnPostResizeArrays += OnResizeArrays;
+        }
+
+        private static void OnResizeArrays(bool unloading)
+        {
+            var tileCount = TileLoader.TileCount;
+            var blendTextureCount = TileBlendTextureLoader.Count; // This count also should be updated on ResizeArrays call
+
+            static void SetupTileTypeToBlendTextureSlot()
+            {
+                if (TileBlendTextureLoader.AllTextures == null)
+                    return;
+                foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
+                {
+                    _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;
+                }
+            }
+
+            if (!_IDSetsInitialized)
+            {
+                _TileBlendable = new bool[tileCount, blendTextureCount + 1];
+                _TileBlendLooselyFillDiagonal = new bool[tileCount, blendTextureCount + 1];
+                _TileTypeToBlendTextureSlot = new byte[tileCount];
+                _IDSetsInitialized = true;
+                SetupTileTypeToBlendTextureSlot();
+                return;
+            }
+
+            if (unloading)
+            {
+                _TileBlendable = null;
+                _TileBlendLooselyFillDiagonal = null;
+                _TileTypeToBlendTextureSlot = null;
+                return;
+            }
+
+            ResizeArray2D(ref _TileBlendable, tileCount, blendTextureCount + 1);
+            ResizeArray2D(ref _TileBlendLooselyFillDiagonal, tileCount, blendTextureCount + 1);
+            Array.Resize(ref _TileTypeToBlendTextureSlot, tileCount);
+            SetupTileTypeToBlendTextureSlot();
+        }
+
+        private static void ResizeArray2D<T>(ref T[,] array, int newColNum, int newRowNum)
+        {
+            var newArray = new T[newColNum, newRowNum];
+            int colCount = array.GetLength(1);
+            int newColCount = newRowNum;
+            int cols = array.GetUpperBound(0);
+            for (int co = 0; co <= cols; co++)
+                Array.Copy(array, co * colCount, newArray, co * newColCount, colCount);
+            array = newArray;
         }
 
         private static void SetupMergeData()
@@ -61,13 +77,6 @@ namespace CalamityMod.Systems
             {
                 blendTexture.BakeBlendTexture(blendTexture.TextureAsset.Value);
             }
-        }
-
-        public override void Unload()
-        {
-            _TileBlendable = null;
-            _TileBlendLooselyFillDiagonal = null;
-            _TileTypeToBlendTextureSlot = null;
         }
         #endregion
 

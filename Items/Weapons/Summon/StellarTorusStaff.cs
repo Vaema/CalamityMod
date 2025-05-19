@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int minion = Projectile.NewProjectile(source, Main.MouseWorld, Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<StellarTorusSummon>(), damage, knockback, player.whoAmI);
+            int minion = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<StellarTorusSummon>(), damage, knockback, player.whoAmI);
 
             if (Main.projectile.IndexInRange(minion))
                 Main.projectile[minion].originalDamage = Item.OriginalDamage;
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient(ItemID.XenoStaff).
                 AddIngredient(ItemID.FragmentStardust, 6).
                 AddIngredient<ArmoredShell>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

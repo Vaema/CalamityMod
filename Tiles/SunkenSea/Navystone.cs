@@ -18,14 +18,13 @@ namespace CalamityMod.Tiles.SunkenSea
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
-            Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             AddMapEntry(new Color(17, 53, 77));
             HitSound = SoundID.Tink;
 
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
             this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
             this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
@@ -54,7 +53,7 @@ namespace CalamityMod.Tiles.SunkenSea
                     Below.TileType = (ushort)ModContent.TileType<DepthVines>();
                     Below.HasTile = true;
                     WorldGen.SquareTileFrame(i, j + 1, true);
-                    if (Main.netMode == NetmodeID.Server) 
+                    if (Main.dedServ) 
                     {
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
                     }

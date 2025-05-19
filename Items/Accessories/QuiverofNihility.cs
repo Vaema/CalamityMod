@@ -32,14 +32,17 @@ namespace CalamityMod.Items.Accessories
             modPlayer.voidField = true;
             if (player.whoAmI == Main.myPlayer)
             {
+                if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()] >= 4)
+                    return;
+
                 var source = player.GetSource_Accessory(Item);
-                if (player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()] < 4)
+                int count = player.ownedProjectileCounts[ModContent.ProjectileType<VoidFieldGenerator>()];
+                do
                 {
-                    for (int v = 0; v < 4; v++)
-                    {
-                        Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VoidFieldGenerator>(), 0, 0f, Main.myPlayer, v);
-                    }
+                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VoidFieldGenerator>(), 0, 0f, Main.myPlayer, count);
+                    count++;
                 }
+                while (count < 4);
             }
         }
         public override void AddRecipes()
@@ -48,7 +51,7 @@ namespace CalamityMod.Items.Accessories
                 AddRecipeGroup("AnyQuiver").
                 AddIngredient<GalacticaSingularity>(5).
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

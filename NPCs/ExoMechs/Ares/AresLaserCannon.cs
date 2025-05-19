@@ -21,6 +21,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.ExoMechs.Ares
 {
+    [HasPierceResist]
     public class AresLaserCannon : ModNPC
     {
         public enum Phase
@@ -79,8 +80,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            NPCID.Sets.TrailingMode[NPC.type] = 3;
-            NPCID.Sets.TrailCacheLength[NPC.type] = NPC.oldPos.Length;
+            NPCID.Sets.TrailingMode[Type] = 3;
+            NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
@@ -118,6 +119,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             writer.Write(frameX);
             writer.Write(frameY);
             writer.Write(NPC.dontTakeDamage);
+            writer.Write(NPC.localAI[0]);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -127,6 +129,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             frameX = reader.ReadInt32();
             frameY = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
+            NPC.localAI[0] = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -234,14 +237,17 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     NPC.Opacity = 0f;
             }
 
+            // Global timer used for passive movement
+            NPC.localAI[0]++;
+            if (NPC.localAI[0] >= 240f)
+                NPC.localAI[0] = 0f;
+
             // Variable to fire normal lasers
             bool fireNormalLasers = calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays;
 
             // Default vector to fly to
-            float offsetX = -560f;
-            float offsetY = 0f;
-            float offsetX2 = -540f;
-            float offsetY2 = -540f;
+            Vector2 offset = new Vector2(-560f, AIState == (int)Phase.Deathray ? 0f : 20f * (float)Math.Sin(NPC.localAI[0] * MathHelper.Pi / 120f));
+            Vector2 offset2 = new Vector2(-540f, -540f);
             bool flyLeft = true;
             switch ((int)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3])
             {
@@ -253,13 +259,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 case 1:
                 case 2:
                 case 5:
-                    offsetX *= -1f;
-                    offsetX2 *= -1f;
-                    offsetY2 *= -1f;
+                    offset.X *= -1f;
+                    offset2 *= -1f;
                     flyLeft = false;
                     break;
             }
-            Vector2 destination = fireNormalLasers ? new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX2, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY2) : new Vector2(Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.X + offsetX, Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center.Y + offsetY);
+            Vector2 destination = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center + (fireNormalLasers ? offset2 : offset);
 
             // Rotate the cannon to look at the target while not firing the beam
             // Rotate the cannon to look in the direction it will fire only while it's charging or while it's firing
@@ -452,8 +457,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                     int type = ModContent.ProjectileType<ThanatosLaser>();
                                     int damage = NPC.GetProjectileDamage(type);
                                     Vector2 laserVelocity = Vector2.Normalize(Main.player[targetIndex].Center - NPC.Center);
-                                    Vector2 offset = laserVelocity * 70f + Vector2.UnitY * 16f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, Main.player[targetIndex].Center, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                    Vector2 laserOffset = laserVelocity * 70f + Vector2.UnitY * 16f;
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + laserOffset, Main.player[targetIndex].Center, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }
@@ -470,9 +475,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             NPC.SimpleFlyMovement(desiredVelocity, baseAcceleration);
                             float velocityX = flyLeft ? deathrayPhaseVelocity : -deathrayPhaseVelocity;
                             NPC.velocity = horizontalLaserSweep ? new Vector2(velocityX, NPC.velocity.Y) : new Vector2(NPC.velocity.X, deathrayPhaseVelocity * 0.75f);
-
-                            NPC.netUpdate = true;
-                            NPC.netSpam -= 5;
+                            NPC.ForceNetUpdate();
 
                             // Fire deathray
                             if (calamityGlobalNPC.newAI[2] == deathrayTelegraphDuration)
@@ -484,9 +487,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 {
                                     int type = ModContent.ProjectileType<AresLaserBeamStart>();
                                     int damage = NPC.GetProjectileDamage(type);
-                                    float offset = 84f;
-                                    float offset2 = 16f;
-                                    Vector2 source = horizontalLaserSweep ? new Vector2(NPC.Center.X - offset2 * NPC.direction, NPC.Center.Y + offset) : new Vector2(NPC.Center.X + offset * NPC.direction, NPC.Center.Y + offset2);
+                                    float beamOffset = 84f;
+                                    float beamOffset2 = 16f;
+                                    Vector2 source = horizontalLaserSweep ? new Vector2(NPC.Center.X - beamOffset2 * NPC.direction, NPC.Center.Y + beamOffset) : new Vector2(NPC.Center.X + beamOffset * NPC.direction, NPC.Center.Y + beamOffset2);
                                     Vector2 laserVelocity = Vector2.Normalize(lookAt - source);
                                     if (laserVelocity.HasNaNs())
                                         laserVelocity = -Vector2.UnitY;
@@ -594,7 +597,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Rectangle frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
             Vector2 vector = new Vector2(NPC.width / 2, NPC.height / 2);
             Color afterimageBaseColor = Main.npc[(int)NPC.ai[2]].localAI[1] == (float)AresBody.Enraged.Yes ? Color.Red : Color.White;
@@ -732,7 +735,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     Main.dust[plasmaDust].noGravity = true;
                 }
 
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresLaserCannon1").Type, 1f);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("AresLaserCannon2").Type, 1f);

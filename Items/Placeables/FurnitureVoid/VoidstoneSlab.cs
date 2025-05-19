@@ -24,6 +24,7 @@ namespace CalamityMod.Items.Placeables.FurnitureVoid
             CreateRecipe().
                 AddIngredient<VoidstoneSlabWall>(4).
                 AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

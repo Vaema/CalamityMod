@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class VanquisherArrowProj : ModProjectile, ILocalizedModType
@@ -25,19 +29,19 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 20;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
         {
-            Projectile.width = 22;
-            Projectile.height = 22;
+            Projectile.width = 35;
+            Projectile.height = 35;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
             Projectile.arrow = true;
             Projectile.penetrate = 2;
-            Projectile.timeLeft = 300;
+            Projectile.timeLeft = 600;
             Projectile.extraUpdates = 7;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
@@ -46,11 +50,23 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            float rate = Main.GlobalTimeWrappedHourly * 5;
+            List<Color> eColors = new List<Color>()
+            {
+                Color.Cyan,
+                Color.Magenta
+            };
+
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            MainColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
             if (Time == 0)
             {
-                Projectile.velocity *= 0.4f;
+                Projectile.scale = 0.014f;
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7f;
                 ProjectileSpeed = 30;
-                MainColor = Main.rand.NextBool() ? Color.Cyan : Color.Magenta;
             }
             Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
@@ -62,19 +78,32 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noLightEmittence = true;
             }
 
-            if (Phase2 == false)
-                targeted = Projectile.Center.ClosestNPCAt(165);
-
-            if (targeted != null)
+            if (Time > 45)
             {
-                Phase2 = true;
-                HomingTime = 1;
+                if (targeted != null)
+                {
+                    Phase2 = true;
+                    if (HomingTime == 0)
+                        HomingTime = 1;
+                    if (targeted.life <= 0)
+                        targeted = null;
+                }
+                else
+                    targeted = Projectile.Center.ClosestNPCAt(450);
             }
 
-            if (HomingTime == 1)
+            if (HomingTime > 0 && HomingTime < 2 && targeted != null)
             {
                 Projectile.timeLeft++;
-                CalamityUtils.HomeInOnNPC(Projectile, true, 2000f, 12, 200f);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.65f, 7, 0.98f, 0.95f, true);
+                //CalamityUtils.HomeInOnNPC(Projectile, true, 2000f, 12, 200f);
+            }
+            else if (Projectile.velocity.Length() < 7)
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7f, 0.04f);
+            if (HomingTime > 1)
+            {
+                HomingTime--;
+                Projectile.velocity = Projectile.velocity.RotatedByRandom(0.09f);
             }
 
             Time++;
@@ -82,9 +111,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void PostDraw(Color lightColor)
         {
-            Color color = Color.White;
-            Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Height);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrowGlow").Value, Projectile.Center - Main.screenPosition, frame, color, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
+            //Color color = Color.White;
+            //Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height);
+            //Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrowGlow").Value, Projectile.Center - Main.screenPosition, frame, color, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
         public override Color? GetAlpha(Color lightColor)
@@ -94,17 +123,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            HomingTime = Main.rand.Next(10, 20 + 1) * Projectile.extraUpdates;
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // First hit is 0.85% damage
-            if (Projectile.numHits < 1)
-                Projectile.damage = (int)(Projectile.damage * .85f);
+            // First hit is 30% damage
             // Second hit is 100% base damage, it is the "Slash Hit"
-            else
-                Projectile.damage = (int)(Projectile.damage * (1f / 0.85f));
-
+            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.3f : 1f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -112,8 +138,22 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.numHits > 0)
             {
-                VoidSparkParticle spark2 = new VoidSparkParticle(Projectile.Center, new Vector2(0.1f, 0.1f).RotatedByRandom(100), false, 9, Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool() ? Color.Magenta : Color.Cyan);
+                Vector2 vel = new Vector2(0.1f, 0.1f).RotatedByRandom(100);
+                VoidSparkParticle spark2 = new VoidSparkParticle(Projectile.Center, vel, false, 9, Main.rand.NextFloat(0.15f, 0.25f), Main.rand.NextBool() ? Color.Magenta : Color.Cyan);
                 GeneralParticleHandler.SpawnParticle(spark2);
+
+                for (int j = -1; j <= 1; j += 2)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), vel.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.1f) * Main.rand.NextFloat(2f, 12.5f) * j);
+                        dust.noGravity = true;
+                        dust.scale = Main.rand.NextFloat(1.2f, 1.7f);
+                        dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Cyan;
+                        dust.noLightEmittence = true;
+                        dust.fadeIn = 1;
+                    }
+                }
 
                 SoundStyle onKill = new("CalamityMod/Sounds/Item/ScorpioHit");
                 SoundEngine.PlaySound(onKill with { Volume = 0.25f, Pitch = 0.1f, PitchVariance = 0.3f }, Projectile.Center);
@@ -122,10 +162,19 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
-                if (Time > 6)
-                    CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], MainColor * 0.3f, 1, texture);
-                return true;
+            if (Time == 0)
+                return false;
+            Asset<Texture2D> arrow = ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrow");
+            Asset<Texture2D> glow = ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrowGlow");
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineSoftEdge").Value;
+
+            if (Time > 6)
+            {
+                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], MainColor with { A = 0 } * 0.6f, 1, texture);
+            }
+            Main.EntitySpriteDraw(arrow.Value, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, arrow.Size() / 2f, 1, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(glow.Value, Projectile.Center - Main.screenPosition, null, Color.Lerp(MainColor, Color.White, 0.6f), Projectile.rotation, glow.Size() / 2f, 1, SpriteEffects.None, 0);
+            return false;
         }
     }
 }

@@ -15,8 +15,8 @@ namespace CalamityMod.Projectiles.Summon
         public bool Firing = false;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 7;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
             if (!Firing)
             {
                 const float outwardPosition = 180f;
-                Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * outwardPosition;
+                Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * outwardPosition + Vector2.UnitY * player.gfxOffY;
                 Projectile.rotation = Projectile.ai[0] + MathHelper.PiOver2 + MathHelper.PiOver4;
                 Projectile.ai[0] -= MathHelper.ToRadians(4f);
             }

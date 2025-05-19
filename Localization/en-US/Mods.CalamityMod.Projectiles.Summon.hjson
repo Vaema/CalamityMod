@@ -244,6 +244,7 @@ SandTornado.DisplayName: Tornado
 SarosAura.DisplayName: Saros Aura
 SarosMicrosun.DisplayName: Saros Microsun
 SarosSunfire.DisplayName: Saros Sunfire
+SeashineSwordProj.DisplayName: Seashine Sword
 SeekerSummonProj.DisplayName: Soul Seeker
 SepulcherMinion.DisplayName: Sepulcher
 Shellfish.DisplayName: Shellfish
@@ -334,3 +335,5 @@ EnchantedBladeSummon.DisplayName: Enchanted Blade Summon
 EnchantedBladeStaffProjectile.DisplayName: Enchanted Blade Beam
 FlarebatMinion.DisplayName: Flarebat
 FrostbatMinion.DisplayName: Frostbat
+AmphibiansGuitarMinion.DisplayName: Amphibian's Guitars
+AmphibiansGuitarProjectile.DisplayName: Note

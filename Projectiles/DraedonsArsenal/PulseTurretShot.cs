@@ -15,7 +15,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public const int SpiralRings = 6;
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.SentryShot[Projectile.type] = true;
+            ProjectileID.Sets.SentryShot[Type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 

@@ -13,14 +13,14 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 58;
             Item.height = 56;
-            Item.damage = 190;
+            Item.damage = 205;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 10;
             Item.useTime = 12;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.ShadowbeamStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<ArmoredShell>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

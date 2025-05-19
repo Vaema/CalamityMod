@@ -9,7 +9,6 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
@@ -48,6 +47,11 @@ namespace CalamityMod.CalPlayer.Dashes
                 dust.velocity = -player.velocity * Main.rand.NextFloat(0.6f, 1.4f);
                 dust.scale = Main.rand.NextFloat(0.9f, 1.4f);
                 dust.noGravity = true;
+                if (d < 1)
+                {
+                    Particle spark = new CustomSpark(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.25f), Main.rand.NextBool(4) ? Color.Khaki : Color.Orange, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.4f, 0.5f));
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
             }
             // Dash at a faster speed than the default value.
             dashSpeed = 14f;
@@ -74,14 +78,12 @@ namespace CalamityMod.CalPlayer.Dashes
             hitContext.PlayerImmunityFrames = ElysianAegis.ShieldSlamIFrames;
 
             // Define damage parameters.
-            int dashDamage = ElysianAegis.ShieldSlamDamage;
             hitContext.damageClass = DamageClass.Melee;
-            hitContext.BaseDamage = player.ApplyArmorAccDamageBonusesTo(dashDamage);
+            hitContext.BaseDamage = ElysianAegis.ShieldSlamDamage;
             hitContext.BaseKnockback = ElysianAegis.ShieldSlamKnockback;
 
             // On-hit Supreme Holy Explosion
             int supremeExplosionDamage = (int)player.GetBestClassDamage().ApplyTo(ElysianAegis.RamExplosionDamage);
-            supremeExplosionDamage = player.ApplyArmorAccDamageBonusesTo(supremeExplosionDamage);
             Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<HolyExplosionSupreme>(), supremeExplosionDamage, ElysianAegis.RamExplosionKnockback, Main.myPlayer, 1f, 0f);
             npc.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
         }

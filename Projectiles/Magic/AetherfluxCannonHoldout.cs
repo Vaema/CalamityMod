@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.Systems.LavaRenderingSystem;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -25,6 +27,8 @@ namespace CalamityMod.Projectiles.Magic
         private ref float AnimationRate => ref Projectile.ai[1];
         private ref float LastShootAttemptTime => ref Projectile.localAI[0];
         private ref float LastAnimationTime => ref Projectile.localAI[1];
+
+        public float postShotFade = 0;
 
         public override void SetStaticDefaults() => Main.projFrames[Type] = 8;
 
@@ -74,7 +78,12 @@ namespace CalamityMod.Projectiles.Magic
                 if (manaOK)
                 {
                     if (actuallyShoot)
-                        SoundEngine.PlaySound(SoundID.Item91, Projectile.Center);
+                    {
+                        postShotFade = 1;
+                        SoundStyle fire = new("CalamityMod/Sounds/Item/MagnaCannonShot");
+                        SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = Main.rand.NextFloat(0.1f, 0.3f) }, Projectile.Center);
+                    }
+                        
 
                     int projID = ModContent.ProjectileType<PhasedGodRay>();
                     float shootSpeed = HeldItem.shootSpeed;
@@ -94,16 +103,17 @@ namespace CalamityMod.Projectiles.Magic
                         Vector2 dustOnlySpread = Main.rand.NextVector2Circular(shootSpeed, shootSpeed);
                         Vector2 dustVelocity = shootVelocity + dustInaccuracy * dustOnlySpread;
                         if (actuallyShoot && Main.myPlayer == Projectile.owner)
-                            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), laserStartPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner, i * 0.5f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserStartPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner, i * 0.5f);
                         SpawnFiringDust(GunTipPosition, dustVelocity);
                     }
                 }
             }
+            postShotFade *= 0.86f;
         }
 
         private void SpawnFiringDust(Vector2 GunTipPosition, Vector2 laserVelocity)
         {
-            int dustID = 133;
+            int dustID = ModContent.DustType<LightDust>();
             int dustRadius = 12;
             float dustRandomness = 11f;
             int dustDiameter = 2 * dustRadius;
@@ -115,18 +125,30 @@ namespace CalamityMod.Projectiles.Magic
                 d.velocity *= 0.18f;
                 d.noGravity = true;
                 d.scale = 0.6f;
+                d.color = Color.Lerp(AetherfluxCannon.accentColor, AetherfluxCannon.mainColor, Main.rand.NextFloat());
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Vector2 vel = Projectile.velocity * 10;
+            Vector2 drawPosition = (Projectile.Center - Main.screenPosition + vel) + vel * (1 - postShotFade);
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Projectile.frame);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f) + MathHelper.PiOver2;
             Vector2 rotationPoint = frame.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipVertically : SpriteEffects.None;
-
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            for (int i = 0; i < 5; i++)
+            {
+                float glowScale = 0.3f;
+                Main.EntitySpriteDraw(glowTexture, drawPosition + vel * 1.7f, null, Color.Lerp(AetherfluxCannon.accentColor, AetherfluxCannon.mainColor, postShotFade) with { A = 0 }, vel.ToRotation(), glowTexture.Size() * 0.5f, new Vector2(1.4f, 0.75f) * (glowScale - i * 0.05f) * postShotFade * 2.5f, SpriteEffects.None, 0);
+            }
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / 15f).ToRotationVector2() * 6.5f * postShotFade;
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, frame, Color.Lerp(AetherfluxCannon.accentColor, AetherfluxCannon.mainColor, postShotFade) with { A = 0 }, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            }
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
 
             return false;

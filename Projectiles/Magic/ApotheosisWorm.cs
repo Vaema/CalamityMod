@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class ApotheosisWorm : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -55,7 +57,7 @@ namespace CalamityMod.Projectiles.Magic
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -66,7 +68,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.timeLeft = 300;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 9;
+            Projectile.localNPCHitCooldown = 6;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.tileCollide = false;
@@ -135,6 +137,7 @@ namespace CalamityMod.Projectiles.Magic
 
         internal void InitializeSegments()
         {
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 directionToMouse = (Main.MouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX * Owner.direction);
             Projectile.rotation = directionToMouse.ToRotation() + MathHelper.PiOver2;
             for (int i = 0; i < Segments.Length; i++)
@@ -199,7 +202,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (Main.rand.NextBool(10))
-                    SoundEngine.PlaySound(GaussRifle.FireSound, Projectile.Center);
+                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
             }
 
             float idealFlyAcceleration = 0.18f;
@@ -261,9 +264,9 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D headTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value.Size() * 0.5f;
+            Vector2 headTextureOrigin = Terraria.GameContent.TextureAssets.Projectile[Type].Value.Size() * 0.5f;
             drawPosition -= headTexture.Size() * Projectile.scale * 0.5f;
             drawPosition += headTextureOrigin * Projectile.scale + new Vector2(0f, 4f + Projectile.gfxOffY);
 
@@ -351,14 +354,15 @@ namespace CalamityMod.Projectiles.Magic
         // Manual collision detection that incorporates segments.
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            if (Collision.CheckAABBvAABBCollision(Projectile.position, projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+            if (Collision.CheckAABBvAABBCollision(Projectile.position, projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                 return true;
 
             for (int i = 0; i < Segments.Length; i++)
             {
-                if (Collision.CheckAABBvAABBCollision(Segments[i].Center - projHitbox.Size() * 0.5f, projHitbox.Size(), targetHitbox.TopLeft(), projHitbox.Size()))
+                if (Collision.CheckAABBvAABBCollision(Segments[i].Center - projHitbox.Size() * 0.5f, projHitbox.Size(), targetHitbox.TopLeft(), targetHitbox.Size()))
                     return true;
             }
+
             return false;
         }
     }

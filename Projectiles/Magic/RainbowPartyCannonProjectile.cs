@@ -85,6 +85,7 @@ namespace CalamityMod.Projectiles.Magic
             // Place the cannon directly into the player's hand at all times.
             Projectile.Center = center;
 
+            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             // Set the direction of the cannon if it hasn't been set yet.
             if (Projectile.velocity == Vector2.Zero || Projectile.velocity.Length() != 1f)
                 Projectile.velocity = (Main.MouseWorld - center).SafeNormalize(Vector2.UnitX * Projectile.direction);

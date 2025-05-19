@@ -19,6 +19,8 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.pickSpeed -= 0.1f;
+            player.Calamity().aFossil = true;
+            player.Calamity().fallingBlockProtection = true;
         }
 
         public override void AddRecipes()

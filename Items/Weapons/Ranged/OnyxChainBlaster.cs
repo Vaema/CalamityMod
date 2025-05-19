@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 64;
             Item.height = 32;
-            Item.damage = 51;
+            Item.damage = 58;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 15;
@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.OnyxBlaster).
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient(ItemID.LunarBar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

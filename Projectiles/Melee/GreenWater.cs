@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = TimeLeft;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 30;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
             if (Projectile.ai[0] == 0)
             {
+                Projectile.ArmorPenetration = 40;
                 if (Projectile.timeLeft == TimeLeft)
                 {
                     storedVel = Projectile.velocity;
@@ -51,21 +52,11 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 else
                 {
-
                     if (Projectile.timeLeft == TimeLeft - 60)
                         Projectile.velocity = storedVel;
 
-                    NPC target = Projectile.Center.ClosestNPCAt(500);
-                    Vector2 moveToMouse;
-                    if (target != null)
-                        moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    else
-                        moveToMouse = Vector2.Zero;
-
-                    if (Projectile.velocity.Length() < 12 && Projectile.timeLeft > 60)
-                        Projectile.velocity += moveToMouse * 0.2f;
-                    else
-                        Projectile.velocity *= 0.9f;
+                    NPC target = Owner.Calamity().mouseWorld.ClosestNPCAt(500);
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.3f, 10, 0.98f);
 
                     if (Main.rand.NextBool(5))
                     {
@@ -76,17 +67,8 @@ namespace CalamityMod.Projectiles.Melee
             }
             else if (Projectile.ai[0] == 1)
             {
-                NPC target = Projectile.Center.ClosestNPCAt(200);
-                Vector2 moveToMouse;
-                if (target != null)
-                    moveToMouse = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                else
-                    moveToMouse = Vector2.Zero;
-
-                if (Projectile.velocity.Length() < 8 && Projectile.timeLeft > 60)
-                    Projectile.velocity += moveToMouse * 0.1f;
-                else
-                    Projectile.velocity *= 0.98f;
+                NPC target = Projectile.Center.ClosestNPCAt(155);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, target, false, 0.15f, 9, 0.98f, accelerate: true);
             }
             else
             {
@@ -137,7 +119,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.ai[0] == 0) // "Jaw" teeth
             {
-                target.AddBuff(ModContent.BuffType<Laceration>(), 180);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             }
             for (int i = 0; i <= 4; i++)
             {
@@ -151,6 +133,13 @@ namespace CalamityMod.Projectiles.Melee
             }
             SoundStyle sound = new("CalamityMod/Sounds/NPCHit/PerfSmallHit", 3);
             SoundEngine.PlaySound(sound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float minMult = 0.25f;
+            int hitsToMinMult = 6;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            modifiers.SourceDamage *= damageMult;
         }
     }
 }

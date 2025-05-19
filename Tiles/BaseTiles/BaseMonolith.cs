@@ -116,6 +116,9 @@ namespace CalamityMod.Tiles.BaseTiles
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
+            if (Main.tile[i, j].IsTileActuallyInvisible())
+                return false;
+
             var tile = Main.tile[i, j];
             var texture = TextureAssets.Tile[Type].Value;
 
@@ -136,6 +139,27 @@ namespace CalamityMod.Tiles.BaseTiles
                 Main.spriteBatch.Draw(GlowMask.Value, drawPos, rect, glowColor, 0f, default, 1f, SpriteEffects.None, 0f);
 
             DrawExtra(drawPos, rect, drawColor);
+
+            // 02FEB2025: Ozzatron: code lifted from https://github.com/CalamityTeam/CalamityModPublic/pull/77
+            // transplanted into base monolith as part of manual cherry pick merge
+            //
+            // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
+            bool actuallySelected;
+            Color highlightColor;
+            Texture2D texhighlight = ModContent.Request<Texture2D>(HighlightTexture).Value;
+            if (texhighlight is not null && Main.InSmartCursorHighlightArea(i, j, out actuallySelected))
+            {
+                if (actuallySelected)
+                {
+                    highlightColor = new Color(252, 252, 84);
+                }
+                else
+                {
+                    highlightColor = new Color(125, 125, 125);
+                }
+                Main.spriteBatch.Draw(texhighlight, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
+            }
+
             return false;
         }
 

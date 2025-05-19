@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         public override void SetStaticDefaults()
         {
 
-            ItemID.Sets.ExtractinatorMode[Item.type] = Item.type;
+            ItemID.Sets.ExtractinatorMode[Type] = Item.type;
         }
 
         public override void SetDefaults()
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Accessories
     {
         public override void AI(Projectile projectile)
         {
-            if (!projectile.npcProj && !projectile.trap && projectile.minion && !ProjectileID.Sets.MinionShot[projectile.type] && Main.player[projectile.owner].GetModPlayer<WulfrumBatteryPlayer>().battery)
+            if (!projectile.npcProj && !projectile.trap && (projectile.minion||projectile.sentry) && !ProjectileID.Sets.MinionShot[projectile.type] && !ProjectileID.Sets.SentryShot[projectile.type] && Main.player[projectile.owner].GetModPlayer<WulfrumBatteryPlayer>().battery)
             {
                 float lightMult = 1f;
                 if (Lighting.UpdateEveryFrame) //The light loks wayyy too bright in retro/trippy

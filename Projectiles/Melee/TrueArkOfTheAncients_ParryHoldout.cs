@@ -35,6 +35,8 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.noEnchantmentVisuals = true;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override bool? CanDamage() => Timer <= ParryTime && AlreadyParried == 0f;
@@ -52,8 +54,10 @@ namespace CalamityMod.Projectiles.Melee
             TrueArkoftheAncients sword = (Owner.HeldItem.ModItem as TrueArkoftheAncients);
             if (sword != null)
                 sword.Charge = 10f;
+
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact);
             SoundEngine.PlaySound(SoundID.Item67);
+
             CombatText.NewText(Projectile.Hitbox, new Color(111, 247, 200), CalamityUtils.GetTextValue("Misc.ArkParry"), true);
             AlreadyParried = 1f;
         }
@@ -92,13 +96,13 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.timeLeft = (int)MaxTime;
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFuryShot, Projectile.Center);
 
+                // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.velocity = Owner.SafeDirectionTo(Owner.Calamity().mouseWorld, Vector2.Zero);
                 Projectile.velocity.Normalize();
                 Projectile.rotation = Projectile.velocity.ToRotation();
 
                 initialized = true;
-                Projectile.netUpdate = true;
-                Projectile.netSpam = 0;
+                Projectile.ForceNetUpdate();
             }
 
             //Manage position and rotation
@@ -133,7 +137,6 @@ namespace CalamityMod.Projectiles.Melee
                         //Bounce off the player if they are in the air
                         if (Owner.velocity.Y != 0)
                             Owner.velocity += Utils.SafeNormalize(Owner.Center - proj.Center, Vector2.Zero) * 2;
-
 
                         break;
                     }

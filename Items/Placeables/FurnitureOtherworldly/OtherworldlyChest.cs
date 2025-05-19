@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureOtherworldly
             CreateRecipe().
                 AddIngredient<OtherworldlyStone>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

@@ -13,6 +13,9 @@ namespace CalamityMod.Items.Weapons.Summon
     public class Sirius : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 6f;
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 62;
@@ -47,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<Lumenyl>(5).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<ExodiumCluster>(12).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 94;
             Item.height = 34;
-            Item.damage = 400;
+            Item.damage = 705;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 30;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 26;
 
         public override Vector2? HoldoutOffset() => new Vector2(-25, 0);
 
@@ -54,8 +54,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             velocity.Y += Main.rand.NextFloat(-XYInaccuracy, XYInaccuracy);
             Vector2 vel = velocity;
             Projectile shot = Projectile.NewProjectileDirect(source, position, vel, type, damage, knockback, player.whoAmI);
+
+            // Set all projectiles fired from Soma Prime to have 3x base crit multiplier and to have supercrits enabled.
+            // They also are able to apply one stack of Shred.
             CalamityGlobalProjectile cgp = shot.Calamity();
             cgp.supercritHits = -1;
+            cgp.bonusCritDamage += 1f;
             cgp.appliesSomaShred = true;
             return false;
         }
@@ -66,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Kingsbane>().
-                AddIngredient<ClockGatlignum>().
+                AddIngredient(ItemID.VenusMagnum).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

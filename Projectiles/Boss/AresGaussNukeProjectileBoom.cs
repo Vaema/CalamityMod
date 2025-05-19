@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
 
         public override void SetDefaults()
@@ -49,13 +49,5 @@ namespace CalamityMod.Projectiles.Boss
         public override void PostAI() => Lighting.AddLight(Projectile.Center, 0.2f, 0.1f, 0f);
 
         public override bool CanHitPlayer(Player target) => CalamityUtils.CircularHitboxCollision(Projectile.Center, CurrentRadius * Projectile.scale * 0.4f, target.Hitbox) && Projectile.timeLeft > 6;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.OnFire, 480);
-        }
     }
 }

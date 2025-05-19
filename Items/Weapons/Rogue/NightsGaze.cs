@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1.22f;
+        public override float StealthDamageMultiplier => 1.2f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<Lumenyl>(7).
                 AddIngredient<RuinousSoul>(4).
                 AddIngredient<ExodiumCluster>(12).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

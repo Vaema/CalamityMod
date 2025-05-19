@@ -9,21 +9,23 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    public class MOAB : ModItem, ILocalizedModType
+    public class MOAB : BaseWings
     {
-        public new string LocalizationCategory => "Items.Accessories.Wings";
-        public override void SetStaticDefaults()
-        {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
-        }
+        public override float BonusAscentWhileFalling => 0.75f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 2.5f;
+        public override float BaseAscent => 0.125f;
+
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(75, 6.5f, 1f);
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Item.width = 28;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
-            Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -88,20 +90,10 @@ namespace CalamityMod.Items.Accessories.Wings
             player.GetJumpState(ExtraJump.BlizzardInABottle).Enable();
             player.jumpBoost = true;
             player.autoJump = true;
-            player.noFallDmg = true;
             player.jumpSpeedBoost += 1.6f;
 
             // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).
             player.Calamity().calamityBonusLuck += 0.05f;
-        }
-
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.75f;
-            ascentWhenRising = 0.15f;
-            maxCanAscendMultiplier = 1f;
-            maxAscentMultiplier = 2.5f;
-            constantAscend = 0.125f;
         }
 
         public override void AddRecipes()

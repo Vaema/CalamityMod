@@ -29,10 +29,10 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             Item.width = 28;
             Item.height = 46;
-            Item.useAnimation = 30;
-            Item.useTime = 30;
-            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.consumable = true;
+            Item.useAnimation = Item.useTime = 30;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.value = Item.sellPrice(gold: 24);
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
@@ -72,7 +72,7 @@ namespace CalamityMod.Items.PermanentBoosters
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<Necroplasm>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

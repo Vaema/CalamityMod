@@ -36,6 +36,13 @@ namespace CalamityMod.NPCs.SlimeGod
     [AutoloadBossHead]
     public class SlimeGodCore : ModNPC
     {
+        private enum PaladinSlimeTypes
+        {
+            None,
+            Ebonian,
+            Crimulan
+        }
+
         private bool slimesSpawned = false;
         private int buffedSlime = 0;
 
@@ -90,12 +97,12 @@ namespace CalamityMod.NPCs.SlimeGod
 
             NPC.defense = 6;
             NPC.LifeMaxNERB(420);
-            NPCID.Sets.TrailCacheLength[NPC.type] = 8;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailCacheLength[Type] = 8;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(0, 12, 0, 0);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();
@@ -132,7 +139,7 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
                 {
-                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 1)
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == (int)PaladinSlimeTypes.Ebonian)
                         Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 1f;
                     else
                         Main.npc[CalamityGlobalNPC.slimeGodPurple].localAI[1] = 0f;
@@ -155,7 +162,7 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
                 {
-                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == 2)
+                    if ((npc.ModNPC as SlimeGodCore).buffedSlime == (int)PaladinSlimeTypes.Crimulan)
                         Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 1f;
                     else
                         Main.npc[CalamityGlobalNPC.slimeGodRed].localAI[1] = 0f;
@@ -192,6 +199,9 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void AI()
         {
+            Vector3 light = new Vector3(0.5f, 0.5f, 0.5f) * NPC.Opacity;
+            Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
+
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             CalamityGlobalNPC.slimeGod = NPC.whoAmI;
@@ -410,27 +420,27 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 NPC.rotation += NPC.direction * 0.3f;
 
-                if (buffedSlime == 0)
+                if (buffedSlime == (int)PaladinSlimeTypes.None)
                 {
                     SoundEngine.PlaySound(PossessionSound, NPC.Center);
 
                     if (purpleSlimeAlive && redSlimeAlive)
                         buffedSlime = Main.rand.Next(2) + 1;
                     else if (purpleSlimeAlive)
-                        buffedSlime = 1;
+                        buffedSlime = (int)PaladinSlimeTypes.Ebonian;
                     else if (redSlimeAlive)
-                        buffedSlime = 2;
+                        buffedSlime = (int)PaladinSlimeTypes.Crimulan;
                 }
 
                 Vector2 purpleSlimeVector = new Vector2(calamityGlobalNPC.newAI[0], calamityGlobalNPC.newAI[1]);
                 Vector2 redSlimeVector = new Vector2(NPC.ai[1], NPC.ai[2]);
-                Vector2 goToVector = buffedSlime == 1 ? purpleSlimeVector : redSlimeVector;
+                Vector2 goToVector = buffedSlime == (int)PaladinSlimeTypes.Ebonian ? purpleSlimeVector : redSlimeVector;
 
                 Vector2 goToPosition = goToVector - NPC.Center;
-                NPC.velocity = Vector2.Normalize(goToPosition) * 24f;
+                NPC.velocity = goToPosition.SafeNormalize(Vector2.UnitY) * 24f;
 
                 // Reduce velocity to 0 to avoid spastic movement when inside big slime.
-                float stickPositionAdjustment = buffedSlime == 1 ? 16f : 32f;
+                float stickPositionAdjustment = buffedSlime == (int)PaladinSlimeTypes.Ebonian ? 16f : 32f;
                 if (Vector2.Distance(NPC.Center, goToVector) < 80f + stickPositionAdjustment)
                 {
                     NPC.velocity = Vector2.Zero;
@@ -500,7 +510,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                             int damage = NPC.GetProjectileDamage(type);
-                            Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
+                            Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
                         }
                         else
@@ -508,7 +518,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
                             int damage = NPC.GetProjectileDamage(type);
-                            Vector2 velocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
+                            Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
                         }
                     }
@@ -519,7 +529,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.Opacity > 0.8f)
                 NPC.Opacity = 0.8f;
 
-            buffedSlime = 0;
+            buffedSlime = (int)PaladinSlimeTypes.None;
 
             float flySpeed = death ? 15f : revenge ? 13.5f : expertMode ? 12f : 9f;
             flySpeed += aggressionLevel;
@@ -649,7 +659,7 @@ namespace CalamityMod.NPCs.SlimeGod
             float sc = 1f;
             if (!ShouldDespawn(NPC))
             {
-                if (buffedSlime != 0f)
+                if (buffedSlime != (int)PaladinSlimeTypes.None)
                 {
                     NPC.scale = MathHelper.Lerp(NPC.scale, 0f, 0.2f);
                     NPC.Opacity = MathHelper.Lerp(NPC.Opacity, 0.7f, 0.4f);
@@ -662,11 +672,11 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Color drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
+            Color drawColorAlpha = (buffedSlime != (int)PaladinSlimeTypes.None && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
             Vector2 origin = NPC.frame.Size() * 0.5f;
             Vector2 halfSize = NPC.Size * 0.5f;
 
-            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
             Texture2D pog = ZenithSeedEyeTexture.Value;
@@ -698,7 +708,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (!Main.zenithWorld)
             {
                 Vector2 drawPositionAdjustment = halfSize - screenPos + new Vector2(0f, NPC.gfxOffY);
-                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[NPC.type] * 1.5f;
+                float colorAlphaDivisor = NPCID.Sets.TrailCacheLength[Type] * 1.5f;
                 int twoConst = 2;
                 int coreID = 1;
 
@@ -725,7 +735,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             // Reset the color
-            drawColorAlpha = (buffedSlime != 0f && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
+            drawColorAlpha = (buffedSlime != (int)PaladinSlimeTypes.None && !ShouldDespawn(NPC)) ? new Color(200, 150, Main.DiscoB, NPC.alpha) * NPC.Opacity : NPC.GetAlpha(drawColor);
 
             // Draw the base texture
             spriteBatch.Draw(texture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
@@ -776,8 +786,6 @@ namespace CalamityMod.NPCs.SlimeGod
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<THIEF>() }, DownedBossSystem.downedSlimeGod);
-
             // Mark the Slime God as dead
             DownedBossSystem.downedSlimeGod = true;
             CalamityNetcode.SyncWorld();
@@ -823,7 +831,7 @@ namespace CalamityMod.NPCs.SlimeGod
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<SlimeGodRelic>());
 
             // GFB Gelatin Crystal drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ItemID.QueenSlimeCrystal, hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ItemID.QueenSlimeCrystal), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedSlimeGod, ModContent.ItemType<LoreSlimeGod>(), desc: DropHelper.FirstKillText);
@@ -844,9 +852,9 @@ namespace CalamityMod.NPCs.SlimeGod
             if (hurtInfo.Damage > 0)
             {
                 int debufftype = Main.zenithWorld ? BuffID.VortexDebuff : BuffID.Slow;
-                target.AddBuff(debufftype, 180, true);
-                target.AddBuff(BuffID.Weak, 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(debufftype, 180);
+                target.AddBuff(BuffID.Weak, 180);
+                target.AddBuff(BuffID.Darkness, 180);
             }
         }
     }

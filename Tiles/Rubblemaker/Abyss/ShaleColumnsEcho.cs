@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -46,7 +46,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
         }
         public override void NumDust(int i, int j, bool fail, ref int num)

@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.Astral
             value.Position.X += 10f;
             value.Position.Y += 10f;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
-            Main.npcFrameCount[NPC.type] = 7;
+            Main.npcFrameCount[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 420;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.75f;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(0, 0, 8, 0);
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<HadarianBanner>();
             if (DownedBossSystem.downedAstrumAureus)
@@ -158,7 +158,7 @@ namespace CalamityMod.NPCs.Astral
                 Vector2 position = NPC.Bottom - new Vector2(19f, 42f);
                 //20 34 38 42
                 Rectangle src = new Rectangle(20, 34, 38, 42);
-                spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, position - screenPos, src, drawColor, NPC.rotation, default, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                spriteBatch.Draw(TextureAssets.Npc[Type].Value, position - screenPos, src, drawColor, NPC.rotation, default, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
                 //draw glowmask
                 spriteBatch.Draw(glowmask.Value, position - screenPos, src, Color.White * 0.6f, NPC.rotation, default, 1f, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
                 return false;
@@ -190,7 +190,7 @@ namespace CalamityMod.NPCs.Astral
             //if dead do gores
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -217,7 +217,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

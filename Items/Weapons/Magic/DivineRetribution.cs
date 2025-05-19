@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -15,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public override void SetStaticDefaults()
         {
-            Item.staff[Item.type] = true;
+            Item.staff[Type] = true;
         }
 
         public override void SetDefaults()
@@ -37,54 +36,21 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Item.UseSound = SoundID.Item73;
             Item.autoReuse = true;
-            Item.shootSpeed = 19f;
+            Item.shootSpeed = 25f;
             Item.shoot = ModContent.ProjectileType<DivineRetributionSpear>();
         }
 
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float spearSpeed = Item.shootSpeed;
-            Vector2 realPlayerPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            float mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X;
-            float mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y;
-            if (player.gravDir == -1f)
+            // 5 projectiles total
+            Vector2 mouse = player.ClampedMouseWorld();
+            for (int i = -2; i < 3; i++)
             {
-                mouseYDist = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - realPlayerPos.Y;
-            }
-            float mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-            if ((float.IsNaN(mouseXDist) && float.IsNaN(mouseYDist)) || (mouseXDist == 0f && mouseYDist == 0f))
-            {
-                mouseXDist = (float)player.direction;
-            }
-            else
-            {
-                mouseDistance = spearSpeed / mouseDistance;
-            }
-            int numProjectiles = 5;
-            for (int i = 0; i < numProjectiles; i++)
-            {
-                realPlayerPos = new Vector2(player.position.X + (float)player.width * 0.5f + (float)(Main.rand.Next(51) * -(float)player.direction) + ((float)Main.mouseX + Main.screenPosition.X - /* - */ player.position.X), player.MountedCenter.Y + 600f); //-
-                realPlayerPos.X = (realPlayerPos.X + player.Center.X) / 2f + (float)Main.rand.Next(-50, 51); //200
-                realPlayerPos.Y += (float)(100 * i); //-=
-                mouseXDist = (float)Main.mouseX + Main.screenPosition.X - realPlayerPos.X; //+ -
-                mouseYDist = (float)Main.mouseY + Main.screenPosition.Y - realPlayerPos.Y; //+ -
-                if (mouseYDist < 0f)
-                {
-                    mouseYDist *= -1f;
-                }
-                if (mouseYDist < 20f)
-                {
-                    mouseYDist = 20f;
-                }
-                mouseDistance = (float)Math.Sqrt((double)(mouseXDist * mouseXDist + mouseYDist * mouseYDist));
-                mouseDistance = spearSpeed / mouseDistance;
-                mouseXDist *= mouseDistance;
-                mouseYDist *= mouseDistance;
-                float speedX6 = mouseXDist + (float)Main.rand.Next(-60, 61) * 0.02f;
-                float speedY7 = mouseYDist + (float)Main.rand.Next(-60, 61) * 0.02f;
-                float ai1 = Main.rand.NextFloat() + 0.5f;
-                Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX6, -speedY7, type, damage, knockback, player.whoAmI, 0.0f, ai1);
+                Vector2 newPos = new Vector2(mouse.X + Main.rand.NextFloat(8f, 64f) * i, player.MountedCenter.Y + Main.rand.NextFloat(640f, 800f));
+                Vector2 newVel = (mouse + Main.rand.NextVector2CircularEdge(4f, 4f) - newPos).SafeNormalize(Vector2.Zero) * velocity.Length() * Main.rand.NextFloat(1f, 1.25f);
+                float velScale = 1f + Main.rand.NextFloat(0.02f, 0.08f) * i;
+                Projectile.NewProjectile(source, newPos, newVel, type, damage, knockback, player.whoAmI, velScale);
             }
             return false;
         }
@@ -95,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<UndinesRetribution>().
                 AddIngredient<DivineGeode>(8).
                 AddIngredient<UnholyEssence>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

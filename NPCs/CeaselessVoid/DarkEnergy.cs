@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
+    [HasPierceResist]
     public class DarkEnergy : ModNPC
     {
         private bool start = true;
@@ -32,8 +33,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = FrameCount;
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            Main.npcFrameCount[Type] = FrameCount;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             if (!Main.dedServ)
             {
@@ -99,7 +100,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += 0.15f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -207,10 +208,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            Texture2D mainTexture = TextureAssets.Npc[NPC.type].Value;
+            Texture2D mainTexture = TextureAssets.Npc[Type].Value;
             Vector2 drawPos = NPC.Center - screenPos;
             SpriteEffects spriteEffects = SpriteEffects.None;
-            Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[NPC.type] / 2);
+            Vector2 drawOrigin = new Vector2(mainTexture.Width / 2, mainTexture.Height / Main.npcFrameCount[Type] / 2);
 
             if (NPC.IsABestiaryIconDummy)
             {
@@ -225,7 +226,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             Color white = Color.White * NPC.Opacity;
             int trailCount = 5;
 
-            drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+            drawPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
             if (CalamityClientConfig.Instance.Afterimages)
@@ -237,7 +238,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     trailColor = NPC.GetAlpha(trailColor);
                     trailColor *= (trailCount - i) / 15f;
                     Vector2 trailPos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    trailPos -= new Vector2(mainTexture.Width, mainTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     trailPos += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(mainTexture, trailPos, NPC.frame, trailColor, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
                 }
@@ -260,7 +261,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     trailColor2 = NPC.GetAlpha(trailColor2);
                     trailColor2 *= (trailCount - i) / 15f;
                     Vector2 trailPos2 = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
-                    trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                    trailPos2 -= new Vector2(glowTexture.Width, glowTexture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     trailPos2 += drawOrigin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
                     spriteBatch.Draw(glowTexture, trailPos2, NPC.frame, trailColor2, NPC.rotation, drawOrigin, NPC.scale, spriteEffects, 0f);
                 }

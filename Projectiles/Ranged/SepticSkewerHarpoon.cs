@@ -7,6 +7,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -49,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
         public bool pullCheckValid => ((chosenTarget != null && chosenTarget.life < Projectile.damage * 28f && !calledToPull && chosenTarget.realLife == -1 && !normalHit) || Main.zenithWorld);
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.DrawScreenCheckFluff[Projectile.type] = 10000;
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
         }
         public Vector2 DrawStartPosition
         {
@@ -256,22 +257,22 @@ namespace CalamityMod.Projectiles.Ranged
                                     closestTarget = Main.npc[index];
                                 }
                             }
-                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Projectile.type] < 80)
+                            if (Main.zenithWorld && Main.npc[index] != null && index < 80 && Main.npc[index].realLife == -1 && Owner.ownedProjectileCounts[Type] < 80)
                             {
                                 closestTarget = Main.npc[index];
-                                Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                             }
                         }
                         if (closestTarget != null)
                         {
-                            Projectile harpoon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
-                        int heal = 25;
-                        Owner.statLife += heal;
-                        Owner.HealEffect(heal);
-                        if (Owner.statLife > Owner.statLifeMax2)
-                            Owner.statLife = Owner.statLifeMax2;
+                        if (!chosenTarget.SpawnedFromStatue)
+                        {
+                            int heal = Math.Max(25 - (int)Projectile.ai[1], 10);
+                            Owner.HealPlayer(heal);
+                        }
 
                         spawnPullBlood = false;
                     }
@@ -342,7 +343,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!stuckInTarget && canStick)
+
+            if (!stuckInTarget && canStick && !target.Calamity().pacified)
             {
                 for (int i = 0; i <= 8; i++)
                 {
@@ -380,7 +382,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     chosenTarget.velocity += storedVelocity * (strongEnemy ? 0.3f : 1.5f);
                     hasLatchedTarget = true;
-                    if ((chosenTarget.life <= chosenTarget.lifeMax * 0.3f) || chosenTarget.boss)
+                    if ((chosenTarget.lifeMax >= Projectile.damage * 28f) || chosenTarget.boss)
                         strongEnemy = true;
                     SoundStyle sound5 = new("CalamityMod/Sounds/Item/HeliumFlashCoreImpact");
                     SoundEngine.PlaySound(sound5 with { Volume = 0.55f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
@@ -407,7 +409,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool? CanDamage() => canDamage ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25 * (!spawnPullBlood ? 4 : 1), targetHitbox);
-
         public override bool PreDraw(ref Color lightColor)
         {
             Player Owner = Main.player[Projectile.owner];

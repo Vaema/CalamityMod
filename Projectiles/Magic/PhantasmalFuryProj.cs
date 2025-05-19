@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Threading.Channels;
 using Microsoft.Xna.Framework;
-using Steamworks;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
@@ -14,12 +11,13 @@ namespace CalamityMod.Projectiles.Magic
         public int time = 0;
         public float dustRotation = 0;
         public bool launched = false;
+        public NPC targeted;
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = 4;
+            Main.projFrames[Type] = 4;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
-            ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 6;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -47,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            if (Projectile.frame >= Main.projFrames[Type])
                 Projectile.frame = 0;
 
             dustRotation += 0.12f;
@@ -66,19 +64,13 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.penetrate = 1;
                     launched = true;
                 }
+                if (targeted == null || targeted.life <= 0)
+                    targeted = Projectile.Center.ClosestNPCAt(950);
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
-                NPC target = Projectile.Center.ClosestNPCAt(700);
-                if (target != null && target.CanBeChasedBy(Projectile))
+                if (time < 550 && targeted == null)
                 {
-                    Vector2 moveTotarget = (target.Center - Projectile.Center).SafeNormalize(Vector2.UnitX);
-                    if (Projectile.velocity.Length() < 6)
-                        Projectile.velocity += moveTotarget * 0.45f;
-                    else
-                        Projectile.velocity *= 0.9f;
-                }
-
-                if (time < 550 && target == null)
-                {
+                    // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     if (Projectile.velocity.Length() < 6)
                         Projectile.velocity += (Owner.Calamity().mouseWorld - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.35f;
                     else
@@ -108,20 +100,22 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.05f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.3f);
 
             Player Owner = Main.player[Projectile.owner];
-            if (target.CanBeMoved(true))
-            {
-                // Custom knockback
-                Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 2);
-                target.velocity = launchVel * (target.knockBackResist == 0 ? 0.5f : 1f);
-            }
-        }
 
+            Vector2 launchVel = (Owner.Center - target.Center).SafeNormalize(Vector2.UnitY) * -10 * (launched ? 0.5f : 1);
+            target.MoveNPC(launchVel, 10 * (launched ? 0.5f : 1), true);
+        }
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (targeted != null)
+                return (target == targeted ? null : false);
+            else
+                return null;
+        }
         public override void OnKill(int timeLeft)
         {
-            //SoundEngine.PlaySound(SoundID.Item43, Projectile.Center);
             for (int i = 0; i <= 3; i++)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, 175, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
@@ -136,7 +130,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Color.White, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White, 1);
 
             return false;
         }

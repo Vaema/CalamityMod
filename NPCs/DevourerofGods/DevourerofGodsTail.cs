@@ -146,10 +146,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.frame = frame;
         }
 
-        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            return false;
-        }
+        public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
@@ -179,12 +176,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     NPC.height = (int)(140 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 86, 148);
                     NPC.position -= NPC.Size * 0.5f;
-
-                    NPC.netUpdate = true;
-
-                    // Prevent netUpdate from being blocked by the spam counter.
-                    if (NPC.netSpam >= 10)
-                        NPC.netSpam = 9;
+                    NPC.ForceNetUpdate(false);
                 }
             }
 
@@ -268,11 +260,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (NPC.Opacity < 0.2f)
                                 NPC.Opacity = 0f;
 
-                            NPC.netUpdate = true;
-
-                            // Prevent netUpdate from being blocked by the spam counter.
-                            if (NPC.netSpam >= 10)
-                                NPC.netSpam = 9;
+                            NPC.ForceNetUpdate(false);
                         }
                     }
                 }
@@ -361,7 +349,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
             Vector2 drawPosition = NPC.Center - screenPos;
@@ -420,7 +408,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS3").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("DoGS4").Type, NPC.scale);
@@ -459,27 +447,17 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             // viable???, done here since it's conditional
             if (Main.zenithWorld && projectile.type == ModContent.ProjectileType<LaceratorYoyo>())
-            {
                 modifiers.SourceDamage *= 40f;
-            }
         }
 
-        public override bool CheckActive()
-        {
-            return false;
-        }
+        public override bool CheckActive() => false;
 
         public override bool CheckDead()
         {
             NPC.life = 1;
             NPC.dontTakeDamage = true;
             NPC.active = true;
-
-            NPC.netUpdate = true;
-
-            // Prevent netUpdate from being blocked by the spam counter.
-            if (NPC.netSpam >= 10)
-                NPC.netSpam = 9;
+            NPC.ForceNetUpdate(false);
 
             if (NPC.realLife >= 0)
             {
@@ -489,12 +467,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 Head.ModNPC<DevourerofGodsHead>().Dying = true;
                 Head.dontTakeDamage = true;
-
-                Head.netUpdate = true;
-
-                // Prevent netUpdate from being blocked by the spam counter.
-                if (Head.netSpam >= 10)
-                    Head.netSpam = 9;
+                Head.ForceNetUpdate(false);
             }
             return false;
         }

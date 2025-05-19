@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.Calamity().donorItem = true;
         }
 
-        public override float StealthDamageMultiplier => 0.72f;
+        public override float StealthDamageMultiplier => 0.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<DuststormInABottle>().
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

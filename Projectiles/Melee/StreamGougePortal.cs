@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
             SoundEngine.PlaySound(SoundID.Item74, target.Center);
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             Color impactColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0.3f, 0.64f));

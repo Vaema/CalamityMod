@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Placeables.Furniture;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,8 +7,6 @@ namespace CalamityMod.Buffs.Placeables
 {
     public class CirrusPurpleCandleBuff : ModBuff
     {
-        public static float DefenseRatioBonus = 0.1f;
-
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:
@@ -30,7 +29,7 @@ namespace CalamityMod.Buffs.Placeables
             // then multiply it by the ratio between the two.
             // A + B = A * ((A+B/A)
             float currentEffectiveness = player.DefenseEffectiveness.Value;
-            float desiredEffectiveness = currentEffectiveness + DefenseRatioBonus;
+            float desiredEffectiveness = currentEffectiveness + ResilientCandle.DefenseRatioBonus;
             player.DefenseEffectiveness *= desiredEffectiveness / currentEffectiveness;
         }
     }

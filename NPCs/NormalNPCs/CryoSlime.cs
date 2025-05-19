@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 2;
+            Main.npcFrameCount[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 180;
             NPC.knockBackResist = 0.6f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -68,8 +68,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 120, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
+                target.AddBuff(BuffID.Frostburn, 180);
+                target.AddBuff(BuffID.Chilled, 90);
             }
         }
 

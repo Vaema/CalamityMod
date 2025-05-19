@@ -23,14 +23,14 @@ namespace CalamityMod.Items.TreasureBags
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 3;
-            ItemID.Sets.BossBag[Item.type] = true;
+            ItemID.Sets.BossBag[Type] = true;
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 24;
-            Item.maxStack = 9999;
+            Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
             Item.rare = ItemRarityID.Cyan;
             Item.expert = true;
@@ -58,8 +58,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Providence>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 25, 35);
-            itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 30, 40);
+            itemLoot.Add(ModContent.ItemType<UnholyEssence>(), 1, 40, 50);
+            itemLoot.Add(ModContent.ItemType<DivineGeode>(), 1, 60, 70);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]

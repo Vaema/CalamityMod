@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     // Photoviscerator right click main projectile (invisible flare cluster bomb)
     public class ExoFlareCluster : ModProjectile, ILocalizedModType
     {
@@ -75,6 +77,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
+            Projectile.tileCollide = false;
+
             float numberOflines = 5;
             float rotFactorlines = 360f / numberOflines;
             for (int i = 0; i < numberOflines; i++)

@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/StormlionDeath");
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 6;
+            Main.npcFrameCount[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Stormlion2").Type, NPC.scale);
@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 60, true);
+                target.AddBuff(ModContent.BuffType<StaticDischarge>(), 120);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

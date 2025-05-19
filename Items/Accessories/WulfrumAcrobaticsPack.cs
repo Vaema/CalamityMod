@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Accessories
             player.moveSpeed += 0.08f;
             player.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped = true;
             player.GetModPlayer<WulfrumPackPlayer>().PackItem = Item;
-
+            player.maxFallSpeed *= 1.25f;
             Lighting.AddLight(player.Center, Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2f) * 0.5f + 0.5f).ToVector3());
         }
 
@@ -108,7 +108,7 @@ namespace CalamityMod.Items.Accessories
         /// <summary>
         /// The index of the grapple projectile currently grappled.
         /// </summary>
-        public int Grapple = 0;
+        public int Grapple = -1;
         /// <summary>
         /// The length of the current rope. Determined when the grapple lands.
         /// </summary>
@@ -124,7 +124,7 @@ namespace CalamityMod.Items.Accessories
         /// <summary>
         /// Is the player grappled?
         /// </summary>
-        public bool Grappled => WulfrumPackEquipped && Main.projectile[Grapple].active && Main.projectile[Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling;
+        public bool Grappled => WulfrumPackEquipped && Grapple > -1 && Main.projectile[Grapple].active && Main.projectile[Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling;
         public bool GrappleMovementDisabled
         {
             get
@@ -132,7 +132,7 @@ namespace CalamityMod.Items.Accessories
                 if (!Grappled)
                     return false;
 
-                if (!PlayerOnGround)
+                if (!PlayerOnGround || !obeyGravity)
                     return false;
 
                 if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLength)
@@ -142,18 +142,88 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
+        public bool obeyGravity => !(Player.miscEquips[4].type == ItemID.AntiGravityHook);
+        public bool strongerReel => Player.miscEquips[4].type == ItemID.StaticHook;
         public Vector2 CurrentPosition;
         public Vector2 OldPosition;
         public List<VerletSimulatedSegment> Segments;
 
-        public static int SimulationResolution = 3;
-        public static int HookUpdates = 3;
-        public static float GrappleVelocity = 17f;
-        public static float ReturnVelocity = 5f;
-        public static float MaxHopVelocity = 4f; //The maximum velocity at which the player gets any amount of vertical boost from hopping out of the hook
-        public static int SafetySteps = 3;
-        public static float SafetyHookAngle = MathHelper.PiOver2 * 1.2f;
-        public static float SafetyHookAngleResolution = 50f;
+        //Hook stats
+        /// <summary>
+        /// This is the length when using Grappling Hook. Faster hooks get more length, and slower ones get less.
+        /// </summary>
+        public const float BaseMaxLength = 600;
+        /// <summary>
+        /// This is the launch velocity when using Grappling Hook. Faster hooks get more speed, and slower ones get less.
+        /// </summary>
+        public const float BaseLaunchVelocity = 17f;
+        /// <summary>
+        /// This is the return velocity when using Grappling Hook.
+        /// The ratio between this and BaseLaunchVelocity will be the same regardless of hook
+        /// </summary>
+        public const float BaseReturnVelocity = 5f;
+        /// <summary>
+        /// This is how much of the equipped hook's launch speed is factored into the Acro Pack hook speed
+        /// All other stat changes are based off the ratio of the base launch velocity and actual launch velocity
+        /// Increase this to make the difference between hooks more obvious, and lower it to make the difference less obvious
+        /// Note: The base stats balance around having Grappling Hook equipped
+        /// </summary>
+        public const float HookSpeedFactor = 0.5f;
+        /// <summary>
+        /// How quickly you reel in/out with UP and DOWN
+        /// </summary>
+        public const float ReelSpeed = 4f;
+        /// <summary>
+        /// How quickly you reel in with Static Hook equipped
+        /// </summary>
+        public const float StaticHookReelSpeed = 6f;
+        /// <summary>
+        /// How much stronger the player manually swinging should be with antigrav hook equipped
+        /// </summary>
+        public const float AntiGravSwingModifier = 2f;
+
+        public const int SimulationResolution = 5;
+        public const int HookUpdates = 3;
+        public const float MaxHopVelocity = 3f; //The maximum velocity at which the player gets any amount of vertical boost from hopping out of the hook
+        public const int SafetySteps = 3;
+        public const float SafetyHookAngle = MathHelper.PiOver2 * 1.2f;
+        public const float SafetyHookAngleResolution = 50f;
+
+
+        public float ActualLaunchVelocity
+        {
+            get
+            {
+                float hookSpeed = 0;
+                Item hook = Player.miscEquips[4];
+                if (!hook.IsAir)
+                {
+                    hookSpeed = hook.shootSpeed;
+                }
+                return BaseLaunchVelocity + (-11.5f + hookSpeed) * HookSpeedFactor;
+            }
+        }
+        public float HookSpeedRatio
+        {
+            get
+            {
+                return ActualLaunchVelocity / BaseLaunchVelocity;
+            }
+        }
+        public float ActualMaxLength
+        {
+            get
+            {
+                return BaseMaxLength * HookSpeedRatio;
+            }
+        }
+        public float ActualReturnVelocity
+        {
+            get
+            {
+                return BaseReturnVelocity * HookSpeedRatio;
+            }
+        }
 
         public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
 
@@ -161,6 +231,8 @@ namespace CalamityMod.Items.Accessories
         {
             WulfrumPackEquipped = false;
             PackItem = null;
+            if (Grapple >= 0)
+                Player.GoingDownWithGrapple = true; //This causes the player to fall through platforms when grappled. Used to fix a weird bug when grappling and standing on a platform.
 
             if (hookCooldown > 0)
                 hookCooldown--;
@@ -210,7 +282,10 @@ namespace CalamityMod.Items.Accessories
             }
 
             hookCache = -1;
-
+            if (!obeyGravity) 
+            {
+                Player.gravity = -1f; //Disable player gravity with Anti-Grav hook
+            }
             if (Grappled)
             {
                 if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLength + 80f)
@@ -221,11 +296,15 @@ namespace CalamityMod.Items.Accessories
                 else
                     SimulateMovement(Main.projectile[Grapple]);
             }
+            else
+            {
+                Grapple = -1;
+            }
         }
 
         public void SimulateMovement(Projectile grapple)
         {
-            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, 0.3f * Player.gravDir);
+            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, (obeyGravity ? 0.3f * Player.gravDir : 0));
 
             Vector2 CurrentPosition;
 
@@ -237,44 +316,85 @@ namespace CalamityMod.Items.Accessories
                 //Dust doost = Dust.NewDustPerfect(CurrentPosition, 1, Vector2.Zero);
                 //doost.noGravity = true;
             }
-
-
             if (!GrappleMovementDisabled)
             {
-                CurrentPosition = Segments[SimulationResolution].position;
-                Player.velocity = CurrentPosition - Player.Center;
-
-                //let the player swing themselves around if they are under the hook.
-                if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
+                if (obeyGravity)
                 {
-                    float swing = 0;
 
-                    if (Math.Sign(Player.velocity.X) < 0)
+
+                    CurrentPosition = Segments[SimulationResolution].position;
+                    Player.velocity = CurrentPosition - Player.Center;
+
+                    //let the player swing themselves around if they are under the hook.
+                    if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
                     {
-                        if (Player.controlLeft)
-                            swing -= 0.1f;
+                        float swing = 0;
 
-                        else if (Player.controlRight)
-                            swing += 0.1f;
+                        if (Math.Sign(Player.velocity.X) < 0)
+                        {
+                            if (Player.controlLeft)
+                                swing -= 0.1f;
+
+                            else if (Player.controlRight)
+                                swing += 0.1f;
+                        }
+
+                        else if (Math.Sign(Player.velocity.X) > 0)
+                        {
+                            if (Player.controlRight)
+                                swing += 0.1f;
+
+                            else if (Player.controlLeft)
+                                swing -= 0.1f;
+                        }
+
+                        Player.velocity.X += swing;
                     }
 
-                    else if (Math.Sign(Player.velocity.X) > 0)
+                    else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
                     {
-                        if (Player.controlRight)
-                            swing += 0.1f;
-
-                        else if (Player.controlLeft)
-                            swing -= 0.1f;
+                        Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
                     }
-
-                    Player.velocity.X += swing;
                 }
-
-                else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
+                
+                else
                 {
-                    Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
-                }
+                    if (Player.grappling[0] > -1)
+                    {
+                        var Hook = Main.projectile[Player.grappling[0]];
+                        if (Hook != null)
+                        {
+                            
+                            if (Player.controlRight)
+                                Player.velocity.X += 0.3f;
+                            else if (Player.controlLeft)
+                                Player.velocity.X -= 0.3f;
+                            Player.velocity -= Player.Center.DirectionTo(Hook.Center);
+                            var estimatedPos = Player.Center + Player.velocity;
+                            var estimatedDir = Hook.Center.DirectionTo(estimatedPos);
+                            var goalPos = Hook.Center + estimatedDir * SwingLength;
+                            var estimatedPosLocked = Hook.Center + Hook.Center.DirectionTo(Player.Center) * SwingLength;
+                            if (estimatedPosLocked.Distance(estimatedPos) < 2)
+                            {
+                                estimatedPos = estimatedPosLocked;
+                            }
+                            var dis = Hook.Center.Distance(estimatedPos);
+                            if (dis > SwingLength && dis < 1000f)
+                            {
+                                var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength*3f);
+                                if (dis2 > 0)
+                                {
+                                    Player.velocity = Player.Center.DirectionTo(goalPos) * dis2;
+                                }
 
+                            }
+
+
+                            if (Player.velocity.Length() < 1.5f)
+                                Player.direction = Hook.Center.X > Player.Center.X ? 1 : -1;
+                        }
+                    }
+                }
             }
 
             if (Grappled)
@@ -341,7 +461,7 @@ namespace CalamityMod.Items.Accessories
 
                     for (float angle = -halfSpread; angle < halfSpread; angle += SafetyHookAngle / SafetyHookAngleResolution)
                     {
-                        for (int i = 0; i < (int)(WulfrumHook.MaxReach / 16f); i++)
+                        for (int i = 0; i < (int)(ActualMaxLength / 16f); i++)
                         {
                             Vector2 checkSpot = Player.Center + (-Vector2.UnitY * Player.gravDir * i * 16f).RotatedBy(angle);
                             Point tilePos = checkSpot.ToSafeTileCoordinates();
@@ -391,11 +511,11 @@ namespace CalamityMod.Items.Accessories
         {
             float score = 0.0001f;
 
-            if (distance < 2 * WulfrumHook.MaxReach / 3f)
-                score += distance / (2 * WulfrumHook.MaxReach / 3f);
+            if (distance < 2 * ActualMaxLength / 3f)
+                score += distance / (2 * ActualMaxLength / 3f);
 
             else
-                score += 1 - (distance - (2 * WulfrumHook.MaxReach / 3f)) / (WulfrumHook.MaxReach / 3f);
+                score += 1 - (distance - (2 * ActualMaxLength / 3f)) / (ActualMaxLength / 3f);
 
             score += (1 - Math.Abs(angle) / (SafetyHookAngle / 2f)) * 0.5f;
 
@@ -425,7 +545,8 @@ namespace CalamityMod.Items.Accessories
                     SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, Player.Center);
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        Vector2 velocity = (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * GrappleVelocity;
+                        // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                        Vector2 velocity = (Main.MouseWorld - Player.Center).SafeNormalize(Vector2.One) * ActualLaunchVelocity;
                         Projectile.NewProjectile(Player.GetSource_ItemUse(PackItem), Player.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, Player.whoAmI);
 
                         float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
@@ -437,7 +558,21 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
             }
-
+            if (Grappled && triggersSet.Up)
+            {
+                SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
+                Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
+            }
+            if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
+            {
+                float length = ActualMaxLength;
+                if (SwingLength < length)
+                {
+                    SwingLength += (ReelSpeed);
+                    if (SwingLength > length)
+                        SwingLength = length;
+                }
+            }
             //Jumping out of the hook
             if (triggersSet.Jump && Player.releaseJump)
             {
@@ -461,6 +596,8 @@ namespace CalamityMod.Items.Accessories
                             if ((Math.Sign(Player.velocity.X) < 0 && Player.controlLeft) || (Math.Sign(Player.velocity.X) > 0 && Player.controlRight))
                             {
                                 velocityBoost += Player.velocity * 0.15f;
+                                if (velocityBoost.Y < 0) //This causes upward velocity to be increased by more. Not needed, but just feels good.
+                                    velocityBoost.Y *= 2;
                             }
                             //Additionally^2, if the player isnt moving very fast, make them do a straight up hop.
                             //Don't do the hop if the player isnt moving at all though because thats handled by vanilla.
@@ -468,10 +605,15 @@ namespace CalamityMod.Items.Accessories
                             {
                                 velocityBoost -= Vector2.UnitY * Player.jumpSpeed * (1 - (float)Math.Pow(Player.velocity.Length() / MaxHopVelocity, 5f));
                             }
+                            //If the player is moving fast enough, don't jump out of the hook. This is to maintain vertical momentum when releasing grapple while swinging.
+                            if (Player.velocity.Length() < 8f)
+                            {
+                                Player.jump = Player.jumpHeight / 2;
+                            }
 
 
                             Player.velocity += velocityBoost;
-                            Player.jump = Player.jumpHeight / 2;
+                            Player.releaseJump = false;
                         }
 
                         else

@@ -118,34 +118,26 @@ namespace CalamityMod.Projectiles.Melee
 
         public void Attune(TrueBiomeBlade item)
         {
-            bool jungle = Owner.ZoneJungle;
-            bool snow = Owner.ZoneSnow;
-            bool evil = Owner.ZoneCorrupt || Owner.ZoneCrimson;
-            bool desert = Owner.ZoneDesert;
-            bool hell = Owner.ZoneUnderworldHeight;
-            bool ocean = Owner.ZoneBeach || Owner.Calamity().ZoneSulphur;
-            bool hallow = Owner.ZoneHallow;
-            bool astral = Owner.Calamity().ZoneAstral;
-            bool marine = Owner.Calamity().ZoneAbyss || Owner.Calamity().ZoneSunkenSea;
+            bool jungleAttune = Owner.ZoneJungle;
+            bool coldAttune = Owner.ZoneSnow || Owner.ZoneSkyHeight;
+            bool evilAttune = Owner.ZoneCorrupt || Owner.ZoneCrimson;
+            bool hotAttune = Owner.ZoneDesert || Owner.ZoneUnderworldHeight;
+            bool heavenlyAttune = Owner.ZoneHallow || Owner.Calamity().ZoneAstral;
 
             Attunement attunement = AttunementSystem.FindOrNull(AttunementID.TrueDefault);
 
-            if (desert || hell)
+            if (hotAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.TrueHot);
-            if (snow)
+            if (coldAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.TrueCold);
-            if (jungle || ocean)
+            if (jungleAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.TrueTropical);
-            if (evil)
+            if (evilAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.TrueEvil);
-            if (hallow)
+            if (heavenlyAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.Holy);
-            if (astral)
-                attunement = AttunementSystem.FindOrNull(AttunementID.Astral);
-            if (marine)
-                attunement = AttunementSystem.FindOrNull(AttunementID.Marine);
 
-            //If the owner already had the attunement , break out of it (And unswap)
+            //If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);
@@ -179,7 +171,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else if (ChanneledState == 1f)
             {
-                Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
+                Texture2D tex = TextureAssets.Projectile[Type].Value;
                 Vector2 squishyScale = new Vector2(Math.Abs((float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f)), 1f);
                 SpriteEffects flip = (float)Math.Sin(MathHelper.Pi + MathHelper.TwoPi * Projectile.timeLeft / 30f) > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
                 Main.EntitySpriteDraw(tex, Projectile.position - Main.screenPosition, null, lightColor * (Projectile.timeLeft / 60f), 0, tex.Size() / 2, squishyScale * (2f - (Projectile.timeLeft / 60f)), flip, 0);

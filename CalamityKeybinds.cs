@@ -6,6 +6,7 @@ namespace CalamityMod
     {
         public static ModKeybind AccessoryParryHotKey { get; private set; }
         public static ModKeybind AdrenalineHotKey { get; private set; }
+        public static ModKeybind AmmoCycleHotkey { get; private set; }
         public static ModKeybind AngelicAllianceHotKey { get; private set; }
         public static ModKeybind ArmorSetBonusHotKey { get; private set; }
         public static ModKeybind AscendantInsigniaHotKey { get; private set; }
@@ -16,14 +17,16 @@ namespace CalamityMod
         public static ModKeybind GravistarSabatonHotkey { get; private set; }
         public static ModKeybind NormalityRelocatorHotKey { get; private set; }
         public static ModKeybind RageHotKey { get; private set; }
-        public static ModKeybind SandCloakHotkey { get; private set; }
         public static ModKeybind SpectralVeilHotKey { get; private set; }
+        public static ModKeybind TransformerHotKey { get; private set; }
+        public static ModKeybind SwitchGravityHotkey {get; private set;}
 
         public override void Load()
         {
             // Register keybinds            
             AccessoryParryHotKey = KeybindLoader.RegisterKeybind(Mod, "ActivateAccessoryParry", "N");
             AdrenalineHotKey = KeybindLoader.RegisterKeybind(Mod, "AdrenalineMode", "B");
+            AmmoCycleHotkey = KeybindLoader.RegisterKeybind(Mod, "AmmoCycle", "Mouse3");
             AngelicAllianceHotKey = KeybindLoader.RegisterKeybind(Mod, "AngelicAllianceBlessing", "G");
             ArmorSetBonusHotKey = KeybindLoader.RegisterKeybind(Mod, "ArmorSetBonus", "Y");
             AscendantInsigniaHotKey = KeybindLoader.RegisterKeybind(Mod, "AscendantInsigniaHotKey", "K");
@@ -34,14 +37,16 @@ namespace CalamityMod
             GravistarSabatonHotkey = KeybindLoader.RegisterKeybind(Mod, "GravistarSabatonHotkey", "X");
             NormalityRelocatorHotKey = KeybindLoader.RegisterKeybind(Mod, "NormalityRelocator", "Z");
             RageHotKey = KeybindLoader.RegisterKeybind(Mod, "RageMode", "V");
-            SandCloakHotkey = KeybindLoader.RegisterKeybind(Mod, "SandCloakEffect", "C");
             SpectralVeilHotKey = KeybindLoader.RegisterKeybind(Mod, "SpectralVeilTeleport", "Z");
+            TransformerHotKey = KeybindLoader.RegisterKeybind(Mod, "TransformerHotKey", "K");
+            SwitchGravityHotkey = KeybindLoader.RegisterKeybind(Mod, "GravitySwapOverride", "T");
         }
 
         public override void Unload()
         {
             AccessoryParryHotKey = null;
             AdrenalineHotKey = null;
+            AmmoCycleHotkey = null;
             AngelicAllianceHotKey = null;
             ArmorSetBonusHotKey = null;
             AscendantInsigniaHotKey = null;
@@ -52,8 +57,8 @@ namespace CalamityMod
             GravistarSabatonHotkey = null;
             NormalityRelocatorHotKey = null;
             RageHotKey = null;
-            SandCloakHotkey = null;
             SpectralVeilHotKey = null;
+            TransformerHotKey = null;
         }
     }
 }

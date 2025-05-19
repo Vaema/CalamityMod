@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -28,12 +30,16 @@ namespace CalamityMod.Items.Accessories
         {
             player.autoJump = true;
             player.jumpSpeedBoost += 1.6f;
-            player.extraFall += 35;
+            player.moveSpeed += 0.1f;
+            player.noFallDmg = true;
             player.blackBelt = true;
-            player.dashType = 1;
-            player.Calamity().DashID = string.Empty;
+            player.dashType = 0;
+            player.Calamity().DashID = StatisNinjaBeltDash.ID;
             player.spikedBoots = 2;
             player.accFlipper = true;
+            player.Calamity().statisNinjaBelt = true;
+
+            player.MountedCenter.ToTileCoordinates();
         }
 
         public override void AddRecipes()
@@ -43,18 +49,18 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.MasterNinjaGear).
                 AddIngredient(ItemID.FrogFlipper).
-                AddIngredient<PurifiedGel>(50).
+                AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
 
             CreateRecipe().
                 AddIngredient(ItemID.Tabi).
                 AddIngredient(ItemID.BlackBelt).
                 AddIngredient(ItemID.FrogGear).
-                AddIngredient<PurifiedGel>(50).
+                AddIngredient<PurifiedGel>(25).
                 AddIngredient<Necroplasm>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

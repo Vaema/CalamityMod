@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[NPC.type] = 11;
+            Main.npcFrameCount[Type] = 11;
         }
 
         public override void SetDefaults()
@@ -590,7 +590,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     spriteEffects |= SpriteEffects.FlipVertically;
                 }
-                Main.spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value,
+                Main.spriteBatch.Draw(TextureAssets.Npc[Type].Value,
                     new Vector2((float)(player.direction * 4), player.gfxOffY) + ((player.gravDir == 1f) ? player.Top : player.Bottom) - screenPos,
                     new Microsoft.Xna.Framework.Rectangle?(NPC.frame), NPC.GetAlpha(color), NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, spriteEffects, 0f);
             }
@@ -608,7 +608,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.15f : 0.075f;
-            NPC.frameCounter %= Main.npcFrameCount[NPC.type];
+            NPC.frameCounter %= Main.npcFrameCount[Type];
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
@@ -624,7 +624,7 @@ namespace CalamityMod.NPCs.Abyss
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 300, true);
+                target.AddBuff(ModContent.BuffType<HadopelagicPressure>(), 300, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
@@ -650,7 +650,7 @@ namespace CalamityMod.NPCs.Abyss
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ColossalSquid").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("ColossalSquid2").Type, NPC.scale);

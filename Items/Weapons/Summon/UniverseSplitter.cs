@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.DamageType = DamageClass.Summon;
             Item.mana = 300;
-            Item.damage = 9600;
+            Item.damage = 9000;
             Item.knockBack = 7f;
             Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<UniverseSplitterField>();
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 if (!player.HasCooldown(Cooldowns.UniverseSplitter.ID))
                 {
                     player.AddCooldown(Cooldowns.UniverseSplitter.ID, CalamityUtils.SecondsToFrames(30));
-                    int p = Projectile.NewProjectile(source, Main.MouseWorld, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
                     if (Main.projectile.IndexInRange(p))
                         Main.projectile[p].originalDamage = Item.damage;
                     for (int i = 0; i < 36; i++)

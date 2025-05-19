@@ -13,6 +13,7 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Boss;
@@ -32,6 +33,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class StormWeaverHead : ModNPC
     {
@@ -62,7 +64,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void SetStaticDefaults()
         {
-            NPCID.Sets.TrailingMode[NPC.type] = 1;
+            NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
@@ -90,7 +92,7 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.height = 74;
             NPC.lifeMax = 825000;
             NPC.LifeMaxNERB(NPC.lifeMax, NPC.lifeMax, 500000);
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(1, 0, 0, 0);
 
             // Phase one settings
             CalamityGlobalNPC global = NPC.Calamity();
@@ -200,7 +202,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.Calamity().VulnerableToCold = true;
                     NPC.Calamity().VulnerableToSickness = true;
 
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                         Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWArmorHead1").Type, NPC.scale);
 
                     SoundEngine.PlaySound(ArmorShedSound, NPC.Center);
@@ -369,7 +371,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 if (phase3 && !useTornadoes)
                 {
                     // Let it snow while able to use the frost wave attack
-                    if (Main.netMode != NetmodeID.Server)
+                    if (!Main.dedServ)
                     {
                         Vector2 scaledSize = Main.Camera.ScaledSize;
                         Vector2 scaledPosition = Main.Camera.ScaledPosition;
@@ -445,9 +447,9 @@ namespace CalamityMod.NPCs.StormWeaver
                         if (phase4)
                         {
                             // Lightning strike
-                            if (!Main.DisableIntenseVisualEffects)
+                            if (!Main.DisableIntenseVisualEffects && !CalamityClientConfig.Instance.Photosensitivity)
                             {
-                                if (Main.netMode != NetmodeID.Server)
+                                if (!Main.dedServ)
                                 {
                                     if (lightningSpeed == 0f)
                                     {
@@ -553,6 +555,11 @@ namespace CalamityMod.NPCs.StormWeaver
                 // Charge
                 if (!phase4)
                 {
+                    if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
+                    {
+                        Vector2 soundCenter = Main.player[NPC.target].Center;
+                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                    }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {
                         NPC.localAI[3] = 60f;
@@ -791,7 +798,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (phase4)
             {
                 // Adjust lightning flash variables when in phase 3
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     if (lightningSpeed > 0f)
                     {
@@ -848,7 +855,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[NPC.type].Value;
+            Texture2D texture = phase2 ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture.Width / 2, texture.Height / 2);
             float chargeTelegraphTime = 120f;
             float chargeTelegraphGateValue = chargePhaseGateValue - chargeTelegraphTime;
@@ -884,9 +891,9 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 240 : 120;
+            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 480 : 240;
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Electrified, buffDuration, true);
+                target.AddBuff(BuffID.Electrified, buffDuration);
         }
 
         public override bool CheckActive()
@@ -901,7 +908,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             if (NPC.life <= 0)
             {
-                if (Main.netMode != NetmodeID.Server)
+                if (!Main.dedServ)
                 {
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeHead1").Type, NPC.scale);
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SWNudeHead2").Type, NPC.scale);
@@ -986,14 +993,17 @@ namespace CalamityMod.NPCs.StormWeaver
                 // Weapons
                 int[] weapons = new int[]
                 {
-                    ModContent.ItemType<StormDragoon>(),
+                    ModContent.ItemType<SkytideDragoon>(),
                     ModContent.ItemType<TheStorm>(),
+                    ModContent.ItemType<Volterion>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
-                normalOnly.Add(ModContent.ItemType<Thunderbolt>(), 10);
+
+                // Equipment
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArcFlashRing>()));
 
                 // Materials
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 5, 7));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 10, 12));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<StormWeaverMask>(), 7);
@@ -1013,8 +1023,8 @@ namespace CalamityMod.NPCs.StormWeaver
             // GFB Elemental Gauntlet and Quiver drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<ElementalGauntlet>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<PlanebreakersPouch>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ElementalGauntlet>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<PlanebreakersPouch>()), hideLootReport: true);
             }
 
             // Lore

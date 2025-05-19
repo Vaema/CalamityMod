@@ -58,6 +58,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     opacity *= pow(sin(coords.y * 3.141), lerp(1, 4, pow(coords.x, 2)));
     opacity *= fadeMapColor.r * 1.5 + 1;
     opacity *= lerp(0.4, 0.9, fadeMapColor.r);
+    opacity *= uOpacity;
     
     float3 transformColor = lerp(float3(1, 205 / 255.0, 119 / 255.0), float3(1, 76 / 255.0, 79 / 255.0), fadeMapColor.r);
     color.rgb = lerp(color.rgb, transformColor, fadeMapColor.r);
