@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
                     return;
                 }
-                List<Vector2> positions = new List<Vector2>()
+                List<Vector2> positions = new List<Vector2>() //Hardcoded positions for the mirror shield shards so we can make it look nice
                 {
                     new(0,75),
                     new(10,65),

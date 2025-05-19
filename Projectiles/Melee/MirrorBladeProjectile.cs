@@ -54,21 +54,14 @@ namespace CalamityMod.Projectiles.Melee
             if (inStartup)
             {
                 Projectile.scale = baseScale * MathHelper.Lerp(0.75f, 1f, StartupCompletion);
-                if (timer >= StartupTime - 1)
-                {
-                    //Projectile.extraUpdates = 3;
-
-                }
             }
             else if (inCooldown)
             {
-                //Projectile.extraUpdates = 1;
                 Projectile.Opacity = 1;
                 Projectile.scale = baseScale * MathHelper.Lerp(1, 0.75f, CooldownCompletion);
             }
             else
             {
-                //Projectile.extraUpdates = 1;
                 Projectile.Opacity = 1;
             }
             if (!inStartup && !inCooldown)
@@ -103,7 +96,7 @@ namespace CalamityMod.Projectiles.Melee
         public override float trailOffset => 28;
         public override float trailWidth(float completion)
         {
-            return 60;//base.trailWidth(completion)*2;
+            return 60;
         }
         public override int trailLength => 40;
         public override bool PreDraw(ref Color lightColor)
