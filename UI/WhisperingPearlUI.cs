@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Typeless;
-using CalamityMod.TileEntities;
-using CalamityMod.Tiles.SunkenSea;
+﻿using CalamityMod.Tiles.SunkenSea;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.UI
@@ -80,46 +72,32 @@ namespace CalamityMod.UI
                     FinishDialogue();
                     return;
                 }
-
-                // Cut the page even further down into individual lines
-                string[] wrapped = Utils.WordwrapString(separated[currentPage], FontAssets.MouseText.Value, 600, 100, out int lineAmt);
-                string combined = "";
-
-                string colorCode = "";
-                // Combine them back together with newlines separating them as well as getting the color code
-                for (int i = 0; i < wrapped.Length; i++)
-                {
-                    if (wrapped[i] != null)
-                    {
-                        if (i == 0)
-                        {
-                            wrapped[i] = wrapped[i].TrimStart();
-                            colorCode = wrapped[i].Substring(0, 6);
-                            wrapped[i] = wrapped[i].Remove(0, 7);
-                        }
-                        combined += '\n' + wrapped[i];
-                    }
-                }
+                string colorCode = separated[currentPage].Split('\n')[0].TrimStart();
 
                 // Chat sounds
                 if ((int)textTimer % Main.rand.Next(2, 8) == 0 && textTimer < maxTextTime)
                 {
                     SoundEngine.PlaySound(SoundID.MenuTick);
                 }
-
                 // System.Drawing use?????? you'd be dead to see it
                 System.Drawing.Color col = System.Drawing.ColorTranslator.FromHtml("#" + colorCode);
                 Color lineColor = new Color(col.R, col.G, col.B);
 
-                maxTextTime = combined.Length;
+                separated[currentPage] = separated[currentPage].Remove(0, 6);
 
-                Vector2 size = FontAssets.MouseText.Value.MeasureString(combined);
+                maxTextTime = separated[currentPage].Length;
+
+                Vector2 size = FontAssets.MouseText.Value.MeasureString(separated[currentPage]);
                 // Shave off text based on the timer
-                combined = combined.Remove((int)textTimer, (combined.Length - (int)textTimer));
+                int charstoRemove = (separated[currentPage].Length - (int)textTimer);
+                if (charstoRemove > -1)
+                {
+                    separated[currentPage] = separated[currentPage].Remove((int)textTimer, charstoRemove);
+                }
 
                 // How much further the BOTTOM of the text should be drawn above the pearl
                 float yOffset = 40;
-                Utils.DrawBorderString(sb, combined, position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), lineColor, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
+                Utils.DrawBorderString(sb, separated[currentPage], position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), lineColor, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
 
                 // Increment the text timer
                 // 0.33 means that it takes 3ish frames for 1 letter to appear
