@@ -52,16 +52,10 @@ namespace CalamityMod.Tiles.SunkenSea
             int frameNum = Main.tile[i, j].TileFrameX / 18;
             string key = frameNum switch
             {
-                1 => "Red",
-                2 => "Orange",
-                3 => "Yellow",
-                4 => "LightGreen",
-                5 => "LightBlue",
-                6 => "DarkBlue",
-                7 => "Purple",
-                8 => "DarkGreen",
-                9 => "Black",
-                _ => "Basic"
+                1 => "LightBlue",
+                2 => "DarkBlue",
+                3 => "LightGreen",
+                _ => "Red"
             };
             if (!WhisperingPearlUI.IsActive)
             {
@@ -80,16 +74,10 @@ namespace CalamityMod.Tiles.SunkenSea
             int frameNum = Main.tile[i, j].TileFrameX / 18;
             int pearl = frameNum switch
             {
-                1 => ModContent.ItemType<WhisperingPearlRed>(),
-                2 => ModContent.ItemType<WhisperingPearlOrange>(),
-                3 => ModContent.ItemType<WhisperingPearlYellow>(),
-                4 => ModContent.ItemType<WhisperingPearlLightGreen>(),
-                5 => ModContent.ItemType<WhisperingPearlLightBlue>(),
-                6 => ModContent.ItemType<WhisperingPearlDarkBlue>(),
-                7 => ModContent.ItemType<WhisperingPearlPurple>(),
-                8 => ModContent.ItemType<WhisperingPearlDarkGreen>(),
-                9 => ModContent.ItemType<WhisperingPearlBlack>(),
-                _ => ModContent.ItemType<Items.Placeables.SunkenSea.WhisperingPearls.WhisperingPearl>(),
+                1 => ModContent.ItemType<WhisperingPearlLightBlue>(),
+                2 => ModContent.ItemType<WhisperingPearlDarkBlue>(),
+                3 => ModContent.ItemType<WhisperingPearlLightGreen>(),
+                _ => ModContent.ItemType<WhisperingPearlRed>(),
             };
             Main.LocalPlayer.cursorItemIconID = pearl;
             Main.LocalPlayer.noThrow = 2;

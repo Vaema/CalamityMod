@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.WhisperingPearl>());
             Item.rare = ItemRarityID.Blue;
-            Item.placeStyle = 4;
+            Item.placeStyle = 3;
         }
     }
 }

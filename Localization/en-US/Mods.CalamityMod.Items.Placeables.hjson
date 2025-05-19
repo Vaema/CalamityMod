@@ -3207,54 +3207,24 @@ VoidWorkBench: {
 	Tooltip: ""
 }
 
-WhisperingPearl: {
-	DisplayName: Whispering Pearl
-	Tooltip: Contains knowledge
-}
-
-WhisperingPearlBlack: {
-	DisplayName: Black Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
-}
-
 WhisperingPearlDarkBlue: {
 	DisplayName: Dark Blue Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
-}
-
-WhisperingPearlDarkGreen: {
-	DisplayName: Dark Green Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
+	Tooltip: Contains knowledge
 }
 
 WhisperingPearlLightBlue: {
 	DisplayName: Light Blue Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
+	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
 }
 
 WhisperingPearlLightGreen: {
 	DisplayName: Light Green Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
-}
-
-WhisperingPearlOrange: {
-	DisplayName: Orange Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
-}
-
-WhisperingPearlPurple: {
-	DisplayName: Purple Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
+	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
 }
 
 WhisperingPearlRed: {
 	DisplayName: Red Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
-}
-
-WhisperingPearlYellow: {
-	DisplayName: Yellow Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearl.Tooltip}"
+	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
 }
 
 WulfrumBathtub: {
