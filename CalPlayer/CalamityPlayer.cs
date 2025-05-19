@@ -125,7 +125,7 @@ namespace CalamityMod.CalPlayer
         public bool noLifeRegen = false;
         public bool reducedDaybrokenDamage = false;
         public bool reducedNightwitherDamage = false;
-        public float rangedAmmoCost = 1f;
+        public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
         /// Tracks whether or not the player is currently holding Gael's Greatsword.<br/>
@@ -2341,7 +2341,7 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
 
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
 
             avertorBonus = false;
@@ -3084,7 +3084,7 @@ namespace CalamityMod.CalPlayer
             bloodfinTimer = 0;
             healCounter = 300;
             danceOfLightCharge = 0;
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;

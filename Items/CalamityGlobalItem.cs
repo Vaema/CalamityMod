@@ -1582,7 +1582,7 @@ namespace CalamityMod.Items
         #endregion
 
         #region Ammo
-        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().rangedAmmoCost;
+        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().ammoCost;
 
         public static bool HasEnoughAmmo(Player player, Item item, int ammoConsumed)
         {
@@ -1655,7 +1655,7 @@ namespace CalamityMod.Items
                 dontConsumeAmmo = true;
             if (player.ammoCost75 && Main.rand.NextBool(4))
                 dontConsumeAmmo = true;
-            if (Main.rand.NextFloat() > player.Calamity().rangedAmmoCost)
+            if (Main.rand.NextFloat() > player.Calamity().ammoCost)
                 dontConsumeAmmo = true;
 
             if (!dontConsumeAmmo && itemAmmo.consumable)

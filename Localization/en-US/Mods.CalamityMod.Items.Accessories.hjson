@@ -1785,8 +1785,8 @@ StatMeter: {
 	AttackSpeed: Attack Speed: {0}%
 	WhipMeleeInheritance: " [{0}% from melee]"
 	// Class stats
-	RangedStats: Ammo Consumption Chance: {0}
-	MagicStats: Mana Usage: {0}% | Mana Regen: {1}
+	AmmoStats: Ammo Consumption Chance: {0}%
+	ManaStats: Mana Usage: {0}% | Mana Regen: {1}
 	SummonStats: Minion Slots: {0} | Sentry Slots: {1}
 	WhipStats: Whip Range: {0}%
 	RogueStats:
