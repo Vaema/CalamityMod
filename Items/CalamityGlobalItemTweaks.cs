@@ -333,7 +333,7 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 3: Tool Balancing
-                { ItemID.AcornAxe, Do(AxePower(125)) }, // Axe of Regrowth
+                { ItemID.AcornAxe, Do(AxePower(100)) }, // Axe of Regrowth
                 { ItemID.AdamantiteChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0), DamageExact(75)) },
                 { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1), DamageExact(32)) },
                 { ItemID.AdamantitePickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
