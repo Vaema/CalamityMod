@@ -42,7 +42,7 @@ namespace CalamityMod
         //
 
         public static readonly Condition DownedDesertScourge            = Create("Drops.DownedDS",       () => DownedBossSystem.downedDesertScourge);
-        public static readonly Condition DownedCrabulon                 = Create("Drops.DownedCrabulon", () => DownedBossSystem.downedDesertScourge);
+        public static readonly Condition DownedCrabulon                 = Create("Drops.DownedCrabulon", () => DownedBossSystem.downedCrabulon);
         public static readonly Condition DownedHiveMind                 = Create("Drops.DownedHM",       () => DownedBossSystem.downedHiveMind);
         public static readonly Condition DownedPerforator               = Create("Drops.DownedPerfs",    () => DownedBossSystem.downedPerforator);
         public static readonly Condition DownedSlimeGod                 = Create("Drops.DownedSG",       () => DownedBossSystem.downedSlimeGod);

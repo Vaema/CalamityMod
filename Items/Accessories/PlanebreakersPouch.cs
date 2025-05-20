@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             player.magicQuiver = true;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.deadshotBrooch = true;
-            modPlayer.rangedAmmoCost *= 0.8f;
+            modPlayer.ammoCost *= 0.8f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateHotkey(CalamityKeybinds.AmmoCycleHotkey);

@@ -78,6 +78,7 @@ using Terraria.GameContent.Events;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using ProvidenceBoss = CalamityMod.NPCs.Providence.Providence;
 
@@ -392,7 +393,10 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                 }
                 if (Player.dashDelay == -1)
+                {
                     Player.endurance += 0.1f;
+                    Player.noKnockback = true;
+                }
                 
             }
 
@@ -917,7 +921,7 @@ namespace CalamityMod.CalPlayer
 
                 // Create a direct strike to hit this specific NPC.
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Calamity>()));
-                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI);
+                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI, 255f);
 
                 // Enable crits by setting the sigil's damage class to be whatever the player's strongest damage class is.
                 sigilStrike.DamageType = Player.GetBestClass();
@@ -1338,10 +1342,16 @@ namespace CalamityMod.CalPlayer
             }
             else
             {
-                if (Player.mount.Type == MountID.Slime || Player.mount.Type == MountID.PogoStick)
+                if (Player.mount.Type == MountID.Slime)
                     Player.velocity.X *= 0.91f;
                 else if (Player.mount.Type == MountID.QueenSlime)
                     Player.velocity.X *= 0.95f;
+                else if (Player.mount.Type == MountID.PogoStick)
+                {
+                    if (Player.velocity.X > 10 || Player.velocity.X < -10)
+                        Player.velocity.X *= 0.99f; //Stops infinite high-speed movement, but allows fun pogo movement tech still
+                    Player.maxFallSpeed *= 0.75f; // 1.5x fall speed instead of 2x to counterbalance
+                }
             }
 
             // Increase Rope climb velocities, if enabled
@@ -2052,12 +2062,8 @@ namespace CalamityMod.CalPlayer
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
                 ursaSergeantCooldown--;
-            if (bGlassbandCooldown > 0)
-                bGlassbandCooldown--;
-            if (batholithBangleCooldown > 0)
-                batholithBangleCooldown--;
-            if (protolithBangleCooldown > 0)
-                protolithBangleCooldown--;
+            if (generalBandCooldown > 0)
+                generalBandCooldown--;
             if (AlchFlaskCooldown > 0)
                 AlchFlaskCooldown--;
             if (tarraRangedCooldown > 0)
@@ -2076,6 +2082,43 @@ namespace CalamityMod.CalPlayer
                 jetPackDash--;
             if (theBeeCooldown > 0)
                 theBeeCooldown--;
+
+            if (bloomStoneHealTimer > 0)
+            {
+                if (bloomStone && bloomStoneHealTimer % 40 == 0)
+                {
+                    Player.HealPlayer(Math.Min(bloomStoneHealInc, bloomStoneTotalHeal));
+                    // Special specifically programmed interaction with Chalice of the Blood God: Healing over time clears bits of the bleedout buffer.
+                    if (chaliceOfTheBloodGod && chaliceBleedoutBuffer > 0D)
+                    {
+                        float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * bloomStoneHealInc;
+                        chaliceBleedoutBuffer -= amountOfBleedToClear;
+                        // Display text indicating that healing was applied to the bleedout buffer.
+                        if (!Main.dedServ)
+                        {
+                            string text = $"(+{amountOfBleedToClear})";
+                            Rectangle location = new Rectangle((int)Player.position.X + 4, (int)Player.position.Y - 3, Player.width - 4, Player.height - 4);
+                            CombatText.NewText(location, ChaliceOfTheBloodGod.BleedoutBufferDamageTextColor, Language.GetTextValue(text), dot: true);
+                        }
+                    }
+
+                    bloomStoneTotalHeal -= bloomStoneHealInc;
+                    if (bloomStoneTotalHeal < 0)
+                        bloomStoneTotalHeal = 0;
+                }
+                bloomStoneHealTimer--;
+            }
+            else
+            {
+                bloomStoneTotalHeal = 0;
+                bloomStoneHealInc = 0;
+            }
+            if (bloomStoneDR > 0)
+            { 
+                Player.endurance += bloomStoneHealTimer > 0 ? 0.12f : 0.06f;
+                bloomStoneDR--;
+            }
+
             if (summonProjCooldown > 0f)
                 summonProjCooldown -= 1f;
             if (ataxiaDmg > 0f)

@@ -284,12 +284,25 @@ Baroclaw: {
 		'''
 }
 
+BatholithBangle: {
+	DisplayName: Batholith Bangle
+	Tooltip:
+		'''
+		Magic enemy hits create a powerful granite flash that always critically strikes
+		This effect has a 10 second cooldown, but is halved if the flash kills an enemy
+		Visual and audio effects are reduced if visibility is disabled
+		[c/0189D7:'The solid granite radiates energy throughout your body']
+		'''
+}
+
 BlackGlassBand: {
 	DisplayName: Black Glass Band
 	Tooltip:
 		'''
-		Enemy hits create an obsidian blast that always critically strikes
-		This effect has a 7 second cooldown, but is halved if the blast kills an enemy
+		Enemy hits create an obsidian flash that always critically strikes
+		This effect has a 5 second cooldown, but is halved if the flash kills an enemy
+		Visual and audio effects are reduced if visibility is disabled
+		[c/655DC5:'A shining band with boundless potential']
 		'''
 }
 
@@ -297,6 +310,7 @@ BlazingCore: {
 	DisplayName: Blazing Core
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		The searing core of the Profaned Goddess
 		Pressing [KEY] will activate a parry, encasing you in luminous profaned crystal
 		Being hit shortly after encasement will shatter the crystal
@@ -311,6 +325,7 @@ BloodflareCore: {
 	DisplayName: Bloodflare Core
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Recovering defense damage heals you, each defense recovered gives 1 HP
 		Taking damage converts at least half of your total defense in defense damage
 		'''
@@ -345,11 +360,10 @@ BloomStone: {
 	DisplayName: Bloom Stone
 	Tooltip:
 		'''
-		Grants between +1 HP/s and +3 HP/s life regen depending on time of day
-		Accelerates life regen based on time of day
-		Both of these effects are maximized from noon to sunset
-		Flowers grow on the grass you walk on
-		Random dye plants will grow while standing on grassless dirt
+		Healing Potions are 50% more effective, but provide their healing over time
+		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
+		Touching a flower makes it burst into pollen which gives a temporary 6% damage reduction boost
+		The damage reduction boost increases to 12% while receiving healing over time
 		'One of the ancient relics'
 		'''
 }
@@ -532,6 +546,7 @@ DarkSunRing: {
 	DisplayName: Dark Sun Ring
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		12% increased damage
 		+0.5 HP/s life regen and +2 max minions
 		Increased minion knockback
@@ -600,6 +615,7 @@ DraedonsHeart: {
 	Tooltip:
 		'''
 		{0}% reduced contact damage from enemies
+		Grants immunity to knockback
 		[NANODESC]
 		With full Nanomachines, press [KEY] to heal {1} health over {2} {^2:second;seconds}
 		While healing, you take [DR]% less damage
@@ -769,6 +785,7 @@ FlameLickedShell: {
 	DisplayName: Flame-Licked Shell
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Pressing [KEY] will activate a parry, encasing you in rocks
 		Being hit shortly after encasement will implode the rocks
 		Upon implosion, a ring of brimstone hellfire is launched outwards and you receive 90% DR for that hit
@@ -1232,6 +1249,7 @@ OldDukeScales: {
 	DisplayName: Old Duke's Scales
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		10% increased damage reduction, max movement speed, and acceleration
 		25% increased dash velocity and length
 		Adds a stamina tracker to the cooldown rack
@@ -1359,6 +1377,17 @@ ProfanedSoulCrystal: {
 		[c/f285a2:Rogue] [c/f2b6c6:attacks become a deadly crystalline spiral]
 		Thinking back, it was a boring life
 		[c/FFBF49:And so we burn it all in the name of purity]
+		'''
+}
+
+ProtolithBangle: {
+	DisplayName: Protolith Bangle
+	Tooltip:
+		'''
+		Ranged enemy hits create a marble flash that always critically strikes and can hit multiple enemies
+		This effect has a 7 second cooldown, but is halved if the flash kills the first enemy it hits
+		Visual and audio effects are reduced if visibility is disabled
+		[c/C5B965:'The cold marble against your wrist puts your mind at ease']
 		'''
 }
 
@@ -1621,8 +1650,9 @@ SlagsplitterPauldron: {
 	DisplayName: Slagsplitter Pauldron
 	Tooltip:
 		'''
-		You gain 10% damage reduction while dashing, and enemies are inflicted with Armor Crunch
-		Your dashes are empowered by fire, shredding enemies near you with violent explosions
+		Your dashes become empowered by flame, erupting on contact with enemies
+		Grants immunity to knockback and 10% damage reduction while dashing
+		Enemies hit by your dashes have their armor crushed
 		Visual effects are reduced if visibility is disabled
 		'''
 }
@@ -1762,8 +1792,8 @@ StatMeter: {
 	AttackSpeed: Attack Speed: {0}%
 	WhipMeleeInheritance: " [{0}% from melee]"
 	// Class stats
-	RangedStats: Ammo Consumption Chance: {0}
-	MagicStats: Mana Usage: {0}% | Mana Regen: {1}
+	AmmoStats: Ammo Consumption Chance: {0}%
+	ManaStats: Mana Usage: {0}% | Mana Regen: {1}
 	SummonStats: Minion Slots: {0} | Sentry Slots: {1}
 	WhipStats: Whip Range: {0}%
 	RogueStats:
@@ -1868,7 +1898,7 @@ TheCamper: {
 	DisplayName: The Camper
 	Tooltip:
 		'''
-		You deal 90% less damage unless stationary
+		You deal 50% less damage unless stationary
 		Standing still grants buffs depending on held item, and creates a damaging aura around you
 		While moving, you regenerate health as if standing still
 		{$Common.AbyssLightLevel1}
@@ -1918,6 +1948,7 @@ TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Gain a barrier with 180 health
 		The barrier grants 20 defense and 10% damage reduction while active
 		[ADREN]
@@ -2066,6 +2097,7 @@ WulfrumAcrobaticsPack: {
 		'''
 		Provides a wulfrum slingshot grappling hook
 		This slingshot's stats scale with your equipped hook
+		If the hook has special effects, the slingshot also benefits from them
 		The slingshot allows for advanced rope-swinging physics
 		Hold UP or DOWN to retract or extend the slingshot's rope
 		Automatically grapples nearby walls if a lethal fall is detected
@@ -2089,6 +2121,7 @@ YharimsGift: {
 	DisplayName: Yharim's Gift
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Flaming meteors rain down after getting hit
 		Volatile dragon dust trails behind you
 		Increases damage and movement speed by 15%

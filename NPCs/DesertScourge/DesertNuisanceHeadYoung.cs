@@ -363,7 +363,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (!shouldFly)
             {
-                NPC.velocity.Y += 0.15f;
+                NPC.velocity.Y += 0.1f;
                 if (NPC.velocity.Y > maxChaseSpeed)
                     NPC.velocity.Y = maxChaseSpeed;
 

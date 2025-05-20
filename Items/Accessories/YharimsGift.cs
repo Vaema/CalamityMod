@@ -29,6 +29,7 @@ namespace CalamityMod.Items.Accessories
             var source = player.GetSource_Accessory(Item);
             player.moveSpeed += 0.15f;
             player.GetDamage<GenericDamageClass>() += 0.15f;
+            player.noKnockback = true;
             if (!player.StandingStill())
             {
                 dragonTimer--;

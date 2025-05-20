@@ -57,6 +57,7 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.adrenaline = 0f;
 
             modPlayer.draedonsHeart = true;
+            player.noKnockback = true;
             modPlayer.hadNanomachinesLastFrame = true;
             modPlayer.AdrenalineDuration = NanomachinesDuration;
             modPlayer.contactDamageReduction += ContactDamageReduction;

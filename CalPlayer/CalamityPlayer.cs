@@ -125,7 +125,7 @@ namespace CalamityMod.CalPlayer
         public bool noLifeRegen = false;
         public bool reducedDaybrokenDamage = false;
         public bool reducedNightwitherDamage = false;
-        public float rangedAmmoCost = 1f;
+        public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
         /// Tracks whether or not the player is currently holding Gael's Greatsword.<br/>
@@ -727,15 +727,13 @@ namespace CalamityMod.CalPlayer
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
+        public int generalBandCooldown = 0;
         public bool bGlassBand = false; // Obsidian band
         public bool bGlassBandVisual = false;
-        public int bGlassbandCooldown = 0;
         public bool batholithBangle = false; // Granite band
         public bool batholithBangleVisual = false;
-        public int batholithBangleCooldown = 0;
         public bool protolithBangle = false; // Marble band
         public bool protolithBangleVisual = false;
-        public int protolithBangleCooldown = 0;
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
@@ -807,6 +805,12 @@ namespace CalamityMod.CalPlayer
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
         public int transformerStoredKills = 0;
+        public bool bloomStone = false;
+        public bool bloomStoneHookVisuals = false;
+        public int bloomStoneHealInc = 0;
+        public int bloomStoneTotalHeal = 0;
+        public int bloomStoneHealTimer = 0;
+        public int bloomStoneDR = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -2177,6 +2181,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            batholithBangle = false; // Granite band
+            batholithBangleVisual = false;
+            protolithBangle = false; // Marble band
+            protolithBangleVisual = false;
             aFossil = false;
             aPowder = false;
             fallingBlockProtection = false;
@@ -2196,6 +2204,8 @@ namespace CalamityMod.CalPlayer
             ilSpark = false;
             transformer = false;
             transformerVisual = false;
+            bloomStone = false;
+            bloomStoneHookVisuals = false;
             hideOfDeus = false;
             dAmulet = false;
             rampartOfDeities = false;
@@ -2335,7 +2345,7 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
 
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
 
             avertorBonus = false;
@@ -2857,6 +2867,10 @@ namespace CalamityMod.CalPlayer
             auralisAurora = 0;
             necroReviveCounter = -1;
             hideOfDeusTimer = 0;
+            bloomStoneHealInc = 0;
+            bloomStoneTotalHeal = 0;
+            bloomStoneHealTimer = 0;
+            bloomStoneDR = 0;
             murasamaHitCooldown = 0;
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
@@ -3078,7 +3092,7 @@ namespace CalamityMod.CalPlayer
             bloodfinTimer = 0;
             healCounter = 300;
             danceOfLightCharge = 0;
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;
@@ -4368,6 +4382,17 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Star in a Bottle gives Mana Regeneration instead of it's usual effect when you don't already have Mana Regeneration
+            if (!Player.manaRegenBuff && Player.HasBuff(BuffID.StarInBottle)) 
+            {
+                //Cancel out Star In A Bottle's normal effect
+				Player.manaRegenDelayBonus -= 0.5f;
+				Player.manaRegenBonus -= 10;
+                //Apply Mana Regen Potion effect
+                Player.manaRegenBuff = true;
+                
+            }
+
             ForceVariousEffects();
         }
         #endregion
@@ -4542,6 +4567,8 @@ namespace CalamityMod.CalPlayer
         public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
         {
             healValue = (int)(healValue * healingPotionMultiplier);
+            if (bloomStone)
+                healValue = 0;
         }
         #endregion
 

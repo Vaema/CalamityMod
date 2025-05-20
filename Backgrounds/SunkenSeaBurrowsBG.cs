@@ -5,11 +5,18 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using ReLogic.Content;
 using Terraria.ID;
+using CalamityMod.Graphics;
+using System.Reflection;
+using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Backgrounds
 {
     public class SunkenSeaBurrowsBG : ModSystem
     {
+        private static ManagedRenderTarget WaterDistortionTarget;
+
+        private static bool CurrentlyRendering { get; set; }
+
         public override void Load()
         {
             if (Main.dedServ)
@@ -17,7 +24,10 @@ namespace CalamityMod.Backgrounds
                 return;
             }
 
+            On_Main.CheckMonoliths += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
+
+            Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
         }
 
         /// <summary>
@@ -48,6 +58,31 @@ namespace CalamityMod.Backgrounds
             }
         }
 
+        private void DrawToTarget(On_Main.orig_CheckMonoliths orig)
+        {
+            if (Main.gameMenu)
+            {
+                orig();
+                return;
+            }
+
+            CurrentlyRendering = true;
+            WaterDistortionTarget.SwapTo();
+
+            // 13MAY2025: fryzahh: Note that when other Sunken Sea backgrounds are implemented they should use this same system.
+            // Leaving this here for other programmers, in case I don't get to doing this myself.
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+
+            DrawBurrowsBG();
+
+            Main.spriteBatch.End();
+
+            Main.graphics.GraphicsDevice.SetRenderTarget(null);
+            CurrentlyRendering = false;
+
+            orig();
+        }
+
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
         {
             if (Main.gameMenu || Main.screenPosition.Y + Main.screenHeight < ((int)Main.worldSurface) * 16f)
@@ -58,7 +93,30 @@ namespace CalamityMod.Backgrounds
 
             orig(self);
 
-            DrawBurrowsBG();
+            // This won't render if the Wave Quality setting isn't turned off unfortunately, so don't bother running any of the shader
+            // rendering code if that setting is on.
+            if (Main.WaveQuality > 0 || !CalamityClientConfig.Instance.SunkenSeaBackgroundDistortion)
+            {
+                DrawBurrowsBG();
+            }
+            else
+            {
+                MiscShaderData distortionShader = GameShaders.Misc["CalamityMod:BasicTextureDistortion"];
+                Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls");
+
+                // Apply a distortion shader to the Sunken Sea backgrounds to give them an underwater ripple-like effect.
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, distortionShader.Shader, CalamityUtils.BackgroundMatrix);
+
+                distortionShader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+                distortionShader.Shader.Parameters["distortionXSpeed"].SetValue(-0.012f);
+                distortionShader.Shader.Parameters["distortionYSpeed"].SetValue(0.02f);
+                distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.035f);
+                distortionShader.Shader.Parameters["noiseScale"].SetValue(0.075f);
+                distortionShader.SetShaderTexture(distortionTexture);
+
+                Main.spriteBatch.Draw(WaterDistortionTarget.Target, new Rectangle(16, 16, Main.screenWidth, Main.screenHeight), Color.White);
+            }
         }
 
         public static float Transparency;

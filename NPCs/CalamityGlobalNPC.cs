@@ -6468,7 +6468,7 @@ namespace CalamityMod.NPCs
         {
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
             {
@@ -6479,9 +6479,9 @@ namespace CalamityMod.NPCs
             if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
                 AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
                 StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>())
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>())
             {
-                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : 0.5f;
+                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : npc.type == NPCType<Crabulon.Crabulon>() ? 0.8f : 0.5f;
                 if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
@@ -6631,7 +6631,7 @@ namespace CalamityMod.NPCs
 
                 // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
                 if (trueVulnerabilityHex > 0)
-                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 1f) ? 2.5f : 1.15f;
+                    modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 255f) ? 2.5f : 1.15f;
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
@@ -6664,7 +6664,7 @@ namespace CalamityMod.NPCs
             }
 
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;
@@ -7405,8 +7405,8 @@ namespace CalamityMod.NPCs
                 DeerclopsAI.hasTargetBeenInRange = false;
                 DeerclopsAI.borderDelay = 7f * 60f;
                 DeerclopsAI.borderScalar = 0f;
-                DeerclopsAI.innerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
-                DeerclopsAI.outerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
+                DeerclopsAI.innerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
+                DeerclopsAI.outerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
             }
 
             // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena

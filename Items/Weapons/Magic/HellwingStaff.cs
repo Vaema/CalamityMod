@@ -89,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient(ItemID.HellstoneBar, 10).
-                AddIngredient(ItemID.AshWood, 7).
+                AddIngredient(ItemID.AshWood, 10).
                 AddTile(TileID.Anvils).
                 Register();
         }

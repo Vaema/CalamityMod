@@ -293,7 +293,7 @@ namespace CalamityMod.Items
             }
 
             // Increase how much health Mushrooms heal.
-            if (item.type == ItemID.Mushroom && item.healLife == 15)
+            if (item.type == ItemID.Mushroom && item.healLife < 25)
                 item.healLife = 25;
 
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
@@ -658,6 +658,8 @@ namespace CalamityMod.Items
 
         public override bool? UseItem(Item item, Player player)
         {
+            var modPlayer = player.Calamity();
+
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
             {
                 if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
@@ -670,6 +672,18 @@ namespace CalamityMod.Items
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
+
+            // Trigger Bloom Stone's heal over time from healing items
+            if (item.healLife > 0 && modPlayer.bloomStone)
+            {
+                // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
+                modPlayer.bloomStone = false;
+                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStone = true;
+
+                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
+                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
+            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
@@ -976,14 +990,13 @@ namespace CalamityMod.Items
         }
         #endregion
 
-        #region ModifyHitNPC
+        #region Hit NPC
         public override void ModifyHitNPC(Item item, Player player, NPC target, ref NPC.HitModifiers modifiers)
         {
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
-        #endregion
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -1009,6 +1022,7 @@ namespace CalamityMod.Items
                 }
             }
         }
+        #endregion
 
         #region Armor Set Changes
         public override string IsArmorSet(Item head, Item body, Item legs)
@@ -1553,7 +1567,7 @@ namespace CalamityMod.Items
         #endregion
 
         #region Ammo
-        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().rangedAmmoCost;
+        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().ammoCost;
 
         public static bool HasEnoughAmmo(Player player, Item item, int ammoConsumed)
         {
@@ -1626,7 +1640,7 @@ namespace CalamityMod.Items
                 dontConsumeAmmo = true;
             if (player.ammoCost75 && Main.rand.NextBool(4))
                 dontConsumeAmmo = true;
-            if (Main.rand.NextFloat() > player.Calamity().rangedAmmoCost)
+            if (Main.rand.NextFloat() > player.Calamity().ammoCost)
                 dontConsumeAmmo = true;
 
             if (!dontConsumeAmmo && itemAmmo.consumable)

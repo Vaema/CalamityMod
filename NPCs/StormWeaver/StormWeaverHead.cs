@@ -555,6 +555,11 @@ namespace CalamityMod.NPCs.StormWeaver
                 // Charge
                 if (!phase4)
                 {
+                    if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
+                    {
+                        Vector2 soundCenter = Main.player[NPC.target].Center;
+                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                    }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {
                         NPC.localAI[3] = 60f;

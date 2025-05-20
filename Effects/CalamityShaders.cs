@@ -210,6 +210,14 @@ namespace CalamityMod.Effects
         internal static Effect FlipScreenShader;
         #endregion
 
+        //
+        // All below shaders were created by fryzahh
+        //
+        #region fryzahh's Shaders
+        // A simple shader which distorts an image using a provided texture of choice. 
+        internal static Effect BasicTextureDistortionShader;
+        #endregion
+
         public override void PostSetupContent()
         {
             AssetRepository calAss = CalamityMod.Instance.Assets;
@@ -416,6 +424,11 @@ namespace CalamityMod.Effects
             #region Loading Doze's Shaders
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
+            #endregion
+
+            #region Loading fryzahh's Shaders
+            BasicTextureDistortionShader = LoadShader("BasicTextureDistortionShader");
+            RegisterMiscShader(BasicTextureDistortionShader, "DistortionPass", "BasicTextureDistortion");
             #endregion
         }
 

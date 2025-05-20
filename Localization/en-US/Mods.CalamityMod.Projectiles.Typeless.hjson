@@ -23,6 +23,7 @@ BlazingSun2.DisplayName: Blazing Sun
 BlissfulBombardierDustProjectile.DisplayName: Dust
 BloodBomb.DisplayName: Bomb
 BloodBombExplosion.DisplayName: Explosion
+BloomStoneFlower.DisplayName: Bloom Stone Flower
 BlunderBoosterAura.DisplayName: Red Lightning Aura
 BobbitHead.DisplayName: Bobbit Head
 BossRushEffectThing.DisplayName: Boss Rush Effect Thing
@@ -105,6 +106,7 @@ PauldronExplosion.DisplayName: Pauldron Explosion
 PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
+ProtolithBangleProjectile.DisplayName: Marble Shatter
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
 PuddleSplash.DisplayName: Puddle Splash
@@ -158,3 +160,4 @@ YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
+BatholithBangleProjectile.DisplayName: Batholith Bangle Projectile

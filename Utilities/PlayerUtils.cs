@@ -136,7 +136,7 @@ namespace CalamityMod
             return ret;
         }
 
-        public static float GetRangedAmmoCostReduction(this Player player)
+        public static float GetAmmoCostReduction(this Player player)
         {
             // Tally up all possible vanilla effects.
             float vanillaCost = player.ammoBox ? 0.8f : 1f;
@@ -148,7 +148,7 @@ namespace CalamityMod
                 vanillaCost *= 0.75f;
 
             // Account for Calamity effects.
-            return vanillaCost * player.Calamity().rangedAmmoCost;
+            return vanillaCost * player.Calamity().ammoCost;
         }
 
         public static float GetStandingStealthRegen(this Player player)

@@ -27,7 +27,7 @@ namespace CalamityMod.Items.PermanentBoosters
             // Same price as Frog Leg, which is used to shimmer into it
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ModContent.RarityType<HotPink>();
-            Item.stack = Item.CommonMaxStack;
+            Item.maxStack = Item.CommonMaxStack;
             Item.Calamity().devItem = true;
         }
 
