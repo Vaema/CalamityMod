@@ -40,6 +40,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().blazingCore = true;
+            player.noKnockback = true;
         }
 
         public static void HandleStars(Player player)

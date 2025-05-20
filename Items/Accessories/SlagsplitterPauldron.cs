@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.sPauldron = true;
+            player.noKnockback = true;
             modPlayer.sPauldronVisual = !hideVisual;
         }
 

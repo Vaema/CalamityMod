@@ -87,6 +87,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.sponge = true;
+            player.noKnockback = true;
             modPlayer.spongeShieldVisible = !hideVisual;
 
             if (modPlayer.SpongeShieldDurability > 0)

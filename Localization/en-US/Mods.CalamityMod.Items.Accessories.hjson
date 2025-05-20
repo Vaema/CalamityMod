@@ -310,6 +310,7 @@ BlazingCore: {
 	DisplayName: Blazing Core
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		The searing core of the Profaned Goddess
 		Pressing [KEY] will activate a parry, encasing you in luminous profaned crystal
 		Being hit shortly after encasement will shatter the crystal
@@ -324,6 +325,7 @@ BloodflareCore: {
 	DisplayName: Bloodflare Core
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Recovering defense damage heals you, each defense recovered gives 1 HP
 		Taking damage converts at least half of your total defense in defense damage
 		'''
@@ -544,6 +546,7 @@ DarkSunRing: {
 	DisplayName: Dark Sun Ring
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		12% increased damage
 		+0.5 HP/s life regen and +2 max minions
 		Increased minion knockback
@@ -612,6 +615,7 @@ DraedonsHeart: {
 	Tooltip:
 		'''
 		{0}% reduced contact damage from enemies
+		Grants immunity to knockback
 		[NANODESC]
 		With full Nanomachines, press [KEY] to heal {1} health over {2} {^2:second;seconds}
 		While healing, you take [DR]% less damage
@@ -781,6 +785,7 @@ FlameLickedShell: {
 	DisplayName: Flame-Licked Shell
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Pressing [KEY] will activate a parry, encasing you in rocks
 		Being hit shortly after encasement will implode the rocks
 		Upon implosion, a ring of brimstone hellfire is launched outwards and you receive 90% DR for that hit
@@ -1644,6 +1649,7 @@ SlagsplitterPauldron: {
 	DisplayName: Slagsplitter Pauldron
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		You gain 10% damage reduction while dashing, and enemies are inflicted with Armor Crunch
 		Your dashes are empowered by fire, shredding enemies near you with violent explosions
 		Visual effects are reduced if visibility is disabled
@@ -1941,6 +1947,7 @@ TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Gain a barrier with 180 health
 		The barrier grants 20 defense and 10% damage reduction while active
 		[ADREN]
@@ -2113,6 +2120,7 @@ YharimsGift: {
 	DisplayName: Yharim's Gift
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		Flaming meteors rain down after getting hit
 		Volatile dragon dust trails behind you
 		Increases damage and movement speed by 15%

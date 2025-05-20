@@ -39,6 +39,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.darkSunRing = true;
+            player.noKnockback = true;
         }
 
         public override void AddRecipes()
