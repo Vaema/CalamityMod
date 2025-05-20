@@ -393,7 +393,10 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                 }
                 if (Player.dashDelay == -1)
+                {
                     Player.endurance += 0.1f;
+                    Player.noKnockback = true;
+                }
                 
             }
 

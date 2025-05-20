@@ -1249,6 +1249,7 @@ OldDukeScales: {
 	DisplayName: Old Duke's Scales
 	Tooltip:
 		'''
+		Grants immunity to knockback
 		10% increased damage reduction, max movement speed, and acceleration
 		25% increased dash velocity and length
 		Adds a stamina tracker to the cooldown rack
@@ -1649,9 +1650,9 @@ SlagsplitterPauldron: {
 	DisplayName: Slagsplitter Pauldron
 	Tooltip:
 		'''
-		Grants immunity to knockback
-		You gain 10% damage reduction while dashing, and enemies are inflicted with Armor Crunch
-		Your dashes are empowered by fire, shredding enemies near you with violent explosions
+		Your dashes become empowered by flame, erupting on contact with enemies
+		Grants immunity to knockback and 10% damage reduction while dashing
+		Enemies hit by your dashes have their armor crushed
 		Visual effects are reduced if visibility is disabled
 		'''
 }
