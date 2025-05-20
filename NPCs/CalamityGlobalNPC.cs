@@ -922,6 +922,10 @@ namespace CalamityMod.NPCs
             // Mana Burn
             if (manaBurn > 0)
             {
+                if (manaBurnPeak >= 0.1f)
+                {
+                    manaBurnPeak *= 0.999f;
+                }
                 manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
                 int burnPerSecond = (int)MathF.Ceiling(manaBurn * 0.5f);
                 manaBurn -= burnPerSecond/60f;

@@ -690,6 +690,14 @@ namespace CalamityMod.Items
             return base.UseItem(item, player);
         }
 
+        public override void UseAnimation(Item item, Player player)
+        {
+             if (player.Calamity().ChaosStone && item.mana == 0)
+            {
+                player.manaRegenDelay = 0.7f * ((1 - (player.statMana / (float)player.statManaMax2)) * 240 + 45);
+            }
+        }
+
         public override bool AltFunctionUse(Item item, Player player)
         {
             if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
