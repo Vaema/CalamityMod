@@ -596,28 +596,9 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 9: Sell Prices
-                { ItemID.Apple, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Apricot, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Banana, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.BlackCurrant, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.BloodOrange, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Cherry, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Coconut, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Dragonfruit, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Elderberry, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.EncumberingStone, Do(Worthless) },
                 { ItemID.GlowingMushroom, Do(Worthless) },
-                { ItemID.Grapefruit, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Lemon, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Mango, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.Mushroom, Do(Worthless) },
-                { ItemID.Peach, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Pineapple, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Plum, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Pomegranate, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Rambutan, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.SpicyPepper, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Starfruit, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.PortableStool, Do(Value(Item.sellPrice(copper: 20))) }, // Step Stool
                 { ItemID.UncumberingStone, Do(Worthless) },
                 { ItemID.ViciousMushroom, Do(Worthless) },
