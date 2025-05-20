@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Threading;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -35,11 +38,11 @@ namespace CalamityMod.MainMenu
             }
         }
 
-        public static List<Bubble> Bubbles
-        {
-            get;
-            internal set;
-        } = new();
+        public static List<Bubble> Bubbles { get; private set; } = [];
+
+        public static List<SunkenFishBoid> Fishes { get; private set; } = [];
+
+        public int MaxBoids = 120;
 
         public float remixLogoRotation = 0f;
         public override string DisplayName => "Calamity Style - Sunken";
@@ -53,8 +56,32 @@ namespace CalamityMod.MainMenu
 
         public override ModSurfaceBackgroundStyle MenuBackgroundStyle => ModContent.GetInstance<NullSurfaceBackground>();
 
-        // Before drawing the logo, draw the entire Calamity background. This way, the typical parallax background is skipped entirely.
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
+        {
+            // Draw the main background for the menu.   
+            DrawMenuBackground(spriteBatch);
+
+            // Draw the fish boids passively swimming around the menu.
+            DrawFishes(spriteBatch);
+
+            // Draw the bubbles rising from the bottom of the screen.
+            DrawBubbles(spriteBatch);
+
+            // Draw the light rays at the top of the screen.
+            DrawLightRays(spriteBatch);
+
+            // Draw the logo.
+            DrawLogo(spriteBatch, ref logoDrawCenter, ref logoRotation, ref logoScale, ref drawColor);
+            
+            return false;
+        }
+
+        private static Color SelectBubbleColor()
+        {
+            return Color.Lerp(Color.Lerp(Color.MediumSlateBlue, Color.DarkBlue, 0.3f), Color.Lerp(Color.MediumTurquoise, Color.PaleTurquoise, Main.rand.NextFloat()), Main.rand.NextFloat());
+        }
+
+        private void DrawMenuBackground(SpriteBatch spriteBatch)
         {
             Texture2D backgroundTexture = ModContent.Request<Texture2D>("CalamityMod/MainMenu/SunkenMenuBackground").Value;
 
@@ -96,9 +123,12 @@ namespace CalamityMod.MainMenu
 
             spriteBatch.Draw(backgroundTexture, drawOffset, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
 
-            spriteBatch.End(); 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+        }
 
+        private void DrawLightRays(SpriteBatch spriteBatch)
+        {
             // Draw rays shining down from the top of the screen.
             MiscShaderData underwaterRaysShader = GameShaders.Misc["CalamityMod:UnderwaterRays"];
             Asset<Texture2D> underwaterRayTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles");
@@ -120,12 +150,41 @@ namespace CalamityMod.MainMenu
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+        }
 
-            static Color selectBubbleColor()
+        private void DrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
+        {
+            // Set the logo draw color to be white and the time to be noon
+            // This is because there is not a day/night cycle in this menu, and changing colors would look bad
+            drawColor = Color.White;
+            Main.time = 27000;
+            Main.dayTime = true;
+
+            // Adjust rotation based on secret seeds; only Drunk world and Remix touch this, with GFB leeching off those two
+            // Standard rotation is none; Drunk world makes it spin out, so it can use the vanilla rotation due to disappearing
+            // Remix makes it flip upside down, and in GFB it will spin forever 
+            if (WorldGen.remixWorldGen)
             {
-                return Color.Lerp(Color.Lerp(Color.MediumSlateBlue, Color.DarkBlue, 0.3f), Color.Lerp(Color.MediumTurquoise, Color.PaleTurquoise, Main.rand.NextFloat()), Main.rand.NextFloat());
+                remixLogoRotation += MathHelper.Pi / 50f;
+                if (remixLogoRotation >= MathHelper.Pi && !WorldGen.everythingWorldGen)
+                    remixLogoRotation = MathHelper.Pi;
             }
+            else
+                remixLogoRotation = 0f;
+            float rotationSecretSeedAdjusted = WorldGen.remixWorldGen ? remixLogoRotation : WorldGen.drunkWorldGen ? logoRotation : 0f;
 
+            // Draw the logo using a different spritebatch blending setting so it doesn't have a horrible yellow glow
+            Vector2 drawPos = new Vector2(Main.screenWidth / 2f, 100f);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(LogoWater.Value, drawPos, null, new Color(255, 255, 255, 0.5f) * 0.7f, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+        }
+
+        private void DrawBubbles(SpriteBatch spriteBatch)
+        {
             // Randomly add bubbles.
             for (int i = 0; i < 3; i++)
             {
@@ -135,7 +194,7 @@ namespace CalamityMod.MainMenu
                     float depth = Main.rand.NextFloat(1.8f, 5f);
                     Vector2 startingPosition = new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * 1.05f);
                     Vector2 startingVelocity = -Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-0.4f, 0.4f)) * 2f;
-                    Color bubbleColor = selectBubbleColor();
+                    Color bubbleColor = SelectBubbleColor();
                     Bubbles.Add(new Bubble(lifetime, Bubbles.Count, depth, bubbleColor, startingPosition, startingVelocity));
                 }
             }
@@ -164,35 +223,42 @@ namespace CalamityMod.MainMenu
                 Vector2 drawPosition = Bubbles[i].Center;
                 spriteBatch.Draw(bubbleTexture, drawPosition, null, Bubbles[i].DrawColor, Main.rand.NextFloat(0f, 90f), bubbleTexture.Size() * 0.5f, Bubbles[i].Scale, 0, 0f);
             }
+        }
 
-            // Set the logo draw color to be white and the time to be noon
-            // This is because there is not a day/night cycle in this menu, and changing colors would look bad
-            drawColor = Color.White;
-            Main.time = 27000;
-            Main.dayTime = true;
-
-            // Adjust rotation based on secret seeds; only Drunk world and Remix touch this, with GFB leeching off those two
-            // Standard rotation is none; Drunk world makes it spin out, so it can use the vanilla rotation due to disappearing
-            // Remix makes it flip upside down, and in GFB it will spin forever 
-            if (WorldGen.remixWorldGen)
+        private void DrawFishes(SpriteBatch spriteBatch)
+        {
+            // Generate random schools of fishes.
+            if (Main.rand.NextBool(14) && Fishes.Count < MaxBoids)
             {
-                remixLogoRotation += MathHelper.Pi / 50f;
-                if (remixLogoRotation >= MathHelper.Pi && !WorldGen.everythingWorldGen)
-                    remixLogoRotation = MathHelper.Pi;
-            }
-            else
-                remixLogoRotation = 0f;
-            float rotationSecretSeedAdjusted = WorldGen.remixWorldGen ? remixLogoRotation : WorldGen.drunkWorldGen ? logoRotation : 0f;
+                int schoolCount = Main.rand.Next(1, 4);
+                for (int i = 0; i < schoolCount; i++)
+                {
+                    int depth = Main.rand.Next(1, 4);
+                    int lifetime = Main.rand.Next(1200, 1800);
+                    float scale = Main.rand.NextFloat(0.8f, 1.2f);
+                    Vector2 schoolSpawnPosition = new(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f) * depth, Main.screenHeight * Main.rand.NextFloat(-0.1f, 1.1f) * depth);
 
-            // Draw the logo using a different spritebatch blending setting so it doesn't have a horrible yellow glow
-            Vector2 drawPos = new Vector2(Main.screenWidth / 2f, 100f);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            spriteBatch.Draw(Logo.Value, drawPos, null, drawColor, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(LogoWater.Value, drawPos, null, new Color(255, 255, 255, 0.5f) * 0.7f, rotationSecretSeedAdjusted, Logo.Value.Size() * 0.5f, WorldGen.drunkWorldGen ? logoScale : 1f, SpriteEffects.None, 0f);
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
-            return false;
+                    int fishCount = Main.rand.Next(3, 11);
+                    for (int j = 0; j < fishCount; j++)
+                    {
+                        Vector2 individualFishSpawnPosition = schoolSpawnPosition + Main.rand.NextVector2Circular(100f, 100f);
+                        SunkenFishBoid fish = new(schoolSpawnPosition, scale, lifetime, depth);
+                        Fishes.Add(fish);
+                    }
+                }
+            }
+
+            // Remove expired fish.
+            Fishes.RemoveAll(f => f.Time >= f.Lifetime);
+
+            // Update all fish.
+            for (int i = 0; i < Fishes.Count; i++)
+                Fishes[i].Update();
+
+            // Draw all fish in an order based on their depth. 
+            var fishesByDepth = Fishes.OrderByDescending(f => f.Depth).ToList();
+            foreach (SunkenFishBoid fish in fishesByDepth)
+                fish.Draw(spriteBatch);
         }
     }
 }
