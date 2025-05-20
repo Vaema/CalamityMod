@@ -49,7 +49,7 @@ namespace CalamityMod.Items
                 AddIngredient(ItemID.FragmentStardust, 30).
                 AddIngredient<Cinderplate>(5).
                 AddIngredient<ExodiumCluster>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

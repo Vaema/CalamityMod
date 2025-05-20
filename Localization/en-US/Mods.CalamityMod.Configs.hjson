@@ -104,10 +104,10 @@ CalamityClientConfig: {
 	DisableGravityScreenSwap: {
 		Label: Disable Gravity Screen Flip
 		Tooltip:
-		'''
-		Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
-		Enable this if the screen-flipping is distracting or induces motion sickness.
-		'''
+			'''
+			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
+			Enable this if the screen-flipping is distracting or induces motion sickness.
+			'''
 	}
 
 	EnableVanillaTextureEdits: {
@@ -344,6 +344,16 @@ CalamityClientConfig: {
 			'''
 			The Y position of the Sulphuric Water Poison Meter, measured as a % of your screen height.
 			The meter can be dragged with the mouse if Lock Meter Positions is disabled.
+			'''
+	}
+
+	SunkenSeaBackgroundDistortion: {
+		Label: "[i:CalamityMod/SeaRemains] Sunken Sea Background Distortion"
+		Tooltip:
+			'''
+			Whether or not the Sunken Sea's custom backgrounds should have an additional distortion shader applied to them to give the
+			illusion of underwater distortion.         
+			[c/FF232C:Note that this will ONLY work if your "Wave Quality" setting is turned off.] 
 			'''
 	}
 

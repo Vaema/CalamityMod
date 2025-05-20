@@ -135,7 +135,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.StarWrath).
                 AddIngredient<DivineGeode>(10).
                 AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

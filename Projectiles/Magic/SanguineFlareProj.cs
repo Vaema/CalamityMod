@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Magic
             float orbCount = MathHelper.Lerp(0, 20, (dmgMult-1) / 4f);
             for (var i = 0; i < orbCount; i++)
             {
-                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, Projectile.velocity.RotatedByRandom(1) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 20, 0f, player.whoAmI);
+                Projectile.NewProjectile(Projectile.GetSource_OnHit(target), Projectile.Center, Projectile.velocity.RotatedByRandom(1) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 18, 0f, player.whoAmI);
             }
             if (dmgMult > 1)
             {

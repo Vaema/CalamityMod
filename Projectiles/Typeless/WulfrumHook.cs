@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Point tilePos = Projectile.Center.ToTileCoordinates();
                 Tile tile = Main.tile[tilePos];
-                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo() || Owner.IsBlacklistedForGrappling(tilePos))
+                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                     State = HookState.Retracting;
 
                 Projectile.velocity = Vector2.Zero;
@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     Tile tile = Main.tile[tilePos];
 
-                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo() || Owner.IsBlacklistedForGrappling(tilePos))
+                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                         continue;
                     if (Main.myPlayer != Owner.whoAmI)
                         continue;
@@ -178,6 +178,7 @@ namespace CalamityMod.Projectiles.Typeless
             //Hook onto the tile
             Projectile.velocity = Vector2.Zero;
             State = HookState.Grappling;
+
             Projectile.Center = grapplePos + Vector2.One * 8f;
             //effects
             WorldGen.KillTile(x, y, fail: true, effectOnly: true);
@@ -190,7 +191,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Owner.grapCount++;
                 //Owner.velocity = Vector2.Zero;
             }
-
+            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
+                Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
             mp.SwingLength = (Owner.Center - Projectile.Center).Length();
             mp.OldPosition = Owner.Center - Owner.velocity;
             mp.SetSegments(Projectile.Center);

@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Placeables.Furniture
                 AddIngredient<AureusCell>(5).
                 AddIngredient<StarblightSoot>(20).
                 AddIngredient<Items.Placeables.Astral.AstralStone>(30).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

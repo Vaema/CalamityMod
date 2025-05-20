@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
 {
     public class TheMutilator : BaseSwordHoldoutItem, ILocalizedModType
     {
-        public static int MaximumCharge = 10;
+        public static int MaximumCharge = 7;
         public int Charge = 0;
 
         public int DecayTimer = 0;
@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 90;
             Item.height = 90;
-            Item.damage = 1111;
+            Item.damage = 1005;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -84,7 +84,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -211,7 +211,7 @@ namespace CalamityMod.Items
                 { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
                 { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
-                { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13)) },
+                { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13), KnockbackExact(8f)) },
                 { ItemID.Rally, Do(AutoReuse, DamageExact(18)) },
                 { ItemID.RavenStaff, Do(AutoReuse, UseExact(20), DamageExact(36)) },
                 { ItemID.RazorbladeTyphoon, Do(DamageExact(103)) },
@@ -333,7 +333,7 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 3: Tool Balancing
-                { ItemID.AcornAxe, Do(AxePower(125)) }, // Axe of Regrowth
+                { ItemID.AcornAxe, Do(AxePower(100)) }, // Axe of Regrowth
                 { ItemID.AdamantiteChainsaw, Do(TrueMeleeNoSpeed, AxePower(90), UseTimeExact(4), TileBoostExact(+0), DamageExact(75)) },
                 { ItemID.AdamantiteDrill, Do(TrueMeleeNoSpeed, PickPower(180), UseTimeExact(4), TileBoostExact(+1), DamageExact(32)) },
                 { ItemID.AdamantitePickaxe, Do(PickPower(180), UseTimeExact(8), TileBoostExact(+1)) },
@@ -596,28 +596,9 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 9: Sell Prices
-                { ItemID.Apple, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Apricot, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Banana, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.BlackCurrant, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.BloodOrange, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Cherry, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Coconut, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Dragonfruit, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Elderberry, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.EncumberingStone, Do(Worthless) },
                 { ItemID.GlowingMushroom, Do(Worthless) },
-                { ItemID.Grapefruit, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Lemon, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Mango, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.Mushroom, Do(Worthless) },
-                { ItemID.Peach, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Pineapple, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Plum, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Pomegranate, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Rambutan, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.SpicyPepper, Do(Value(Item.sellPrice(copper: 40))) },
-                { ItemID.Starfruit, Do(Value(Item.sellPrice(copper: 40))) },
                 { ItemID.PortableStool, Do(Value(Item.sellPrice(copper: 20))) }, // Step Stool
                 { ItemID.UncumberingStone, Do(Worthless) },
                 { ItemID.ViciousMushroom, Do(Worthless) },

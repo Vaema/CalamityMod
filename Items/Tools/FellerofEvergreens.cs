@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Tools
         {
             CreateRecipe().
                 AddRecipeGroup("AnySilverBar", 18).
-                AddRecipeGroup("Wood", 18).
+                AddIngredient(ItemID.RichMahogany, 18).
                 AddTile(TileID.Anvils).
                 Register();
         }

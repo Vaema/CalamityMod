@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<ReaperTooth>(6).
                 AddIngredient<Lumenyl>(15).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

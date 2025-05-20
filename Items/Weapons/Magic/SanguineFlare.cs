@@ -21,9 +21,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 56;
             Item.height = 60;
-            Item.damage = 1000;
+            Item.damage = 1050;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 22;
+            Item.mana = 36;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

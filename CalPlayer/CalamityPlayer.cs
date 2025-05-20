@@ -125,7 +125,7 @@ namespace CalamityMod.CalPlayer
         public bool noLifeRegen = false;
         public bool reducedDaybrokenDamage = false;
         public bool reducedNightwitherDamage = false;
-        public float rangedAmmoCost = 1f;
+        public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
         /// Tracks whether or not the player is currently holding Gael's Greatsword.<br/>
@@ -727,15 +727,13 @@ namespace CalamityMod.CalPlayer
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
+        public int generalBandCooldown = 0;
         public bool bGlassBand = false; // Obsidian band
         public bool bGlassBandVisual = false;
-        public int bGlassbandCooldown = 0;
         public bool batholithBangle = false; // Granite band
         public bool batholithBangleVisual = false;
-        public int batholithBangleCooldown = 0;
         public bool protolithBangle = false; // Marble band
         public bool protolithBangleVisual = false;
-        public int protolithBangleCooldown = 0;
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
@@ -785,6 +783,7 @@ namespace CalamityMod.CalPlayer
         public int gloveLevel = 0;
         public bool alreadyHasFrogLeg = false; // Unused, intended to prevent Frog Leg tinker stacking
         public bool eTalisman = false;
+        public bool lastDashWasTabi = false;
         public bool statisNinjaBelt = false;
         /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
         public int statisPenaltyTimer = 0;
@@ -806,6 +805,12 @@ namespace CalamityMod.CalPlayer
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
         public int transformerStoredKills = 0;
+        public bool bloomStone = false;
+        public bool bloomStoneHookVisuals = false;
+        public int bloomStoneHealInc = 0;
+        public int bloomStoneTotalHeal = 0;
+        public int bloomStoneHealTimer = 0;
+        public int bloomStoneDR = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -850,7 +855,6 @@ namespace CalamityMod.CalPlayer
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
-        public bool elysianWingsDust = false;
         public bool tracersCelestial = false;
         public bool tracersElysian = false;
         public bool tracersSeraph = false;
@@ -927,6 +931,11 @@ namespace CalamityMod.CalPlayer
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
         public int spiritOriginCritBoost = 0;
+/// <summary>
+/// The amount of bonus crit damage the player has.
+/// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
+/// </summary>
+        public float critDamage = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
@@ -951,6 +960,7 @@ namespace CalamityMod.CalPlayer
         public bool sPauldronVisual = false;
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
+        public Color XykFXColor = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
         public bool royalGel = false;
@@ -1028,8 +1038,6 @@ namespace CalamityMod.CalPlayer
         /// Life regeneration is increased while between 600 and 720, with a 10 second cooldown afterwards represented by being below 600.
         /// </summary>
         public int phantomicHeartRegen = 0;
-        public bool silvaWings = false;
-        public int silvaWingsLifeRegenTimer = 0;
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
         public bool RustyMedallionDroplets = false;
@@ -2169,6 +2177,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            batholithBangle = false; // Granite band
+            batholithBangleVisual = false;
+            protolithBangle = false; // Marble band
+            protolithBangleVisual = false;
             aFossil = false;
             aPowder = false;
             fallingBlockProtection = false;
@@ -2180,11 +2192,16 @@ namespace CalamityMod.CalPlayer
             bloodyWormTooth = false;
             vexation = false;
             badgeOfBravery = false;
+            // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
+            if (!WarbanneroftheRighteous)
+                cooldowns.Remove(WarbanneroftheRighteousBuff.ID);
             WarbanneroftheRighteous = false;
             warbannerGlow = false;
             ilSpark = false;
             transformer = false;
             transformerVisual = false;
+            bloomStone = false;
+            bloomStoneHookVisuals = false;
             hideOfDeus = false;
             dAmulet = false;
             rampartOfDeities = false;
@@ -2220,8 +2237,10 @@ namespace CalamityMod.CalPlayer
             eGauntlet = false;
             eGauntletVisuals = true;
             gloveLevel = 0;
-            statisNinjaBelt = false;
-            statisVoidSash = false;
+            if (Player.dashDelay != -1)
+                statisNinjaBelt = false;
+            if (Player.dashDelay != -1)
+                statisVoidSash = false;
             alreadyHasFrogLeg = false;
             eTalisman = false;
             nucleogenesis = false;
@@ -2283,7 +2302,6 @@ namespace CalamityMod.CalPlayer
             hallowedPower = false;
             kamiBoost = false;
             tracersDust = false;
-            elysianWingsDust = false;
             tracersCelestial = false;
             tracersElysian = false;
             tracersSeraph = false;
@@ -2299,7 +2317,6 @@ namespace CalamityMod.CalPlayer
             starbusterCore = false;
             starTaintedGenerator = false;
             camper = false;
-            silvaWings = false;
             corrosiveSpine = false;
             RustyMedallionDroplets = false;
             rottenDogTooth = false;
@@ -2324,7 +2341,7 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
 
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
 
             avertorBonus = false;
@@ -2349,6 +2366,7 @@ namespace CalamityMod.CalPlayer
                 spiritOriginCritBoost = 0;
             spiritOrigin = false;
             spiritOriginVanity = false;
+            critDamage = 0;
 
 
             astralStarRain = false;
@@ -2841,11 +2859,16 @@ namespace CalamityMod.CalPlayer
             auralisAurora = 0;
             necroReviveCounter = -1;
             hideOfDeusTimer = 0;
+            bloomStoneHealInc = 0;
+            bloomStoneTotalHeal = 0;
+            bloomStoneHealTimer = 0;
+            bloomStoneDR = 0;
             murasamaHitCooldown = 0;
             RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
+            critDamage = 0f;
             rage = 0f;
             adrenaline = 0f;
             raiderCritLifespan = 0;
@@ -3061,7 +3084,7 @@ namespace CalamityMod.CalPlayer
             bloodfinTimer = 0;
             healCounter = 300;
             danceOfLightCharge = 0;
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;
@@ -3181,7 +3204,6 @@ namespace CalamityMod.CalPlayer
             fearmongerRegenFrames = 0;
             xerocSet = false;
             tracersDust = false;
-            elysianWingsDust = false;
             GemTechState.OnDeathEffects();
             shieldOfTheOceanParry = 0;
             shieldOfTheOceanEmpoweredParry = false;
@@ -3221,7 +3243,6 @@ namespace CalamityMod.CalPlayer
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
             vortexBoosterStealthDelay = 0;
-            silvaWingsLifeRegenTimer = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -4037,42 +4058,37 @@ namespace CalamityMod.CalPlayer
 
             // Takes the movement speed bonus and uses it to increase run speed
             float accRunSpeedMin = Player.accRunSpeed * 0.5f;
-            Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.2f;
+            Player.accRunSpeed += Player.accRunSpeed * moveSpeedBonus * 0.16f;
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
 
-            //Life Jelly regen aura spawn when using a healing potion
+            // Life Jelly regen aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && lifejelly && !GrandGelatin)
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<PinkJellyAura>(), 0, 0, Player.whoAmI);
 
-            //Cleansing Jelly cleansing aura spawn when using a healing potion
+            // Cleansing Jelly cleansing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && cleansingjelly && !GrandGelatin)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<BlueJellyAura>(), 0, 0, Player.whoAmI);
-            }
-            //Grand Gellatin regen and cleansing aura spawn when using a healing potion
+
+            // Grand Gellatin regen and cleansing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && GrandGelatin && !absorber)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<GreenJellyAura>(), 0, 0, Player.whoAmI);
-            }
-            //Absorber's regen, cleansing, and buffing aura spawn when using a healing potion
+
+            // Absorber's regen, cleansing, and buffing aura spawn when using a healing potion
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && absorber)
-            {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, Player.whoAmI);
-            }
 
             if (snowman)
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
                     Player.AddBuff(BuffType<PopoBuff>(), 60, true);
             }
+
             if (abyssalDivingSuit)
             {
                 Player.AddBuff(BuffType<AbyssalDivingSuitBuff>(), 60, true);
                 if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(DivingPlatesBroken.ID))
-                {
                     Player.AddBuff(BuffType<AbyssalDivingSuitPlates>(), 2);
-                }
 
                 if (Player.whoAmI == Main.myPlayer && Player.active && abyssalDivingSuitPlateHits < 3)
                 {
@@ -4090,40 +4106,36 @@ namespace CalamityMod.CalPlayer
             }
 
             if (aquaticHeart)
-            {
                 Player.AddBuff(BuffType<AquaticHeartBuff>(), 60, true);
-            }
+
             if (aquaticHeart && NPC.downedBoss3)
             {
                 if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(AquaticHeartIceShield.ID))
-                {
                     Player.AddBuff(BuffType<IceShieldBuff>(), 2);
-                }
             }
+
             if (profanedCrystal)
-            {
                 Player.AddBuff(BuffType<ProfanedCrystalBuff>(), 60, true);
-            }
+
             if (gSabaton)
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     // While holding hotkey, but before slam, bring Y velocity closer to 0
                     if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
-                    {
                         Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
-                    }
+
                     // Play sound a bit early so it goes in time with the fall
                     if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
-                    {
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
-                    }
+
                     // 0.5 seconds passed, falling time
                     if (gSabatonHotkeyHoldTime == 30)
                     {
                         gSabatonFalling = true;
                         Player.velocity.Y = 0.01f;
                     }
+
                     // Cancel fall and don't give 'on ground' effects if on rope, on mount, grappled, or tongued
                     // Also cancel fall if the player has upwards Y velocity (Goodbye Inner Tube cheese)
                     if ((Player.gravDir == 1 && Player.velocity.Y < 0f) || (Player.gravDir == -1 && Player.velocity.Y > 1f) || Player.pulley || Player.mount.Active || Player.grappling[0] != -1 || Player.tongued)
@@ -4131,6 +4143,7 @@ namespace CalamityMod.CalPlayer
                         gSabatonFall = 0;
                         gSabatonFalling = false;
                     }
+
                     if (gSabatonFalling)
                     {
                         SpawnGravistarParticle();
@@ -4141,6 +4154,7 @@ namespace CalamityMod.CalPlayer
 
                         Player.maxFallSpeed = 40f;
                         Player.gravity = 1.3f;
+
                         // If the player can fly during the fall, the physics gets a bit funky
                         Player.controlJump = false;
 
@@ -4148,13 +4162,14 @@ namespace CalamityMod.CalPlayer
                         if (0 == Player.velocity.Y)
                         {
                             var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
-                            //Spawn explosion. ai[0] is used for transferring the recorded falling time
+                            // Spawn explosion. ai[0] is used for transferring the recorded falling time
 
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
 
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
+
                             // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
                         }
@@ -4215,7 +4230,7 @@ namespace CalamityMod.CalPlayer
             if (Main.myPlayer == Player.whoAmI)
             {
                 mouseRight = PlayerInput.Triggers.Current.MouseRight;
-                mouseWorld = Main.MouseWorld;
+                mouseWorld = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
 
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
@@ -4353,6 +4368,17 @@ namespace CalamityMod.CalPlayer
                     if (!Player.HasCooldown(LifeSteal.ID) || (cooldowns[LifeSteal.ID].duration < duration))
                         Player.AddCooldown(LifeSteal.ID, duration);
                 }
+            }
+
+            //Star in a Bottle gives Mana Regeneration instead of it's usual effect when you don't already have Mana Regeneration
+            if (!Player.manaRegenBuff && Player.HasBuff(BuffID.StarInBottle)) 
+            {
+                //Cancel out Star In A Bottle's normal effect
+				Player.manaRegenDelayBonus -= 0.5f;
+				Player.manaRegenBonus -= 10;
+                //Apply Mana Regen Potion effect
+                Player.manaRegenBuff = true;
+                
             }
 
             ForceVariousEffects();
@@ -4521,6 +4547,8 @@ namespace CalamityMod.CalPlayer
         public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
         {
             healValue = (int)(healValue * healingPotionMultiplier);
+            if (bloomStone)
+                healValue = 0;
         }
         #endregion
 
@@ -4837,12 +4865,7 @@ namespace CalamityMod.CalPlayer
                     Vector2 mouse = Player.ClampedMouseWorld();
                     Vector2 startingPosition = mouse - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
                     Vector2 directionToMouse = (mouse - startingPosition).SafeNormalize(Vector2.UnitX);
-                    int drop = Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<AcidBarrelDrop>(), d, 0f, Player.whoAmI, 3);
-                    if (drop.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[drop].penetrate = 2;
-                        Main.projectile[drop].DamageType = DamageClass.Generic;
-                    }
+                    Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<RustyMedallionDroplet>(), d, 0f, Player.whoAmI, 3);
                     RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
                 }
             }

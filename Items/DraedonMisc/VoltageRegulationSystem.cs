@@ -62,7 +62,7 @@ namespace CalamityMod.Items.DraedonMisc
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(4, out Func<bool> condition), condition).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

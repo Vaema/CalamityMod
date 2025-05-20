@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -39,6 +40,15 @@ namespace CalamityMod.Items.Weapons.Rogue
                 return false;
             }
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<ContaminatedBile>().
+                AddIngredient<CorrodedFossil>(15).
+                AddTile(TileID.Anvils).
+                Register();
         }
     }
 }

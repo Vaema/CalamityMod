@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), Owner.Center);
                     CombatText.NewText(Owner.Hitbox, new Color(192, 0, 0), CalamityUtils.GetTextValue("Misc.BurningSeaBurn"), true);
 
-                    Owner.AddBuff(ModContent.BuffType<BrimstoneFlames>(), (int)BurningSea.FizzleOutTime);
+                    Owner.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
                     TriggeredBurnOut = true;
                 }
             }

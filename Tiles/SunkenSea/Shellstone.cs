@@ -28,17 +28,15 @@ namespace CalamityMod.Tiles.SunkenSea
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
-        }
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak) => TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+
         public override void RandomUpdate(int i, int j)
         {
             Tile Tile = Framing.GetTileSafely(i, j);
             Tile Below = Framing.GetTileSafely(i, j + 1);
             Tile Above = Framing.GetTileSafely(i, j - 1);
 
-            if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope)
+            if (!Below.HasTile && Below.LiquidType == LiquidID.Water && !Tile.BottomSlope)
             {
                 if (Main.rand.NextBool(10))
                 {
@@ -46,9 +44,7 @@ namespace CalamityMod.Tiles.SunkenSea
                     Below.HasTile = true;
                     WorldGen.SquareTileFrame(i, j + 1, true);
                     if (Main.dedServ)
-                    {
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-                    }
                 }
             }
         }

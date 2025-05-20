@@ -109,9 +109,11 @@ namespace CalamityMod.NPCs
                 #region Sky / Space
                 // Harpy
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
+                // Giant Harpy Feather @ 1.25% (0.67% in Vanilla)
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
+                    npcLoot.ChangeDropRate(ItemID.GiantHarpyFeather, 1, 80);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -133,18 +135,24 @@ namespace CalamityMod.NPCs
 
                 #region Underground
                 // Giant Shelly
+                // Giant Shell @ 100% IF Hardmode
+                // OTHERWISE,
                 // Giant Shell @ 14.29% Normal, 25% Expert+
                 case NPCID.GiantShelly:
                 case NPCID.GiantShelly2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<GiantShell>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<GiantShell>(), 7, 4));
                     break;
 
                 // Crawdad
+                // Craw Carapace @ 100% IF Hardmode
+                // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
                 // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
+                    hardmode.Add(ModContent.ItemType<CrawCarapace>());
+                    hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
 
@@ -174,6 +182,27 @@ namespace CalamityMod.NPCs
                 // Punch Card @ 100%
                 case NPCID.SkeletonMerchant:
                     npcLoot.Add(ModContent.ItemType<PunchCard>());
+                    break;
+
+                // Skeleton Archer
+                // Magic Quiver @ 5% (2.5% in Vanilla)
+                // Marrow @ 2.5% (0.5% in Vanilla)
+                case NPCID.SkeletonArcher:
+                    npcLoot.ChangeDropRate(ItemID.MagicQuiver, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 40);
+                    break;
+
+                // Armored Skeleton
+                // Beam Sword @ 5% (0.67% in Vanilla)
+                case NPCID.ArmoredSkeleton:
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 20);
+                    break;
+
+                // Black Recluse
+                // Poison Staff @ 5% (2.5% in Vanilla)
+                case NPCID.BlackRecluse:
+                case NPCID.BlackRecluseWall:
+                    npcLoot.ChangeDropRate(ItemID.PoisonStaff, 1, 20);
                     break;
 
                 // Mimic
@@ -373,18 +402,21 @@ namespace CalamityMod.NPCs
                 // Life Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
                     break;
 
                 // Piranha, Arapaima, Blood Feeder
@@ -409,7 +441,7 @@ namespace CalamityMod.NPCs
                 // Jellyfish Necklace @ 1%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 100);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
                     break;
                 #endregion
 
@@ -551,7 +583,7 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<StaffOfNecrosteocytes>(), 15, 10));
                     break;
 
-                //The ectoplasm extra drops got moved to the list section; just like moss hornets
+                // The ectoplasm extra drops got moved to the list section; just like moss hornets
 
                 // Hardmode Dungeon Melee Skeletons
                 // Wisp in a Bottle @ 0.5% INSTEAD OF 0.25%
@@ -602,10 +634,18 @@ namespace CalamityMod.NPCs
 
                 #region Hell
 
-                // Hellbat.
+                // Hellbat
                 // Flarebat Staff @ 4%
+                // Magma Stone @ 1.33% (0.67% in Vanilla)
                 case NPCID.Hellbat:
                     npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 75);
+                    break;
+
+                // Lava Bat
+                // Magma Stone @ 3.33% (2% in Vanilla)
+                case NPCID.Lavabat:
+                    npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 30);
                     break;
 
                 // Fire Imp
@@ -617,10 +657,12 @@ namespace CalamityMod.NPCs
 
                 // Demon, Voodoo Demon
                 // Bladecrest Oathsword @ 2%, 6.67% after defeating EoW/BoC
+                // Demon Scythe @ 5% (2.86% in Vanilla)
                 case NPCID.Demon:
                 case NPCID.VoodooDemon:
                     npcLoot.AddIf((info) => !NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 50);
                     npcLoot.AddIf((info) => NPC.downedBoss2, ModContent.ItemType<BladecrestOathsword>(), 15);
+                    npcLoot.ChangeDropRate(ItemID.DemonScythe, 1, 20);
                     break;
 
                 // Bone Serpent

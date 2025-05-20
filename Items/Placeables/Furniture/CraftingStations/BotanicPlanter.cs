@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
             CreateRecipe().
                 AddIngredient<UelibloomBrick>(20).
                 AddIngredient(ItemID.JungleSpores, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

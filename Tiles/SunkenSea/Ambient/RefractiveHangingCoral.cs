@@ -46,24 +46,17 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            // Light Cyan
-            if (closer && Main.rand.NextBool(600))
+            if (closer && Main.rand.NextBool(300))
             {
+                // this comment will exist until The Great Dustpan is merged:
+                // vanilla's Firefly dust (304) is completely yellow.
+                // therefore, it is completely unable to be turned blue due to how draw colour works!
+                // so it will always appear grey when you try to draw blue, and red/green/yellow otherwise.
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(136, 206, 215), 1.7f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, Color.Lerp(new Color(0, 76, 255), new Color(76, 0, 255), Main.rand.NextFloat()), Main.rand.NextFloat(1f, 2f))];
                 dust.noGravity = true;
                 dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
-            }
-
-            //Lilac
-            if (closer && Main.rand.NextBool(600))
-            {
-                Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(236, 194, 252), 1.6f)];
-                dust.noGravity = true;
-                dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
+                dust.fadeIn = 2.5f;
             }
         }
 

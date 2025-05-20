@@ -155,7 +155,6 @@ namespace CalamityMod.NPCs
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
-        public bool IncreasedColdEffects_FrozenWings = false;
         public bool IncreasedColdEffects_CryoStone = false;
 
         // Electric effects
@@ -165,7 +164,6 @@ namespace CalamityMod.NPCs
         public bool IncreasedHeatEffects_Fireball = false;
         public bool IncreasedHeatEffects_CinnamonRoll = false;
         public int IncreasedHeatEffects_FireBoots = 0;
-        public bool IncreasedHeatEffects_FlameWings = false;
 
         // Toxic Heart effect
         public bool IncreasedSicknessEffects_ToxicHeart = false;
@@ -544,13 +542,11 @@ namespace CalamityMod.NPCs
             myClone.VulnerableToWater = VulnerableToWater;
 
             myClone.IncreasedColdEffects_EskimoSet = IncreasedColdEffects_EskimoSet;
-            myClone.IncreasedColdEffects_FrozenWings = IncreasedColdEffects_FrozenWings;
             myClone.IncreasedColdEffects_CryoStone = IncreasedColdEffects_CryoStone;
             myClone.IncreasedElectricityEffects_Unused = IncreasedElectricityEffects_Unused;
             myClone.IncreasedHeatEffects_Fireball = IncreasedHeatEffects_Fireball;
             myClone.IncreasedHeatEffects_CinnamonRoll = IncreasedHeatEffects_CinnamonRoll;
             myClone.IncreasedHeatEffects_FireBoots = IncreasedHeatEffects_FireBoots;
-            myClone.IncreasedHeatEffects_FlameWings = IncreasedHeatEffects_FlameWings;
             myClone.IncreasedSicknessEffects_ToxicHeart = IncreasedSicknessEffects_ToxicHeart;
             myClone.IncreasedWaterEffects_Amulet1 = IncreasedWaterEffects_Amulet1;
             myClone.IncreasedWaterEffects_Amulet2 = IncreasedWaterEffects_Amulet2;
@@ -974,8 +970,6 @@ namespace CalamityMod.NPCs
 
             if (IncreasedColdEffects_EskimoSet)
                 coldDamageMult += 0.25;
-            if (IncreasedColdEffects_FrozenWings)
-                coldDamageMult += 0.25;
             if (IncreasedColdEffects_CryoStone)
                 coldDamageMult += 0.5;
 
@@ -988,8 +982,6 @@ namespace CalamityMod.NPCs
                 heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
             if (IncreasedHeatEffects_CinnamonRoll)
                 heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FlameWings)
-                heatDamageMult += 0.25;
 
             if (IncreasedSicknessEffects_ToxicHeart)
                 sicknessDamageMult += 0.5;
@@ -6476,7 +6468,7 @@ namespace CalamityMod.NPCs
         {
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
             {
@@ -6487,9 +6479,9 @@ namespace CalamityMod.NPCs
             if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
                 AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
                 StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>())
+                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>())
             {
-                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : 0.5f;
+                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : npc.type == NPCType<Crabulon.Crabulon>() ? 0.8f : 0.5f;
                 if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
                     modifiers.SourceDamage *= damageMult;
             }
@@ -6672,7 +6664,7 @@ namespace CalamityMod.NPCs
             }
 
             if (modPlayer.camper && !player.StandingStill())
-                modifiers.SourceDamage *= 0.1f;
+                modifiers.SourceDamage *= 0.5f;
 
             if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;
@@ -7408,8 +7400,8 @@ namespace CalamityMod.NPCs
                 DeerclopsAI.hasTargetBeenInRange = false;
                 DeerclopsAI.borderDelay = 7f * 60f;
                 DeerclopsAI.borderScalar = 0f;
-                DeerclopsAI.innerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
-                DeerclopsAI.outerBorder = DeerclopsAI.maxDRIncreaseDistance * 5f;
+                DeerclopsAI.innerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
+                DeerclopsAI.outerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
             }
 
             // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena

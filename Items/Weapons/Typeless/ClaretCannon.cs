@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Typeless
 
         public int ClaretCooldown = 0;
 
-        public static int ClaretCooldownMax = 300;
+        public static int ClaretCooldownMax = 600;
 
         public float baseUseDir = 0;
         public override void SetDefaults()
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

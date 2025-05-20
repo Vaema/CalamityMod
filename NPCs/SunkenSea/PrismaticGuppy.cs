@@ -440,7 +440,31 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.velocity.Y += 1;
             }
 
-            if (CurrentColor == (int)FishColor.Gold)
+            if (Main.rand.NextBool(50))
+            {
+                int dustid = DustID.WhiteTorch;
+                switch (CurrentColor)
+                {
+                    case 0:
+                        dustid = DustID.IceTorch;
+                        break;
+                    case 1:
+                        dustid = DustID.CoralTorch;
+                        break;
+                    case 2:
+                        dustid = DustID.PinkTorch;
+                        break;
+                    case 4:
+                        dustid = DustID.BoneTorch;
+                        break;
+                }
+                Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, dustid, Scale: 1.5f);
+                dust.velocity = Vector2.Zero;
+                dust.noGravity = true;
+                dust.color *= 0.5f;
+            }
+
+                if (CurrentColor == (int)FishColor.Gold)
             {
                 NPC.rarity = 3;
                 NPC.value = 100000;

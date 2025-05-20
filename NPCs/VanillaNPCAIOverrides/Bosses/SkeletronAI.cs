@@ -410,9 +410,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 calamityGlobalNPC.newAI[1] += 1f;
-                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 14f) : phase4 ? (death ? 8f : 6f) : ((death ? 6f : 4f) * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
+                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 8f) : phase4 ? (death ? 6f : 4f) : ((death ? 4.5f : 3f) * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
                 if (!handsDead)
-                    chargePhaseChangeRateBoost *= 0.5f;
+                    chargePhaseChangeRateBoost *= 0.25f;
 
                 float chargePhaseChangeRate = chargePhaseChangeRateBoost + 1f;
                 npc.ai[2] += chargePhaseChangeRate;
@@ -493,6 +493,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                     else
                         npc.rotation = npc.velocity.X / 15f;
+
+                    // Force net updates every frame during this movement to avoid despawning in multiplayer
+                    // I'm doing this because npc.ai[2] changes every frame and that's used to calculate Skeletron's velocity here
+                    npc.ForceNetUpdate();
 
                     return false;
                 }

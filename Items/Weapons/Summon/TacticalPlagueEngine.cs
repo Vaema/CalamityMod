@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 AddIngredient<BlackHawkRemote>().
                 AddIngredient<FuelCellBundle>().
                 AddIngredient(ItemID.LunarBar, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
