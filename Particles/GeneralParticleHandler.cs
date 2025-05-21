@@ -39,10 +39,16 @@ namespace CalamityMod.Particles
         private static bool CurrentlyRendering { get; set; }
 
         /// <summary>
+        /// The resolution ratio at which pixelated particles should draw.<br/>
+        /// <c>0.5f</c> will draw at half resolution, <c>0.25f</c> will draw at quarter resolution, etc.
+        /// </summary>
+        private const float PixelationResolution = 0.5f;
+
+        /// <summary>
         /// Creates a render target at half the screen's dimensions.
         /// This is done due to the fact that when the target itself drawn, it needs to be drawn at double the original scale in order to pixelate its contents
         /// </summary>
-        private static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.instance.GraphicsDevice, (int)(width * 0.5f), (int)(height * 0.5f));
+        private static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.instance.GraphicsDevice, (int)(width * PixelationResolution), (int)(height * PixelationResolution));
 
         public override void PostSetupContent()
         {
@@ -205,7 +211,8 @@ namespace CalamityMod.Particles
 
             if (particles.Count > 0)
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, blendStateToUse, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix * Matrix.CreateScale(PixelationResolution);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, blendStateToUse, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
 
                 foreach (Particle particle in particles)
                 {
@@ -239,8 +246,10 @@ namespace CalamityMod.Particles
 
         private static void DrawScaledTarget(ManagedRenderTarget targetToDraw, SpriteBatch spriteBatch, BlendState blendState)
         {
+            const float inversePixelationScale = 1f / PixelationResolution;
+
             spriteBatch.Begin(SpriteSortMode.Deferred, blendState, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            spriteBatch.Draw(targetToDraw, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(targetToDraw, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, inversePixelationScale, SpriteEffects.None, 0f);
             spriteBatch.End();
         }
 
