@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
+using System.Reflection;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using ReLogic.Threading;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Default;
 
 namespace CalamityMod.MainMenu
 {
@@ -42,19 +42,52 @@ namespace CalamityMod.MainMenu
 
         public static List<SunkenFishBoid> Fishes { get; private set; } = [];
 
+        public static Asset<Texture2D> LogoWater => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken_Water");
+
         public int MaxBoids = 120;
 
         public float remixLogoRotation = 0f;
+        
+        /// <summary>
+        /// The global save data key which dictates whether or not the player is opening the Sunken Sea Overhaul update for the first time.
+        /// </summary>
+        public const string FirstTimeOpeningSunkenSeaOverhaulKey = "HasOpenedTheSunkenSeaOverhaulForTheFirstTime";
+
         public override string DisplayName => "Calamity Style - Sunken";
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken");
-        Asset<Texture2D> LogoWater => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken_Water");
+
         public override Asset<Texture2D> SunTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");
+
         public override Asset<Texture2D> MoonTexture => ModContent.Request<Texture2D>("CalamityMod/Backgrounds/BlankPixel");
 
         public override int Music => CalamityMod.Instance.GetMusicFromMusicMod("SunkenSea") ?? MusicID.OceanNight;
 
         public override ModSurfaceBackgroundStyle MenuBackgroundStyle => ModContent.GetInstance<NullSurfaceBackground>();
+
+        public static void ForceMenuStyle()
+        {
+            // Forcefully open this ModMenu if it's the player's first time opening the Sunken Sea Overhaul update.
+            if (GlobalSaveDataSystem.IsKeyAlreadySaved(FirstTimeOpeningSunkenSeaOverhaulKey))
+                return;
+
+            FieldInfo menusInfo = typeof(MenuLoader).GetField("menus", BindingFlags.Static | BindingFlags.NonPublic);
+            List<ModMenu> modMenus = (List<ModMenu>)menusInfo.GetValue(null);
+
+            var sunkenMenu = ModContent.GetInstance<CalamityMainMenu_Sunken>();
+            if (modMenus.Contains(sunkenMenu))
+            {
+                FieldInfo lastSelectedMenuInfo = typeof(MenuLoader).GetField("LastSelectedModMenu", BindingFlags.Static | BindingFlags.NonPublic);
+                int sunkenSeaMenuIndex = modMenus.IndexOf(sunkenMenu);
+                lastSelectedMenuInfo.SetValue(null, modMenus[sunkenSeaMenuIndex].FullName);
+            }
+        }
+
+        public override void Update(bool isOnTitleScreen)
+        {
+            if (!GlobalSaveDataSystem.IsKeyAlreadySaved(FirstTimeOpeningSunkenSeaOverhaulKey))
+                GlobalSaveDataSystem.SaveKey(FirstTimeOpeningSunkenSeaOverhaulKey);
+        }
 
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {

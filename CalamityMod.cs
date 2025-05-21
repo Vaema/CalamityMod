@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
+using CalamityMod.MainMenu;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,12 @@ namespace CalamityMod
                 // However, render targets and certain other graphical objects can only be created on the main thread.
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
+        }
+
+        public override void PostSetupContent()
+        {
+            // Force open certain ModMenus for various reasons and the added flair of "Hey! Something big has happened! Check it out!"
+            CalamityMainMenu_Sunken.ForceMenuStyle();
         }
         #endregion
 
