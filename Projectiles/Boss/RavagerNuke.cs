@@ -7,11 +7,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class ScavengerNuke : ModProjectile, ILocalizedModType
+    public class RavagerNuke : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle ExplosionSound = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
@@ -153,20 +154,26 @@ namespace CalamityMod.Projectiles.Boss
             Color finalColor = Color.Lerp(Color.White, Color.Red, (float)Math.Abs(Math.Sin((timeToStartWarning - Projectile.timeLeft) * (MathHelper.Pi * 7f / 180f))));
             Color warningColor;
             finalColor.A = (byte)(255 - Projectile.alpha);
+            float colorTransitionRatio = MathHelper.Clamp((timeToStartWarning - Projectile.timeLeft) / (float)timeToStartWarning, 0f, 1f);
 
             if (Projectile.timeLeft <= timeToStartWarning)
-            {
-                float colorTransitionRatio = (timeToStartWarning - Projectile.timeLeft) / (float)timeToStartWarning;
                 warningColor = Color.Lerp(initialColor, finalColor, colorTransitionRatio);
-            }
             else
                 warningColor = initialColor;
 
             float strength = Utils.GetLerpValue(0, timeToStartWarning / 1.5f, timeToStartWarning - Projectile.timeLeft, true);
-            Rectangle frame = TextureAssets.Projectile[Type].Value.Frame(1, 5, 0, Projectile.frame);
+            Texture2D tex = TextureAssets.Projectile[Type].Value;
+            Rectangle frame = tex.Frame(1, 5, 0, Projectile.frame);
             SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            Projectile.DrawProjectileWithBackglow(new Color(64, 255, 255) * strength, Projectile.GetAlpha(warningColor), 4.5f, null, frame, sp);
+            Projectile.DrawBackglow(new Color(64, 255, 255) * strength, 4.5f, null, frame, sp);
+
+            Main.spriteBatch.EnterShaderRegion(BlendState.AlphaBlend);
+            GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(colorTransitionRatio * 0.45f);
+            GameShaders.Misc["CalamityMod:BasicTint"].UseColor(warningColor);
+            GameShaders.Misc["CalamityMod:BasicTint"].Apply();
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() * 0.5f, Projectile.scale, sp);
+            Main.spriteBatch.ExitShaderRegion();
             return false;
         }
     }
