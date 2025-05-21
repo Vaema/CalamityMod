@@ -1,13 +1,15 @@
-using Terraria.ModLoader;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
-using CalamityMod.Items.Weapons.Melee;
-using Terraria.DataStructures;
-using System;
-using System.Collections.Generic;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -15,6 +17,7 @@ namespace CalamityMod.Projectiles.Melee
     public class MirrorBladeProjectile : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+        public Player Owner => Main.player[Projectile.owner];
         public override int swingWidth => 200;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<MirrorBlade>()).Item;
         public override int AfterImageLength => 10;
@@ -23,6 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public override Color[] trailColors => new Color[] { Color.Red, Color.MediumPurple, Color.Purple }; public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
         public override bool AlternateSwings => true;
+        public bool SpawnShards = true;
 
         public override bool useMeleeSpeed => true;
 
@@ -89,8 +93,26 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            for (var i = 0; i < 2; i++)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+
+            //Ensures only two shards spawn on enemy hits. If you're wondering why this is needed, turn this off and fight Storm Weaver
+            if (SpawnShards)
+            {
+                for (var i = 0; i < 2; i++)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+
+                SpawnShards = false;
+            }
+
+            int slashCreatorID = ModContent.ProjectileType<MirrorBladeSlashCreator>();
+            int damage = (int)(Projectile.damage * DarklightGreatsword.SlashProjectileDamageMultiplier);
+            float knockback = Projectile.knockBack * DarklightGreatsword.SlashProjectileDamageMultiplier;
+            if (Owner.ownedProjectileCounts[slashCreatorID] < MirrorBlade.SlashProjectileLimit)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, slashCreatorID, damage, knockback, Projectile.owner, target.whoAmI, Projectile.rotation, 1f);
+                Owner.ownedProjectileCounts[slashCreatorID]++;
+            }
+            SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with { Volume = CommonCalamitySounds.SwiftSliceSound.Volume * 0.3f }, Projectile.Center);
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
         }
         public override float trailOffset => 28;

@@ -1,23 +1,29 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using System;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.DataStructures;
-using Microsoft.Xna.Framework;
 using CalamityMod.Systems.Collections;
-using System;
-using Terraria.Localization;
+using Microsoft.Xna.Framework;
+using Mono.Cecil;
+using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
-    public class MirrorBlade : BaseSwordHoldoutItem, ILocalizedModType
+    public class MirrorBlade : BaseSwordHoldoutItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public bool HasFlavorTooltip => true;
         public override int ProjectileType => ModContent.ProjectileType<MirrorBladeProjectile>();
 
+        internal const float SlashProjectileDamageMultiplier = 0.5f;
+        internal const int SlashProjectileLimit = 4;
+        internal const int SlashCreationRate = 18;
 
         public int reflectTimer = 0;
 
@@ -32,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 114;
             Item.height = 128;
-            Item.damage = 1000;
+            Item.damage = 550;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 40;
             Item.useTime = 40;
@@ -45,6 +51,12 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shootSpeed = 9f;
             Item.shoot = ModContent.ProjectileType<MirrorBlast>();
             base.SetDefaults();
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            Item.UseSound = player.altFunctionUse == 2 ? null : SoundID.Item71;
+            return base.CanUseItem(player);
         }
 
         public override void UpdateInventory(Player player)
@@ -69,6 +81,10 @@ namespace CalamityMod.Items.Weapons.Melee
                     {
                         if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
                         {
+                            if (shardCount > 0)
+                            {
+                                SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
+                            }
                             if (shardCount >= 10)
                             {
                                 player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
@@ -119,6 +135,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
+
 
         public override bool AltFunctionUse(Player player)
         {
