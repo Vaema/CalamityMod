@@ -211,7 +211,10 @@ namespace CalamityMod.Particles
 
             if (particles.Count > 0)
             {
-                Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix * Matrix.CreateScale(PixelationResolution);
+                Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix
+                    * Matrix.CreateScale(PixelationResolution / Main.GameViewMatrix.Zoom.X, PixelationResolution / Main.GameViewMatrix.Zoom.Y, 1f)
+                    * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
+
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, blendStateToUse, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
 
                 foreach (Particle particle in particles)
