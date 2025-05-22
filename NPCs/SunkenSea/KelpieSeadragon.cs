@@ -157,7 +157,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         SquishY = 0;
                         break;
                     }
-                    NPC.chaseable = true;
+                    if (currentTarget is Player)
+                        NPC.chaseable = true;
                     bool hasSight = Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1);
                     // If the target is too far from its shooting range or a tile is in the way, move closer
                     if ((currentTarget.Distance(NPC.Center) > 300 || !hasSight) || currentTarget is NPC)

@@ -94,6 +94,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             NPC.netAlways = true;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaSerpentBanner>();
@@ -125,6 +126,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write(InitialSnapDirection);
             writer.Write(CurrentSnapDirection);
             writer.Write(NPC.Calamity().newAI[1]);
+            writer.Write(NPC.chaseable);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -134,6 +136,7 @@ namespace CalamityMod.NPCs.SunkenSea
             InitialSnapDirection = reader.ReadSingle();
             CurrentSnapDirection = reader.ReadSingle();
             NPC.Calamity().newAI[1] = reader.ReadSingle();
+            NPC.chaseable = reader.ReadBoolean();
         }
 
         public override void AI()
@@ -346,6 +349,21 @@ namespace CalamityMod.NPCs.SunkenSea
                 SnapTimer = 1f;
                 NPC.netUpdate = true;
             }
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            NPC.chaseable = true;
         }
 
         public override void FindFrame(int frameHeight)

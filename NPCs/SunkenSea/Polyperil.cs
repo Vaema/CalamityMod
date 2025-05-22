@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -79,6 +80,16 @@ namespace CalamityMod.NPCs.SunkenSea
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(NPC.chaseable);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.chaseable = reader.ReadBoolean();
+        }
+
         public override void OnSpawn(IEntitySource source)
         {
             // Pick a random color
@@ -150,6 +161,21 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CanBeHitByNPC(NPC attacker)
         {
             return PredatorIDs.Contains(attacker.type);
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            NPC.chaseable = true;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
