@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public static int HealValue = 200;
         public static int RegenLoss = 1;
-        public static int SecondDuration = 15;
+        public static int SecondDuration = 30;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenLoss.ToRegenPerSecond(), SecondDuration);
 
         public override void SetStaticDefaults()

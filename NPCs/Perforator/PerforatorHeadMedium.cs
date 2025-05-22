@@ -570,13 +570,6 @@ namespace CalamityMod.NPCs.Perforator
                     Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread * i)), type2, damage, 0f, Main.myPlayer);
                 }
             }
-
-            // ????
-            /*for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (i != NPC.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPC.type || Main.npc[i].type == ModContent.NPCType<PerforatorBodyMedium>() || Main.npc[i].type == ModContent.NPCType<PerforatorTailMedium>()))
-                    return;
-            }*/
         }
 
         public override void BossLoot(ref string name, ref int potionType)
@@ -598,7 +591,10 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 240, true);
+            {
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
+                target.AddBuff(BuffID.Ichor, 240);
+            }
         }
     }
 }

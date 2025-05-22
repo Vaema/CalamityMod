@@ -158,9 +158,6 @@ namespace CalamityMod.Balancing
             // See Aquatic Scourge comment.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
 
-            // 50% resist to Aftershock's rocks.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AftershockRock>()))));
-
             // 50% resist to Dormant Brimseeker.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
 
@@ -340,9 +337,6 @@ namespace CalamityMod.Balancing
             // 35% resist to Sulphuric Acid Cannon's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
 
-            // 35% resist to Venusian Trident.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
-
             // 25% resist to Corinth Prime's grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
 
@@ -403,9 +397,6 @@ namespace CalamityMod.Balancing
             #region Exo Mechs: Thanatos
             // 65% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(ResistTrueMelee(0.35f))));
-
-            // 65% resist to The Enforcer's projectiles.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<EssenceFlame2>()))));
 
             // 65% resist to The Final Dawn's lunge.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<FinalDawnThrow2>()))));
@@ -482,14 +473,8 @@ namespace CalamityMod.Balancing
             // 15% resist to The Final Dawn's AoE sweep flames.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<FinalDawnFlame>()))));
 
-            // 15% resist to God Slayer Slugs.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<GodSlayerSlugProj>()))));
-
             // 15% resist to Gruesome Eminence.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<SpiritCongregation>()))));
-
-            // 15% resist to Luminite Bullets.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.85f, ProjectileID.MoonlordBullet))));
             #endregion
 
             #region Supreme Calamitas: Brimstone Hearts

@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<Laudanum>().
                 AddIngredient<StressPills>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

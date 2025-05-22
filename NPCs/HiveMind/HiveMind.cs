@@ -385,17 +385,19 @@ namespace CalamityMod.NPCs.HiveMind
                     switch (choice)
                     {
                         case 0:
+                            type = !NPC.AnyNPCs(NPCID.EaterofSouls) ? NPCID.EaterofSouls : 0;
+                            break;
+
                         case 1:
-                            type = NPC.CountNPCS(NPCID.EaterofSouls) < 2 ? NPCID.EaterofSouls : 0;
+                            type = !NPC.AnyNPCs(NPCID.DevourerHead) ? NPCID.DevourerHead : 0;
                             break;
 
                         case 2:
-                            type = NPC.CountNPCS(NPCID.DevourerHead) < 2 ? NPCID.DevourerHead : 0;
+                            type = !NPC.AnyNPCs(ModContent.NPCType<DankCreeper>()) ? ModContent.NPCType<DankCreeper>() : 0;
                             break;
 
                         case 3:
-                        case 4:
-                            type = NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < 2 ? ModContent.NPCType<DankCreeper>() : 0;
+                            type = (!NPC.AnyNPCs(NPCID.Corruptor) && death) ? NPCID.Corruptor : 0;
                             break;
 
                         default:
@@ -629,7 +631,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+                            int maxSpawns = bossRush ? 16 : death ? 8 : revenge ? 6 : expertMode ? Main.rand.Next(4, 6) : Main.rand.Next(3, 5);
                             int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
                             for (int i = 0; i < maxSpawns; i++)
@@ -1115,13 +1117,6 @@ namespace CalamityMod.NPCs.HiveMind
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
-                                if (Main.netMode != NetmodeID.MultiplayerClient && Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height))
-                                {
-                                    int maxEaters = revenge ? 3 : 2;
-                                    if (NPC.CountNPCS(NPCID.EaterofSouls) < maxEaters && NPC.Distance(Main.player[NPC.target].Center) > 80f)
-                                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
-                                }
-
                                 if (NPC.ai[0] == 6f)
                                 {
                                     NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
@@ -1332,7 +1327,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 300);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 360);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => NPC.scale == 1f; // Only draw HP bar while at full size
@@ -1362,19 +1357,20 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(30))
+                    if (Main.rand.NextBool(15))
                     {
-                        if (NPC.CountNPCS(NPCID.EaterofSouls) < 3)
+                        int hiveBlobCount = NPC.CountNPCS(ModContent.NPCType<HiveBlob>()) + NPC.CountNPCS(ModContent.NPCType<HiveBlob2>());
+                        if (hiveBlobCount < 3)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
                     }
 
-                    if (Main.rand.NextBool(60))
+                    if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                     }
 
-                    if (Main.rand.NextBool(150))
+                    if (Main.rand.NextBool(45))
                     {
                         if (!NPC.AnyNPCs(NPCID.DevourerHead))
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.DevourerHead);
@@ -1488,11 +1484,11 @@ namespace CalamityMod.NPCs.HiveMind
             // GFB class emblem drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.WarriorEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.RangerEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SorcererEmblem, hideLootReport: true);
-                GFBOnly.Add(ItemID.SummonerEmblem, hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<RogueEmblem>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.WarriorEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.RangerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SorcererEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.SummonerEmblem), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RogueEmblem>()), hideLootReport: true);
             }
 
             // Lore

@@ -30,6 +30,7 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
+using CalamityMod.ExtraJumps;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -180,32 +181,53 @@ namespace CalamityMod.Items
             SetStaticDefaults_ShimmerRecipes();
 
             #region Vanilla Wing Tweaks
-            // 170 -> 240 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
-            // 170 -> 200 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.MothronWings].FlyTime = 200;
+            // Shorthand to make looking at this easier
+            WingStats[] stats = ArmorIDs.Wing.Sets.Stats;
 
+            // 130 -> 160 flight time, 6.75 -> 7.5 horizontal speed
+            stats[(int)VanillaWingID.HarpyWings].FlyTime = 160;
+            stats[(int)VanillaWingID.HarpyWings].AccRunSpeedOverride = 7.5f;
+            // 6.75 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.FrozenWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.FrozenWings].AccRunAccelerationMult = 1.5f;
+            // 160 -> 130 flight time
+            stats[(int)VanillaWingID.FlameWings].FlyTime = 130;
+            // 160 -> 180 flight time, 7.5 -> 6.25 horizontal speed
+            stats[(int)VanillaWingID.BatWings].FlyTime = 180;
+            stats[(int)VanillaWingID.BatWings].AccRunSpeedOverride = 6.25f;
+            // 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.ButterflyWings].AccRunAccelerationMult = 1.5f;
+
+            // 170 -> 240 flight time
+            stats[(int)VanillaWingID.BoneWings].FlyTime = 240;
+            // 160 -> 170 flight time, 7.5 -> 9 horizontal speed, 1 -> 1.5 acceleration multiplier
+            stats[(int)VanillaWingID.LeafWings].FlyTime = 170;
+            stats[(int)VanillaWingID.LeafWings].AccRunSpeedOverride = 9f;
+            stats[(int)VanillaWingID.LeafWings].AccRunAccelerationMult = 1.5f;
+            // (Spectre Wings) 1 -> 2 acceleration multiplier
+            stats[(int)VanillaWingID.GhostWings].AccRunAccelerationMult = 2f;
+
+            // 170 -> 210 flight time
+            stats[(int)VanillaWingID.BeetleWings].FlyTime = 210;
+            // 180 -> 210 flight time
+            stats[(int)VanillaWingID.TatteredFairyWings].FlyTime = 210;
             // (Empress Wings) 150 -> 120 flight time
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
+            stats[(int)VanillaWingID.RainbowWings].FlyTime = 120;
 
             // 12 -> 10.8 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsVortex].DownHoverAccelerationMult = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverSpeedOverride = 10.8f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.WingsNebula].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverSpeedOverride = 10.8f; // (Lazure)
+            stats[(int)VanillaWingID.BejeweledValkyrieWing].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.Yoraiz0rWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.SkiphsWings].DownHoverAccelerationMult = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverSpeedOverride = 10.8f;
+            stats[(int)VanillaWingID.BetsyWings].DownHoverAccelerationMult = 10.8f;
 
-            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 11.6 hover stats
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 11.6f;
-            ArmorIDs.Wing.Sets.Stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 11.6f;
+            // (Celestial Starboard) 4.5 -> 2.75 acceleration multiplier, 16 -> 12 hover stats
+            stats[(int)VanillaWingID.LongRainbowTrailWings].AccRunAccelerationMult = 2.75f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverSpeedOverride = 12f;
+            stats[(int)VanillaWingID.LongRainbowTrailWings].DownHoverAccelerationMult = 12f;
             #endregion
         }
 
@@ -271,7 +293,7 @@ namespace CalamityMod.Items
             }
 
             // Increase how much health Mushrooms heal.
-            if (item.type == ItemID.Mushroom && item.healLife == 15)
+            if (item.type == ItemID.Mushroom && item.healLife < 25)
                 item.healLife = 25;
 
             // Allow Beam Sword to change direction when it fires, because vanilla disables it for some reason.
@@ -651,6 +673,8 @@ namespace CalamityMod.Items
 
         public override bool? UseItem(Item item, Player player)
         {
+            var modPlayer = player.Calamity();
+
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
             {
                 if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
@@ -663,6 +687,18 @@ namespace CalamityMod.Items
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
                 player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
+
+            // Trigger Bloom Stone's heal over time from healing items
+            if (item.healLife > 0 && modPlayer.bloomStone)
+            {
+                // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
+                modPlayer.bloomStone = false;
+                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStone = true;
+
+                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
+                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
+            }
 
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
@@ -969,14 +1005,13 @@ namespace CalamityMod.Items
         }
         #endregion
 
-        #region ModifyHitNPC
+        #region Hit NPC
         public override void ModifyHitNPC(Item item, Player player, NPC target, ref NPC.HitModifiers modifiers)
         {
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
         }
-        #endregion
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
@@ -1002,6 +1037,7 @@ namespace CalamityMod.Items
                 }
             }
         }
+        #endregion
 
         #region Armor Set Changes
         public override string IsArmorSet(Item head, Item body, Item legs)
@@ -1285,10 +1321,16 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
 
+            
+            if (item.type == ItemID.EyeoftheGolem) 
+            {
+                player.Calamity().critDamage += 0.2f;
+            }
             if (item.type == ItemID.SniperScope)
             {
-                player.GetDamage<RangedDamageClass>() -= 0.03f;
-                player.GetCritChance<RangedDamageClass>() -= 3;
+                player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
+                player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
+                player.Calamity().critDamage += 0.2f;
             }
 
             if (item.type == ItemID.MagicQuiver)
@@ -1391,6 +1433,13 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.GravityGlobe)
             {
+                player.GetJumpState<GravityJump>().Enable();
+                if (player.Calamity().justChangedGravity) {
+                    player.GetJumpState<GravityJump>().Available = true;
+                }
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8) {
+                    player.maxRunSpeed = 5f;
+                }
                 player.jumpSpeedBoost += 1.6f;
                 if (player.controlDown)
                     player.maxFallSpeed *= 1.5f;
@@ -1398,99 +1447,49 @@ namespace CalamityMod.Items
                     player.maxFallSpeed *= 1.2f;
             }
 
-            if (item.type == ItemID.FinWings) // Boosted water abilities, faster fall in water
+            if (item.type == ItemID.DemonWings && !player.mount.Active)
+                player.maxFallSpeed *= 1.3f;
+
+            if (item.type == ItemID.BeeWings && !player.mount.Active && !player.controlDown)
             {
-                if (player.IsUnderwater())
-                    player.gills = true;
+                player.gravity *= 0.6f;
+                player.maxFallSpeed *= 0.6f;
+            }
+
+            if (item.type == ItemID.FinWings)
                 player.ignoreWater = true;
-                player.noFallDmg = true;
-                if (!player.mount.Active)
-                {
-                    if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
-                        player.maxFallSpeed = 12f;
-                }
-            }
-            else if (item.type == ItemID.BeeWings) // Honey buff
+
+            // Spawns ornaments which refreshes flight time upon pickup
+            else if (item.type == ItemID.FestiveWings)
             {
-                player.AddBuff(BuffID.Honey, 2);
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.ButterflyWings) // Boost to mana regen
-            {
-                player.manaRegen = (int)(player.manaRegen * 1.25f);
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.BatWings) // Greatly increases vision
-            {
-                player.noFallDmg = true;
-                player.nightVision = false; // Does not stack with Night Owl; actual effect is handled in LightingEffectsSystem
-            }
-            else if (item.type == ItemID.HarpyWings)
-            {
-                player.moveSpeed += 0.1f;
-                player.noFallDmg = true;
-            }
-            else if (item.type == ItemID.FrozenWings) // Increases cold debuff damage
-            {
-                player.noFallDmg = true;
-                player.Calamity().frozenWingsCold = true;
-            }
-            else if (item.type == ItemID.FlameWings) // Increases heat debuff damage
-            {
-                player.noFallDmg = true;
-                player.Calamity().flameWingsHeat = true;
-            }
-            else if (item.type == ItemID.LeafWings) // Bonus to defensive stats
-            {
-                player.noFallDmg = true;
-                player.statDefense += 10;
-                player.AddBuff(BuffID.DryadsWard, 2); // Dryad's Blessing
-            }
-            else if (item.type == ItemID.FestiveWings) // Drop homing christmas tree bulbs while in flight
-            {
-                player.noFallDmg = true;
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
                     {
-                        int ornamentDamage = (int)player.GetBestClassDamage().ApplyTo(50);
-                        int p = Projectile.NewProjectile(source, player.Center, Vector2.UnitY * 2f, ProjectileID.OrnamentFriendly, ornamentDamage, 5f, player.whoAmI);
+                        Vector2 ornamentPos = player.Center + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(105f)) * Main.rand.NextFloat(-512f, -320f);
+
+                        int p = Projectile.NewProjectile(source, ornamentPos, Vector2.Zero, ModContent.ProjectileType<FestiveWingsOrnament>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                        {
-                            Main.projectile[p].DamageType = DamageClass.Generic;
-                            Main.projectile[p].Calamity().lineColor = 1;
-                            modPlayer.wingProjectileCooldown = 15;
-                        }
+                            modPlayer.wingProjectileCooldown = 90;
                     }
                 }
             }
-            else if (item.type == ItemID.TatteredFairyWings) // Leave a trail of damaging fairy dust while in flight
+            // Leaves a trail of black fairy dust which reduces flight time to any player that touches it
+            else if (item.type == ItemID.TatteredFairyWings)
             {
-                player.noFallDmg = true;
                 if (modPlayer.wingProjectileCooldown <= 0)
                 {
                     var source = player.GetSource_Accessory(item);
-                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)
+                    if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && player.wingTime > 0f && !player.mount.Active && !player.mount.Cart)
                     {
-                        int fairyDustDamage = (int)player.GetBestClassDamage().ApplyTo(35);
                         Vector2 fairyDustVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.08f, 0.2f);
 
-                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), fairyDustDamage, 0f, player.whoAmI);
+                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
-                            modPlayer.wingProjectileCooldown = 10;
+                            modPlayer.wingProjectileCooldown = 8;
                     }
                 }
-            }
-            else if (item.type == ItemID.FishronWings || item.type == ItemID.BetsyWings || item.type == ItemID.Yoraiz0rWings ||
-                item.type == ItemID.JimsWings || item.type == ItemID.SkiphsWings || item.type == ItemID.LokisWings ||
-                item.type == ItemID.ArkhalisWings || item.type == ItemID.LeinforsWings || item.type == ItemID.BejeweledValkyrieWing ||
-                item.type == ItemID.RedsWings || item.type == ItemID.DTownsWings || item.type == ItemID.WillsWings ||
-                item.type == ItemID.CrownosWings || item.type == ItemID.CenxsWings || item.type == ItemID.CreativeWings ||
-                item.type == ItemID.FoodBarbarianWings || item.type == ItemID.GroxTheGreatWings || item.type == ItemID.GhostarsWings ||
-                item.type == ItemID.SafemanWings || item.type == ItemID.RainbowWings || item.type == ItemID.LongRainbowTrailWings)
-            {
-                player.noFallDmg = true;
             }
 
             if (item.type == ItemID.JellyfishNecklace || item.type == ItemID.JellyfishDivingGear || item.type == ItemID.ArcticDivingGear)
@@ -1517,7 +1516,7 @@ namespace CalamityMod.Items
         public override void HorizontalWingSpeeds(Item item, Player player, ref float speed, ref float acceleration)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.1f;
+            float moveSpeedBoost = modPlayer.moveSpeedBonus * 0.06f;
 
             float flightSpeedMult = 1f +
                 (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
@@ -1531,6 +1530,36 @@ namespace CalamityMod.Items
 
             flightAccMult = MathHelper.Clamp(flightAccMult, 0.5f, 1.5f);
             acceleration *= flightAccMult;
+        }
+
+        public override void VerticalWingSpeeds(Item item, Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
+        {
+            switch (item.type)
+            {
+                case ItemID.AngelWings:
+                    maxAscentMultiplier *= 1.3f;
+                    constantAscend *= 1.5f;
+                    break;
+                case ItemID.DemonWings:
+                    ascentWhenFalling *= 2f;
+                    ascentWhenRising *= 2f;
+                    maxCanAscendMultiplier *= 2f;
+                    break;
+                case ItemID.FlameWings:
+                    maxAscentMultiplier *= 1.2f;
+                    constantAscend *= 1.35f;
+                    break;
+                case ItemID.ButterflyWings:
+                    maxAscentMultiplier *= 0.9f;
+                    constantAscend *= 5f;
+                    break;
+                case ItemID.GhostWings:
+                    maxAscentMultiplier *= 0.904f;
+                    constantAscend *= 5f;
+                    break;
+                default:
+                    break;
+            }
         }
         #endregion
 
@@ -1553,7 +1582,7 @@ namespace CalamityMod.Items
         #endregion
 
         #region Ammo
-        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().rangedAmmoCost;
+        public override bool CanConsumeAmmo(Item weapon, Item ammo, Player player) => Main.rand.NextFloat() <= player.Calamity().ammoCost;
 
         public static bool HasEnoughAmmo(Player player, Item item, int ammoConsumed)
         {
@@ -1626,7 +1655,7 @@ namespace CalamityMod.Items
                 dontConsumeAmmo = true;
             if (player.ammoCost75 && Main.rand.NextBool(4))
                 dontConsumeAmmo = true;
-            if (Main.rand.NextFloat() > player.Calamity().rangedAmmoCost)
+            if (Main.rand.NextFloat() > player.Calamity().ammoCost)
                 dontConsumeAmmo = true;
 
             if (!dontConsumeAmmo && itemAmmo.consumable)

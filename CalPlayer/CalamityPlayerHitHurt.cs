@@ -512,6 +512,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
+            modifiers.CritDamage += critDamage;
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
 
@@ -593,6 +594,8 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
+                
+            modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
@@ -1381,11 +1384,11 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
                 {
-                    // 66.6% chance of Poison for 3 seconds, 1 guaranteed second of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
+                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
                     if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 180);
+                        Player.AddBuff(BuffID.Poisoned, 300);
                     else
-                        Player.AddBuff(BuffID.Poisoned, 60);
+                        Player.AddBuff(BuffID.Poisoned, 120);
                 }
                 else if (proj.type == ProjectileID.PoisonSeedPlantera)
                 {
@@ -1397,11 +1400,11 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
-                    Player.AddBuff(BuffID.Poisoned, 300);
+                    Player.AddBuff(BuffID.Poisoned, 420);
                 }
                 else if (proj.type == ProjectileID.CultistBossFireBall)
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
                 }
                 else if (proj.type == ProjectileID.CultistBossIceMist)
                 {
@@ -1412,7 +1415,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
                 {
-                    Player.AddBuff(BuffID.Electrified, 120);
+                    Player.AddBuff(BuffID.Electrified, 180);
                 }
                 else if (proj.type == ProjectileID.AncientDoomProjectile)
                 {
@@ -1420,15 +1423,15 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.CultistBossFireBallClone)
                 {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 180);
                 }
                 else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
                 }
                 else if (proj.type == ProjectileID.PhantasmalSphere)
                 {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 210);
                 }
                 else if (proj.type == ProjectileID.PhantasmalDeathray)
                 {
@@ -1436,23 +1439,23 @@ namespace CalamityMod.CalPlayer
                 }
                 else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 60);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
                 }
                 else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
                 }
                 else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
                 {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
+                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
-                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
+                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 240);
                 }
                 else if (proj.type == ProjectileID.BloodShot)
                 {
-                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
+                    Player.AddBuff(ModContent.BuffType<BurningBlood>(), 180);
                 }
                 else if (proj.type == ProjectileID.RuneBlast && Main.zenithWorld)
                 {
@@ -2553,14 +2556,6 @@ namespace CalamityMod.CalPlayer
                         {
                             int duration = Main.rand.Next(300 + hurtInfo.Damage / 3, 480 + hurtInfo.Damage / 2);
                             npc.AddBuff(BuffID.Confused, duration, false);
-                            if (amalgam)
-                            {
-                                npc.AddBuff(BuffID.Venom, duration);
-                                npc.AddBuff(ModContent.BuffType<Plague>(), duration);
-                                npc.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), duration);
-                                npc.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), duration);
-                                npc.AddBuff(ModContent.BuffType<Irradiated>(), duration);
-                            }
                         }
                     }
 
@@ -2626,7 +2621,8 @@ namespace CalamityMod.CalPlayer
                     Player.immuneTime += iFramesToAdd;
 
                 // Similar handle to 1.4 Star Cloak: these hits ie. spikes or lava cannot activate hit effects
-                if (hurtInfo.CooldownCounter != -1 && hurtInfo.CooldownCounter != 1)
+                bool canTriggerHitEffects = hurtInfo.CooldownCounter == -1 || hurtInfo.CooldownCounter == 1;
+                if (!canTriggerHitEffects)
                     return;
 
                 if (aeroSet && hurtInfo.Damage > 25)
@@ -2655,20 +2651,25 @@ namespace CalamityMod.CalPlayer
                     }
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
+                // In the meantime, gave them homing astral bombers instead of the lame falling stars
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));
-                    for (int n = 0; n < 3; n++)
+                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    for (int n = 0; n < projAmount; n++)
                     {
                         int baseDamage = 130 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                        int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
+                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
 
-                        Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
-                        if (star.whoAmI.WithinBounds(Main.maxProjectiles))
+                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
+                        if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
-                            star.DamageType = DamageClass.Generic;
-                            star.usesLocalNPCImmunity = true;
-                            star.localNPCHitCooldown = 5;
+                            onHitProj.DamageType = DamageClass.Generic;
+                            onHitProj.usesLocalNPCImmunity = true;
+                            onHitProj.localNPCHitCooldown = 5;
+                            onHitProj.tileCollide = false;
+                            onHitProj.extraUpdates = 1;
+                            onHitProj.Calamity().conditionalHomingRange = 500f;
                         }
                     }
                 }

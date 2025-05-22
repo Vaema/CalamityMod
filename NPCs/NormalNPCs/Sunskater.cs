@@ -261,7 +261,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 90);
                 }
                 else
-                    target.AddBuff(BuffID.OnFire, 150, true);
+                    target.AddBuff(BuffID.OnFire, 180);
             }
         }
 

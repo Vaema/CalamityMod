@@ -175,7 +175,7 @@ namespace CalamityMod.Tiles
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j));
             Texture2D leaves = ModContent.Request<Texture2D>("CalamityMod/Tiles/VernicFernGrass").Value;
 
-            if (uptile.HasTile)
+            if (uptile.HasTile && uptile.IsTileFull())
             {
                 return;
             }

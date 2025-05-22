@@ -14,13 +14,13 @@ namespace CalamityMod.Items.Accessories.Wings
     [AutoloadEquip(EquipType.Wings)]
     public class ElysianWings : BaseWings
     {
-        public override float BonusAscentWhileFalling => 0.85f;
-        public override float BonusAscentWhileRising => 0.15f;
-        public override float RisingSpeedThreshold => 1f;
+        public override float BonusAscentWhileFalling => 1f;
+        public override float BonusAscentWhileRising => 0.17f;
+        public override float RisingSpeedThreshold => 1.2f;
         public override float MaxAscentSpeed => 3f;
-        public override float BaseAscent => 0.135f;
+        public override float BaseAscent => 0.15f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(240, 9.5f, 2.7f);
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(240, 10f, 3f);
 
         public override void SetDefaults()
         {
@@ -35,12 +35,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            player.moveSpeed += 0.1f;
-            player.lavaImmune = true;
-            player.noFallDmg = true;
-            modPlayer.elysianWingsDust = false;
-
             if (!hideVisual)
                 DrawWingEffects(player);
         }

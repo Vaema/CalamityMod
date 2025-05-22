@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<ReaperTooth>(3).
                 AddIngredient<DivineGeode>(20).
                 AddIngredient<Voidstone>(50).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

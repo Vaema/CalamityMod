@@ -1435,7 +1435,7 @@ namespace CalamityMod.NPCs.Cryogen
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<CryogenRelic>());
 
             // GFB Bloodflare Core drop
-            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(ModContent.ItemType<BloodflareCore>(), hideLootReport: true);
+            npcLoot.DefineConditionalDropSet(DropHelper.GFB).Add(DropHelper.PerPlayer(ModContent.ItemType<BloodflareCore>()), hideLootReport: true);
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCryogen, ModContent.ItemType<LoreArchmage>(), desc: DropHelper.FirstKillText);
@@ -1507,13 +1507,13 @@ namespace CalamityMod.NPCs.Cryogen
             {
                 if (Main.zenithWorld)
                 {
-                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
-                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120, true);
+                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
+                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
                 }
                 else
                 {
-                    target.AddBuff(BuffID.Frostburn, 240, true);
-                    target.AddBuff(BuffID.Chilled, 120, true);
+                    target.AddBuff(BuffID.Frostburn, 360);
+                    target.AddBuff(BuffID.Chilled, 120);
                 }
             }
         }

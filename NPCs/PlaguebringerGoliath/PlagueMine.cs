@@ -124,10 +124,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
+            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            drawLocation += halfSizeTexture * NPC.scale + Vector2.UnitY * NPC.gfxOffY;
 
             Color backAfterimageColor = PlaguebringerGoliath.BackglowColor * NPC.Opacity;
             for (int i = 0; i < 10; i++)
@@ -152,11 +152,11 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 if (Main.zenithWorld) // it is the plague, you get very sick.
                 {
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300, true);
-                    target.AddBuff(BuffID.Poisoned, 300, true);
-                    target.AddBuff(BuffID.Venom, 300, true);
+                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300);
+                    target.AddBuff(BuffID.Poisoned, 300);
+                    target.AddBuff(BuffID.Venom, 300);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 150, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 240);
             }
         }
 

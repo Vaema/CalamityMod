@@ -1,4 +1,5 @@
-﻿using CalamityMod.Systems;
+﻿using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,7 +20,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = SoundID.Shatter;
+            HitSound = CommonCalamitySounds.VoidstoneMine;
             DustType = DustID.Ice_Pink;
             AddMapEntry(new Color(204, 143, 174));
             Main.tileShine[Type] = 3500;

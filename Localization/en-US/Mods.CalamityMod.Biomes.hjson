@@ -72,7 +72,7 @@ SunkenSeaBiome: {
 }
 
 AstralUnderground: {
-	DisplayName: Astral Underground
+	DisplayName: Underground Astral
 	TownNPCDialogueName: Underground Astral Infection
 }
 
@@ -109,4 +109,9 @@ RadiantReefsBiome: {
 TimelessShoresBiome: {
 	DisplayName: Timeless Shores Biome
 	TownNPCDialogueName: the Timeless Shores Biome
+}
+
+ClamDenBiome: {
+	DisplayName: Clam Den
+	TownNPCDialogueName: the Clam Den
 }

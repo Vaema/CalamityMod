@@ -973,8 +973,8 @@ namespace CalamityMod.NPCs.Signus
             // GFB Nanotech and Ethereal Talisman drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<Nanotech>(), hideLootReport: true);
-                GFBOnly.Add(ModContent.ItemType<EtherealTalisman>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Nanotech>()), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<EtherealTalisman>()), hideLootReport: true);
             }
 
             // Lore
@@ -1055,7 +1055,7 @@ namespace CalamityMod.NPCs.Signus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 420, true);
+                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 420);
         }
     }
 }

@@ -249,8 +249,8 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffID.Darkness, 300);
             }
         }
 

@@ -216,6 +216,7 @@ namespace CalamityMod.NPCs
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
             "Lain", // <@!655201622863118337> (literallyadeerfr)
+            "Hamis", // <@!608455754093035521> (haefer)
         };
         private static readonly string[] TavernkeepNames =
         {
@@ -242,7 +243,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] WitchDoctorNames =
         {
             "Sok'ar",
-            "Toxin", // <@!348174404984766465> (Toxin#9598),
+            "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Khatunz", // <@!303022375191183360> (jackshiz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
@@ -1024,8 +1025,6 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Wizard:
-                    if (Main.rand.NextBool(6) && !Main.LocalPlayer.InventoryHas(ItemID.RodofDiscord) && !Main.LocalPlayer.InventoryHas(ItemType<NormalityRelocator>()) && !Main.LocalPlayer.ZoneHallow)
-                        chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.MentionRoD");
                     if (Main.rand.NextBool(10) && Main.hardMode)
                         chat = CalamityUtils.GetTextValue("Vanilla.WizardChat.Hardmode");
                     break;
@@ -1222,7 +1221,6 @@ namespace CalamityMod.NPCs
             {
                 shop.AddWithCustomValue(ItemType<HowlsHeart>(), CalamityGlobalItem.RarityLightRedBuyPrice * 3)
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 5))
-                .AddWithCustomValue(ItemID.RodofDiscord, Item.buyPrice(gold: 50), Condition.Hardmode, Condition.InHallow)
                 .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)

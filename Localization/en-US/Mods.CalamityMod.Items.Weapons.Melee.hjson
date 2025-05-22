@@ -31,11 +31,6 @@ AegisBlade: {
 		'''
 }
 
-Aftershock: {
-	DisplayName: Aftershock
-	Tooltip: Summons boulders from the sky on enemy hits
-}
-
 AirSpinner: {
 	DisplayName: Air Spinner
 	Tooltip:
@@ -114,11 +109,6 @@ ArkoftheElements: {
 		You can parry projectiles to make them deal 100 less damage for a short period
 		Parrying will empower the next 10 swings of the sword, letting you use both blades at once
 		'''
-}
-
-AstralBlade: {
-	DisplayName: Astral Blade
-	Tooltip: Deals more damage the more life an enemy has left
 }
 
 AstralPike: {
@@ -803,7 +793,11 @@ Lacerator: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Accelerates natural life regeneration on hits with the yoyo
+		Striking enemies conjures a bloody saw to shred them
+		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
+		Enemies touching the edge of the sawblade get blood orbs torn out of them
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		The direction of the saw's spin depends on which direction you originally threw the yoyo
 		[GFB]
 		'''
 	TooltipNormal: Someone thought this was a viable weapon against DoG at one point lol
@@ -858,9 +852,17 @@ MirrorBlade: {
 	DisplayName: Mirror Blade
 	Tooltip:
 		'''
-		The amount of contact damage an enemy does is added to this weapons' damage
-		You must hit an enemy with the blade to trigger this effect
+		Striking an enemy or a hostile projectile summons up to 10 orbiting mirror shards
+		Any shards above 10 instead seek out enemies 
+		Holding <right> coalesces the orbiting mirror shards into a shield
 		'''
+	HoldShiftTooltip:
+		'''
+		[c/aab7f1:Each shard reduces the damage of a projectile that hit the shield by 10%]
+		[c/aab7f1:The shield shatters after one projectile, launching the shards at enemies with increased damage]
+		[c/aab7f1:With all 10 shards, you gain a brief period of invulnerability when shattering the shield]
+		'''
+	FlavorTooltip: "[c/7b6d8d:'A blade taken from your own reflection within the Ceaseless Void']"
 }
 
 MonolithSword: {
@@ -1296,11 +1298,13 @@ Terratomere: {
 
 TerrorBlade: {
 	DisplayName: Terror Blade
+	GFBName: TERROR BLADD4
 	Tooltip:
 		'''
 		Fires a terror beam that bounces off tiles
-		On every bounce it emits an explosion
+		On every bounce it emits an explosion[STATUS]
 		'''
+	GFB: "'Ignore my spelling.'"
 }
 
 TheBurningSky: {
@@ -1324,11 +1328,6 @@ TheDarkMaster: {
 		The clones may only exist while holding this weapon
 		'The blade by which the shadows levy their foes with a terrible fate'
 		'''
-}
-
-TheEnforcer: {
-	DisplayName: The Enforcer
-	Tooltip: Spawns essence flames on hit
 }
 
 TheGodsGambit: {
@@ -1359,8 +1358,9 @@ TheMutilator: {
 	DisplayName: The Mutilator
 	Tooltip:
 		'''
-		Striking an enemy below 20% life will trigger a bloodsplosion
-		Bloodsplosions cause hearts to drop that can be picked up to heal you
+		Striking enemies empowers The Mutilator, increasing its damage
+		At full charge, striking enemies causes a blood orb explosion
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
 		'''
 }
 
@@ -1475,7 +1475,12 @@ UltimusCleaver: {
 
 UrchinMace: {
 	DisplayName: Urchin Mace
-	Tooltip: Throws out a whirlpool when released
+	Tooltip:
+		'''
+		Throws out a whirlpool when released
+		[c/5C95A1:'The people of the sea were adept hunters, but they abhorred unnecessary violence.]
+		[c/5C95A1:Unfortunately, neighboring nations were brutish, so they fashioned their tools for war.']
+		'''
 }
 
 VanishingPoint: {
@@ -1494,7 +1499,12 @@ VeinBurster: {
 
 Violence: {
 	DisplayName: Violence
-	Tooltip: Releases a blazing fork which stays near the mouse and shreds enemies
+	Tooltip:
+		'''
+		A demonic pitchfork, cursed to cause endless bloodshed
+		<left> commands the trident to follow your cursor and shred enemies with devastating speed
+		<right> throws the trident, violently tearing through enemies with immense power and inflicting Vulnerability Hex
+		'''
 }
 
 Virulence: {

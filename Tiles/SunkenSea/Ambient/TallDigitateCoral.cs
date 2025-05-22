@@ -29,15 +29,17 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
 
@@ -62,17 +64,20 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 96;
             HitSound = SoundID.Dig;
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
+
     public class TallDigitateCoral3 : ModTile
     {
         public override void SetStaticDefaults()
@@ -94,6 +99,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 96;
             HitSound = SoundID.Dig;
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
@@ -101,11 +107,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
+
     public class TallDigitateCoral4 : ModTile
     {
         public override void SetStaticDefaults()
@@ -127,11 +134,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 96;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 56f / 400f;
-            g = 164f / 400f;
-            b = 180f / 400f;
+            r = 0.14f;
+            g = 0.41f;
+            b = 0.45f;
         }
     }
 }

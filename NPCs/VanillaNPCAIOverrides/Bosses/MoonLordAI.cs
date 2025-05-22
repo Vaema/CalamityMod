@@ -715,11 +715,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (attackTimer >= 60f)
                         {
-                            Vector2 center20 = npc.Center;
-
                             // Hopefully it plays
                             if (attackTimer == 60f)
-                                SoundEngine.PlaySound(DeathrayChargeSound, center20);
+                                SoundEngine.PlaySound(DeathrayChargeSound, Main.player[npc.target].Center);
 
                             int deathrayAttackDustAmt = 0;
                             if (attackTimer >= 120f)
@@ -731,9 +729,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (i % 2 == 1)
                                     deathrayAttackDustScale = 1.65f;
 
-                                Vector2 deathrayAttackDustRotation = center20 + ((float)Main.rand.NextDouble() * MathHelper.TwoPi).ToRotationVector2() * boltAndDeathrayVector / 2f;
+                                Vector2 deathrayAttackDustRotation = npc.Center + ((float)Main.rand.NextDouble() * MathHelper.TwoPi).ToRotationVector2() * boltAndDeathrayVector / 2f;
                                 int deathrayAttackDust = Dust.NewDust(deathrayAttackDustRotation - Vector2.One * 8f, 16, 16, DustID.Vortex, npc.velocity.X / 2f, npc.velocity.Y / 2f, 0, default, 1f);
-                                Main.dust[deathrayAttackDust].velocity = Vector2.Normalize(center20 - deathrayAttackDustRotation) * 3.5f * (10f - deathrayAttackDustAmt * 2f) / 10f;
+                                Main.dust[deathrayAttackDust].velocity = Vector2.Normalize(npc.Center - deathrayAttackDustRotation) * 3.5f * (10f - deathrayAttackDustAmt * 2f) / 10f;
                                 Main.dust[deathrayAttackDust].noGravity = true;
                                 Main.dust[deathrayAttackDust].scale = deathrayAttackDustScale;
                                 Main.dust[deathrayAttackDust].customData = npc;

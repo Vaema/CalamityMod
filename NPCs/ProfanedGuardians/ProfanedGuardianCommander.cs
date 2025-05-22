@@ -1226,8 +1226,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // GFB Chicken Nugget and Divine Geode drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ItemID.ChickenNugget, 1, 1, 9999, true);
-                GFBOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 25, 30, true);
+                GFBOnly.Add(DropHelper.PerPlayer(ItemID.ChickenNugget, 1, 1, 9999), true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DivineGeode>(), 1, 25, 30), true);
             }
 
             // Lore
@@ -1273,7 +1273,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 200, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

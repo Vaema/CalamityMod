@@ -4,7 +4,6 @@ AegisBeam.DisplayName: Aegis Beam
 AegisBlast.DisplayName: Aegis Blast
 AegisBlast2.DisplayName: Aegis Blast
 AegisFlame.DisplayName: Aegis Flame
-AftershockRock.DisplayName: Afterrock
 AmidiasWhirlpool.DisplayName: Whirlpool
 AncientBeam.DisplayName: Ancient Beam
 AncientStar.DisplayName: Ancient Star
@@ -105,7 +104,6 @@ ElementalGlassStar.DisplayName: Glass Star
 EmpyreanKnife.DisplayName: Empyrean Knife
 EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
-EssenceFlame2.DisplayName: Essence Flame
 EssenceScythe.DisplayName: Essence Scythe
 ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
 ExcelsusBlue.DisplayName: Excelsus
@@ -170,7 +168,7 @@ MantisClawHoldout.DisplayName: Mantis Claw
 MantisClawJet.DisplayName: Mantis Claw Jet
 MantisClawSlash.DisplayName: Mantis Claw Slash
 MicrowaveAura.DisplayName: Microwave Radiation
-MirrorBlast.DisplayName: Mirror Blade
+MirrorBlast.DisplayName: Mirror Blast
 MonstrousKnife.DisplayName: Monstrous Knife
 MourningSkull.DisplayName: Mourning Skull
 MourningstarFlail.DisplayName: Mourningstar
@@ -306,3 +304,7 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+MutilatorSwordProj.DisplayName: The Mutilator
+MirrorBladeProjectile.DisplayName: Mirror Blade
+MirrorBladeSlash.DisplayName: Mirror Blade Slash
+MirrorBladeSlashCreator.DisplayName: Mirror Blade Slash Creator

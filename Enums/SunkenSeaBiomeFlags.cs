@@ -15,5 +15,6 @@ namespace CalamityMod.Enums
         PolypForest = 8,
         GleamingBurrows = 16,
         BasaltGully = 32,
+        ClamDen = 64
     }
 }

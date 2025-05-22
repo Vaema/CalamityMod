@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.LaserMachinegun).
                 AddIngredient<UelibloomBar>(7).
                 AddIngredient(ItemID.Nanites, 100).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

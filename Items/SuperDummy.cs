@@ -104,6 +104,7 @@ namespace CalamityMod.Items
             r = Recipe.Create(ItemID.TargetDummy);
             r.AddIngredient<SuperDummy>();
             r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.TargetDummy);
         }
     }
 }
