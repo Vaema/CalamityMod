@@ -3293,6 +3293,10 @@ namespace CalamityMod.Projectiles
                     break;
             }
 
+            // Makes flares from Firestorm and Spectralstorm Cannon ignore gravity
+            if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
+                projectile.localAI[1]--;
+
             // Jack O Lantern Launcher projectile tweak
             if (projectile.type == ProjectileID.JackOLantern)
             {

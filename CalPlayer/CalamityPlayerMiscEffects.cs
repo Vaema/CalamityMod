@@ -2047,6 +2047,8 @@ namespace CalamityMod.CalPlayer
                 --fullRageSoundCountdownTimer;
             if (plagueTaintedSMGDroneCooldown > 0)
                 plagueTaintedSMGDroneCooldown--;
+            if (flareGunOverheat > 0)
+                flareGunOverheat--;
             if (momentumCapacitorTime > 0)
                 --momentumCapacitorTime;
             if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)

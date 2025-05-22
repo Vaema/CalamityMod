@@ -277,6 +277,8 @@ namespace CalamityMod.CalPlayer
         public int evilSmasherBoost = 0;
         /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
         public int plagueTaintedSMGDroneCooldown = 0;
+        /// <summary> Cooldown variable which prevents using Firestorm Cannon or Spectralstorm Cannon during their overheat mechanics. </summary>
+        public int flareGunOverheat = 0;
         /// <summary>
         /// If true, this player's Brittle Star Staff minions are in their orbiting mode.<br/>
         /// While in this mode, they orbit around the player, do not break on hits, and increase defense.
@@ -3242,6 +3244,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
+            flareGunOverheat = 0;
             hellbornShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
