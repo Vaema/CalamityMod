@@ -105,8 +105,8 @@ namespace CalamityMod.Projectiles.Melee
             }
 
             int slashCreatorID = ModContent.ProjectileType<MirrorBladeSlashCreator>();
-            int damage = (int)(Projectile.damage * DarklightGreatsword.SlashProjectileDamageMultiplier);
-            float knockback = Projectile.knockBack * DarklightGreatsword.SlashProjectileDamageMultiplier;
+            int damage = (int)(Projectile.damage * MirrorBlade.SlashProjectileDamageMultiplier);
+            float knockback = Projectile.knockBack * MirrorBlade.SlashProjectileDamageMultiplier;
             if (Owner.ownedProjectileCounts[slashCreatorID] < MirrorBlade.SlashProjectileLimit)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, slashCreatorID, damage, knockback, Projectile.owner, target.whoAmI, Projectile.rotation, 1f);
