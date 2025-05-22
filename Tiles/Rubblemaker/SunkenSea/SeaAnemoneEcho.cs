@@ -37,9 +37,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
             brightness += 0.4f;
             brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 85f / 255f;
-            b = 151f / 255f;
-            g = 196f / 255f;
+            r = 0.33f;
+            b = 0.59f;
+            g = 0.77f;
             r *= brightness;
             g *= brightness;
             b *= brightness;

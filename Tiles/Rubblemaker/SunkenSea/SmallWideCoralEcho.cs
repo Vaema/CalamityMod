@@ -10,6 +10,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
     public class SmallWideCoralEcho : ModTile
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral";
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -27,21 +28,24 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
             base.SetStaticDefaults();
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 161f / 500f;
-            g = 183f / 500f;
-            b = 73f / 500f;
+            r = 0.32f;
+            g = 0.37f;
+            b = 0.15f;
         }
     }
+
     public class SmallWideCoral2Echo : SmallWideCoralEcho
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallWideCoral2";
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 229f / 700f;
-            g = 137f / 700f;
-            b = 204f / 700f;
+            r = 0.33f;
+            g = 0.2f;
+            b = 0.29f;
         }
     }
 }
