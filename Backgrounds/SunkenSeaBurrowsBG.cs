@@ -102,7 +102,7 @@ namespace CalamityMod.Backgrounds
             else
             {
                 MiscShaderData distortionShader = GameShaders.Misc["CalamityMod:BasicTextureDistortion"];
-                Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls").Value;
+                Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls");
 
                 // Apply a distortion shader to the Sunken Sea backgrounds to give them an underwater ripple-like effect.
                 Main.spriteBatch.End();
@@ -113,7 +113,7 @@ namespace CalamityMod.Backgrounds
                 distortionShader.Shader.Parameters["distortionYSpeed"].SetValue(0.02f);
                 distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.035f);
                 distortionShader.Shader.Parameters["noiseScale"].SetValue(0.075f);
-                distortionShader.Shader.Parameters["distortionTexture"].SetValue(distortionTexture);
+                distortionShader.SetShaderTexture(distortionTexture, index: 0);
 
                 Main.spriteBatch.Draw(WaterDistortionTarget.Target, new Rectangle(16, 16, Main.screenWidth, Main.screenHeight), Color.White);
             }

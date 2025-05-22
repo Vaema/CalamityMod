@@ -25,6 +25,6 @@ technique Technique1
 {
     pass DistortionPass
     {
-        PixelShader = compile ps_3_0 PixelShaderFunction();
+        PixelShader = compile ps_4_0 PixelShaderFunction();
     }
 }
