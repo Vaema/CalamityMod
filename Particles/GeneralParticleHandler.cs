@@ -195,9 +195,13 @@ namespace CalamityMod.Particles
 
             CurrentlyRendering = true;
 
-            DrawParticlesToRenderTarget(PixelationTarget_AlphaBlend, pixelatedAlphaBlendParticles, BlendState.AlphaBlend);
-            DrawParticlesToRenderTarget(PixelationTarget_NonPremultiplied, pixelatedNonPremultipliedParticles, BlendState.NonPremultiplied);
-            DrawParticlesToRenderTarget(PixelationTarget_AdditiveBlend, pixelatedAdditiveBlendParticles, BlendState.Additive);
+            Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix
+                * Matrix.CreateScale(PixelationResolution / Main.GameViewMatrix.Zoom.X, PixelationResolution / Main.GameViewMatrix.Zoom.Y, 1f)
+                * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
+
+            DrawParticlesToRenderTarget(PixelationTarget_AlphaBlend, pixelatedAlphaBlendParticles, BlendState.AlphaBlend, pixelationMatrix);
+            DrawParticlesToRenderTarget(PixelationTarget_NonPremultiplied, pixelatedNonPremultipliedParticles, BlendState.NonPremultiplied, pixelationMatrix);
+            DrawParticlesToRenderTarget(PixelationTarget_AdditiveBlend, pixelatedAdditiveBlendParticles, BlendState.Additive, pixelationMatrix);
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);
             CurrentlyRendering = false;
@@ -205,16 +209,12 @@ namespace CalamityMod.Particles
             orig();
         }
 
-        private static void DrawParticlesToRenderTarget(RenderTarget2D target, List<Particle> particles, BlendState blendStateToUse)
+        private static void DrawParticlesToRenderTarget(RenderTarget2D target, List<Particle> particles, BlendState blendStateToUse, Matrix pixelationMatrix)
         {
             target.SwapTo();
 
             if (particles.Count > 0)
             {
-                Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix
-                    * Matrix.CreateScale(PixelationResolution / Main.GameViewMatrix.Zoom.X, PixelationResolution / Main.GameViewMatrix.Zoom.Y, 1f)
-                    * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
-
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, blendStateToUse, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
 
                 foreach (Particle particle in particles)
