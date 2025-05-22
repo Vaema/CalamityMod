@@ -551,9 +551,29 @@ namespace CalamityMod.NPCs.SunkenSea
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
                 dust.color *= 0.5f;
+                dust.noLight = true;
             }
 
-                if (CurrentColor == (int)FishColor.Gold)
+            Color c = Color.White;
+
+            switch (CurrentColor)
+            {
+                case 0:
+                    c = Color.SkyBlue;
+                    break;
+                case 1:
+                    c = Color.SeaGreen;
+                    break;
+                case 2:
+                    c = Color.Pink;
+                    break;
+                case 4:
+                    c = Color.Cyan;
+                    break;
+            }
+            Lighting.AddLight(NPC.Center, c.R / 255f, c.G / 255f, c.B / 255f);
+
+            if (CurrentColor == (int)FishColor.Gold)
             {
                 NPC.rarity = 3;
                 NPC.value = 100000;
