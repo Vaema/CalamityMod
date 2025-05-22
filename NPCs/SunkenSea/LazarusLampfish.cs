@@ -329,15 +329,6 @@ namespace CalamityMod.NPCs.SunkenSea
             EnterAttackMode();
         }
 
-        protected override void OnPreyDetection(NPC prey)
-        {
-            /*if (CurrentPredator == null && CurrentPlayer == null)
-            {
-                EnterAttackMode();
-                currentTarget = prey;
-            }*/
-        }
-
         public void EnterAttackMode()
         {
             CurrentPhase = (int)PhaseType.Attacking;
