@@ -1,30 +1,20 @@
-﻿cbuffer DistortionParams : register(b0)
-{
-    float time;
-    float distortionXSpeed;
-    float distortionYSpeed;
-    float distortionStrength;
-    float noiseScale;
-};
+﻿sampler baseTexture : register(s0);
+sampler distortionTexture : register(s1);
 
-Texture2D baseTexture : register(t0);
-Texture2D distortionTexture : register(t1);
-SamplerState linearSampler : register(s0);
+float2 timeOffset;
+float2 noiseScaleStrength;
 
-float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : SV_Target
+float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR
 {
-    float2 distortedCoords = coords + float2(time * distortionXSpeed, time * distortionYSpeed);
-    distortedCoords *= noiseScale;
-    float distortion = distortionTexture.Sample(linearSampler, distortedCoords).r;
-    
-    float4 returnColor = baseTexture.Sample(linearSampler, coords + distortion * distortionStrength);
-    return returnColor * sampleColor.a;
+    float2 distortedCoords = coords * noiseScaleStrength.x + timeOffset;
+    float distortion = tex2D(distortionTexture, distortedCoords).r * noiseScaleStrength.y;
+    return tex2D(baseTexture, coords + distortion) * sampleColor.a;
 }
 
 technique Technique1
 {
     pass DistortionPass
     {
-        PixelShader = compile ps_4_0 PixelShaderFunction();
+        PixelShader = compile ps_2_0 PixelShaderFunction();
     }
 }
