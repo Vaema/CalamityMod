@@ -226,6 +226,99 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 else
                 {
+                    if (!owner.active)
+                        return;
+
+                    if (NPC.Distance(owner.Center) > 200)
+                        pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
+                    else
+                    {
+                        float passiveMvtFloat = 0.5f;
+                        float range = 100f;
+                        Vector2 fischPos = NPC.Center;
+                        float xDist = owner.Center.X - fischPos.X;
+                        float yDist = owner.Center.Y - fischPos.Y;
+                        yDist += Main.rand.NextFloat(-10, 20);
+                        xDist += Main.rand.NextFloat(-10, 20);
+                        xDist += 30f * -(float)owner.direction;
+                        Vector2 leaderVector = new Vector2(xDist, yDist);
+                        float leaderDist = leaderVector.Length();
+                        float returnSpeed = 8f;
+                        //If leader is close enough, resume normal
+                        if (leaderDist < range && owner.velocity.Y == 0f &&
+                            NPC.Bottom.Y <= owner.Bottom.Y &&
+                            !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                        {
+                            if (NPC.velocity.Y < -6f)
+                            {
+                                NPC.velocity.Y = -6f;
+                            }
+                        }
+
+                        if (leaderDist < 50f)
+                        {
+                            if (Math.Abs(NPC.velocity.X) > 2f || Math.Abs(NPC.velocity.Y) > 2f)
+                            {
+                                NPC.velocity *= 0.99f;
+                            }
+                            passiveMvtFloat = 0.01f;
+                        }
+                        else
+                        {
+                            if (leaderDist < 100f)
+                            {
+                                passiveMvtFloat = 0.1f;
+                            }
+                            if (leaderDist > 300f)
+                            {
+                                passiveMvtFloat = 1f;
+                            }
+                            leaderDist = returnSpeed / leaderDist;
+                            leaderVector.X *= leaderDist;
+                            leaderVector.Y *= leaderDist;
+                        }
+                        if (NPC.velocity.X < leaderVector.X)
+                        {
+                            NPC.velocity.X += passiveMvtFloat;
+                            if (passiveMvtFloat > 0.05f && NPC.velocity.X < 0f)
+                            {
+                                NPC.velocity.X += passiveMvtFloat;
+                            }
+                        }
+                        if (NPC.velocity.X > leaderVector.X)
+                        {
+                            NPC.velocity.X -= passiveMvtFloat;
+                            if (passiveMvtFloat > 0.05f && NPC.velocity.X > 0f)
+                            {
+                                NPC.velocity.X -= passiveMvtFloat;
+                            }
+                        }
+                        if (NPC.velocity.Y < leaderVector.Y)
+                        {
+                            NPC.velocity.Y += passiveMvtFloat;
+                            if (passiveMvtFloat > 0.05f && NPC.velocity.Y < 0f)
+                            {
+                                NPC.velocity.Y += passiveMvtFloat * 2f;
+                            }
+                        }
+                        if (NPC.velocity.Y > leaderVector.Y)
+                        {
+                            NPC.velocity.Y -= passiveMvtFloat;
+                            if (passiveMvtFloat > 0.05f && NPC.velocity.Y > 0f)
+                            {
+                                NPC.velocity.Y -= passiveMvtFloat * 2f;
+                            }
+                        }
+                        if (NPC.velocity.X >= 0.25f)
+                        {
+                            NPC.direction = -1;
+                        }
+                        else if (NPC.velocity.X < -0.25f)
+                        {
+                            NPC.direction = 1;
+                        }
+                        NPC.spriteDirection = -NPC.direction;
+                    }
                     float SAImovement = 0.2f;
                     for (int k = 0; k < Main.maxNPCs; k++)
                     {
@@ -235,7 +328,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             continue;
 
                         float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
-                        if (taxicabDist < NPC.width * 2f)
+                        if (taxicabDist < NPC.width)
                         {
                             if (NPC.position.X < otherFish.position.X)
                                 NPC.velocity.X -= SAImovement;
@@ -248,12 +341,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                 NPC.velocity.Y += SAImovement;
                         }
                     }
-
-                    if (!owner.active)
-                        return;
-
-                    if (NPC.Distance(owner.Center) > 20)
-                        pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
                 }
                 int dir = NPC.velocity.X.DirectionalSign();
                 NPC.rotation = NPC.velocity.ToRotation() + (dir == 1 ? 0 : MathHelper.Pi);
