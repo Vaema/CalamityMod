@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Summon;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -46,7 +45,8 @@ namespace CalamityMod.Items.Armor.Victide
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSeaSnail>()] < 1)
                 {
                     var source = player.GetSource_ItemUse(Item);
-                    Projectile.NewProjectile(source, player.Center, -Vector2.UnitY, ModContent.ProjectileType<VictideSeaSnail>(), 0, 0f, player.whoAmI);
+                    Vector2 position = player.Center + Vector2.UnitY * (player.gfxOffY - 60f) * player.gravDir;
+                    Projectile.NewProjectile(source, position, Vector2.Zero, ModContent.ProjectileType<VictideSeaSnail>(), 0, 0f, player.whoAmI);
                 }
             }
         }

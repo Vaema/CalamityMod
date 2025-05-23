@@ -269,7 +269,7 @@ VictideHeadSnail: {
 	SetBonus:
 		'''
 		Summons a sea snail to fish alongside you
-		It automatically casts and reels while you are fishing
+		It automatically casts and reels while you are standing still and fishing
 		'''
 }
 

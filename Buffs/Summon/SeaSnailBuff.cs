@@ -1,4 +1,4 @@
-using CalamityMod.Projectiles.Summon;
+using CalamityMod.Projectiles.Typeless;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
