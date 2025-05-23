@@ -35,7 +35,6 @@ namespace CalamityMod.MainMenu
             "PolypPanaseaPurple",
             "PolypPanaseaRadiant",
             "PolypPanaseaTurquoise",
-            "PolypPanaseaGoldCoated",
             "PolypPanaseaGreenCoated",
             "PolypPanaseaPurpleCoated",
             "PolypPanaseaRadiantCoated",

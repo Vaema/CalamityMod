@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Terraria;
@@ -13,21 +14,25 @@ namespace CalamityMod.Systems
         /// <summary>
         /// The directory in which all files related to globall saved data are stored.
         /// </summary>
-        internal static string GlobalSaveDataDirectoryPath => Main.SavePath + "\\CalamityModGlobalSaveData\\";
-
+        internal static string GlobalSaveDataDirectoryPath;
 
         /// <summary>
         /// The path to the text file which contains all globally saved data keys.
         /// </summary>
-        internal static string GlobalSaveDataKeysPath => Main.SavePath + "\\CalamityModGlobalSaveData\\GlobalSaveDataKeys.txt";
+        internal static string GlobalSaveDataKeysPath;
 
         /// <summary>
         /// The path to the README file explaining the purpose of the directory.
         /// </summary>
-        internal static string READMEPath => Main.SavePath + "\\CalamityModGlobalSaveData\\README.txt";
+        internal static string READMEPath;
 
         public override void OnModLoad()
         {
+            string savePathByOS = OperatingSystem.IsLinux() ? "~/.local/share/Terraria/tModloader/" : Main.SavePath;
+            GlobalSaveDataDirectoryPath = savePathByOS + Path.DirectorySeparatorChar + "CalamityModGlobalSaveData";
+            GlobalSaveDataKeysPath = savePathByOS + Path.DirectorySeparatorChar + "CalamityModGlobalSaveData" + Path.DirectorySeparatorChar + "GlobalSaveDataKeys.txt";
+            READMEPath = savePathByOS + Path.DirectorySeparatorChar + "CalamityModGlobalSaveData" + Path.DirectorySeparatorChar + "README.txt";
+
             // Ensure that the save data keys text file exists. If not, create a new one.
             if (!File.Exists(GlobalSaveDataKeysPath))
             {

@@ -53,7 +53,7 @@ namespace CalamityMod.MainMenu
         /// </summary>
         public const string FirstTimeOpeningSunkenSeaOverhaulKey = "HasOpenedTheSunkenSeaOverhaulForTheFirstTime";
 
-        public override string DisplayName => "Calamity Style - Sunken";
+        public override string DisplayName => CalamityUtils.GetTextValue("UI.MainMenuSunken");
 
         public override Asset<Texture2D> Logo => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken");
 
