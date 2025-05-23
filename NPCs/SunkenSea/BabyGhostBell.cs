@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 0;
             NPC.lifeMax = 5;
             NPC.knockBackResist = 1f;
-            NPC.alpha = 100;
+            NPC.alpha = 75;
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
