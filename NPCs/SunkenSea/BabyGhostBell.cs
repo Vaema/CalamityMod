@@ -121,7 +121,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 return;
             }
-            Variant = Main.rand.Next(1, 4);
+            Variant = Main.rand.Next(0, 4);
             if (Main.rand.NextBool(30))
             {
                 Variant = (int)JellyColor.Radiant;
