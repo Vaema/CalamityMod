@@ -2373,7 +2373,7 @@ namespace CalamityMod.CalPlayer
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 
-                if (amidiasBlessing && hurtInfo.Damage > 50)
+                if (amidiasBlessing && (chaliceOfTheBloodGod ? chaliceBleedoutToApplyOnHurt : hurtInfo.Damage) > 50)
                 {
                     Player.ClearBuff(ModContent.BuffType<AmidiasBlessing>());
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
