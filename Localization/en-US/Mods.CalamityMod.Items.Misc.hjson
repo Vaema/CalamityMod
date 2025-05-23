@@ -168,6 +168,11 @@ RepairUnitItem: {
 	Tooltip: ""
 }
 
+SeaFloatyItem: {
+	DisplayName: "{$NPCs.SeaFloaty.DisplayName}"
+	Tooltip: ""
+}
+
 SeaMinnowItem: {
 	DisplayName: "{$NPCs.SeaMinnow.DisplayName}"
 	Tooltip: ""
