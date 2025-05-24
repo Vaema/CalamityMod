@@ -61,11 +61,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Slow down dramatically while teleporting
             if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
-                if (npc.velocity.Length() > 0.1f)
+                if (Math.Abs(npc.velocity.X) > 0.1f)
                 {
                     npc.velocity.X *= 0.8f;
-                    if (npc.velocity.Length() <= 0.1f)
-                        npc.velocity = Vector2.Zero;
+                    if (Math.Abs(npc.velocity.X) <= 0.1f)
+                        npc.velocity.X = 0f;
                 }
             }
 
