@@ -48,8 +48,8 @@ BabyGhostBellRadiantItem: {
 	Tooltip: ""
 }
 
-BabyGhostBellRedItem: {
-	DisplayName: Red Baby Ghost Bell
+BabyGhostBellPinkItem: {
+	DisplayName: Pink Baby Ghost Bell
 	Tooltip: ""
 }
 
