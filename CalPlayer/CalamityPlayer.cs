@@ -878,6 +878,7 @@ namespace CalamityMod.CalPlayer
         public bool community = false;
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
+        public bool fleshTotemMinion = false;
         public int fleshTotemManaStorage = 0;
         public bool bloodPact = false;
         public bool bloodPactBoost = false;
@@ -2263,6 +2264,7 @@ namespace CalamityMod.CalPlayer
             stressPills = false;
             laudanum = false;
             fleshTotem = false;
+            fleshTotemMinion = false;
             bloodPact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;

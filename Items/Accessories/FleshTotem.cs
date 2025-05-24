@@ -30,6 +30,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.fleshTotem = true;
+            modPlayer.fleshTotemMinion = true;
             player.statManaMax2 += 30;
             player.GetCritChance<MagicDamageClass>() += 5;
             if (player.whoAmI == Main.myPlayer)
