@@ -159,7 +159,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(white, ModContent.ItemType<PolypPanaseaPurpleItem>(), 1, 0.01f);
             AddScavengerItem(white, ModContent.ItemType<PolypPanaseaTurquoiseItem>(), 1, 0.01f);
             AddScavengerItem(white, ModContent.ItemType<BabyGhostBellItem>(), 1, 0.02f);
-            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellRedItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellPinkItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<BabyGhostBellGreenItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<SlugbunItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<SlugbunBurrowsItem>(), 1, 0.02f);
