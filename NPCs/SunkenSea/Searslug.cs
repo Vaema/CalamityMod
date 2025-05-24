@@ -17,22 +17,35 @@ using Terraria.GameContent;
 using CalamityMod.Particles;
 using CalamityMod.Graphics.Metaballs;
 using ReLogic.Content;
+using CalamityMod.Enums;
+using System.Collections.Generic;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Searslug : ModNPC
+    public class Searslug : SunkenSeaNPC
     {
         public bool Skinwalker => NPC.Calamity()?.newAI[0] == 1;
         public static Asset<Texture2D> glowTexture;
 
         public override void Load() => glowTexture = ModContent.Request<Texture2D>(Texture + "Glow");
 
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.BasaltGully;
+
+        protected override List<int> PreyIDs => new();
+
+        protected override List<int> PredatorIDs => new()
+        {
+            ModContent.NPCType<Steampod>()
+        };
+
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 7;
         }
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
             AIType = NPCID.Snail;
             NPC.damage = 0;
@@ -135,10 +148,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneBasaltGully && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneBasaltGully && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.Cavern.Chance * 0.2f;
             }
