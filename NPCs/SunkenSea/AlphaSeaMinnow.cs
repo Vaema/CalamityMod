@@ -56,6 +56,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -75,7 +76,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<AlphaSeaMinnowItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

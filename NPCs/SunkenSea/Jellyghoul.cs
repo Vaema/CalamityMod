@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noTileCollide = true;
            // Banner = NPC.type;
             //BannerItem = ModContent.ItemType<JellyghoulBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
 
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);

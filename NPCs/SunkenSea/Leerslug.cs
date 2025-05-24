@@ -66,7 +66,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BasaltGullyBiome>().Type };
             
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);

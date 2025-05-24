@@ -68,7 +68,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)

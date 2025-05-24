@@ -91,7 +91,6 @@ namespace CalamityMod.NPCs.SunkenSea
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<BabyGhostBellBanner>();
             NPC.catchItem = (short)ModContent.ItemType<BabyGhostBellItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

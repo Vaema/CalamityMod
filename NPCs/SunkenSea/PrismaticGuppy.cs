@@ -168,6 +168,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -183,7 +184,6 @@ namespace CalamityMod.NPCs.SunkenSea
             //BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyBlueItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<AlphaSeaMinnowBanner>();
             NPC.chaseable = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
