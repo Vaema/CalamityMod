@@ -43,6 +43,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -59,7 +60,6 @@ namespace CalamityMod.NPCs.SunkenSea
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaFloatyBanner>();
             NPC.catchItem = ModContent.ItemType<SeaFloatyItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

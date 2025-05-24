@@ -91,7 +91,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToWater = true;
             NPC.Calamity().VulnerableToCold = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
