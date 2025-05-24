@@ -10,6 +10,7 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
@@ -6494,8 +6495,9 @@ namespace CalamityMod.NPCs
 
         #region Modify Hit By Projectile
         public static bool DisableMultWhipTag = false;
-        //this bool does nothing on this branch, its just here so that CalTestHelpers doesn't crash searching for it
-        //if you want to mess with this, please do so in the summoner branch - Shade
+        //this bool does nothing on the main branch, its just here so that CalTestHelpers doesn't crash searching for it
+        //if you want to mess with this to test whips, please do so in the summoner branch - Shade
+
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
@@ -6673,14 +6675,36 @@ namespace CalamityMod.NPCs
             if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;
 
+            //Doze apr-6-2025: with the summon tag system we now have this is unnececcessary and very likely causes issues on MP, so i'm commenting it out for the time being. Once further testing is done, delete it entirely.
+            //Delete ardor blososm sparks and buff if hit by something that isnt a minion or sentry while not having Ardor Blossom Star in hand
+            /*if (npc.HasBuff<ArdorBlossomSpark>() && player.HeldItem.type != ModContent.ItemType<ArdorBlossomStar>() && !projectile.minion && !ProjectileID.Sets.MinionShot[projectile.type] && !projectile.sentry)
+            {
+                npc.RequestBuffRemoval(ModContent.BuffType<ArdorBlossomSpark>());
+                //Remove all embers from this enemy
+                for (int k = 0; k < Main.maxProjectiles; k++)
+                {
+                    if (Main.projectile[k].active && Main.projectile[k].type == ModContent.ProjectileType<ArdorBlossomStarSpark>() && Main.projectile[k].ai[0] == 1f && Main.projectile[k].ai[1] == npc.whoAmI && Main.projectile[k].owner == player.whoAmI)
+                        Main.projectile[k].Kill();
+                }
+            }*/
+            //Handle summon tag effects
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
-                EditWhipTagDamage(projectile, npc, ref modifiers);
+            {
+                EditSummonTagDamage(projectile, npc, ref modifiers);
+            }
+
+
         }
-        #endregion  
+        #endregion
 
         #region OnHitBy overrides
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
         {
+            if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
+            {
+                SummonTagOnHitEffects(npc, projectile, hit, damagedone);
+            }
+
             if (IsArmored())
             {
                 CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
@@ -6705,75 +6729,89 @@ namespace CalamityMod.NPCs
             }
 
         }
+
         #endregion
 
-        #region Whip Tag
-        // Make whip tags multiplicative, by effectively reversing the process done to it
-        private void EditWhipTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
+
+        #region Summon Tag 
+        //doze 03-15-2025: A full refactor of the summon tag system to make it easier to use and more flexible. Ping me with any questions.
+        private void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
-            // Don't make it run through the index if it's a trap
-            if (proj.npcProj || proj.trap)
+            if (proj.npcProj || proj.trap || proj.owner == -1) // don't run on non-player-owned projectiles.
                 return;
 
+            var player = Main.player[proj.owner];
+            var modPlayer = player.Calamity();
+
+            float critChance = modPlayer.bonusCritTag;
             float TagDamageMult = ProjectileID.Sets.SummonTagDamageMultiplier[proj.type];
+
+            TagDamageMult += modPlayer.bonusMultTag;
+            modifiers.FlatBonusDamage += modPlayer.bonusFlatTag;
+
             for (int i = 0; i < NPC.maxBuffs; i++)
             {
                 if (npc.buffTime[i] >= 1)
                 {
-                    switch (npc.buffType[i])
+                    int type = npc.buffType[i];
+                    if (SummonTagDebuffDict.TryGet(type, out SummonTag tag))
                     {
-                        case BuffID.BlandWhipEnemyDebuff: // Leather Whip
-                            modifiers.FlatBonusDamage += -4f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.DurendalTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.ThornWhipNPCDebuff: // Snapthorn
-                            modifiers.FlatBonusDamage += -6f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.SnapthornTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.BoneWhipNPCDebuff: // Spinal Tap
-                            modifiers.FlatBonusDamage += -7f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.SpinalTapTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.FlameWhipEnemyDebuff: // Firecracker
-                            modifiers.ScalingBonusDamage += (BalancingConstants.FirecrackerExplosionDamageMultiplier - 2.75f) * TagDamageMult;
-                            break;
-                        case BuffID.CoolWhipNPCDebuff: // Cool Whip
-                            modifiers.FlatBonusDamage += -6f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.CoolWhipTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.SwordWhipNPCDebuff: // Durendal
-                            modifiers.FlatBonusDamage += -9f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.DurendalTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.ScytheWhipEnemyDebuff: // Dark Harvest
-                            modifiers.FlatBonusDamage += -10f * TagDamageMult;
-                            break;
-                        case BuffID.MaceWhipNPCDebuff: // Morning Star
-                            modifiers.FlatBonusDamage += -8f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.MorningStarTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
-                        case BuffID.RainbowWhipNPCDebuff: // Kaleidoscope
-                            modifiers.FlatBonusDamage += -20f * TagDamageMult;
-                            modifiers.ScalingBonusDamage += (BalancingConstants.KaleidoscopeTagDamageMultiplier - 1f) * TagDamageMult;
-                            break;
+                        tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
                     }
                 }
             }
-            //BuffType cannot be used in switch case, so that has to be handled outside of it
-            //Verify that the owner of the proj has psc state higher or equal to psc buffs
-            if (npc.HasBuff<ProfanedCrystalWhipDebuff>() && Main.player[proj.owner].Calamity().pscState >= (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Buffs)
+
+            //For the vanilla Monk/Shinobi armor critting with Lightning Auras. In vanilla it doesn't stack additively but frankly I do not care. It's not like aura is that good anyway.
+            if (proj.type == ProjectileID.DD2LightningAuraT1 || proj.type == ProjectileID.DD2LightningAuraT2 || proj.type == ProjectileID.DD2LightningAuraT3)
             {
-                var empowered = Main.player[proj.owner].Calamity().pscState == (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Empowered;
-                //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
-                //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
-                modifiers.ScalingBonusDamage += (empowered ? 0.4f : 0.2f) * TagDamageMult;
-                if (!Main.dedServ)
+                if (player.setMonkT3)
                 {
-                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
-                    float power = Math.Min(npc.height / 100f, 3f);
-                    var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
-                    var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
-                    GeneralParticleHandler.SpawnParticle(particle);
+                    critChance += 0.25f; // 1/4 chance to crit with Shinobi
+                }
+                else if (player.setMonkT2)
+                {
+                    critChance += 0.166f; // 1/6 chance to crit with Monk
+                }
+            }
+
+            //Used to convert all multiplicative tag into crit chance and vice-versa. If both force tag crit and multiplicative are applied, chooses one at random.
+            if (modPlayer.forceSummonTagCrit && !(modPlayer.forceSummonTagMultiplicative && Main.rand.NextBool()))
+            {
+                critChance += modifiers.ScalingBonusDamage.Value;
+                modifiers.ScalingBonusDamage += -modifiers.ScalingBonusDamage.Value;
+
+            }
+            else if (modPlayer.forceSummonTagMultiplicative)
+            {
+
+                modifiers.ScalingBonusDamage += critChance;
+                critChance = 0;
+            }
+
+            //currently doesn't support more than 100% crit chance, todo if something does more than +100% tag damage
+            if (Main.rand.NextFloat() < critChance)
+                modifiers.SetCrit();
+            else
+                modifiers.DisableCrit(); //This is to prevent Morning Star and Kalei from critting with their vanilla tag effect. If you want a minion/sentry to crit, you *must* make sure to change critChance in this function.
+        }
+
+        //This is for whip tag effects that run on hit and don't modify the damage of the hit.
+        private void SummonTagOnHitEffects(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
+        {
+            if (projectile.npcProj || projectile.trap || projectile.owner == -1) // don't run on non-player-owned projectiles.
+                return;
+
+            Player player = Main.player[projectile.owner];
+
+            for (int i = 0; i < NPC.maxBuffs; i++)
+            {
+                if (npc.buffTime[i] >= 1)
+                {
+                    int type = npc.buffType[i];
+                    if (SummonTagDebuffDict.TryGet(type, out SummonTag tag))
+                    {
+                        tag.TagOnHit(npc, projectile, hit, damagedone);
+                    }
                 }
             }
         }
@@ -7930,8 +7968,6 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Slimed].Value);
                     if (npc.drippingSparkleSlime)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.GelBalloonBuff].Value);
-                    if (npc.markedByScytheWhip) // Dark Harvest whip, the only Whip debuff that has an NPC bool
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.ScytheWhipEnemyDebuff].Value);
 
                     // Total amount of elements in the buff list
                     int buffTextureListLength = currentDebuffs.Count();
@@ -7974,6 +8010,33 @@ namespace CalamityMod.NPCs
                         // Shred stack display
                         if (currentDebuffs[i] == TextureAssets.Buff[BuffType<Shred>()].Value)
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
+                    }
+
+
+                    // Draw summon tag display. TODO: make it use custom textures provided by SummonTag.
+                    int yOffset = 0;
+                    for (int i = NPC.maxBuffs - 1; i >= 0; i--)
+                    {
+                        if (npc.buffTime[i] > 0)
+                        {
+                            if (SummonTagDebuffDict.TryGet(npc.buffType[i], out SummonTag tag))
+                            {
+                                // Fetch the item and its frames
+                                var tex = TextureAssets.Item[tag.TagItem].Value;
+                                Rectangle frame = (Main.itemAnimations[tag.TagItem] == null) ? tex.Frame() : Main.itemAnimations[tag.TagItem].GetFrame(tex);
+                                if (tag.TagTexture != null)
+                                {
+                                    tex = tag.TagTexture.Value;
+                                    frame = tex.Frame();
+                                }
+
+                                // Draw it accordingly
+                                // This is drawn below the NPC as opposed to above to differentiate from regular debuffs
+                                Vector2 drawPos = npc.Center - screenPos + Vector2.UnitY * (drawPosY + frame.Height * 0.5f + yOffset);
+                                spriteBatch.Draw(tex, drawPos, frame, Color.White, 0f, frame.Size() * 0.5f, 0.75f, SpriteEffects.None, 0f);
+                                yOffset += frame.Height + 4;
+                            }
+                        }
                     }
                 }
             }

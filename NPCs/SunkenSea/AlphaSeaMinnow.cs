@@ -95,12 +95,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.TargetClosest(false);
             // Spawn a shoal of minnows
-            int fishCount = Main.rand.Next(5, 10);
+            int fishCount = Main.rand.Next(2, 7);
             // More spawn in the Radiant Reefs
             if (NPC.HasPlayerTarget)
             {
                 if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
-                    fishCount += 5;
+                    fishCount += 3;
             }
             for (int i = 0; i < fishCount; i++)
             {
@@ -241,7 +241,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+
             }
             return 0f;
         }
@@ -284,7 +288,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.03f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+
             }
             return 0f;
         }

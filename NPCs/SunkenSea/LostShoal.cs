@@ -188,7 +188,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Role == 0)
             {                
                 // the amount of fish to spawn
-                int fishCount = 5;
+                int fishCount = Main.rand.Next(3, 6);
                 for (int i = 0; i < fishCount; i++)
                 {
                     int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<LostShoal>());
