@@ -1540,6 +1540,16 @@ namespace CalamityMod.CalPlayer
         public bool AmphibiansGuitarBool = false;
         #endregion
 
+        #region Whip
+        public bool forceSummonTagCrit = false; //Forces whip multiplicative effects to function as crit chance
+        public bool forceSummonTagMultiplicative = false; //Forces whip multiplicative effects to function as multiplicative damage
+
+        //Allows providing flat, crit, and multiplicative tag values on gear. These will apply on *any* minion or sentry hit, not just if the target is tagged.
+        public int bonusFlatTag = 0;
+        public float bonusCritTag = 0;
+        public float bonusMultTag = 0;
+        #endregion
+
         #region Biome
         public bool ZoneSunkenSea => ZoneTimelessShores || ZoneRadiantReefs || ZonePolypForest || ZoneGleamingBurrows || ZoneClamDen || ZoneBasaltGully;
         public bool ZoneTimelessShores => Player.InModBiome<TimelessShoresBiome>();
@@ -2707,6 +2717,13 @@ namespace CalamityMod.CalPlayer
             FrostbatBool = false;
             AmphibiansGuitarBool = false;
             #endregion
+
+            //On GFB both are enabled to cause the game to pick between multiplicative and crit at random
+            forceSummonTagMultiplicative = (Main.zenithWorld ? true : false);
+            forceSummonTagCrit = (Main.zenithWorld ? true : false);
+            bonusFlatTag = 0;
+            bonusCritTag = 0;
+            bonusMultTag = 0;
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
