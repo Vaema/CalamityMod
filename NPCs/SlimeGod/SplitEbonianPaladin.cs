@@ -231,7 +231,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
-            // Get ready to teleport by increasing ai[3]
+            // Get ready to teleport
             // This only occurs in Rev and Death for the split Slime Gods
             if (NPC.ai[3] < teleportGateValue && revenge)
             {

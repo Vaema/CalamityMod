@@ -253,11 +253,11 @@ namespace CalamityMod.NPCs.SlimeGod
             // Slow down dramatically while teleporting
             if (NPC.ai[0] == 4f || NPC.ai[0] == 5f)
             {
-                if (NPC.velocity.Length() > 0.1f)
+                if (Math.Abs(NPC.velocity.X) > 0.1f)
                 {
                     NPC.velocity.X *= 0.8f;
-                    if (NPC.velocity.Length() <= 0.1f)
-                        NPC.velocity = Vector2.Zero;
+                    if (Math.Abs(NPC.velocity.X) <= 0.1f)
+                        NPC.velocity.X = 0f;
                 }
             }
 
@@ -322,26 +322,30 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
-            // Get ready to teleport by increasing ai[3]
+            // Get ready to teleport
             if (calamityGlobalNPC.newAI[0] < teleportGateValue)
             {
-                float teleportFasterDistance = 500f;
-                if (!Collision.CanHitLine(NPC.Center, 0, 0, player.Center, 0, 0) || Math.Abs(NPC.Top.Y - player.Bottom.Y) > teleportFasterDistance)
-                    calamityGlobalNPC.newAI[0] += death ? 3f : 2f;
+                // Teleport very soon if too far away
+                float catchUpDistance = 1500f;
+                bool fastTeleport = NPC.Distance(player.Center) > catchUpDistance;
+                if (fastTeleport)
+                {
+                    calamityGlobalNPC.newAI[0] += 10f;
+                }
                 else
-                    calamityGlobalNPC.newAI[0] += 1f;
+                {
+                    float teleportFasterDistance = 500f;
+                    if (!Collision.CanHitLine(NPC.Center, 0, 0, player.Center, 0, 0) || Math.Abs(NPC.Top.Y - player.Bottom.Y) > teleportFasterDistance)
+                        calamityGlobalNPC.newAI[0] += death ? 3f : 2f;
+                    else
+                        calamityGlobalNPC.newAI[0] += 1f;
+                }
             }
 
-            float distanceSpeedBoost = Vector2.Distance(player.Center, NPC.Center) * (bossRush ? 0.008f : 0.005f);
+            float distanceSpeedBoost = NPC.Distance(player.Center) * (bossRush ? 0.008f : 0.005f);
 
             if (NPC.ai[0] == 0f)
             {
-                // Teleport very soon if too far away
-                float catchUpDistance = 1600f;
-                bool fastTeleport = Vector2.Distance(player.Center, NPC.Center) > catchUpDistance || !Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height);
-                if (fastTeleport)
-                    calamityGlobalNPC.newAI[0] += 8f;
-
                 if (NPC.velocity.Y == 0f)
                 {
                     // Avoid cheap bullshit
