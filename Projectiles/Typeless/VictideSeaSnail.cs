@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -22,8 +23,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public Player Owner => Main.player[Projectile.owner];
         public CalamityPlayer ModdedOwner => Owner.Calamity();
-        public bool StandingStill => Owner.velocity.Length() == 0 && !Owner.mount.Active && !Collision.DrownCollision(Owner.position, Owner.width, Owner.height, Owner.gravDir);
-        public bool CanPeekOut => PlayerStandStillTimer >= PeekCooldown || Projectile.frame > 0;
+
+        // Extra requirements so you don't break the bobber, or snail, or how would you fish underwater??
+        public bool StandingStill => Owner.velocity.Length() == 0 && !Owner.pulley && !Owner.mount.Active && !Collision.DrownCollision(Owner.position, Owner.width, Owner.height, Owner.gravDir);
 
         public override void SetStaticDefaults()
         {
@@ -99,8 +101,7 @@ namespace CalamityMod.Projectiles.Typeless
                         Projectile.velocity.Y = collide.Value ? MathF.Sin(CollisionTimer * 0.05f) * 0.25f : 0f;
                     }
 
-                    if (CanPeekOut)
-                        Projectile.rotation = Projectile.rotation.AngleTowards(0, MathHelper.PiOver4 * 0.14f);
+                    Projectile.rotation = Projectile.rotation.AngleTowards(0, MathHelper.PiOver4 * 0.14f);
 
                     if (CollisionTimer > 0f)
                     {
@@ -167,17 +168,19 @@ namespace CalamityMod.Projectiles.Typeless
                 // This means you can't just AFK with the fishing rod held
                 if (Owner.itemAnimation > 0 && Owner.ActiveItem().fishingPole > 0)
                     PlayerFishingTimer = 600f;
+                else
+                    PlayerFishingTimer = Math.Max(PlayerFishingTimer -1f, 0f);
 
                 // Automatically casts bobbers one at a time
-                // This casts to your cursor at the speed of the pole
-                /*int bobberType = ModContent.ProjectileType<VictideBobber>();
-                if (Owner.ownedProjectileCounts[bobberType] < 1 && Projectile.owner == Main.myPlayer)
+                // This casts the same way the pole does to prevent position variance
+                int bobberType = ModContent.ProjectileType<VictideBobber>();
+                if (Owner.ownedProjectileCounts[bobberType] < 1 && Owner.ActiveItem().fishingPole > 0 && Projectile.owner == Main.myPlayer && PlayerFishingTimer > 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
 
-                    Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, bobberType, 0, 0f, Projectile.owner);
-                }*/
+                    Vector2 velocity = Owner.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, bobberType, 0, 0f, Projectile.owner, ai2: Projectile.whoAmI);
+                }
             }
         }
 
@@ -230,7 +233,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            //Touches the ground
+            // Touches the ground
             if (oldVelocity.Y >= 0)
                 CollisionTimer = 1f;
             return false;
@@ -240,11 +243,19 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            bool CanPeekOut = PlayerStandStillTimer >= PeekCooldown || Projectile.frame > 0;
             Vector2 origin = !CanPeekOut ? new Vector2(15, 23) : frame.Size() * 0.5f;
 
-            //Look at the player's direction
+            // Look at the player's direction
             SpriteEffects flip = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Main.EntitySpriteDraw(tex, Projectile.Center + Vector2.UnitY * 2f - Main.screenPosition, frame, lightColor, Projectile.rotation, origin, Projectile.scale, flip);
+
+            // Fisbing Rod,,.
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<VictideBobber>()] > 0)
+            {
+                Texture2D rod = Terraria.GameContent.TextureAssets.Item[ModContent.ItemType<Cnidarian>()].Value;
+                Main.EntitySpriteDraw(rod, Projectile.Center - Main.screenPosition + Vector2.UnitX * Owner.direction * 30f, null, lightColor, 0f, rod.Size() * 0.5f, Projectile.scale, flip);
+            }
             return false;
         }
     }
