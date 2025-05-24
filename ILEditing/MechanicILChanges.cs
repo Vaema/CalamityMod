@@ -2507,7 +2507,7 @@ namespace CalamityMod.ILEditing
                     }
                     if (item.type == ModContent.ItemType<BabyGhostBellPinkItem>())
                     {
-                        colorType = (int)BabyGhostBell.JellyColor.Red;
+                        colorType = (int)BabyGhostBell.JellyColor.Pink;
                     }
                     if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
                     {
