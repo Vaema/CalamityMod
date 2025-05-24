@@ -58,6 +58,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Slow down dramatically while teleporting
+            if (npc.ai[0] == 1f || npc.ai[0] == 2f)
+            {
+                if (Math.Abs(npc.velocity.X) > 0.1f)
+                {
+                    npc.velocity.X *= 0.8f;
+                    if (Math.Abs(npc.velocity.X) <= 0.1f)
+                        npc.velocity.X = 0f;
+                }
+            }
+
             // Teleport
             float teleportGateValue = death ? 300f : 600f;
             if (!Main.player[npc.target].dead && npc.timeLeft > 10 && !phase2 && npc.ai[3] >= teleportGateValue && npc.ai[0] == 0f && npc.velocity.Y == 0f)
@@ -870,8 +881,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             npc.localAI[0] = npc.life;
-            int x = (int)(npc.position.X + Main.rand.Next(npc.width - 32));
-            int y = (int)(npc.position.Y + Main.rand.Next(npc.height - 32));
+
+            int offset = 16;
+            int x = (int)(npc.position.X + offset + Main.rand.Next(npc.width - offset * 2));
+            int y = (int)(npc.position.Y + offset + Main.rand.Next(npc.height - offset * 2));
 
             int random = Main.rand.Next(2);
             if (phase2)

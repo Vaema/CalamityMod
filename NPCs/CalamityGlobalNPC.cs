@@ -1686,6 +1686,10 @@ namespace CalamityMod.NPCs
 
             OtherStatChanges(npc);
 
+            // Change Queen Slime's fart sound on death to something more serious. Except GFB though because naturally
+            if (npc.type == NPCID.QueenSlimeBoss)
+                npc.DeathSound = Main.zenithWorld ? new SoundStyle("CalamityMod/Sounds/Item/GFBScreams/Scream", 8) : SoundID.NPCDeath1;
+
             // Function lives in NPCDebuffs.cs
             // This applies to ALL NPCs, vanilla AND Calamity.
             // Calamity NPC debuff immunity definitions live here.
@@ -7187,8 +7191,8 @@ namespace CalamityMod.NPCs
                     continue;
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
-                pool.Add(NPCID.None, 0f);
-                pool.Add(NPCType<PodobooKoi>(), 0.25f);
+                pool.Add(NPCID.None, 1f);
+                pool.Add(NPCType<PodobooKoi>(), 0.05f);
 
                 int typeToSpawn = pool.Get();
                 if (typeToSpawn != NPCID.None)

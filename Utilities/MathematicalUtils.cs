@@ -237,6 +237,9 @@ namespace CalamityMod
 
             while (true)
             {
+                if (!WorldGen.InWorld(start.X, start.Y))
+                    break;
+                
                 // Add the current cell to the list
                 intersectingCells.Add(start);
 

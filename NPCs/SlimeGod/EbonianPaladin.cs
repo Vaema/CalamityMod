@@ -169,6 +169,97 @@ namespace CalamityMod.NPCs.SlimeGod
             // For animating the wings
             NPC.localAI[0] += 1f;
 
+            // Slow down dramatically while teleporting
+            if (NPC.ai[0] == 5f || NPC.ai[0] == 6f)
+            {
+                if (NPC.velocity.Length() > 0.1f)
+                {
+                    NPC.velocity *= 0.8f;
+                    if (NPC.velocity.Length() <= 0.1f)
+                        NPC.velocity = Vector2.Zero;
+                }
+            }
+
+            // Teleport
+            float teleportGateValue = 1080f;
+            if (!player.dead && NPC.timeLeft > 10 && calamityGlobalNPC.newAI[1] >= teleportGateValue && NPC.ai[0] == 0f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.ai[0] = 5f;
+                NPC.ai[1] = 0f;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.netUpdate = true;
+                    NPC.TargetClosest(false);
+                    player = Main.player[NPC.target];
+
+                    float distanceAhead = 960f;
+                    Vector2 randomDefault = Main.rand.NextBool() ? Vector2.UnitX : -Vector2.UnitX;
+                    Vector2 vectorAimedAheadOfTarget = player.Center + new Vector2((float)Math.Round(player.velocity.X), 0f).SafeNormalize(randomDefault) * distanceAhead;
+                    Point predictiveTeleportPoint = vectorAimedAheadOfTarget.ToTileCoordinates();
+                    int randomPredictiveTeleportOffset = 5;
+                    int teleportTries = 0;
+                    while (teleportTries < 100)
+                    {
+                        teleportTries++;
+                        int teleportTileX = Main.rand.Next(predictiveTeleportPoint.X - randomPredictiveTeleportOffset, predictiveTeleportPoint.X + randomPredictiveTeleportOffset + 1);
+                        int teleportTileY = Main.rand.Next(predictiveTeleportPoint.Y - randomPredictiveTeleportOffset, predictiveTeleportPoint.Y);
+
+                        if (!Main.tile[teleportTileX, teleportTileY].HasUnactuatedTile)
+                        {
+                            bool canTeleportToTile = true;
+                            if (canTeleportToTile && Main.tile[teleportTileX, teleportTileY].LiquidType == LiquidID.Lava)
+                                canTeleportToTile = false;
+                            if (canTeleportToTile && !Collision.CanHitLine(NPC.Center, 0, 0, predictiveTeleportPoint.ToVector2() * 16, 0, 0))
+                                canTeleportToTile = false;
+
+                            if (canTeleportToTile)
+                            {
+                                calamityGlobalNPC.newAI[2] = teleportTileX * 16 + 8;
+                                calamityGlobalNPC.newAI[3] = teleportTileY * 16 + 16;
+                                calamityGlobalNPC.newAI[1] = 0f;
+                                break;
+                            }
+                            else
+                                predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                        }
+                        else
+                            predictiveTeleportPoint.X += predictiveTeleportPoint.X < 0f ? 1 : -1;
+                    }
+
+                    // Default teleport if the above conditions aren't met in 100 iterations
+                    if (teleportTries >= 100)
+                    {
+                        Vector2 bottom = Main.player[Player.FindClosest(NPC.position, NPC.width, NPC.height)].Bottom;
+                        calamityGlobalNPC.newAI[2] = bottom.X;
+                        calamityGlobalNPC.newAI[3] = bottom.Y;
+                        calamityGlobalNPC.newAI[1] = 0f;
+                    }
+                }
+            }
+
+            // Get ready to teleport
+            if (calamityGlobalNPC.newAI[1] < teleportGateValue)
+            {
+                // Teleport very soon if too far away
+                float catchUpDistance = 1500f;
+                bool fastTeleport = NPC.Distance(player.Center) > catchUpDistance;
+                if (fastTeleport)
+                {
+                    calamityGlobalNPC.newAI[1] += 10f;
+                }
+                else
+                {
+                    float teleportFasterDistance = 1000f;
+                    if (NPC.Distance(player.Center) > teleportFasterDistance)
+                        calamityGlobalNPC.newAI[1] += death ? 3f : 2f;
+                    else
+                        calamityGlobalNPC.newAI[1] += 1f;
+                }
+            }
+
             if (NPC.ai[0] == 0f)
             {
                 // Avoid cheap bullshit
@@ -540,6 +631,76 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.velocity.X *= 0.98f;
             }
 
+            // Teleport shit
+            else if (NPC.ai[0] == 5f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.aiAction = 1;
+                NPC.ai[1] += 1f;
+                float teleportTime = bossRush ? 20f : death ? 30f : 40f;
+                scale = MathHelper.Clamp((teleportTime - NPC.ai[1]) / teleportTime, 0f, 1f);
+                scale = 0.5f + scale * 0.5f;
+                if (NPC.ai[1] >= teleportTime && Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.Bottom = new Vector2(calamityGlobalNPC.newAI[2], calamityGlobalNPC.newAI[3]);
+                    NPC.ai[0] = 6f;
+                    NPC.ai[1] = 0f;
+                    NPC.netUpdate = true;
+                }
+
+                if (Main.netMode == NetmodeID.MultiplayerClient && NPC.ai[1] >= teleportTime * 2f)
+                {
+                    NPC.ai[0] = 6f;
+                    NPC.ai[1] = 0f;
+                }
+
+                // Emit teleport dust
+                Color dustColor = Color.Lavender;
+                dustColor.A = 150;
+                for (int i = 0; i < 5; i++)
+                {
+                    int corruptDust = Dust.NewDust(NPC.position + Vector2.UnitX * -20f, NPC.width + 40, NPC.height, DustID.TintableDust, NPC.velocity.X, NPC.velocity.Y, 0, dustColor, 2f);
+                    Main.dust[corruptDust].noGravity = true;
+                    Main.dust[corruptDust].velocity *= 0.5f;
+                }
+            }
+            else if (NPC.ai[0] == 6f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.ai[1] += 1f;
+                float teleportEndTime = bossRush ? 10f : death ? 15f : 20f;
+                scale = MathHelper.Clamp(NPC.ai[1] / teleportEndTime, 0f, 1f);
+                scale = 0.5f + scale * 0.5f;
+                if (NPC.ai[1] >= teleportEndTime && Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = -10f;
+                    NPC.netUpdate = true;
+                    NPC.TargetClosest();
+                }
+
+                if (Main.netMode == NetmodeID.MultiplayerClient && NPC.ai[1] >= teleportEndTime * 2f)
+                {
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = -10f;
+                    NPC.TargetClosest();
+                }
+
+                // Emit teleport dust
+                Color dustColor = Color.Lavender;
+                dustColor.A = 150;
+                for (int i = 0; i < 5; i++)
+                {
+                    int corruptDust = Dust.NewDust(NPC.position + Vector2.UnitX * -20f, NPC.width + 40, NPC.height, DustID.TintableDust, NPC.velocity.X, NPC.velocity.Y, 0, dustColor, 2f);
+                    Main.dust[corruptDust].noGravity = true;
+                    Main.dust[corruptDust].velocity *= 0.5f;
+                }
+            }
+
             if (bossLife == 0f && NPC.life > 0)
                 bossLife = NPC.lifeMax;
 
@@ -570,8 +731,8 @@ namespace CalamityMod.NPCs.SlimeGod
                         for (int j = 0; j < randSlimeAmt; j++)
                         {
                             int offset = 16;
-                            int x = (int)(NPC.position.X + offset + (float)Main.rand.Next(NPC.width - offset));
-                            int y = (int)(NPC.position.Y + offset + (float)Main.rand.Next(NPC.height - offset));
+                            int x = (int)(NPC.position.X + offset + (float)Main.rand.Next(NPC.width - offset * 2));
+                            int y = (int)(NPC.position.Y + offset + (float)Main.rand.Next(NPC.height - offset * 2));
                             int slimeType = ModContent.NPCType<CorruptSlimeSpawn>();
                             int slimeSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, slimeType);
                             Main.npc[slimeSpawn].SetDefaults(slimeType);

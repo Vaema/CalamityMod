@@ -73,7 +73,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -397,7 +396,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override int PearlType => ItemID.PinkPearl;
-        public override float SpawnRate => 0.2f;
+        public override float SpawnRate => 0.05f;
         public override int ItemType => ModContent.ItemType<PearlpodPinkItem>();
     }
     public class PearlpodBlack : Pearlpod
@@ -409,7 +408,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.npcFrameCount[Type] = 6;
         }
         public override int PearlType => ItemID.BlackPearl;
-        public override float SpawnRate => 0.05f;
+        public override float SpawnRate => 0.2f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
     }
     public class PearlpodGold : Pearlpod

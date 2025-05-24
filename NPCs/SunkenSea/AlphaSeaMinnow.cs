@@ -39,7 +39,9 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>() {
             ModContent.NPCType<Sharkoon>(),
             ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<LazarusLampfish>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
@@ -54,6 +56,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -73,7 +76,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<AlphaSeaMinnowItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -161,7 +163,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
-            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
+            Point lookAheadPosition = (NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates();
+            if (!CalamityUtils.ParanoidTileRetrieval(lookAheadPosition.X, lookAheadPosition.Y).IsTileSolid())
             {
                 NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
                 pathfinding.ClearResults();

@@ -231,7 +231,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
-            // Get ready to teleport by increasing ai[3]
+            // Get ready to teleport
             // This only occurs in Rev and Death for the split Slime Gods
             if (NPC.ai[3] < teleportGateValue && revenge)
             {
@@ -819,8 +819,8 @@ namespace CalamityMod.NPCs.SlimeGod
                         bossLife = (float)NPC.life;
 
                         int offset = 16;
-                        int x = (int)(NPC.position.X + offset + (float)Main.rand.Next(NPC.width - offset));
-                        int y = (int)(NPC.position.Y + offset + (float)Main.rand.Next(NPC.height - offset));
+                        int x = (int)(NPC.position.X + offset + (float)Main.rand.Next(NPC.width - offset * 2));
+                        int y = (int)(NPC.position.Y + offset + (float)Main.rand.Next(NPC.height - offset * 2));
                         int slimeType = ModContent.NPCType<CorruptSlimeSpawn>();
                         int slimeSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, slimeType);
                         Main.npc[slimeSpawn].SetDefaults(slimeType);

@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs => new List<int>()
         {
-
+            ModContent.NPCType<Steampod>()
         };
 
         protected override List<int> PredatorIDs => new List<int>() {
@@ -85,6 +85,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 30;
             NPC.width = 40;
@@ -102,7 +103,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = true;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PodobooKoiBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -135,6 +139,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[3] = 180;
             }
             NPC.ai[3]--;
+            NPC.chaseable = false;
             if (NPC.lavaWet)
             {
                 switch (CurrentBehavior)
@@ -235,6 +240,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            NPC.chaseable = true;
             bool noLava = lavaLine == Vector2.Zero;
             // If this is true, use its lava behavior
             bool useLavaAI = CurrentPlayer.lavaWet && NPC.Distance(CurrentPlayer.Center) < 500;
@@ -506,6 +512,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.WriteVector2(randomPathPoint);
             writer.WriteVector2(lavaLine);
             writer.Write(NPC.Calamity().newAI[0]);
+            writer.Write(NPC.chaseable);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -513,6 +520,7 @@ namespace CalamityMod.NPCs.SunkenSea
             randomPathPoint = reader.ReadVector2();
             lavaLine = reader.ReadVector2();
             NPC.Calamity().newAI[0] = reader.ReadSingle();
+            NPC.chaseable = reader.ReadBoolean();
         }
     }
 }

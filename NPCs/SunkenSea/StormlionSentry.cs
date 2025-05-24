@@ -81,11 +81,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noGravity = true;
             NPC.noTileCollide = true; // Custom tile collision
 
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+
             AIState = Mode.Idle;
             attackFeedback = 1;
             headRot = -MathHelper.PiOver2;
 
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<StormlionSentryBanner>();
         }

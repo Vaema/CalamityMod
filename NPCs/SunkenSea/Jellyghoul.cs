@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noTileCollide = true;
            // Banner = NPC.type;
             //BannerItem = ModContent.ItemType<JellyghoulBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
 
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
@@ -131,6 +131,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (NPC.ai[2] >= 1)
             {
+                NPC.chaseable = true;
                 NPC.TargetClosest(false);
                 NPC.ai[3]++;
                 if (NPC.ai[3] >= 120 + (NPC.localAI[1] * 10))
@@ -146,8 +147,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (Main.rand.NextBool(80))
             { 
-            Particle ash = new SquareAshParticle(Main.rand.NextVector2FromRectangle(NPC.getRect()), new Vector2(0, 2), Main.rand.Next(100, 200), Main.rand.NextFloat(0.8f, 1.2f), new Color(50, 50, 50));
-            GeneralParticleHandler.SpawnParticle(ash);
+                Particle ash = new SquareAshParticle(Main.rand.NextVector2FromRectangle(NPC.getRect()), new Vector2(0, 2), Main.rand.Next(100, 200), Main.rand.NextFloat(0.8f, 1.2f), new Color(50, 50, 50));
+                GeneralParticleHandler.SpawnParticle(ash);
             }
         }
 
