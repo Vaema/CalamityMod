@@ -14,6 +14,24 @@ namespace CalamityMod.Buffs
 
         public override void Update(int type, Player player, ref int buffIndex)
         {
+            // Globally remove summon tag buff stacking
+            // Other mods need to add to this list because we genuinely don't have any way to tell this
+            if (SummonTagBuffList.Includes(type) && buffIndex > 0)
+            {
+                for (int i = buffIndex; i >= 0; i--)
+                {
+                    if (player.buffTime[i] > 0)
+                    {
+                        int buffID = player.buffType[i];
+                        if (SummonTagBuffList.Includes(buffID) && buffID != type)
+                        {
+                            player.DelBuff(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type == BuffID.Archery)
             {
                 player.arrowDamage *= 0.955f;
@@ -106,6 +124,24 @@ namespace CalamityMod.Buffs
 
         public override void Update(int type, NPC npc, ref int buffIndex)
         {
+            // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
+            // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
+            if (SummonTagDebuffDict.TryGet(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            {
+                for (int i = buffIndex; i >= 0; i--)
+                {
+                    if (npc.buffTime[i] > 0)
+                    {
+                        int buffID = npc.buffType[i];
+                        if (SummonTagDebuffDict.TryGet(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        {
+                            npc.DelBuff(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type == BuffID.Webbed)
             {
                 if (npc.Calamity().webbed < npc.buffTime[buffIndex])

@@ -1,14 +1,15 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Systems;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -16,6 +17,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {    
@@ -82,7 +84,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            NPC.Center -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
+            NPC.position -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
         }
         public override void AI()
         {
@@ -162,16 +164,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            Tile tile = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY);
-
-            return !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>() ? 0.05f : 0f;
-
-            //fuck this
-            //if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>())
-            //{
-            //    return 0.05f;
-            //}
-            //return 0f;
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.Cavern.Chance * 0.9f;
+            }
+            return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
