@@ -17,7 +17,7 @@ namespace CalamityMod.CalPlayer.Dashes
         public int Time = 0;
         public int lastDashDir = 0;
 
-        public override float CalculateDashSpeed(Player player) => (50f * player.moveSpeed);
+        public override float CalculateDashSpeed(Player player) => (55f * player.moveSpeed);
 
         public override void OnDashEffects(Player player)
         {
@@ -69,6 +69,17 @@ namespace CalamityMod.CalPlayer.Dashes
             dust2.fadeIn = 0.5f;
 
             player.velocity.X *= 0.93f;
+            
+            if (player.velocity.X > 140)
+            {
+                player.velocity.X = 140;
+            }
+            if (player.velocity.X < -140)
+            {
+                player.velocity.X = -140;
+            }
+            if (Time > 6)
+                player.velocity.X *= 0.5f;
         }
     }
 }

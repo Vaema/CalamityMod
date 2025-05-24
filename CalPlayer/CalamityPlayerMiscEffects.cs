@@ -293,16 +293,6 @@ namespace CalamityMod.CalPlayer
                     Player.velocity.X *= 0.9f;
                 }
             }
-            
-            if (Player.Calamity().statisNinjaBelt)
-            {
-                Player.Calamity().DashID = StatisNinjaBeltDash.ID;
-            }
-            if (Player.Calamity().statisVoidSash)
-            {
-                Player.Calamity().DashID = StatisVoidSashDash.ID;
-            }
-
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
             {
                 float fxScale = 1;
