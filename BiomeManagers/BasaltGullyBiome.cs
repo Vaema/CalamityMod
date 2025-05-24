@@ -21,9 +21,12 @@ namespace CalamityMod.BiomeManagers
 
         public override bool IsBiomeActive(Player player)
         {
+            bool MoreThanShores = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaShoresTiles;
+            bool MoreThanReefs = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaReefsTiles;
+            bool MoreThanPolyp = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaPolypTiles;
             bool MoreThanBurrows = BiomeTileCounterSystem.SunkenSeaBasaltTiles > BiomeTileCounterSystem.SunkenSeaBurrowsTiles;
 
-            return BiomeTileCounterSystem.SunkenSeaBasaltTiles > 1000 && MoreThanBurrows;
+            return BiomeTileCounterSystem.SunkenSeaBasaltTiles > 1000 && MoreThanShores && MoreThanReefs && MoreThanPolyp && MoreThanBurrows;
         }
     }
 }
