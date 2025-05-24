@@ -3,7 +3,6 @@ using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Items.Weapons.Summon.Whips;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
@@ -30,13 +29,7 @@ namespace CalamityMod.Systems.Collections
                 { BuffID.ScytheWhipEnemyDebuff, SummonTag.DarkHarvest },
                 { BuffID.SwordWhipNPCDebuff, SummonTag.Durendal },
                 { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
-                { BuffType<ArdorBlossomSpark>(), ArdorBlossomStar.SummonTag },
-                { BuffType<CnidarianWhipDebuff>(), Cnidarian.SummonTag },
                 { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag },
-                { BuffType<RottenMawWhipDebuff>(), RottenMaw.SummonTag },
-                { BuffType<UnderBiteWhipDebuff>(), UnderBite.SummonTag },
-                { BuffType<AtlasMunitionsTagDebuff>(), AtlasMunitionsBeacon.SummonTag },
-                { BuffType<AberrantHorrorWhipDebuff>(), AberrantHorror.SummonTag }
             };
 
         }
