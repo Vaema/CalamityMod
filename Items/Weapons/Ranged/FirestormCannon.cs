@@ -17,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public const int OverheatLevel = 480;
         public const int OverheatCooldown = 180;
         public const int OverheatDamage = 20;
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
 
         public override void SetDefaults()
         {
