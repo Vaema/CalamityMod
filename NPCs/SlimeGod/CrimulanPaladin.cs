@@ -362,7 +362,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         NPC.ai[1] += 1f;
 
                         float jumpGateValue = 50f;
-                        float velocityX = death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
+                        float velocityX = death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
                         if (revenge)
                         {
                             float moveBoost = death ? 22f * (1f - lifeRatio) : 14f * (1f - lifeRatio);
@@ -379,10 +379,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         if (speedMult > 2f)
                             speedMult = 2f;
 
-                        float velocityY = 8f;
-                        if (!Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1))
-                            velocityY += 4f;
-
+                        float velocityY = 6f;
                         float jumpTelegraphGateValue2 = jumpGateValue - telegraphTime;
                         if (NPC.ai[1] >= jumpGateValue)
                         {
@@ -641,9 +638,6 @@ namespace CalamityMod.NPCs.SlimeGod
 
                         float jumpSpeedX = ((death ? 14f : revenge ? 13f : expertMode ? 12f : 10f) + distanceSpeedBoost) * NPC.direction;
                         float jumpSpeedY = -4f - (NPC.Top.Y > player.Bottom.Y ? ((NPC.Top.Y - player.Bottom.Y) * 0.05f) : 0f);
-                        if (!Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1))
-                            jumpSpeedY -= 2f;
-
                         NPC.velocity = new Vector2(jumpSpeedX, jumpSpeedY);
 
                         NPC.ai[2] += 1f;
