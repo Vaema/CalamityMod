@@ -67,7 +67,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             float brightness = 0.9f;
             brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
             Color lilac = new Color(126, 94, 252);
-            Color mint = new Color(96, 252, 236);
+            Color mint = new Color(96, 252, 186);
             Color value = Color.Lerp(lilac, mint, (MathF.Sin(j / 30f + Main.GameUpdateCount * 0.017f + -i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(lilac, mint, (MathF.Sin((-j - 100) / 40f + Main.GameUpdateCount * 0.014f + i / 20f) + 1f) / 2f);
             r = (value.R + value1.R) / 450f;
