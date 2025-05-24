@@ -31,18 +31,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.4f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 0.33f;
-            b = 0.59f;
-            g = 0.77f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            r = 0.11f;
+            g = 0.29f;
+            b = 0.57f;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
