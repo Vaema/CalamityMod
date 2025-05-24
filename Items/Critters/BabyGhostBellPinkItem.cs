@@ -5,7 +5,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Items.Critters
 {
-    public class BabyGhostBellRedItem : ModItem, ILocalizedModType
+    public class BabyGhostBellPinkItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Misc";
         public override void SetStaticDefaults()
