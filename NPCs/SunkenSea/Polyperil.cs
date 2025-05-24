@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public static Asset<Texture2D> pinkTexture = null;
 
-        public static Asset<Texture2D> radiantTexture = null;
+        public static Asset<Texture2D> voltaicTexture = null;
 
         // The tentacles do all the work
         protected override List<int> PreyIDs => new List<int>();
@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.SunkenSea
             pinkTexture = ModContent.Request<Texture2D>(Texture + "Pink");
             blueTexture = ModContent.Request<Texture2D>(Texture + "Blue");
             greenTexture = ModContent.Request<Texture2D>(Texture + "Green");
-            radiantTexture = ModContent.Request<Texture2D>(Texture + "Radiant");
+            voltaicTexture = ModContent.Request<Texture2D>(Texture + "Voltaic");
         }
 
         public override void SetStaticDefaults()
@@ -94,13 +94,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             // Pick a random color
             Color = Main.rand.Next(0, 3);
-            // 1 in 30 chance to be Radiant
-            if (Main.rand.NextBool(30))
-            {
+            // 1 in 15 chance to be Voltaic
+            if (Main.rand.NextBool(15)) 
                 Color = 3;
-                NPC.rarity = 3;
-                NPC.value = 100000;
-            }
 
             // Spawn tentacles
             int dist = 80;
@@ -110,7 +106,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    Vector2 pos = NPC.Center + new Vector2(Main.rand.Next(-dist, dist), Main.rand.Next(-dist, dist));
+                    Vector2 pos = NPC.Center + new Vector2(Main.rand.Next(-dist, dist), 20);
                     NPC tent = NPC.NewNPCDirect(NPC.GetSource_FromThis(), NPC.Center, ModContent.NPCType<PolyperilTentacle>(), ai0: NPC.whoAmI);
                     tent.ModNPC<PolyperilTentacle>().anchor = pos;
                 }
@@ -147,14 +143,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
-            }
-        }
-
-        public override void ModifyTypeName(ref string typeName)
-        {
-            if (Color == 3)
-            {
-                typeName = CalamityUtils.GetTextValue("NPCs.RadiantPolyperil");
             }
         }
 
@@ -197,7 +185,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 1 => blueTexture.Value,
                 2 => greenTexture.Value,
-                3 => radiantTexture.Value,
+                3 => voltaicTexture.Value,
                 _ => pinkTexture.Value
             };
 
