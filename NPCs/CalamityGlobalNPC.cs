@@ -7191,8 +7191,8 @@ namespace CalamityMod.NPCs
                     continue;
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
-                pool.Add(NPCID.None, 0f);
-                pool.Add(NPCType<PodobooKoi>(), 0.25f);
+                pool.Add(NPCID.None, 1f);
+                pool.Add(NPCType<PodobooKoi>(), 0.05f);
 
                 int typeToSpawn = pool.Get();
                 if (typeToSpawn != NPCID.None)

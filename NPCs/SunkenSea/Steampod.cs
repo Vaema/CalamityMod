@@ -494,8 +494,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
-            spriteBatch.Draw(tex, NPC.Center - Main.screenPosition + Vector2.UnitY * NPC.gfxOffY, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
-            spriteBatch.Draw(glowTex.Value, NPC.Center - Main.screenPosition + Vector2.UnitY * NPC.gfxOffY, NPC.frame, Color.White, NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
+            spriteBatch.Draw(tex, NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
+            spriteBatch.Draw(glowTex.Value, NPC.Center - screenPos + Vector2.UnitY * NPC.gfxOffY, NPC.frame, Color.White, NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 2 / Main.npcFrameCount[NPC.type]), NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : 0, 0);
 
             return false;
         }
