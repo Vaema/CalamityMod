@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public bool hasBeenHit = false;
         public static Asset<Texture2D> RadiantTexture;
         public static Asset<Texture2D> VoltaicTexture;
-        public static Asset<Texture2D> RedTexture;
+        public static Asset<Texture2D> PinkTexture;
         public static Asset<Texture2D> GreenTexture;
         public static Asset<Texture2D> GoldTexture;
         public ref float Variant => ref NPC.ai[1];
@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Blue = 0,
             Green = 1,
-            Red = 2,
+            Pink = 2,
             Radiant = 3,
             Voltaic = 4,
             Gold = 5
@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.SunkenSea
             RadiantTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRadiant");
             VoltaicTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellVoltaic");
             GreenTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGreen");
-            RedTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellRed");
+            PinkTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellPink");
             GoldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/BabyGhostBellGold");
         }
 
@@ -142,8 +142,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 case (int)JellyColor.Green:
                     NPC.catchItem = ModContent.ItemType<BabyGhostBellGreenItem>();
                     break;
-                case (int)JellyColor.Red:
-                    NPC.catchItem = ModContent.ItemType<BabyGhostBellRedItem>();
+                case (int)JellyColor.Pink:
+                    NPC.catchItem = ModContent.ItemType<BabyGhostBellPinkItem>();
                     break;
                 case (int)JellyColor.Radiant:
                     {
@@ -271,7 +271,7 @@ namespace CalamityMod.NPCs.SunkenSea
             Color lightColor = Color.LightBlue; // Voltaic uses the same light blue
             switch (Variant)
             {
-                case (int)JellyColor.Red:
+                case (int)JellyColor.Pink:
                     lightColor = Color.Pink;
                     break;
                 case (int)JellyColor.Green:
@@ -337,8 +337,8 @@ namespace CalamityMod.NPCs.SunkenSea
             int dustType = DustID.BlueCrystalShard;
             switch (Variant)
             {
-                case (int)JellyColor.Red:
-                    dustType = DustID.RedTorch;
+                case (int)JellyColor.Pink:
+                    dustType = DustID.PinkTorch;
                     break;
                 case (int)JellyColor.Green:
                     dustType = DustID.GemEmerald;
@@ -368,8 +368,8 @@ namespace CalamityMod.NPCs.SunkenSea
             Texture2D texture = TextureAssets.Npc[Type].Value;
             switch (Variant)
             {
-                case (int)JellyColor.Red:
-                    texture = RedTexture.Value;
+                case (int)JellyColor.Pink:
+                    texture = PinkTexture.Value;
                     break;
                 case (int)JellyColor.Green:
                     texture = GreenTexture.Value;
