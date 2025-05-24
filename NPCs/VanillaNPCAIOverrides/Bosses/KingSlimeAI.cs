@@ -290,6 +290,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] += 1f;
             }
 
+            // Slow down dramatically while teleporting
+            if (npc.ai[1] == 5f || npc.ai[1] == 6f)
+            {
+                if (npc.velocity.Length() > 0.1f)
+                {
+                    npc.velocity.X *= 0.8f;
+                    if (npc.velocity.Length() <= 0.1f)
+                        npc.velocity = Vector2.Zero;
+                }
+            }
+
             // Teleport
             if (npc.ai[1] == 5f)
             {
@@ -634,10 +645,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (CalamityWorld.LegendaryMode)
                             npcType = NPCID.RainbowSlime;
 
-                        int spawnZoneWidth = npc.width - 32;
-                        int spawnZoneHeight = npc.height - 32;
-                        int x = (int)(npc.position.X + Main.rand.Next(spawnZoneWidth));
-                        int y = (int)(npc.position.Y + Main.rand.Next(spawnZoneHeight));
+                        int offset = 16;
+                        int spawnZoneWidth = npc.width - offset * 2;
+                        int spawnZoneHeight = npc.height - offset * 2;
+                        int x = (int)(npc.position.X + offset + Main.rand.Next(spawnZoneWidth));
+                        int y = (int)(npc.position.Y + offset + Main.rand.Next(spawnZoneHeight));
                         int slimeSpawns = NPC.NewNPC(npc.GetSource_FromAI(), x, y, npcType);
                         Main.npc[slimeSpawns].SetDefaults(npcType);
                         Main.npc[slimeSpawns].velocity.X = Main.rand.Next(-15, 16) * 0.1f;
