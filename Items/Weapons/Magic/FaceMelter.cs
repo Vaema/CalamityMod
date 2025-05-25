@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 5f;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<MelterNote1>();

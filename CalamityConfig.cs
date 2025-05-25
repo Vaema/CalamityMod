@@ -66,6 +66,10 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
+        public bool textEffects;
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]

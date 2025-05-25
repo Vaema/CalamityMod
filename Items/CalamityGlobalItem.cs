@@ -255,7 +255,7 @@ namespace CalamityMod.Items
 
             // Zenith rarity
             if (item.type == ItemID.Zenith)
-                item.rare = ModContent.RarityType<Violet>();
+                item.rare = ModContent.RarityType<BurnishedAuric>();
 
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
@@ -1867,9 +1867,9 @@ namespace CalamityMod.Items
                 return RarityTurquoiseBuyPrice;
             if (rarity == ModContent.RarityType<PureGreen>())
                 return RarityPureGreenBuyPrice;
-            if (rarity == ModContent.RarityType<DarkBlue>())
+            if (rarity == ModContent.RarityType<CosmicPurple>())
                 return RarityDarkBlueBuyPrice;
-            if (rarity == ModContent.RarityType<Violet>())
+            if (rarity == ModContent.RarityType<BurnishedAuric>())
                 return RarityVioletBuyPrice;
             if (rarity == ModContent.RarityType<HotPink>())
                 return RarityHotPinkBuyPrice;

@@ -18,7 +18,7 @@ namespace CalamityMod.Items.SummonItems
         public override void SetDefaults()
         {
             Item.width = Item.height = 32;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.useAnimation = 10;
             Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;

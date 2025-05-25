@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item109;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.shoot = ModContent.ProjectileType<ScourgeoftheCosmosProj>();
             Item.shootSpeed = 20f;
         }

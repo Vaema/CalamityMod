@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAuric
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricToiletTile>());
             Item.value = Item.sellPrice(gold: 40);
-            Item.rare = ModContent.RarityType<Violet>(); // Most special shitter gets most preferential treatment
+            Item.rare = ModContent.RarityType<BurnishedAuric>(); // Most special shitter gets most preferential treatment
         }
 
         public override void AddRecipes()

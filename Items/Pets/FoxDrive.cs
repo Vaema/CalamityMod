@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Pets
             Item.DefaultToVanitypet(ModContent.ProjectileType<FoxPet>(), ModContent.BuffType<FoxPetBuff>());
             Item.expert = true;
             Item.value = Item.sellPrice(gold: 20);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().devItem = true;
         }
 

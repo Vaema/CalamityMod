@@ -13,8 +13,8 @@ namespace CalamityMod.Rarities
         {
             -2 => ItemRarityID.Purple,
             -1 => ModContent.RarityType<Turquoise>(),
-            1 => ModContent.RarityType<DarkBlue>(),
-            2 => ModContent.RarityType<Violet>(),
+            1 => ModContent.RarityType<CosmicPurple>(),
+            2 => ModContent.RarityType<BurnishedAuric>(),
             _ => Type,
         };
     }
