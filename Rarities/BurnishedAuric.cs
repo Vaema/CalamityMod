@@ -53,7 +53,7 @@ namespace CalamityMod.Rarities
                     spriteBatch, font, text,
                     new Vector2(X, Y) + new Vector2(pulsing, 0f).RotatedBy(f + time * 2f % MathHelper.TwoPi),
                     textColor * 0.5f, rotation, origin, baseScale);
-                if (isFlashing)
+                if (isFlashing && CalamityClientConfig.Instance.TextEffects)
                     origin += Main.rand.NextVector2Circular(2f, 1.2f); // Small shake
             }
 
@@ -78,7 +78,7 @@ namespace CalamityMod.Rarities
             float shinePos = (shineDisp % (fontSize.X + shineWidth));
 
             Vector2 basePos = new Vector2(X, Y);
-            if (isFlashing)
+            if (isFlashing && CalamityClientConfig.Instance.TextEffects)
                 basePos += Main.rand.NextVector2Circular(3f, 10f); // Small shake
 
             float charOffsetX = 0f;
@@ -105,15 +105,12 @@ namespace CalamityMod.Rarities
 
                 charOffsetX += charSize.X - text.Length * 0.0085f;
             }
-
-            var rand = new UnifiedRandom(Main.LocalPlayer.name.GetHashCode() + (int)(center.X + center.Y));
         }
 
         public static void Draw(Item Item, string text, int X, int Y, float rotation, Vector2 origin, Vector2 baseScale, Color? textColor = null, Color? lightColor = null, bool? renderTextSparkles = null)
         {
-            Draw(Item, Main.spriteBatch, text, X, Y, Colors.AlphaDarken(textColor == null ? TextClr : textColor.Value), lightColor == null ? BloomClr : lightColor.Value, rotation, origin, baseScale, Main.GlobalTimeWrappedHourly,
-                renderTextSparkles == null ? Language.ActiveCulture == GameCulture.FromCultureName(GameCulture.CultureName.Chinese) ? false : CalamityClientConfig.Instance.textEffects : renderTextSparkles.Value,
-                FontAssets.MouseText.Value);
+            Draw(Item, Main.spriteBatch, text, X, Y, Colors.AlphaDarken(textColor ?? TextClr), lightColor ?? BloomClr, rotation, origin, baseScale, Main.GlobalTimeWrappedHourly,
+                renderTextSparkles ?? CalamityClientConfig.Instance.TextEffects, FontAssets.MouseText.Value);
         }
 
         public static void Draw(Item Item, DrawableTooltipLine line)
