@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 104;
             NPC.height = 104;
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
