@@ -83,6 +83,7 @@ namespace CalamityMod.Items.Weapons.Melee
                             if (shardCount > 0)
                             {
                                 SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
+                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath,player.Center);
                             }
                             if (shardCount >= 10)
                             {
@@ -100,8 +101,6 @@ namespace CalamityMod.Items.Weapons.Melee
                                     proj2.netUpdate = true;
                                 }
                             }
-                            if (shardCount > 0)
-                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath,player.Center);
                             reflectTimer = 0;
                             return;
                         }

@@ -251,12 +251,6 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            if (manaOverloader)
-            {
-                if (Player.statMana > (int)(Player.statManaMax2 * 0.5))
-                    totalNegativeLifeRegen += 3;
-            }
-
             if (brimflameFrenzy)
             {
                 Player.manaRegen = 0;
@@ -715,13 +709,19 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
                 Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
             }
+            
+            if (manaOverloader)
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.lifeRegen += (int)(MathF.Round(MathHelper.Lerp(4f, -4f, manaRatio)) * (Player.HasBuff(BuffID.ManaSickness) ? 0.5f : 1f));
+            }
 
             #region Standing Still Life Regen
             // Standing still healing bonuses (all are exclusive with vanilla Shiny Stone, but all function similarly)
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
             {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking  || aAmpoule || purity;
+                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || aAmpoule || purity;
 
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
@@ -759,8 +759,8 @@ namespace CalamityMod.CalPlayer
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
-                    purityRegen += turboRegenPower/2f;
-                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower/2f;
+                    purityRegen += turboRegenPower / 2f;
+                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower / 2f;
                 }
 
             }
