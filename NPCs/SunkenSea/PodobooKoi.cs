@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 30;
-            NPC.width = 40;
+            NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 10;
             NPC.lifeMax = 1000;
@@ -173,12 +173,21 @@ namespace CalamityMod.NPCs.SunkenSea
         public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValiditySizeless));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValidityLenient));
         }
 
-        public bool LavaTileValiditySizeless(Point point)
+        /// <summary>
+        /// Same as LavaTileValidity but without the requirement for a full tile of lava
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public bool LavaTileValidityLenient(Point point)
         {
-            return !(Main.tile[point].IsTileSolidGround() || Main.tile[point].LiquidAmount < 255 || Main.tile[point].LiquidType != LiquidID.Lava);
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+
+            return NPC.Hitbox.Contains(actualFuckingPoint)
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 25 || Main.tile[a].LiquidType != LiquidID.Lava);
         }
 
         public void FleeBehavior()
@@ -209,7 +218,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                 randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, LavaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, LavaTileValidityLenient));
             }
         }
 
@@ -223,7 +232,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
             pathfinding.MaxSpeed = 8;
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, LavaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, LavaTileValidityLenient));
         }
 
         public void HostileBehavior()
@@ -286,7 +295,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.velocity.Y = 4;
                 }
                 pathfinding.MaxSpeed = 6;
-                pathfinding.DoPathfinding(new(NPC.Center, CurrentPlayer.Center, LavaTileValiditySizeless));
+                pathfinding.DoPathfinding(new(NPC.Center, CurrentPlayer.Center, LavaTileValidityLenient));
                 // Mark the fish as currently trying to chase the player
                 NPC.Calamity().newAI[0] = 1;
             }
