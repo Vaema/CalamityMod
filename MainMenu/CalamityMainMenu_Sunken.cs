@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.MainMenu.SunkenFishBoid;
 
 namespace CalamityMod.MainMenu
 {
@@ -22,19 +22,50 @@ namespace CalamityMod.MainMenu
             public int Lifetime;
             public int IdentityIndex;
             public float Scale;
+            public float StoredScale;
+            public float Rotation;
+            public float RotationSpeed;
             public float Depth;
             public Color DrawColor;
             public Vector2 Velocity;
             public Vector2 Center;
 
-            public Bubble(int lifetime, int identity, float depth, Color color, Vector2 startingPosition, Vector2 startingVelocity)
+            public Asset<Texture2D> BubbleTexture;
+
+            public Bubble(int lifetime, int identity, float depth, float storedScale, Color color, Vector2 startingPosition, Vector2 startingVelocity)
             {
                 Lifetime = lifetime;
                 IdentityIndex = identity;
                 Depth = depth;
+                StoredScale = storedScale;
                 DrawColor = color;
                 Center = startingPosition;
                 Velocity = startingVelocity;
+
+                Rotation = Main.rand.NextFloat(MathF.Tau);
+                RotationSpeed = Main.rand.NextFloat(0.01f, 0.04f) * Main.rand.NextBool().ToDirectionInt();
+                BubbleTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/Bubble");
+            }
+
+            public void Update()
+            {
+                // Sway from side to side.
+                Velocity.X = MathHelper.Lerp(-1f, 1f, CalamityUtils.SineBumpEasing((Time / 60f), 1));
+                Scale = MathHelper.Lerp(StoredScale, 0f, Time / (float)Lifetime);
+
+                // Rotate.
+                Rotation += RotationSpeed * MathHelper.TwoPi * 0.1f;
+
+                Time++;
+                Center += Velocity;
+            }
+
+            public void Draw(SpriteBatch spriteBatch)
+            {
+                Vector2 depthFactor = new(1f / Depth, 1.1f / Depth);
+                Vector2 parallaxedPosition = Center * depthFactor;
+                var scaleByDepth = Scale * Utils.Remap(Depth, 1, 5, 1f, 0.4f, true);
+                spriteBatch.Draw(BubbleTexture.Value, parallaxedPosition, null, DrawColor, Rotation, BubbleTexture.Value.Size() * 0.5f, scaleByDepth, 0, 0f);
             }
         }
 
@@ -107,11 +138,6 @@ namespace CalamityMod.MainMenu
             DrawLogo(spriteBatch, ref logoDrawCenter, ref logoRotation, ref logoScale, ref drawColor);
             
             return false;
-        }
-
-        private static Color SelectBubbleColor()
-        {
-            return Color.Lerp(Color.Lerp(Color.MediumSlateBlue, Color.DarkBlue, 0.3f), Color.Lerp(Color.MediumTurquoise, Color.PaleTurquoise, Main.rand.NextFloat()), Main.rand.NextFloat());
         }
 
         private void DrawMenuBackground(SpriteBatch spriteBatch)
@@ -227,69 +253,101 @@ namespace CalamityMod.MainMenu
                 if (Main.rand.NextBool(4))
                 {
                     int lifetime = Main.rand.NextBool(5) ? Main.rand.Next(400, 500) : Main.rand.Next(200, 250);
-                    float depth = Main.rand.NextFloat(1.8f, 5f);
-                    Vector2 startingPosition = new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * 1.05f);
-                    Vector2 startingVelocity = -Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-0.4f, 0.4f)) * 2f;
-                    Color bubbleColor = SelectBubbleColor();
-                    Bubbles.Add(new Bubble(lifetime, Bubbles.Count, depth, bubbleColor, startingPosition, startingVelocity));
+                    float depth = Main.rand.NextFloat(1f, 5f);
+                    float scale = Main.rand.NextFloat(0.2f, 0.8f);
+                    Vector2 startingPosition = new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * 1.05f) * depth;
+                    Vector2 startingVelocity = -Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-0.4f, 0.4f)) * 6f;
+                    Color bubbleColor = Color.Lerp(SelectBubbleColor(), Color.White, 0.6f);
+
+                    Bubbles.Add(new Bubble(lifetime, Bubbles.Count, depth, scale, bubbleColor, startingPosition, startingVelocity));
                 }
             }
 
             // Update all bubbles.
             for (int i = 0; i < Bubbles.Count; i++)
             {
-                Bubbles[i].Scale = Utils.GetLerpValue(Bubbles[i].Lifetime, Bubbles[i].Lifetime / 3, Bubbles[i].Time, true);
-                Bubbles[i].Scale *= MathHelper.Lerp(0.2f, 0.4f, Bubbles[i].IdentityIndex % 6f / 6f);
-                //Bubbles[i].DrawColor.A = (byte)Utils.Remap(Bubbles[i].Lifetime, 100f, 0f, 1f, 0f, true);
-                Bubbles[i].DrawColor.A = 150;
+                Bubbles[i].Update();
+
+                Bubbles[i].DrawColor.A = 180;
                 if (Bubbles[i].IdentityIndex % 13 == 12)
                     Bubbles[i].Scale *= 0.5f;
-
-                Bubbles[i].Time++;
-                Bubbles[i].Center += Bubbles[i].Velocity;
             }
 
             // Clear away all dead bubbles.
             Bubbles.RemoveAll(c => c.Time >= c.Lifetime);
 
             // Draw bubbles.
-            Texture2D bubbleTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/PearlParticleGlow").Value;
-            for (int i = 0; i < Bubbles.Count; i++)
-            {
-                Vector2 drawPosition = Bubbles[i].Center;
-                spriteBatch.Draw(bubbleTexture, drawPosition, null, Bubbles[i].DrawColor, Main.rand.NextFloat(0f, 90f), bubbleTexture.Size() * 0.5f, Bubbles[i].Scale, 0, 0f);
-            }
+            var bubblesByDepth = Bubbles.OrderByDescending(b => b.Depth).ToList();
+            foreach (Bubble bubble in bubblesByDepth)
+                bubble.Draw(spriteBatch);
         }
+
+        /// <summary>
+        /// Selects a random color for the bubbles which rise from the bottom of the screen.
+        /// </summary>
+        private static Color SelectBubbleColor()
+            => Color.Lerp(Color.Lerp(Color.MediumSlateBlue, Color.DarkBlue, 0.3f), Color.Lerp(Color.MediumTurquoise, Color.PaleTurquoise, Main.rand.NextFloat()), Main.rand.NextFloat());
 
         private void DrawFishes(SpriteBatch spriteBatch)
         {
-            // Generate random schools of fishes.
+            // Generate random fishes.
             if (Main.rand.NextBool(14) && Fishes.Count < MaxBoids)
             {
-                int schoolCount = Main.rand.Next(1, 4);
+                int schoolCount = Main.rand.Next(2, 9);
                 for (int i = 0; i < schoolCount; i++)
                 {
                     int depth = Main.rand.Next(1, 4);
                     int lifetime = Main.rand.Next(1200, 1800);
                     float scale = Main.rand.NextFloat(0.8f, 1.2f);
-                    Vector2 schoolSpawnPosition = new(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f) * depth, Main.screenHeight * Main.rand.NextFloat(-0.1f, 1.1f) * depth);
-
-                    int fishCount = Main.rand.Next(3, 11);
-                    for (int j = 0; j < fishCount; j++)
-                    {
-                        Vector2 individualFishSpawnPosition = schoolSpawnPosition + Main.rand.NextVector2Circular(100f, 100f);
-                        SunkenFishBoid fish = new(schoolSpawnPosition, scale, lifetime, depth);
-                        Fishes.Add(fish);
-                    }
+                    Vector2 spawnPosition = new(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f) * depth, Main.screenHeight * Main.rand.NextFloat(-0.1f, 1.1f) * depth);
+                    SunkenFishBoid fish = new(spawnPosition, scale, depth);
+                    Fishes.Add(fish);
                 }
             }
 
-            // Remove expired fish.
-            Fishes.RemoveAll(f => f.Time >= f.Lifetime);
+            // Remove fish when they are offscreen.
+            Rectangle outOfBoundsRectangle = new(-50, -50, Main.screenWidth + 100, Main.screenHeight + 100);
+            Fishes.RemoveAll(f =>
+            {
+                Vector2 depthFactor = new(1f / f.Depth, 1.1f / f.Depth);
+                Vector2 parallaxedPosition = f.Position * depthFactor;
+                return !outOfBoundsRectangle.Contains((int)parallaxedPosition.X, (int)parallaxedPosition.Y);
+            });
 
             // Update all fish.
             for (int i = 0; i < Fishes.Count; i++)
+            {
+                // Alpha Sea Minnows and Prismatic Guppies can spawn in schools.
+                bool canSpawnSchool = Fishes[i].SelectedFishType == FishType.AlphaSeaMinnow || Fishes[i].IsAPrismaticGuppy;
+                if (canSpawnSchool && !Fishes[i].HasSpawnedSchool)
+                {
+                    int fishCount = Main.rand.Next(3, 8);
+                    for (int fishes = 0; fishes < fishCount; fishes++)
+                    {
+                        Vector2 spawnPosition = Fishes[i].Position + Main.rand.NextVector2Circular(50f, 50f) * Fishes[i].Depth;
+                        float scale = Main.rand.NextFloat(0.8f, 1.2f);
+                        FishType typeToSpawn = Fishes[i].IsAPrismaticGuppy ? (FishType)Main.rand.Next(3, 6) : FishType.SeaMinnow;
+
+                        SunkenFishBoid schoolingFish = new(spawnPosition, scale, Fishes[i].Depth, typeToSpawn)
+                        {
+                            HasSpawnedSchool = true
+                        };
+
+                        if (Fishes[i].SelectedFishType == FishType.AlphaSeaMinnow)
+                        {
+                            Fishes[i].SeaMinnowSchoolMembers.Add(schoolingFish);
+                            schoolingFish.SeaMinnowSchoolMembers.Add(schoolingFish);
+                            schoolingFish.SeaMinnowSchoolMembers.Add(Fishes[i]);
+                        }
+
+                        Fishes.Add(schoolingFish);
+                    }
+
+                    Fishes[i].HasSpawnedSchool = true;
+                }
+
                 Fishes[i].Update();
+            }
 
             // Draw all fish in an order based on their depth. 
             var fishesByDepth = Fishes.OrderByDescending(f => f.Depth).ToList();

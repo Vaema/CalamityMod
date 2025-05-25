@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.MainMenu
 {
@@ -16,6 +16,7 @@ namespace CalamityMod.MainMenu
         public enum FishType
         {
             SeaMinnow,
+            AlphaSeaMinnow,
             PolypPanasea,
             PrismaticGuppy1,
             PrismaticGuppy2,
@@ -68,17 +69,19 @@ namespace CalamityMod.MainMenu
 
         public int Time;
 
-        public int Lifetime;
-
         public int Depth;
 
         public int CurrentFrame;
 
         public int MaxFrames;
 
+        public int FrameSpeed;
+
         public Vector2 Position;
 
         public Vector2 Velocity;
+
+        public Vector2 StretchFactor;
 
         public float Scale;
 
@@ -94,13 +97,25 @@ namespace CalamityMod.MainMenu
 
         public float PassiveMovementSpeed;
 
-        public float MaxSpeed = 2f;
+        public float MaxSpeed_Default = 3f;
+
+        public float MaxSpeed_SwimAwayFromCursor = 4.25f;
 
         public FishType SelectedFishType;
+
+        public FishType? FishTypeOverride;
+
+        public WeightedRandom<FishType> RandomFishType = new();
 
         public int FishTextureIndex = -1;
 
         public bool Initialized = false;
+
+        public bool HasSpawnedSchool = false;
+
+        public List<SunkenFishBoid> SeaMinnowSchoolMembers = [];
+
+        public Asset<Texture2D> FishTexture;
 
         // -- BOID ALOGORITHM SPECIFIC VARIABLES -- 
 
@@ -108,50 +123,61 @@ namespace CalamityMod.MainMenu
         // Coefficients to control how strongly each of the Boid Algos affect the movement of each boid.
         // Higher values will lead to sharper flocking AI, but movement might be a little choppier.
         // Please beware of this if you ever change these values.
-        public float CohesionCoefficient = 0.015f;
+        public float CohesionCoefficient = 0.075f;
 
-        public float AlignmentCoefficient = 0.035f;
+        public float AlignmentCoefficient = 0.12f;
 
-        public float SeparationCoefficient = 0.055f;
+        public float SeparationCoefficient = 0.03f;
 
-        public float MaxRadiusFromOtherFish = 75f;
+        public float MaxRadiusFromOtherFish = 125f;
 
-        public float MaxDetectionRadius = 125f;
-
-        /// <summary>
-        /// The ratio of how much time a fish has left to live before despawning.
-        /// </summary>
-        public float LifetimeInterpolant => Time / (float)Lifetime;
+        public float MaxDetectionRadius = 200f;
 
         /// <summary>
-        /// Whether or not this fish boid is any of the Prismatic Guppy variants. Used for allowing allow Prismatic Guppies to school with each other.
+        /// Whether or not this fish boid is any of the Prismatic Guppy variants. Used for allowing Prismatic Guppies to school with each other.
         /// </summary>
         public bool IsAPrismaticGuppy => SelectedFishType == FishType.PrismaticGuppy1 || SelectedFishType == FishType.PrismaticGuppy2 || SelectedFishType == FishType.PrismaticGuppy3;
 
-        public SunkenFishBoid(Vector2 position, float scale, int lifetime, int depth)
+        /// <summary>
+        /// Whether or not this fish boid is any one of the Sea Minnow variants. Used for allowing Sea Minnows to school with Alphas properly.
+        /// </summary>
+        public bool IsASeaMinnow => SelectedFishType == FishType.SeaMinnow || SelectedFishType == FishType.AlphaSeaMinnow;
+
+        public SunkenFishBoid(Vector2 position, float scale, int depth, FishType? fishTypeOverride = null)
         {
             Position = position;
             StoredScale = scale;
-            Lifetime = lifetime;
             Depth = depth;
+            FishTypeOverride = fishTypeOverride;
 
-            SelectedFishType = (FishType)Main.rand.Next(0, 5);
+            FrameSpeed = Main.rand.Next(6, 11);
+            StretchFactor = Vector2.One;
+            RandomFishType.Add(FishType.AlphaSeaMinnow, 0.7f);
+            RandomFishType.Add(FishType.PolypPanasea, 0.6f);
+            RandomFishType.Add(FishType.PrismaticGuppy1, 0.1f);
+            RandomFishType.Add(FishType.PrismaticGuppy2, 0.1f);
+            RandomFishType.Add(FishType.PrismaticGuppy3, 0.1f);
         }
 
         public void Update()
         {
             if (!Initialized)
             {
+                // Select the appropriate fish type.
+                SelectedFishType = FishTypeOverride ?? RandomFishType;
+
                 // Select the correct texture index for the different types of fish textures.
                 if (SelectedFishType == FishType.SeaMinnow)
-                    FishTextureIndex = Main.rand.Next(SeaMinnowTextureNames.Length);
+                    FishTextureIndex = 0;
+                if (SelectedFishType == FishType.AlphaSeaMinnow)
+                    FishTextureIndex = 1;
                 if (SelectedFishType == FishType.PolypPanasea)
                     FishTextureIndex = Main.rand.Next(PolypPanaseaTextureNames.Length);
-                if (SelectedFishType == FishType.PrismaticGuppy1 || SelectedFishType == FishType.PrismaticGuppy2 || SelectedFishType == FishType.PrismaticGuppy3)
+                if (IsAPrismaticGuppy)
                     FishTextureIndex = Main.rand.Next(PrismaticGuppyTextureNames_1.Length);
 
                 // Select the correct amount of animation frames each texture has based on the fish type.
-                if (SelectedFishType == FishType.SeaMinnow)
+                if (IsASeaMinnow)
                     MaxFrames = 8;
                 if (SelectedFishType == FishType.PolypPanasea)
                     MaxFrames = 6;
@@ -162,31 +188,19 @@ namespace CalamityMod.MainMenu
                 if (SelectedFishType == FishType.PrismaticGuppy3)
                     MaxFrames = 5;
 
+                CurrentFrame = Main.rand.Next(MaxFrames);
+                FishTexture = GetCorrectFishTexture();
                 Initialized = true;
             }
 
-            // Don't run anything if the previous two variables haven't been intialized properly.
             if (!Initialized)
                 return;
 
-            // Scale up and out accordingly depending on the remaining lifetime of the fish.
-            if (LifetimeInterpolant < 0.07f)
+            if (Scale < StoredScale)
             {
-                Scale = MathHelper.Lerp(0f, StoredScale, LifetimeInterpolant / 0.07f);
-                Opacity = MathHelper.Lerp(0f, 1f, LifetimeInterpolant / 0.07f);
+                Scale = MathHelper.Clamp(Scale + 0.05f, 0f, StoredScale);
+                Opacity = MathHelper.Clamp(Opacity + 0.05f, 0f, 1f);
             }
-            else if (LifetimeInterpolant > 0.9f)
-            {
-                Scale = MathHelper.Lerp(StoredScale, 0f, (LifetimeInterpolant - 0.9f) / 0.1f);
-                Opacity = MathHelper.Lerp(1f, 0f, (LifetimeInterpolant - 0.9f) / 0.1f);
-            }
-
-            // Rotate towards the movement direction.
-            Rotation = Velocity.ToRotation();
-
-            // Animate.
-            if (Time % 6 == 0)
-                CurrentFrame = (CurrentFrame + 1) % MaxFrames;
 
             // Perform all Boids Behavior.
             DoBoidsBehavior();
@@ -195,68 +209,108 @@ namespace CalamityMod.MainMenu
             PassiveMovementTimer--;
             if (PassiveMovementTimer <= 0f)
             {
-                PassiveMovementSpeed = Main.rand.NextFloat(0.05f, 1.45f);
+                PassiveMovementSpeed = Main.rand.NextFloat(0.25f, MaxSpeed_Default);
                 PassiveMovementVector.X = Main.rand.NextFloat(-100f, 101f);
                 PassiveMovementVector.Y = Main.rand.NextFloat(-100f, 101f);
                 PassiveMovementTimer = Main.rand.Next(120, 180);
             }
 
-            float moveSpeed = PassiveMovementSpeed / PassiveMovementVector.Length();
+            var moveSpeed = PassiveMovementSpeed / PassiveMovementVector.Length();
             Velocity = Vector2.Lerp(Velocity, PassiveMovementVector * moveSpeed, 0.01f);
 
             // Make fishes closest to the screen swim away from the mouse cursor if it's nearby.
-            float distanceFromCursor = Vector2.Distance(Position, Main.MouseScreen);
-            if (distanceFromCursor < 100f && Depth <= 1)
+            var distanceFromCursor = Vector2.Distance(Position, Main.MouseScreen);
+            var shouldSwimAway = distanceFromCursor < 100f && Depth <= 1;
+            if (shouldSwimAway)
             {
-                float distanceInterpolant = Utils.GetLerpValue(100f, 20f, distanceFromCursor, true);
-                Velocity += Position.DirectionTo(Main.MouseScreen).SafeNormalize(Vector2.UnitY) * distanceInterpolant * -0.8f;
+                var distanceInterpolant = Utils.GetLerpValue(175f, 0f, distanceFromCursor, true);
+                Velocity += Position.DirectionTo(Main.MouseScreen).SafeNormalize(Vector2.UnitY) * distanceInterpolant * -0.46f;
+
+                // Stretch a little while swimming away from danger for additional silliness :D
+                float stretch = MathHelper.Clamp(Velocity.Length() / MaxSpeed_SwimAwayFromCursor * 0.1f, 1f, 1.65f);
+                Vector2 stretchedVector = new(Scale * stretch, Scale - Scale * stretch * 0.3f);
+                StretchFactor = Vector2.Lerp(StretchFactor, stretchedVector, 0.15f);
+            }
+            else
+            {
+                if (Velocity.Length() > MaxSpeed_Default)
+                    Velocity *= 0.7f;
+                StretchFactor = Vector2.Lerp(StretchFactor, Vector2.One, 0.15f);
             }
 
-            Velocity = Velocity.ClampMagnitude(0f, 1.45f);
+            Velocity = Velocity.ClampMagnitude(0.25f, MaxSpeed_SwimAwayFromCursor);
             Position += Velocity;
+
+            Rotation = Velocity.ToRotation();
+            if (Time % FrameSpeed == 0)
+                CurrentFrame = (CurrentFrame + 1) % MaxFrames;
 
             Time++;
         }
-        
+
         public void DoBoidsBehavior()
         {
-            Vector2 cohesion = Vector2.Zero;
-            Vector2 alignment = Vector2.Zero;
-            Vector2 separation = Vector2.Zero;
-            int totalSchoolMembers = 0;
+            // Polyp Panaseas do not travel in schools.
+            if (SelectedFishType == FishType.PolypPanasea)
+                return;
 
-            float detetctionRadiusSquared = MathF.Pow(MaxDetectionRadius, 2f);
-            float separationDistanceSquared = MathF.Pow(MaxRadiusFromOtherFish, 2f);
-            List<SunkenFishBoid> allOtherFishes = CalamityMainMenu_Sunken.Fishes;
-            foreach (SunkenFishBoid other in allOtherFishes)
+            var cohesion = Vector2.Zero;
+            var alignment = Vector2.Zero;
+            var separation = Vector2.Zero;
+            var totalSchoolMembers = 0;
+
+            var detetctionRadiusSquared = MathF.Pow(MaxDetectionRadius, 2f);
+            var separationDistanceSquared = MathF.Pow(MaxRadiusFromOtherFish, 2f);
+            var allOtherFishes = CalamityMainMenu_Sunken.Fishes;
+
+            // Alpha Sea Minnows spawn a school of Sea Minnows manually and stick with it.
+            if (IsASeaMinnow && SeaMinnowSchoolMembers.Count > 0)
             {
-                // Only school with other fishes that are nearby, of the same type and within the same depth.
-                bool isPrismaticGuppy = IsAPrismaticGuppy && other.IsAPrismaticGuppy;
-                bool schoolByFishType = isPrismaticGuppy || SelectedFishType == other.SelectedFishType;
-                float distance = Vector2.DistanceSquared(Position, other.Position);
-                if (distance < detetctionRadiusSquared && other != this && schoolByFishType && other.Depth == Depth)
+                foreach (var minnow in SeaMinnowSchoolMembers)
                 {
-                    float separationFactor = (separationDistanceSquared - distance) * Scale;
-                    separation += (Position - other.Position) * separationFactor;
+                    var distance = Vector2.DistanceSquared(Position, minnow.Position);
+                    var separationFactor = Utils.GetLerpValue(separationDistanceSquared, 0f, distance, true);
+                    separation += (Position - minnow.Position) * separationFactor * 0.7f;
 
-                    cohesion += other.Position;
-                    alignment += other.Velocity;
+                    cohesion += minnow.Position;
+                    alignment += minnow.Velocity;
                     totalSchoolMembers++;
                 }
             }
+            else
+            {
+                foreach (var other in allOtherFishes)
+                {
+                    // Only school with other fishes that are nearby, of the same type and within the same depth.
+                    var isPrismaticGuppy = IsAPrismaticGuppy && other.IsAPrismaticGuppy;
+                    var schoolByFishType = isPrismaticGuppy || SelectedFishType == other.SelectedFishType;
 
+                    var distance = Vector2.DistanceSquared(Position, other.Position);
+                    if (distance < detetctionRadiusSquared && other != this && schoolByFishType && other.Depth == Depth)
+                    {
+                        var separationFactor = Utils.GetLerpValue(separationDistanceSquared, 0f, distance, true);
+                        separation += (Position - other.Position) * separationFactor * 0.7f;
+
+                        cohesion += other.Position;
+                        alignment += other.Velocity;
+                        totalSchoolMembers++;
+                    }
+                }
+            }
+                
             if (totalSchoolMembers == 0)
                 return;
 
             // Add all boids algorithm factors into the velocity.
             cohesion /= totalSchoolMembers;
-            Velocity += (cohesion - Position).SafeNormalize(Vector2.Zero) * CohesionCoefficient;
+            var schoolCenterInterpolant = Utils.GetLerpValue(0f, 80f, Position.Distance(cohesion), true);
+            Velocity += (cohesion - Position).SafeNormalize(-Vector2.UnitY) * schoolCenterInterpolant * CohesionCoefficient;
 
             alignment /= totalSchoolMembers;
-            Velocity += (alignment - Velocity).SafeNormalize(Vector2.Zero) * AlignmentCoefficient;
+            Velocity += Velocity.ToRotation().AngleLerp(alignment.ToRotation(), 0.06f).ToRotationVector2() * Velocity.Length() * AlignmentCoefficient;
 
             separation /= totalSchoolMembers;
-            Velocity += separation.SafeNormalize(Vector2.Zero) * SeparationCoefficient;
+            Velocity += separation.SafeNormalize(-Vector2.UnitY) * SeparationCoefficient;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -264,36 +318,30 @@ namespace CalamityMod.MainMenu
             if (!Initialized)
                 return;
 
-            Rectangle screenBounds = new Rectangle(-50, -50, Main.screenWidth + 100, Main.screenHeight + 100);
             Vector2 depthFactor = new(1f / Depth, 1.1f / Depth);
             Vector2 parallaxedPosition = Position * depthFactor;
 
-            // Don't draw anything if the fish is not within the screen bounds. No point in wasting resources on that.
-            if (!screenBounds.Contains((int)parallaxedPosition.X, (int)parallaxedPosition.Y))
-                return;
+            var frame = FishTexture.Frame(1, MaxFrames, 0, CurrentFrame);
+            var origin = frame.Size() * 0.5f;
 
-            Texture2D fishTexture = GetCorrectFishTexture();
-            Rectangle frame = fishTexture.Frame(1, MaxFrames, 0, CurrentFrame);
-            Vector2 origin = frame.Size() * 0.5f;
+            var scaleByDepth = Scale / Depth;
+            var drawRotaton = Rotation + MathHelper.Pi;
+            var colorByDepth = Color.Lerp(Color.White, Color.Black, Utils.Remap(Depth, 1, 4, 0f, 0.8f, true));
 
-            float opacityByDepth = Utils.Remap(Depth, 1, 4, 0.8f, 0.6f, true) * Opacity;
-            float drawRotaton = Rotation + MathHelper.Pi;
-            float scaleByDepth = Scale / Depth;
-
-            SpriteEffects effects = (Velocity.X > 0f) ? SpriteEffects.FlipVertically : SpriteEffects.None;
-            spriteBatch.Draw(fishTexture, parallaxedPosition, frame, Color.White * opacityByDepth, drawRotaton, origin, scaleByDepth, effects, 0f);
+            var effects = Velocity.X > 0f ? SpriteEffects.FlipVertically : SpriteEffects.None;
+            spriteBatch.Draw(FishTexture.Value, parallaxedPosition, frame, colorByDepth * Opacity, drawRotaton, origin, StretchFactor * scaleByDepth, effects, 0f);
         }
 
-        private Texture2D GetCorrectFishTexture()
+        private Asset<Texture2D> GetCorrectFishTexture()
         {
-            string sunkenSeaPath = "CalamityMod/NPCs/SunkenSea/";
-            Texture2D returnTexture = SelectedFishType switch
+            var sunkenSeaPath = "CalamityMod/NPCs/SunkenSea/";
+            var returnTexture = SelectedFishType switch
             {
-                FishType.PolypPanasea => ModContent.Request<Texture2D>(sunkenSeaPath + PolypPanaseaTextureNames[FishTextureIndex]).Value,
-                FishType.PrismaticGuppy1 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_1[FishTextureIndex]).Value,
-                FishType.PrismaticGuppy2 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_2[FishTextureIndex]).Value,
-                FishType.PrismaticGuppy3 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_3[FishTextureIndex]).Value,
-                _ => ModContent.Request<Texture2D>(sunkenSeaPath + SeaMinnowTextureNames[FishTextureIndex]).Value,
+                FishType.PolypPanasea => ModContent.Request<Texture2D>(sunkenSeaPath + PolypPanaseaTextureNames[FishTextureIndex]),
+                FishType.PrismaticGuppy1 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_1[FishTextureIndex]),
+                FishType.PrismaticGuppy2 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_2[FishTextureIndex]),
+                FishType.PrismaticGuppy3 => ModContent.Request<Texture2D>(sunkenSeaPath + PrismaticGuppyTextureNames_3[FishTextureIndex]),
+                _ => ModContent.Request<Texture2D>(sunkenSeaPath + SeaMinnowTextureNames[FishTextureIndex]),
             };
             return returnTexture;
         }
