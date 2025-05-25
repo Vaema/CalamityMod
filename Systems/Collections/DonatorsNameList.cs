@@ -47,7 +47,6 @@ namespace CalamityMod.Systems.Collections
                 "Ein",
                 "2Larry2",
                 "Jenonen",
-                "Dodu",
                 "Arti",
                 "Tervastator",
                 "Luis",
