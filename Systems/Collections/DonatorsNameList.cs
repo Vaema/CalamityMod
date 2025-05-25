@@ -34,7 +34,6 @@ namespace CalamityMod.Systems.Collections
                 "Hans Volter",
                 "Krankwagon",
                 "MishiroUsui",
-                "pixlgray",
                 "Arkhine",
                 "Lodude",
                 "DevAesthetic",
