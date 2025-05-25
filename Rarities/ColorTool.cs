@@ -18,6 +18,7 @@ namespace CatalystMod.Items
     {
         public static int RarityCosmicPurple => ModContent.GetInstance<CosmicPurple>().Type;
         public static int RarityBurnishedAuric => ModContent.GetInstance<BurnishedAuric>().Type;
+        public static int RarityCalamityRed => ModContent.GetInstance<CalamityRed>().Type;
 
 
         public override bool PreDrawTooltipLine(Item Item, DrawableTooltipLine line, ref int yOffset)
@@ -32,6 +33,11 @@ namespace CatalystMod.Items
                 if (Item.rare == RarityBurnishedAuric)
                 {
                     BurnishedAuric.Draw(Item, line);
+                    return false;
+                }
+                if (Item.rare == RarityCalamityRed)
+                {
+                    CalamityRed.Draw(Item, line);
                     return false;
                 }
             }

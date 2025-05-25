@@ -22,10 +22,26 @@ namespace CalamityMod.Rarities
         public static float MaxY = 4.5f;
         public static Color BloomClr = new Color(48, 33, 4, 0);
         public static Color TextClr = new Color(157, 110, 11, 50);
-
+        static float lastFlashTime = 0f;
+        static bool isFlashing = false;
         public static void Draw(Item Item, SpriteBatch spriteBatch, string text, int X, int Y, Color textColor, Color lightColor, float rotation,
         Vector2 origin, Vector2 baseScale, float time, bool renderTextSparkles, DynamicSpriteFont font)
         {
+            float flashChance = 0.005f; // Low chance per frame
+            float flashDuration = 0.2f; // Flash lasts ~0.2 seconds
+
+            if (Main.GameUpdateCount - lastFlashTime > flashDuration * 60)
+            {
+                if (Main.rand.NextFloat() < flashChance)
+                {
+                    isFlashing = true;
+                    lastFlashTime = Main.GameUpdateCount;
+                }
+                else
+                {
+                    isFlashing = false;
+                }
+            }
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2.0f;
 
@@ -39,6 +55,14 @@ namespace CalamityMod.Rarities
                     spriteBatch, font, text,
                     new Vector2(X, Y) + new Vector2(pulsing, 0f).RotatedBy(f + time * 2f % MathHelper.TwoPi),
                     textColor * 0.5f, rotation, origin, baseScale);
+                if (isFlashing)
+                    origin += Main.rand.NextVector2Circular(2f, 1.2f); // Small shake
+            }
+
+            if (isFlashing)
+            {
+                textColor = new Color(0, 183, 241, 50);
+                lightColor = new Color(14, 255, 255, 50);
             }
 
             textColor.A = 255;
@@ -56,9 +80,12 @@ namespace CalamityMod.Rarities
             float shinePos = (shineDisp % (fontSize.X + shineWidth));
 
             Vector2 basePos = new Vector2(X, Y);
+            if (isFlashing)
+                basePos += Main.rand.NextVector2Circular(3f, 10f); // Small shake
 
             float charOffsetX = 0f;
-
+            if (!renderTextSparkles)
+                return;
             for (int i = 0; i < text.Length; i++)
             {
                 string c = text[i].ToString();
@@ -73,16 +100,13 @@ namespace CalamityMod.Rarities
 
                 if (intensity > 0f)
                 {
-                    Color shineColor = new Color(255, 233, 155) * intensity * 1f;
+                    Color shineColor = isFlashing ? new Color(90, 207, 255) * intensity * 2f : new Color(254, 231, 117) * intensity * 1f;
                     ChatManager.DrawColorCodedString(
                         spriteBatch, font, c, charPos, shineColor, rotation, origin, baseScale);
                 }
 
                 charOffsetX += charSize.X - text.Length * 0.0085f;
             }
-
-            if (!renderTextSparkles)
-                return;
 
             var rand = new UnifiedRandom(Main.LocalPlayer.name.GetHashCode() + (int)(center.X + center.Y));
         }
