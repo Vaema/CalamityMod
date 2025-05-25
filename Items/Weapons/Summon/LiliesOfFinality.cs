@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = new("CalamityMod/Sounds/Item/LiliesOfFinalitySummonSpawn");
         }

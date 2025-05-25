@@ -90,7 +90,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 28f;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults

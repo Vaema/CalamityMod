@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;

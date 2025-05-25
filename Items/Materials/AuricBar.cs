@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricTeslaBar>());
             Item.value = Item.sellPrice(gold: 7);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

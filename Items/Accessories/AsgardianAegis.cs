@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 12;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

@@ -44,7 +44,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.CanOfWorms, WorldGen.genRand.Next(3, 5)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 11)),
                 new ChestItem(ItemID.LuckPotionGreater, WorldGen.genRand.Next(1, 3)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(4, 7)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(2, 5)),
             };
 
             for (int i = 0; i < contents.Count; i++)

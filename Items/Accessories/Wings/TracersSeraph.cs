@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
