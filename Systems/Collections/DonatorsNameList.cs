@@ -99,7 +99,6 @@ namespace CalamityMod.Systems.Collections
                 "William",
                 "Arche",
                 "DevilSunrise",
-                "Yanmei",
                 "Chaos",
                 "Ryan",
                 "Fish Repairs",

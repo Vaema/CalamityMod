@@ -1389,7 +1389,6 @@ namespace CalamityMod.CalPlayer
         public int bloodfinTimer = 30;
         public bool hallowedRegen = false;
         public bool hallowedPower = false;
-        public bool kamiBoost = false;
         public bool avertorBonus = false;
         public bool divineBless = false;
         public bool infiniteFlight = false;
@@ -2310,7 +2309,6 @@ namespace CalamityMod.CalPlayer
             phantomicArtifact = false;
             hallowedRegen = false;
             hallowedPower = false;
-            kamiBoost = false;
             tracersDust = false;
             tracersCelestial = false;
             tracersElysian = false;
@@ -3032,7 +3030,6 @@ namespace CalamityMod.CalPlayer
             crimEffigy = false;
             rRage = false;
             xWrath = false;
-            kamiBoost = false;
             graxDefense = false;
             encased = false;
             brutalCarnage = false;
@@ -4481,7 +4478,6 @@ namespace CalamityMod.CalPlayer
                     (laudanum && Player.HasBuff(BuffID.VortexDebuff) ? 0.15f : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
-                    (kamiBoost ? YanmeisKnife.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
@@ -4502,7 +4498,6 @@ namespace CalamityMod.CalPlayer
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
-                    (kamiBoost ? YanmeisKnife.RunSpeedBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
