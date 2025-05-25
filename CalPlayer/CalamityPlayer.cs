@@ -847,7 +847,7 @@ namespace CalamityMod.CalPlayer
         public int raiderCritLifespan = 0;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
-        public int gSabatonHotkeyHoldTime = 0;
+        public int gSabatonHotkeyFallWindup = -1;
         public int gSabatonFall = 0;
         public bool gSabatonFalling = false;
         public int gSabatonTempJumpSpeed = 0;
@@ -2890,7 +2890,7 @@ namespace CalamityMod.CalPlayer
             adrenaline = 0f;
             raiderCritLifespan = 0;
             raiderSoundCooldown = 0;
-            gSabatonHotkeyHoldTime = 0;
+            gSabatonHotkeyFallWindup = -1;
             gSabatonFall = 0;
             gSabatonFalling = false;
             gSabatonTempJumpSpeed = 0;
@@ -3351,18 +3351,20 @@ namespace CalamityMod.CalPlayer
                 
             }
 
-            //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero
-            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
+            //Only increment the slam if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset slam time to zero
+            if (CalamityKeybinds.GravistarSabatonHotkey.JustPressed && gSabatonHotkeyFallWindup < 0)
+                gSabatonHotkeyFallWindup = 0;
+            if (gSabaton && gSabatonHotkeyFallWindup >= 0 && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
             {
-                gSabatonHotkeyHoldTime++;
-                if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime % 3f == 0)
+                gSabatonHotkeyFallWindup++;
+                if (gSabatonHotkeyFallWindup < 20 && gSabatonHotkeyFallWindup % 2f == 0)
                 {
                     SpawnGravistarParticle();
                 }
             }
             else if (Main.myPlayer == Player.whoAmI)
             {
-                gSabatonHotkeyHoldTime = 0;
+                gSabatonHotkeyFallWindup = -1;
             }
 
             if (CalamityKeybinds.NormalityRelocatorHotKey.JustPressed && normalityRelocator && Main.myPlayer == Player.whoAmI)
@@ -4138,16 +4140,16 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    // While holding hotkey, but before slam, bring Y velocity closer to 0
-                    if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
-                        Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
+                    // While preparing slam, bring Y velocity closer to 0
+                    if (gSabatonHotkeyFallWindup < 20 && gSabatonHotkeyFallWindup != 0 && !gSabatonFalling)
+                        Player.velocity.Y *= (60 - (gSabatonHotkeyFallWindup * 0.75f)) / 60f;
 
                     // Play sound a bit early so it goes in time with the fall
-                    if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
+                    if (gSabatonHotkeyFallWindup == 5 && !gSabatonFalling)
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
 
                     // 0.5 seconds passed, falling time
-                    if (gSabatonHotkeyHoldTime == 30)
+                    if (gSabatonHotkeyFallWindup == 20)
                     {
                         gSabatonFalling = true;
                         Player.velocity.Y = 0.01f;
@@ -4159,6 +4161,7 @@ namespace CalamityMod.CalPlayer
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
+                        gSabatonHotkeyFallWindup = -1;
                     }
 
                     if (gSabatonFalling)
@@ -4186,6 +4189,7 @@ namespace CalamityMod.CalPlayer
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
+                            gSabatonHotkeyFallWindup = -1;
 
                             // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
@@ -4197,6 +4201,7 @@ namespace CalamityMod.CalPlayer
             {
                 gSabatonFall = 0;
                 gSabatonFalling = false;
+                gSabatonHotkeyFallWindup = -1;
             }
 
             // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
