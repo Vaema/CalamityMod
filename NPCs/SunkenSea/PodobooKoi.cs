@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 1;
+            Main.npcFrameCount[Type] = 15;
             base.SetStaticDefaults();
         }
 
@@ -361,7 +361,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 pathfinding.MaxSpeed = 4;
                 ShootTimer--;
 
-                if (ShootTimer <= -30)
+                if (ShootTimer <= -40)
                 {
                     ShootTimer = fireRate;
 
@@ -469,12 +469,35 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.wet && !NPC.IsABestiaryIconDummy)
             {
                 NPC.frameCounter = 0.0;
+                NPC.frame.Y = 0;
                 return;
             }
-            NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
+            bool shooting = ShootTimer <= -1;
+            int interval = shooting ? 12 : 6;
+            NPC.frameCounter++;
+            if (NPC.frameCounter > interval)
+            {
+                NPC.frame.Y++;
+                NPC.frameCounter = 0;
+            }
+            if (shooting)
+            {
+                if (NPC.frame.Y < 9)
+                {
+                    NPC.frame.Y = 9;
+                }
+                if (NPC.frame.Y > 14)
+                {
+                    NPC.frame.Y = 14;
+                }
+            }
+            else
+            {
+                if (NPC.frame.Y >= 9)
+                {
+                    NPC.frame.Y = 0;
+                }
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -492,9 +515,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     tex = bubbleEyedTex.Value;
                     break;
             }
-            float animSped = MathHelper.Lerp(0, 10, Utils.GetLerpValue(0, -30, ShootTimer, true));
+            float animSped = MathHelper.Lerp(0, 10, Utils.GetLerpValue(0, -40, ShootTimer, true));
             Vector2 scale = Vector2.One + new Vector2(MathF.Cos(Main.GlobalTimeWrappedHourly * animSped), MathF.Sin(Main.GlobalTimeWrappedHourly * animSped)) * 0.05f;
-            spriteBatch.Draw(tex, NPC.Center - screenPos, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, tex.Frame(1, 15, 0, NPC.frame.Y), NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 30), scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             return false;
         }
 
