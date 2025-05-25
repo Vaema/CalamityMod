@@ -1142,7 +1142,7 @@ namespace CalamityMod.Items
                 player.endurance -= 0.12f;
 
                 // Solar Flare armor dash overrides modded dashes by default
-                if (player.solarShields > 0)
+                if (player.solarShields > 0 || player.wingsLogic == (int)VanillaWingID.WingsSolar)
                     modPlayer.DashID = string.Empty;
             }
         }
