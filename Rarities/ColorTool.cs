@@ -1,18 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using CalamityMod;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.TreasureBags;
-using CalamityMod.Rarities;
+﻿using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.ItemDropRules;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
-namespace CatalystMod.Items
+namespace CalamityMod.Items
 {
     public sealed class ColorTool : GlobalItem
     {

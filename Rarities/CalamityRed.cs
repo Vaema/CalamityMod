@@ -1,5 +1,5 @@
-﻿using CatalystMod.Items;
-using System;
+﻿using System;
+using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;

@@ -1,5 +1,4 @@
-﻿using CatalystMod.Items;
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -10,7 +9,6 @@ using Terraria.ModLoader;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
 using Terraria.ID;
-using System.IO;
 
 namespace CalamityMod.Rarities
 {
