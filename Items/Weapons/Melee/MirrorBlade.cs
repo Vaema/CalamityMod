@@ -55,7 +55,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
-            Item.UseSound = player.altFunctionUse == 2 ? null : SoundID.Item71;
             return base.CanUseItem(player);
         }
 

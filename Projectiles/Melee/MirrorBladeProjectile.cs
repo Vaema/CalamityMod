@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override int swingTime { get; set; } = 8;
 
-        public override SoundStyle? UseSound => SoundID.Item1 with {Volume = 0.7f};
+        public override SoundStyle? UseSound => SoundID.Item71 with {Volume = 0.9f};
 
         public List<int> reflectedProjectiles = new List<int>() { };
 
