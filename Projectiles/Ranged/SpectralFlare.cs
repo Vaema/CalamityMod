@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.alpha < 70)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position - Vector2.UnitY * 2f, 6, 6, DustID.SpectreStaff, Projectile.velocity.X, Projectile.velocity.Y, Scale: 1.5f);
+                Dust dust = Dust.NewDustDirect(Projectile.position - Vector2.UnitY * 2f, 6, 6, DustID.SpectreStaff, Projectile.velocity.X, Projectile.velocity.Y, Scale: 1.1f);
                 dust.noGravity = true;
                 dust.velocity *= 0.3f;
                 dust.position.X -= xVel;

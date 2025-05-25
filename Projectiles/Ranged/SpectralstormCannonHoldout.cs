@@ -1,18 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Projectiles.BaseProjectiles;
-using Terraria;
-using Terraria.ModLoader;
 using CalamityMod.Particles;
-using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.ID;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Rogue;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
-using CalamityMod.Projectiles.Rogue;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYDownwards => 5f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.35f;
 
-        public static readonly SoundStyle OverheatSound = new SoundStyle("CalamityMod/Sounds/Custom/AbilitySounds/OmegaBlueAbility") with { Pitch = -0.15f };
+        public static readonly SoundStyle OverheatSound = new SoundStyle("CalamityMod/Sounds/Custom/AbilitySounds/OmegaBlueAbility") with { Pitch = -0.3f };
         public ref float Timer => ref Projectile.ai[0];
         public ref float SoulTimer => ref Projectile.ai[1];
         private int BuiltHeat => (Owner.ActiveItem().ModItem as SpectralstormCannon).BuiltUpHeat;
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
                         {
                             Vector2 soulVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4f, 7.5f);
                             Projectile soul = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, soulVel, ModContent.ProjectileType<LostSoulFriendly>(), (int)(Projectile.damage * 1.15f), 0f, Projectile.owner);
-                            soul.timeLeft = 600;
+                            soul.timeLeft = 250;
                             soul.DamageType = DamageClass.Ranged;
                             soul.frame = Main.rand.Next(4);
                         }
@@ -124,13 +124,17 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Fire souls while dissipating heat
-            if (SoulTimer % 8 == 4f && Main.myPlayer == Projectile.owner)
+            if (SoulTimer % 8 == 4f)
             {
-                Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.03f) * Owner.ActiveItem().shootSpeed * 0.8f;
-                Projectile soul = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<LostSoulFriendly>(), Projectile.damage, 0f, Projectile.owner, 2f);
-                soul.timeLeft = 600;
-                soul.DamageType = DamageClass.Ranged;
-                soul.frame = Main.rand.Next(4);
+                if (SoulTimer % 16 == 4f)
+                    SoundEngine.PlaySound(SoundID.Item103 with { Volume = 0.7f }, Owner.Center);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.03f) * Owner.ActiveItem().shootSpeed * 0.8f;
+                    Projectile soul = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<LostSoulFriendly>(), Projectile.damage, 0f, Projectile.owner, 2f);
+                    soul.DamageType = DamageClass.Ranged;
+                    soul.frame = Main.rand.Next(4);
+                }
             }
 
             // Reset overheat draw color once the overheat ends
@@ -139,7 +143,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Draw smoke effect while overheated
             if (displayOverheat && Main.rand.NextBool(3))
             {
-                HeavySmokeParticle smoke = new(GunTipPosition, -Vector2.UnitY * 7.5f, Color.DarkGray, 25, 0.4f, 0.75f);
+                HeavySmokeParticle smoke = new(GunTipPosition, -Vector2.UnitY * 7.5f, Color.DarkCyan, 25, 0.4f, 0.75f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
         }
@@ -153,9 +157,12 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Color tintColor = displayOverheat ? Color.Black :
                 BuiltHeat >= WarningTime ? Color.Lerp(Color.LightPink, Color.White, MathF.Abs(MathF.Sin(Owner.miscCounter * MathHelper.Pi / 30f))) : Color.LightPink;
+            float opacity = Utils.GetLerpValue(0, WarningTime, BuiltHeat, true);
+
+            Projectile.DrawBackglow(Color.HotPink * opacity, 4f, null, null, (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipVertically : SpriteEffects.None);
 
             CalamityUtils.EnterShaderRegion(Main.spriteBatch);
-            GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity((displayOverheat ? 1f : Utils.GetLerpValue(0, WarningTime, BuiltHeat, true)) * 0.45f);
+            GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity((displayOverheat ? 1f : opacity) * 0.45f);
             GameShaders.Misc["CalamityMod:BasicTint"].UseColor(tintColor);
             GameShaders.Misc["CalamityMod:BasicTint"].Apply();
 
