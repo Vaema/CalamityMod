@@ -18,7 +18,7 @@ namespace CalamityMod.World
             var schematic = TileMaps[mapKey];
 
             int placementPositionX = (int)GenVars.shimmerPosition.X;
-            int placementPositionY = (int)Main.worldSurface - 200;
+            int placementPositionY = (int)Main.worldSurface - 250;
             int offset = 28;
 
             while (!Main.tile[placementPositionX, placementPositionY].HasTile)

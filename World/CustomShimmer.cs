@@ -17,7 +17,7 @@ namespace CalamityMod.World
         {
             // Large = 4, Medium = 3, Small = 2
             int worldSize = (int)(Main.maxTilesX / 4200f * 2f);
-            int minOffsetX = 225;
+            int minOffsetX = 240;
             int maxOffsetX;
             switch (worldSize)
             {
@@ -27,11 +27,11 @@ namespace CalamityMod.World
                     break;
 
                 case 3:
-                    maxOffsetX = 400;
+                    maxOffsetX = 360;
                     break;
 
                 case 4:
-                    maxOffsetX = 500;
+                    maxOffsetX = 420;
                     break;
             }
 
