@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.GleamingBurrows | SunkenSeaBiomeFlags.ClamDen;
 
-        public abstract int PearlType { get; }
         public abstract float SpawnRate { get; }
         public abstract int ItemType { get; }
 
@@ -243,10 +242,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 NPC.dontTakeDamage = false;
             }
-            if (NPC.type == ModContent.NPCType<PearlpodGold>())
-            {
-                NPC.ProduceGoldCritterDust();
-            }
         }
         
         /// <summary>
@@ -337,6 +332,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             return !(CurrentPhase == (int)PhaseType.Hiding && !IsClamValid()) && (base.PlayerSearchFilter(p) || p == CurrentPlayer && Vector2.DistanceSquared(NPC.Center, p.Center) < 600f * 600f);
         }
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override void FindFrame(int frameHeight)
         {
@@ -368,11 +364,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
             }
         }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot)
-        {
-            npcLoot.Add(PearlType);
-        }
     }
 
     public class PearlpodWhite : Pearlpod
@@ -382,7 +373,6 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 6;
         }
-        public override int PearlType => ItemID.WhitePearl;
         public override float SpawnRate => 0.6f;
         public override int ItemType => ModContent.ItemType<PearlpodItem>();
     }
@@ -395,7 +385,6 @@ namespace CalamityMod.NPCs.SunkenSea
             Main.npcFrameCount[Type] = 6;
         }
 
-        public override int PearlType => ItemID.PinkPearl;
         public override float SpawnRate => 0.05f;
         public override int ItemType => ModContent.ItemType<PearlpodPinkItem>();
     }
@@ -407,35 +396,7 @@ namespace CalamityMod.NPCs.SunkenSea
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 6;
         }
-        public override int PearlType => ItemID.BlackPearl;
         public override float SpawnRate => 0.2f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
-    }
-    public class PearlpodGold : Pearlpod
-    {
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-            this.HideFromBestiary();
-            Main.npcFrameCount[Type] = 6;
-        }
-        public override void SetDefaults()
-        {
-            base.SetDefaults();
-            NPC.value = 120000;
-            NPC.catchItem = ItemType;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-            NPC.rarity = 3;
-        }
-        public override int PearlType => ItemID.GoldCoin;
-        public override float SpawnRate => 0.0005f;
-        public override int ItemType => ModContent.ItemType<PearlpodGoldItem>();
-        public override void HitEffect(NPC.HitInfo hit)
-        {
-            for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
-            }
-        }
     }
 }

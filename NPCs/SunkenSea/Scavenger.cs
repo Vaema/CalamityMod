@@ -41,6 +41,9 @@ namespace CalamityMod.NPCs.SunkenSea
             { ItemID.WhitePearl, new WeightedRandom<ScavengerItem>() },
             { ItemID.BlackPearl, new WeightedRandom<ScavengerItem>() },
             { ItemID.PinkPearl, new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodItem>(), new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodBlackItem>(), new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodPinkItem>(), new WeightedRandom<ScavengerItem>() },
             { ItemID.GalaxyPearl, new WeightedRandom<ScavengerItem>() },
             { ModContent.ItemType<GiantPearl>(), new WeightedRandom<ScavengerItem>() },
         };
@@ -195,6 +198,11 @@ namespace CalamityMod.NPCs.SunkenSea
             //AddScavengerItem(pink, ModContent.ItemType<ScavengerBoots>(), 1);
             AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode);
             AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode);
+
+            // Pearlpods can be used as a substitute for pearls
+            ScavengerLoot[ModContent.ItemType<PearlpodItem>()] = ScavengerLoot[white];
+            ScavengerLoot[ModContent.ItemType<PearlpodBlackItem>()] = ScavengerLoot[black];
+            ScavengerLoot[ModContent.ItemType<PearlpodPinkItem>()] = ScavengerLoot[pink];
 
             ScavengerLoot[ItemID.GalaxyPearl] = ScavengerLoot[white]; // Gives 1-2x the amount of white items
             ScavengerLoot[ModContent.ItemType<GiantPearl>()] = ScavengerLoot[pink]; // Gives 2 pink items

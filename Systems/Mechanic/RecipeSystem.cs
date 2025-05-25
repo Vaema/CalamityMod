@@ -1339,13 +1339,6 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<PearlpodGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<SeaMinnowGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
