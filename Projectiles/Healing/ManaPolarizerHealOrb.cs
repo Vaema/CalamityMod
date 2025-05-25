@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.timeLeft = 300;
-            Projectile.extraUpdates = 3;
+            Projectile.extraUpdates = 5;
         }
 
         public override void AI()

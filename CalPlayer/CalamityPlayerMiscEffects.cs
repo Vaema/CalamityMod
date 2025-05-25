@@ -3795,7 +3795,10 @@ namespace CalamityMod.CalPlayer
             }
 
             if (manaOverloader)
-                Player.GetDamage<MagicDamageClass>() += 0.06f;
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f,0.15f,manaRatio);
+            }
 
             if (bloodyWormTooth)
             {
