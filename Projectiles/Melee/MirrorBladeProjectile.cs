@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
         public override int swingWidth => 200;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<MirrorBlade>()).Item;
         public override int AfterImageLength => 10;
-        public override int OffsetDistance => 80;
+        public override int OffsetDistance => 90;
         public override bool drawSwordTrail => false;
         public override Color[] trailColors => new Color[] { Color.Red, Color.MediumPurple, Color.Purple }; public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
