@@ -74,10 +74,10 @@ namespace CalamityMod.Tiles.SunkenSea
             int frameNum = Main.tile[i, j].TileFrameX / 18;
             int pearl = frameNum switch
             {
-                1 => ModContent.ItemType<WhisperingPearlLightBlue>(),
-                2 => ModContent.ItemType<WhisperingPearlDarkBlue>(),
-                3 => ModContent.ItemType<WhisperingPearlLightGreen>(),
-                _ => ModContent.ItemType<WhisperingPearlRed>(),
+                1 => ModContent.ItemType<WhisperingPearlRoyalBlue>(),
+                2 => ModContent.ItemType<WhisperingPearlOceanBlue>(),
+                3 => ModContent.ItemType<WhisperingPearlLightningGreen>(),
+                _ => ModContent.ItemType<WhisperingPearlFlamingRed>(),
             };
             Main.LocalPlayer.cursorItemIconID = pearl;
             Main.LocalPlayer.noThrow = 2;

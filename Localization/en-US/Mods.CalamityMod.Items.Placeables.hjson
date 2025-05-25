@@ -3207,24 +3207,24 @@ VoidWorkBench: {
 	Tooltip: ""
 }
 
-WhisperingPearlDarkBlue: {
-	DisplayName: Dark Blue Whispering Pearl
+WhisperingPearlFlamingRed: {
+	DisplayName: Flaming Red Whispering Pearl
 	Tooltip: Contains knowledge
 }
 
-WhisperingPearlLightBlue: {
-	DisplayName: Light Blue Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
+WhisperingPearlLightningGreen: {
+	DisplayName: Lightning Green Whispering Pearl
+	Tooltip: "{$Items.Placeables.WhisperingPearlFlamingRed.Tooltip}"
 }
 
-WhisperingPearlLightGreen: {
-	DisplayName: Light Green Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
+WhisperingPearlOceanBlue: {
+	DisplayName: Ocean Blue Whispering Pearl
+	Tooltip: "{$Items.Placeables.WhisperingPearlFlamingRed.Tooltip}"
 }
 
-WhisperingPearlRed: {
-	DisplayName: Red Whispering Pearl
-	Tooltip: "{$Items.Placeables.WhisperingPearlDarkBlue.Tooltip}"
+WhisperingPearlRoyalBlue: {
+	DisplayName: Royal Blue Whispering Pearl
+	Tooltip: "{$Items.Placeables.WhisperingPearlFlamingRed.Tooltip}"
 }
 
 WulfrumBathtub: {

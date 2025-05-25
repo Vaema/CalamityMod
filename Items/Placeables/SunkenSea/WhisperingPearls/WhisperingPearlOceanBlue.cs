@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls
 {
-    public class WhisperingPearlLightGreen : ModItem, ILocalizedModType
+    public class WhisperingPearlOceanBlue : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
 
@@ -11,7 +11,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.WhisperingPearl>());
             Item.rare = ItemRarityID.Blue;
-            Item.placeStyle = 3;
+            Item.placeStyle = 2;
         }
     }
 }

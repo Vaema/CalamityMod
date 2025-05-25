@@ -95,6 +95,12 @@ namespace CalamityMod.UI
                     separated[currentPage] = separated[currentPage].Remove((int)textTimer, charstoRemove);
                 }
 
+                // Pause briefly on elipses
+                float increment = 0.33f;
+                if (separated[currentPage].EndsWith("..."))
+                {
+                    increment /= 20f; 
+                }
                 // How much further the BOTTOM of the text should be drawn above the pearl
                 float yOffset = 40;
                 Utils.DrawBorderString(sb, separated[currentPage], position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), lineColor, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
@@ -103,7 +109,7 @@ namespace CalamityMod.UI
                 // 0.33 means that it takes 3ish frames for 1 letter to appear
                 if (textTimer < maxTextTime)
                 {
-                    textTimer += 0.33f;
+                    textTimer += increment;
                 }
             }
             // If dialogue can't be active, finish it
