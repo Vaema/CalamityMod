@@ -52,8 +52,8 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
             NPC.damage = 0;
-            NPC.width = 24;
-            NPC.height = 24;
+            NPC.width = 30;
+            NPC.height = 30;
             NPC.defense = 0;
             NPC.lifeMax = 20;
             NPC.knockBackResist = 0f;
@@ -337,11 +337,11 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter++;
-            if (NPC.frameCounter > 8)
+            if (NPC.frameCounter > 6)
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
-                if (NPC.frame.Y > frameHeight * 5)
+                if (NPC.frame.Y > frameHeight * 3)
                 {
                     NPC.frame.Y = 0;
                 }
@@ -371,7 +371,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
-            Main.npcFrameCount[Type] = 6;
+            Main.npcFrameCount[Type] = 4;
         }
         public override float SpawnRate => 0.6f;
         public override int ItemType => ModContent.ItemType<PearlpodItem>();
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetStaticDefaults();
             this.HideFromBestiary();
-            Main.npcFrameCount[Type] = 6;
+            Main.npcFrameCount[Type] = 4;
         }
 
         public override float SpawnRate => 0.05f;
@@ -394,7 +394,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetStaticDefaults();
             this.HideFromBestiary();
-            Main.npcFrameCount[Type] = 6;
+            Main.npcFrameCount[Type] = 4;
         }
         public override float SpawnRate => 0.2f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
