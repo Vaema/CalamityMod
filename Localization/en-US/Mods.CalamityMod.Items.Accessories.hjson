@@ -1013,7 +1013,7 @@ InterstellarStompers: {
 		'''
 		6% increased movement speed, 20% increased jump speed, and negates fall damage
 		Hold DOWN to increase your maximum fall speed
-		Hold [KEY] for 0.5 seconds while midair to charge up a superspeed slam
+		Pressing [KEY] while midair charges up a superspeed slam over 0.33 seconds
 		While falling, you ram through enemies and don't take contact damage
 		Once you hit the ground, you create an explosion at your feet 
 		The explosion scales in both damage and size the longer you slam for
