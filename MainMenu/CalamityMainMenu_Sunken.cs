@@ -146,11 +146,14 @@ namespace CalamityMod.MainMenu
             spriteBatch.End(); //                            BLESS THIS.
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
 
-            distortionShader.Shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            distortionShader.Shader.Parameters["distortionXSpeed"].SetValue(-0.012f);
-            distortionShader.Shader.Parameters["distortionYSpeed"].SetValue(0.015f);
-            distortionShader.Shader.Parameters["distortionStrength"].SetValue(0.02f);
-            distortionShader.Shader.Parameters["noiseScale"].SetValue(0.75f);
+            const float distortionXSpeed = -0.012f;
+            const float distortionYSpeed = 0.015f;
+            const float noiseScale = 0.75f;
+            const float noiseStrength = 0.02f;
+            Vector2 timeOffset = new Vector2(distortionXSpeed, distortionYSpeed) * Main.GlobalTimeWrappedHourly * noiseScale;
+            Vector2 noiseScaleStrength = new Vector2(noiseScale, noiseStrength);
+            distortionShader.Shader.Parameters["timeOffset"].SetValue(timeOffset);
+            distortionShader.Shader.Parameters["noiseScaleStrength"].SetValue(noiseScaleStrength);
             distortionShader.SetShaderTexture(distortionTexture);
             distortionShader.Apply();
 
