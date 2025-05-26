@@ -164,7 +164,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "PaleoStar",
             "Pbtopacio",
             "Phantasmal Deathray",
-            "Phupperbat",
             "Pinkie Poss",
             "Poly",
             "Popo",
