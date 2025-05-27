@@ -73,7 +73,6 @@ namespace CalamityMod.Particles
             });
 
             On_Main.CheckMonoliths += DrawToTarget;
-            On_Main.DrawDust += DrawPixelatedParticles;
         }
 
         public override void Load()
@@ -109,7 +108,6 @@ namespace CalamityMod.Particles
             batchedAdditiveBlendParticles = null;
 
             On_Main.CheckMonoliths -= DrawToTarget;
-            On_Main.DrawDust -= DrawPixelatedParticles;
         }
 
         /// <summary>
@@ -238,13 +236,11 @@ namespace CalamityMod.Particles
             }
         }
 
-        private static void DrawPixelatedParticles(On_Main.orig_DrawDust orig, Main self)
+        private static void DrawPixelatedParticles()
         {
             DrawScaledTarget(PixelationTarget_AlphaBlend, Main.spriteBatch, BlendState.AlphaBlend);
             DrawScaledTarget(PixelationTarget_NonPremultiplied, Main.spriteBatch, BlendState.NonPremultiplied);
             DrawScaledTarget(PixelationTarget_AdditiveBlend, Main.spriteBatch, BlendState.Additive);
-
-            orig(self);
         }
 
         private static void DrawScaledTarget(ManagedRenderTarget targetToDraw, SpriteBatch spriteBatch, BlendState blendState)
@@ -356,6 +352,9 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles.Clear();
             batchedNonPremultipliedParticles.Clear();
             batchedAdditiveBlendParticles.Clear();
+
+            // Draw all pixelated particles.
+            DrawPixelatedParticles();
 
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
         }
