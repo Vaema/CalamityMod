@@ -51,7 +51,6 @@ namespace CalamityMod.Effects
         internal static Effect FadingSolidTrailShader;
 
         // Typical projectile javelin glowing trail. BEWARE: Is used by many items!
-        // 25MAY2025: Ozzatron: This has not been renamed to a more generic name to avoid breaking addons.
         internal static Effect ScarletDevilShader;
 
         // Yharon border flame pillar trail.

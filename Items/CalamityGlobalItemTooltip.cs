@@ -315,6 +315,8 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(131, 239, 255), new Color(36, 55, 230), 4f);
             if (item.type == ModContent.ItemType<DraconicDestruction>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 69, 0), new Color(139, 0, 0), 4f);
+            if (item.type == ModContent.ItemType<ScarletDevil>())
+                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(191, 45, 71), new Color(185, 187, 253), 4f);
             if (item.type == ModContent.ItemType<RedSun>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(204, 86, 80), new Color(237, 69, 141), 4f);
             if (item.type == ModContent.ItemType<CrystylCrusher>())
