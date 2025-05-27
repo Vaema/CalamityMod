@@ -12,7 +12,7 @@ namespace CalamityMod.Tiles.Furniture
 {
     public class YellowCandle : ModTile
     {
-        // TODO -- Unique sounds for each Cirrus Candle.
+        // TODO -- Unique sounds for each Candle.
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Item/LouderPhantomPhoenix2");
 
         public override void SetStaticDefaults()

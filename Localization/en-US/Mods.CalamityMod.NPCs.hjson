@@ -316,7 +316,7 @@ BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
 SoulSeekerSupreme.DisplayName: Soul Seeker
 SupremeCalamitas.DisplayName: Supreme Witch, Calamitas
-SupremeCirrus: Supreme Alchemist, Cirrus
+SupremePermafrost: Supreme Ultramage, Permafrost
 SupremeCataclysm.DisplayName: Cataclysm
 SupremeCatastrophe.DisplayName: Catastrophe
 Yharon.DisplayName: Yharon, Dragon of Rebirth
@@ -403,7 +403,6 @@ Bandit: {
 		Night1: Hm, the stars are too bright tonight. Makes sneaking around a little more difficult.
 		Night2: You think those stars that fall occasionally would make good throwing weapons?
 		BrimstoneWitch: Hey, hey, has {0} seriously moved in here with us? Why???
-		DrunkPrincess: I learned never to steal {0}'s drinks. She doesn't appreciate me right now, so I'll go back to hiding.
 		Merchant: Don't tell {0}, but I took some of his stuff and replaced it with Angel Statues.
 		NurseArmsDealer: Don't tell {0} that I was responsible for {1}'s injuries.
 		NamedLaura: The nice thing about maps is I can track anything that has fallen.
@@ -462,7 +461,6 @@ BrimstoneWitch: {
 		BloodMoon2: I can't work with nights like these. The stars seem to have shrunk away in fear.
 		Night1: These undead are horrific, I can't stand to look at them. How could anyone be satisfied with such amateur work?
 		Night2: I don't think it's a stretch to say that astrology is utter nonsense... but it was a hobby of mine once.
-		DrunkPrincess: I wonder if {0} ever feels cold given how revealing her dress is. Perhaps she should cover up a bit more.
 		SeaKing: I cannot understand the Sea King. He does not seem to want me dead. That amount of compassion I just can't understand.
 		Party: If another person asks me if I can dance or not, I will light their hat on fire.
 	}
@@ -504,7 +502,6 @@ SeaKing: {
 		Angler1: Meet me at {0}'s house at night. We will throw him to the Trashers.
 		Angler2: Not sure how {0} has not been roasted and digested by now, hanging around the sulphuric seas for so long. Perhaps it got to his head.
 		BrimstoneWitch: I must admit, the Witch's presence is unsettling to me. But so many years have passed, and she too has suffered much.
-		DrunkPrincess: Rumor has it {0} drinks to forget her troubled past.
 		PartyGirl: "{0} asked if my nose could be used as a vuvuzela. What is a vuvuzela?"
 		BloodMoon1: Since ancient times people have said that deities cause celestial events. Which one then, is the cause for these?
 		BloodMoon2: I've never been keen on these nights. Such violence.

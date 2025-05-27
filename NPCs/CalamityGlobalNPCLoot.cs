@@ -1815,7 +1815,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.FairyQueenMasterTrophy);
                     rev.Add(ItemID.FairyQueenPetItem, 4);
 
-                    // GFB Cirrus' Vodka and Terraformer drop
+                    // GFB Purple Haze and Terraformer drop
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<PurpleHaze>(), 1, 1, 9999), true);
                     GFB.Add(DropHelper.PerPlayer(ItemID.Clentaminator2), hideLootReport: true);
 

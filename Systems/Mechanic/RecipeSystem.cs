@@ -1409,6 +1409,13 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Bone, 2);
             r.AddTile(TileID.CookingPots);
             r.Register();
+            r.DisableDecraft(); 
+            
+            r = Recipe.Create(ItemID.Milkshake);
+            r.AddIngredient(ItemID.IceBlock);
+            r.AddIngredient(ItemID.MilkCarton);
+            r.AddTile(TileID.IceMachine);
+            r.Register();
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.Nachos);

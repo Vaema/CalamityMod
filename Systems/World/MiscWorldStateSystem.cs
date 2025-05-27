@@ -233,7 +233,7 @@ namespace CalamityMod
             BitsByte flags5 = new BitsByte();
             flags5[0] = downedAstrumDeus;
             flags5[1] = spawnedBandit;
-            flags5[2] = spawnedCirrus;
+            flags5[2] = false;
             flags5[3] = AcidRainEvent.HasStartedAcidicDownpour;
             flags5[4] = false;
             flags5[5] = downedPolterghast;
@@ -387,7 +387,7 @@ namespace CalamityMod
             BitsByte flags5 = reader.ReadByte();
             downedAstrumDeus = flags5[0];
             spawnedBandit = flags5[1];
-            spawnedCirrus = flags5[2];
+            _ = flags5[2];
             AcidRainEvent.HasStartedAcidicDownpour = flags5[3];
             _ = flags5[4];
             downedPolterghast = flags5[5];

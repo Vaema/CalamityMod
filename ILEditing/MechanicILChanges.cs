@@ -1765,7 +1765,7 @@ namespace CalamityMod.ILEditing
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
             // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
-            else if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
             {
                 if (NPC.downedGolemBoss)
                     orig(self);
