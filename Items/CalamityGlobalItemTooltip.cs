@@ -305,6 +305,8 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
             if (item.type == ModContent.ItemType<ShatteredCommunity>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
+            if (item.type == ModContent.ItemType<Ozzathoth>())
+                nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
             if (item.type == ModContent.ItemType<NimbleBounder>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
             if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
@@ -536,10 +538,6 @@ namespace CalamityMod.Items
 
             // Numerous random tooltip edits which don't fit into another category
             #region Various Tooltip Edits
-
-            // Lilies of Finality 512 edit
-            if (item.type == ModContent.ItemType<LiliesOfFinality>())
-                EditTooltipByName("Damage", (line) => line.Text = LiliesOfFinality.TheNumber + Language.GetTextValue("LegacyTooltip.53"));
 
             // Apparently 612 is a homestuck reference
             if (item.type == ModContent.ItemType<Respiteblock>())

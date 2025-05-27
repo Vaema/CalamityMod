@@ -8,16 +8,16 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
-    public class AzathothYoyo : ModProjectile
+    public class OzzathothYoyo : ModProjectile
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Azathoth>();
+        public override LocalizedText DisplayName => CalamityUtils.GetItemName<Ozzathoth>();
         public const int MaxUpdates = 3;
 
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
-            ProjectileID.Sets.YoyosMaximumRange[Type] = Azathoth.Reach;
-            ProjectileID.Sets.YoyosTopSpeed[Type] = Azathoth.Speed / MaxUpdates;
+            ProjectileID.Sets.YoyosMaximumRange[Type] = Ozzathoth.Reach;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = Ozzathoth.Speed / MaxUpdates;
 
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.TrailingMode[Type] = 1;
