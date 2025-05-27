@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -31,6 +32,22 @@ namespace CalamityMod.Items.Potions.Alcohol
             // Cirrus overcharges: 10% sell value instead of 20%
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.Ale).
+                AddIngredient(ItemID.Ectoplasm).
+                AddTile(TileID.Kegs).
+                Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.BottledWater).
+                AddIngredient<BloodOrb>(5).
+                AddIngredient(ItemID.Ectoplasm).
+                AddTile(TileID.AlchemyTable).
+                Register()
+                .DisableDecraft();
         }
     }
 }
