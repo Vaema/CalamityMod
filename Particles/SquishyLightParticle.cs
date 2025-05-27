@@ -11,9 +11,7 @@ namespace CalamityMod.Particles
         public override string Texture => "CalamityMod/Particles/Light";
         public override bool UseAdditiveBlend => true;
         public override bool UseCustomDraw => true;
-        public override bool Pixelate => true;
         public override bool SetLifetime => true;
-
 
         public float Opacity;
         public float SquishStrenght;
