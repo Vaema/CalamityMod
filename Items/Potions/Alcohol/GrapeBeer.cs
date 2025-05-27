@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToHealingPotion(12, 28, 100);
-            // Cirrus overcharges: 10% sell value instead of 20%
+
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.LightRed;
         }

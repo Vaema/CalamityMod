@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToFood(18, 32, ModContent.BuffType<EvergreenGinBuff>(), CalamityUtils.MinutesToFrames(8), true);
-            // Cirrus overcharges: 10% sell value instead of 20%
+
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;
         }

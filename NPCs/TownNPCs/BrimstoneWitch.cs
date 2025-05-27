@@ -673,10 +673,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 }
             }
 
-            int cirrus = NPC.FindFirstNPC(NPCType<Cirrus>());
-            if (cirrus != -1 && ChildSafety.Disabled)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrus].GivenName), 1.45);
-
             if (NPC.AnyNPCs(NPCType<SeaKing>()))
                 dialogue.Add(this.GetLocalizedValue("Chat.SeaKing"), 1.45);
 

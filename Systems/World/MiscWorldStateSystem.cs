@@ -56,7 +56,6 @@ namespace CalamityMod
             //Abyss.AbleToUnlockChests = false; //Yet another fucking failsave for abyss chests
 
             spawnedBandit = false;
-            spawnedCirrus = false;
             foundHomePermafrost = false;
 
             catName = false;
@@ -92,8 +91,6 @@ namespace CalamityMod
                 downed.Add("acidRain");
             if (spawnedBandit)
                 downed.Add("bandit");
-            if (spawnedCirrus)
-                downed.Add("drunkPrincess");
             if (foundHomePermafrost)
                 downed.Add("archmageHome");
 
@@ -151,7 +148,6 @@ namespace CalamityMod
             BossRushEvent.BossRushActive = downed.Contains("bossRushActive");
             AcidRainEvent.AcidRainEventIsOngoing = downed.Contains("acidRain");
             spawnedBandit = downed.Contains("bandit");
-            spawnedCirrus = downed.Contains("drunkPrincess");
             foundHomePermafrost = downed.Contains("archmageHome");
 
             #region Load Pet Names

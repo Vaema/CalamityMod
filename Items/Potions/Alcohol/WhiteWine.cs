@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         {
             Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(5), true);
             Item.healMana = 300;
-            // Cirrus overcharges: 10% sell value instead of 20%
+
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;
         }

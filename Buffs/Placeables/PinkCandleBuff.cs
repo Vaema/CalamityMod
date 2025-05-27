@@ -1,11 +1,10 @@
-﻿using CalamityMod.Items.Placeables.Furniture;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Placeables
 {
-    public class CirrusPurpleCandleBuff : ModBuff
+    public class PinkCandleBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -22,15 +21,7 @@ namespace CalamityMod.Buffs.Placeables
             BuffID.Sets.TimeLeftDoesNotDecrease[Type] = true;
         }
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            // MultipliableFloats cannot be added to or reduced.
-            // To work around this, we get its current value, add what we want to that,
-            // then multiply it by the ratio between the two.
-            // A + B = A * ((A+B/A)
-            float currentEffectiveness = player.DefenseEffectiveness.Value;
-            float desiredEffectiveness = currentEffectiveness + ResilientCandle.DefenseRatioBonus;
-            player.DefenseEffectiveness *= desiredEffectiveness / currentEffectiveness;
-        }
+        // Implementation is performed elsewhere using the pinkCandle bool.
+        public override void Update(Player player, ref int buffIndex) => player.Calamity().pinkCandle = true;
     }
 }

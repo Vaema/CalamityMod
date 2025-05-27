@@ -189,14 +189,13 @@ CinnamonRoll: {
 		'''
 }
 
-CirrusVodka: {
-	DisplayName: Cirrus' Vodka
+PurpleHaze: {
+	DisplayName: purpleHaze
 	Tooltip:
 		'''
 		{0}% increased damage, but lowers defense by {1}%
 		Increases immune time after being struck
 		{$Common.AlcoholWarning}
-		This magical liquor is highly sought by those with a refined palate
 		'''
 }
 

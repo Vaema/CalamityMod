@@ -1816,7 +1816,7 @@ namespace CalamityMod.NPCs
                     rev.Add(ItemID.FairyQueenPetItem, 4);
 
                     // GFB Cirrus' Vodka and Terraformer drop
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<CirrusVodka>(), 1, 1, 9999), true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<PurpleHaze>(), 1, 1, 9999), true);
                     GFB.Add(DropHelper.PerPlayer(ItemID.Clentaminator2), hideLootReport: true);
 
                     // Lore
@@ -2090,7 +2090,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.TheDestroyer:
                     SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                    SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Cirrus>(), ModContent.NPCType<Bandit>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
+                    SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, NPC.downedMechBoss1 || !NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
                     if (!NPC.downedMechBoss1 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -2102,7 +2102,7 @@ namespace CalamityMod.NPCs
                     if (lastTwinStanding)
                     {
                         SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                        SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Cirrus>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
+                        SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || NPC.downedMechBoss2 || !NPC.downedMechBoss3);
                         SetNewBossJustDowned(npc);
 
                         if (!NPC.downedMechBoss2 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -2112,7 +2112,7 @@ namespace CalamityMod.NPCs
 
                 case NPCID.SkeletronPrime:
                     SetNewShopVariable(new int[] { NPCID.Demolitionist, NPCID.DD2Bartender, NPCID.Stylist, NPCID.Truffle }, NPC.downedMechBossAny);
-                    SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Cirrus>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
+                    SetNewShopVariable(new int[] { NPCID.Stylist, ModContent.NPCType<Archmage>(), ModContent.NPCType<Bandit>() }, !NPC.downedMechBoss1 || !NPC.downedMechBoss2 || NPC.downedMechBoss3);
                     SetNewBossJustDowned(npc);
 
                     if (!NPC.downedMechBoss3 && CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -2120,7 +2120,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    SetNewShopVariable(new int[] { NPCID.WitchDoctor, NPCID.Truffle, NPCID.BestiaryGirl, ModContent.NPCType<Cirrus>(), ModContent.NPCType<Bandit>() }, NPC.downedPlantBoss);
+                    SetNewShopVariable(new int[] { NPCID.WitchDoctor, NPCID.Truffle, NPCID.BestiaryGirl, ModContent.NPCType<Bandit>() }, NPC.downedPlantBoss);
                     SetNewBossJustDowned(npc);
 
                     // Spawn Perennial Ore if Plantera has never been killed
@@ -2156,7 +2156,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    SetNewShopVariable(new int[] { NPCID.ArmsDealer, NPCID.Cyborg, NPCID.Steampunker, NPCID.Wizard, NPCID.WitchDoctor, NPCID.DD2Bartender, ModContent.NPCType<Cirrus>(), ModContent.NPCType<Bandit>() }, NPC.downedGolemBoss);
+                    SetNewShopVariable(new int[] { NPCID.ArmsDealer, NPCID.Cyborg, NPCID.Steampunker, NPCID.Wizard, NPCID.WitchDoctor, NPCID.DD2Bartender, ModContent.NPCType<Bandit>() }, NPC.downedGolemBoss);
                     SetNewBossJustDowned(npc);
 
                     // If Golem has never been killed, send a message about the Plague.

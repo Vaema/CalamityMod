@@ -5,8 +5,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Placeables
 {
-    public class CirrusBlueCandleBuff : ModBuff
-    {        
+    public class PurpleCandleBuff : ModBuff
+    {
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:
@@ -22,11 +22,15 @@ namespace CalamityMod.Buffs.Placeables
             BuffID.Sets.TimeLeftDoesNotDecrease[Type] = true;
         }
 
-        // Implementation is partially performed elsewhere using the blueCandle bool.
         public override void Update(Player player, ref int buffIndex)
         {
-            player.moveSpeed += WeightlessCandle.MoveSpeedBoost;
-            player.Calamity().blueCandle = true;
+            // MultipliableFloats cannot be added to or reduced.
+            // To work around this, we get its current value, add what we want to that,
+            // then multiply it by the ratio between the two.
+            // A + B = A * ((A+B/A)
+            float currentEffectiveness = player.DefenseEffectiveness.Value;
+            float desiredEffectiveness = currentEffectiveness + ResilientCandle.DefenseRatioBonus;
+            player.DefenseEffectiveness *= desiredEffectiveness / currentEffectiveness;
         }
     }
 }

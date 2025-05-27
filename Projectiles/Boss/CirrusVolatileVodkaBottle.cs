@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
-        public override string Texture => "CalamityMod/Items/Potions/Alcohol/CirrusVodka";
+        public override string Texture => "CalamityMod/Items/Potions/Alcohol/PurpleHaze";
 
         public override void SetDefaults()
         {
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             Projectile.Kill();
-            target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), 54000);
+            target.AddBuff(ModContent.BuffType<PurpleHazeBuff>(), 54000);
         }
     }
 }

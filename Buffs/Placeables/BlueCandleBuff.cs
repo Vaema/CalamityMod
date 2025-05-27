@@ -2,12 +2,11 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.NPC;
 
 namespace CalamityMod.Buffs.Placeables
 {
-    public class CirrusYellowCandleBuff : ModBuff
-    {
+    public class BlueCandleBuff : ModBuff
+    {        
         public override void SetStaticDefaults()
         {
             // These settings are standard for a "opt-in eternal" buff, which has the following properties:
@@ -23,14 +22,11 @@ namespace CalamityMod.Buffs.Placeables
             BuffID.Sets.TimeLeftDoesNotDecrease[Type] = true;
         }
 
-        // Implementation is performed elsewhere using the yellowCandle bool.
-        public override void Update(Player player, ref int buffIndex) => player.Calamity().yellowCandle = true;
-
-        // Yellow Candle is implemented as a dirty modifier.
-        internal static void ModifyHitInfo_Spite(ref HitInfo info)
+        // Implementation is partially performed elsewhere using the blueCandle bool.
+        public override void Update(Player player, ref int buffIndex)
         {
-            int damageBoost = (int)(info.SourceDamage * SpitefulCandle.ExtraChipDamageRatio);
-            info.Damage += damageBoost;
+            player.moveSpeed += WeightlessCandle.MoveSpeedBoost;
+            player.Calamity().blueCandle = true;
         }
     }
 }

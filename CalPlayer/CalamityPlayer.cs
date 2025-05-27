@@ -116,7 +116,6 @@ namespace CalamityMod.CalPlayer
         public int searedPanTimer = 0;
         /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
         public int potionTimer = 0;
-        public bool cirrusDress = false;
         /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
@@ -244,7 +243,6 @@ namespace CalamityMod.CalPlayer
         public bool newPrincessInventory = false;
         public bool newSkeletonMerchantInventory = false;
         public bool newPermafrostInventory = false;
-        public bool newCirrusInventory = false;
         public bool newAmidiasInventory = false;
         public bool newBanditInventory = false;
         public bool newCalamitasInventory = false;
@@ -466,7 +464,6 @@ namespace CalamityMod.CalPlayer
         #region Mount
         public bool onyxExcavator = false;
         public bool rimehound = false;
-        public bool fab = false;
         public bool crysthamyr = false;
         public bool ExoChair = false;
         public AndromedaPlayerState andromedaState;
@@ -1327,7 +1324,7 @@ namespace CalamityMod.CalPlayer
         public bool zen = false;
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
-        public bool cirrusVodka = false;
+        public bool purpleHaze = false;
         public bool mushy = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
@@ -1782,7 +1779,6 @@ namespace CalamityMod.CalPlayer
             newPrincessInventory = false;
             newSkeletonMerchantInventory = false;
             newPermafrostInventory = false;
-            newCirrusInventory = false;
             newAmidiasInventory = false;
             newBanditInventory = false;
             newCalamitasInventory = false;
@@ -1836,7 +1832,6 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("newPrincessInventory", newPrincessInventory);
             boost.AddWithCondition("newSkeletonMerchantInventory", newSkeletonMerchantInventory);
             boost.AddWithCondition("newPermafrostInventory", newPermafrostInventory);
-            boost.AddWithCondition("newCirrusInventory", newCirrusInventory);
             boost.AddWithCondition("newAmidiasInventory", newAmidiasInventory);
             boost.AddWithCondition("newBanditInventory", newBanditInventory);
             boost.AddWithCondition("newCalamitasInventory", newCalamitasInventory);
@@ -1928,7 +1923,6 @@ namespace CalamityMod.CalPlayer
             newPrincessInventory = boost.Contains("newPrincessInventory");
             newSkeletonMerchantInventory = boost.Contains("newSkeletonMerchantInventory");
             newPermafrostInventory = boost.Contains("newPermafrostInventory");
-            newCirrusInventory = boost.Contains("newCirrusInventory");
             newAmidiasInventory = boost.Contains("newAmidiasInventory");
             newBanditInventory = boost.Contains("newBanditInventory");
             newCalamitasInventory = boost.Contains("newCalamitasInventory");
@@ -2103,7 +2097,6 @@ namespace CalamityMod.CalPlayer
 
             onyxExcavator = false;
             rimehound = false;
-            fab = false;
             crysthamyr = false;
             ExoChair = false;
             miniOldDuke = false;
@@ -2167,7 +2160,6 @@ namespace CalamityMod.CalPlayer
             shadowSpeed = false;
             dsSetBonus = false;
             wearingRogueArmor = false;
-            cirrusDress = false;
 
             blockAllDashes = false;
             blazingCursorDamage = false;
@@ -2549,7 +2541,7 @@ namespace CalamityMod.CalPlayer
             trippy = false;
             amidiasBlessing = false;
             flaskBrimstone = false;
-            cirrusVodka = false;
+            purpleHaze = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -3016,7 +3008,6 @@ namespace CalamityMod.CalPlayer
             hallowedPower = false;
             onyxExcavator = false;
             rimehound = false;
-            fab = false;
             crysthamyr = false;
             ExoChair = false;
             abyssalDivingSuitPlates = false;
@@ -3053,7 +3044,7 @@ namespace CalamityMod.CalPlayer
             sulphurskin = false;
             baguette = false;
             flaskBrimstone = false;
-            cirrusVodka = false;
+            purpleHaze = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -4930,8 +4921,6 @@ namespace CalamityMod.CalPlayer
                         abyssalDivingSuitForce = true;
                     if (vanity.type == ModContent.ItemType<AquaticHeart>())
                         aquaticHeartForce = true;
-                    if (vanity.type == ModContent.ItemType<CrystalHeartVodka>())
-                        Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped = true;
                     if (vanity.type == ModContent.ItemType<GhostBracelet>())
                         ghostBracelet = true;
                     if (vanity.type == ModContent.ItemType<HapuFruit>())
@@ -5335,7 +5324,7 @@ namespace CalamityMod.CalPlayer
         public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
         {
             // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > (cirrusDress ? 5 : 3))
+            if (removeDebuffs && alcoholPoisonLevel > 3)
             {
                 List<int[]> Alcohol = new List<int[]>();
                 for (int i = 0; i < Player.MaxBuffs; i++)
@@ -5354,7 +5343,7 @@ namespace CalamityMod.CalPlayer
                     poison -= relation[1]; // Cancel the poison level
                     Alcohol.RemoveAt(0);
                 }
-                while (poison > (cirrusDress ? 5 : 3));
+                while (poison > 3);
             }
         }
         #endregion

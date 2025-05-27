@@ -79,9 +79,9 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
         public static void HoverItemIcon(int i, int j)
         {
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<PurpleHaze>() && Main.zenithWorld;
             if (vodka)
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CirrusVodka>();
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<PurpleHaze>();
             else if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
                 Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
             else
@@ -108,12 +108,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
         public static bool AttemptToSummonSCal(int i, int j)
         {
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<AshesofCalamity>()) &&
-                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld))
+                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<PurpleHaze>() && Main.zenithWorld))
             {
                 return true;
             }
 
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<PurpleHaze>() && Main.zenithWorld;
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) || BossRushEvent.BossRushActive)
                 return true;
@@ -134,7 +134,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
             if (vodka)
             {
-                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<CirrusVodka>(), true);
+                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<PurpleHaze>(), true);
                 foreach (NPC n in Main.ActiveNPCs)
                 {
                     if (n.type == ModContent.NPCType<Cirrus>())
