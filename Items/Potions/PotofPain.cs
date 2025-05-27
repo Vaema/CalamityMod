@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Potions
 {
+    [LegacyName("Fabsoup")]
     public class PotofPain : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
