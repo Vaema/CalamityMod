@@ -103,11 +103,10 @@ namespace CalamityMod.NPCs.TownNPCs
                 dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
             }
 
-            int lilBitch = NPC.FindFirstNPC(NPCID.Angler);
-            if (lilBitch != -1)
+            int angler = NPC.FindFirstNPC(NPCID.Angler);
+            if (angler != -1)
             {
-                dialogue.Add(this.GetLocalization("Chat.Angler1").Format(Main.npc[lilBitch].GivenName));
-                dialogue.Add(this.GetLocalization("Chat.Angler2").Format(Main.npc[lilBitch].GivenName));
+                dialogue.Add(this.GetLocalization("Chat.Angler").Format(Main.npc[angler].GivenName));
             }
 
             int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());

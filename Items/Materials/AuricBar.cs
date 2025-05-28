@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Materials
             ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Type] = true;
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 4));
         }
 
         public override void Unload()

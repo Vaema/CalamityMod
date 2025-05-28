@@ -501,8 +501,7 @@ SeaKing: {
 		Night1: There lurk horrifying creatures beyond the light of our homes. You should take care.
 		Night2: My eyes are not well suited to bright lights after so many years of darkness. The peace of the night is welcome.
 		Night3: Oh, me? I do not sleep, it is part of my nature.
-		Angler1: Meet me at {0}'s house at night. We will throw him to the Trashers.
-		Angler2: Not sure how {0} has not been roasted and digested by now, hanging around the sulphuric seas for so long. Perhaps it got to his head.
+		Angler: Not sure how {0} has not been roasted and digested by now, hanging around the sulphuric seas for so long. Perhaps it got to his head.
 		BrimstoneWitch: I must admit, the Witch's presence is unsettling to me. But so many years have passed, and she too has suffered much.
 		PartyGirl: "{0} asked if my nose could be used as a vuvuzela. What is a vuvuzela?"
 		BloodMoon1: Since ancient times people have said that deities cause celestial events. Which one then, is the cause for these?
