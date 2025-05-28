@@ -5,6 +5,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Projectiles.Magic;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -682,7 +683,11 @@ namespace CalamityMod.NPCs.TownNPCs
             return dialogue;
         }
 
-        public override void SetChatButtons(ref string button, ref string button2) => button = this.GetLocalizedValue("EnchantButton");
+        public override void SetChatButtons(ref string button, ref string button2)
+        {
+            button = this.GetLocalizedValue("EnchantButton");
+            button2 = this.GetLocalizedValue("DonorButton");
+        }
 
         public override void OnChatButtonClicked(bool firstButton, ref string shopName)
         {
@@ -698,6 +703,25 @@ namespace CalamityMod.NPCs.TownNPCs
                     Main.LocalPlayer.Calamity().GivenBrimstoneLocus = true;
                 }
             }
+            else
+            {
+                Main.npcChatText = Donors();
+            }
+        }
+
+        public string Donors()
+        {
+            IList<string> donorList = new List<string>(DonatorsNameList.List);
+            int maxDonorsListed = 25;
+            string[] donors = new string[maxDonorsListed];
+            for (int i = 0; i < maxDonorsListed; i++)
+            {
+                donors[i] = donorList[Main.rand.Next(donorList.Count)];
+                donorList.Remove(donors[i]);
+            }
+
+            string text = this.GetLocalization("DonorShoutout").Format(donors);
+            return text;
         }
 
         // Make this Town NPC teleport to the Queen statue when triggered.
