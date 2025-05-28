@@ -1197,10 +1197,10 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .Add(ModContent.ItemType<ResilientCandle>())
-                .Add(ModContent.ItemType<SpitefulCandle>())
-                .Add(ModContent.ItemType<VigorousCandle>())
-                .Add(ModContent.ItemType<WeightlessCandle>());
+                .Add(ItemType<ResilientCandle>())
+                .Add(ItemType<SpitefulCandle>())
+                .Add(ItemType<VigorousCandle>())
+                .Add(ItemType<WeightlessCandle>());
             }
 
             if (type == NPCID.WitchDoctor)
