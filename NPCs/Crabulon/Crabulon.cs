@@ -261,7 +261,7 @@ namespace CalamityMod.NPCs.Crabulon
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
 
-                // Gets tired easily in final phase. - Fabsol
+                // Gets tired easily in final phase.
                 float idleTime = phase4 ? 480f : death ? 60f : expertMode ? 90f : 120f;
                 if (NPC.ai[1] >= idleTime)
                 {
@@ -530,7 +530,7 @@ namespace CalamityMod.NPCs.Crabulon
                             destination.Normalize();
                             destination *= projectileVelocity;
 
-                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
                             int numProj = bossRush ? 24 : phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
@@ -555,7 +555,7 @@ namespace CalamityMod.NPCs.Crabulon
                                 destination.Normalize();
                                 destination *= projectileVelocity;
 
-                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
                                 int numProj = bossRush ? 16 : phase4 ? 8 : (phase3 && death) ? 6 : 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)

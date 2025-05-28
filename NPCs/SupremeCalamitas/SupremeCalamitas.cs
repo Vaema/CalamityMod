@@ -1552,12 +1552,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 rayVelocity = spinningPoint.RotatedBy(radians * k);
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (rayVelocity).SafeNormalize(Vector2.UnitY) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Magic.FabRay>(), 250, 0f, Main.myPlayer);
+                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (rayVelocity).SafeNormalize(Vector2.UnitY) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Melee.DarkIceZero>(), 250, 0f, Main.myPlayer);
                                         if (proj.WithinBounds(Main.maxProjectiles))
                                         {
                                             Main.projectile[proj].DamageType = DamageClass.Default;
                                             Main.projectile[proj].friendly = false;
                                             Main.projectile[proj].hostile = true;
+                                            Main.projectile[proj].tileCollide = false;
                                         }
                                     }
                                 }

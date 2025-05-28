@@ -1995,8 +1995,8 @@ namespace CalamityMod.NPCs
         #region Vulnerabilities and Resistances
         private void VulnerabilitiesAndResistances(NPC npc)
         {
-            // These enemies are categorized in such a way to make them easy to understand.
-            // Do not mess with these categories unless you ask me for permission - Fab.
+            // These enemies are categorized in such a way to make them easy to understand
+            // Regroup these if necessary, reminder to keep it comprehensive
             switch (npc.type)
             {
                 // Regular organic desert enemies.
@@ -7308,8 +7308,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            // 12JUL2023: Ozzatron: what does this do
-            // 27SEP2023: Fabsol: disables vanilla spawns "a pool of [0] indicates vanilla spawning"
+            // Disable vanilla spawns while in the Brimstone Crag
             if (calamityBiomeZone)
             {
                 pool[0] = 0f;

@@ -174,7 +174,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            // Note from CIT: I originally removed these entirely;
             cursor.Emit(OpCodes.Pop);
             cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
         }
