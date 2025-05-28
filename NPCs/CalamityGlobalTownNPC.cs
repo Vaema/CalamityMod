@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -1195,7 +1196,11 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem)
+                .Add(ModContent.ItemType<ResilientCandle>())
+                .Add(ModContent.ItemType<SpitefulCandle>())
+                .Add(ModContent.ItemType<VigorousCandle>())
+                .Add(ModContent.ItemType<WeightlessCandle>());
             }
 
             if (type == NPCID.WitchDoctor)
@@ -1218,8 +1223,18 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
+                Mod musicMod = ExternalMods.musicMod;
+                musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
+                musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
+                musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
+                musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
+
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
-                .Add(ItemType<LanternCenter>());
+                .Add(ItemType<LanternCenter>())
+                .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
+                .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
+                .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
+                .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods);
             }
 
             if (type == NPCID.SkeletonMerchant)
@@ -1239,6 +1254,11 @@ namespace CalamityMod.NPCs
             if (type == NPCID.BestiaryGirl)
             {
                 shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
+            }
+
+            if (type == NPCID.Truffle)
+            {
+                shop.Add(ItemType<OddMushroom>());
             }
         }
         #endregion
