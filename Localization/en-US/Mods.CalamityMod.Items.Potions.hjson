@@ -60,15 +60,6 @@ DeliciousMeat: {
 		'''
 }
 
-Fabsoup: {
-	DisplayName: Pot of Pain
-	Tooltip:
-		'''
-		{$CommonItemTooltip.MajorStats}
-		'hrngh, soup'
-		'''
-}
-
 FlaskOfBrimstone: {
 	DisplayName: Flask of Brimstone
 	Tooltip: Melee, Whip, and Rogue attacks inflict {$Buffs.BrimstoneFlames.DisplayName}
@@ -96,6 +87,15 @@ HadalStew: {
 		Only gives [S] seconds of {$BuffName.PotionSickness}
 		{$CommonItemTooltip.MediumStats}
 		{$CommonItemTooltip.MinuteDuration}
+		'''
+}
+
+LavaChickenBroth: {
+	DisplayName: Lava Chicken Broth
+	Tooltip:
+		'''
+		{$CommonItemTooltip.MajorStats}
+		'It's tasty as hell'
 		'''
 }
 
