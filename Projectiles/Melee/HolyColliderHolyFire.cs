@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool setStats = true;
         public static int statMax = 8;
         public int setStatTimer = statMax;
-        public int time = 0;
+        public ref float time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
