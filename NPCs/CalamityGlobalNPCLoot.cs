@@ -1115,14 +1115,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Angler
-                // Golden Fishing Rod @ 100% IF fed to a Trasher
-                // OTHERWISE,
                 // Golden Fishing Rod @ 8.33% IF Hardmode
                 case NPCID.Angler:
-                    LeadingConditionRule trasherLCR = new LeadingConditionRule(DropHelper.AnglerFedToTrasherCondition);
-                    trasherLCR.Add(ItemDropRule.ByCondition(DropHelper.TrasherText, ItemID.GoldenFishingRod));
-                    trasherLCR.OnFailedConditions(ItemDropRule.ByCondition(DropHelper.Hardmode(), ItemID.GoldenFishingRod, 12));
-                    npcLoot.Add(trasherLCR);
+                    hardmode.Add(ItemID.GoldenFishingRod, 12, 1, 1);
                     break;
                 #endregion
 
