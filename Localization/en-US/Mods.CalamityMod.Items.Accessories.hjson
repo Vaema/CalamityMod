@@ -1554,6 +1554,17 @@ SandSharkToothNecklace: {
 		'''
 }
 
+ScionsCurio: {
+	DisplayName: Scions Curio
+	Tooltip:
+		'''
+		Ranged hits increase the effectiveness of the Irradiated debuff
+		This effectiveness is based on your ranged damage and crit chance
+		On kill enemies burst, spreading Irradiated to nearby enemies
+		Taking damage causes the curio to explode ion retaliation
+		'''
+}
+
 ScuttlersJewel: {
 	DisplayName: Scuttler's Jewel
 	Tooltip:

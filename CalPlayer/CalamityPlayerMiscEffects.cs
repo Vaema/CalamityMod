@@ -2290,8 +2290,6 @@ namespace CalamityMod.CalPlayer
 
             if (miningSetCooldown > 0)
                 miningSetCooldown--;
-            if (RustyMedallionCooldown > 0)
-                RustyMedallionCooldown--;
             if (MiniSwarmerCooldown > 0)
                 MiniSwarmerCooldown--;
 
