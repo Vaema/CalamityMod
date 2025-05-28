@@ -455,7 +455,7 @@ namespace CalamityMod.Systems
                 ItemType<TracersCelestial>(),
                 ItemType<SoulofCryogen>(),
                 ItemType<ElysianWings>(),
-                ItemType<DrewsWings>(),
+                ItemType<WingsofRebirth>(),
                 ItemType<MOAB>(),
                 ItemID.Jetpack
             };
