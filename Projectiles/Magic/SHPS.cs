@@ -234,7 +234,7 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(Color.White, tipColor, completion);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
         {
             // Render the main trail for the body for the soul.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
@@ -242,7 +242,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Render a smaller, pure white trail in the same position to represent the glowing white core of the soul.
             Vector2[] soulCoreLength = Projectile.oldPos.Take(8).ToArray();
-            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             PrimitiveRenderer.RenderTrail(soulCoreLength, new(SoulCoreWidthFunction, SoulCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), soulCoreLength.Length * 2);
         }
     }
