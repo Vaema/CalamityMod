@@ -340,7 +340,7 @@ namespace CalamityMod.Projectiles.Melee
                                     projectile.type == ModContent.ProjectileType<HolyBomb>() ||
                                     projectile.type == ModContent.ProjectileType<HolyBlast>());
                                 bool isAFireball = (projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10) || isProviProj;
-                                if (Vector2.Distance(Owner.Center + (new Vector2(100, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 100 + Math.Max(projectile.width, projectile.height) && projectile.active && isAFireball)
+                                if (Vector2.Distance(Owner.Center + (new Vector2(60, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 150 + Math.Max(projectile.width, projectile.height) && projectile.active && isAFireball)
                                 {
                                     if (isProviProj)
                                     {
@@ -366,7 +366,7 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 Projectile projectile = Main.projectile[x];
                                 bool isAFireball = (projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10);
-                                if (Vector2.Distance(Owner.Center + (new Vector2(100, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 100 && isAFireball)
+                                if (Vector2.Distance(Owner.Center + (new Vector2(60, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 150 && isAFireball)
                                 {
                                     Vector2 launch = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -2.5f;
                                     projectile.velocity += launch;
