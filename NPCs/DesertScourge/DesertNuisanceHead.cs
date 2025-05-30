@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
 
         public const float SegmentVelocity_Expert = 11f;
-        public const float SegmentVelocity_Master = 13.5f;
+        public const float SegmentVelocity_Death = 13.5f;
         public const float SegmentVelocity_GoodWorld = 19f;
         public const float SegmentVelocity_ZenithSeed = 22f;
 
@@ -112,7 +112,6 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -274,10 +273,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
                 Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             if (Main.player[NPC.target].dead)

@@ -764,7 +764,6 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             // Difficulty bools
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode;
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
             bool ableToDropSlime = npc.ai[1] == 1f;
@@ -783,7 +782,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             float slimeBombardmentDistance = 720f;
-            float flyDistanceY = slimeBombardment ? -450f : masterMode ? -360f : -405f;
+            float flyDistanceY = slimeBombardment ? -450f : death ? -360f : -405f;
             float flyDistanceX = slimeBombardment ? (ableToDropSlime ? (slimeBombardmentDistance * -npc.ai[2]) : (slimeBombardmentDistance * npc.ai[2])) : 0f;
             Vector2 destination = Main.player[npc.target].Center + new Vector2(flyDistanceX, flyDistanceY);
 

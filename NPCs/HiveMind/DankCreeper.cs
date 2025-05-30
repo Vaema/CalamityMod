@@ -65,9 +65,9 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool masterMode = Main.masterMode;
+            bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
-            float speed = masterMode ? 15f : revenge ? 13f : 11f;
+            float speed = death ? 15f : revenge ? 13f : 11f;
             if (BossRushEvent.BossRushActive)
                 speed = 18f;
 
