@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Potions;
 using CalamityMod.Dusts;
+using CalamityMod.ForegroundDrawing.LoopingTextures;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Placeables.Furniture.Monoliths;
 using CalamityMod.NPCs.Yharon;
@@ -24,7 +25,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
     {
         public override int TileWidth => 4;
         public override int TileHeight => 8;
-        public override int AnimationFrameCount => 25;
+        public override int AnimationFrameCount => 24;
         public override int AnimationDelay => 6;
         public override int CursorItemType => ModContent.ItemType<OldDukeMonolith>();
 
@@ -48,7 +49,7 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
             TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop, 3, 0);
             
-            AnimationFrameHeight = 8;
+            AnimationFrameHeight = 8 * 18;
             TileObjectData.newTile.CoordinateHeights = [16, 16, 16, 16, 16, 16, 16, 16];
             TileObjectData.addTile(Type);
 
@@ -62,9 +63,10 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
             if (!monolithEnabled)
                 return;
 
-            /*if (localPlayer is not null && localPlayer.active)
-                 = 30;
-            */
+            if (localPlayer is not null && localPlayer.active)
+            {
+                localPlayer.GetModPlayer<NuclearTorrentPlayer>().ShouldDisplayTorrentMonolith = true;
+            }
         }
 
         public override void DrawExtra(Vector2 drawPos, Rectangle rect, Color tileColor)
