@@ -91,6 +91,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Shayy",
             "Spider Prov",
             "StipulateVenus",
+            "Tobias",
             "Triangle",
             "TYESKI (Universe)",
             "Uncle Danny",
