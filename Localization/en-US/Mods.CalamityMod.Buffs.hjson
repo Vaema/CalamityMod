@@ -760,11 +760,6 @@ DivineBless: {
 	Description: Increased health regen and minions inflict Banishing Fire
 }
 
-EmpyreanRage: {
-	DisplayName: Empyrean Rage
-	Description: Rage of the cosmos
-}
-
 EmpyreanWrath: {
 	DisplayName: Empyrean Wrath
 	Description: Wrath of the cosmos
