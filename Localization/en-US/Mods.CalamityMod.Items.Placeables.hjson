@@ -4334,8 +4334,3 @@ Dreadstone: {
 	DisplayName: Dreadstone
 	Tooltip: ""
 }
-
-OldDukeMonolith: {
-	DisplayName: Elden Diorama
-	Tooltip: ""
-}
