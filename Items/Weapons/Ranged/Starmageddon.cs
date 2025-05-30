@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.useTurn = false;
             Item.autoReuse = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
         }
 

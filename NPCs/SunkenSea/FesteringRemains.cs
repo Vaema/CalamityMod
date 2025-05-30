@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<AlphaSeaMinnowBanner>();
             NPC.chaseable = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -142,7 +142,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.Cavern.Chance * 0.6f;
+                return SpawnCondition.Cavern.Chance * 0.4f;
             }
             return 0f;
         }

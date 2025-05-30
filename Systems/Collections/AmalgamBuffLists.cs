@@ -41,7 +41,7 @@ namespace CalamityMod.Systems.Collections
                 BuffType<CinnamonRollBuff>(),
                 BuffType<EverclearBuff>(),
                 BuffType<EvergreenGinBuff>(),
-                BuffType<CirrusVodkaBuff>(),
+                BuffType<PurpleHazeBuff>(),
                 BuffType<FireballBuff>(),
                 BuffType<GrapeBeerBuff>(),
                 BuffType<MargaritaBuff>(),

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.Auric
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 24; //132
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

@@ -10,8 +10,8 @@ namespace CalamityMod.Rarities
 
         public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
         {
-            -2 => ModContent.RarityType<DarkBlue>(),
-            -1 => ModContent.RarityType<Violet>(),
+            -2 => ModContent.RarityType<CosmicPurple>(),
+            -1 => ModContent.RarityType<BurnishedAuric>(),
             1 => ModContent.RarityType<CalamityRed>(),
             2 => ModContent.RarityType<CalamityRed>(),
             _ => Type,

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
 using CalamityMod.CustomRecipes;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.PermanentBoosters;
@@ -15,6 +16,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Prefixes;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -154,6 +156,7 @@ namespace CalamityMod.Items
             // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the tooltip list.
             EnchantmentTooltips(item, tooltips);
 
+            WhipAutomaticTooltips(item, tooltips, ref lastTooltipIndex);
             // In GFB, replace all instances of "rogue" with "rouge".
             string[] rogueKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRogueUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRogueLowercase") };
             string[] rougeKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase") };
@@ -292,8 +295,8 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             // Developer items
-            if (item.type == ModContent.ItemType<Fabstaff>())
-                nameLine.OverrideColor = new Color(Main.DiscoR, 100, 255);
+            if (item.type == ModContent.ItemType<Sylvestaff>())
+                nameLine.OverrideColor = new Color(249, 197, 255);
             if (item.type == ModContent.ItemType<StaffofBlushie>())
                 nameLine.OverrideColor = new Color(0, 0, 255);
             if (item.type == ModContent.ItemType<TheDanceofLight>())
@@ -301,6 +304,8 @@ namespace CalamityMod.Items
             if (item.type == ModContent.ItemType<NanoblackReaper>())
                 nameLine.OverrideColor = new Color(0.34f, 0.34f + 0.66f * Main.DiscoG / 255f, 0.34f + 0.5f * Main.DiscoG / 255f);
             if (item.type == ModContent.ItemType<ShatteredCommunity>())
+                nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
+            if (item.type == ModContent.ItemType<Ozzathoth>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
             if (item.type == ModContent.ItemType<NimbleBounder>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
@@ -411,6 +416,47 @@ namespace CalamityMod.Items
         }
         #endregion
 
+        #region Whip Tooltips
+        private void WhipAutomaticTooltips(Item item, IList<TooltipLine> tooltips, ref int lastTooltipIndex)
+        {
+            // Multiplicative tag changes
+            string FlatTagTooltip(int dmg) => (CalamityUtils.GetText($"Common.SummonTagDamageFlat").Format(dmg.ToString()));
+            string MultTagTooltip(float mult) => (CalamityUtils.GetText($"Common.SummonTagDamageMult").Format((mult + 1).ToString("0.##")));
+            string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
+
+            Dictionary<int, SummonTag> TagByItem = new();
+            foreach (SummonTag tag1 in SummonTagDebuffDict.Dict.Values)
+            {
+                if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
+            }
+            if (TagByItem.TryGetValue(item.type, out SummonTag tag))
+            {
+                if (!tag.AutoDrawTooltip) return;
+                var modPlayer = Main.LocalPlayer.Calamity();
+                if (tag.FlatTagDamage != 0)
+                {
+                    TooltipLine line = new TooltipLine(Mod, "CalamityMod:FlatSummonTag", FlatTagTooltip(tag.FlatTagDamage));
+                    tooltips.Insert(++lastTooltipIndex, line);
+                }
+                if (!modPlayer.forceSummonTagCrit && (tag.MultiplicativeTagDamage != 0 || (modPlayer.forceSummonTagMultiplicative && tag.TagCritChance != 0)))
+                {
+                    TooltipLine line = new TooltipLine(Mod, "CalamityMod:MultiplicativeSummonTag", MultTagTooltip(tag.MultiplicativeTagDamage + (modPlayer.forceSummonTagMultiplicative ? tag.TagCritChance : 0)));
+                    tooltips.Insert(++lastTooltipIndex, line);
+                }
+                if (!modPlayer.forceSummonTagMultiplicative && (tag.TagCritChance != 0 || (modPlayer.forceSummonTagCrit && tag.MultiplicativeTagDamage != 0)))
+                {
+                    TooltipLine line = new TooltipLine(Mod, "CalamityMod:CritSummonTag", CritTagTooltip(tag.TagCritChance + (modPlayer.forceSummonTagCrit ? tag.MultiplicativeTagDamage : 0)));
+                    tooltips.Insert(++lastTooltipIndex, line);
+                }
+                if (modPlayer.forceSummonTagMultiplicative && modPlayer.forceSummonTagCrit) //when both tag and crit are forced, swaps between the two
+                {
+                    TooltipLine line = new TooltipLine(Mod, "CalamityMod:CritSummonTag", ((int)(Main.GlobalTimeWrappedHourly / 5) % 2 == 0 ? CritTagTooltip(tag.MultiplicativeTagDamage + tag.TagCritChance) : MultTagTooltip(tag.MultiplicativeTagDamage + tag.TagCritChance)));
+                    tooltips.Insert(++lastTooltipIndex, line);
+                }
+            }
+        }
+        #endregion
+
         #region Vanilla Item Tooltip Modification
         private static void ModifyVanillaTooltips(Item item, IList<TooltipLine> tooltips)
         {
@@ -492,10 +538,6 @@ namespace CalamityMod.Items
 
             // Numerous random tooltip edits which don't fit into another category
             #region Various Tooltip Edits
-
-            // Lilies of Finality 512 edit
-            if (item.type == ModContent.ItemType<LiliesOfFinality>())
-                EditTooltipByName("Damage", (line) => line.Text = LiliesOfFinality.TheNumber + Language.GetTextValue("LegacyTooltip.53"));
 
             // Apparently 612 is a homestuck reference
             if (item.type == ModContent.ItemType<Respiteblock>())
@@ -636,8 +678,33 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
             #endregion
 
-            // Weapon changes
-            #region Weapon changes
+            // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
+            #region Whip Tag removal
+            // Additive tag changes
+            if (item.type == ItemID.BlandWhip)
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+            if (item.type == ItemID.ThornWhip)
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+            if (item.type == ItemID.BoneWhip)
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+            if (item.type == ItemID.CoolWhip)
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+            if (item.type == ItemID.SwordWhip)
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+            if (item.type == ItemID.MaceWhip)
+            {
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+                EditTooltipByNum(1, (line) => line.Text = string.Empty);
+            }
+            if (item.type == ItemID.RainbowWhip)
+            {
+                EditTooltipByNum(0, (line) => line.Text = string.Empty);
+                EditTooltipByNum(1, (line) => line.Text = string.Empty);
+            }
+            #endregion
+
+            // Other weapon changes
+            #region Other weapon changes
             // Aerial Bane is no longer the real bane of aerial enemies (50% dmg bonus removed)
             if (item.type == ItemID.DD2BetsyBow)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("DD2BetsyBow"));

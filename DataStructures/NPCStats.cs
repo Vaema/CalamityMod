@@ -730,9 +730,9 @@ namespace CalamityMod
                 { new Tuple<int, int>(NPCID.DukeFishron, ProjectileID.Cthulunado), new int[] { 160, 200, 232, 264, 480 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<RavagerBody>(), ModContent.ProjectileType<RavagerBlaster>()), new int[] { 120, 180, 208, 236, 360 } },
-                { new Tuple<int, int>(ModContent.NPCType<RavagerHead>(), ModContent.ProjectileType<ScavengerNuke>()), new int[] { 120, 180, 208, 236, 360 } },
+                { new Tuple<int, int>(ModContent.NPCType<RavagerHead>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 120, 180, 208, 236, 360 } },
                 { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<HomingLaserDart>()), new int[] { 90, 144, 172, 200, 300 } },
-                { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<ScavengerNuke>()), new int[] { 120, 180, 208, 236, 360 } },
+                { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 120, 180, 208, 236, 360 } },
                 { new Tuple<int, int>(ModContent.NPCType<FlamePillar>(), ModContent.ProjectileType<RavagerFlame>()), new int[] { 90, 144, 172, 200, 300 } },
 
                 { new Tuple<int, int>(NPCID.CultistBoss, ProjectileID.CultistBossFireBall), new int[] { 88, 156, 184, 212, 318 } },

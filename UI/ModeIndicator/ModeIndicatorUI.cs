@@ -357,7 +357,6 @@ namespace CalamityMod.UI.ModeIndicator
 
                         // Cannot switch to Death Mode if Master Mode isn't active.
                         // Cannot switch to Revengeance Mode if Master Mode is active.
-                        // I hate how this is coded, it makes me want to smash my head through a wall. - Fabsol
                         bool cannotSwitchTo = (!Main.masterMode && mode == Difficulties[2]) || (Main.masterMode && mode == Difficulties[1]);
                         if (ClickingMouse && !cannotSwitchTo)
                             SwitchToDifficulty(mode);

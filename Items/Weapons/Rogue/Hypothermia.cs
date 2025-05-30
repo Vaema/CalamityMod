@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shoot = ModContent.ProjectileType<HypothermiaShard>();
             Item.shootSpeed = 8f;
 
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.DamageType = RogueDamageClass.Instance;
         }
 

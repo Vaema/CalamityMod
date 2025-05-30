@@ -41,6 +41,9 @@ namespace CalamityMod.NPCs.SunkenSea
             { ItemID.WhitePearl, new WeightedRandom<ScavengerItem>() },
             { ItemID.BlackPearl, new WeightedRandom<ScavengerItem>() },
             { ItemID.PinkPearl, new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodItem>(), new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodBlackItem>(), new WeightedRandom<ScavengerItem>() },
+            { ModContent.ItemType<PearlpodPinkItem>(), new WeightedRandom<ScavengerItem>() },
             { ItemID.GalaxyPearl, new WeightedRandom<ScavengerItem>() },
             { ModContent.ItemType<GiantPearl>(), new WeightedRandom<ScavengerItem>() },
         };
@@ -49,7 +52,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             Idle = 0,
             FoundItem = 1,
-            Bartering = 2
+            Bartering = 2,
+            Burrow = 3
         }
 
         // The in world index of the item the crab is going after
@@ -158,7 +162,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(white, ModContent.ItemType<PolypPanaseaPurpleItem>(), 1, 0.01f);
             AddScavengerItem(white, ModContent.ItemType<PolypPanaseaTurquoiseItem>(), 1, 0.01f);
             AddScavengerItem(white, ModContent.ItemType<BabyGhostBellItem>(), 1, 0.02f);
-            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellRedItem>(), 1, 0.02f);
+            AddScavengerItem(white, ModContent.ItemType<BabyGhostBellPinkItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<BabyGhostBellGreenItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<SlugbunItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<SlugbunBurrowsItem>(), 1, 0.02f);
@@ -194,6 +198,11 @@ namespace CalamityMod.NPCs.SunkenSea
             //AddScavengerItem(pink, ModContent.ItemType<ScavengerBoots>(), 1);
             AddScavengerItem(white, ModContent.ItemType<DeepDiver>(), 1, () => Main.hardMode);
             AddScavengerItem(white, ModContent.ItemType<Poseidon>(), 1, () => Main.hardMode);
+
+            // Pearlpods can be used as a substitute for pearls
+            ScavengerLoot[ModContent.ItemType<PearlpodItem>()] = ScavengerLoot[white];
+            ScavengerLoot[ModContent.ItemType<PearlpodBlackItem>()] = ScavengerLoot[black];
+            ScavengerLoot[ModContent.ItemType<PearlpodPinkItem>()] = ScavengerLoot[pink];
 
             ScavengerLoot[ItemID.GalaxyPearl] = ScavengerLoot[white]; // Gives 1-2x the amount of white items
             ScavengerLoot[ModContent.ItemType<GiantPearl>()] = ScavengerLoot[pink]; // Gives 2 pink items
@@ -643,9 +652,33 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
                     }
                     break;
+                // Burrow away and despawn 
+                case (int)PhaseType.Burrow:
+                    {
+                        NPC.velocity.X *= 0.95f;
+                        if (NPC.velocity.Y == 0)
+                        {
+                            WalkTimer++;
+                            GeneralParticleHandler.SpawnParticle(new Particles.StoneDebrisParticle(Main.rand.NextVector2FromRectangle(NPC.getRect() with { Y = (int)NPC.Center.Y }), new Vector2(Main.rand.NextFloat(-6, 6), Main.rand.NextFloat(-6, -2)), Lighting.GetColor(NPC.Bottom.ToTileCoordinates()), Main.rand.NextFloat(0.5f, 1.2f), 10));
+                        }
+                        if (WalkTimer % 10 == 0)
+                        {
+                            SoundEngine.PlaySound(SoundID.Dig, NPC.Center);
+                        }
+                        int startFall = 40;
+                        if (WalkTimer >= startFall)
+                        {
+                            NPC.alpha += 5;
+                            if (NPC.alpha > 255)
+                            {
+                                NPC.active = false;
+                            }
+                        }
+                    }
+                    break;
             }
 
-            if (Phase != (int)PhaseType.FoundItem && WalkTimer > 0)
+            if ((Phase != (int)PhaseType.FoundItem && Phase != (int)PhaseType.Burrow) && WalkTimer > 0)
                 WalkTimer--;
 
             if (TurnTimer > 0)
@@ -820,6 +853,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
@@ -834,6 +869,37 @@ namespace CalamityMod.NPCs.SunkenSea
             //    return 0.05f;
             //}
             //return 0f;
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            if (Phase != (int)PhaseType.Burrow)
+            {
+                WalkTimer = 0;
+                Phase = (int)PhaseType.Burrow;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (n == NPC)
+                        continue;
+                    if (n.type != NPC.type)
+                        continue;
+                    if (n.Distance(NPC.Center) > 600)
+                        continue;
+                    Scavenger scav = n.ModNPC<Scavenger>();
+                    scav.PlayerHurt();
+                    scav.WalkTimer += Main.rand.Next(-20, 10);
+                }
+            }
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -880,7 +946,15 @@ namespace CalamityMod.NPCs.SunkenSea
             Vector2 npcOffset = NPC.Center - screenPos + Vector2.UnitY * extraPosOffset;
             npcOffset -= new Vector2(texture.Width, texture.Height / frameCount) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture, npcOffset, texture.Frame(1, frameCount, 0, NPC.frame.Y), NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            int burrowHide = 0;
+            if (Phase == (int)PhaseType.Burrow)
+            { 
+                float comp = Utils.GetLerpValue(40, 120, WalkTimer, true);
+                burrowHide = (int)MathHelper.Lerp(0, texture.Height / frameCount + 1, comp);
+                npcOffset.Y += MathHelper.Lerp(0, NPC.height, comp);
+            }
+            Rectangle frame = texture.Frame(1, frameCount, 0, NPC.frame.Y);
+            spriteBatch.Draw(texture, npcOffset, frame with { Height = frame.Height - burrowHide }, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             // my dreams devoured
             // legacy code for visually holding an item

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.FurnitureSacrilegious
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<MonolithOfTheAccursedTile>());
             Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ModContent.RarityType<Violet>(); 
+            Item.rare = ModContent.RarityType<BurnishedAuric>(); 
             Item.accessory = true;
             Item.vanity = true;
         }

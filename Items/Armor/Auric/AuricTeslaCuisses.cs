@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Auric
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 44;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateEquip(Player player)

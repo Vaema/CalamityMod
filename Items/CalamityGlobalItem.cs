@@ -255,7 +255,7 @@ namespace CalamityMod.Items
 
             // Zenith rarity
             if (item.type == ItemID.Zenith)
-                item.rare = ModContent.RarityType<Violet>();
+                item.rare = ModContent.RarityType<BurnishedAuric>();
 
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
@@ -981,7 +981,6 @@ namespace CalamityMod.Items
         // 10%  charge = 83% damage
         // 0%   charge = 41.33% damage
         //
-        // Fabsol - I changed this formula because it was bad and confusing, and I had promised to do so a while ago.
         internal float ChargeDamageFormula()
         {
             float x = MathHelper.Clamp(ChargeRatio, 0f, 1f);
@@ -1127,7 +1126,7 @@ namespace CalamityMod.Items
                 player.endurance -= 0.12f;
 
                 // Solar Flare armor dash overrides modded dashes by default
-                if (player.solarShields > 0)
+                if (player.solarShields > 0 || player.wingsLogic == (int)VanillaWingID.WingsSolar)
                     modPlayer.DashID = string.Empty;
             }
         }
@@ -1852,9 +1851,9 @@ namespace CalamityMod.Items
                 return RarityTurquoiseBuyPrice;
             if (rarity == ModContent.RarityType<PureGreen>())
                 return RarityPureGreenBuyPrice;
-            if (rarity == ModContent.RarityType<DarkBlue>())
+            if (rarity == ModContent.RarityType<CosmicPurple>())
                 return RarityDarkBlueBuyPrice;
-            if (rarity == ModContent.RarityType<Violet>())
+            if (rarity == ModContent.RarityType<BurnishedAuric>())
                 return RarityVioletBuyPrice;
             if (rarity == ModContent.RarityType<HotPink>())
                 return RarityHotPinkBuyPrice;

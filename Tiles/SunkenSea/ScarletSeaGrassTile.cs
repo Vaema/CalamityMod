@@ -22,6 +22,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.GeneralPlacementTiles[Type] = false;
 
             Main.tileSolid[Type] = true;
+            Main.tileLighted[Type] = true;
             Main.tileBlockLight[Type] = false;
 
             CalamityUtils.MergeWithGeneral(Type);
@@ -94,15 +95,9 @@ namespace CalamityMod.Tiles.SunkenSea
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float brightness = 0.7f;
-            brightness *= (float)MathF.Sin(-i / 40f + Main.GameUpdateCount * 0.01f + j);
-            brightness += 0.5f;
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            r = 0.3f;
+            g = 0f;
+            b = 0.1f;
         }
         public override void RandomUpdate(int i, int j)
         {

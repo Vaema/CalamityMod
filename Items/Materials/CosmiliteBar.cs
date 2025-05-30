@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CosmiliteBarTile>());
             Item.value = Item.sellPrice(gold: 3);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)

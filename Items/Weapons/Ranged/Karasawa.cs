@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<KarasawaShot>();

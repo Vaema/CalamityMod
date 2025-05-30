@@ -78,6 +78,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
             AIType = NPCID.Snail;
+            NPC.chaseable = false;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<SlugbunBanner>();
             NPC.catchItem = ModContent.ItemType<SlugbunItem>();
@@ -85,7 +86,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
