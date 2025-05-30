@@ -6790,8 +6790,8 @@ PrepareToShoot:
 
                 int projType = ProjectileID.SandBallFalling;
 
-                // 2 to 3 in Rev, 3 to 5 in Death, if FTW is also enabled, 8 to 13 (random chance for 10x the amount)
-                int projAmt = CalamityWorld.revenge ? Main.rand.Next(CalamityWorld.death ? 3 : 2, CalamityWorld.death ? 6 : 4) : 1;
+                // If FTW is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
+                int projAmt = 1;
                 if (Main.getGoodWorld)
                 {
                     projAmt = Main.rand.Next(8, 14);

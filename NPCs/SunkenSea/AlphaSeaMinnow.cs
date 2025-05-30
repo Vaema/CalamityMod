@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 600;
+        public static int IdleMinPathDistance = 100;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
