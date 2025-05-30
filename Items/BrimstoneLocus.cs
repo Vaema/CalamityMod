@@ -12,7 +12,7 @@ namespace CalamityMod.Items
         {
             Item.width = 20;
             Item.height = 20;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = 0;
         }
 

@@ -110,6 +110,16 @@ namespace CalamityMod.CalPlayer.Dashes
                 }
             }
             player.velocity.X *= 0.912f;
+            if (player.velocity.X > 140)
+            {
+                player.velocity.X = 140;
+            }
+            if (player.velocity.X < -140)
+            {
+                player.velocity.X = -140;
+            }
+            if (Time > 8)
+                player.velocity.X *= 0.5f;
         }
     }
 }

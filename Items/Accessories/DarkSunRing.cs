@@ -32,13 +32,14 @@ namespace CalamityMod.Items.Accessories
             Item.defense = 10;
             Item.lifeRegen = 1;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.darkSunRing = true;
+            player.noKnockback = true;
         }
 
         public override void AddRecipes()

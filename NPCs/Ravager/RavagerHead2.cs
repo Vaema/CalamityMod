@@ -122,7 +122,7 @@ namespace CalamityMod.NPCs.Ravager
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         SoundEngine.PlaySound(RavagerHead.MissileSound, NPC.Center);
-                        type = ModContent.ProjectileType<ScavengerNuke>();
+                        type = ModContent.ProjectileType<RavagerNuke>();
                         damage = NPC.GetProjectileDamage(type);
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity * 0.25f, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.scavenger].target, 0f);
                     }

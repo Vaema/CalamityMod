@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 600;
+        public static int IdleMinPathDistance = 100;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
@@ -39,7 +39,9 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>() {
             ModContent.NPCType<Sharkoon>(),
             ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<LazarusLampfish>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
@@ -54,6 +56,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -73,7 +76,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<AlphaSeaMinnowItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -93,12 +95,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.TargetClosest(false);
             // Spawn a shoal of minnows
-            int fishCount = Main.rand.Next(5, 10);
+            int fishCount = Main.rand.Next(2, 7);
             // More spawn in the Radiant Reefs
             if (NPC.HasPlayerTarget)
             {
                 if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
-                    fishCount += 5;
+                    fishCount += 3;
             }
             for (int i = 0; i < fishCount; i++)
             {
@@ -161,7 +163,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
-            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
+            Point lookAheadPosition = (NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates();
+            if (!CalamityUtils.ParanoidTileRetrieval(lookAheadPosition.X, lookAheadPosition.Y).IsTileSolid())
             {
                 NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
                 pathfinding.ClearResults();
@@ -238,7 +241,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+
             }
             return 0f;
         }
@@ -281,7 +288,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.03f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+
             }
             return 0f;
         }

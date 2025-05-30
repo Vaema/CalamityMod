@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<DraconicIncenseTile>());
             Item.value = Item.sellPrice(gold: 75);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
             Item.vanity = true;
         }

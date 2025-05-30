@@ -135,16 +135,6 @@ Avalanche: {
 		'''
 }
 
-Azathoth: {
-	DisplayName: Azathoth
-	Tooltip:
-		'''
-		{$Common.YoyoStatsInfinite}
-		Fires cosmic orbs that blast nearby enemies with lasers
-		'Destroy the universe in the blink of an eye'
-		'''
-}
-
 BalefulHarvester: {
 	DisplayName: Baleful Harvester
 	Tooltip:
@@ -793,7 +783,11 @@ Lacerator: {
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Accelerates natural life regeneration on hits with the yoyo
+		Striking enemies conjures a bloody saw to shred them
+		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
+		Enemies touching the edge of the sawblade get blood orbs torn out of them
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		The direction of the saw's spin depends on which direction you originally threw the yoyo
 		[GFB]
 		'''
 	TooltipNormal: Someone thought this was a viable weapon against DoG at one point lol
@@ -848,9 +842,17 @@ MirrorBlade: {
 	DisplayName: Mirror Blade
 	Tooltip:
 		'''
-		The amount of contact damage an enemy does is added to this weapons' damage
-		You must hit an enemy with the blade to trigger this effect
+		Striking an enemy or a hostile projectile summons up to 10 orbiting mirror shards
+		Any shards above 10 instead seek out enemies 
+		Holding <right> coalesces the orbiting mirror shards into a shield
 		'''
+	HoldShiftTooltip:
+		'''
+		[c/aab7f1:Each shard reduces the damage of a projectile that hit the shield by 10%]
+		[c/aab7f1:The shield shatters after one projectile, launching the shards at enemies with increased damage]
+		[c/aab7f1:With all 10 shards, you gain a brief period of invulnerability when shattering the shield]
+		'''
+	FlavorTooltip: "[c/7b6d8d:'A blade taken from your own reflection within the Ceaseless Void']"
 }
 
 MonolithSword: {
@@ -959,6 +961,16 @@ Orderbringer: {
 		Energy waves deal more damage with each consecutive hit
 		Hits with the blade summon two beams from the sky
 		'No matter where you may be you are never alone'
+		'''
+}
+
+Ozzathoth: {
+	DisplayName: Ozzathoth
+	Tooltip:
+		'''
+		{$Common.YoyoStatsInfinite}
+		Fires cosmic orbs that blast nearby enemies with lasers
+		'Destroy the universe in the blink of an eye'
 		'''
 }
 
@@ -1487,7 +1499,12 @@ VeinBurster: {
 
 Violence: {
 	DisplayName: Violence
-	Tooltip: Releases a blazing fork which stays near the mouse and shreds enemies
+	Tooltip:
+		'''
+		A demonic pitchfork, cursed to cause endless bloodshed
+		<left> commands the trident to follow your cursor and shred enemies with devastating speed
+		<right> throws the trident, violently tearing through enemies with immense power and inflicting Vulnerability Hex
+		'''
 }
 
 Virulence: {

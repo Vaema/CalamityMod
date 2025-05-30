@@ -63,8 +63,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Acidwood>(35).
-                AddIngredient<SulphuricScale>(10).
+                AddIngredient<Acidwood>(15).
+                AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

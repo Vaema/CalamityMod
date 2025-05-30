@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.Ravager
                     NPC.TargetClosest();
 
                 NPC.ai[1] = 0f;
-                int type = ModContent.ProjectileType<ScavengerNuke>();
+                int type = ModContent.ProjectileType<RavagerNuke>();
                 int damage = NPC.GetProjectileDamage(type);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {

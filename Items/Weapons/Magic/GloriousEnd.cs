@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,6 +30,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }
+
+        public override bool? CanAutoReuseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<GiantIbanRobotOfDoom>()] > 0;
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 

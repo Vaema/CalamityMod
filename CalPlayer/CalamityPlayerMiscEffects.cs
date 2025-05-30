@@ -293,16 +293,6 @@ namespace CalamityMod.CalPlayer
                     Player.velocity.X *= 0.9f;
                 }
             }
-            
-            if (Player.Calamity().statisNinjaBelt)
-            {
-                Player.Calamity().DashID = StatisNinjaBeltDash.ID;
-            }
-            if (Player.Calamity().statisVoidSash)
-            {
-                Player.Calamity().DashID = StatisVoidSashDash.ID;
-            }
-
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
             {
                 float fxScale = 1;
@@ -393,7 +383,10 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Player.velocity * 1.5f, Vector2.Zero, ModContent.ProjectileType<PauldronDash>(), damage, 0, Player.whoAmI);
                 }
                 if (Player.dashDelay == -1)
+                {
                     Player.endurance += 0.1f;
+                    Player.noKnockback = true;
+                }
                 
             }
 
@@ -918,7 +911,7 @@ namespace CalamityMod.CalPlayer
 
                 // Create a direct strike to hit this specific NPC.
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Calamity>()));
-                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI);
+                Projectile sigilStrike = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), sigilDamage, 0f, Player.whoAmI, target.whoAmI, 255f);
 
                 // Enable crits by setting the sigil's damage class to be whatever the player's strongest damage class is.
                 sigilStrike.DamageType = Player.GetBestClass();
@@ -1293,8 +1286,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (!Player.wet)
                 {
-                    if (cirrusDress)
-                        Player.maxFallSpeed = 12f;
                     if (aeroSet)
                         Player.maxFallSpeed = 15f;
                     if (Player.PortalPhysicsEnabled)
@@ -2513,9 +2504,6 @@ namespace CalamityMod.CalPlayer
             if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
                 Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
 
-            if (kamiBoost)
-                Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
-
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
 
@@ -3518,11 +3506,8 @@ namespace CalamityMod.CalPlayer
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
 
-            if (cirrusDress)
-                Player.moveSpeed -= 0.2f;
-
-            if (cirrusVodka)
-                Player.GetDamage<GenericDamageClass>() += CirrusVodka.DamageBoost;
+            if (purpleHaze)
+                Player.GetDamage<GenericDamageClass>() += PurpleHaze.DamageBoost;
 
             if (vodka)
             {
@@ -3802,7 +3787,10 @@ namespace CalamityMod.CalPlayer
             }
 
             if (manaOverloader)
-                Player.GetDamage<MagicDamageClass>() += 0.06f;
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f,0.15f,manaRatio);
+            }
 
             if (bloodyWormTooth)
             {
@@ -4825,10 +4813,10 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (cirrusVodka)
+            if (purpleHaze)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CirrusVodka.DefenseLossPercent);
+                    Player.statDefense -= (int)(Player.statDefense * PurpleHaze.DefenseLossPercent);
             }
 
             if (vodka)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
@@ -24,7 +25,6 @@ namespace CalamityMod.Tiles
 {
     public class CalamityGlobalTile : GlobalTile
     {
-
         public static List<int> GrowthTiles = new List<int>()
         {
             TileType<SeaPrism>(),
@@ -48,8 +48,10 @@ namespace CalamityMod.Tiles
 
         public override void PreShakeTree(int x, int y, TreeTypes treeType)
         {
-            // Add an additional 25% chance to drop vanilla fruits
-            if (WorldGen.genRand.NextBool(4))
+            // All trees have a 33% chance to drop extra fruit when using Feller of Evergreens
+            Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
+            Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
+            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = 0;
                 switch (treeType)

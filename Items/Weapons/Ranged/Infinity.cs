@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 1f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.UseSound = SoundID.Item31;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.PurificationPowder;

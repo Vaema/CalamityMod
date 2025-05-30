@@ -232,6 +232,7 @@ BulletFilledShotgun: {
 	Tooltip:
 		'''
 		Fires a massive spread of bouncing bullets
+		Bullets attempt to bounce towards enemies after bouncing twice
 		Consumes five bullets per-use
 		'Aim? What's that?'
 		'''
@@ -394,15 +395,6 @@ DeepcoreGK2: {
 		'''
 		Bullets are twice as large and ignore 10 points of enemy defense
 		'For rock and stone!'
-		'''
-}
-
-DodusHandcannon: {
-	DisplayName: Dodu's Handcannon
-	Tooltip:
-		'''
-		Fires high explosive peanut shells, literally
-		'The power of the nut rests in your hands'
 		'''
 }
 

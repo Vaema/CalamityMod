@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
+        public int EquippedHook => Owner.miscEquips[4].type;
 
         public HookState State
         {
@@ -117,7 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Point tilePos = Projectile.Center.ToTileCoordinates();
                 Tile tile = Main.tile[tilePos];
-                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
+                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                     State = HookState.Retracting;
 
                 Projectile.velocity = Vector2.Zero;
@@ -153,7 +154,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     Tile tile = Main.tile[tilePos];
 
-                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
+                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                         continue;
                     if (Main.myPlayer != Owner.whoAmI)
                         continue;
@@ -179,8 +180,6 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.velocity = Vector2.Zero;
             State = HookState.Grappling;
 
-            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
-                Owner.DoQueenSlimeHookTeleport(grapplePos);
             Projectile.Center = grapplePos + Vector2.One * 8f;
             //effects
             WorldGen.KillTile(x, y, fail: true, effectOnly: true);
@@ -193,7 +192,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Owner.grapCount++;
                 //Owner.velocity = Vector2.Zero;
             }
-
+            if (EquippedHook == ItemID.QueenSlimeHook)
+                Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
             mp.SwingLength = (Owner.Center - Projectile.Center).Length();
             mp.OldPosition = Owner.Center - Owner.velocity;
             mp.SetSegments(Projectile.Center);
@@ -224,7 +224,27 @@ namespace CalamityMod.Projectiles.Typeless
 
         public Color PrimColorFunction(float completionRatio)
         {
-            return Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Pow(completionRatio, 1.5D));
+            Color EndColor = Color.GreenYellow;
+
+            switch (EquippedHook)
+            {
+                case ItemID.AntiGravityHook:
+                    EndColor = Color.Aquamarine;
+                    break;
+                case ItemID.QueenSlimeHook:
+                    EndColor = Color.HotPink;
+                    break;
+                case ItemID.SquirrelHook:
+                    EndColor = Color.DarkOrange;
+                    break;
+                case ItemID.StaticHook:
+                    EndColor = Color.Silver;
+                    break;
+                default:
+                    break;
+            }
+
+            return Color.Lerp(Color.DeepSkyBlue, EndColor, (float)Math.Pow(completionRatio, 1.5D));
         }
 
         public override bool PreDraw(ref Color lightColor)

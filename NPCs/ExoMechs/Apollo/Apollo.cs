@@ -1180,7 +1180,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
-                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge))) // I'm not that evil (you aren't, but I am - Fab)
+                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge)))
                         {
                             int totalProjectiles = bossRush ? 16 : death ? 12 : 8;
                             float radians = MathHelper.TwoPi / totalProjectiles;

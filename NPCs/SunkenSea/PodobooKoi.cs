@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs => new List<int>()
         {
-
+            ModContent.NPCType<Steampod>()
         };
 
         protected override List<int> PredatorIDs => new List<int>() {
@@ -79,15 +79,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 1;
+            Main.npcFrameCount[Type] = 15;
             base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 30;
-            NPC.width = 40;
+            NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 10;
             NPC.lifeMax = 1000;
@@ -102,7 +103,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = true;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PodobooKoiBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+
+            // Scale stats in Expert and Master
+            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
+            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -135,6 +139,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[3] = 180;
             }
             NPC.ai[3]--;
+            NPC.chaseable = false;
             if (NPC.lavaWet)
             {
                 switch (CurrentBehavior)
@@ -168,12 +173,21 @@ namespace CalamityMod.NPCs.SunkenSea
         public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValiditySizeless));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValidityLenient));
         }
 
-        public bool LavaTileValiditySizeless(Point point)
+        /// <summary>
+        /// Same as LavaTileValidity but without the requirement for a full tile of lava
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public bool LavaTileValidityLenient(Point point)
         {
-            return !(Main.tile[point].IsTileSolidGround() || Main.tile[point].LiquidAmount < 255 || Main.tile[point].LiquidType != LiquidID.Lava);
+            Point actualFuckingPoint = new Point(point.X * 16, point.Y * 16);
+
+            return NPC.Hitbox.Contains(actualFuckingPoint)
+                || !NPC.GetIntersectingHitboxPoints(
+                    actualFuckingPoint, 10, 10).Any(a => Main.tile[a].IsTileSolidGround() || Main.tile[a].LiquidAmount < 25 || Main.tile[a].LiquidType != LiquidID.Lava);
         }
 
         public void FleeBehavior()
@@ -204,7 +218,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                 randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, LavaTileValidity));
+                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, LavaTileValidityLenient));
             }
         }
 
@@ -218,7 +232,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
             pathfinding.MaxSpeed = 8;
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, LavaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, LavaTileValidityLenient));
         }
 
         public void HostileBehavior()
@@ -235,6 +249,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
+            NPC.chaseable = true;
             bool noLava = lavaLine == Vector2.Zero;
             // If this is true, use its lava behavior
             bool useLavaAI = CurrentPlayer.lavaWet && NPC.Distance(CurrentPlayer.Center) < 500;
@@ -280,7 +295,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     NPC.velocity.Y = 4;
                 }
                 pathfinding.MaxSpeed = 6;
-                pathfinding.DoPathfinding(new(NPC.Center, CurrentPlayer.Center, LavaTileValiditySizeless));
+                pathfinding.DoPathfinding(new(NPC.Center, CurrentPlayer.Center, LavaTileValidityLenient));
                 // Mark the fish as currently trying to chase the player
                 NPC.Calamity().newAI[0] = 1;
             }
@@ -355,7 +370,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 pathfinding.MaxSpeed = 4;
                 ShootTimer--;
 
-                if (ShootTimer <= -30)
+                if (ShootTimer <= -40)
                 {
                     ShootTimer = fireRate;
 
@@ -463,12 +478,35 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!NPC.wet && !NPC.IsABestiaryIconDummy)
             {
                 NPC.frameCounter = 0.0;
+                NPC.frame.Y = 0;
                 return;
             }
-            NPC.frameCounter += 0.1f;
-            NPC.frameCounter %= Main.npcFrameCount[Type];
-            int frame = (int)NPC.frameCounter;
-            NPC.frame.Y = frame * frameHeight;
+            bool shooting = ShootTimer <= -1;
+            int interval = shooting ? 12 : 6;
+            NPC.frameCounter++;
+            if (NPC.frameCounter > interval)
+            {
+                NPC.frame.Y++;
+                NPC.frameCounter = 0;
+            }
+            if (shooting)
+            {
+                if (NPC.frame.Y < 9)
+                {
+                    NPC.frame.Y = 9;
+                }
+                if (NPC.frame.Y > 14)
+                {
+                    NPC.frame.Y = 14;
+                }
+            }
+            else
+            {
+                if (NPC.frame.Y >= 9)
+                {
+                    NPC.frame.Y = 0;
+                }
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -486,9 +524,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     tex = bubbleEyedTex.Value;
                     break;
             }
-            float animSped = MathHelper.Lerp(0, 10, Utils.GetLerpValue(0, -30, ShootTimer, true));
+            float animSped = MathHelper.Lerp(0, 10, Utils.GetLerpValue(0, -40, ShootTimer, true));
             Vector2 scale = Vector2.One + new Vector2(MathF.Cos(Main.GlobalTimeWrappedHourly * animSped), MathF.Sin(Main.GlobalTimeWrappedHourly * animSped)) * 0.05f;
-            spriteBatch.Draw(tex, NPC.Center - screenPos, null, NPC.GetAlpha(drawColor), NPC.rotation, tex.Size() / 2, scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            spriteBatch.Draw(tex, NPC.Center - screenPos, tex.Frame(1, 15, 0, NPC.frame.Y), NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(tex.Width / 2, tex.Height / 30), scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             return false;
         }
 
@@ -506,6 +544,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.WriteVector2(randomPathPoint);
             writer.WriteVector2(lavaLine);
             writer.Write(NPC.Calamity().newAI[0]);
+            writer.Write(NPC.chaseable);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -513,6 +552,7 @@ namespace CalamityMod.NPCs.SunkenSea
             randomPathPoint = reader.ReadVector2();
             lavaLine = reader.ReadVector2();
             NPC.Calamity().newAI[0] = reader.ReadSingle();
+            NPC.chaseable = reader.ReadBoolean();
         }
     }
 }

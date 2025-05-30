@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
         }

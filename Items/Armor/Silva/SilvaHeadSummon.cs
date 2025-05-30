@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Armor.Silva
             Item.height = 24;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 13; //110
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

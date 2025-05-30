@@ -1764,27 +1764,8 @@ namespace CalamityMod.ILEditing
         #region Shimmer effect edits
         public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<CirrusVodka>())
-            {
-                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
-                self.shimmered = true;
-                self.shimmerWet = true;
-                self.wet = true;
-                self.velocity *= 0.1f;
-                if (Main.netMode == 0)
-                {
-                    Item.ShimmerEffect(self.Center);
-                }
-                else
-                {
-                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
-                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
-                }
-                AchievementsHelper.NotifyProgressionEvent(27);
-            }
             // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
-            else if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
             {
                 if (NPC.downedGolemBoss)
                     orig(self);
@@ -2505,9 +2486,9 @@ namespace CalamityMod.ILEditing
                     {
                         colorType = (int)BabyGhostBell.JellyColor.Green;
                     }
-                    if (item.type == ModContent.ItemType<BabyGhostBellRedItem>())
+                    if (item.type == ModContent.ItemType<BabyGhostBellPinkItem>())
                     {
-                        colorType = (int)BabyGhostBell.JellyColor.Red;
+                        colorType = (int)BabyGhostBell.JellyColor.Pink;
                     }
                     if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
                     {

@@ -378,9 +378,9 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(endColor, Color.White, deathInterpolant);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
         {
-            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PlasmaBallWidthFunction, PlasmaBallColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
         }
     }

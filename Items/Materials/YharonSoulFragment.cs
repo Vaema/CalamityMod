@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 14;
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(gold: 5);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
     }
 }

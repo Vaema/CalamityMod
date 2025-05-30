@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -28,9 +30,25 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToFood(14, 28, ModContent.BuffType<ScrewdriverBuff>(), CalamityUtils.MinutesToFrames(8), true);
-            // Cirrus overcharges: 10% sell value instead of 20%
+
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.Ale).
+                AddIngredient<HallowedOre>(3).
+                AddTile(TileID.Kegs).
+                Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.BottledWater).
+                AddIngredient<BloodOrb>(5).
+                AddIngredient<HallowedOre>().
+                AddTile(TileID.AlchemyTable).
+                Register()
+                .DisableDecraft();
         }
     }
 }

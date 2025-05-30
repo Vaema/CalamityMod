@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 9f;
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true; // revertusernamechange on Discord (Yatagarasu)
         }
 

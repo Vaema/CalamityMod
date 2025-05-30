@@ -213,7 +213,7 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
-            On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
+            //On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
         
             On_Player.UpdateControlHolds += DelayGravity;
             On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;

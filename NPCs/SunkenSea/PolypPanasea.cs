@@ -70,7 +70,8 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>()
         {
             ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>()
+            ModContent.NPCType<SandProwlerNested>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
@@ -101,6 +102,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -120,7 +122,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void OnSpawn(IEntitySource source)

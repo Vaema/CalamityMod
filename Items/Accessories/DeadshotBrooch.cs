@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().deadshotBrooch = true;
-            player.Calamity().rangedAmmoCost *= 0.8f;
+            player.Calamity().ammoCost *= 0.8f;
             player.GetDamage<RangedDamageClass>() += 0.12f;
             player.GetCritChance<RangedDamageClass>() += 7;
         }

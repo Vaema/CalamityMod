@@ -129,7 +129,9 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>() {
             ModContent.NPCType<SandProwler>(),
             ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<LazarusLampfish>(),
+            ModContent.NPCType<GhostBell>()
         };
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows | SunkenSeaBiomeFlags.ClamDen;
 
@@ -166,6 +168,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -181,7 +184,6 @@ namespace CalamityMod.NPCs.SunkenSea
             //BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyBlueItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -292,6 +294,101 @@ namespace CalamityMod.NPCs.SunkenSea
                                 Role = 2;
                                 break;
                             }
+
+                            if (!owner.active)
+                                return;
+
+                            if (NPC.Distance(owner.Center) > 20)
+                                pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
+                            else
+                            {
+                                float passiveMvtFloat = 0.5f;
+                                float range = 70f;
+                                Vector2 fischPos = NPC.Center;
+                                float xDist = owner.Center.X - fischPos.X;
+                                float yDist = owner.Center.Y - fischPos.Y;
+                                yDist += Main.rand.NextFloat(-10, 20);
+                                xDist += Main.rand.NextFloat(-10, 20);
+                                xDist += 20f * -(float)owner.direction;
+                                Vector2 leaderVector = new Vector2(xDist, yDist);
+                                float leaderDist = leaderVector.Length();
+                                float returnSpeed = 8f;
+                                //If leader is close enough, resume normal
+                                if (leaderDist < range && owner.velocity.Y == 0f &&
+                                    NPC.Bottom.Y <= owner.Bottom.Y &&
+                                    !Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                                {
+                                    if (NPC.velocity.Y < -6f)
+                                    {
+                                        NPC.velocity.Y = -6f;
+                                    }
+                                }
+
+                                if (leaderDist < 50f)
+                                {
+                                    if (Math.Abs(NPC.velocity.X) > 2f || Math.Abs(NPC.velocity.Y) > 2f)
+                                    {
+                                        NPC.velocity *= 0.99f;
+                                    }
+                                    passiveMvtFloat = 0.01f;
+                                }
+                                else
+                                {
+                                    if (leaderDist < 100f)
+                                    {
+                                        passiveMvtFloat = 0.1f;
+                                    }
+                                    if (leaderDist > 300f)
+                                    {
+                                        passiveMvtFloat = 1f;
+                                    }
+                                    leaderDist = returnSpeed / leaderDist;
+                                    leaderVector.X *= leaderDist;
+                                    leaderVector.Y *= leaderDist;
+                                }
+                                if (NPC.velocity.X < leaderVector.X)
+                                {
+                                    NPC.velocity.X += passiveMvtFloat;
+                                    if (passiveMvtFloat > 0.05f && NPC.velocity.X < 0f)
+                                    {
+                                        NPC.velocity.X += passiveMvtFloat;
+                                    }
+                                }
+                                if (NPC.velocity.X > leaderVector.X)
+                                {
+                                    NPC.velocity.X -= passiveMvtFloat;
+                                    if (passiveMvtFloat > 0.05f && NPC.velocity.X > 0f)
+                                    {
+                                        NPC.velocity.X -= passiveMvtFloat;
+                                    }
+                                }
+                                if (NPC.velocity.Y < leaderVector.Y)
+                                {
+                                    NPC.velocity.Y += passiveMvtFloat;
+                                    if (passiveMvtFloat > 0.05f && NPC.velocity.Y < 0f)
+                                    {
+                                        NPC.velocity.Y += passiveMvtFloat * 2f;
+                                    }
+                                }
+                                if (NPC.velocity.Y > leaderVector.Y)
+                                {
+                                    NPC.velocity.Y -= passiveMvtFloat;
+                                    if (passiveMvtFloat > 0.05f && NPC.velocity.Y > 0f)
+                                    {
+                                        NPC.velocity.Y -= passiveMvtFloat * 2f;
+                                    }
+                                }
+                                if (NPC.velocity.X >= 0.25f)
+                                {
+                                    NPC.direction = -1;
+                                }
+                                else if (NPC.velocity.X < -0.25f)
+                                {
+                                    NPC.direction = 1;
+                                }
+                                NPC.spriteDirection = -NPC.direction;
+                            }
+
                             float SAImovement = 0.2f;
                             for (int k = 0; k < Main.maxNPCs; k++)
                             {
@@ -301,7 +398,7 @@ namespace CalamityMod.NPCs.SunkenSea
                                     continue;
 
                                 float taxicabDist = Math.Abs(NPC.position.X - otherFish.position.X) + Math.Abs(NPC.position.Y - otherFish.position.Y);
-                                if (taxicabDist < NPC.width * 2f)
+                                if (taxicabDist < NPC.width)
                                 {
                                     if (NPC.position.X < otherFish.position.X)
                                         NPC.velocity.X -= SAImovement;
@@ -314,12 +411,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                         NPC.velocity.Y += SAImovement;
                                 }
                             }
-
-                            if (!owner.active)
-                                return;
-
-                            if (NPC.Distance(owner.Center) > 20)
-                                pathfinding.DoPathfinding(new(NPC.Center, owner.Center, SunkenSeaTileValidity));
                         }
                         break;
                     // Run from predators, attempting to find crystals to camo in
@@ -462,9 +553,29 @@ namespace CalamityMod.NPCs.SunkenSea
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
                 dust.color *= 0.5f;
+                dust.noLight = true;
             }
 
-                if (CurrentColor == (int)FishColor.Gold)
+            Color c = Color.White;
+
+            switch (CurrentColor)
+            {
+                case 0:
+                    c = Color.SkyBlue;
+                    break;
+                case 1:
+                    c = Color.SeaGreen;
+                    break;
+                case 2:
+                    c = Color.Pink;
+                    break;
+                case 4:
+                    c = Color.Cyan;
+                    break;
+            }
+            Lighting.AddLight(NPC.Center, c.R / 255f, c.G / 255f, c.B / 255f);
+
+            if (CurrentColor == (int)FishColor.Gold)
             {
                 NPC.rarity = 3;
                 NPC.value = 100000;
@@ -519,7 +630,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (spawnInfo.Player.Calamity().ZoneGleamingBurrows || spawnInfo.Player.Calamity().ZoneClamDen)
                     return SpawnCondition.CaveJellyfish.Chance * 0.2f;
                 if (spawnInfo.Player.Calamity().ZonePolypForest)
-                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+                    return SpawnCondition.CaveJellyfish.Chance * 0.1f;
             }
             return 0f;
         }

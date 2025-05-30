@@ -55,8 +55,8 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             expertPlus.Add(ModContent.ItemType<EssenceofEleum>(), 1, 1, 3);
             expertPlus.Add(ModContent.ItemType<EssenceofSunlight>(), 1, 1, 3);
             expertPlus.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 1, 3);
-            normalOnly.Add(ModContent.ItemType<LifeAlloy>(), 2);
-            normalOnly.Add(ModContent.ItemType<CoreofCalamity>(), 3);
+            expertPlus.Add(ModContent.ItemType<LifeAlloy>(), 2);
+            expertPlus.Add(ModContent.ItemType<CoreofCalamity>(), 3);
         }
     }
 }

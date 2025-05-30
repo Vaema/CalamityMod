@@ -12,6 +12,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.ForegroundDrawing.LoopingTextures
 {
+    public class NuclearTorrentPlayer : ModPlayer
+    {
+        public bool ShouldDisplayTorrentMonolith = false;
+        public override void ResetEffects()
+        {
+            ShouldDisplayTorrentMonolith = false;
+        }
+    }
     public class NuclearTorrentForeground : LoopingTextureForeground
     {
         public override Vector2 ParallaxDepth => new Vector2(1f, 1f);
@@ -59,7 +67,9 @@ namespace CalamityMod.ForegroundDrawing.LoopingTextures
             Raindrops.Remove(drop);
         }
 
-        public override bool DoesThisShow() => NPC.CountNPCS(ModContent.NPCType<OldDuke>()) > 0 && Main.LocalPlayer.Calamity().ZoneSulphur && !CalamityServerConfig.Instance.BossesStopWeather;
+        public bool ShouldDisplayDuringOldDuke() => NPC.CountNPCS(ModContent.NPCType<OldDuke>()) > 0 && Main.LocalPlayer.Calamity().ZoneSulphur && !CalamityServerConfig.Instance.BossesStopWeather;
+
+        public override bool DoesThisShow() => ShouldDisplayDuringOldDuke() || Main.LocalPlayer.GetModPlayer<NuclearTorrentPlayer>().ShouldDisplayTorrentMonolith;
 
         public override void Update()
         {

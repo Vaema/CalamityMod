@@ -427,6 +427,8 @@ namespace CalamityMod.NPCs.Perforator
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int maxProjectiles = 3;
+                        Vector2 dustSpawnBox = new Vector2(12f, 12f);
+                        Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
                         for (int i = 0; i < maxProjectiles; i++)
                         {
                             bool ichor = Main.rand.NextBool();
@@ -446,8 +448,7 @@ namespace CalamityMod.NPCs.Perforator
                             {
                                 for (int j = 0; j < 4; j++)
                                 {
-                                    int ichorDust = Dust.NewDust(NPC.Center, 1, 1, DustID.Ichor);
-                                    Main.dust[ichorDust].position = randomizedProjectileSpawnLocation;
+                                    int ichorDust = Dust.NewDust(randomizedProjectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Ichor);
                                     Main.dust[ichorDust].velocity = dustVelocity;
                                 }
                             }
@@ -455,8 +456,7 @@ namespace CalamityMod.NPCs.Perforator
                             {
                                 for (int j = 0; j < 4; j++)
                                 {
-                                    int bloodDust = Dust.NewDust(NPC.Center, 1, 1, DustID.Blood);
-                                    Main.dust[bloodDust].position = randomizedProjectileSpawnLocation;
+                                    int bloodDust = Dust.NewDust(randomizedProjectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Blood);
                                     Main.dust[bloodDust].velocity = dustVelocity;
                                     Main.dust[bloodDust].scale = 2f;
                                 }
@@ -488,6 +488,8 @@ namespace CalamityMod.NPCs.Perforator
                     Vector2 destination = wormsAlive > 0 ? player.Center : NPC.Center - Vector2.UnitY * 100f;
                     Vector2 projectileVelocity = new Vector2(Vector2.Normalize(destination - NPC.Center).X * velocity, -velocity);
                     float rotation = MathHelper.ToRadians(spread);
+                    Vector2 dustSpawnBox = new Vector2(12f, 12f);
+                    Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
                     for (int i = 0; i < numProj; i++)
                     {
                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -505,8 +507,7 @@ namespace CalamityMod.NPCs.Perforator
                         {
                             for (int j = 0; j < 4; j++)
                             {
-                                int ichorDust = Dust.NewDust(NPC.Center, 1, 1, DustID.Ichor);
-                                Main.dust[ichorDust].position = projectileSpawnLocation;
+                                int ichorDust = Dust.NewDust(projectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Ichor);
                                 Main.dust[ichorDust].velocity = dustVelocity;
                             }
                         }
@@ -514,8 +515,7 @@ namespace CalamityMod.NPCs.Perforator
                         {
                             for (int j = 0; j < 4; j++)
                             {
-                                int bloodDust = Dust.NewDust(NPC.Center, 1, 1, DustID.Blood);
-                                Main.dust[bloodDust].position = projectileSpawnLocation;
+                                int bloodDust = Dust.NewDust(projectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Blood);
                                 Main.dust[bloodDust].velocity = dustVelocity;
                                 Main.dust[bloodDust].scale = 2f;
                             }

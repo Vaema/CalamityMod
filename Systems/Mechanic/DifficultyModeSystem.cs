@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Armor.Demonshade;
@@ -11,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -41,13 +43,15 @@ namespace CalamityMod.Systems
             Difficulties = null;
         }
 
-        // Makes the world automatically convert to Death if in Master, or out of Death if not in Master
+        // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
-            if (!Main.masterMode && CalamityWorld.death)
-                ModeIndicatorUI.SwitchToDifficulty(new RevengeanceDifficulty());
-            if (Main.masterMode && CalamityWorld.revenge)
-                ModeIndicatorUI.SwitchToDifficulty(new DeathDifficulty());
+            if (!Main.expertMode)
+                ModeIndicatorUI.SwitchToDifficulty(NoDifficulty.Instance);
+            if (Main.expertMode && !Main.masterMode && GetCurrentDifficulty == DeathDifficulty.Instance)
+                ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
+            if (Main.masterMode && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
+                ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
         }
 
         public static DifficultyMode GetCurrentDifficulty
@@ -192,7 +196,10 @@ namespace CalamityMod.Systems
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
             ChatTextColor = Color.White;
+            Instance = this;
         }
+
+        public static NoDifficulty Instance { get; private set; } = null;
     }
 
     public class RevengeanceDifficulty : DifficultyMode
@@ -237,7 +244,10 @@ namespace CalamityMod.Systems
             ActivationSound = SoundID.Item119;
 
             ChatTextColor = Color.Crimson;
+            Instance = this;
         }
+
+        public static RevengeanceDifficulty Instance { get; private set; } = null;
     }
 
     public class DeathDifficulty : DifficultyMode
@@ -274,6 +284,7 @@ namespace CalamityMod.Systems
             ActivationSound = DemonshadeHelm.ActivationSound;
 
             ChatTextColor = Color.MediumOrchid;
+            Instance = this;
         }
 
         public override int FavoredDifficultyAtTier(int tier)
@@ -288,5 +299,6 @@ namespace CalamityMod.Systems
 
             return 0;
         }
+        public static DeathDifficulty Instance { get; private set; } = null;
     }
 }

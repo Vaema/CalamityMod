@@ -59,6 +59,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 20;
             NPC.width = 88;
@@ -68,7 +69,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 8, 0) : Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.DeathSound = SoundID.NPCDeath27;
             NPC.knockBackResist = 0.15f;
@@ -79,7 +80,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
 
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
@@ -239,7 +239,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if ((spawnInfo.Player.Calamity().ZoneRadiantReefs || spawnInfo.Player.Calamity().ZoneGleamingBurrows) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+                return SpawnCondition.CaveJellyfish.Chance * 0.7f;
             }
             return 0f;
         }

@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 1;
             Item.damage = 75;
             Item.DamageType = RogueDamageClass.Instance;
+            Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useTime = 15;
