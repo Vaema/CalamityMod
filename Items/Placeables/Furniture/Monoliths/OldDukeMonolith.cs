@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Furniture.Monoliths;
+﻿using CalamityMod.ForegroundDrawing.LoopingTextures;
+using CalamityMod.Tiles.Furniture.Monoliths;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,14 +21,14 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                player.Calamity().monolithCryogenShader = 30;
+                player.GetModPlayer<NuclearTorrentPlayer>().ShouldDisplayTorrentMonolith = true;
             }
         }
         public override void UpdateVanity(Player player)
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                player.Calamity().monolithCryogenShader = 30;
+                player.GetModPlayer<NuclearTorrentPlayer>().ShouldDisplayTorrentMonolith = true;
             }
         }
     }

@@ -68,20 +68,5 @@ namespace CalamityMod.Tiles.Furniture.Monoliths
                 localPlayer.GetModPlayer<NuclearTorrentPlayer>().ShouldDisplayTorrentMonolith = true;
             }
         }
-
-        public override void DrawExtra(Vector2 drawPos, Rectangle rect, Color tileColor)
-        {
-            /*
-            if (Numbers != null)
-            {
-                int colorIndex = (int)(Main.GlobalTimeWrappedHourly / 0.5 % CalamityUtils.ExoPalette.Length);
-                Color currentColor = CalamityUtils.ExoPalette[colorIndex];
-                Color nextColor = CalamityUtils.ExoPalette[(colorIndex + 1) % CalamityUtils.ExoPalette.Length];
-                Color exoColors = Color.Lerp(currentColor, nextColor, Main.GlobalTimeWrappedHourly % 0.5f > 1f ? 1f : Main.GlobalTimeWrappedHourly % 1f);
-
-                Main.spriteBatch.Draw(Numbers.Value, drawPos, rect, exoColors, 0f, default, 1f, SpriteEffects.None, 0f);
-            }
-            */
-        }
     }
 }
