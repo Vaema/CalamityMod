@@ -1004,11 +1004,11 @@ namespace CalamityMod.NPCs
             //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
             if (IncreasedDebuffEffects_Amalgam)
             {            
-                heatDamageMult += 3;
-                coldDamageMult += 3;
-                waterDamageMult += 3;
-                sicknessDamageMult += 3;
-                electricityDamageMult += 3;
+                heatDamageMult += 2;
+                coldDamageMult += 2;
+                waterDamageMult += 2;
+                sicknessDamageMult += 2;
+                electricityDamageMult += 2;
             }
 
             // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
