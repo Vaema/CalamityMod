@@ -327,6 +327,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatBlackNames =
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
+            "Storm", // <@!620383533516718085> (airwaveslr)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
