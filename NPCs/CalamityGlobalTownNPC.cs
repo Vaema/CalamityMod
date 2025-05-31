@@ -122,6 +122,7 @@ namespace CalamityMod.NPCs
             "Him", // <@!931019614958256139> (himtheguy1)
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
+            "Bars Boldia", // <@!332989575708540939> (careless_imp)
         };
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
