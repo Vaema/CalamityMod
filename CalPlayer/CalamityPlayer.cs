@@ -3791,6 +3791,17 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
+            if (victideBurrowSet && !Player.HasCooldown(BubblyBurrow.ID))
+            {
+                SoundEngine.PlaySound(SoundID.Item154, Player.Center);
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    Player.AddCooldown(BubblyBurrow.ID, VictideHeadBurrow.BurrowCooldown + VictideHeadBurrow.BurrowDuration);
+
+                    var source = Player.GetSource_Misc("1");
+                    Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<VictideSpirit>(), 0, 0f, Player.whoAmI);
+                }
+            }
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
                 if (Player.whoAmI == Main.myPlayer)

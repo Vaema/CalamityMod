@@ -829,6 +829,10 @@ namespace CalamityMod.Items
             if (PopupGUIManager.AnyGUIsActive)
                 return false;
 
+            // Can't use anything while burrowing
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
+                return false;
+
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
                 (item.damage > 0 || item.ammo != AmmoID.None))
             {

@@ -86,6 +86,8 @@ Cooldowns: {
 	BloodflareFrenzy: Blood Frenzy Cooldown
 	BloodflareRangedSet: Bloodflare Soul Cooldown
 	BrimflameFrenzy: Brimflame Frenzy Cooldown
+	BubblyBurrowActive: Bubbly Burrow
+	BubblyBurrowCooldown: Bubbly Burrow Cooldown
 	ChaosState: Teleportation Cooldown
 	DivineBless: Divine Bless Cooldown
 	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability

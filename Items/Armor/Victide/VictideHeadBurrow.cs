@@ -14,10 +14,12 @@ namespace CalamityMod.Items.Armor.Victide
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
         public static float MoveSpeedAccelerationBoost = 0.15f;
-        public static float BaseBurrowSpeed = 8f; // 41 mph
-        public static float BurrowSpeedSubmergeMultiplier = 1.5f;
-        public static int BurrowDuration = CalamityUtils.SecondsToFrames(6);
-        public static int BurrowCooldown = CalamityUtils.SecondsToFrames(30);
+        public static float BaseBurrowSpeed = 9f; // 46 mph
+        public static float SubmergedBurrowSpeed = 12f; // 61 mph
+        public static float BaseAcceleration = 0.4f; // For reference, base player running acceleration is 0.08
+        public static int BurrowDuration = CalamityUtils.SecondsToFrames(8);
+        // this should be 30 seconds. its just 1 right now for rapid testing. if this stays at 1 second by the time i make a pr of this please yell at me
+        public static int BurrowCooldown = CalamityUtils.SecondsToFrames(1);
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedAccelerationBoost.ToPercent());
 

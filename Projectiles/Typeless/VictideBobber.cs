@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
             Vector2 originalPos = Owner.MountedCenter + Vector2.UnitY * (Owner.gfxOffY - (Owner.gravDir == -1 ? 12f : 0f));
 
             if (Parent.active)
-                lineOriginOffset = Parent.Center - originalPos + Vector2.UnitY * 10f;
+                lineOriginOffset = Parent.Center - originalPos + Vector2.UnitY * 12f;
 
             // How this is a thing is beyond me
             if (Owner.direction == -1)

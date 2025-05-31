@@ -270,6 +270,7 @@ VictideHeadSnail: {
 		'''
 		Summons a sea snail to fish alongside you
 		It automatically casts and reels while you are standing still and fishing
+		Fishing stats are inherited from its owner
 		'''
 }
 
