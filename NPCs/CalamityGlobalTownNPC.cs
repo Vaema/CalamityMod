@@ -100,6 +100,7 @@ namespace CalamityMod.NPCs
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
             "Fimmy", // <@!407348617079160832> (darkmega5)
             "Dorira", // <@!215269032360804352> (crimsoncb)
+            "John Helldiver", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] DryadNames =
         {
@@ -143,7 +144,6 @@ namespace CalamityMod.NPCs
             "Alfred Rend", // <@!606301806481375255> (deadsqurp300)
             "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
-            "Cooler Kevin", // <@!614126424751603714> (exellent.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
             "Wamy",
         };
