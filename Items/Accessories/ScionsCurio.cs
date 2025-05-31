@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.scionsCurio = true;
+            modPlayer.scionsCurioVisuals = !hideVisual;
 
             if (player.ownedProjectileCounts[ProjectileType<ScionsCurioMini>()] < 1 && !player.dead)
             {

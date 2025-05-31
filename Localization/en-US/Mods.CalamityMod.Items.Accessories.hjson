@@ -1559,9 +1559,9 @@ ScionsCurio: {
 	Tooltip:
 		'''
 		Ranged hits increase the effectiveness of the Irradiated debuff
-		This effectiveness is based on your ranged damage and crit chance
-		On kill enemies burst, spreading Irradiated to nearby enemies
-		Taking damage causes the curio to explode ion retaliation
+		Irradiated damage over time scales off of your ranged damage and crit chance
+		On kill, enemies burst, spreading Irradiated
+		Taking damage causes the curio to explode in retaliation
 		'''
 }
 

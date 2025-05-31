@@ -1025,6 +1025,7 @@ namespace CalamityMod.CalPlayer
         public bool corrosiveSpine = false;
         public bool scionsCurio = false;
         public bool scionsCurioGotHit = false;
+        public bool scionsCurioVisuals = false;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;

@@ -1924,7 +1924,8 @@ namespace CalamityMod.CalPlayer
                 ShieldoftheOcean.ActivateParry(Player);
             }
 
-            scionsCurioGotHit = true;
+            if (Player.Calamity().scionsCurio)
+                scionsCurioGotHit = true;
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
