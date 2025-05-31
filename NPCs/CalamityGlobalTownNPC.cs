@@ -158,6 +158,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] MerchantNames =
         {
             "Morshu", // <@!194931581826236416> (uberransy)
+            "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
         };
         private static readonly string[] NurseNames =
         {
