@@ -245,6 +245,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TruffleNames =
         {
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
+            "Wonton", // <@!1198092982923043040> (imonthatgudkush)
         };
         private static readonly string[] WitchDoctorNames =
         {
