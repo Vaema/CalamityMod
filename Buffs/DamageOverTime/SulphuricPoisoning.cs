@@ -33,10 +33,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().sulphurPoison < npc.buffTime[buffIndex])
-                npc.Calamity().sulphurPoison = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().sulphurPoison = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

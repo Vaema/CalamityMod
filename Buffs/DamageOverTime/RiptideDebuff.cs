@@ -18,15 +18,12 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().rTide = true;
+            player.Calamity().riptide = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().rTide < npc.buffTime[buffIndex])
-                npc.Calamity().rTide = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+                npc.Calamity().riptide = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

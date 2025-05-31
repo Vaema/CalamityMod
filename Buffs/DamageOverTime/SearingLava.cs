@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().cragsLava = true;
+            player.Calamity().searingLava = true;
         }
     }
 }

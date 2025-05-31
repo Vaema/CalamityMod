@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Boss
                 target.AddBuff(BuffID.Frostburn, 180, true);
                 target.AddBuff(BuffID.Chilled, 90, true);
 
-                if (!target.Calamity().gState)
+                if (!target.Calamity().glacialState)
                     target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             }
         }

@@ -19,15 +19,12 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().bBlood = true;
+            player.Calamity().burningBlood = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().bBlood < npc.buffTime[buffIndex])
-                npc.Calamity().bBlood = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().burningBlood = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

@@ -152,6 +152,21 @@ namespace CalamityMod.NPCs
         public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
         public const double ResistantToDoTDamageMult = 0.5;
 
+        public float TypelessDebuffMultiplier = 1;
+        public float HeatDebuffMultiplier = 1;
+        public float ColdDebuffMultiplier = 1;
+        public float SicknessDebuffMultiplier = 1;
+        public float WaterDebuffMultiplier = 1;
+        public float ElectricDebuffMultiplier = 1;
+
+        // These are all recalculated constantly, while the regular ones are recalulated only on hit
+        public double ActiveTypelessDebuffMultiplier = 1;
+        public double ActiveHeatDebuffMultiplier = 1;
+        public double ActiveColdDebuffMultiplier = 1;
+        public double ActiveSicknessDebuffMultiplier = 1;
+        public double ActiveWaterDebuffMultiplier = 1;
+        public double ActiveElectricDebuffMultiplier = 1;
+
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
         public bool IncreasedColdEffects_CryoStone = false;
@@ -288,17 +303,17 @@ namespace CalamityMod.NPCs
         /// <summary> Tracks the current slowing debuff cooldown for this NPC. </summary>
         public int debuffResistanceTimer = 0;
 
-        // Debuffs
-        public int vaporfied = 0;
-        public int timeSlow = 0;
-        public int gState = 0;
-        public int tesla = 0;
-        public int tSad = 0;
-        public int eutrophication = 0;
-        public int webbed = 0;
-        public int slowed = 0;
-        public int electrified = 0;
-        public int pearlAura = 0;
+        #region Debuffs
+        public bool vaporfied = false;
+        public bool timeDistortion = false;
+        public bool glacialState = false;
+        public bool galvanicCorrosion = false;
+        public bool temporalSadness = false;
+        public bool eutrophication = false;
+        public bool webbed = false;
+        public bool slowed = false;
+        public bool electrified = false;
+        public bool pearlAura = false;
         /// <summary>
         /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
         /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
@@ -309,23 +324,22 @@ namespace CalamityMod.NPCs
         /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
         /// </summary>
         public int pearlAuraOwner = -1;
-        public int bBlood = 0;
-        public int brainRot = 0;
-        public int heavybleeding = 0;
-        public int laceration = 0;
-        public int elementalMix = 0;
-        public int marked = 0;
-        public int absorberAffliction = 0;
-        public int irradiated = 0;
+        public bool burningBlood = false;
+        public bool brainRot = false;
+        public bool heavyBleeding = false;
+        public bool laceration = false;
+        public bool elementalMix = false;
+        public bool markedForDeath = false;
+        public bool absorberAffliction = false;
+        public bool irradiated = false;
         public double irradiatedContactBoost = 1.5;
-        public int bFlames = 0;
-        public int demonicFlames = 0;
+        public bool brimstoneFlames = false;
+        public bool demonicFlames = false;
         public int demonicFlamesBonusDamage = 0;
-        public int hFlames = 0;
-        /// <summary> Plague debuff. </summary>
-        public int pFlames = 0;
-        public int aCrunch = 0;
-        public int crumble = 0;
+        public bool holyFlames = false;
+        public bool plague = false;
+        public bool armorCrunch = false;
+        public bool crumble = false;
 
         public int antlionCloudDebuffTimer = 0;
         public bool scionsCurioEffected = false;
@@ -385,40 +399,41 @@ namespace CalamityMod.NPCs
         /// <summary> Counter used for removing stacks of Shred. The number of stacks is subtracted every frame, and when it hits zero, it is reset and one stack is removed. </summary>
         public int somaShredFalloff = Shred.StackFalloffFrames;
 
-        public int cDepth = 0;
-        public int rTide = 0;
-        public int hPressure = 0;
-        public int gsInferno = 0;
-        public int dragonFire = 0;
-        public int vermillionFlux = 0;
-        public int auricRebuke = 0;
-        public int staticDischarge = 0;
-        public int miracleBlight = 0;
-        public int astralInfection = 0;
-        public int wDeath = 0;
-        public int nightwither = 0;
+        public bool crushDepth = false;
+        public bool riptide = false;
+        public bool hadopelagicPressure = false;
+        public bool godSlayerInferno = false;
+        public bool dragonFire = false;
+        public bool vermillionFlux = false;
+        public bool auricRebuke = false;
+        public bool staticDischarge = false;
+        public bool miracleBlight = false;
+        public bool astralInfection = false;
+        public bool whisperingDeath = false;
+        public bool nightwither = false;
         /// <summary> If greater than 0, this NPC has been "shocked" by Ilmeris' Spark's on hurt effect. </summary>
         public int shocked = 0;
-        public int voidfrost = 0;
-        public int shellfishVore = 0;
-        public int clamDebuff = 0;
-        public int sulphurPoison = 0;
+        public bool voidfrost = false;
+        public bool shellfishStaffDebuff = false;
+        public bool snapClamDebuff = false;
+        public bool sulphurPoison = false;
         /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
-        public int relicOfResilienceWeakness = 0;
+        public bool relicOfResilienceWeakness = false;
         /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
         public int GaussFluxTimer = 0;
-        public int sagePoisonTime = 0;
+        public bool sagePoison = false;
         public int sagePoisonDamage = 0;
-        public int vulnerabilityHex = 0;
-        public int trueVulnerabilityHex = 0;
-        public int banishingFire = 0;
-        public int wither = 0;
+        public bool vulnerabilityHex = false;
+        public bool trueVulnerabilityHex = false;
+        public bool banishingFire = false;
+        public bool wither = false;
         /// <summary>
         /// If greater than 0, this enemy will appear to disintegrate into ash when killed.<br/>
         /// Used by Rancor's laser beam.
         /// </summary>
         public int ashesOnDeath = 0;
+        #endregion
 
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
@@ -587,31 +602,31 @@ namespace CalamityMod.NPCs
             myClone.debuffResistanceTimer = debuffResistanceTimer;
 
             myClone.vaporfied = vaporfied;
-            myClone.timeSlow = timeSlow;
-            myClone.gState = gState;
-            myClone.tesla = tesla;
-            myClone.tSad = tSad;
+            myClone.timeDistortion = timeDistortion;
+            myClone.glacialState = glacialState;
+            myClone.galvanicCorrosion = galvanicCorrosion;
+            myClone.temporalSadness = temporalSadness;
             myClone.eutrophication = eutrophication;
             myClone.webbed = webbed;
             myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
             myClone.pearlAuraCounter = pearlAuraCounter;
-            myClone.bBlood = bBlood;
+            myClone.burningBlood = burningBlood;
             myClone.brainRot = brainRot;
-            myClone.heavybleeding = heavybleeding;
+            myClone.heavyBleeding = heavyBleeding;
             myClone.laceration = laceration;
             myClone.elementalMix = elementalMix;
-            myClone.marked = marked;
+            myClone.markedForDeath = markedForDeath;
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
             myClone.irradiatedContactBoost = irradiatedContactBoost;
-            myClone.bFlames = bFlames;
+            myClone.brimstoneFlames = brimstoneFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
-            myClone.hFlames = hFlames;
-            myClone.pFlames = pFlames;
-            myClone.aCrunch = aCrunch;
+            myClone.holyFlames = holyFlames;
+            myClone.plague = plague;
+            myClone.armorCrunch = armorCrunch;
             myClone.crumble = crumble;
 
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
@@ -646,27 +661,27 @@ namespace CalamityMod.NPCs
             myClone.somaShredApplicator = somaShredApplicator;
             myClone.somaShredFalloff = somaShredFalloff;
 
-            myClone.cDepth = cDepth;
-            myClone.rTide = rTide;
-            myClone.hPressure = hPressure;
-            myClone.gsInferno = gsInferno;
+            myClone.crushDepth = crushDepth;
+            myClone.riptide = riptide;
+            myClone.hadopelagicPressure = hadopelagicPressure;
+            myClone.godSlayerInferno = godSlayerInferno;
             myClone.miracleBlight = miracleBlight;
             myClone.dragonFire = dragonFire;
             myClone.vermillionFlux = vermillionFlux;
             myClone.auricRebuke = auricRebuke;
             myClone.staticDischarge = staticDischarge;
             myClone.astralInfection = astralInfection;
-            myClone.wDeath = wDeath;
+            myClone.whisperingDeath = whisperingDeath;
             myClone.nightwither = nightwither;
             myClone.shocked = shocked;
             myClone.voidfrost = voidfrost;
-            myClone.shellfishVore = shellfishVore;
-            myClone.clamDebuff = clamDebuff;
+            myClone.shellfishStaffDebuff = shellfishStaffDebuff;
+            myClone.snapClamDebuff = snapClamDebuff;
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
             myClone.GaussFluxTimer = GaussFluxTimer;
-            myClone.sagePoisonTime = sagePoisonTime;
+            myClone.sagePoison = sagePoison;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
             myClone.trueVulnerabilityHex = trueVulnerabilityHex;
@@ -844,7 +859,7 @@ namespace CalamityMod.NPCs
             }
 
             // Shellfish Staff (and Mollusk armor) debuff stacking
-            if (shellfishVore > 0)
+            if (shellfishStaffDebuff)
             {
                 int projectileCount = 0;
                 int owner = 255;
@@ -874,7 +889,7 @@ namespace CalamityMod.NPCs
             }
 
             // Snap Clam debuff stacking
-            if (clamDebuff > 0)
+            if (snapClamDebuff)
             {
                 int projectileCount = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
@@ -892,7 +907,7 @@ namespace CalamityMod.NPCs
             }
 
             // Parasitic Scepter debuff stacking
-            if (irradiated > 0)
+            if (irradiated)
             {
                 int projectileCount = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
@@ -933,409 +948,185 @@ namespace CalamityMod.NPCs
             bool wormBoss = DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type) ||
                 AquaticScourgeIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type);
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
-
-            bool slimed = npc.drippingSlime || npc.drippingSparkleSlime;
-            bool wetReducedEffectiveness = npc.wet || npc.honeyWet || npc.dripping;
-            double heatDamageMult = slimed ? ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
-            if (wetReducedEffectiveness)
-                heatDamageMult *= wormBoss || slimeGod ? 0.66 : ResistantToDoTDamageMult;
+            ActiveHeatDebuffMultiplier = BaseDoTDamageMult;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 1.25 : 1.5) : ((wormBoss || slimeGod) ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
+                    ActiveHeatDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    heatDamageMult *= slimed ? ((wormBoss || slimeGod) ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
+                    ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            double coldDamageMult = BaseDoTDamageMult;
+            ActiveColdDebuffMultiplier = BaseDoTDamageMult;
             if (VulnerableToCold.HasValue)
             {
                 if (VulnerableToCold.Value)
-                    coldDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                    ActiveColdDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    coldDamageMult *= ResistantToDoTDamageMult;
+                    ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            double sicknessDamageMult = BaseDoTDamageMult;
+            ActiveSicknessDebuffMultiplier = BaseDoTDamageMult;
             if (VulnerableToSickness.HasValue)
             {
                 if (VulnerableToSickness.Value)
-                    sicknessDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                    ActiveSicknessDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    sicknessDamageMult *= ResistantToDoTDamageMult;
+                    ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
             }
-            bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
-            double electricityDamageMult = increasedElectricityDamage ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            ActiveElectricDebuffMultiplier = BaseDoTDamageMult;
             if (VulnerableToElectricity.HasValue)
             {
                 if (VulnerableToElectricity.Value)
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
+                    ActiveElectricDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
+                    ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
             }
-            double waterDamageMult = BaseDoTDamageMult;
+            ActiveWaterDebuffMultiplier = BaseDoTDamageMult;
             if (VulnerableToWater.HasValue)
             {
                 if (VulnerableToWater.Value)
-                    waterDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                    ActiveWaterDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    waterDamageMult *= ResistantToDoTDamageMult;
+                    ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            if (IncreasedColdEffects_EskimoSet)
-                coldDamageMult += 0.25;
-            if (IncreasedColdEffects_CryoStone)
-                coldDamageMult += 0.5;
+            ActiveHeatDebuffMultiplier += HeatDebuffMultiplier;
+            ActiveColdDebuffMultiplier += ColdDebuffMultiplier;
+            ActiveSicknessDebuffMultiplier += SicknessDebuffMultiplier;
+            ActiveWaterDebuffMultiplier += WaterDebuffMultiplier;
+            ActiveElectricDebuffMultiplier += ElectricDebuffMultiplier;
 
-            if (IncreasedElectricityEffects_Unused)
-                electricityDamageMult += 0.5;
-
-            if (IncreasedHeatEffects_Fireball)
-                heatDamageMult += Fireball.HeatDebuffBoost;
-            if (IncreasedHeatEffects_FireBoots > 0)
-                heatDamageMult += 0.25 * IncreasedHeatEffects_FireBoots;
-            if (IncreasedHeatEffects_CinnamonRoll)
-                heatDamageMult += CinnamonRoll.HeatDebuffBoost;
-
-            if (IncreasedSicknessEffects_ToxicHeart)
-                sicknessDamageMult += 0.5;
-
-            if (IncreasedWaterEffects_Amulet1)
-                waterDamageMult += 0.35;
-            if (IncreasedWaterEffects_Amulet2)
-                waterDamageMult += 0.75;
-
-            if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
-            {
-                sicknessDamageMult += 0.25;
-                waterDamageMult += 0.25;
-            }
-            if (IncreasedSicknessAndWaterEffects_EvergreenGin)
-            {
-                sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
-                waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
-            }
-
-            if (irradiated > 0)
+            if (irradiated)
             {
                 double irradiatedBoost = scionsCurioEffected ? 1.75 : 1;
-                sicknessDamageMult += irradiatedBoost;
+                ActiveSicknessDebuffMultiplier += irradiatedBoost;
             }
 
-            //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
-            if (IncreasedDebuffEffects_Amalgam)
-            {            
-                heatDamageMult += 3.5;
-                coldDamageMult += 3.5;
-                waterDamageMult += 3.5;
-                sicknessDamageMult += 3.5;
-                electricityDamageMult += 3.5;
+            if (npc.drippingSlime || npc.drippingSparkleSlime)
+            {
+                ActiveHeatDebuffMultiplier += 1;
             }
 
-            // Subtract 1 for the vanilla damage multiplier because it's already dealing DoT in the vanilla regen code.
-            double vanillaHeatDamageMult = heatDamageMult - BaseDoTDamageMult;
-            double vanillaColdDamageMult = coldDamageMult - BaseDoTDamageMult;
-            double vanillaSicknessDamageMult = sicknessDamageMult - BaseDoTDamageMult;
+            if (npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping)
+            {
+                ActiveElectricDebuffMultiplier += 1;
+            }
+
+            if (npc.wet || npc.honeyWet || npc.dripping)
+            {
+                ActiveColdDebuffMultiplier += 1;
+                ActiveHeatDebuffMultiplier -= 0.5f;
+            }
+            if (npc.HasBuff(BuffID.Chilled)) //Nothing inflicts this at the moment. Put here so we can start using it.
+            {
+                ActiveWaterDebuffMultiplier += 1;
+            }
             #endregion
 
             // Oiled
             bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
             bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
-            bool hasModHotOil = bFlames > 0 || demonicFlames > 0 || hFlames > 0 || gsInferno > 0 || dragonFire > 0 || banishingFire > 0 || vulnerabilityHex > 0;
-            if (npc.oiled && (hasColdOil || hasHotOil || hasModHotOil))
+            if (npc.oiled && (hasColdOil || hasHotOil))
             {
-                double multiplier = 1D;
-                if (hasColdOil)
-                    multiplier *= vanillaColdDamageMult;
-                if (hasHotOil || (hasModHotOil && hasColdOil))
-                    multiplier *= vanillaHeatDamageMult;
-                if (hasModHotOil && !hasColdOil && !hasHotOil)
-                    multiplier *= heatDamageMult;
-
-                int baseOiledDoTValue = (int)(50 * multiplier);
-                npc.lifeRegen -= baseOiledDoTValue;
-                if (damage < baseOiledDoTValue / 4)
-                    damage = baseOiledDoTValue / 4;
+                //npc.lifeRegen += 50; //This cancels out Vanilla oiled
             }
 
-            #region Cold Debuffs
-            // Frostburn
-            if (npc.onFrostBurn)
+            for (var index = 0; index < npc.buffType.Count(); index++)
             {
-                int baseFrostBurnDoTValue = (int)(16 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBurnDoTValue;
-                if (damage < baseFrostBurnDoTValue / 4)
-                    damage = baseFrostBurnDoTValue / 4;
+                var type = npc.buffType[index];
+                var debuffData = BuffDatasets.DebuffDataset[type];
+                if (debuffData == null)
+                    continue;
+                debuffData.NPCLifeRegenMethod(npc, type, ref index,ref damage);
             }
-
-            // Frostbite
-            if (npc.onFrostBurn2)
-            {
-                int baseFrostBiteDoTValue = (int)(50 * vanillaColdDamageMult);
-                npc.lifeRegen -= baseFrostBiteDoTValue;
-                if (damage < baseFrostBiteDoTValue / 4)
-                    damage = baseFrostBiteDoTValue / 4;
-            }
+            
 
             // Nightwither
-            if (nightwither > 0)
-            {
-                int baseNightwitherDoTValue = (int)(200 * coldDamageMult);
-                ApplyDPSDebuff(baseNightwitherDoTValue, baseNightwitherDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
+           //200 , /5
             // Voidfrost
-            if (voidfrost > 0)
-            {
-                int baseVoidfrostDoTValue = (int)(300 * coldDamageMult);
-                ApplyDPSDebuff(baseVoidfrostDoTValue, baseVoidfrostDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-            #endregion
-
-            #region Electricity Debuffs
+            //200, /5
+            
             // Static Discharge
-            if (staticDischarge > 0)
-            {
-                int baseStaticDischargeDoTValue = (int)(5 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 24 on moving targets
-                ApplyDPSDebuff(baseStaticDischargeDoTValue, baseStaticDischargeDoTValue / 15, ref npc.lifeRegen, ref damage);
-            }
-
-            // Electrified
-            if (electrified > 0)
-            {
-                int baseElectrifiedDoTValue = (int)(21 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 84 on moving targets
-                ApplyDPSDebuff(baseElectrifiedDoTValue, baseElectrifiedDoTValue / 22, ref npc.lifeRegen, ref damage);
-            }
+            //5 /15
 
             // Vermillion Flux
-            if (vermillionFlux > 0)
-            {
-                int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
-                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
-            }
+            //100 /40
 
             // Auric Rebuke
-            if (auricRebuke > 0)
-            {
-                int baseAuricRebukeDoTValue = (int)(200 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 800 on moving targets
-                ApplyDPSDebuff(baseAuricRebukeDoTValue, baseAuricRebukeDoTValue / 70, ref npc.lifeRegen, ref damage);
-            }
-            #endregion
-
-            #region Heat Debuffs
-            // On Fire
-            if (npc.onFire)
-            {
-                int baseOnFireDoTValue = (int)(12 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseOnFireDoTValue;
-                if (damage < baseOnFireDoTValue / 4)
-                    damage = baseOnFireDoTValue / 4;
-            }
-
-            // Hellfire
-            if (npc.onFire3)
-            {
-                int baseHellfireDoTValue = (int)(30 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseHellfireDoTValue;
-                if (damage < baseHellfireDoTValue / 4)
-                    damage = baseHellfireDoTValue / 4;
-            }
-
-            // Cursed Inferno
-            if (npc.onFire2)
-            {
-                int baseCursedInfernoDoTValue = (int)(48 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseCursedInfernoDoTValue;
-                if (damage < baseCursedInfernoDoTValue / 4)
-                    damage = baseCursedInfernoDoTValue / 4;
-            }
-
-            // Shadowflame
-            if (npc.shadowFlame)
-            {
-                int baseShadowFlameDoTValue = (int)(60 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseShadowFlameDoTValue;
-                if (damage < baseShadowFlameDoTValue / 4)
-                    damage = baseShadowFlameDoTValue / 4;
-            }
-
-            // Daybroken
-            // 18OCT2023: Ozzatron: im not gonna sugarcoat it
-            // vanilla debuff damage from Daybreak impales scales linearly up to 8 for 800 DPS
-            // instead of allowing this entire 800 DPS to be multiplied by heat weakness + heat DoT bonuses,
-            // each Daybreak spear beyond the first is only affected 25% as much by weaknesses or resistances.
-            // This also stops Daybreak's DPS from being utterly shafted by heat resistance.
-            // As no other weapon can stack Daybroken, this has no effect on other weapons (they count as "1 Daybreak spear")
-            if (npc.daybreak)
-            {
-                int numImpaledSpears = 0;
-                for (int k = 0; k < Main.maxProjectiles; k++)
-                {
-                    if (Main.projectile[k].active && Main.projectile[k].type == ProjectileID.Daybreak && Main.projectile[k].ai[0] == 1f && Main.projectile[k].ai[1] == npc.whoAmI)
-                        numImpaledSpears++;
-                }
-
-                // If there are no Daybreak impaled spears, Daybroken has 1x potency (it was applied some other way)
-                float daybrokenMultiplier = numImpaledSpears <= 1 ? 1f : (1f + 0.25f * (numImpaledSpears - 1));
-
-                int baseDaybreakDoTValue = (int)(daybrokenMultiplier * 2 * 100 * vanillaHeatDamageMult);
-                npc.lifeRegen -= baseDaybreakDoTValue;
-                if (damage < baseDaybreakDoTValue / 4)
-                    damage = baseDaybreakDoTValue / 4;
-            }
+            //200 /70
 
             // Brimstone Flames
-            if (bFlames > 0)
-            {
-                int baseBrimstoneFlamesDoTValue = (int)(60 * heatDamageMult);
-                ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //60 /5
 
             // Demonic Flames
             // An unresistable fire debuff that you can set the damage of when it is applied
             // This way it can be viable for multiple tiers
-            if (demonicFlames > 0)
+            if (demonicFlames)
             {
-                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(heatDamageMult, 1));
+                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(ActiveHeatDebuffMultiplier, 1));
                 ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
             }
 
             // Holy Flames
-            if (hFlames > 0)
-            {
-                int baseHolyFlamesDoTValue = (int)(300 * heatDamageMult);
-                ApplyDPSDebuff(baseHolyFlamesDoTValue, baseHolyFlamesDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //300 /5
 
             // God Slayer Inferno
-            if (gsInferno > 0)
-            {
-                int baseGodSlayerInfernoDoTValue = (int)(500 * heatDamageMult);
-                ApplyDPSDebuff(baseGodSlayerInfernoDoTValue, baseGodSlayerInfernoDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //500 /5
 
             // Dragonfire
-            if (dragonFire > 0)
-            {
-                int baseDragonFireDoTValue = (int)(960 * heatDamageMult);
-                ApplyDPSDebuff(baseDragonFireDoTValue, baseDragonFireDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //960 /5
 
             // Vulnerability Hex
-            if (vulnerabilityHex > 0)
-            {
-                int baseVulnerabilityHexDoTValue = (int)(VulnerabilityHex.DPS * heatDamageMult);
-                ApplyDPSDebuff(baseVulnerabilityHexDoTValue, VulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
-            }
+            //file
 
             // True Vulnerability Hex
-            if (trueVulnerabilityHex > 0)
-            {
-                int baseTrueVHexDoTValue = (int)(TrueVulnerabilityHex.DPS * heatDamageMult);
-                ApplyDPSDebuff(baseTrueVHexDoTValue, TrueVulnerabilityHex.TickNumber, ref npc.lifeRegen, ref damage);
-            }
+            //file
 
             // Banishing Fire
-            if (banishingFire > 0)
+            if (banishingFire)
             {
-                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * heatDamageMult);
+                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * ActiveHeatDebuffMultiplier);
                 ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
-            #endregion
+            
 
-            #region Sickness Debuffs
-            // Poisoned
-            if (npc.poisoned)
-            {
-                int basePoisonedDoTValue = (int)(12 * vanillaSicknessDamageMult);
-                npc.lifeRegen -= basePoisonedDoTValue;
-                if (damage < basePoisonedDoTValue / 4)
-                    damage = basePoisonedDoTValue / 4;
-            }
-
-            // Venom
-            if (npc.venom)
-            {
-                int baseVenomDoTValue = (int)(60 * vanillaSicknessDamageMult);
-                npc.lifeRegen -= baseVenomDoTValue;
-                if (damage < baseVenomDoTValue / 4)
-                    damage = baseVenomDoTValue / 4;
-            }
 
             // Burning Blood
-            if (bBlood > 0)
-            {
-                int baseBurningBloodDoTValue = (int)(40 * sicknessDamageMult);
-                ApplyDPSDebuff(baseBurningBloodDoTValue, baseBurningBloodDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //40 /5
 
             // Brain Rot
-            if (brainRot > 0)
-            {
-                int baseBrainRotDoTValue = (int)(40 * sicknessDamageMult);
-                ApplyDPSDebuff(baseBrainRotDoTValue, baseBrainRotDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //40 /5
 
             // Sage Poison
-            if (sagePoisonTime > 0)
+            if (sagePoison)
             {
                 // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
                 // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
+                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * ActiveSicknessDebuffMultiplier);
                 ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
             // Astral Infection
-            if (astralInfection > 0)
-            {
-                int baseAstralInfectionDoTValue = (int)(75 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAstralInfectionDoTValue, baseAstralInfectionDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //75 /5
 
             // Plague
-            if (pFlames > 0)
-            {
-                int basePlagueDoTValue = (int)(100 * sicknessDamageMult);
-                ApplyDPSDebuff(basePlagueDoTValue, basePlagueDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //100 /5
 
             // Sulphuric Poisoning
-            if (sulphurPoison > 0)
-            {
-                int baseSulphurPoisonDoTValue = (int)(240 * sicknessDamageMult);
-                ApplyDPSDebuff(baseSulphurPoisonDoTValue, baseSulphurPoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
+            //240 /5
 
             //Absorber Affliction
-            if (absorberAffliction > 0)
-            {
-                int baseAbsorberDoTValue = (int)(400 * sicknessDamageMult);
-                ApplyDPSDebuff(baseAbsorberDoTValue, baseAbsorberDoTValue / 65, ref npc.lifeRegen, ref damage);
-            }
-            #endregion
+            //400 /65
 
-            #region Water Debuffs
             // Riptide
-            if (rTide > 0)
-            {
-                int baseRiptideDoTValue = (int)(30 * waterDamageMult);
-                ApplyDPSDebuff(baseRiptideDoTValue, baseRiptideDoTValue / 3, ref npc.lifeRegen, ref damage);
-            }
+            //30 /3
 
             // Crush Depth
-            if (cDepth > 0)
-            {
-                int baseCrushDepthDoTValue = (int)(100 * waterDamageMult);
-                ApplyDPSDebuff(baseCrushDepthDoTValue, baseCrushDepthDoTValue / 2, ref npc.lifeRegen, ref damage);
-            }
+            //100 /2
 
             //Hadopelagic Pressure
-            if (hPressure > 0)
-            {
-                int baseHadopelagicPressureDoTValue = (int)(400 * waterDamageMult);
-                ApplyDPSDebuff(baseHadopelagicPressureDoTValue, baseHadopelagicPressureDoTValue / 2, ref npc.lifeRegen, ref damage);
-            }
-            #endregion
+            //400 /2
 
             if (npc.dryadBane)
             {
@@ -1375,17 +1166,17 @@ namespace CalamityMod.NPCs
             }
 
             // Debuffs that aren't affected by weaknesses or resistances.
-            if (vaporfied > 0)
+            if (vaporfied)
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (heavybleeding > 0)
+            if (heavyBleeding)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
-            if (laceration > 0)
+            if (laceration)
                 ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
-            if (elementalMix > 0)
+            if (elementalMix)
                 ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
-            if (miracleBlight > 0)
+            if (miracleBlight)
                 ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
@@ -3786,7 +3577,7 @@ namespace CalamityMod.NPCs
 
             // Apply armor penetration based on Calamity debuffs. The hit system manages the sequencing.
             // Ozzatron 05JAN2023: fixed doubled armor pen, this time for real
-            int defenseReduction = (marked > 0 && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither > 0 ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
+            int defenseReduction = (markedForDeath && DR <= 0f ? MarkedforDeath.DefenseReduction : 0) + (wither ? RemsRevenge.WitherDefenseReduction : 0) + miscDefenseLoss;
             modifiers.ArmorPenetration += defenseReduction;
 
             // DR applies after vanilla defense.
@@ -3862,18 +3653,18 @@ namespace CalamityMod.NPCs
             modifiers.FinalDamage *= finalMultiplier;
         }
 
-        private float DefaultDRMath(NPC npc, float DR)
+        private float DefaultDRMath(NPC npc, float DR) //FIX THIS LATER DOZE
         {
             float calcDR = DR;
-            if (marked > 0)
+            if (markedForDeath)
                 calcDR *= 0.5f;
-            if (absorberAffliction > 0)
+            if (absorberAffliction)
                 calcDR *= 0.8f;
-            if (npc.Calamity().aCrunch > 0)
+            if (npc.Calamity().armorCrunch)
                 calcDR *= ArmorCrunch.MultiplicativeDamageReductionEnemy;
-            if (npc.Calamity().crumble > 0)
+            if (npc.Calamity().crumble)
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
-            if (relicOfResilienceWeakness > 0)
+            if (relicOfResilienceWeakness)
                 calcDR *= 0.5f;
 
 
@@ -5684,113 +5475,66 @@ namespace CalamityMod.NPCs
             if (debuffResistanceTimer > 0)
                 debuffResistanceTimer--;
 
-            if (timeSlow > 0)
-                timeSlow--;
-            if (tesla > 0)
-                tesla--;
-            if (gState > 0)
-                gState--;
-            if (tSad > 0)
-                tSad--;
-            if (eutrophication > 0)
-                eutrophication--;
-            if (webbed > 0)
-                webbed--;
-            if (slowed > 0)
-                slowed--;
-            if (vaporfied > 0)
-                vaporfied--;
-
-            if (electrified > 0)
-                electrified--;
-            if (pearlAura > 0)
-                pearlAura--;
-            if (bBlood > 0)
-                bBlood--;
-            if (brainRot > 0)
-                brainRot--;
-            if (heavybleeding > 0)
-                heavybleeding--;
-            if (laceration > 0)
-                laceration--;
-            if (elementalMix > 0)
-                elementalMix--;
-            if (trueVulnerabilityHex > 0)
+            timeDistortion = false;
+            galvanicCorrosion = false;
+            glacialState = false;
+            temporalSadness = false;
+            eutrophication = false;
+            webbed = false;
+            slowed = false;
+            vaporfied = false;
+            electrified = false;
+            pearlAura = false;
+            burningBlood = false;
+            brainRot = false;
+            heavyBleeding = false;
+            laceration = false;
+            elementalMix = false;
+            if (!trueVulnerabilityHex) //FIX THIS DOZE - vhex and tvhex stacking! BAD!
             {
-                vulnerabilityHex = 0; // You cannot stack True VHex with its lesser counterpart.
-                trueVulnerabilityHex--;
-                if (trueVulnerabilityHex == 0)
-                    cursorFocus = 0;
+                cursorFocus = 0;
             }
-            if (vulnerabilityHex > 0)
-                vulnerabilityHex--;
-            if (marked > 0)
-                marked--;
-            if (absorberAffliction > 0)
-                absorberAffliction--;
-            if (irradiated > 0)
-                irradiated--;
+            trueVulnerabilityHex = false;
+            vulnerabilityHex = false;
+            markedForDeath = false;
+            absorberAffliction = false;
+            irradiated = false;
             if (scionsCurioEffected)
                 irradiatedContactBoost = 2f;
-            if (bFlames > 0)
-                bFlames--;
-            if (demonicFlames > 0)
-                demonicFlames--;
-            else
+            brimstoneFlames = false;
+            if (!demonicFlames)
                 demonicFlamesBonusDamage = 0;
-            if (hFlames > 0)
-                hFlames--;
-            if (pFlames > 0)
-                pFlames--;
+            demonicFlames = false;
+            holyFlames = false;
+            plague = false;
             // Soma Prime's Shred stacks have a unique falloff mechanic in the debuff's own file.
-            if (aCrunch > 0)
-                aCrunch--;
-            if (crumble > 0)
-                crumble--;
-            if (cDepth > 0)
-                cDepth--;
-            if (hPressure > 0)
-                hPressure--;
-            if (rTide > 0)
-                rTide--;
-            if (gsInferno > 0)
-                gsInferno--;
-            if (dragonFire > 0)
-                dragonFire--;
-            if (vermillionFlux > 0)
-                vermillionFlux--;
-            if (auricRebuke > 0)
-                auricRebuke--;
-            if (staticDischarge > 0)
-                staticDischarge--;
-            if (miracleBlight > 0)
-                miracleBlight--;
-            if (astralInfection > 0)
-                astralInfection--;
-            if (wDeath > 0)
-                wDeath--;
-            if (nightwither > 0)
-                nightwither--;
+            armorCrunch = false;
+            crumble = false;
+            crushDepth = false;
+            hadopelagicPressure = false;
+            riptide = false;
+            godSlayerInferno = false;
+            dragonFire = false;
+            vermillionFlux = false;
+            auricRebuke = false;
+            staticDischarge = false;
+            miracleBlight = false;
+            astralInfection = false;
+            whisperingDeath = false;
+            nightwither = false;
             if (shocked > 0)
                 shocked--;
-            if (voidfrost > 0)
-                voidfrost--;
-            if (shellfishVore > 0)
-                shellfishVore--;
-            if (clamDebuff > 0)
-                clamDebuff--;
-            if (sulphurPoison > 0)
-                sulphurPoison--;
-            if (sagePoisonTime > 0)
-                sagePoisonTime--;
+            voidfrost = false;
+            shellfishStaffDebuff = false;
+            snapClamDebuff = false;
+            sulphurPoison = false;
+            sagePoison = false;
             if (GaussFluxTimer > 0)
                 GaussFluxTimer--;
             if (ladHearts > 0)
                 ladHearts--;
-            if (banishingFire > 0)
-                banishingFire--;
-            if (wither > 0)
-                wither--;
+            banishingFire = false;
+            wither = false;
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
@@ -5798,9 +5542,7 @@ namespace CalamityMod.NPCs
                 antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
                 cursorFocus--;
-
-            if (relicOfResilienceWeakness > 0)
-                relicOfResilienceWeakness--;
+            relicOfResilienceWeakness = false;
 
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
@@ -5985,7 +5727,7 @@ namespace CalamityMod.NPCs
 
             // Pearl Aura shard spawning
             // Slowing is handled in the general slowing code below
-            if (pearlAura > 0)
+            if (pearlAura)
             {
                 pearlAuraCounter++;
                 if (pearlAuraCounter >= 45)
@@ -6032,23 +5774,23 @@ namespace CalamityMod.NPCs
             if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
             {
                 // Slowing debuffs which set a velocity hard cap take priority first.
-                if (vulnerabilityHex > 0)
+                if (vulnerabilityHex)
                     npc.velocity = Vector2.Clamp(npc.velocity, new Vector2(-Calamity.MaxNPCSpeed), new Vector2(Calamity.MaxNPCSpeed, 10f));
 
                 // Then debuffs which apply a multiplier to velocity.
                 // These multipliers can stack with each other, even if you'll rarely see this on a boss.
                 float velocitySlownessFactor = 1f;
 
-                if (tSad > 0)
+                if (temporalSadness)
                     velocitySlownessFactor += 0.2f;
 
-                if (timeSlow > 0)
+                if (timeDistortion)
                     velocitySlownessFactor += 0.15f;
 
-                if (webbed > 0)
+                if (webbed)
                     velocitySlownessFactor += 0.15f;
 
-                if (gState > 0)
+                if (glacialState)
                 {
                     float baseSlownessFactor = 0.1f;
                     if (VulnerableToCold.HasValue)
@@ -6061,10 +5803,10 @@ namespace CalamityMod.NPCs
                     velocitySlownessFactor += baseSlownessFactor;
                 }
 
-                if (pearlAura > 0)
+                if (pearlAura)
                     velocitySlownessFactor += 0.1f;
 
-                if (eutrophication > 0)
+                if (eutrophication)
                 {
                     float baseSlownessFactor = 0.05f;
                     if (VulnerableToWater.HasValue)
@@ -6077,10 +5819,10 @@ namespace CalamityMod.NPCs
                     velocitySlownessFactor += baseSlownessFactor;
                 }
 
-                if (slowed > 0)
+                if (slowed)
                     velocitySlownessFactor += 0.05f;
 
-                if (tesla > 0)
+                if (galvanicCorrosion)
                 {
                     float baseSlownessFactor = 0.05f;
                     if (VulnerableToElectricity.HasValue)
@@ -6093,7 +5835,7 @@ namespace CalamityMod.NPCs
                     velocitySlownessFactor += baseSlownessFactor;
                 }
 
-                if (vaporfied > 0)
+                if (vaporfied)
                     velocitySlownessFactor += 0.05f;
 
                 // Divide 1 by the slowness factor to get the amount to slow by.
@@ -6640,11 +6382,11 @@ namespace CalamityMod.NPCs
             if (!projectile.npcProj && !projectile.trap)
             {
                 // Plague Reaper deals 1.1x damage to Plagued enemies
-                if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && pFlames > 0)
+                if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && plague)
                     modifiers.SourceDamage *= 1.1f;
 
                 // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
-                if (trueVulnerabilityHex > 0)
+                if (trueVulnerabilityHex)
                     modifiers.SourceDamage *= (projectile.type == ProjectileType<DirectStrike>() && projectile.ai[1] == 255f) ? 2.5f : 1.15f;
             }
 
@@ -6965,7 +6707,7 @@ namespace CalamityMod.NPCs
             }
 
             // Plague debuff on kill effect
-            if (pFlames > 0 && npc.life <= 0 && npc.realLife == -1)
+            if (plague && npc.life <= 0 && npc.realLife == -1)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -7131,8 +6873,8 @@ namespace CalamityMod.NPCs
                                 }
 
                                 target.Calamity().scionsCurioEffected = true;
-                                if (target.Calamity().irradiated > 0)
-                                    target.Calamity().irradiated += 90;
+                                if (target.Calamity().irradiated)
+                                    target.buffTime[target.FindBuffIndex(ModContent.BuffType<Irradiated>())] += 90;
                                 else
                                     target.AddBuff(BuffType<Irradiated>(), 180);
                             }
@@ -7663,8 +7405,8 @@ namespace CalamityMod.NPCs
             if (!npc.canDisplayBuffs)
                 return;
 
-            if (absorberAffliction > 0)
-                AbsorberAffliction.DrawEffects(npc, ref drawColor);
+            /*if (absorberAffliction)
+                AbsorberAffliction.DrawEffects(npc, ref drawColor);*/
 
             // Rancor's burn effect
             if (ashesOnDeath > 0)
@@ -7680,27 +7422,29 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (astralInfection > 0)
+            // FIX THIS DOZE - Make sure Enraged applies BrimstonFlames draw effects
+            //Temp Sadness uses Eutrophication, so doesBanishing FIre use Holy Flames
+            /*if (astralInfection)
                 AstralInfectionDebuff.DrawEffects(npc, ref drawColor);
 
             // Brimstone Flames and Demonshade Enrage set bonus share the same visual effects
             // TODO -- change this when Demonshade is reworked
-            if (bFlames > 0 || npc.HasBuff<Enraged>())
+            if (brimstoneFlames || npc.HasBuff<Enraged>())
                 BrimstoneFlames.DrawEffects(npc, ref drawColor);
 
-            if (demonicFlames > 0)
+            if (demonicFlames)
                 DemonicFlames.DrawEffects(npc, ref drawColor);
 
-            if (bBlood > 0)
+            if (burningBlood )
                 BurningBlood.DrawEffects(npc, ref drawColor);
 
             if (brainRot > 0)
                 BrainRot.DrawEffects(npc, ref drawColor);
 
-            if (cDepth > 0)
+            if (crushDepth > 0)
                 CrushDepth.DrawEffects(npc, ref drawColor);
 
-            if (hPressure > 0)
+            if (hadopelagicPressure > 0)
                 HadopelagicPressure.DrawEffects(npc, ref drawColor);
 
             if (dragonFire > 0)
@@ -7719,19 +7463,19 @@ namespace CalamityMod.NPCs
                 ElementalMix.DrawEffects(npc, ref drawColor);
 
             // Eutrophication and Temporal Sadness share the same visual effects
-            if (eutrophication > 0 || tSad > 0)
+            if (eutrophication > 0 || temporalSadness > 0)
                 Eutrophication.DrawEffects(npc, ref drawColor);
 
-            if (gsInferno > 0)
+            if (godSlayerInferno > 0)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);
 
             // Holy Flames and Banishing Fire share the same visual effects
-            if (hFlames > 0 || banishingFire > 0)
+            if (holyFlames > 0 || banishingFire > 0)
                 HolyFlames.DrawEffects(npc, ref drawColor);
 
-            if (heavybleeding > 0)
+            if (heavyBleeding > 0)
                 HeavyBleeding.DrawEffects(npc, ref drawColor);
-
+            */
             if (hyperiusFxTimer > 0)
             {
                 float rate = (Main.GlobalTimeWrappedHourly * 5);
@@ -7770,8 +7514,8 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (laceration > 0)
-                Laceration.DrawEffects(npc, ref drawColor);
+            /*if (laceration > 0)
+                Laceration.DrawEffects(npc, ref drawColor);*/
 
             if (laserBurnTimer > 0)
             {
@@ -7795,7 +7539,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            // These draw effects do not include Miracle Blight's shader
+            /*// These draw effects do not include Miracle Blight's shader
             if (miracleBlight > 0)
                 MiracleBlight.DrawEffects(npc, ref drawColor);
 
@@ -7805,18 +7549,18 @@ namespace CalamityMod.NPCs
             if (pearlAura > 0)
                 PearlAura.DrawEffects(npc, ref drawColor);
 
-            if (pFlames > 0) // Plague debuff
+            if (plague > 0) // Plague debuff
                 Plague.DrawEffects(npc, ref drawColor);
 
             if (relicOfResilienceWeakness > 0)
                 ProfanedWeakness.DrawEffects(npc, ref drawColor);
 
-            if (rTide > 0)
+            if (riptide > 0)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
-
+            */
             if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
-
+            /*
             if (sulphurPoison > 0)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
 
@@ -7824,7 +7568,7 @@ namespace CalamityMod.NPCs
                 TrueVulnerabilityHex.DrawEffects(npc, ref drawColor);
 
             if (vaporfied > 0)
-                Vaporfied.DrawEffects(npc, ref drawColor);
+                Vaporfied.DrawEffects(npc, ref drawColor);*/
 
             if (veriumDoomTimer > 0)
             {
@@ -7838,18 +7582,18 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (voidfrost > 0)
-                Voidfrost.DrawEffects(npc, ref drawColor);
-
+            /*if (voidfrost > 0)
+                Voidfrost.DrawEffects(npc, ref drawColor);*/
+            //FIX THIS DOZE. you know what to do.
             // TODO -- These debuff visuals cannot be moved because they correspond to vanilla debuffs
-            if (electrified > 0)
+            if (electrified)
             {
                 if (Main.rand.NextBool())
                 {
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
                 }
             }
-            if (slowed > 0)
+            if (slowed)
             {
                 if (Main.rand.Next(5) < 4)
                 {
@@ -7864,7 +7608,7 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
-            if (webbed > 0)
+            if (webbed)
             {
                 if (Main.rand.Next(5) < 4)
                 {
@@ -7898,35 +7642,35 @@ namespace CalamityMod.NPCs
 
             // Calamity debuff coloring effects
             // These are in order of precedence because they override each other.
-            if (gState > 0)
+            if (glacialState)
                 drawColor = Color.Cyan;
 
-            else if (auricRebuke > 0)
+            else if (auricRebuke)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkBlue, Color.White, Utils.Remap(npc.width, 30, 400, 0.4f, 0.7f, true)) : Color.White;
             }
-            else if (vermillionFlux > 0)
+            else if (vermillionFlux)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.DarkRed, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
-            else if (electrified > 0)
+            else if (electrified)
             {
                 int scaleFactor = (int)(Utils.Remap(npc.width, 30, 400, 5, 15, true));
                 drawColor = Main.rand.NextBool(scaleFactor) ? Color.Lerp(Color.SlateGray, Color.White, Utils.Remap(npc.width, 30, 400, 0, 0.7f, true)) : Color.White;
             }
 
-            else if (absorberAffliction > 0)
+            else if (absorberAffliction)
                 drawColor = Color.DarkSeaGreen;
 
-            else if (marked > 0 || vaporfied > 0)
+            else if (markedForDeath || vaporfied)
                 drawColor = Color.Fuchsia;
 
-            else if (pearlAura > 0)
+            else if (pearlAura)
                 drawColor = new Color(185, 185, 255);
 
-            else if (timeSlow > 0 || tesla > 0)
+            else if (timeDistortion || galvanicCorrosion)
                 drawColor = Color.Aquamarine;
         }
 
@@ -7962,55 +7706,57 @@ namespace CalamityMod.NPCs
             return null;
         }
 
+
+        //FIX THIS DOZE. this will be part of the DebuffDataClass
         public static List<(string, Predicate<NPC>)> moddedDebuffTextureList = new List<(string, Predicate<NPC>)>
         {
             // All Calamity DoTs in alphabetical order
-            ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection > 0),
-            ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke > 0),
-            ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire > 0),
-            ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot > 0),
-            ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().bFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().bBlood > 0),
-            ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().cDepth > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire > 0),
-            ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix > 0),
-            ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().gsInferno > 0),
-            ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hPressure > 0),
-            ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().hFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration > 0),
-            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavybleeding > 0),
-            ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().pFlames > 0),
-            ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().rTide > 0),
-            ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoisonTime > 0),
-            ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishVore > 0),
+            ("CalamityMod/Buffs/DamageOverTime/AstralInfectionDebuff", NPC => NPC.Calamity().astralInfection),
+            ("CalamityMod/Buffs/DamageOverTime/AuricRebuke", NPC => NPC.Calamity().auricRebuke),
+            ("CalamityMod/Buffs/DamageOverTime/BanishingFire", NPC => NPC.Calamity().banishingFire),
+            ("CalamityMod/Buffs/DamageOverTime/BrainRot", NPC => NPC.Calamity().brainRot),
+            ("CalamityMod/Buffs/DamageOverTime/BrimstoneFlames", NPC => NPC.Calamity().brimstoneFlames),
+            ("CalamityMod/Buffs/DamageOverTime/DemonicFlames", NPC => NPC.Calamity().demonicFlames),
+            ("CalamityMod/Buffs/DamageOverTime/BurningBlood", NPC => NPC.Calamity().burningBlood),
+            ("CalamityMod/Buffs/DamageOverTime/CrushDepth", NPC => NPC.Calamity().crushDepth),
+            ("CalamityMod/Buffs/DamageOverTime/Dragonfire", NPC => NPC.Calamity().dragonFire),
+            ("CalamityMod/Buffs/DamageOverTime/ElementalMix", NPC => NPC.Calamity().elementalMix),
+            ("CalamityMod/Buffs/DamageOverTime/GodSlayerInferno", NPC => NPC.Calamity().godSlayerInferno),
+            ("CalamityMod/Buffs/DamageOverTime/HadopelagicPressure", NPC => NPC.Calamity().hadopelagicPressure),
+            ("CalamityMod/Buffs/DamageOverTime/HolyFlames", NPC => NPC.Calamity().holyFlames),
+            ("CalamityMod/Buffs/DamageOverTime/Laceration", NPC => NPC.Calamity().laceration),
+            ("CalamityMod/Buffs/DamageOverTime/HeavyBleeding", NPC => NPC.Calamity().heavyBleeding),
+            ("CalamityMod/Buffs/DamageOverTime/MiracleBlight", NPC => NPC.Calamity().miracleBlight),
+            ("CalamityMod/Buffs/DamageOverTime/Nightwither", NPC => NPC.Calamity().nightwither),
+            ("CalamityMod/Buffs/DamageOverTime/Plague", NPC => NPC.Calamity().plague),
+            ("CalamityMod/Buffs/DamageOverTime/RiptideDebuff", NPC => NPC.Calamity().riptide),
+            ("CalamityMod/Buffs/DamageOverTime/SagePoison", NPC => NPC.Calamity().sagePoison),
+            ("CalamityMod/Buffs/DamageOverTime/ShellfishClaps", NPC => NPC.Calamity().shellfishStaffDebuff),
             ("CalamityMod/Buffs/DamageOverTime/Shred", NPC => NPC.Calamity().somaShredStacks > 0),
-            ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().clamDebuff > 0),
-            ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge > 0),
-            ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison > 0),
-            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied > 0),
-            ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux > 0),
-            ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost > 0),
-            ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex > 0),
+            ("CalamityMod/Buffs/DamageOverTime/SnapClamDebuff", NPC => NPC.Calamity().snapClamDebuff),
+            ("CalamityMod/Buffs/DamageOverTime/StaticDischarge", NPC => NPC.Calamity().staticDischarge),
+            ("CalamityMod/Buffs/DamageOverTime/SulphuricPoisoning", NPC => NPC.Calamity().sulphurPoison),
+            ("CalamityMod/Buffs/DamageOverTime/TrueVulnerabilityHex", NPC => NPC.Calamity().trueVulnerabilityHex),
+            ("CalamityMod/Buffs/DamageOverTime/Vaporfied", NPC => NPC.Calamity().vaporfied),
+            ("CalamityMod/Buffs/DamageOverTime/VermillionFlux", NPC => NPC.Calamity().vermillionFlux),
+            ("CalamityMod/Buffs/DamageOverTime/Voidfrost", NPC => NPC.Calamity().voidfrost),
+            ("CalamityMod/Buffs/DamageOverTime/VulnerabilityHex", NPC => NPC.Calamity().vulnerabilityHex),
 
             // All other important Calamity debuffs, in alphabetical order
-            ("CalamityMod/Buffs/StatDebuffs/AbsorberAffliction", NPC => NPC.Calamity().absorberAffliction > 0),
-            ("CalamityMod/Buffs/StatDebuffs/ArmorCrunch", NPC => NPC.Calamity().aCrunch > 0),
-            ("CalamityMod/Buffs/StatDebuffs/Crumbling", NPC => NPC.Calamity().crumble > 0),
-            ("CalamityMod/Buffs/StatDebuffs/Eutrophication", NPC => NPC.Calamity().eutrophication > 0),
-            ("CalamityMod/Buffs/StatDebuffs/GalvanicCorrosion", NPC => NPC.Calamity().tesla > 0),
-            ("CalamityMod/Buffs/StatDebuffs/GlacialState", NPC => NPC.Calamity().gState > 0),
-            ("CalamityMod/Buffs/StatDebuffs/Irradiated", NPC => NPC.Calamity().irradiated > 0),
-            ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().marked > 0),
-            ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura > 0),
-            ("CalamityMod/Buffs/StatDebuffs/ProfanedWeakness", NPC => NPC.Calamity().relicOfResilienceWeakness > 0),
-            ("CalamityMod/Buffs/StatDebuffs/TemporalSadness", NPC => NPC.Calamity().tSad > 0),
-            ("CalamityMod/Buffs/StatDebuffs/TimeDistortion", NPC => NPC.Calamity().timeSlow > 0),
-            ("CalamityMod/Buffs/StatDebuffs/WhisperingDeath", NPC => NPC.Calamity().wDeath > 0),
-            ("CalamityMod/Buffs/StatDebuffs/WitherDebuff", NPC => NPC.Calamity().wither > 0),
+            ("CalamityMod/Buffs/StatDebuffs/AbsorberAffliction", NPC => NPC.Calamity().absorberAffliction),
+            ("CalamityMod/Buffs/StatDebuffs/ArmorCrunch", NPC => NPC.Calamity().armorCrunch),
+            ("CalamityMod/Buffs/StatDebuffs/Crumbling", NPC => NPC.Calamity().crumble),
+            ("CalamityMod/Buffs/StatDebuffs/Eutrophication", NPC => NPC.Calamity().eutrophication),
+            ("CalamityMod/Buffs/StatDebuffs/GalvanicCorrosion", NPC => NPC.Calamity().galvanicCorrosion),
+            ("CalamityMod/Buffs/StatDebuffs/GlacialState", NPC => NPC.Calamity().glacialState),
+            ("CalamityMod/Buffs/StatDebuffs/Irradiated", NPC => NPC.Calamity().irradiated),
+            ("CalamityMod/Buffs/StatDebuffs/MarkedforDeath", NPC => NPC.Calamity().markedForDeath),
+            ("CalamityMod/Buffs/StatDebuffs/PearlAura", NPC => NPC.Calamity().pearlAura),
+            ("CalamityMod/Buffs/StatDebuffs/ProfanedWeakness", NPC => NPC.Calamity().relicOfResilienceWeakness),
+            ("CalamityMod/Buffs/StatDebuffs/TemporalSadness", NPC => NPC.Calamity().temporalSadness),
+            ("CalamityMod/Buffs/StatDebuffs/TimeDistortion", NPC => NPC.Calamity().timeDistortion),
+            ("CalamityMod/Buffs/StatDebuffs/WhisperingDeath", NPC => NPC.Calamity().whisperingDeath),
+            ("CalamityMod/Buffs/StatDebuffs/WitherDebuff", NPC => NPC.Calamity().wither),
         };
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -8055,8 +7801,9 @@ namespace CalamityMod.NPCs
                         }
                     }
 
+                    //FIX THIS DOZE. this is replaced via DebuffData stuff
                     // Vanilla damage over time debuffs
-                    if (electrified > 0)
+                    if (electrified)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Electrified].Value);
                     if (npc.onFire)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.OnFire].Value);
@@ -8096,9 +7843,9 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (slowed > 0)
+                    if (slowed)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Slow].Value);
-                    if (webbed > 0)
+                    if (webbed)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Midas].Value);
@@ -8357,7 +8104,7 @@ namespace CalamityMod.NPCs
             else
             {
                 // VHex and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
-                if (npc.Calamity().vulnerabilityHex > 0 || npc.Calamity().trueVulnerabilityHex > 0)
+                if (npc.Calamity().vulnerabilityHex || npc.Calamity().trueVulnerabilityHex)
                 {
                     float compactness = npc.width * 0.6f;
                     if (compactness < 10f)
@@ -8366,7 +8113,7 @@ namespace CalamityMod.NPCs
                     if (power > 2.75f)
                         power = 2.75f;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex > 0 ? npc.Calamity().trueVulnerabilityHex : npc.Calamity().vulnerabilityHex, 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex ? npc.buffTime[npc.FindBuffIndex(ModContent.BuffType<TrueVulnerabilityHex>())] : npc.buffTime[npc.FindBuffIndex(ModContent.BuffType<VulnerabilityHex>())], 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }

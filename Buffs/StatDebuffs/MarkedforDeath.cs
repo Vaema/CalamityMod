@@ -16,10 +16,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().marked < npc.buffTime[buffIndex])
-                npc.Calamity().marked = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().markedForDeath = true;
         }
     }
 }

@@ -16,10 +16,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         }
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().relicOfResilienceWeakness < npc.buffTime[buffIndex])
-                npc.Calamity().relicOfResilienceWeakness = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().relicOfResilienceWeakness = true;
         }
         internal static void DrawEffects(NPC npc, ref Color drawColor)
         {

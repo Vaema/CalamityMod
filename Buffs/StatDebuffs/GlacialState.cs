@@ -20,17 +20,14 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().gState = true;
+            player.Calamity().glacialState = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().gState < npc.buffTime[buffIndex])
-                npc.Calamity().gState = npc.buffTime[buffIndex];
+            npc.Calamity().glacialState = true;
             if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().gState;
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

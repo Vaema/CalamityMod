@@ -13,10 +13,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         }
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().sagePoisonTime < npc.buffTime[buffIndex])
-                npc.Calamity().sagePoisonTime = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().sagePoison = true;
         }
     }
 }

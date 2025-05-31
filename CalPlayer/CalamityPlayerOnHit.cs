@@ -233,25 +233,12 @@ namespace CalamityMod.CalPlayer
 
             if (witheringWeaponEnchant)
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
-
-            cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
-            cgn.IncreasedColdEffects_CryoStone = CryoStone;
-
-            cgn.IncreasedElectricityEffects_Unused = false;
-
-            cgn.IncreasedHeatEffects_Fireball = fireball;
-            cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
-            cgn.IncreasedHeatEffects_FireBoots = bootLevel;
-
-            cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
-
-            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            cgn.IncreasedWaterEffects_Amulet2 = dOfTheDeep;
-
-            cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
-            cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
-
-            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
+            cgn.TypelessDebuffMultiplier = TypelessDebuffMultiplier;
+            cgn.HeatDebuffMultiplier = HeatDebuffMultiplier;
+            cgn.ColdDebuffMultiplier = ColdDebuffMultiplier;
+            cgn.SicknessDebuffMultiplier = SicknessDebuffMultiplier;
+            cgn.WaterDebuffMultiplier = WaterDebuffMultiplier;
+            cgn.ElectricDebuffMultiplier = ElectricDebuffMultiplier;
 
             switch (proj.type)
             {

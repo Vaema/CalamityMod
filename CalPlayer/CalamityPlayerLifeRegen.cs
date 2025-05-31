@@ -97,39 +97,39 @@ namespace CalamityMod.CalPlayer
             }
 
             // Whispering Death sets positive regen to zero but doesn't actually deal any damage
-            ApplyDoTDebuff(wDeath, 0, laudanum);
+            ApplyDoTDebuff(whisperingDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4, purity);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
             ApplyDoTDebuff(sulphurPoison, sulphurDoT, purity);
-            ApplyDoTDebuff(rTide, 6, purity);
+            ApplyDoTDebuff(riptide, 6, purity);
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
-            ApplyDoTDebuff(bBlood, 8, purity);
+            ApplyDoTDebuff(burningBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
             ApplyDoTDebuff(heavybleeding, 16, purity);
             ApplyDoTDebuff(laceration, 24, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
-            ApplyDoTDebuff(bFlames, abaddon ? 10 : 20, purity);
+            ApplyDoTDebuff(brimstoneFlames, abaddon ? 10 : 20, purity);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 15 : 30, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 15 : 30, purity);
-            ApplyDoTDebuff(hFlames, 24, purity);
+            ApplyDoTDebuff(holyFlames, 24, purity);
             ApplyDoTDebuff(voidfrost, 30, purity);
             ApplyDoTDebuff(vHex, 24);
             ApplyDoTDebuff(trueVHex, 36);
-            ApplyDoTDebuff(cDepth, 15, purity);
+            ApplyDoTDebuff(crushDepth, 15, purity);
             ApplyDoTDebuff(astralInfection, 18, infectedJewel || hideOfDeus || purity);
-            ApplyDoTDebuff(hPressure, 30, purity);
-            ApplyDoTDebuff(pFlames, alchFlask ? 12 : 24, purity);
-            ApplyDoTDebuff(cragsLava, 30); // Being literally submerged in crags lava should do more than brimstone flames
+            ApplyDoTDebuff(hadopelagicPressure, 30, purity);
+            ApplyDoTDebuff(plague, alchFlask ? 12 : 24, purity);
+            ApplyDoTDebuff(searingLava, 30); // Being literally submerged in crags lava should do more than brimstone flames
             ApplyDoTDebuff(shadowflame, 30, purity);
             ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
-            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 45 : 35);
+            ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 45 : 35);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 40) / (dynamoStemCells ? 2 : 1);
@@ -525,7 +525,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenCount = 0;
             }
 
-            if (hInferno)
+            if (holyInferno)
             {
                 Player.nebulaLevelLife = 0;
 

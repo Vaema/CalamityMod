@@ -19,15 +19,12 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().gsInferno = true;
+            player.Calamity().godSlayerInferno = true;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().gsInferno < npc.buffTime[buffIndex])
-                npc.Calamity().gsInferno = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().godSlayerInferno = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

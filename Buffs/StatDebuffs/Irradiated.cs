@@ -22,10 +22,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().irradiated < npc.buffTime[buffIndex])
-                npc.Calamity().irradiated = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().irradiated = true;
         }
     }
 }

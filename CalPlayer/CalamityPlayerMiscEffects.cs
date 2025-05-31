@@ -885,8 +885,11 @@ namespace CalamityMod.CalPlayer
 
                     if (target.Calamity().cursorFocus >= CalamityGlobalNPC.cursorFocusMax)
                     {
-                        target.Calamity().trueVulnerabilityHex = target.Calamity().vulnerabilityHex >= 300 ? target.Calamity().vulnerabilityHex : 300;
-                        target.Calamity().vulnerabilityHex = 0;
+                        int vHexDuration = 0;
+                        if (target.HasBuff<VulnerabilityHex>())
+                            vHexDuration = target.buffTime[target.FindBuffIndex(ModContent.BuffType<VulnerabilityHex>())];
+                        target.AddBuff(ModContent.BuffType<TrueVulnerabilityHex>(),vHexDuration <= 300 ? vHexDuration : 300);
+                        target.RequestBuffRemoval(ModContent.BuffType<VulnerabilityHex>());
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), target.Center);
 
                         for (int i = 0; i < 18; i++)
@@ -918,8 +921,12 @@ namespace CalamityMod.CalPlayer
 
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
-                int buffToInflict = target.Calamity().trueVulnerabilityHex > 0 ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
-                target.AddBuff(buffToInflict, target.Calamity().trueVulnerabilityHex > 0 ? target.Calamity().trueVulnerabilityHex + 8 : target.Calamity().vulnerabilityHex < VulnerabilityHex.CalamityDuration ? VulnerabilityHex.CalamityDuration : target.Calamity().vulnerabilityHex + 8);
+                int buffToInflict = target.Calamity().trueVulnerabilityHex? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
+                if (!target.HasBuff(target.buffTime[target.FindBuffIndex(buffToInflict)]))
+                    target.AddBuff(buffToInflict, 52);
+                target.buffTime[target.FindBuffIndex(buffToInflict)] += 8;
+                if (target.buffTime[target.FindBuffIndex(buffToInflict)] < VulnerabilityHex.CalamityDuration)
+                    target.buffTime[target.FindBuffIndex(buffToInflict)] = VulnerabilityHex.CalamityDuration;
 
                 // Make some fancy dust to indicate damage is being done.
                 for (int j = 0; j < 12; j++)
@@ -1150,7 +1157,7 @@ namespace CalamityMod.CalPlayer
             ProvidenceBurnEffectDrawer.ParticleSpawnRate = int.MaxValue;
 
             // If the player has holy inferno, cause the player to ignite into flames.
-            if (hInferno)
+            if (holyInferno)
                 ProvidenceBurnEffectDrawer.ParticleSpawnRate = 1;
 
             // Otherwise, if the intensity is too weak, but still present, cause the player to release holy cinders.
@@ -1171,11 +1178,11 @@ namespace CalamityMod.CalPlayer
             }
             ProvidenceBurnEffectDrawer.Update();
 
-            if (hInferno && holyInfernoFadeIntensity < 1f)
+            if (holyInferno && holyInfernoFadeIntensity < 1f)
             {
                 holyInfernoFadeIntensity = MathHelper.Clamp(holyInfernoFadeIntensity + 0.015f, 0f, 1f);
             }
-            else if (!hInferno && holyInfernoFadeIntensity > 0f)
+            else if (!holyInferno && holyInfernoFadeIntensity > 0f)
             {
                 holyInfernoFadeIntensity = MathHelper.Clamp(holyInfernoFadeIntensity - 0.01f, 0f, 1f);
             }
@@ -1197,7 +1204,7 @@ namespace CalamityMod.CalPlayer
                             Player.AddBuff(ModContent.BuffType<FrozenLungs>(), 2, false);
                     }
                 }
-                if (iCantBreathe)
+                if (frozenLungs)
                 {
                     if (Player.breath > 0 && Player.miscCounter % 2 == 0)
                         Player.breath--;
@@ -1526,11 +1533,9 @@ namespace CalamityMod.CalPlayer
 
             // The fire boots debuff boosts
             if (hellfireTreads)
-                bootLevel = 2;
+                HeatDebuffMultiplier += 0.5f;
             else if (flameWakerBoots)
-                bootLevel = 1;
-            else
-                bootLevel = 0;
+                HeatDebuffMultiplier += 0.25f;
 
             if (rOfResilienceEffect > 0)
                 rOfResilienceEffect--;
@@ -1989,7 +1994,7 @@ namespace CalamityMod.CalPlayer
                 SyncCooldownRemoval(Main.dedServ, expiredCooldowns);
 
             // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
-            if (Player.stoned || Player.frozen || Player.webbed || gState)
+            if (Player.stoned || Player.frozen || Player.webbed || glacialState)
             {
                 ImmobilityDebuffImmunityTimer = ImmobilityDebuffImmunityTimerMax;
             }
@@ -3041,9 +3046,9 @@ namespace CalamityMod.CalPlayer
                         // Reduce breath
                         if (Player.breath > 0)
                         {
-                            Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
+                            Player.breath -= (int)(crushDepth && !depthCharm ? breathLoss + 1D : breathLoss);
 
-                            if (hPressure)
+                            if (hadopelagicPressure)
                                 resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
                         }
                     }
@@ -3719,18 +3724,18 @@ namespace CalamityMod.CalPlayer
                 Player.lifeMagnet = true;
             }
 
-            if (wDeath && !laudanum && !purity)
+            if (whisperingDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
             if (astralInfection && !(infectedJewel || hideOfDeus || purity))
                 Player.GetDamage<GenericDamageClass>() -= 0.1f;
 
-            if (pFlames && !purity)
+            if (plague && !purity)
             {
                 Player.GetDamage<GenericDamageClass>() -= 0.1f;
             }
 
-            if (aCrunch && !laudanum && !purity)
+            if (armorCrunch && !laudanum && !purity)
             {
                 Player.statDefense -= ArmorCrunch.DefenseReduction;
                 Player.endurance *= ArmorCrunch.MultiplicativeDamageReductionPlayer;
@@ -3741,7 +3746,7 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense -= RemsRevenge.WitherDefenseReduction;
             }
 
-            if (gState)
+            if (glacialState)
             {
                 Player.velocity.X *= 0.5f;
                 Player.velocity.Y += 0.05f;

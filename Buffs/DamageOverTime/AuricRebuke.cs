@@ -24,10 +24,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().auricRebuke < npc.buffTime[buffIndex])
-                npc.Calamity().auricRebuke = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().auricRebuke = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

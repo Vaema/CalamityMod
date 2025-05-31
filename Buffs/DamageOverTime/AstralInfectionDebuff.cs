@@ -24,10 +24,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().astralInfection < npc.buffTime[buffIndex])
-                npc.Calamity().astralInfection = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().astralInfection = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

@@ -144,28 +144,19 @@ namespace CalamityMod.Buffs
 
             if (type == BuffID.Webbed)
             {
-                if (npc.Calamity().webbed < npc.buffTime[buffIndex])
-                    npc.Calamity().webbed = npc.buffTime[buffIndex];
+                npc.Calamity().webbed = true;
                 if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().webbed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
+                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             else if (type == BuffID.Slow)
             {
-                if (npc.Calamity().slowed < npc.buffTime[buffIndex])
-                    npc.Calamity().slowed = npc.buffTime[buffIndex];
+                npc.Calamity().slowed = true;
                 if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().slowed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
+                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             if (type == BuffID.Electrified)
             {
-                if (npc.Calamity().electrified < npc.buffTime[buffIndex])
-                    npc.Calamity().electrified = npc.buffTime[buffIndex];
-                npc.DelBuff(buffIndex);
-                buffIndex--;
+                npc.Calamity().electrified = true;
             }
         }
 

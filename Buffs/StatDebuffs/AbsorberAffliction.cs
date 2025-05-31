@@ -17,10 +17,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().absorberAffliction < npc.buffTime[buffIndex])
-                npc.Calamity().absorberAffliction = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().absorberAffliction = true;
         }
 
         internal static void DrawEffects(NPC npc, ref Color drawColor)
