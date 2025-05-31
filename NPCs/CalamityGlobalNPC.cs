@@ -1506,7 +1506,7 @@ namespace CalamityMod.NPCs
                 { NPCID.TheHungry, 0.1f },
                 { NPCID.UndeadViking, 0.1f },
                 { NPCID.WalkingAntlion, 0.1f },
-                { NPCID.WallofFlesh, 0.5f },
+                { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
 
