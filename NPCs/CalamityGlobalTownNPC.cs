@@ -285,6 +285,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogNames =
         {
             "Ozymandias", // <@!146333264871686145> (ozzatron)
+            "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
         };
         private static readonly string[] TownDogLabradorNames =
         {
