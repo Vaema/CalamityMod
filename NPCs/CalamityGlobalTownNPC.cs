@@ -123,6 +123,7 @@ namespace CalamityMod.NPCs
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
             "Bars Boldia", // <@!332989575708540939> (careless_imp)
+            "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
         };
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
