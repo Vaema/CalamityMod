@@ -1053,20 +1053,9 @@ namespace CalamityMod.NPCs
             // Vermillion Flux
             //100 /40
 
-            // Auric Rebuke
-            //200 /70
-
-            // Brimstone Flames
-            //60 /5
-
             // Demonic Flames
             // An unresistable fire debuff that you can set the damage of when it is applied
             // This way it can be viable for multiple tiers
-            if (demonicFlames)
-            {
-                int baseDemonicFlamesDoTValue = (int)((demonicFlamesBonusDamage) * Math.Max(ActiveHeatDebuffMultiplier, 1));
-                ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
-            }
 
             // Holy Flames
             //300 /5
@@ -1074,41 +1063,17 @@ namespace CalamityMod.NPCs
             // God Slayer Inferno
             //500 /5
 
-            // Dragonfire
-            //960 /5
-
             // Vulnerability Hex
             //file
 
             // True Vulnerability Hex
             //file
 
-            // Banishing Fire
-            if (banishingFire)
-            {
-                int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : 4000) * ActiveHeatDebuffMultiplier);
-                ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
             
 
 
             // Burning Blood
             //40 /5
-
-            // Brain Rot
-            //40 /5
-
-            // Sage Poison
-            if (sagePoison)
-            {
-                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
-                // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * ActiveSicknessDebuffMultiplier);
-                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
-            // Astral Infection
-            //75 /5
 
             // Plague
             //100 /5
@@ -1170,14 +1135,8 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
-            if (heavyBleeding)
-                ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (laceration)
                 ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
-            if (elementalMix)
-                ApplyDPSDebuff(400, 100, ref npc.lifeRegen, ref damage);
-            if (miracleBlight)
-                ApplyDPSDebuff(3000, 500, ref npc.lifeRegen, ref damage);
 
             // Reduce DoT on worm bosses and Creepers by 75%.
             if ((wormBoss || npc.type == NPCID.Creeper) && npc.lifeRegen < 0)
