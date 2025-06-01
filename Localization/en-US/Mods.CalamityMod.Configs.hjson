@@ -139,7 +139,7 @@ CalamityClientConfig: {
 	}
 
 	FlightBar: {
-		Label: "[i:CalamityMod/DrewsWings] Display Flight Bar"
+		Label: "[i:AngelWings] Display Flight Bar"
 		Tooltip:
 			'''
 			Enables the Flight Bar UI, which shows the player's remaining wing flight time.
