@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.Xml;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using ReLogic.Threading;
 using Terraria;
@@ -432,6 +433,17 @@ namespace CalamityMod
                 break;
             }
             return ratio;
+        }
+        /// <summary>
+        /// Xyk's version of easing in and out<br />
+        /// Returns an eased version of a 0 - 1 lerp value.
+        /// </summary>
+        /// <param name="lerpValue">The 0 - 1 lerp input</param>
+        /// <param name="inPower">The intensisty of the easing in.</param>
+        /// /// <param name="outPower">The intensisty of the easing out.</param>
+        public static float EaseInOutExp(float lerpValue, float inPower, float outPower)
+        {
+            return (lerpValue < 0.5f ? (float)Math.Pow(Utils.GetLerpValue(0, 0.5f, lerpValue, true), inPower) * 0.5f : 0.5f + (1 - (float)Math.Pow(Utils.GetLerpValue(1, 0.5f, lerpValue, true), outPower)) * 0.5f);
         }
 
         #endregion

@@ -40,8 +40,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (time == 0)
             {
-                Projectile.scale = (Projectile.ai[2] == 1 ? 0.75f : 0.5f);
                 mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
+                Projectile.scale = (Projectile.ai[2] == 1 ? 0.75f : 0.5f);
                 if (Projectile.ai[2] == 1)
                 {
                     Projectile.localNPCHitCooldown = 7;
@@ -88,7 +88,10 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int buffType = Projectile.ai[2] == 1f ? ModContent.BuffType<Voidfrost>() : ModContent.BuffType<Nightwither>();
+            if (!target.CanBeChasedBy())
+                Projectile.penetrate++;
+
+            int buffType = ModContent.BuffType<Nightwither>();
             target.AddBuff(buffType, 60);
 
             if (Projectile.ai[2] == 0)

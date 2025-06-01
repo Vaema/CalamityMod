@@ -768,16 +768,6 @@ InsidiousImpaler: {
 		'''
 }
 
-IridescentExcalibur: {
-	DisplayName: Iridescent Excalibur
-	Tooltip:
-		'''
-		True melee strikes freeze enemies
-		Fires rainbow beams that change their behavior based on their color
-		Press <right> for true melee
-		'''
-}
-
 Lacerator: {
 	DisplayName: Lacerator
 	Tooltip:
@@ -958,7 +948,6 @@ Orderbringer: {
 	Tooltip:
 		'''
 		Fires piercing energy waves and summons four homing stars near your cursor
-		Energy waves deal more damage with each consecutive hit
 		Hits with the blade summon two beams from the sky
 		'No matter where you may be you are never alone'
 		'''

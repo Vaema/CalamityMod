@@ -289,8 +289,26 @@ namespace CalamityMod.Items
         #region Rarity Coloration
         private static void ApplyRarityColor(Item item, TooltipLine nameLine)
         {
-            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>() || item.type == ModContent.ItemType<IridescentExcalibur>())
+            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>())
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+            if (item.type == ModContent.ItemType<Orderbringer>())
+            {
+                float rate = Main.GlobalTimeWrappedHourly * 15;
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.PaleVioletRed,
+                    Color.Coral,
+                    Color.Khaki,
+                    Color.PaleGreen,
+                    Color.Turquoise,
+                    Color.Violet
+                };
+
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                nameLine.OverrideColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            }
 
             // Developer items
             if (item.type == ModContent.ItemType<Sylvestaff>())
