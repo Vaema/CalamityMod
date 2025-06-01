@@ -146,7 +146,7 @@ namespace CalamityMod.Systems.Collections
                 "Azura",
                 "BakaQing",
                 "Ben",
-                // "Ben Shapiro", // 0JUN2025: Ozzatron: we already have this as a guide name. That's enough. Melting him in lava is appropriate. Crediting him for funding is not.
+                // "Ben Shapiro", // 01JUN2025: Ozzatron: we already have this as a guide name. That's enough. Melting him in lava is appropriate. Crediting him for funding is not.
                 "Bendy",
                 "Beta165",
                 "Bladesaber",
