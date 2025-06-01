@@ -705,22 +705,26 @@ namespace CalamityMod.NPCs.TownNPCs
             }
             else
             {
-                Main.npcChatText = Donors();
+                Main.npcChatText = GetRandomDonors(25);
             }
         }
 
-        public string Donors()
+        /// <summary>
+        /// Returns 25 random donator usernames.
+        /// </summary>
+        public string GetRandomDonors(int numDonors)
         {
-            IList<string> donorList = new List<string>(DonatorsNameList.List);
-            int maxDonorsListed = 25;
-            string[] donors = new string[maxDonorsListed];
-            for (int i = 0; i < maxDonorsListed; i++)
+            IList<string> pickingList = [..DonatorsNameList.List];
+
+            string[] pickedDonors = new string[numDonors];
+            for (int i = 0; i < numDonors; ++i)
             {
-                donors[i] = donorList[Main.rand.Next(donorList.Count)];
-                donorList.Remove(donors[i]);
+                int idxSelected = Main.rand.Next(pickingList.Count);
+                pickedDonors[i] = pickingList[idxSelected];
+                pickingList.RemoveAt(idxSelected);
             }
 
-            string text = this.GetLocalization("DonorShoutout").Format(donors);
+            string text = this.GetLocalization("DonorShoutout").Format(pickedDonors);
             return text;
         }
 

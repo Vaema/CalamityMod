@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,9 +12,60 @@ namespace CalamityMod.Systems.Collections
     {
         public static IList<string> List { get; private set; }
 
+        /// <summary>
+        /// This list contains all the donors of the current Patreon, which is for the entire Calamity Dev Team. <br /><br />
+        /// <b>There is no overlap between OriginalPatreonList and this list.</b><br /><br />
+        /// Any user who donates to the new team-wide Patreon gets added to this new list and removed from the old one.
+        /// </summary>
+        internal static IList<string> NewPatreonList { get; private set; }
+
+        /// <summary>
+        /// This list contains all the donors of the previous Patreon, which was in Fabsol's name. <br /><br />
+        /// <b>There is no overlap between NewPatreonList and this list.</b><br /><br />
+        /// Any user who donates to the new team-wide Patreon gets added to the new list and removed from this one. 
+        /// </summary>
+        internal static IList<string> OriginalPatreonList { get; private set; }
+
         public override void OnModLoad()
         {
-            List =
+            // All donors at the $10 - Brimstone tier or higher are included in the shout-out.
+            // This is updated for each release.
+            NewPatreonList =
+            [
+                "Aerosyn",
+                "Arcxus",
+                "awesomechapro",
+                "azazel",
+                "BlueRay_256",
+                "botbot94",
+                "Chin",
+                "Cinder",
+                "drake093104",
+                "Grant Curtiss",
+                "Jace Ufret",
+                "JFL",
+                "MizzUltraViolet",
+                "Nature",
+                "Nick H",
+                "Nightinglade",
+                "Patch357",
+                "Phil Broome",
+                "roryoftheabyss",
+                "Sable",
+                "SakuraWinterz",
+                "Salted Warlock",
+                "Shayy", // Current dev. Listed as "Shay" on Patreon.
+                "SirChaos189",
+                "SkeletonHunter96",
+                "Taylor Olligoci", // also an ex-dev. Listed as "Lilac Olligoci" on Patreon. There were two "Taylor"s on the old list
+                "Xtra Trinity 3678",
+                "Zachtoplasm",
+                "ZoeyPlague",
+            ];
+            
+            // 01JUN2025: Ozzatron: TODO -- Alphabetically sort this list. No time before release.
+            // Historical donor list. Please never remove names from here unless you are also adding them to NewPatreonList.
+            OriginalPatreonList =
             [
                 "Vorbis",
                 "SoloMael",
@@ -64,7 +116,6 @@ namespace CalamityMod.Systems.Collections
                 "MovingTarget_086",
                 "Shiro",
                 "Chip",
-                "Taylor",
                 "ShotgunAngel",
                 "Sandblast",
                 "ThomasThePencil",
@@ -203,7 +254,6 @@ namespace CalamityMod.Systems.Collections
                 "Olkothan",
                 "Vmar98",
                 "Dasdruid",
-                "Cinder",
                 "Brutzli",
                 "Yhashtur",
                 "Zekai",
@@ -542,7 +592,6 @@ namespace CalamityMod.Systems.Collections
                 "Kaledoulas",
                 "Mohammad",
                 "Skeli_G",
-                "Arcxus",
                 "Sigil",
                 "Dull",
                 "DjackV",
@@ -641,25 +690,16 @@ namespace CalamityMod.Systems.Collections
                 "Pusheen_",
                 "Patrera"
             ];
+
+            // Staple the two lists together.
+            List = [..OriginalPatreonList, ..NewPatreonList];
         }
 
-        public override void Unload() => List = null;
-
-        /// <summary>
-        /// Returns 25 random donator usernames.
-        /// </summary>
-        public static string[] GetRandomDonors()
+        public override void Unload()
         {
-            List<string> donorList = new(List);
-            const int maxDonorsListed = 25;
-            string[] donors = new string[maxDonorsListed];
-            for (int i = 0; i < maxDonorsListed; i++)
-            {
-                donors[i] = donorList[Main.rand.Next(donorList.Count)];
-                donorList.Remove(donors[i]);
-            }
-
-            return donors;
+            OriginalPatreonList = null;
+            NewPatreonList = null;
+            List = null;
         }
     }
 }
