@@ -197,6 +197,7 @@ namespace CalamityMod.NPCs
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
+            "Vela", // <@!208719047146209281> (nyxxynightstar)
         };
         private static readonly string[] SantaClausNames =
         {
