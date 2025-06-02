@@ -55,6 +55,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || bossRush;
 
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
@@ -124,7 +126,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Fire projectiles
             NPC.ai[0] += 1f;
-            if (NPC.ai[0] >= (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue))
+            if (NPC.ai[0] >= (bossRush ? BoltShootGateValue_BossRush : death ? BoltShootGateValue_Death : BoltShootGateValue))
             {
                 NPC.ai[0] = 0f;
 
@@ -134,7 +136,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Vector2 projVector = new Vector2(xDist, yDist);
                 float projLength = projVector.Length();
 
-                float speed = Main.masterMode ? 12f : 10f;
+                float speed = death ? 12f : 10f;
                 int type = ModContent.ProjectileType<JewelProjectile>();
 
                 projLength = speed / projLength;
@@ -152,9 +154,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int damage = NPC.GetProjectileDamage(type);
-                    if (CalamityWorld.death || BossRushEvent.BossRushActive)
+                    if (death)
                     {
-                        int numProj = Main.masterMode ? 5 : 4;
+                        int numProj = 4;
                         float rotation = MathHelper.ToRadians(18);
                         for (int i = 0; i < numProj; i++)
                         {

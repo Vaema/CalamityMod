@@ -234,7 +234,7 @@ namespace CalamityMod.CalPlayer
                     Player.fishingSkill += 5;
 
             }
-            if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
+            if (alcoholPoisonLevel > 3)
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;

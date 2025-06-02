@@ -303,7 +303,7 @@ namespace CalamityMod.World
                 {
                     float interpolator = Utils.GetLerpValue(startPosY - 90, startPosY - 150, y, true);
 
-                    // This lerp does absolutely nothing. - Fabsol
+                    // This lerp does absolutely nothing.
                     float ditherStrength = MathHelper.Lerp(0f, 0f, interpolator);
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]

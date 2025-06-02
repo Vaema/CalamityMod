@@ -38,11 +38,11 @@ namespace CalamityMod.Items.Accessories
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
             player.GetDamage<GenericDamageClass>() += 0.1f;
-            modPlayer.HeatDebuffMultiplier += 3f;
-            modPlayer.ColdDebuffMultiplier += 3f;
-            modPlayer.SicknessDebuffMultiplier += 3f;
-            modPlayer.WaterDebuffMultiplier += 3f;
-            modPlayer.ElectricDebuffMultiplier += 3f;
+            modPlayer.HeatDebuffMultiplier += 2f;
+            modPlayer.ColdDebuffMultiplier += 2f;
+            modPlayer.SicknessDebuffMultiplier += 2f;
+            modPlayer.WaterDebuffMultiplier += 2f;
+            modPlayer.ElectricDebuffMultiplier += 2f;
         }
 
         public override void AddRecipes()

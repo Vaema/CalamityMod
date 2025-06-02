@@ -118,7 +118,8 @@ namespace CalamityMod.Projectiles.Typeless
 
             Projectile.rotation = 0.2f * sine;
 
-            Lighting.AddLight(Projectile.Center, usedColor.ToVector3() * 0.3f);
+            if (Owner.Calamity().scionsCurioVisuals)
+                Lighting.AddLight(Projectile.Center, usedColor.ToVector3() * 0.3f);
 
             // Swine Secrets
             int textSpeed = 5;
@@ -204,7 +205,7 @@ namespace CalamityMod.Projectiles.Typeless
                 swineSecretTimer = originalLength * textSpeed + 30;
                 idleTimer = idleMax - 300 - swineSecretTimer;
             }
-            if (Owner.velocity.Length() < 2)
+            if (Owner.velocity.Length() < 2 && Owner.Calamity().scionsCurioVisuals)
                 idleTimer++;
             else
             {
@@ -226,11 +227,13 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 18; i++) // Backglow
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 18f).ToRotationVector2() * 2 * drawMult * attackFade;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset + shake, null, Color.Lerp(drawColor, Color.Chartreuse, attackFade - 1) with { A = 0 } * 0.2f * drawMult, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, facing == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+                if (attackFade > 1 || Owner.Calamity().scionsCurioVisuals)
+                    Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset + shake, null, Color.Lerp(drawColor, Color.Chartreuse, attackFade - 1) with { A = 0 } * 0.2f * drawMult, Projectile.rotation, tex.Size() * 0.5f, Projectile.scale, facing == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             }
 
             // Main body
-            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + shake, null, Color.Lerp(bodyColor, Color.Chartreuse with { A = 0 }, attackFade - 1), Projectile.rotation, tex.Size() * 0.5f, new Vector2(1f, 1f) * Projectile.scale, facing == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
+            if (Owner.Calamity().scionsCurioVisuals)
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + shake, null, Color.Lerp(bodyColor, Color.Chartreuse with { A = 0 }, attackFade - 1), Projectile.rotation, tex.Size() * 0.5f, new Vector2(1f, 1f) * Projectile.scale, facing == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
 
             // Eye Shine
             for (int j = -1; j <= 1; j += 2)

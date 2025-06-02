@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.zenithWorld)
                 {
-                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 12);
+                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 13);
                     SoundEngine.PlaySound(bees with { Volume = 1.5f }, Projectile.Center);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/TheHiveNuke");
                     SoundEngine.PlaySound(fire with { Volume = 0.35f }, Projectile.Center);

@@ -174,7 +174,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
+            // Note from CIT: I originally removed these entirely;
             cursor.Emit(OpCodes.Pop);
             cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
         }
@@ -1153,14 +1153,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Multiple NPC Happiness support for Cirrus
-        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        #region Multiple NPC Happiness support 
+        // Currently unused as the one NPC who used it was removed. However it is very likely it'll be used again in the future, so this code is being kept.
+        /*private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
         {
             FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
             NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
 
-            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
-            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            int npcTypee = 0;
+
+            // Allow the given NPC to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == npcTypee)
             {
                 MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -1182,7 +1185,7 @@ namespace CalamityMod.ILEditing
             {
                 orig(self, npcType, affectionLevel);
             }
-        }
+        }*/
         #endregion
 
         #region Allow disabling gravity swap visual && allow gravity keybind

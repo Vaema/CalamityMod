@@ -1195,7 +1195,7 @@ namespace CalamityMod.NPCs
                 { NPCID.TheHungry, 0.1f },
                 { NPCID.UndeadViking, 0.1f },
                 { NPCID.WalkingAntlion, 0.1f },
-                { NPCID.WallofFlesh, 0.5f },
+                { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
 
@@ -1580,8 +1580,8 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
             {
-                // HP boosted in Master Mode due to having two heads (piercing can make them die faster than normal here since they share an HP bar)
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * (Main.masterMode ? 1.7 : 1.2));
+                // HP boosted in Death Mode due to having two heads (piercing can make them die faster than normal here since they share an HP bar)
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 1.7 : 1.2));
                 npc.npcSlots = 12f;
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
@@ -1684,8 +1684,8 @@ namespace CalamityMod.NPCs
         #region Vulnerabilities and Resistances
         private void VulnerabilitiesAndResistances(NPC npc)
         {
-            // These enemies are categorized in such a way to make them easy to understand.
-            // Do not mess with these categories unless you ask me for permission - Fab.
+            // These enemies are categorized in such a way to make them easy to understand
+            // Regroup these if necessary, reminder to keep it comprehensive
             switch (npc.type)
             {
                 // Regular organic desert enemies.
@@ -3491,17 +3491,9 @@ namespace CalamityMod.NPCs
                 effectiveDR = 0f;
 
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
-            // Cirrus being active makes the extra DR cease to function
-            bool cirrusBossActive = false;
-            if (SCal != -1)
-            {
-                if (Main.npc[SCal].active)
-                    cirrusBossActive = Main.npc[SCal].ModNPC<SupremeCalamitas.SupremeCalamitas>().cirrus;
-            }
-
             bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
             bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && !cirrusBossActive && (enragedProvi || dayEmpress))
+            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && (enragedProvi || dayEmpress))
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
@@ -3613,14 +3605,14 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime && (Main.masterMode || BossRushEvent.BossRushActive))
+                if (npc.type == NPCID.SkeletronPrime && (CalamityWorld.death || BossRushEvent.BossRushActive))
                     index = ExtraTextureRefs.BossHeadIndex_ChadPrime;
 
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
                     float lifeRatio = npc.life / (float)npc.lifeMax;
-                    float mapIconVanishValue = Main.masterMode ? 0.3f : 0.4f;
-                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (Main.masterMode || BossRushEvent.BossRushActive)))
+                    float mapIconVanishValue = CalamityWorld.death ? 0.3f : 0.4f;
+                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (CalamityWorld.death || BossRushEvent.BossRushActive)))
                         index = -1;
                 }
             }
@@ -3821,7 +3813,7 @@ namespace CalamityMod.NPCs
                         {
                             npc.TargetClosest();
 
-                            float velocity = Main.getGoodWorld ? 12f : (Main.masterMode || BossRushEvent.BossRushActive) ? 10.5f : 9f;
+                            float velocity = Main.getGoodWorld ? 12f : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 10.5f : 9f;
                             if (npc.ai[1] == 70f)
                                 velocity *= 0.4f;
 
@@ -3915,6 +3907,10 @@ namespace CalamityMod.NPCs
 
                     case NPCID.QueenSlimeBoss:
                         return QueenSlimeAI.BuffedQueenSlimeAI(npc, Mod);
+                    case NPCID.QueenSlimeMinionBlue:
+                        return QueenSlimeAI.BuffedQueenSlimeCrystalSlimeAI(npc, Mod);
+                    case NPCID.QueenSlimeMinionPink:
+                        return QueenSlimeAI.BuffedQueenSlimeBouncySlimeAI(npc, Mod);
 
                     case NPCID.TheDestroyer:
                     case NPCID.TheDestroyerBody:
@@ -4008,106 +4004,6 @@ namespace CalamityMod.NPCs
                     case NPCID.MoonLordFreeEye:
                     case NPCID.MoonLordLeechBlob:
                         return MoonLordAI.BuffedMoonLordAI(npc, Mod);
-
-                    default:
-                        break;
-                }
-            }
-
-            // Adjust vanilla AI in Classic, Expert and Master
-            // Fair contact damage and a few Expert/Master AI edits happen here
-            // Deerclops doesn't deserve love so he's not here
-            else if (!CalamityMod.ExternalFlag_DisableNonRevBossAI)
-            {
-                switch (npc.type)
-                {
-                    case NPCID.KingSlime:
-                        return KingSlimeAI.VanillaKingSlimeAI(npc, Mod);
-
-                    case NPCID.EyeofCthulhu:
-                        return EyeOfCthulhuAI.VanillaEyeofCthulhuAI(npc, Mod);
-
-                    case NPCID.EaterofWorldsHead:
-                    case NPCID.EaterofWorldsBody:
-                    case NPCID.EaterofWorldsTail:
-                        return EaterOfWorldsAI.VanillaEaterofWorldsAI(npc, Mod);
-
-                    case NPCID.BrainofCthulhu:
-                        return BrainOfCthulhuAI.VanillaBrainofCthulhuAI(npc, Mod);
-                    case NPCID.Creeper:
-                        return BrainOfCthulhuAI.VanillaCreeperAI(npc, Mod);
-
-                    case NPCID.QueenBee:
-                        return QueenBeeAI.VanillaQueenBeeAI(npc, Mod);
-
-                    case NPCID.SkeletronHand:
-                        return SkeletronAI.VanillaSkeletronHandAI(npc, Mod);
-                    case NPCID.SkeletronHead:
-                        return SkeletronAI.VanillaSkeletronAI(npc, Mod);
-
-                    case NPCID.WallofFlesh:
-                        return WallOfFleshAI.VanillaWallofFleshAI(npc, Mod);
-                    case NPCID.WallofFleshEye:
-                        return WallOfFleshAI.VanillaWallofFleshEyeAI(npc, Mod);
-
-                    case NPCID.QueenSlimeBoss:
-                        return QueenSlimeAI.VanillaQueenSlimeAI(npc, Mod);
-
-                    case NPCID.TheDestroyer:
-                    case NPCID.TheDestroyerBody:
-                    case NPCID.TheDestroyerTail:
-                        return DestroyerAI.VanillaDestroyerAI(npc, Mod);
-                    case NPCID.Probe:
-                        return DestroyerAI.VanillaProbeAI(npc, Mod);
-
-                    case NPCID.Retinazer:
-                        return TwinsAI.VanillaRetinazerAI(npc, Mod);
-                    case NPCID.Spazmatism:
-                        return TwinsAI.VanillaSpazmatismAI(npc, Mod);
-
-                    case NPCID.SkeletronPrime:
-                        return SkeletronPrimeAI.VanillaSkeletronPrimeAI(npc, Mod);
-                    case NPCID.PrimeLaser:
-                        return SkeletronPrimeAI.VanillaPrimeLaserAI(npc, Mod);
-                    case NPCID.PrimeCannon:
-                        return SkeletronPrimeAI.VanillaPrimeCannonAI(npc, Mod);
-                    case NPCID.PrimeVice:
-                        return SkeletronPrimeAI.VanillaPrimeViceAI(npc, Mod);
-                    case NPCID.PrimeSaw:
-                        return SkeletronPrimeAI.VanillaPrimeSawAI(npc, Mod);
-
-                    case NPCID.Plantera:
-                        return PlanteraAI.VanillaPlanteraAI(npc, Mod);
-
-                    case NPCID.HallowBoss:
-                        return EmpressofLightAI.VanillaEmpressofLightAI(npc, Mod);
-
-                    case NPCID.Golem:
-                        return GolemAI.VanillaGolemAI(npc, Mod);
-                    case NPCID.GolemFistLeft:
-                    case NPCID.GolemFistRight:
-                        return GolemAI.VanillaGolemFistAI(npc, Mod);
-                    case NPCID.GolemHead:
-                        return GolemAI.VanillaGolemHeadAI(npc, Mod);
-                    case NPCID.GolemHeadFree:
-                        return GolemAI.VanillaGolemHeadFreeAI(npc, Mod);
-
-                    case NPCID.DukeFishron:
-                        return DukeFishronAI.VanillaDukeFishronAI(npc, Mod);
-
-                    case NPCID.CultistBoss:
-                    case NPCID.CultistBossClone:
-                        return CultistAI.VanillaCultistAI(npc, Mod);
-                    case NPCID.AncientLight:
-                        return CultistAI.VanillaAncientLightAI(npc, Mod);
-                    case NPCID.AncientDoom:
-                        return CultistAI.VanillaAncientDoomAI(npc, Mod);
-
-                    /*case NPCID.MoonLordCore:
-                    case NPCID.MoonLordHand:
-                    case NPCID.MoonLordHead:
-                    case NPCID.MoonLordFreeEye:
-                        return MoonLordAI.VanillaMoonLordAI(npc, Mod);*/
 
                     default:
                         break;
@@ -4737,12 +4633,6 @@ namespace CalamityMod.NPCs
                         break;
                 }
             }
-
-            if (npc.type == NPCID.QueenSlimeMinionBlue)
-                return QueenSlimeAI.QueenSlimeCrystalSlimeAI(npc, Mod);
-
-            if (npc.type == NPCID.QueenSlimeMinionPink)
-                return QueenSlimeAI.QueenSlimeBouncySlimeAI(npc, Mod);
 
             if (npc.type == NPCID.FungiBulb)
                 return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
@@ -6378,7 +6268,7 @@ namespace CalamityMod.NPCs
         {
             if (npc.type == NPCID.SkeletronPrime)
             {
-                if ((Main.masterMode || BossRushEvent.BossRushActive) && CalamityWorld.revenge)
+                if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 {
                     // Kill the other head if he's still alive when this head dies
                     for (int i = 0; i < Main.maxNPCs; i++)
@@ -7029,8 +6919,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            // 12JUL2023: Ozzatron: what does this do
-            // 27SEP2023: Fabsol: disables vanilla spawns "a pool of [0] indicates vanilla spawning"
+            // Disable vanilla spawns while in the Brimstone Crag
             if (calamityBiomeZone)
             {
                 pool[0] = 0f;
@@ -8100,8 +7989,8 @@ namespace CalamityMod.NPCs
                         }
                         else if (npc.type == NPCID.TheDestroyerBody && revenge)
                         {
-                            float shootProjectileTime = death ? (masterMode ? (phase5 ? 30f : phase4 ? 60f : 90f) : 270f) : (masterMode ? (phase5 ? 90f : phase4 ? 120f : 150f) : 450f);
-                            float bodySegmentTime = npc.ai[0] * (masterMode ? 15f : 30f);
+                            float shootProjectileTime = death ? (phase5 ? 120f : phase4 ? 150f : 180f) : 450f;
+                            float bodySegmentTime = npc.ai[0] * (death ? 20f : 30f);
                             float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
                             float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
                             if (newAI[0] > telegraphGateValue)
@@ -8122,15 +8011,6 @@ namespace CalamityMod.NPCs
                                 }
                                 telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
                             }
-                        }
-                        else if (npc.type == NPCID.TheDestroyerBody)
-                        {
-                            float shootProjectileTime = Main.masterMode ? 500f : Main.expertMode ? 700f : 900f;
-                            float bodySegmentTime = npc.ai[0] * 30f;
-                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                            float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
-                            if (npc.localAI[0] > telegraphGateValue)
-                                telegraphProgress = MathHelper.Clamp((npc.localAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
                         }
                     }
 
@@ -9869,7 +9749,7 @@ namespace CalamityMod.NPCs
         #region Type Name Changes
         public override void ModifyTypeName(NPC npc, ref string typeName)
         {
-            if ((Main.masterMode && CalamityWorld.death) || BossRushEvent.BossRushActive)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
             {
                 if (npc.type == NPCID.SkeletronPrime)
                 {

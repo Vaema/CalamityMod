@@ -159,7 +159,6 @@ namespace CalamityMod.NPCs.HiveMind
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -202,17 +201,6 @@ namespace CalamityMod.NPCs.HiveMind
                 driftSpeed = 6f;
                 driftBoost = 1f;
                 vileSpitFireRate = 12;
-            }
-
-            if (masterMode)
-            {
-                lungeRots += 0.1;
-                minimumDriftTime /= 2;
-                reelbackFade *= 2;
-                lungeTime -= 5;
-                driftSpeed += ((death && !bossRush) ? 0.5f : 1f);
-                driftBoost += ((death && !bossRush) ? 0.5f : 1f);
-                vileSpitFireRate -= 6;
             }
 
             if (Main.getGoodWorld)
@@ -370,15 +358,14 @@ namespace CalamityMod.NPCs.HiveMind
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
-                int type = 0;
-                int choice = masterMode ? 1 : -1;
+                int type;
+                int choice = -1;
                 do
                 {
                     choice++;
@@ -459,7 +446,6 @@ namespace CalamityMod.NPCs.HiveMind
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -886,7 +872,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                     phase2timer--;
 
-                    if (masterMode)
+                    if (death)
                     {
                         // Use an attack sooner if being hit
                         if (NPC.justHit)
@@ -934,7 +920,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y = NPC.ai[2] * 16 - NPC.height / 2;
                         }
 
-                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                        phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                         NPC.ForceNetUpdate();
                     }
                     else if (NPC.ai[1] == 0f && NPC.ai[2] == 0f)
@@ -1003,7 +989,7 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
 
-                            if (masterMode)
+                            if (death)
                             {
                                 NPC.localAI[2] += 1f;
                                 if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
@@ -1042,7 +1028,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 {
                                     NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
 
-                                    if (masterMode)
+                                    if (death)
                                     {
                                         NPC.localAI[2] += 1f;
                                         if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
@@ -1086,7 +1072,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y += teleportRadius;
                         }
 
-                        NPC.alpha -= masterMode ? 10 : 5;
+                        NPC.alpha -= 5;
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
@@ -1148,7 +1134,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.X += (death ? (teleportRadius * 1.5f) : teleportRadius) * (rainDashesPerformed == 0 ? rotationDirection : -rotationDirection);
                         }
 
-                        NPC.alpha -= masterMode ? 10 : 5;
+                        NPC.alpha -= 5;
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
@@ -1217,7 +1203,7 @@ namespace CalamityMod.NPCs.HiveMind
                             }
                             else
                             {
-                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                                 performingRainDashCombo = false;
                                 rainDashesPerformed = 0;
                                 state = 0;
@@ -1232,7 +1218,7 @@ namespace CalamityMod.NPCs.HiveMind
                             }
                             else
                             {
-                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                                 performingLungeCombo = false;
                                 lungesPerformed = 0;
                                 state = 0;
@@ -1240,7 +1226,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
                         else
                         {
-                            phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                            phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                             state = 0;
                         }
 

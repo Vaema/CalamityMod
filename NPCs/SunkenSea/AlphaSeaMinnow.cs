@@ -27,12 +27,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 600;
+        public static int IdleMinPathDistance = 100;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
 
         public Vector2 randomPathPoint;
+
+        public bool instantiated = false;
 
         protected override List<int> PreyIDs => new List<int>();
 
@@ -109,15 +111,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.6f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.6f,
+                    MaxSpeed = 4f,
+                };
+            }
             if (NPC.wet)
             {
                 switch (CurrentBehavior)
