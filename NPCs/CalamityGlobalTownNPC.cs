@@ -185,6 +185,7 @@ namespace CalamityMod.NPCs
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
+            "Yarrim", // <@!290061123137306624> (borb9834)
         };
         private static readonly string[] PrincessNames =
         {
