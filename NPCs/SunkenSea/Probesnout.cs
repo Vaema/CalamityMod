@@ -131,6 +131,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
+            pathfinding = new PathfindingManager(NPC)
+            {
+                Acceleration = 0.4f,
+                MaxSpeed = 8f,
+                MinimumPointDistance = 60f
+            };
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
