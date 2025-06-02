@@ -584,8 +584,8 @@ namespace CalamityMod.NPCs.Other
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
-            npcLoot.AddIf(() => CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
-            npcLoot.AddIf(() => !(CalamityWorld.LegendaryMode && CalamityWorld.revenge), ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
+            npcLoot.AddIf(() => CalamityWorld.LegendaryMode, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
+            npcLoot.AddIf(() => !CalamityWorld.LegendaryMode, ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
             npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }
     }

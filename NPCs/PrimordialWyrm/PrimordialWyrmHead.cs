@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             float ancientDoomGateValue = death ? 95f : revenge ? 100f : expertMode ? 105f : 120f;
             float lightningChargePhaseGateValue = death ? 120f : revenge ? 135f : expertMode ? 150f : 180f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 lightningRainDuration *= 0.5f;
                 eidolonWyrmPhaseDuration *= 0.25f;
@@ -448,7 +448,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Velocity and turn speed values
             float velocityScale = death ? 1.8f : revenge ? 1.5f : expertMode ? 1.2f : 0f;
             float baseVelocity = (targetDownDeep ? 10f : 15f) + (targetDownDeep ? velocityScale : velocityScale * 1.5f);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.15f;
 
             float turnSpeed = baseVelocity * 0.015f;

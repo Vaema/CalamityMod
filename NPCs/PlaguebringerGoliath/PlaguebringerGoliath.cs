@@ -176,7 +176,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             float challengeAmt = (1f - lifeRatio) * 100f;
             float nukeBarrageChallengeAmt = (0.5f - lifeRatio) * 200f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 challengeAmt *= 1.5f;
                 nukeBarrageChallengeAmt *= 1.5f;
@@ -209,7 +209,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             // Missile countdown
             if (halfLife && MissileCountdown == 0)
-                MissileCountdown = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 300 : 600;
+                MissileCountdown = CalamityWorld.LegendaryMode ? 300 : 600;
             if (MissileCountdown > 1)
                 MissileCountdown--;
 
@@ -250,7 +250,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (enrageScale > 1.5f)
                 enrageScale = 1.5f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrageScale += 0.5f;
 
             if (bossRush)
@@ -545,7 +545,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                             NPC.velocity *= 1.01f;
 
                         // Spawn honey in legendary rev+
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge && calamityGlobalNPC.newAI[0] % 6f == 0f)
+                        if (CalamityWorld.LegendaryMode && calamityGlobalNPC.newAI[0] % 6f == 0f)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -803,7 +803,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 NPC.direction = playerLocation < 0 ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                if (NPC.ai[2] > ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 3f : 5f))
+                if (NPC.ai[2] > (CalamityWorld.LegendaryMode ? 3f : 5f))
                 {
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;

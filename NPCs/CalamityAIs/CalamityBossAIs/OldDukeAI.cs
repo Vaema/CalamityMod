@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             bool death = CalamityWorld.death || bossRush;
 
             float exhaustionGateValue = 360f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 exhaustionGateValue *= 0.5f;
 
             float numberOfAttacksBeforeExhaustion = 12f;
@@ -147,7 +147,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.LegendaryMode)
                 chargeVelocity *= 1.25f;
 
             if (exhausted)
@@ -305,7 +305,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.LegendaryMode)
                 chargeTime *= 2;
 
             // Set variables for spawn effects
@@ -609,7 +609,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && npc.ai[2] % 10f == 0f)
+                if (CalamityWorld.LegendaryMode && npc.ai[2] % 10f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - npc.Center.X);
@@ -781,7 +781,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 900f), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 900f), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 1800f), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 1800f), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
@@ -828,7 +828,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 50f + calamityGlobalNPC.newAI[2]), (int)(npc.Center.Y + 540f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, 1f, -sharkronVelocity, 255);
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 50f - calamityGlobalNPC.newAI[2]), (int)(npc.Center.Y + 540f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, -1f, -sharkronVelocity, 255);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 50f + calamityGlobalNPC.newAI[2] * 0.5f), (int)(npc.Center.Y + 270f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, 1f, -sharkronVelocity, 255);
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 50f - calamityGlobalNPC.newAI[2] * 0.5f), (int)(npc.Center.Y + 270f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, -1f, -sharkronVelocity, 255);
@@ -984,7 +984,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && npc.ai[2] % 8f == 0f)
+                if (CalamityWorld.LegendaryMode && npc.ai[2] % 8f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - npc.Center.X);
@@ -1141,13 +1141,13 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         Vector2 phase2GoreDirection = npc.rotation.ToRotationVector2() * (Vector2.UnitX * npc.direction) * (npc.width + 20) / 2f + npc.Center;
                         int type = ModContent.ProjectileType<OldDukeGore>();
                         int damage = npc.GetProjectileDamage(type);
-                        int totalGore = Main.getGoodWorld ? 40 : 20;
+                        int totalGore = CalamityWorld.LegendaryMode ? 40 : 20;
                         for (int i = 0; i < totalGore; i++)
                         {
                             float velocityX = npc.direction * goreVelocityX * (Main.rand.NextFloat(0.2f, 0.8f) + 0.5f);
                             float velocityY = goreVelocityY * (Main.rand.NextFloat(0.2f, 0.8f) + 0.5f);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 velocityX *= Main.rand.NextFloat() + 0.5f;
                                 velocityY *= Main.rand.NextFloat() + 0.5f;
@@ -1211,7 +1211,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 50f + calamityGlobalNPC.newAI[2]), (int)(npc.Center.Y - 540f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, 1f, sharkronVelocity, 255);
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 50f - calamityGlobalNPC.newAI[2]), (int)(npc.Center.Y - 540f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, -1f, sharkronVelocity, 255);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + 50f + calamityGlobalNPC.newAI[2] * 0.5f), (int)(npc.Center.Y + 270f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, 1f, -sharkronVelocity, 255);
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - 50f - calamityGlobalNPC.newAI[2] * 0.5f), (int)(npc.Center.Y + 270f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, -1f, -sharkronVelocity, 255);
@@ -1379,7 +1379,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && npc.ai[2] % 6f == 0f)
+                if (CalamityWorld.LegendaryMode && npc.ai[2] % 6f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - npc.Center.X);
@@ -1517,13 +1517,13 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         Vector2 phase3GoreDirection = npc.rotation.ToRotationVector2() * (Vector2.UnitX * npc.direction) * (npc.width + 20) / 2f + npc.Center;
                         int type = ModContent.ProjectileType<OldDukeGore>();
                         int damage = npc.GetProjectileDamage(type);
-                        int totalGore = Main.getGoodWorld ? 40 : 20;
+                        int totalGore = CalamityWorld.LegendaryMode ? 40 : 20;
                         for (int i = 0; i < totalGore; i++)
                         {
                             float velocityX = npc.direction * goreVelocityX * (Main.rand.NextFloat(0.2f, 0.8f) + 0.5f);
                             float velocityY = goreVelocityY * (Main.rand.NextFloat(0.2f, 0.8f) + 0.5f);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 velocityX *= Main.rand.NextFloat() + 0.5f;
                                 velocityY *= Main.rand.NextFloat() + 0.5f;
@@ -1546,7 +1546,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + x), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - x), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2]), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
 
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X + x), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2] * 0.5f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X - x), (int)(npc.Center.Y - calamityGlobalNPC.newAI[2] * 0.5f), ModContent.NPCType<SulphurousSharkron>(), 0, 0f, 0f, npc.whoAmI, 0f, 255);

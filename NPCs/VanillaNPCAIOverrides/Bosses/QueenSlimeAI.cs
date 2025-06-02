@@ -328,7 +328,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (death)
                         {
                             int numGelProjectiles = 12;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 numGelProjectiles = 15;
 
                             float gelVelocity = death ? 20f : 16f;
@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
 
                         float jumpVelocity = bossRush ? 9f : death ? 7f : 4.5f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             jumpVelocity = 12f;
 
                         if ((npc.direction == 1 && npc.velocity.X < jumpVelocity) || (npc.direction == -1 && npc.velocity.X > 0f - jumpVelocity))
@@ -512,7 +512,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (phase2)
                             slamDelay = 10;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             slamDelay = 0;
 
                         if (npc.velocity.Y == 0f)
@@ -626,7 +626,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.velocity.Y += bossRush ? 2f : death ? 1.75f : 1.5f;
                             float slamVelocity = bossRush ? 15.99f : death ? 15.5f : 15f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 npc.velocity.Y += 1f;
                                 slamVelocity = 15.99f;
@@ -732,7 +732,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numGelProjectiles = phase4 ? Main.rand.Next(9, 12) : phase2 ? Main.rand.Next(6, 9) : 12;
                             if (phase5)
                                 numGelProjectiles += 6;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 numGelProjectiles = 20;
 
                             float projectileVelocity = death ? 12f : 10.5f;

@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         SoundEngine.PlaySound(SoundID.Item109, npc.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -117,7 +117,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         SoundEngine.PlaySound(SoundID.Item109, npc.Center);
                         calamityGlobalNPC.newAI[2] = 1f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 baseVelocity += 1.5f * (1f - lifeRatio);
                 baseAcceleration += 0.03f * (1f - lifeRatio);
             }
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 baseVelocity *= 1.15f;
                 baseAcceleration *= 1.15f;
@@ -355,7 +355,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
-                            float gigaBlastFrequency = (Main.getGoodWorld ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
+                            float gigaBlastFrequency = (CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
                             float projSpeed = bossRush ? 6.25f : 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {
@@ -492,7 +492,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 return;
             }
-            else if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            else if (CalamityWorld.LegendaryMode)
             {
                 if (calamityGlobalNPC.newAI[3] < 900f)
                     calamityGlobalNPC.newAI[3] += 1f;
@@ -580,7 +580,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
                         int damage = npc.GetProjectileDamage(type);
-                        bool shootPredictiveShot = CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool();
+                        bool shootPredictiveShot = CalamityWorld.LegendaryMode && Main.rand.NextBool();
                         Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - npc.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -862,7 +862,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
                 calCloneBroProjAttackAccel += 0.06f * enrageScale;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     calCloneBroProjAttackMaxSpeed *= 1.15f;
                     calCloneBroProjAttackAccel *= 1.15f;
@@ -989,7 +989,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         calCloneBroChargeSpeed += 2f;
                     if (revenge)
                         calCloneBroChargeSpeed += 2f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         calCloneBroChargeSpeed *= 1.25f;
 
                     Vector2 calCloneBroChargeCenter = npc.Center;
@@ -1196,7 +1196,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
                 calCloneBroProjAttackAccel += 0.1f * enrageScale;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     calCloneBroProjAttackMaxSpeed *= 1.15f;
                     calCloneBroProjAttackAccel *= 1.15f;
@@ -1320,7 +1320,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         calCloneBroChargeSpeed += 2f;
                     if (revenge)
                         calCloneBroChargeSpeed += 2f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         calCloneBroChargeSpeed *= 1.25f;
 
                     Vector2 calCloneBroChargeCenter = new Vector2(npc.position.X + npc.width * 0.5f, npc.position.Y + npc.height * 0.5f);

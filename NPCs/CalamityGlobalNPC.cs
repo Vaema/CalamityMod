@@ -1979,11 +1979,11 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.KingSlime)
             {
                 if (CalamityWorld.death)
-                    npc.scale = Main.getGoodWorld ? 6f : 2.5f;
+                    npc.scale = CalamityWorld.LegendaryMode ? 6f : 2.5f;
                 else
-                    npc.scale = Main.getGoodWorld ? 3f : 1.5f;
+                    npc.scale = CalamityWorld.LegendaryMode ? 3f : 1.5f;
 
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * (Main.getGoodWorld ? 1.8 : 1.5));
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.LegendaryMode ? 1.8 : 1.5));
             }
             else if ((npc.type == NPCID.Wraith || npc.type == NPCID.Mimic || npc.type == NPCID.Reaper || npc.type == NPCID.PresentMimic || npc.type == NPCID.SandElemental || npc.type == NPCID.Ghost) && CalamityWorld.LegendaryMode)
             {
@@ -4124,14 +4124,14 @@ namespace CalamityMod.NPCs
                         {
                             npc.TargetClosest();
 
-                            float velocity = Main.getGoodWorld ? 12f : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 10.5f : 9f;
+                            float velocity = CalamityWorld.LegendaryMode ? 12f : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 10.5f : 9f;
                             if (npc.ai[1] == 70f)
                                 velocity *= 0.4f;
 
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         }
 
-                        if (Main.getGoodWorld && !npc.dontTakeDamage)
+                        if (CalamityWorld.LegendaryMode && !npc.dontTakeDamage)
                         {
                             if ((double)(npc.Center.Y / 16f) < Main.worldSurface)
                                 npc.dontTakeDamage = true;
@@ -6779,7 +6779,7 @@ namespace CalamityMod.NPCs
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int slimeAmt = Main.getGoodWorld ? Main.rand.Next(6) + 10 : Main.rand.Next(2) + 2; // 2 to 3 extra
+                                int slimeAmt = CalamityWorld.LegendaryMode ? Main.rand.Next(6) + 10 : Main.rand.Next(2) + 2; // 2 to 3 extra
                                 for (int s = 0; s < slimeAmt; s++)
                                 {
                                     int slime = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)(npc.position.Y + npc.height), NPCID.BlueSlime, 0, 0f, 0f, 0f, 0f, 255);
@@ -6787,8 +6787,8 @@ namespace CalamityMod.NPCs
                                     npc2.SetDefaults(NPCID.BabySlime);
                                     npc2.velocity.X = npc.velocity.X * 2f;
                                     npc2.velocity.Y = npc.velocity.Y;
-                                    npc2.velocity.X += Main.rand.Next(-20, 20) * (Main.getGoodWorld ? 0.5f : 0.1f) + s * npc.direction * (Main.getGoodWorld ? 0.5f : 0.3f);
-                                    npc2.velocity.Y -= Main.rand.Next(0, 10) * (Main.getGoodWorld ? 0.5f : 0.1f) + s;
+                                    npc2.velocity.X += Main.rand.Next(-20, 20) * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f) + s * npc.direction * (CalamityWorld.LegendaryMode ? 0.5f : 0.3f);
+                                    npc2.velocity.Y -= Main.rand.Next(0, 10) * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f) + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
                                     if (Main.dedServ && slime < Main.maxNPCs)
@@ -6801,7 +6801,7 @@ namespace CalamityMod.NPCs
                     case NPCID.CursedHammer:
                     case NPCID.EnchantedSword:
                     case NPCID.CrimsonAxe:
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             npc.justHit = false;
 
                         break;
@@ -6812,13 +6812,13 @@ namespace CalamityMod.NPCs
                     case NPCID.IceTortoise:
                     case NPCID.BlackRecluse:
                     case NPCID.BlackRecluseWall:
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             npc.justHit = false;
 
                         break;
 
                     case NPCID.Paladin:
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             npc.justHit = false;
 
                         break;
@@ -6826,7 +6826,7 @@ namespace CalamityMod.NPCs
 
                 if (npc.type == NPCType<Plagueshell>())
                 {
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         npc.justHit = false;
                 }
             }
@@ -7660,7 +7660,7 @@ namespace CalamityMod.NPCs
             if (npc.IsABestiaryIconDummy)
                 return null;
 
-            if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && CalamityWorld.LegendaryMode))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
             if (npc.type == NPCID.KingSlime && CalamityWorld.death)
@@ -8352,7 +8352,7 @@ namespace CalamityMod.NPCs
                         {
                             Color currentColor = npc.GetAlpha(drawColor);
                             float opacityScale = 1f - MathHelper.Lerp(0.34f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
-                            float opacity = Main.getGoodWorld ? 0.7f : opacityScale;
+                            float opacity = CalamityWorld.LegendaryMode ? 0.7f : opacityScale;
 
                             opacity = MathHelper.Clamp(opacity, 0f, 1f);
                             currentColor.R = (byte)((float)(int)currentColor.R * opacity);
@@ -8455,7 +8455,7 @@ namespace CalamityMod.NPCs
                         Color currentColor = npc.GetAlpha(drawColor);
                         float opacity = (1f - Main.npc[NPC.crimsonBoss].life / (float)Main.npc[NPC.crimsonBoss].lifeMax) * 2f;
                         opacity *= opacity;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             opacity = 1f;
 
                         opacity = MathHelper.Clamp(opacity, 0f, 1f);
@@ -8492,7 +8492,7 @@ namespace CalamityMod.NPCs
                         {
                             currentColor = npc.GetAlpha(drawColor);
                             float opacityScale = 1f - Main.npc[NPC.crimsonBoss].life / (float)secondAfterimageSetHealthValue;
-                            opacity = Main.getGoodWorld ? 1f : opacityScale;
+                            opacity = CalamityWorld.LegendaryMode ? 1f : opacityScale;
 
                             opacity = MathHelper.Clamp(opacity, 0f, 1f);
                             currentColor.R = (byte)((float)(int)currentColor.R * opacity);

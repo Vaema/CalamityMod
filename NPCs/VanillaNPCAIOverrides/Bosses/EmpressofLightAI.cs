@@ -73,7 +73,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool visible = true;
             bool takeDamage = true;
             float lessTimeSpentPerPhaseMultiplier = phase2 ? (death ? 0.375f : 0.5f) : (death ? 0.75f : 1f);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 lessTimeSpentPerPhaseMultiplier *= 0.2f;
 
             float extraPhaseTime;
@@ -151,7 +151,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     float idleTimer = phase2 ? (death ? 10f : 15f) : (death ? 20f : 30f);
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         idleTimer *= 0.5f;
                     if (idleTimer < 10f)
                         idleTimer = 10f;

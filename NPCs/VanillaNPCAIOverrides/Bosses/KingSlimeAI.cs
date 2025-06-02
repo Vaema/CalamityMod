@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool teleported = false;
             npc.aiAction = 0;
             float teleportScaleSpeed = 2f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 teleportScaleSpeed -= 1f - lifeRatio;
                 teleportScale *= teleportScaleSpeed;
@@ -317,7 +317,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[0] += teleportRate;
                 teleportScale = MathHelper.Clamp((60f - npc.ai[0]) / 60f, 0f, 1f);
                 teleportScale = 0.5f + teleportScale * 0.5f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     teleportScale *= teleportScaleSpeed;
 
                 if (npc.ai[0] >= 60f)
@@ -399,7 +399,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[0] += teleportRate;
                 teleportScale = MathHelper.Clamp(npc.ai[0] / 30f, 0f, 1f);
                 teleportScale = 0.5f + teleportScale * 0.5f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     teleportScale *= teleportScaleSpeed;
 
                 if (npc.ai[0] >= 30f && Main.netMode != NetmodeID.MultiplayerClient)
@@ -516,7 +516,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
                 if (death)
                     jumpVelocityLimit += 3f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     jumpVelocityLimit = 8f;
 
                 if ((npc.direction == 1 && npc.velocity.X < jumpVelocityLimit) || (npc.direction == -1 && npc.velocity.X > -jumpVelocityLimit))
@@ -554,12 +554,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             // Adjust size based on HP
-            float maxScale = death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
+            float maxScale = death ? (CalamityWorld.LegendaryMode ? 6f : 2.5f) : (CalamityWorld.LegendaryMode ? 3f : 1.5f);
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
             // Inversed scale in FTW
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 lifeRatio = (maxScaledValue - lifeRatio * maxScaledValue) + minScale;
             else
                 lifeRatio = lifeRatio * maxScaledValue + minScale;

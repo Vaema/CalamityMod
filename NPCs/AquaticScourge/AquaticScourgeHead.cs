@@ -63,7 +63,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 16, 0, 0);
@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -205,7 +205,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water)
             {
                 if (!NPC.AnyNPCs(ModContent.NPCType<AquaticScourgeHead>()))
-                    return (Main.getGoodWorld ? 0.05f : 0.01f);
+                    return (CalamityWorld.LegendaryMode ? 0.05f : 0.01f);
             }
 
             return 0f;

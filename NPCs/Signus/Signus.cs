@@ -138,12 +138,12 @@ namespace CalamityMod.NPCs.Signus
 
             double lifeRatio = NPC.life / (double)NPC.lifeMax;
 
-            lifeToAlpha = (int)((Main.getGoodWorld ? 200D : 100D) * (1D - lifeRatio));
+            lifeToAlpha = (int)((CalamityWorld.LegendaryMode ? 200D : 100D) * (1D - lifeRatio));
             int maxCharges = death ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             int maxTeleports = (death && lifeRatio < 0.9) ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             float inertia = bossRush ? 9f : death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
             float chargeVelocity = bossRush ? 16f : death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 inertia *= 0.5f;
                 chargeVelocity *= 1.15f;
@@ -197,7 +197,7 @@ namespace CalamityMod.NPCs.Signus
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            if (lifeToAlpha < (Main.getGoodWorld ? 100 : 50) && NPC.ai[0] != 1f)
+            if (lifeToAlpha < (CalamityWorld.LegendaryMode ? 100 : 50) && NPC.ai[0] != 1f)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -263,7 +263,7 @@ namespace CalamityMod.NPCs.Signus
                 playerYDist *= playerDistance;
 
                 float inertia2 = 50f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     inertia2 *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia2 + playerXDist) / (inertia2 + 1f);
@@ -298,7 +298,7 @@ namespace CalamityMod.NPCs.Signus
                     if (expertMode)
                         NPC.localAI[1] += death ? 3f * (float)(1D - lifeRatio) : 2f * (float)(1D - lifeRatio);
 
-                    if (NPC.localAI[1] >= (Main.getGoodWorld ? 0f : 120f))
+                    if (NPC.localAI[1] >= (CalamityWorld.LegendaryMode ? 0f : 120f))
                     {
                         NPC.localAI[1] = 0f;
 
@@ -573,7 +573,7 @@ namespace CalamityMod.NPCs.Signus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalLamps = (Main.getGoodWorld && !Main.zenithWorld) ? 10 : 5;
+                    int totalLamps = (CalamityWorld.LegendaryMode && !Main.zenithWorld) ? 10 : 5;
                     if (NPC.CountNPCS(ModContent.NPCType<CosmicLantern>()) < totalLamps)
                     {
                         bool buffed = false;
@@ -712,10 +712,10 @@ namespace CalamityMod.NPCs.Signus
                         if ((phase2 || buffed) && NPC.ai[2] % 3f == 0f)
                         {
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
-                            int type = (CalamityWorld.LegendaryMode && revenge) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
-                            int damage = (CalamityWorld.LegendaryMode && revenge) ? 60 : NPC.GetProjectileDamage(type);
+                            int type = (CalamityWorld.LegendaryMode) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
+                            int damage = (CalamityWorld.LegendaryMode) ? 60 : NPC.GetProjectileDamage(type);
                             Vector2 velocity = Main.zenithWorld ? new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) : Vector2.Zero;
-                            if (Main.getGoodWorld && !Main.zenithWorld)
+                            if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                             {
                                 velocity = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
                             }

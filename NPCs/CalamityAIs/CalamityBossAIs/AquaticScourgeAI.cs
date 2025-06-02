@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (npc.justHit || npc.life <= npc.lifeMax * 0.999 || bossRush || Main.getGoodWorld)
+            if (npc.justHit || npc.life <= npc.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -399,7 +399,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             }
 
             Vector2 scourgePosition = npc.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[npc.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = CalamityWorld.LegendaryMode ? Main.player[npc.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 
@@ -432,7 +432,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     scourgeAcceleration *= accelerationMultiplier;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     scourgeMaxSpeed *= 1.15f;
                     scourgeAcceleration *= 1.15f;

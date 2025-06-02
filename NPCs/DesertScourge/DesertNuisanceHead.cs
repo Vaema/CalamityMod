@@ -56,14 +56,14 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.GetNPCDamage();
 
             NPC.defense = 3;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.defense += 19;
 
             NPC.width = 88;
             NPC.height = 88;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax = 4800;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -146,7 +146,7 @@ namespace CalamityMod.NPCs.DesertScourge
             speed += 0.085f * enrageScale;
             turnSpeed += 0.17f * enrageScale;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 speed *= 1.1f;
                 turnSpeed *= 1.2f;
@@ -168,7 +168,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 {
                     int previous = NPC.whoAmI;
                     int minLength = 8;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         minLength *= 2;
 
                     int bodyTypeAIVariable = 0;
@@ -272,7 +272,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.spriteDirection = -1;
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? SegmentVelocity_GoodWorld :
+                CalamityWorld.LegendaryMode ? SegmentVelocity_GoodWorld :
                 death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
@@ -299,7 +299,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
             }
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
             {
                 speed *= 1.5f;
                 turnSpeed *= 1.5f;

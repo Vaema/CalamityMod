@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
             // Flight timer
-            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
+            float aiSwitchTimer = doubleWormPhase ? (CalamityWorld.LegendaryMode ? 600f : 1200f) : (CalamityWorld.LegendaryMode ? 900f : 1800f);
 
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Become gradually more pissed as more worms are killed
             int gfbMaxWormCount = 10;
             int gfbWormCount = 0;
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.LegendaryMode)
                 gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
             if (gfbWormCount > gfbMaxWormCount)
                 gfbWormCount = gfbMaxWormCount;
@@ -230,7 +230,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 int startIndexHeadTwo = startIndexHeadOne + phase2Length + 1;
                                 int headTwoID = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, npc.type, startIndexHeadTwo);
                                 Main.npc[headTwoID].Calamity().newAI[0] = 2f;
-                                Main.npc[headTwoID].Calamity().newAI[3] = Main.getGoodWorld ? 300f : 600f;
+                                Main.npc[headTwoID].Calamity().newAI[3] = CalamityWorld.LegendaryMode ? 300f : 600f;
                                 Main.npc[headTwoID].velocity = Vector2.Normalize(player.Center - Main.npc[headTwoID].Center) * 16f;
                                 Main.npc[headTwoID].timeLeft *= 20;
                                 Main.npc[headTwoID].ForceNetUpdate();
@@ -524,7 +524,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 speed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
                 turnSpeed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     speed *= 1.15f;
                     turnSpeed *= 1.15f;

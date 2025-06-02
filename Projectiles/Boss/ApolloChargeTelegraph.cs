@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Boss
             bool expertMode = Main.expertMode || bossRush;
 
             Projectile.timeLeft = bossRush ? 45 : death ? 60 : revenge ? 68 : expertMode ? 75 : 90;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 Projectile.timeLeft /= 2;
         }
 
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Determine opacity
             float telegraphTotalTime = bossRush ? 45f : death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 telegraphTotalTime *= 0.5f;
 
             Projectile.Opacity = Utils.GetLerpValue(0f, 6f, Projectile.timeLeft, true) * Utils.GetLerpValue(telegraphTotalTime, telegraphTotalTime - 6f, Projectile.timeLeft, true);

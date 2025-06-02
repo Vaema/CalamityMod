@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (npc.localAI[2] > 0f || bossRush)
                 enrageScale += 1f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrageScale += 0.5f;
 
             if (enrageScale > 3f)
@@ -252,7 +252,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             }
 
             // Max spawn amount
-            int maxBirbs = (CalamityWorld.LegendaryMode && revenge) ? 12 : revenge ? 3 : 2;
+            int maxBirbs = CalamityWorld.LegendaryMode ? 12 : revenge ? 3 : 2;
 
             // Variable for charging
             float chargeDistance = 600f;
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                         bool spawnRight = player.velocity.X > 0f;
                                         for (int i = 0; i < totalProjectiles; i++)
                                         {
-                                            if (Main.getGoodWorld)
+                                            if (CalamityWorld.LegendaryMode)
                                             {
                                                 if (i >= (int)(totalProjectiles * 0.125) && i <= (int)(totalProjectiles * 0.375))
                                                 {
@@ -449,13 +449,13 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                     {
                                         int totalProjectiles = phase2 ? 40 : 48;
 
-                                        if (Main.getGoodWorld)
+                                        if (CalamityWorld.LegendaryMode)
                                             totalProjectiles *= 2;
 
                                         float radians = MathHelper.TwoPi / totalProjectiles;
                                         int distance = phase2 ? 1200 : 1320;
 
-                                        if (Main.getGoodWorld)
+                                        if (CalamityWorld.LegendaryMode)
                                             distance *= 2;
 
                                         bool spawnRight = player.velocity.X > 0f;
@@ -564,7 +564,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 float velocity = 8f + (enrageScale - 1f) * 2f;
                 float follyQuickFlySpeed = velocity + npc.ai[2] + follyQuickFlyTargetDirection.Length() / 120f;
-                if (CalamityWorld.LegendaryMode && revenge)
+                if (CalamityWorld.LegendaryMode)
                     follyQuickFlySpeed *= 2f;
 
                 float follyQuickFlyVelMult = 20f;
@@ -573,7 +573,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 npc.velocity = (npc.velocity * (follyQuickFlyVelMult - 1f) + follyQuickFlyTargetDirection) / follyQuickFlyVelMult;
 
                 npc.ai[1] += 1f;
-                if (npc.ai[1] >= ((CalamityWorld.LegendaryMode && revenge) ? 90f : 180f))
+                if (npc.ai[1] >= ((CalamityWorld.LegendaryMode) ? 90f : 180f))
                 {
                     npc.TargetClosest();
                     npc.ai[0] = 0f;
@@ -771,7 +771,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool gfbSpawnFlag = CalamityWorld.LegendaryMode && revenge && (npc.ai[1] == 145f || npc.ai[1] == 150f || npc.ai[1] == 160f || npc.ai[1] == 165f);
+                        bool gfbSpawnFlag = CalamityWorld.LegendaryMode && (npc.ai[1] == 145f || npc.ai[1] == 150f || npc.ai[1] == 160f || npc.ai[1] == 165f);
                         bool spawnFlag = NPC.CountNPCS(ModContent.NPCType<Bumblefuck2>()) < maxBirbs && (npc.ai[1] == 140f || (revenge && npc.ai[1] == 155f) || npc.ai[1] == 170f || gfbSpawnFlag);
                         if (spawnFlag)
                         {
@@ -933,7 +933,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     swarmerIdleTargetDist.Normalize();
                     swarmerIdleTargetDist *= swarmerIdleSpeed;
                     npc.velocity = (npc.velocity * 29f + swarmerIdleTargetDist) / 30f;
-                    if (Main.getGoodWorld && !Main.zenithWorld)
+                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                         npc.velocity *= 1.15f;
                 }
                 else if (npc.velocity.Length() > 2f)
@@ -981,7 +981,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     swarmerChargeTargetDist.Normalize();
                     swarmerChargeTargetDist *= swarmerChargeSpeed;
                     npc.velocity = (npc.velocity * (swarmerChargeVelMult - 1f) + swarmerChargeTargetDist) / swarmerChargeVelMult;
-                    if (Main.getGoodWorld && !Main.zenithWorld)
+                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                         npc.velocity *= 1.15f;
 
                     npc.ForceNetUpdate();
@@ -1009,7 +1009,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     swarmerDecelerateTargetDist.Normalize();
                     swarmerDecelerateTargetDist *= swarmerDecelerateSpeed;
                     npc.velocity = (npc.velocity * (swarmerDecelerateVelMult - 1f) + swarmerDecelerateTargetDist) / swarmerDecelerateVelMult;
-                    if (Main.getGoodWorld && !Main.zenithWorld)
+                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                         npc.velocity *= 1.15f;
 
                     if (npc.velocity.X < 0f)
@@ -1026,7 +1026,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         npc.damage = npc.defDamage;
 
                         npc.velocity = swarmerDecelerateTargetDist;
-                        if (Main.getGoodWorld && !Main.zenithWorld)
+                        if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                             npc.velocity *= 1.15f;
 
                         if (npc.velocity.X < 0f)

@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.8f;
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;

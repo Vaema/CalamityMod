@@ -90,7 +90,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (expertMode)
                 astralFlameBarrageTimerIncrement += death ? (float)Math.Round(3f * (1f - lifeRatio)) : (float)Math.Round(2f * (1f - lifeRatio));
 
-            float walkingVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 6f : 5f;
+            float walkingVelocity = CalamityWorld.LegendaryMode ? 6f : 5f;
             walkingVelocity += 3f * enrageScale;
             if (phase5)
                 walkingVelocity += 2f;
@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 walkingVelocity += 1.5f * (1f - lifeRatio);
             if (revenge)
                 walkingVelocity += Math.Abs(npc.Center.X - player.Center.X) * 0.0025f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 walkingVelocity *= 1.15f;
 
             float walkingProjectileVelocity = walkingVelocity * 0.8f;
@@ -531,11 +531,11 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                                 calamityGlobalNPC.newAI[1] = speedMultLimit;
                         }
 
-                        float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 27f : 20f;
+                        float velocity = CalamityWorld.LegendaryMode ? 27f : 20f;
                         velocity += 6f * enrageScale;
                         if (expertMode)
                             velocity += death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             velocity *= 1.15f;
 
                         npc.velocity = (new Vector2(player.Center.X, player.Center.Y - 500f) - npc.Center).SafeNormalize(Vector2.Zero) * velocity;
@@ -661,7 +661,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float laserVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 7f : death ? 6f : 5f;
+                            float laserVelocity = CalamityWorld.LegendaryMode ? 7f : death ? 6f : 5f;
                             int maxProjectiles = !phase3 ? (bossRush ? 13 : death ? 11 : 9) : (bossRush ? 17 : death ? 15 : 13);
                             int spread = !phase3 ? (bossRush ? 20 : death ? 18 : 16) : (bossRush ? 24 : death ? 22 : 20);
 
@@ -714,7 +714,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             fallSpeed += 0.36f * enrageScale;
                             if (expertMode)
                                 fallSpeed += death ? 0.36f * (1f - lifeRatio) : 0.24f * (1f - lifeRatio);
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            if (CalamityWorld.LegendaryMode)
                                 fallSpeed += 0.5f;
 
                             if (calamityGlobalNPC.newAI[1] > 0f)
@@ -741,7 +741,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         velocityXCap += 3.6f * enrageScale;
                         if (expertMode)
                             velocityXCap += death ? 3.6f * (1f - lifeRatio) : 2.4f * (1f - lifeRatio);
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                             velocityXCap += 5f;
 
                         if (calamityGlobalNPC.newAI[0] > 0f)
@@ -954,7 +954,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 if (calamityGlobalNPC.newAI[1] > 0f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1] + 1f;
 
-                if (Main.getGoodWorld && !reduceFallSpeed)
+                if (CalamityWorld.LegendaryMode && !reduceFallSpeed)
                 {
                     gravity *= 1.15f;
                     maxFallSpeed *= 1.15f;

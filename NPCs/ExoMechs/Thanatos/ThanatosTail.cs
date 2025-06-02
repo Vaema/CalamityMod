@@ -532,7 +532,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             else
                 baseVelocity *= increaseSpeedMult;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.15f;
 
             // Calculate contact damage based on velocity

@@ -172,7 +172,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = NPC.Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
+            float cyanThreshold = CalamityWorld.LegendaryMode ? 300f : 600f;
             // Head is always the last segment to visually transition
             float transitionStart = cyanThreshold * 0.95f;
             bool drawCyan = NPC.Calamity().newAI[3] >= cyanThreshold;

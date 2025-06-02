@@ -127,7 +127,7 @@ namespace CalamityMod.NPCs.SlimeGod
             addedStretch = -landingRecoil;
 
             // Used for teleporting
-            float scale = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.6f : Main.getGoodWorld ? 0.8f : 1f;
+            float scale = CalamityWorld.LegendaryMode ? 0.6f : CalamityWorld.LegendaryMode ? 0.8f : 1f;
 
             // How fast the slime slams down
             float slamVelocity = bossRush ? 22.25f : death ? 18.25f : revenge ? 16.5f : expertMode ? 15.5f : 13.5f;

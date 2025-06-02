@@ -23,7 +23,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.timeLeft = BossRushEvent.BossRushActive ? 780 : CalamityWorld.death ? 600 : CalamityWorld.revenge ? 540 : Main.expertMode ? 480 : 300;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 Projectile.extraUpdates = 1;
         }
 

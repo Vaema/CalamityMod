@@ -366,7 +366,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     npc.chaseable = true;
                     npc.ai[3] += 1f;
                     npc.alpha = 0;
-                    if (npc.ai[3] >= 2f || phase2 || Main.getGoodWorld)
+                    if (npc.ai[3] >= 2f || phase2 || CalamityWorld.LegendaryMode)
                     {
                         npc.ai[0] = -1f;
                         npc.ai[1] = 0f;
@@ -419,7 +419,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     {
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 5f, projectileVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         Main.projectile[proj].timeLeft = 240;
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                             Main.projectile[proj].extraUpdates += 1;
                     }
 
@@ -440,7 +440,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
                         int spread = death ? 90 : 45;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             numProj *= 3;
                             spread *= 2;
@@ -454,7 +454,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                                 int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                                if (CalamityWorld.LegendaryMode)
                                     Main.projectile[proj2].extraUpdates += 1;
                             }
                         }
@@ -482,7 +482,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 npc.chaseable = false;
                 npc.localAI[0] += 1f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     npc.localAI[0] += 2f;
                 if (expertMode)
                     npc.localAI[0] += 1f - lifeRatio;
@@ -520,7 +520,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
                             Main.projectile[proj].timeLeft = 300;
                             Main.projectile[proj].tileCollide = false;
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            if (CalamityWorld.LegendaryMode)
                                 Main.projectile[proj].extraUpdates += 1;
                         }
                     }
@@ -550,7 +550,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         {
                             Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            if (CalamityWorld.LegendaryMode)
                                 Main.projectile[proj].extraUpdates += 1;
                         }
 
@@ -561,7 +561,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                                if (CalamityWorld.LegendaryMode)
                                     Main.projectile[proj].extraUpdates += 1;
                             }
                         }
@@ -653,7 +653,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             int damage = npc.GetProjectileDamage(type);
 
                             Projectile.NewProjectile(npc.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, npc.whoAmI);
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), source, -laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, npc.whoAmI);
 
                             if (Main.zenithWorld)
@@ -694,7 +694,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(npc.GetSource_FromAI(), source, laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, npc.whoAmI);
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), source, -laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, npc.whoAmI);
 
                             if (Main.zenithWorld)
@@ -716,7 +716,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), source.X, source.Y, npc.localAI[0], npc.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, npc.whoAmI);
-                                if (Main.getGoodWorld)
+                                if (CalamityWorld.LegendaryMode)
                                     Projectile.NewProjectile(npc.GetSource_FromAI(), source.X, source.Y, -npc.localAI[0], -npc.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, npc.whoAmI);
 
                                 if (Main.zenithWorld)

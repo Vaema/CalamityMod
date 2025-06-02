@@ -217,7 +217,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             bool useCrystalShards = AIState == (float)Phase.CrystalShards;
             float velocity = useCrystalShards ? (bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 velocity *= 1.25f;
 
             float idealDistanceFromDestination = useCrystalShards ? 80f : 160f;
@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = 10f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -407,7 +407,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 float inertia = bossRush ? 28f : death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
                 if (lifeRatio < 0.5f)
                     inertia *= 0.8f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     inertia *= 0.8f;
 
                 NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;

@@ -4167,7 +4167,7 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient && !targetDead)
             {
-                if (Main.getGoodWorld && npc.type == NPCID.EaterofSouls)
+                if (CalamityWorld.LegendaryMode && npc.type == NPCID.EaterofSouls)
                 {
                     if (NPC.AnyNPCs(NPCID.EaterofWorldsHead))
                     {
@@ -5433,7 +5433,7 @@ PrepareToShoot:
             }
             else
             {
-                if (Main.getGoodWorld && npc.type == NPCID.FireImp)
+                if (CalamityWorld.LegendaryMode && npc.type == NPCID.FireImp)
                 {
                     if (NPC.AnyNPCs(NPCID.WallofFlesh))
                     {
@@ -6792,7 +6792,7 @@ PrepareToShoot:
 
                 // If FTW is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
                 int projAmt = 1;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     projAmt = Main.rand.Next(8, 14);
                     if (Main.rand.NextBool(1000) || Main.zenithWorld)

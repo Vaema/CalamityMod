@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.3f;
 
             // Scale stats in Expert and Master

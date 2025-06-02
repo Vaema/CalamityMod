@@ -62,7 +62,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (phase4)
                 darkEnergyAmt += 1;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 darkEnergyAmt *= 2;
 
             // Spawn a few Dark Energies as soon as the fight starts
@@ -121,7 +121,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             else if (npc.timeLeft < 1800)
                 npc.timeLeft = 1800;
 
-            float tileEnrageMult = (CalamityWorld.LegendaryMode && revenge) ? 1.5f : bossRush ? 1.375f : 1f;
+            float tileEnrageMult = (CalamityWorld.LegendaryMode) ? 1.5f : bossRush ? 1.375f : 1f;
             npc.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !bossRush;
 
             // Set AI variable to be used by Dark Energies
@@ -131,14 +131,14 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
 
             // Decides whether Ceaseless moves closer to its target or not
-            float distanceRequiredToMove = (Main.getGoodWorld || !anyDarkEnergies) ? 320f : bossRush ? 600f : death ? 520f : revenge ? 480f : expertMode ? 440f : 400f;
+            float distanceRequiredToMove = (CalamityWorld.LegendaryMode || !anyDarkEnergies) ? 320f : bossRush ? 600f : death ? 520f : revenge ? 480f : expertMode ? 440f : 400f;
             bool move = Vector2.Distance(npc.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(npc.Center, 1, 1, player.Center, 1, 1);
 
             // Succ attack
             if (!anyDarkEnergies)
             {
                 // This is here because it's used in multiple places
-                float suckDistance = (CalamityWorld.LegendaryMode && revenge) ? 2400f : bossRush ? 1920f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+                float suckDistance = (CalamityWorld.LegendaryMode) ? 2400f : bossRush ? 1920f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
 
                 // Move closer to the target before trying to succ
                 if (movingDuringSuccPhase)
@@ -474,7 +474,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                     acceleration *= 2f;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     velocity *= 1.15f;
                     acceleration *= 1.15f;
@@ -484,8 +484,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
-                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
-                if (!succ && Main.getGoodWorld)
+                Vector2 moveToOffset = succ ? Vector2.Zero : CalamityWorld.LegendaryMode ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if (!succ && CalamityWorld.LegendaryMode)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -537,7 +537,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 Vector2 distanceFromDestination = destination - npc.Center;
 
                 // Movement
-                if (npc.Distance(destination) > maxDistance || succ || !Main.getGoodWorld)
+                if (npc.Distance(destination) > maxDistance || succ || !CalamityWorld.LegendaryMode)
                     CalamityUtils.SmoothMovement(npc, 0f, distanceFromDestination, velocity, acceleration, true);
             }
 

@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 setDamage += 22;
             }
 
-            float scale = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.6f : Main.getGoodWorld ? 0.8f : 1f;
+            float scale = CalamityWorld.LegendaryMode ? 0.6f : CalamityWorld.LegendaryMode ? 0.8f : 1f;
             NPC.aiAction = 0;
 
             // Get a target
@@ -131,7 +131,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
             if (lifeRatio <= 0.5f && Main.netMode != NetmodeID.MultiplayerClient && expertMode)
             {
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                 {
                     int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                     for (int i = 0; i < 30; i++)
@@ -319,7 +319,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int numProjectiles = Main.getGoodWorld ? 12 : death ? 6 : 4;
+                                int numProjectiles = CalamityWorld.LegendaryMode ? 12 : death ? 6 : 4;
                                 float projectileVelocity = death ? 8f : 6f;
                                 int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                                 int damage = NPC.GetProjectileDamage(type);
@@ -499,15 +499,15 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Charge variables
                 float chargeVelocityMult = 0.1f;
                 float maxChargeVelocity = (bossRush || enraged) ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     maxChargeVelocity *= 1.15f;
-                if (CalamityWorld.LegendaryMode && revenge)
+                if (CalamityWorld.LegendaryMode)
                     maxChargeVelocity *= 2f;
 
                 float inertia = (bossRush || enraged) ? 100f : death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;
                 if (lifeRatio < 0.75f)
                     inertia *= 0.8f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     inertia *= 0.8f;
 
                 // Start charge
