@@ -144,7 +144,6 @@ namespace CalamityMod.CalPlayer
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
-
             if (generalBandCooldown == 0)
             {
                 int cooldown = 0;
