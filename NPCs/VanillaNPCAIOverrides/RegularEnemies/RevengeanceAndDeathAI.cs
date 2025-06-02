@@ -9685,13 +9685,8 @@ PrepareToShoot:
             if (npc.ai[0] != -1f)
             {
                 npc.TargetClosest(true);
-                float acceleration = Main.masterMode ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
-                float velocity = Main.masterMode ? 6f : Main.expertMode ? 5f : 3f;
-                if (CalamityWorld.death)
-                {
-                    acceleration *= 1.25f;
-                    velocity *= 1.25f;
-                }
+                float acceleration = CalamityWorld.death ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
+                float velocity = CalamityWorld.death ? 6.25f : Main.expertMode ? 5f : 3f;
 
                 // Simple movement AI. You shouldn't need any help from comments to parse this.
                 if (npc.Center.X < Main.player[npc.target].position.X)

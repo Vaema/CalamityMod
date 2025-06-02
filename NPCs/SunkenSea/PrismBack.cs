@@ -103,16 +103,16 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.chaseable = reader.ReadBoolean();
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                MaxSpeed = 1.8f
-            };
-        }
-
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    MaxSpeed = 1.8f
+                };
+            }
+
             NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
             Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.75f / 255f, (255 - NPC.alpha) * 0.75f / 255f);
 

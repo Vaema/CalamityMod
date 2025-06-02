@@ -1525,15 +1525,6 @@ RuinMedallion: {
 		'''
 }
 
-RustyMedallion: {
-	DisplayName: Rusty Medallion
-	Tooltip:
-		'''
-		Causes most ranged weapons to release acid droplets from the sky
-		Grants immunity to Irradiated
-		'''
-}
-
 SandCloak: {
 	DisplayName: Sand Cloak
 	Tooltip:
@@ -1551,6 +1542,17 @@ SandSharkToothNecklace: {
 		'''
 		Increases armor penetration by 10
 		10% increased damage
+		'''
+}
+
+ScionsCurio: {
+	DisplayName: Scions Curio
+	Tooltip:
+		'''
+		Ranged hits increase the effectiveness of the Irradiated debuff
+		Irradiated damage over time scales off of your ranged damage and crit chance
+		On kill, enemies burst, spreading Irradiated
+		Taking damage causes the curio to explode in retaliation
 		'''
 }
 
@@ -1874,7 +1876,7 @@ TheAmalgam: {
 	Tooltip:
 		'''
 		10% increased damage
-		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3.5x
+		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3x
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds

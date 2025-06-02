@@ -34,6 +34,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public Vector2 randomPathPoint;
 
+        public bool instantiated = false;
+
         protected override List<int> PreyIDs => new List<int>();
 
         protected override List<int> PredatorIDs => new List<int>() {
@@ -109,15 +111,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.6f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.6f,
+                    MaxSpeed = 4f,
+                };
+            }
             if (NPC.wet)
             {
                 switch (CurrentBehavior)
