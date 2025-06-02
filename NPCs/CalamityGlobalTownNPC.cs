@@ -274,6 +274,7 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
+            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
         };
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
