@@ -1525,15 +1525,6 @@ RuinMedallion: {
 		'''
 }
 
-RustyMedallion: {
-	DisplayName: Rusty Medallion
-	Tooltip:
-		'''
-		Causes most ranged weapons to release acid droplets from the sky
-		Grants immunity to Irradiated
-		'''
-}
-
 SandCloak: {
 	DisplayName: Sand Cloak
 	Tooltip:
