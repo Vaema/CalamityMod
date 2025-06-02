@@ -41,30 +41,39 @@ namespace CalamityMod.DataStructures
         }
         #region DebuffData data
         /// <summary>
-        /// Damage Per Second of this debuff on a player.
+        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
+        /// Amount of life regen lost by a player under this debuff
+        /// For debuffs with unique scaling, this should usually be the "base" amount.
+        /// Defaults to 0
         /// </summary>
-        public float PlayerDPS = 0;
+        public float PlayerLostRegen = 0;
 
         /// <summary>
-        /// Damage Per Second of this debuff on a player
+        /// Amount of life regen lost by an enemy under this debuff.
+        /// For debuffs with unique scaling, this should usually be the "base" amount.
+        /// Defaults to 0
         /// </summary>
         public float EnemyLostRegen = 0;
 
         /// <summary>
-        /// This is used to cancel Vanilla dot damage and allow using Calamity's own instead
+        /// This is used to cancel Vanilla DoT damage on enemies and allow using Calamity's own instead.
         /// </summary>
-        public int VanillaRegenToCancelOut = 0;
+        public int EnemyVanillaRegenToCancelOut = 0;
 
         /// <summary>
-        /// minimum Damage tick size of this debuff
+        /// The minimum size of damage ticks from this debuff on an enemy.
+        /// Ticks can be larger than this due to MultiplierDamageTickSize
+        /// Defaults to 1
         /// </summary>
         public int MinimumDamageTickSize = 1;
 
         /// <summary>
-        /// Damage tick size of this debuff, compared to total DPS
-        /// MinimumDamageTickSize takes prioriity if this returns lower
+        /// The size of damage ticks from this debuff on an enemy
+        /// This is based on the applied regen of the debuff, and will cause the tick to scale with amplifiers
+        /// Ticks can be larger than this due to MinimumDamageTickSize
+        /// Defaults to 0.25f
         /// </summary>
-        public float MultiplierDamageTickSize = 0.5f;
+        public float MultiplierDamageTickSize = 0.25f;
 
         /// <summary>
         /// How much this benefits from heat debuff amplifiers.
@@ -93,28 +102,34 @@ namespace CalamityMod.DataStructures
         public float ElectricDebuffScaling = 0;
 
         /// <summary>
-        /// Whether or not this debuff should draw above NPCs.
+        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
+        /// Whether or not this debuff should draw above inflicted NPCs.
+        /// Defaults to TRUE
         /// </summary>
         public bool DrawAboveNPC = true;
 
         /// <summary>
-        /// Whether or not player gear can modify the debuff effects such as duration or damage.
+        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
+        /// Whether or not gear can modify the debuff effects such as duration or damage on the player.
         /// </summary>
         public bool GearCanModifyDebuff = true;
 
         /// <summary>
+        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
         /// How much alcohol this counts as.
         /// Default is 0, most alcohol is 1, and Everclear is 2
         /// </summary>
         public float AlcoholLevel = 0f;
 
         /// <summary>
-        /// The UpdateOnPlayer code to run. Defaults to just applying DoT
+        /// UNIMPLEMENTED. WILL BE DONE IN A FUTURE PR
+        /// The UpdatePlayerLifeRegen code to run. Defaults to just applying DoT
         /// </summary>
-        public UpdateOnPlayer PlayerUpdateMethod;
+        public UpdatePlayerLifeRegen PlayerUpdateMethod;
 
         /// <summary>
         /// The UpdateNPCLifeRegen code to run. Defaults to just applying DoT
+        /// Parameters of the method should be (NPC npc, int buffType, ref int buffIndex, ref int damage)
         /// </summary>
         public UpdateNPCLifeRegen NPCLifeRegenMethod;
 
@@ -124,37 +139,39 @@ namespace CalamityMod.DataStructures
             NPCLifeRegenMethod = BaseUpdateNPCLifeRegen;
         }
         /// <summary>
-        /// Allows using keys to determine preset behavior
+        /// Allows using DebuffBehavior to determine preset behavior
         /// "electric" causes debuffs to scale 4x when moving
         /// Uses default behavior if no known key is inputed
         /// </summary>
-        /// <param name="key"></param>
-        public DebuffData(DebuffBehavior key)
+        /// <param name="behavior">This determines the type of behavior of the debuff</param>
+        public DebuffData(DebuffBehavior behavior)
         {
 
             PlayerUpdateMethod = DefaultUpdateOnPlayer;
-            if (key == DebuffBehavior.Electric)
+            if (behavior == DebuffBehavior.Electric)
                 NPCLifeRegenMethod = ElectricDebuffNPCLifeRegen;
             else
                 NPCLifeRegenMethod = BaseUpdateNPCLifeRegen;
         }
 
         /// <summary>
+        /// UNIMPLEMENTED. WILL BE IN A FUTURE PR
         /// This is the code that should be run when updating the buff on a player.
-        /// Use for gameplay effects, not drawing.
+        /// Use for DoT damage. Other effects should be in the ModBuff class, or wherever appropriate.
         /// </summary>
         /// <param name="player"></param>
-        public delegate void UpdateOnPlayer(Player player, int buffType, ref int buffIndex, ref int damage);
+        public delegate void UpdatePlayerLifeRegen(Player player, int buffType, ref int buffIndex, ref int damage);
 
         /// <summary>
         /// This is the code that should be run when updating life regen on NPC
-        /// Use for gameplay effects, not drawing.
+        /// Use for DoT damage. Other effects should be in the ModBuff class, or wherever appropriate.
         /// </summary>
         /// <param name="npc"></param>
         public delegate void UpdateNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage);
 
         /// <summary>
-        /// The default debuff DoT functionality
+        /// UNIMPLEMENTED. WILL BE IN A FUTURE PR
+        /// The default debuff DoT functionality on a player
         /// </summary>
         public void DefaultUpdateOnPlayer(Player player, int buffType, ref int buffIndex, ref int damage)
         {
@@ -162,14 +179,14 @@ namespace CalamityMod.DataStructures
         }
 
         /// <summary>
-        /// The default debuff DoT functionality
+        /// The default debuff DoT functionality on enemies.
         /// </summary>
         public void BaseUpdateNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
             double totalDPS = EnemyLostRegen;
             double totalScaling =
-                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling == 0
+                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
                 ?
                 1 + (
                     (cnpc.ActiveHeatDebuffMultiplier - 1) * HeatDebuffScaling +
@@ -181,15 +198,22 @@ namespace CalamityMod.DataStructures
                 :
                 1 + (cnpc.TypelessDebuffMultiplier-1);
             totalDPS *= totalScaling;
-            var totalDPSAdjusted = totalDPS-VanillaRegenToCancelOut;
-            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Min(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            var totalDPSAdjusted = totalDPS-EnemyVanillaRegenToCancelOut;
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
+        /// <summary>
+        /// DoT functionality that takes into account Electric debuff's 4x DPS when moving
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="buffType"></param>
+        /// <param name="buffIndex"></param>
+        /// <param name="damage"></param>
         public void ElectricDebuffNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
             double totalDPS = EnemyLostRegen;
             double totalScaling =
-                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling == 0
+                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
                 ?
                 1 + (
                     (cnpc.ActiveHeatDebuffMultiplier - 1) * HeatDebuffScaling +
@@ -202,18 +226,24 @@ namespace CalamityMod.DataStructures
                 1 + (cnpc.TypelessDebuffMultiplier - 1);
             totalDPS *= totalScaling;
             totalDPS *= (npc.velocity.X == 0 ? 1 : 4);
-            totalDPS -= VanillaRegenToCancelOut * (npc.velocity.X == 0 ? 1 : 5); //Vanilla Electrified is 5x when moving, not 4x
-            npc.Calamity().ApplyDPSDebuff((int)(totalDPS), (int)Math.Min(totalDPS * MultiplierDamageTickSize, MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            totalDPS -= EnemyVanillaRegenToCancelOut * (npc.velocity.X == 0 ? 1 : 5); //Vanilla Electrified is 5x when moving, not 4x
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPS), (int)Math.Max(totalDPS * MultiplierDamageTickSize, MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         #region Special Regen Functions
+        /// <summary>
+        /// 18OCT2023: Ozzatron: im not gonna sugarcoat it
+        /// vanilla debuff damage from Daybreak impales scales linearly up to 8 for 800 DPS
+        /// instead of allowing this entire 800 DPS to be multiplied by heat weakness + heat DoT bonuses,
+        /// each Daybreak spear beyond the first is only affected 25% as much by weaknesses or resistances.
+        /// This also stops Daybreak's DPS from being utterly shafted by heat resistance.
+        /// As no other weapon can stack Daybroken, this has no effect on other weapons (they count as "1 Daybreak spear")
+        /// </summary>
+        /// <param name="npc"></param>
+        /// <param name="buffType"></param>
+        /// <param name="buffIndex"></param>
+        /// <param name="damage"></param>
         public static void DaybrokenRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
-        { 
-            // 18OCT2023: Ozzatron: im not gonna sugarcoat it
-            // vanilla debuff damage from Daybreak impales scales linearly up to 8 for 800 DPS
-            // instead of allowing this entire 800 DPS to be multiplied by heat weakness + heat DoT bonuses,
-            // each Daybreak spear beyond the first is only affected 25% as much by weaknesses or resistances.
-            // This also stops Daybreak's DPS from being utterly shafted by heat resistance.
-            // As no other weapon can stack Daybroken, this has no effect on other weapons (they count as "1 Daybreak spear")
+        {
             var cnpc = npc.Calamity();
             int numImpaledSpears = 0;
             for (int k = 0; k < Main.maxProjectiles; k++)
@@ -224,14 +254,68 @@ namespace CalamityMod.DataStructures
 
             // If there are no Daybreak impaled spears, Daybroken has 1x potency (it was applied some other way)
             float daybrokenMultiplier = numImpaledSpears <= 1 ? 1f : (1f + 0.25f * (numImpaledSpears - 1));
+            int adjustedSpears = Math.Max(1, numImpaledSpears);
+            int baseDaybreakDoTValue = (int)(Daybroken.EnemyLostRegen * adjustedSpears + (Daybroken.EnemyLostRegen + Daybroken.EnemyLostRegen * 0.25f * (adjustedSpears - 1)) * (cnpc.ActiveHeatDebuffMultiplier - 1));
+            var totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut*numImpaledSpears;
+            if (numImpaledSpears == 0)
+            {
+                totalDPSAdjusted -= Daybroken.EnemyVanillaRegenToCancelOut;
+            }
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(baseDaybreakDoTValue * Daybroken.MultiplierDamageTickSize, Daybroken.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+        }
+        /// <summary>
+        /// Apply Oiled DoT.
+        /// </summary>
+        public static void OiledNPCMethod(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            var cnpc = npc.Calamity();
+            double totalDPS = Oiled.EnemyLostRegen;
+            double totalScaling = cnpc.ActiveHeatDebuffMultiplier * Oiled.HeatDebuffScaling;
+            totalDPS *= totalScaling;
+            if (totalDPS <= 0)
+                return;
+            npc.Calamity().ApplyDPSDebuff((int)(totalDPS), damage+(int)Math.Max(totalDPS * Oiled.MultiplierDamageTickSize, Oiled.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+        }
+        /// <summary>
+        /// Has Dryad's Bane scale with Calamity's town NPC buffs
+        /// </summary>
+        public static void DryadsBaneNPCMethod(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            // Buffs match 1:1 with Town NPC buffs
+            // See CalamityGlobalTownNPC: BuffTownNPC
+            float buffedDryadsBaneMult = 0f +
+                (NPC.downedMoonlord ? 0.6f : 0f) +
+                (DownedBossSystem.downedProvidence ? 0.2f : 0f) +
+                (DownedBossSystem.downedPolterghast ? 0.2f : 0f) +
+                (DownedBossSystem.downedDoG ? 0.2f : 0f) +
+                (DownedBossSystem.downedYharon ? 0.2f : 0f) +
+                (DownedBossSystem.downedExoMechs ? 0.6f : 0f) +
+                (DownedBossSystem.downedCalamitas ? 0.6f : 0f);
+            if (Main.expertMode)
+                buffedDryadsBaneMult *= Main.GameModeInfo.TownNPCDamageMultiplier;
+            int buffedDryadsBaneDoTValue = 2 * (int)(4 * buffedDryadsBaneMult);
+            npc.lifeRegen -= buffedDryadsBaneDoTValue;
 
-            int baseDaybreakDoTValue = (int)(daybrokenMultiplier * 2 * 100 * (cnpc.ActiveHeatDebuffMultiplier - CalamityGlobalNPC.BaseDoTDamageMult));
-            npc.lifeRegen -= baseDaybreakDoTValue;
-            if (damage < baseDaybreakDoTValue / 4)
-                damage = baseDaybreakDoTValue / 4;
+            // Scales damage tick if greater than the vanilla amount
+            float vanillaDryadsBaneMult = 1f +
+                (NPC.downedBoss1 ? 0.1f : 0f) +
+                (NPC.downedBoss2 ? 0.1f : 0f) +
+                (NPC.downedBoss3 ? 0.1f : 0f) +
+                (NPC.downedQueenBee ? 0.1f : 0f) +
+                (Main.hardMode ? 0.4f : 0f) +
+                (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                (NPC.downedMechBoss1 ? 0.15f : 0f) +
+                (NPC.downedPlantBoss ? 0.15f : 0f) +
+                (NPC.downedGolemBoss ? 0.15f : 0f) +
+                (NPC.downedAncientCultist ? 0.15f : 0f);
+            if (Main.expertMode)
+                vanillaDryadsBaneMult *= Main.GameModeInfo.TownNPCDamageMultiplier;
+            int totalDryadsBaneDoTValue = 2 * (int)(4 * vanillaDryadsBaneMult) + buffedDryadsBaneDoTValue;
+            if (damage < totalDryadsBaneDoTValue / 6)
+                damage = totalDryadsBaneDoTValue / 6;
         }
 
-        
         #endregion
         #endregion
 
@@ -239,65 +323,75 @@ namespace CalamityMod.DataStructures
         public static DebuffData OnFire = new DebuffData()
         {
             EnemyLostRegen = 12,
-            VanillaRegenToCancelOut = 12,
+            EnemyVanillaRegenToCancelOut = 12,
             HeatDebuffScaling = 1
         };
         public static DebuffData Hellfire = new DebuffData()
         {
             EnemyLostRegen = 30,
-            VanillaRegenToCancelOut = 30,
+            EnemyVanillaRegenToCancelOut = 30,
             HeatDebuffScaling = 1
         };
         public static DebuffData CursedInferno = new DebuffData()
         {
             EnemyLostRegen = 48,
-            VanillaRegenToCancelOut = 48,
+            EnemyVanillaRegenToCancelOut = 48,
             HeatDebuffScaling = 1
         };
         public static DebuffData Shadowflame = new DebuffData()
         {
             EnemyLostRegen = 60,
-            VanillaRegenToCancelOut = 60,
+            EnemyVanillaRegenToCancelOut = 60,
             HeatDebuffScaling = 1
         };
         public static DebuffData Daybroken = new DebuffData()
         {
-            // These first three are not actually used in the Daybroken logic due to it being copied from prior systems
-            // Ideally, they would be used for consistency, but no effects besides DoT currently interface with these.
             EnemyLostRegen = 200,
-            VanillaRegenToCancelOut = 200,
+            EnemyVanillaRegenToCancelOut = 200,
             HeatDebuffScaling = 1,
             NPCLifeRegenMethod = DaybrokenRegen
         };
         public static DebuffData Frostburn = new DebuffData()
         {
             EnemyLostRegen = 16,
-            VanillaRegenToCancelOut = 16,
+            EnemyVanillaRegenToCancelOut = 16,
             ColdDebuffScaling = 1
         };
         public static DebuffData Frostbite = new DebuffData()
         {
             EnemyLostRegen = 50,
-            VanillaRegenToCancelOut = 50,
+            EnemyVanillaRegenToCancelOut = 50,
             ColdDebuffScaling = 1
         };
         public static DebuffData Poisoned = new DebuffData()
         {
             EnemyLostRegen = 12,
-            VanillaRegenToCancelOut = 12,
+            EnemyVanillaRegenToCancelOut = 12,
             SicknessDebuffScaling = 1
         };
         public static DebuffData AcidVenom = new DebuffData()
         {
             EnemyLostRegen = 60,
-            VanillaRegenToCancelOut = 60,
+            EnemyVanillaRegenToCancelOut = 60,
             SicknessDebuffScaling = 1
         };
         public static DebuffData Electrified = new DebuffData(DebuffBehavior.Electric)
         {
             EnemyLostRegen = 21,
-            VanillaRegenToCancelOut = 8,
+            EnemyVanillaRegenToCancelOut = 8,
             ElectricDebuffScaling = 1
+        };
+        public static DebuffData Oiled = new DebuffData()
+        {
+            EnemyLostRegen = 50, //This is how much DPS Oiled does when applied alongside a valid debuff
+            EnemyVanillaRegenToCancelOut = 50,
+            HeatDebuffScaling = 2, //Oiled scales twice as hard with heat debuff scaling to reward debuff builds who use such a rare and difficult to apply debuff.
+            NPCLifeRegenMethod = OiledNPCMethod
+        };
+        public static DebuffData DryadsBane = new DebuffData()
+        {
+            EnemyLostRegen = 8, //This is not used in the method, serves as a token amount for anything that may need to interface in the future.
+            NPCLifeRegenMethod = DryadsBaneNPCMethod
         };
         #endregion
     }

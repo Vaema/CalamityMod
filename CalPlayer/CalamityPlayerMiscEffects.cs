@@ -922,7 +922,7 @@ namespace CalamityMod.CalPlayer
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
                 int buffToInflict = target.Calamity().trueVulnerabilityHex? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
-                if (!target.HasBuff(target.buffTime[target.FindBuffIndex(buffToInflict)]))
+                if (!target.HasBuff(buffToInflict))
                     target.AddBuff(buffToInflict, 52);
                 target.buffTime[target.FindBuffIndex(buffToInflict)] += 8;
                 if (target.buffTime[target.FindBuffIndex(buffToInflict)] < VulnerabilityHex.CalamityDuration)

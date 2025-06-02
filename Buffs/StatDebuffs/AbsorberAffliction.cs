@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,11 +9,19 @@ namespace CalamityMod.Buffs.StatDebuffs
 {
     public class AbsorberAffliction : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 400,
+            SicknessDebuffScaling = 1,
+            MultiplierDamageTickSize = 1 / 20f
+
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(NPC npc, ref int buffIndex)
