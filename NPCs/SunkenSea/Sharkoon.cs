@@ -221,11 +221,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.3f,
-                MaxSpeed = 6f,
-            };
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
@@ -234,6 +229,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 6f,
+                };
+            }
             CurrentBehavior?.Invoke();
 
             // Leans the Sharkoon towards the direction it's going.

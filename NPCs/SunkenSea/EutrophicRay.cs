@@ -119,17 +119,20 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                MaxSpeed = 4.85f,
-                Acceleration = 0.5f
-            };
             CurrentBehavior = IdleBehavior;
         }
 
         #region AI Functions
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    MaxSpeed = 4.85f,
+                    Acceleration = 0.5f
+                };
+            }
             CurrentBehavior?.Invoke();
 
             // If out of water, act like you're out of water.

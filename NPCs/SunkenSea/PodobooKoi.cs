@@ -124,15 +124,18 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentVariant = Main.rand.Next(1, 4);
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.5f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.5f,
+                    MaxSpeed = 4f,
+                };
+            }
             if (NPC.ai[3] <= 0)
             {
                 lavaLine = FindLavaLine();
