@@ -695,7 +695,11 @@ GrandGuardian: {
 
 GreatswordofJudgement: {
 	DisplayName: Greatsword of Judgement
-	Tooltip: Fires a piercing energy wave that releases homing stars as it flies
+	Tooltip:
+    '''
+Fires a piercing energy wave that releases homing stars as it flies
+Hits with the blade summon two stronger stars from behind you
+    '''
 }
 
 Greentide: {

@@ -25,7 +25,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public Vector2 bladeHitboxPos;
         public float bladeRotation = 0;
         public int bladeDirection = 0;
-        public float bladeFX = 0;
         public float completion = 0;
         public bool canHit => (completion >= 0.35f && completion <= 0.8f);
         public int swingCount = 0;
@@ -62,7 +61,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 mPos = player.Calamity().mouseWorld;
             Vector2 shootDir = player.Center.DirectionTo(mPos);
             float _ = float.NaN;
-            bool hitCheck = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), player.Center, player.Center + shootDir * 245, Item.width * 3f, ref _);
+            bool hitCheck = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), player.Center - shootDir * 30, player.Center + shootDir * 245, Item.width * 3f, ref _);
             return ((canHit && hitCheck) ? null : false);
         }
         public override void UseAnimation(Player player)
@@ -72,7 +71,6 @@ namespace CalamityMod.Items.Weapons.Melee
             bladeDirection = player.direction;
             bladeHitboxPos = player.Center;
             bladeRotation = 0;
-            bladeFX = 0;
             spawnProj = true;
             playSound = true;
             int dir = -Math.Sign(player.Center.X - player.Calamity().mouseWorld.X);
