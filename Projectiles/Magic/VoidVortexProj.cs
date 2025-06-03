@@ -145,9 +145,12 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ExpandHitboxBy(400);
                 Projectile.Damage();
 
-                for (int k = 0; k < 12; k++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<VoidVortexProj>(), Projectile.damage / 6, 0f, Main.myPlayer, 0f, 0f, 3f);
+                    for (int k = 0; k < 12; k++)
+                    {
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<VoidVortexProj>(), Projectile.damage / 6, 0f, Main.myPlayer, 0f, 0f, 3f);
+                    }
                 }
                 for (int k = 0; k < 40; k++)
                 {
