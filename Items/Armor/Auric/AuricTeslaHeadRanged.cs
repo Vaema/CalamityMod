@@ -13,7 +13,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaHoodedFacemask : ModItem, ILocalizedModType
+    [LegacyName("AuricTeslaHoodedFacemask")]
+    public class AuricTeslaHeadRanged : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
@@ -98,7 +99,7 @@ namespace CalamityMod.Items.Armor.Auric
                 AddIngredient<TarragonHeadRanged>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
-                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaBodyArmor>()).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHeadMagic>()).
                 Register();
         }
     }
