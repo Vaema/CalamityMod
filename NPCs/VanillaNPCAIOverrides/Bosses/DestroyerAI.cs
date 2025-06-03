@@ -151,8 +151,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Check if other segments are still alive, if not, die
-            // Check for Oblivion too, since having a max power Destroyer during that fight would be turbo cancer
-            bool oblivionAlive = false;
             if (npc.type > NPCID.TheDestroyer)
             {
                 bool shouldDespawn = true;
@@ -179,27 +177,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.active = false;
                 }
             }
-            else
-            {
-                if (death && !bossRush && npc.localAI[3] == 1f)
-                {
-                    for (int i = 0; i < Main.maxNPCs; i++)
-                    {
-                        if (Main.npc[i].active && (Main.npc[i].type == ModContent.NPCType<SkeletronPrime2>() || Main.npc[i].type == NPCID.SkeletronPrime))
-                        {
-                            oblivionAlive = true;
-                            break;
-                        }
-                    }
-                }
-            }
 
             // Total segment variable
             int totalSegments = Main.getGoodWorld ? 100 : 80;
 
             // Calculate aggression based on how many broken segments there are
             float brokenSegmentAggressionMultiplier = 1f;
-            if (npc.type == NPCID.TheDestroyer && !oblivionAlive)
+            if (npc.type == NPCID.TheDestroyer)
             {
                 int numProbeSegments = 0;
                 for (int i = 0; i < Main.maxNPCs; i++)
@@ -225,51 +209,39 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Increase velocity based on distance
             float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
+            noFlyZoneBoxHeight -= death ? 400 : (int)(400f * (1f - lifeRatio));
 
-            // If Oblivion is alive, don't fly, don't spit laser spreads, use the default vanilla no fly zone, reduce segment count to 60, use base speed and use base turn speed
-            if (oblivionAlive)
+            float segmentVelocityBoost = death ? (flyAtTarget ? 4.5f : 6f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
+            float speedBoost = death ? (flyAtTarget ? 0.1125f : 0.15f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
+            float turnSpeedBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
+
+            segmentVelocity += segmentVelocityBoost;
+            speed += speedBoost;
+            turnSpeed += turnSpeedBoost;
+
+            segmentVelocity += 5f * enrageScale;
+            speed += 0.05f * enrageScale;
+            turnSpeed += 0.075f * enrageScale;
+
+            if (flyAtTarget)
             {
-                calamityGlobalNPC.newAI[3] = 0f;
-                totalSegments = Main.getGoodWorld ? 75 : 60;
-                spitLaserSpreads = false;
-                noFlyZoneBoxHeight = 2000;
+                float speedMultiplier = phase5 ? 1.8f : phase4 ? 1.65f : 1.5f;
+                speed *= speedMultiplier;
             }
-            else
+
+            segmentVelocity *= velocityMultiplier;
+            speed *= velocityMultiplier;
+            turnSpeed *= velocityMultiplier;
+
+            segmentVelocity *= brokenSegmentAggressionMultiplier;
+            speed *= brokenSegmentAggressionMultiplier;
+            turnSpeed *= brokenSegmentAggressionMultiplier;
+
+            if (Main.getGoodWorld)
             {
-                noFlyZoneBoxHeight -= death ? 400 : (int)(400f * (1f - lifeRatio));
-
-                float segmentVelocityBoost = death ? (flyAtTarget ? 4.5f : 6f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
-                float speedBoost = death ? (flyAtTarget ? 0.1125f : 0.15f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
-                float turnSpeedBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
-
-                segmentVelocity += segmentVelocityBoost;
-                speed += speedBoost;
-                turnSpeed += turnSpeedBoost;
-
-                segmentVelocity += 5f * enrageScale;
-                speed += 0.05f * enrageScale;
-                turnSpeed += 0.075f * enrageScale;
-
-                if (flyAtTarget)
-                {
-                    float speedMultiplier = phase5 ? 1.8f : phase4 ? 1.65f : 1.5f;
-                    speed *= speedMultiplier;
-                }
-
-                segmentVelocity *= velocityMultiplier;
-                speed *= velocityMultiplier;
-                turnSpeed *= velocityMultiplier;
-
-                segmentVelocity *= brokenSegmentAggressionMultiplier;
-                speed *= brokenSegmentAggressionMultiplier;
-                turnSpeed *= brokenSegmentAggressionMultiplier;
-
-                if (Main.getGoodWorld)
-                {
-                    segmentVelocity *= 1.2f;
-                    speed *= 1.2f;
-                    turnSpeed *= 1.2f;
-                }
+                segmentVelocity *= 1.2f;
+                speed *= 1.2f;
+                turnSpeed *= 1.2f;
             }
 
             bool probeLaunched = npc.ai[2] == 1f;
@@ -287,9 +259,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         calamityGlobalNPC.newAI[2] -= 1f;
                 }
 
-                // Regenerate Probes in Master Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
-                // This doesn't happen if Oblivion is alive
-                if (death && probeLaunched && !oblivionAlive)
+                // Regenerate Probes in Death Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
+                if (death && probeLaunched)
                 {
                     npc.localAI[2] += 1f;
                     if (npc.localAI[2] >= 600f)
@@ -770,8 +741,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            bool oblivionFightDespawn = (oblivionAlive && lifeRatio < 0.8f) && npc.localAI[3] == 1f;
-            if (player.dead || oblivionFightDespawn)
+            if (player.dead)
             {
                 shouldFly = false;
                 npc.velocity.Y += 2f;
@@ -1034,12 +1004,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            // Force the fucker to turn around in ground phase in Master
-            // Turns slower if Oblivion is alive, for fairness
+            // Force the fucker to turn around in ground phase in Death
             if (npc.type == NPCID.TheDestroyer && death && !flyAtTarget)
             {
                 if (npc.Distance(player.Center) > 2000f)
-                    npc.velocity += (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * (oblivionAlive ? speed : turnSpeed);
+                    npc.velocity += (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
             }
 
             if (NPC.IsMechQueenUp && npc.type == NPCID.TheDestroyer)

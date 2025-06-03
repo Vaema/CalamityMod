@@ -10200,34 +10200,5 @@ namespace CalamityMod.NPCs
             return result;
         }
         #endregion
-
-        #region Type Name Changes
-        public override void ModifyTypeName(NPC npc, ref string typeName)
-        {
-            if (CalamityWorld.death || BossRushEvent.BossRushActive)
-            {
-                if (npc.type == NPCID.SkeletronPrime)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.SkeletronOmega.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeSaw)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaSaw.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeLaser)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaLaser.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeVice)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaVice.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeCannon)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaCannon.DisplayName");
-                }
-            }
-        }
-        #endregion
     }
 }
