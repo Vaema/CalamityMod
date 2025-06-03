@@ -2161,6 +2161,11 @@ HapuFruit: {
 	Tooltip: "'A fruit that calms your nerves (may have unintended side effects)'"
 }
 
+LucisSight: {
+	DisplayName: Luci's Sight
+	Tooltip: "'Fashionable glasses? In Earthia's current economy?!'"
+}
+
 OracleHeadphones: {
 	DisplayName: Oracle Headphones
 	Tooltip: "'Hey game's over!'"
