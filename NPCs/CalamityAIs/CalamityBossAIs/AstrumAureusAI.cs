@@ -41,7 +41,6 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -76,10 +75,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
             if (dontAttack)
             {
                 npc.localAI[3] -= 1f;
-                if (npc.justHit && masterMode)
-                    npc.localAI[3] -= 3f;
                 if (npc.Distance(player.Center) < 240f)
-                    npc.localAI[3] -= masterMode ? 4f : expertMode ? 2f : 1f;
+                    npc.localAI[3] -= death ? 4f : expertMode ? 2f : 1f;
             }
 
             float enrageScale = bossRush ? 1f : 0f;
@@ -343,10 +340,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 
                 // Stay vulnerable for 3 seconds
                 npc.ai[1] += 1f;
-                if (npc.justHit && masterMode)
-                    npc.ai[1] += 3f;
                 if (npc.Distance(player.Center) < 240f)
-                    npc.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+                    npc.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
                 if (npc.ai[1] >= 180f || bossRush)
                 {
@@ -457,7 +452,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                 {
                     npc.ai[1] += 1f;
                     if (npc.Distance(player.Center) < 240f)
-                        npc.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+                        npc.ai[1] += death ? 4f : expertMode ? 2f : 1f;
                 }
 
                 if (npc.ai[1] >= ((bossRush ? 270f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f)))

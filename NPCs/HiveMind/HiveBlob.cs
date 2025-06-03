@@ -62,7 +62,6 @@ namespace CalamityMod.NPCs.HiveMind
         public override void AI()
         {
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -171,7 +170,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.localAI[1] += 1f;
                     if (NPC.localAI[1] < ShowTelegraphValue)
                         NPC.localAI[1] += Main.rand.Next(2);
-                    if (masterMode)
+                    if (death)
                         NPC.localAI[1] += 1f;
                 }
 
@@ -184,8 +183,6 @@ namespace CalamityMod.NPCs.HiveMind
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
-                        if (masterMode)
-                            projSpeed += 2f;
                         if (Main.getGoodWorld)
                             projSpeed *= 1.5f;
 

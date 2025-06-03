@@ -93,13 +93,14 @@ namespace CalamityMod.NPCs
         private static readonly string[] CyborgNames =
         {
             "Sylux", // <@!331812782183809025> (gonkachino)
-            "XL-39 Nemesis", // <@!1104036024063107082> (yashimayamanata)
+            "Nemesis", // <@!1104036024063107082> (yashimayamanata)
         };
         private static readonly string[] DemolitionistNames =
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
             "Fimmy", // <@!407348617079160832> (darkmega5)
             "Dorira", // <@!215269032360804352> (crimsoncb)
+            "John Helldiver", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] DryadNames =
         {
@@ -122,6 +123,9 @@ namespace CalamityMod.NPCs
             "Him", // <@!931019614958256139> (himtheguy1)
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
+            "Bars Boldia", // <@!332989575708540939> (careless_imp)
+            "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
+            "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
         };
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
@@ -141,9 +145,9 @@ namespace CalamityMod.NPCs
             "Alfred Rend", // <@!606301806481375255> (deadsqurp300)
             "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
-            "Cooler Kevin", // <@!614126424751603714> (exellent.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
-            "Wamy",
+            "Wamy", // Fab added this name with no Discord ID. May be a donor who has no Discord account.
+            "Baggute", // <@!535140564174110720> (thebaggutegamer)
         };
         private static readonly string[] MechanicNames =
         {
@@ -156,6 +160,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] MerchantNames =
         {
             "Morshu", // <@!194931581826236416> (uberransy)
+            "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
         };
         private static readonly string[] NurseNames =
         {
@@ -181,6 +186,7 @@ namespace CalamityMod.NPCs
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
+            "Yarrim", // <@!290061123137306624> (borb9834)
         };
         private static readonly string[] PrincessNames =
         {
@@ -192,6 +198,7 @@ namespace CalamityMod.NPCs
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
+            "Vela", // <@!208719047146209281> (nyxxynightstar)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -201,7 +208,9 @@ namespace CalamityMod.NPCs
         {
             "Sans Undertale", // <@!145379091648872450> (shayy)
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
+            "Gaster Undertale", // <@!924706306093379614> (enamoured)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
+            "Freakbob", // <@!377863128140087296> (jevilamv)
         };
         private static readonly string[] SteampunkerNames =
         {
@@ -210,6 +219,7 @@ namespace CalamityMod.NPCs
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
+            "Kreutz", // <@!553445849149997056> (red_r_kreutz)
         };
         private static readonly string[] StylistNames =
         {
@@ -240,13 +250,13 @@ namespace CalamityMod.NPCs
         private static readonly string[] TruffleNames =
         {
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
+            "Wonton", // <@!1198092982923043040> (imonthatgudkush)
         };
         private static readonly string[] WitchDoctorNames =
         {
             "Sok'ar",
             "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
-            "Khatunz", // <@!303022375191183360> (jackshiz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
         };
         private static readonly string[] WizardNames =
@@ -266,6 +276,8 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
+            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
+            "Daxie", // <@!465438861103988737> (daxie626)
         };
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
@@ -281,6 +293,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogNames =
         {
             "Ozymandias", // <@!146333264871686145> (ozzatron)
+            "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
+            "Brikwilla", // <@!543803736909414438> (lavendercobra)
         };
         private static readonly string[] TownDogLabradorNames =
         {
@@ -321,6 +335,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatBlackNames =
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
+            "Storm", // <@!620383533516718085> (airwaveslr)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
@@ -328,7 +343,10 @@ namespace CalamityMod.NPCs
             "Tardo", // <@!739343546867384391> (midnight295)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
-        private static readonly string[] TownCatSilverNames = null;
+        private static readonly string[] TownCatSilverNames =
+        {
+            "Archie", // <@!303022375191183360> (jackshiz)
+        };
         private static readonly string[] TownCatWhiteNames = null;
 
         private const int TownBunnyWhiteVanillaNames = 14;
@@ -337,7 +355,10 @@ namespace CalamityMod.NPCs
         private const int TownBunnyFlemishVanillaNames = 12;
         private const int TownBunnyLopVanillaNames = 13;
         private const int TownBunnySilverVanillaNames = 13;
-        private static readonly string[] TownBunnyNames = null;
+        private static readonly string[] TownBunnyNames =
+        {
+            "Poco", // <@!1192261996146593872> (tostitomuncher33)
+        };
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
         private static readonly string[] TownBunnyDutchNames = null;

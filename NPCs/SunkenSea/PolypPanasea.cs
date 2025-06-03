@@ -126,11 +126,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.5f,
-                MaxSpeed = 4f,
-            };
             // Panaseas released by the player do not randomize when spawned
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
             {
@@ -182,6 +177,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.5f,
+                    MaxSpeed = 4f,
+                };
+            }
             // Reset polyp index in case the polyp dies
             if (PolypIndex > -1)
             {
