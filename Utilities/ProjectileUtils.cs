@@ -184,7 +184,7 @@ namespace CalamityMod
             foreach (NPC n in Main.ActiveNPCs)
             {
                 float extraDistance = (n.width / 2) + (n.height / 2);
-                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance))
+                if (!n.CanBeChasedBy(projectile, false) || projectile.localNPCImmunity[n.whoAmI] != 0 || !projectile.WithinRange(n.Center, maxDistance + extraDistance))
                     continue;
 
                 float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);

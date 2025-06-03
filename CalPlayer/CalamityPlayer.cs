@@ -1333,6 +1333,7 @@ namespace CalamityMod.CalPlayer
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
         public bool purpleHaze = false;
+        public int purpleHazeStealthTimer = 0;
         public bool mushy = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
@@ -1359,6 +1360,7 @@ namespace CalamityMod.CalPlayer
         public bool vodka = false;
         public bool redWine = false;
         public bool grapeBeer = false;
+        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -2557,6 +2559,8 @@ namespace CalamityMod.CalPlayer
             amidiasBlessing = false;
             flaskBrimstone = false;
             purpleHaze = false;
+            if (purpleHazeStealthTimer > 0)
+                purpleHazeStealthTimer--;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2573,6 +2577,8 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
+            if (grapeBeerTimer > 0)
+                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -4598,15 +4604,6 @@ namespace CalamityMod.CalPlayer
             // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
 
-            if (whiskey)
-                knockback += Whiskey.KnockbackBoost;
-
-            if (tequila && Main.dayTime)
-                knockback += Tequila.KnockbackBoost;
-
-            if (tequilaSunrise && Main.dayTime)
-                knockback += TequilaSunrise.KnockbackBoost;
-
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
 
@@ -4796,7 +4793,13 @@ namespace CalamityMod.CalPlayer
         {
             if (bladeArmEnchant)
                 return false;
-
+            if (purpleHaze)
+            {
+                if (item.CountsAsClass<RogueDamageClass>() && StealthStrikeAvailable())
+                {
+                    purpleHazeStealthTimer = 300;
+                }
+            }
             if (veneratedLocket)
             {
                 var LocketSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<VeneratedLocket>()));

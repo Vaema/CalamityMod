@@ -13,11 +13,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DamageBoost = 0.06f;
-        public static int CritBoost = 2;
-        public static int RegenLoss = 1;
-        public static float DefenseLossPercent = 0.05f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, RegenLoss.ToRegenPerSecond(), DefenseLossPercent.ToPercent());
+        public static float DebuffBoost = 0.25f;
+        public static float DebuffLoss = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DebuffBoost).ToPercent(), DebuffLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {

@@ -628,13 +628,6 @@ namespace CalamityMod.CalPlayer
             if (proj.Calamity().stealthStrike && proj.CountsAsClass<RogueDamageClass>())
                 modifiers.SourceDamage *= (float)bonusStealthDamage + 1; // Default bonusStealthDamage is 0, a 1 has to be added to take the damage of the weapon.
 
-            // Screwdriver adds 5% bonus damage to all piercing projectiles.
-            if (screwdriver)
-            {
-                if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
-            }
-
             // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
             // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
             if (proj.type == ProjectileID.InfernoFriendlyBlast)

@@ -3509,13 +3509,10 @@ namespace CalamityMod.CalPlayer
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
 
-            if (purpleHaze)
-                Player.GetDamage<GenericDamageClass>() += PurpleHaze.DamageBoost;
-
-            if (vodka)
+            if (purpleHazeStealthTimer > 0)
             {
-                Player.GetDamage<GenericDamageClass>() += Vodka.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Vodka.CritBoost;
+                Player.GetDamage<RogueDamageClass>() += PurpleHaze.DamageBoost;
+                stealthDamage -= PurpleHaze.StealthDamageLoss;
             }
 
             if (moonshine)
@@ -3523,9 +3520,6 @@ namespace CalamityMod.CalPlayer
                 Player.statDefense += Moonshine.DefenseBoost;
                 Player.endurance += Moonshine.DamageReductionBoost;
             }
-
-            if (rum)
-                Player.moveSpeed += Rum.MoveSpeedBoost;
 
             if (whiskey)
             {
@@ -3542,15 +3536,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
                     Player.moveSpeed += BloodyMary.MoveSpeedBoost;
-                }
-            }
-
-            if (tequila)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += Tequila.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += Tequila.CritBoost;
                 }
             }
 
@@ -4816,87 +4801,11 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (purpleHaze)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * PurpleHaze.DefenseLossPercent);
-            }
-
-            if (vodka)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Vodka.DefenseLossPercent);
-            }
-
-            if (grapeBeer)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * GrapeBeer.DefenseLossPercent);
-            }
-
-            if (rum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Rum.DefenseLossPercent);
-            }
-
-            if (whiskey)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Whiskey.DefenseLossPercent);
-            }
-
             if (everclear)
             {
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
-
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    if (Player.statDefense > 0)
-                        Player.statDefense -= (int)(Player.statDefense * BloodyMary.DefenseLossPercent);
-                }
-            }
-
-            if (caribbeanRum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CaribbeanRum.DefenseLossPercent);
-            }
-
-            if (cinnamonRoll)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CinnamonRoll.DefenseLossPercent);
-            }
-
-            if (margarita)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Margarita.DefenseLossPercent);
-            }
-
-            if (starBeamRye)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * StarBeamRye.DefenseLossPercent);
-            }
-
-            if (whiteWine)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * WhiteWine.DefenseLossPercent);
-            }
-
-            if (Player.HasBuff(BuffID.Tipsy))
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
-            }
-
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
                 Player.statDefense -= (int)(Player.statDefense * 0.75);
         }

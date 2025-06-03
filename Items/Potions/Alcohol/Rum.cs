@@ -12,10 +12,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int RegenBoost = 2;
-        public static float MoveSpeedBoost = 0.1f;
-        public static float DefenseLossPercent = 0.05f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), MoveSpeedBoost.ToPercent(), DefenseLossPercent.ToPercent());
+        public static float NonMinionBoost = 1.15f;
+        public static float MinionBoost = 0.85f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((NonMinionBoost-1).ToPercent(), (MinionBoost - 1).ToPercent());
 
         public override void SetStaticDefaults()
         {

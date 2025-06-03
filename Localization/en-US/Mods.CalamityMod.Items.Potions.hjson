@@ -163,8 +163,8 @@ BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
 		'''
-		{0}% increased damage and movement speed during a Blood Moon
-		Reduces life regen by {1} HP/s and defense by {2}%
+		Increased enemy spawn rates increased by {0}
+		Piercing attacks lose {1} of their damage for each enemy hit
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -173,8 +173,8 @@ CaribbeanRum: {
 	DisplayName: Caribbean Rum
 	Tooltip:
 		'''
-		Increases life regen by {0} HP/s, movement speed by {1}%
-		Makes you floaty and reduces defense by {2}%
+		Increases move speed by {0}
+		Reduces your gravity by {1}
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -183,8 +183,8 @@ CinnamonRoll: {
 	DisplayName: Cinnamon Roll
 	Tooltip:
 		'''
-		Multiplies all fire-based debuff damage by {0}x and increases mana regeneration
-		Reduces defense by {1}%
+		{0} increased maximum Mana
+		{1} increased mana consumption
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -193,8 +193,8 @@ PurpleHaze: {
 	DisplayName: purpleHaze
 	Tooltip:
 		'''
-		{0}% increased damage, but lowers defense by {1}%
-		Increases immune time after being struck
+		Damage increased by {0} for a short time after a stealth strike
+		Stealth Strike damage reduced by {1}
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -214,9 +214,8 @@ EvergreenGin: {
 	DisplayName: Evergreen Gin
 	Tooltip:
 		'''
-		Multiplies all sickness and water-related debuff damage by {0}x
-		Reduces life regen by {1} HP/s
-		{$Common.AlcoholWarning}
+		{0} increased Water and Sickness debuff damage
+		{1} decreased Electric and Heat debuff damage
 		'''
 }
 
@@ -224,8 +223,8 @@ Fireball: {
 	DisplayName: Fireball
 	Tooltip:
 		'''
-		Multiplies all fire-based debuff damage by {0}x
-		Reduces life regen by {1} HP/s
+		{0} increased Heat debuff damage
+		{1} decreased Sickness debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -234,7 +233,8 @@ GrapeBeer: {
 	DisplayName: Grape Beer
 	Tooltip:
 		'''
-		Reduces defense by {0}% for {1} seconds
+		Bullets, Arrows, Darts, and Rockets gain homing
+		{0} reduced critical strike chance
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -243,10 +243,9 @@ Margarita: {
 	DisplayName: Margarita
 	Tooltip:
 		'''
-		Halves the duration of most harmful debuffs
-		Reduces defense by {0}% and life regen by {1} HP/s
+		Reduces duration of harmful debuffs by {0}
+		Reduces damage of debuffs you inflict by {1}
 		{$Common.AlcoholWarning}
-		{$CommonItemTooltip.MinuteDuration@2}
 		'''
 }
 
@@ -255,7 +254,7 @@ Moonshine: {
 	Tooltip:
 		'''
 		Increases defense by {0} and damage reduction by {1}%
-		Reduces life regen by {2} HP/s
+		Reduces flight time by {2}
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -264,8 +263,8 @@ MoscowMule: {
 	DisplayName: Moscow Mule
 	Tooltip:
 		'''
-		Increases damage by {0}%, knockback by {1}% and critical strike chance by {2}%
-		Reduces life regen by {3} HP/s
+		{0} increased knockback, all attacks infict Heavy Knockback
+		Piercing attacks lose {1} of their damage for each enemy hit
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -285,8 +284,8 @@ OldFashioned: {
 	DisplayName: Old Fashioned
 	Tooltip:
 		'''
-		Multiplies most non-weapon, non-debuff damage by {0}x
-		Multiplies all weapon damage by {1}x
+		{0} increase to most non-weapon, non-debuff damage
+		{1} decreased weapon damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -295,7 +294,8 @@ RedWine: {
 	DisplayName: Red Wine
 	Tooltip:
 		'''
-		Reduces life regen by {0} HP/s for {1} seconds
+		{0} increased vertical speed
+		{1} reduced flight time
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -304,8 +304,8 @@ Rum: {
 	DisplayName: Rum
 	Tooltip:
 		'''
-		Increases life regen by {0} HP/s and movement speed by {1}%
-		Reduces defense by {2}%
+		{0} increased non-minion Summon damage
+		{1} decreased minion damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -314,8 +314,8 @@ Screwdriver: {
 	DisplayName: Screwdriver
 	Tooltip:
 		'''
-		Multiplies piercing projectile damage by {0}x
-		Reduces life regen by {1} HP/s
+		{0} increased Cold debuff damage
+		{1} decreased Water debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -324,9 +324,8 @@ StarBeamRye: {
 	DisplayName: Star Beam Rye
 	Tooltip:
 		'''
-		Increases max mana by {0}, magic damage by {1}%,
-		and reduces mana usage by {2}%
-		Reduces defense by {3}% and life regen by {4} HP/s
+		{0} increased Mana regeneration
+		{1} decreased maximum Mana
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -335,8 +334,8 @@ Tequila: {
 	DisplayName: Tequila
 	Tooltip:
 		'''
-		Increases knockback by {0}%, crit chance by {1}% and defense by {2} during daytime
-		Reduces life regen by {3} HP/s
+		{0} increased Electric debuff damage
+		{1} decreased Cold debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -345,8 +344,8 @@ TequilaSunrise: {
 	DisplayName: Tequila Sunrise
 	Tooltip:
 		'''
-		Increases knockback by {0}%, crit chance by {1}% and defense by {2} during daytime
-		Reduces life regen by {3} HP/s
+		Greatly increases natural regeneration after suffering a damaging debuff
+		{0} increased damage taken from debuffs
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -355,8 +354,8 @@ Vodka: {
 	DisplayName: Vodka
 	Tooltip:
 		'''
-		Increases damage by {0}% and critical strike chance by {1}%
-		Reduces life regen by {2} HP/s and defense by {3}%
+		{0} increased Typeless debuff damage
+		{1} decreased other debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -365,8 +364,8 @@ Whiskey: {
 	DisplayName: Whiskey
 	Tooltip:
 		'''
-		Increases damage by {0}%, knockback by {1}% and critical strike chance by {2}%
-		Reduces defense by {3}%
+		{0} increased damage, which decays to {1} decreased damage the longer you hold the same class weapon
+		This does not apply when not holding a weapon
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -375,8 +374,8 @@ WhiteWine: {
 	DisplayName: White Wine
 	Tooltip:
 		'''
-		Increases magic damage by {0}%
-		Reduces defense by {1}% and life regen by {2} HP/s
+		{0} reduced mana consumption
+		{1} reduced maximum mana
 		{$Common.AlcoholWarning}
 		'''
 }

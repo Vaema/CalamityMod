@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +18,8 @@ namespace CalamityMod.Buffs.Alcohol
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().fireball = true;
-            player.Calamity().HeatDebuffMultiplier += 0.25f;
+            player.Calamity().HeatDebuffMultiplier += Fireball.DebuffBoost;
+            player.Calamity().SicknessDebuffMultiplier -= Fireball.DebuffLoss;
         }
     }
 }

@@ -194,34 +194,10 @@ namespace CalamityMod.CalPlayer
                 if (AlcoholsDict.TryGet(buff, out var level))
                     alcoholPoisonLevel += level;
             }
-            if (vodka)
-                totalNegativeLifeRegen += Vodka.RegenLoss;
-            if (redWine)
-                totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
             if (moonshine)
                 totalNegativeLifeRegen += Moonshine.RegenLoss;
-            if (fireball)
-                totalNegativeLifeRegen += Fireball.RegenLoss;
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-            if (bloodyMary)
-                totalNegativeLifeRegen += BloodyMary.RegenLoss;
-            if (tequila)
-                totalNegativeLifeRegen += Tequila.RegenLoss;
-            if (tequilaSunrise)
-                totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
-            if (screwdriver)
-                totalNegativeLifeRegen += Screwdriver.RegenLoss;
-            if (margarita)
-                totalNegativeLifeRegen += Margarita.RegenLoss;
-            if (starBeamRye)
-                totalNegativeLifeRegen += StarBeamRye.RegenLoss;
-            if (moscowMule)
-                totalNegativeLifeRegen += MoscowMule.RegenLoss;
-            if (whiteWine)
-                totalNegativeLifeRegen += WhiteWine.RegenLoss;
-            if (evergreenGin)
-                totalNegativeLifeRegen += EvergreenGin.RegenLoss;
 
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
@@ -570,8 +546,6 @@ namespace CalamityMod.CalPlayer
         #region Update Life Regen
         public override void UpdateLifeRegen()
         {
-            if (rum)
-                Player.lifeRegen += Rum.RegenBoost;
 
             if (caribbeanRum)
                 Player.lifeRegen += CaribbeanRum.RegenBoost;

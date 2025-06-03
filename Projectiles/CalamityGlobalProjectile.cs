@@ -3319,6 +3319,17 @@ namespace CalamityMod.Projectiles
                         if (modPlayer.filthyGlove || modPlayer.bloodyGlove)
                             projectile.ArmorPenetration += gloveArmorPenAmt;
                     }
+                    if (player.Calamity().grapeBeer && player.heldProj != projectile.whoAmI && projectile.damage > 0 && projectile.DamageType == DamageClass.Ranged && projectile.Distance(player.Center) < 80)
+                    {
+                        var item = player.ActiveItem();
+                        if (item != null && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket) && player.Calamity().grapeBeerTimer < 5)
+                        {
+                            conditionalHomingRange += 600;
+                            player.Calamity().grapeBeerTimer += 1;
+                            if (projectile.usesLocalNPCImmunity)
+                                projectile.localNPCHitCooldown = -1;
+                        }
+                    }
                 }
 
                 if (NPC.downedMoonlord)
