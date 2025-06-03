@@ -311,13 +311,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (j == totalSegments)
                             type = NPCID.TheDestroyerTail;
 
-                            int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
-                            Main.npc[segment].ai[3] = npc.whoAmI;
-                            Main.npc[segment].realLife = npc.whoAmI;
-                            Main.npc[segment].ai[1] = index;
-                            Main.npc[index].ai[0] = segment;
-                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
-                            index = segment;
+                        int segment = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)(npc.position.Y + npc.height), type, npc.whoAmI);
+                        Main.npc[segment].ai[3] = npc.whoAmI;
+                        Main.npc[segment].realLife = npc.whoAmI;
+                        Main.npc[segment].ai[1] = index;
+                        Main.npc[index].ai[0] = segment;
+                        Main.npc[index].Calamity().newAI[0] = -90f - Main.npc[index].ai[0] * (death ? 12f : 3f); // This controls the delay between laser shots
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
+                        index = segment;
                     }
                 }
 
@@ -412,28 +413,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Set laser color and type
                 if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched)
                 {
-                    if (Main.rand.NextBool(death ? OneInXChanceToFireLaser / (phase5 ? 4 : phase4 ? 3 : 2) : OneInXChanceToFireLaser))
+                    int random = phase3 ? 4 : phase2 ? 3 : 2;
+                    switch (Main.rand.Next(random))
                     {
-                        int random = phase3 ? 4 : phase2 ? 3 : 2;
-                        switch (Main.rand.Next(random))
-                        {
-                            case 0:
-                            case 1:
-                                calamityGlobalNPC.destroyerLaserColor = 0;
-                                break;
-                            case 2:
-                                calamityGlobalNPC.destroyerLaserColor = 1;
-                                break;
-                            case 3:
-                                calamityGlobalNPC.destroyerLaserColor = 2;
-                                break;
-                        }
-
-                        if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                        case 0:
+                        case 1:
+                            calamityGlobalNPC.destroyerLaserColor = 0;
+                            break;
+                        case 2:
+                            calamityGlobalNPC.destroyerLaserColor = 1;
+                            break;
+                        case 3:
                             calamityGlobalNPC.destroyerLaserColor = 2;
-
-                        npc.SyncDestroyerLaserColor();
+                            break;
                     }
+
+                    if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                        calamityGlobalNPC.destroyerLaserColor = 2;
+
+                    npc.SyncDestroyerLaserColor();
                 }
 
                 if (probeLaunched && ableToFireLaser)
@@ -443,12 +441,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Laser rate of fire
-                float shootProjectileTime = death ? (phase5 ? 120f : phase4 ? 150f : 180f) : 450f;
-                float bodySegmentTime = npc.ai[0] * (death ? 20f : 30f);
-                float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                float laserTimerIncrement = (calamityGlobalNPC.newAI[0] > shootProjectileGateValue - LaserTelegraphTime) ? 1f : 2f;
+                float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
                 if (ableToFireLaser)
-                    calamityGlobalNPC.newAI[0] += laserTimerIncrement;
+                    calamityGlobalNPC.newAI[0] += 1f;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -471,7 +466,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                 }
 
-                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - LaserTelegraphTime)
+                if (calamityGlobalNPC.newAI[0] == shootProjectileTime - LaserTelegraphTime)
                 {
                     Particle telegraph = new DestroyerReticleTelegraph(
                         npc,
@@ -482,7 +477,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     GeneralParticleHandler.SpawnParticle(telegraph);
                 }
 
-                if (calamityGlobalNPC.newAI[0] == shootProjectileGateValue - SparkTelegraphTime)
+                if (calamityGlobalNPC.newAI[0] == shootProjectileTime - SparkTelegraphTime)
                 {
                     Particle spark = new DestroyerSparkTelegraph(
                         npc,
@@ -496,40 +491,44 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Shoot lasers
                 // Shoot nothing if probe has been launched
-                if (calamityGlobalNPC.newAI[0] >= shootProjectileGateValue && ableToFireLaser)
+                if (calamityGlobalNPC.newAI[0] >= shootProjectileTime && ableToFireLaser)
                 {
+                    int numProbeSegments = 0;
+                    for (int i = 0; i < Main.maxNPCs; i++)
+                    {
+                        if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
+                            numProbeSegments++;
+                    }
+                    float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
+                    float laserShootTimeBonus = (int)MathHelper.Lerp(0f, shootProjectileTime - LaserTelegraphTime, 1f - lerpAmount);
+                    // Controls the fire rate getting slower as health lowers
                     if (!death)
                     {
-                        int numProbeSegments = 0;
-                        for (int i = 0; i < Main.maxNPCs; i++)
+                        if (npc.localAI[3] == 0f && phase2)
                         {
-                            if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
-                                numProbeSegments++;
+                            npc.localAI[3] = 1f;
+                            npc.SyncVanillaLocalAI();
+                            laserShootTimeBonus -= npc.ai[0] * 2f;
                         }
-                        float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
-                        float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
-                        calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
-                        npc.SyncExtraAI();
-                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                        else if (npc.localAI[3] == 1f && phase3)
+                        {
+                            npc.localAI[3] = 2f;
+                            npc.SyncVanillaLocalAI();
+                            laserShootTimeBonus -= npc.ai[0] * 2f;
+                        }
+                        else if (npc.localAI[3] == 2f && startFlightPhase)
+                        {
+                            npc.localAI[3] = 3f;
+                            npc.SyncVanillaLocalAI();
+                            laserShootTimeBonus -= npc.ai[0];
+                        }
                     }
+                    calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
+                    npc.SyncExtraAI();
+                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
                     {
-                        if (death)
-                        {
-                            int numProbeSegments = 0;
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                if (Main.npc[i].active && Main.npc[i].type == npc.type && Main.npc[i].ai[2] == 0f)
-                                    numProbeSegments++;
-                            }
-                            float lerpAmount = MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f);
-                            float laserShootTimeBonus = (int)MathHelper.Lerp(0f, (shootProjectileTime + bodySegmentTime * lerpAmount) - LaserTelegraphTime, 1f - lerpAmount);
-                            calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
-                            npc.SyncExtraAI();
-                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                        }
-
                         // Laser speed
                         float projectileSpeed = (death ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
                         projectileSpeed += enrageScale;
@@ -713,9 +712,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else if (npc.type == NPCID.TheDestroyerBody)
                     {
                         float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 270f : 450f;
-                        float bodySegmentTime = npc.ai[0] * 30f;
-                        float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                        float telegraphGateValue = shootProjectileGateValue - LaserTelegraphTime;
+                        float telegraphGateValue = shootProjectileTime - LaserTelegraphTime;
                         if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
                         {
                             switch (calamityGlobalNPC.destroyerLaserColor)
@@ -1241,12 +1238,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (targetData.Center.X - npc.Center.X > 0f)
             {
-                npc.spriteDirection = -1;
+                npc.spriteDirection = 1;
                 npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X);
             }
             else
             {
-                npc.spriteDirection = 1;
+                npc.spriteDirection = -1;
                 npc.rotation = (float)Math.Atan2(targetData.Center.Y - npc.Center.Y, targetData.Center.X - npc.Center.X) + MathHelper.Pi;
             }
 

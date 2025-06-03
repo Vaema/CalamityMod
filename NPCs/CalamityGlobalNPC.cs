@@ -1900,7 +1900,7 @@ namespace CalamityMod.NPCs
             else if (DestroyerIDList.Includes(npc.type))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
-                npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
+                npc.scale *= Main.zenithWorld ? 2f : 1.2f;
                 npc.npcSlots = 10f;
             }
             else if (npc.type == NPCID.Probe)
@@ -1908,7 +1908,7 @@ namespace CalamityMod.NPCs
                 if (CalamityWorld.death)
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2D);
 
-                npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
+                npc.scale *= Main.zenithWorld ? 2f : 1.2f;
             }
             else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
             {
@@ -3793,10 +3793,13 @@ namespace CalamityMod.NPCs
             ApplyDR(npc, ref modifiers);
 
             // Damage reduction on spawn for certain worm bosses.
-            if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
-                modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
-            if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
-                modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
+            if (CalamityWorld.revenge)
+            {
+                if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
+                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
+                if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
+                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
+            }
             if (AstrumDeusIDList.Includes(npc.type))
             {
                 float drTime = newAI[0] != 0f ? 300f : 600f;
@@ -6630,7 +6633,6 @@ namespace CalamityMod.NPCs
 
         #endregion
 
-
         #region Summon Tag 
         //doze 03-15-2025: A full refactor of the summon tag system to make it easier to use and more flexible. Ping me with any questions.
         private void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
@@ -8084,7 +8086,7 @@ namespace CalamityMod.NPCs
                     shouldDrawBool = false;
             }
 
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
             {
                 Texture2D texture = TextureAssets.Npc[npc.type].Value;
 
@@ -8439,10 +8441,8 @@ namespace CalamityMod.NPCs
                         }
                         else if (npc.type == NPCID.TheDestroyerBody && revenge)
                         {
-                            float shootProjectileTime = death ? (phase5 ? 120f : phase4 ? 150f : 180f) : 450f;
-                            float bodySegmentTime = npc.ai[0] * (death ? 20f : 30f);
-                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                            float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
+                            float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
+                            float telegraphGateValue = shootProjectileTime - DestroyerAI.LaserTelegraphTime;
                             if (newAI[0] > telegraphGateValue)
                             {
                                 switch (destroyerLaserColor)
@@ -8486,22 +8486,18 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.EnableVanillaTextureEdits)
+            else if (npc.type == NPCID.Probe)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
-                Texture2D glowTexture = ExtraTextureRefs.ProbeGlowmask.Value;
+                Texture2D glowTexture = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (npc.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
 
+                Vector2 drawPosition = npc.Center - screenPos + Vector2.UnitX.RotatedBy(npc.rotation) * (npc.width * 0.45f * npc.spriteDirection) + Vector2.UnitY * npc.gfxOffY;
                 float colorScale = MathHelper.Clamp((npc.localAI[0] - eyeTelegraphGateValue) / DestroyerAI.ProbeLaserTelegraphTime, 0f, 1f);
-                Color drawColor2 = Color.Lerp(new Color(150, 0, 0, 192), new Color(255, 100, 150, 192), colorScale);
-                for (int i = 0; i < 2; i++)
-                {
-                    spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
-                        drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                }
+                Color drawColor2 = new Color(255, 100, 150, 192) * colorScale;
+                spriteBatch.SetBlendState(BlendState.Additive);
+                spriteBatch.Draw(glowTexture, drawPosition, npc.frame, drawColor2, npc.rotation, halfSize, npc.scale * 1.1f, SpriteEffects.None, 0f);
+                spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
 
             if (revenge)
