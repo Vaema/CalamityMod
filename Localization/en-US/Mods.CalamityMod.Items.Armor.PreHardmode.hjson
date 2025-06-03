@@ -33,7 +33,7 @@ AerospecHeadMelee: {
 	Tooltip: 10% increased melee damage
 	SetBonus:
 		'''
-		Helm: 5% increased movement speed and melee critical strike chance
+		5% increased movement speed and melee critical strike chance
 		Enemies are more likely to target you
 		'''
 }

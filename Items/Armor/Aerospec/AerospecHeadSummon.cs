@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Head)]
-    [LegacyName("AreospectHelmet")]
+    [LegacyName("AreospecHelmet")]
     public class AerospecHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
