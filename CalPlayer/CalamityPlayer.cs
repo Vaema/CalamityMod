@@ -361,7 +361,6 @@ namespace CalamityMod.CalPlayer
         public int murasamaHitCooldown = 0;
         public int giantShellPostHit = 0;
         public int tortShellPostHit = 0;
-        public int RustyMedallionCooldown = 0;
         public int MiniSwarmerCooldown = 0;
         public float SulphWaterPoisoningLevel;
         public float holyInfernoFadeIntensity;
@@ -958,6 +957,7 @@ namespace CalamityMod.CalPlayer
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
         public Color XykFXColor = Color.Black;
+        public int XykWingTimer = 0;
         public Color lightRGB = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
@@ -1022,6 +1022,9 @@ namespace CalamityMod.CalPlayer
         public bool veneratedLocket = false;
         public bool camper = false;
         public bool corrosiveSpine = false;
+        public bool scionsCurio = false;
+        public bool scionsCurioGotHit = false;
+        public bool scionsCurioVisuals = false;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1038,7 +1041,6 @@ namespace CalamityMod.CalPlayer
         public int phantomicHeartRegen = 0;
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
-        public bool RustyMedallionDroplets = false;
         public bool noStupidNaturalARSpawns = false;
         /// <summary> Used for animating Void Concentration Staff's draw layer. </summary>
         public int voidFrameCounter = 0;
@@ -2319,7 +2321,7 @@ namespace CalamityMod.CalPlayer
             starTaintedGenerator = false;
             camper = false;
             corrosiveSpine = false;
-            RustyMedallionDroplets = false;
+            scionsCurio = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -2872,7 +2874,6 @@ namespace CalamityMod.CalPlayer
             bloomStoneHealTimer = 0;
             bloomStoneDR = 0;
             murasamaHitCooldown = 0;
-            RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
@@ -4861,21 +4862,6 @@ namespace CalamityMod.CalPlayer
                                 Main.projectile[knife].DamageType = DamageClass.Generic;
                         }
                     }
-                }
-            }
-
-            if (RustyMedallionDroplets && RustyMedallionCooldown <= 0)
-            {
-                if (item.CountsAsClass<RangedDamageClass>())
-                {
-                    var MedallionSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RustyMedallion>()));
-                    int d = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(RustyMedallion.AcidDropBaseDamage);
-
-                    Vector2 mouse = Player.ClampedMouseWorld();
-                    Vector2 startingPosition = mouse - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
-                    Vector2 directionToMouse = (mouse - startingPosition).SafeNormalize(Vector2.UnitX);
-                    Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<RustyMedallionDroplet>(), d, 0f, Player.whoAmI, 3);
-                    RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
                 }
             }
             return true;

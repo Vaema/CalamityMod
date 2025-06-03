@@ -266,8 +266,8 @@ namespace CalamityMod
         public float FlightBarPosY { get; set; }
         #endregion
 
-        #region Music Events
-        [Header("MusicEvents")]
+        #region Music Toggles
+        [Header("MusicToggles")]
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -284,6 +284,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool DevourerofGodsEulogy { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool AbyssLayer3Alt { get; set; }
 
         #endregion
 

@@ -27,7 +27,7 @@ A more detailed breakdown of the content available in Calamity:
 [olist]
 [*] 27 bosses and 5 minibosses
 [*] 200+ enemies
-[*] 5 town NPCs
+[*] 4 town NPCs
 [*] 5 biomes and many new structures
 [*] 1 event
 [*] 1 new playable class (based on Throwing from Terraria 1.3)
