@@ -13,6 +13,9 @@ namespace CalamityMod.Schematics
 {
     public sealed class SchematicManager : ModSystem
     {
+        internal const string ShimmerShrineKey = "Shimmer Shrine Key";
+        internal const string ShimmerShrineFilename = "Schematics/Shimmer_Shrine.csch";
+
         internal const string BrimstoneAtriumType1Key = "Brimstone Atrium Type 1 Key";
         internal const string BrimstoneAtriumType1Filename = "Schematics/Brimstone_Atrium1.csch";
 
@@ -166,6 +169,9 @@ namespace CalamityMod.Schematics
             PilePlacementMaps = new Dictionary<string, PilePlacementFunction>();
             TileMaps = new Dictionary<string, SchematicMetaTile[,]>
             {
+                // Shimmer Shrine
+                [ShimmerShrineKey] = CalamitySchematicIO.LoadSchematic(ShimmerShrineFilename),
+
                 // Underworld structures
                 [BrimstoneAtriumType1Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType1Filename),
                 [BrimstoneAtriumType2Key] = CalamitySchematicIO.LoadSchematic(BrimstoneAtriumType2Filename),

@@ -197,11 +197,6 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void OnSpawn(IEntitySource source)
         {
             NPC.frameCounter = Main.rand.NextFloat(FrameCount);
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.5f,
-                MaxSpeed = 4f,
-            };
             CurrentShape = Main.rand.Next(0, 3);
             // Guppies released by the player do not randomize when spawned
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
@@ -247,6 +242,14 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.5f,
+                    MaxSpeed = 4f,
+                };
+            }
             // Spawn more guppies if a leader/naturally spawned guppy
             if (Role == 0 && NPC.releaseOwner == 255)
             {
@@ -630,7 +633,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 if (spawnInfo.Player.Calamity().ZoneGleamingBurrows || spawnInfo.Player.Calamity().ZoneClamDen)
                     return SpawnCondition.CaveJellyfish.Chance * 0.2f;
                 if (spawnInfo.Player.Calamity().ZonePolypForest)
-                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+                    return SpawnCondition.CaveJellyfish.Chance * 0.1f;
             }
             return 0f;
         }

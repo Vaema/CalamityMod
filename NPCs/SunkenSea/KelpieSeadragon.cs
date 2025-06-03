@@ -93,17 +93,16 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.3f,
-                MaxSpeed = 3f,
-            };
-        }
-
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 3f,
+                };
+            }
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest();
@@ -359,7 +358,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+                return SpawnCondition.CaveJellyfish.Chance * 0.7f;
             }
             return 0f;
         }

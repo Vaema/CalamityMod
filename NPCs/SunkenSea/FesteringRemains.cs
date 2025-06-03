@@ -142,7 +142,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.Cavern.Chance * 0.6f;
+                return SpawnCondition.Cavern.Chance * 0.4f;
             }
             return 0f;
         }

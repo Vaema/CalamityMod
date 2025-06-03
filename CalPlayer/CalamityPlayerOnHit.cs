@@ -144,7 +144,6 @@ namespace CalamityMod.CalPlayer
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
 
-
             if (generalBandCooldown == 0)
             {
                 int cooldown = 0;
@@ -1402,9 +1401,9 @@ namespace CalamityMod.CalPlayer
                 {
                     if (manaOverloader)
                     {
-                        double healMult = 0.2;
+                        double healMult = 0.1;
                         healMult -= proj.numHits * healMult * 0.25;
-                        int heal = (int)Math.Round(damage * healMult * (Player.statMana / (double)Player.statManaMax2));
+                        int heal = (int)Math.Round(damage * healMult);
                         if (heal > BalancingConstants.LifeStealCap)
                             heal = BalancingConstants.LifeStealCap;
 

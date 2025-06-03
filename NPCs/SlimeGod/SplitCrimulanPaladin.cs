@@ -590,6 +590,9 @@ namespace CalamityMod.NPCs.SlimeGod
 
                         float jumpSpeedX = ((death ? 16.25f : revenge ? 14.5f : expertMode ? 13.5f : 11.5f) + distanceSpeedBoost) * NPC.direction;
                         float jumpSpeedY = -4f - (NPC.Top.Y > player.Bottom.Y ? ((NPC.Top.Y - player.Bottom.Y) * 0.05f) : 0f);
+                        if (jumpSpeedY < -16f)
+                            jumpSpeedY = -16f;
+
                         NPC.velocity = new Vector2(jumpSpeedX, jumpSpeedY);
 
                         NPC.ai[2] += 1f;

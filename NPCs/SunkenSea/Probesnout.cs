@@ -131,20 +131,29 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            CurrentBehavior = IdlingBehavior;
-            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.GravityMultiplier *= 2f;
-            NPC.MaxFallSpeedMultiplier *= 2f;
             pathfinding = new PathfindingManager(NPC)
             {
                 Acceleration = 0.4f,
                 MaxSpeed = 8f,
                 MinimumPointDistance = 60f
             };
+            CurrentBehavior = IdlingBehavior;
+            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
+            NPC.GravityMultiplier *= 2f;
+            NPC.MaxFallSpeedMultiplier *= 2f;
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.4f,
+                    MaxSpeed = 8f,
+                    MinimumPointDistance = 60f
+                };
+            }
             CurrentBehavior?.Invoke();
 
             NPC.rotation = MathHelper.ToRadians(NPC.velocity.X * 3f);
@@ -487,7 +496,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
                 if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
-                    return SpawnCondition.CaveJellyfish.Chance * 0.015f;
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
             }
             return 0f;
         }

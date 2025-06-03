@@ -254,12 +254,21 @@ namespace CalamityMod.CalPlayer
                 foreach (Projectile p in Main.ActiveProjectiles)
                     if (p.type == ModContent.ProjectileType<XykWings>() && p.owner == Player.whoAmI && p.ai[1] == 0)
                         numOfActiveWings++;
-                bool spawnWings = numOfActiveWings < maxWingPieces && !Player.dead && Player.wingsLogic > 0 && !(Player.wingTime == Player.wingTimeMax && Player.velocity.Y == 0) && Player.wingTime > 0;
+                bool spawnWings = numOfActiveWings < maxWingPieces && !Player.dead && Player.wingsLogic > 0 && ((!(Player.wingTime == Player.wingTimeMax && Player.velocity.Y == 0) && Player.wingTime > 0) || XykWingTimer >= 3);
                 if (spawnWings)
                 {
-                    int wingCount = numOfActiveWings;
-                    Projectile wings = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykWings>(), 0, 0f, Player.whoAmI, wingCount);
+                    if (XykWingTimer >= 3)
+                    {
+                        int wingCount = numOfActiveWings;
+                        Projectile wings = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<XykWings>(), 0, 0f, Player.whoAmI, wingCount);
+                        if (numOfActiveWings + 1 == maxWingPieces)
+                            XykWingTimer = 0;
+                    }
+                    else
+                        XykWingTimer++;
                 }
+                else
+                    XykWingTimer = 0;
             }
 
             // First Frame dash effects
@@ -293,16 +302,6 @@ namespace CalamityMod.CalPlayer
                     Player.velocity.X *= 0.9f;
                 }
             }
-            
-            if (Player.Calamity().statisNinjaBelt)
-            {
-                Player.Calamity().DashID = StatisNinjaBeltDash.ID;
-            }
-            if (Player.Calamity().statisVoidSash)
-            {
-                Player.Calamity().DashID = StatisVoidSashDash.ID;
-            }
-
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
             {
                 float fxScale = 1;
@@ -1296,8 +1295,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (!Player.wet)
                 {
-                    if (cirrusDress)
-                        Player.maxFallSpeed = 12f;
                     if (aeroSet)
                         Player.maxFallSpeed = 15f;
                     if (Player.PortalPhysicsEnabled)
@@ -2300,8 +2297,6 @@ namespace CalamityMod.CalPlayer
 
             if (miningSetCooldown > 0)
                 miningSetCooldown--;
-            if (RustyMedallionCooldown > 0)
-                RustyMedallionCooldown--;
             if (MiniSwarmerCooldown > 0)
                 MiniSwarmerCooldown--;
 
@@ -2515,9 +2510,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<ThrowingDamageClass>() += RaidersTalisman.RaiderBonus;
             if (vampiricTalisman && !StealthStrikeAvailable() && raiderCritLifespan > 0f)
                 Player.GetCritChance<ThrowingDamageClass>() += VampiricTalisman.RaiderBonus;
-
-            if (kamiBoost)
-                Player.GetDamage<GenericDamageClass>() += YanmeisKnife.DamageBoost;
 
             if (avertorBonus)
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
@@ -3521,11 +3513,8 @@ namespace CalamityMod.CalPlayer
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
 
-            if (cirrusDress)
-                Player.moveSpeed -= 0.2f;
-
-            if (cirrusVodka)
-                Player.GetDamage<GenericDamageClass>() += CirrusVodka.DamageBoost;
+            if (purpleHaze)
+                Player.GetDamage<GenericDamageClass>() += PurpleHaze.DamageBoost;
 
             if (vodka)
             {
@@ -3805,7 +3794,10 @@ namespace CalamityMod.CalPlayer
             }
 
             if (manaOverloader)
-                Player.GetDamage<MagicDamageClass>() += 0.06f;
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f,0.15f,manaRatio);
+            }
 
             if (bloodyWormTooth)
             {
@@ -4828,10 +4820,10 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (cirrusVodka)
+            if (purpleHaze)
             {
                 if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CirrusVodka.DefenseLossPercent);
+                    Player.statDefense -= (int)(Player.statDefense * PurpleHaze.DefenseLossPercent);
             }
 
             if (vodka)

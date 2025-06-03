@@ -203,7 +203,6 @@ namespace CalamityMod.NPCs.Yharon
             // Variables
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -217,7 +216,7 @@ namespace CalamityMod.NPCs.Yharon
             // Start phase 2 or not
             if (startSecondAI)
             {
-                Yharon_AI2(expertMode, masterMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
+                Yharon_AI2(expertMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
                 return;
             }
 
@@ -306,12 +305,12 @@ namespace CalamityMod.NPCs.Yharon
             float spinPhaseVelocity = 25f;
             float spinPhaseRotation = MathHelper.TwoPi * 3 / spinTime;
 
-            float increasedIdleTimeAfterBulletHell = (masterMode ? 120f : 180f) + phaseSwitchTimer;
+            float increasedIdleTimeAfterBulletHell = (death ? 120f : 180f) + phaseSwitchTimer;
             bool moveSlowerAfterBulletHell = NPC.ai[2] < 0f;
             bool slowChargeAfterBulletHell = NPC.ai[2] == -1f;
             if (moveSlowerAfterBulletHell)
             {
-                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, masterMode ? 1f : 0.75f, (NPC.ai[2] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
+                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, death ? 1f : 0.75f, (NPC.ai[2] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
                 acceleration *= reducedMovementMultiplier;
                 velocity *= reducedMovementMultiplier;
                 chargeSpeed *= reducedMovementMultiplier;
@@ -1620,7 +1619,7 @@ namespace CalamityMod.NPCs.Yharon
         }
 
         #region AI2
-        public void Yharon_AI2(bool expertMode, bool masterMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
+        public void Yharon_AI2(bool expertMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
         {
             CalamityGlobalNPC.yharonP2 = NPC.whoAmI;
 
@@ -1789,12 +1788,12 @@ namespace CalamityMod.NPCs.Yharon
             int flareDustSpawnDivisor = spinPhaseTimer / 10;
             int flareDustSpawnDivisor2 = spinPhaseTimer / 20 + (secondPhasePhase == 4 ? spinPhaseTimer / 60 : 0);
 
-            float increasedIdleTimeAfterBulletHell = (masterMode ? 120f : 180f) + phaseSwitchTimer;
+            float increasedIdleTimeAfterBulletHell = (death ? 120f : 180f) + phaseSwitchTimer;
             bool moveSlowerAfterBulletHell = NPC.ai[1] < 0f;
             bool slowChargeAfterBulletHell = NPC.ai[1] == -1f;
             if (moveSlowerAfterBulletHell)
             {
-                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, masterMode ? 1f : 0.75f, (NPC.ai[1] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
+                float reducedMovementMultiplier = MathHelper.Lerp(0.1f, death ? 1f : 0.75f, (NPC.ai[1] + increasedIdleTimeAfterBulletHell) / increasedIdleTimeAfterBulletHell);
                 acceleration *= reducedMovementMultiplier;
                 velocity *= reducedMovementMultiplier;
                 chargeSpeed *= reducedMovementMultiplier;
@@ -3004,7 +3003,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DrewsWings>()));
+                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<WingsofRebirth>()));
             }
 
             // Trophy (always directly from boss, never in bag)

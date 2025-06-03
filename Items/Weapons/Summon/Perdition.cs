@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.noMelee = true;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.DD2_EtherianPortalOpen;
         }

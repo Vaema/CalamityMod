@@ -27,12 +27,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 600;
+        public static int IdleMinPathDistance = 100;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
 
         public Vector2 randomPathPoint;
+
+        public bool instantiated = false;
 
         protected override List<int> PreyIDs => new List<int>();
 
@@ -95,12 +97,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.TargetClosest(false);
             // Spawn a shoal of minnows
-            int fishCount = Main.rand.Next(5, 10);
+            int fishCount = Main.rand.Next(2, 7);
             // More spawn in the Radiant Reefs
             if (NPC.HasPlayerTarget)
             {
                 if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
-                    fishCount += 5;
+                    fishCount += 3;
             }
             for (int i = 0; i < fishCount; i++)
             {
@@ -109,15 +111,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.6f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.6f,
+                    MaxSpeed = 4f,
+                };
+            }
             if (NPC.wet)
             {
                 switch (CurrentBehavior)
@@ -241,7 +246,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+
             }
             return 0f;
         }
@@ -284,7 +293,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.03f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+
             }
             return 0f;
         }

@@ -486,10 +486,10 @@ namespace CalamityMod.Projectiles
                 // Accelerate if fired in a spread from Skeletron in Rev+
                 if (revSkeletronAcceleratingSkull)
                 {
-                    float maxVelocity = (Main.masterMode || BossRushEvent.BossRushActive) ? 20f : CalamityWorld.death ? 18f : 15f;
+                    float maxVelocity = BossRushEvent.BossRushActive ? 20f : CalamityWorld.death ? 18f : 15f;
                     if (projectile.velocity.Length() < maxVelocity)
                     {
-                        float acceleration = (Main.masterMode || BossRushEvent.BossRushActive) ? 1.02f : 1.015f;
+                        float acceleration = BossRushEvent.BossRushActive ? 1.02f : 1.015f;
                         projectile.velocity *= acceleration;
                         if (projectile.velocity.Length() > maxVelocity)
                         {
@@ -528,7 +528,7 @@ namespace CalamityMod.Projectiles
                     num133 = Player.FindClosest(projectile.Center, 1, 1);
                     projectile.ai[1] += 1f;
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
-                    float homingEndTime = (Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f;
+                    float homingEndTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
                         homingEndTime += 60f;
 
@@ -549,7 +549,7 @@ namespace CalamityMod.Projectiles
                     }
 
                     float maxVelocity = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 18f : 15f;
-                    float acceleration = (Main.masterMode || BossRushEvent.BossRushActive) ? 1.02f : 1.015f;
+                    float acceleration = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 1.02f : 1.015f;
                     if (projectile.velocity.Length() < maxVelocity)
                         projectile.velocity *= acceleration;
 
@@ -1127,11 +1127,11 @@ namespace CalamityMod.Projectiles
 
                 if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                 {
-                    bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
+                    bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                     int num606 = 16;
                     int num607 = 16;
-                    float segmentScale = masterMode ? 2.5f : 2f;
+                    float segmentScale = death ? 2.5f : 2f;
                     int segmentWidth = 150;
                     int segmentHeight = 42;
 
@@ -1207,12 +1207,12 @@ namespace CalamityMod.Projectiles
                         float segmentSpawnDelay = 10f;
                         Projectile.NewProjectile(projectile.GetSource_FromThis(), center, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, segmentSpawnDelay, projectile.ai[1] - 1f);
 
-                        int sharkronSpawnGateValue = masterMode ? 2 : 3;
+                        int sharkronSpawnGateValue = death ? 2 : 3;
                         if ((int)projectile.ai[1] % sharkronSpawnGateValue == 0 && projectile.ai[1] != 0f)
                         {
                             int sharkron = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center.X, (int)center.Y, NPCID.Sharkron2);
                             Main.npc[sharkron].velocity = projectile.velocity;
-                            Main.npc[sharkron].scale = masterMode ? 2f : 1.5f;
+                            Main.npc[sharkron].scale = death ? 2f : 1.5f;
                             Main.npc[sharkron].netUpdate = true;
                             Main.npc[sharkron].ai[2] = projectile.width;
                             Main.npc[sharkron].ai[3] = -1.5f;
@@ -1770,7 +1770,7 @@ namespace CalamityMod.Projectiles
                 int maxHealAmount = 20;
 
                 // If the target has more than 250 max life, incorporate their total life into the max amount to heal.
-                // This is done so that more powerful NPCs, such as Cirrus, do not take an eternity to receive meaningful healing benefits
+                // This is done so that more powerful NPCs do not take an eternity to receive meaningful healing benefits
                 // from the Nurse.
                 if (npcToHeal.lifeMax > 250)
                     maxHealAmount = (int)Math.Max(maxHealAmount, npcToHeal.lifeMax * 0.05f);
@@ -2088,7 +2088,6 @@ namespace CalamityMod.Projectiles
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
                 bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 if (projectile.type == ProjectileID.DeerclopsIceSpike)
@@ -2098,8 +2097,8 @@ namespace CalamityMod.Projectiles
                     int numDust = 5;
                     int numDust2 = 5;
                     int fadeInTime = 50;
-                    int fadeOutGateValue = masterMode ? 120 : death ? 90 : 65;
-                    float killGateValue = masterMode ? 130f : death ? 100f : 75f;
+                    int fadeOutGateValue = death ? 90 : 65;
+                    float killGateValue = death ? 100f : 75f;
                     int maxFrames = 5;
 
                     bool fadeIn = projectile.ai[0] < (float)fadeInTime;
@@ -2191,7 +2190,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.ai[0] == projectile.ai[2])
                         {
                             projectile.velocity *= 100f;
-                            projectile.velocity *= (masterMode ? 20f : death ? 16f : 12f) + Main.rand.NextFloat() * 2f;
+                            projectile.velocity *= (death ? 16f : 12f) + Main.rand.NextFloat() * 2f;
                         }
                     }
                     else
@@ -2318,7 +2317,7 @@ namespace CalamityMod.Projectiles
                     }
                 }
 
-                else if (projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && masterMode)
+                else if (projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && death)
                 {
                     int num = (int)(projectile.Center.X / 16f);
                     int num2 = (int)(projectile.Center.Y / 16f);
@@ -2332,8 +2331,8 @@ namespace CalamityMod.Projectiles
                         }
                     }
 
-                    bool masterModeSkeletronPrimeHomingBomb = projectile.ai[0] == -1f;
-                    bool masterModeSkeletronPrimeFallingBomb = projectile.ai[0] == -2f;
+                    bool deathModeSkeletronPrimeHomingBomb = projectile.ai[0] == -1f;
+                    bool deathModeSkeletronPrimeFallingBomb = projectile.ai[0] == -2f;
 
                     int target = 0;
                     target = Player.FindClosest(projectile.Center, 1, 1);
@@ -2347,7 +2346,7 @@ namespace CalamityMod.Projectiles
                     if (projectile.timeLeft < SkeletronPrime2.BombTimeLeft / 2 && projectile.timeLeft > 3)
                         projectile.tileCollide = true;
 
-                    if (masterModeSkeletronPrimeHomingBomb)
+                    if (deathModeSkeletronPrimeHomingBomb)
                     {
                         projectile.ai[1] += 1f;
                         float homingStartTime = 20f;
@@ -2415,7 +2414,7 @@ namespace CalamityMod.Projectiles
                         dust8.position = projectile.Center + new Vector2(0f, -projectile.height / 2 - 6).RotatedBy(projectile.rotation) * 1.1f;
                     }
 
-                    if (masterModeSkeletronPrimeFallingBomb)
+                    if (deathModeSkeletronPrimeFallingBomb)
                     {
                         projectile.ai[2] += 1f;
                         if (projectile.ai[2] > 60f)
@@ -2431,13 +2430,13 @@ namespace CalamityMod.Projectiles
                 {
                     bool primeCannonProjectile = projectile.ai[1] == 2f;
                     bool homeIn = false;
-                    float homingTime = masterMode ? 80f : 140f;
+                    float homingTime = 140f;
                     float spreadOutCutoffTime = 510f;
                     float homeInCutoffTime = spreadOutCutoffTime - homingTime;
-                    float minAcceleration = masterMode ? 0.072f : 0.08f;
-                    float maxAcceleration = masterMode ? 0.108f : 0.12f;
-                    float homingVelocity = masterMode ? 22.5f : 25f;
-                    float maxVelocity = masterMode ? 13.5f : 15f;
+                    float minAcceleration = 0.08f;
+                    float maxAcceleration = 0.12f;
+                    float homingVelocity = 25f;
+                    float maxVelocity = 15f;
 
                     if (!primeCannonProjectile)
                     {
@@ -2466,7 +2465,7 @@ namespace CalamityMod.Projectiles
                         projectile.velocity = Vector2.SmoothStep(projectile.velocity, velocity, amount);
 
                         // Stop homing when within a certain distance of the target
-                        if (Vector2.Distance(projectile.Center, Main.player[playerIndex].Center) < (masterMode ? 192f : 96f) && projectile.timeLeft > homeInCutoffTime)
+                        if (Vector2.Distance(projectile.Center, Main.player[playerIndex].Center) < 96f && projectile.timeLeft > homeInCutoffTime)
                             projectile.timeLeft = (int)homeInCutoffTime;
                     }
 
@@ -2544,7 +2543,7 @@ namespace CalamityMod.Projectiles
                         projectile.alpha = 0;
 
                     projectile.ai[0] += 1f;
-                    if (projectile.ai[0] >= (masterMode ? 60f : 120f))
+                    if (projectile.ai[0] >= 120f)
                     {
                         if (projectile.velocity.Length() < 18f)
                             projectile.velocity *= 1.01f;
@@ -2582,7 +2581,7 @@ namespace CalamityMod.Projectiles
                         {
                             if (projectile.owner == Main.myPlayer)
                             {
-                                int totalProjectiles = masterMode ? 12 : 8;
+                                int totalProjectiles = death ? 12 : 8;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
                                 int type = ProjectileType<ThornBallSpike>();
                                 float velocity = 1f;
@@ -2623,9 +2622,9 @@ namespace CalamityMod.Projectiles
                     else
                     {
                         int closestPlayer = Player.FindClosest(projectile.Center, 1, 1);
-                        float homingSpeed = (masterMode ? 9f : 7.5f) + Vector2.Distance(Main.player[closestPlayer].Center, projectile.Center) * 0.01f;
+                        float homingSpeed = 7.5f + Vector2.Distance(Main.player[closestPlayer].Center, projectile.Center) * 0.01f;
                         Vector2 homingVelocity = Vector2.Normalize(Main.player[closestPlayer].Center - projectile.Center) * homingSpeed;
-                        int inertia = masterMode ? 150 : 200;
+                        int inertia = 200;
                         projectile.velocity.X = (projectile.velocity.X * (inertia - 1) + homingVelocity.X) / inertia;
 
                         if (projectile.velocity.Length() > 16f)
@@ -2797,7 +2796,7 @@ namespace CalamityMod.Projectiles
                         projectile.velocity *= scaleFactor2;
 
                         // Fly away from other Ice Mists in Master
-                        if (masterMode)
+                        if (death)
                         {
                             float pushForce = 0.06f;
                             float pushDistance = 120f;
@@ -2826,7 +2825,7 @@ namespace CalamityMod.Projectiles
                             }
                         }
 
-                        if (projectile.ai[0] % (masterMode ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        if (projectile.ai[0] % (death ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 vector50 = projectile.rotation.ToRotationVector2();
                             Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector50, projectile.type, projectile.damage, projectile.knockBack, projectile.owner);
@@ -3481,7 +3480,7 @@ namespace CalamityMod.Projectiles
             {
                 int spreadOutTime = 90;
                 if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - spreadOutTime)
-                    projectile.velocity *= ((Main.masterMode || BossRushEvent.BossRushActive) ? 1.017078f : 1.015525f);
+                    projectile.velocity *= BossRushEvent.BossRushActive ? 1.017078f : 1.015525f;
             }
 
             // Zapinator lasers cannot trigger their damage multiplier more than once
@@ -4330,7 +4329,6 @@ namespace CalamityMod.Projectiles
             if (projectile.hostile && (projectile.damage - flatDR <= 0))
                 return false;
 
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             switch (projectile.type)
@@ -4340,7 +4338,7 @@ namespace CalamityMod.Projectiles
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
                         float fadeInTime = 50f;
-                        float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
+                        float fadeOutGateValue = death ? 90f : 65f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
                     break;
@@ -4351,9 +4349,9 @@ namespace CalamityMod.Projectiles
                         return projectile.ai[0] > projectile.ai[2];
                     break;
 
-                // Additional slams in the Master Mode shockwave have a delay before expanding and dealing damage
+                // Additional slams in the Death Mode shockwave have a delay before expanding and dealing damage
                 case ProjectileID.QueenSlimeSmash:
-                    if (masterMode)
+                    if (death)
                         return projectile.ai[0] > 0f;
                     break;
 
@@ -4420,7 +4418,7 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
             {
-                float homingTime = ((Main.masterMode || BossRushEvent.BossRushActive) ? 120f : CalamityWorld.death ? 105f : 90f);
+                float homingTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
 
@@ -4514,7 +4512,6 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.DeerclopsIceSpike && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
             {
-                bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
                 bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
                 Texture2D texture = TextureAssets.Projectile[projectile.type].Value;
@@ -4522,8 +4519,8 @@ namespace CalamityMod.Projectiles
                 Vector2 origin12 = new Vector2(16f, value26.Height / 2);
                 Color alpha5 = projectile.GetAlpha(lightColor);
                 Vector2 vector39 = new Vector2(projectile.scale);
-                float fadeOutGateValue = masterMode ? 120f : death ? 90f : 65f;
-                float killGateValue = masterMode ? 130f : death ? 100f : 75f;
+                float fadeOutGateValue = death ? 90f : 65f;
+                float killGateValue = death ? 100f : 75f;
                 float lerpValue5 = Utils.GetLerpValue(killGateValue, killGateValue - 50f, projectile.ai[0], clamped: true);
                 vector39.Y *= lerpValue5;
                 Vector4 vector40 = lightColor.ToVector4();
@@ -4746,7 +4743,7 @@ namespace CalamityMod.Projectiles
         #region Pre Kill
         public override bool PreKill(Projectile projectile, int timeLeft)
         {
-            bool masterRevSkeletronPrimeBomb = projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && (Main.masterMode || BossRushEvent.BossRushActive);
+            bool masterRevSkeletronPrimeBomb = projectile.type == ProjectileID.BombSkeletronPrime && projectile.ai[0] < 0f && (CalamityWorld.death || BossRushEvent.BossRushActive);
             bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death);
             bool revGolemInferno = projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f;
 
@@ -4863,7 +4860,7 @@ namespace CalamityMod.Projectiles
                     {
                         int beeAmt = Main.rand.Next(2, 5 + 1);
                         int totalBeesAlive = NPC.CountNPCS(NPCID.Bee) + NPC.CountNPCS(NPCID.BeeSmall);
-                        int finalBeeAmtToSpawn = NPC.AnyNPCs(NPCID.QueenBee) ? Math.Min(beeAmt, (Main.masterMode ? 9 : 15) - totalBeesAlive) : NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
+                        int finalBeeAmtToSpawn = NPC.AnyNPCs(NPCID.QueenBee) ? Math.Min(beeAmt, (CalamityWorld.death ? 9 : 15) - totalBeesAlive) : NPC.GetAvailableAmountOfNPCsToSpawnUpToSlot(beeAmt);
                         for (int i = 0; i < finalBeeAmtToSpawn; i++)
                         {
                             int beeType = Main.rand.NextBool() ? NPCID.Bee : NPCID.BeeSmall;
@@ -4871,7 +4868,7 @@ namespace CalamityMod.Projectiles
                             {
                                 beeType = Main.rand.NextBool(3) ? NPCType<PlagueChargerLarge>() : NPCType<PlagueCharger>();
                             }
-                            else if (Main.masterMode || BossRushEvent.BossRushActive)
+                            else if (CalamityWorld.death || BossRushEvent.BossRushActive)
                             {
                                 switch (Main.rand.Next(12))
                                 {

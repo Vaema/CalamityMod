@@ -17,7 +17,12 @@ namespace CalamityMod.BiomeManagers
             {
                 if (CalamityPlayer.areThereAnyDamnBosses)
                     return Main.curMusic;
-                return CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3") ?? MusicID.Hell;
+
+                int? musicSlot = CalamityClientConfig.Instance.AbyssLayer3Alt ? 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3Alt") : 
+                    CalamityMod.Instance.GetMusicFromMusicMod("AbyssLayer3");
+                    
+                return musicSlot ?? MusicID.Hell;
             }
         }
 

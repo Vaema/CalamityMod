@@ -535,7 +535,10 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
+
+            if (Player.Calamity().scionsCurio && item.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -619,7 +622,7 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
@@ -637,6 +640,9 @@ namespace CalamityMod.CalPlayer
             // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
             if (proj.type == ProjectileID.InfernoFriendlyBlast)
                 modifiers.SourceDamage *= 1.2f;
+
+            if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -718,7 +724,7 @@ namespace CalamityMod.CalPlayer
             // Enemies deal less contact damage while sick, due to being weakened.
             if (npc.poisoned)
             {
-                float damageReductionFromPoison = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPoison = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -733,7 +739,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.venom)
             {
-                float damageReductionFromVenom = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromVenom = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -748,7 +754,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().astralInfection > 0)
             {
-                float damageReductionFromAstralInfection = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -763,7 +769,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().pFlames > 0)
             {
-                float damageReductionFromPlague = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPlague = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -778,7 +784,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().wDeath > 0)
             {
-                float damageReductionFromWhisperingDeath = npc.Calamity().irradiated > 0 ? 0.15f : 0.1f;
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -1780,7 +1786,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center); //metal hit noise
                     hurtSoundTimer = 10;
                 }
-                else if (((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide) || Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped)
+                else if ((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(SoundID.FemaleHit, Player.Center); //female hit noise
@@ -1913,6 +1919,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
                 ShieldoftheOcean.ActivateParry(Player);
             }
+
+            if (Player.Calamity().scionsCurio)
+                scionsCurioGotHit = true;
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)

@@ -130,13 +130,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            Variant = Main.rand.Next(0, 3);
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.1f,
-                MaxSpeed = 1f,
-            };
             NPC.TargetClosest();
+            Variant = Main.rand.Next(0, 3);
             if (Phase == (int)PhaseType.Idle)
             {
                 // 1-3 in the Polyp Forest, 3-4 in the burrows
@@ -166,6 +161,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.1f,
+                    MaxSpeed = 1f,
+                };
+            }
+
             CreateTentacles();
             NPC.ai[2]++;
 
@@ -338,9 +342,13 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+                if (spawnInfo.Player.Calamity().ZonePolypForest)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.5f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+
             }
             return 0f;
         }

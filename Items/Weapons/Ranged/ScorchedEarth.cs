@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 8.7f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.autoReuse = true;
             Item.shootSpeed = 12.6f;
             Item.shoot = ModContent.ProjectileType<ScorchedEarthRocket>();

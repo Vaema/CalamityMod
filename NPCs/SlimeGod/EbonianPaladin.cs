@@ -493,6 +493,9 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Distance required to charge
                 float minChargeSafeDistance = 650f;
 
+                // Duration for slow down after charging
+                float slowDownDurationAfterCharge = revenge ? 90f : 120f;
+
                 // Charge variables
                 float chargeVelocityMult = 0.1f;
                 float maxChargeVelocity = (bossRush || enraged) ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
@@ -545,7 +548,6 @@ namespace CalamityMod.NPCs.SlimeGod
                     if (NPC.ai[2] >= phaseGateValue)
                     {
                         NPC.ai[1] = 2f;
-                        float slowDownDurationAfterCharge = revenge ? 90f : 120f;
                         NPC.ai[2] = slowDownDurationAfterCharge;
                         NPC.localAI[2] = 0f;
                         NPC.velocity *= 0.5f;
@@ -597,7 +599,19 @@ namespace CalamityMod.NPCs.SlimeGod
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    NPC.ai[2] -= 1f;
+                    // Fly to a location that the player can hit
+                    bool flyToHittableLocation = NPC.ai[2] == slowDownDurationAfterCharge && !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
+                    if (flyToHittableLocation)
+                    {
+                        Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(new Vector2(NPC.direction, 0f)) * maxChargeVelocity;
+                        NPC.SimpleFlyMovement(velocity, 0.25f);
+                    }
+                    else
+                    {
+                        NPC.velocity *= 0.95f;
+                        NPC.ai[2] -= 1f;
+                    }
+
                     if (NPC.ai[2] <= 0f)
                     {
                         NPC.Calamity().newAI[0] = NPC.ai[0];
@@ -609,8 +623,6 @@ namespace CalamityMod.NPCs.SlimeGod
                         NPC.TargetClosest();
                         NPC.netUpdate = true;
                     }
-
-                    NPC.velocity *= 0.95f;
                 }
             }
 
@@ -752,7 +764,6 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             // Difficulty bools
             bool bossRush = BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode;
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
             bool ableToDropSlime = npc.ai[1] == 1f;
@@ -771,7 +782,7 @@ namespace CalamityMod.NPCs.SlimeGod
             }
 
             float slimeBombardmentDistance = 720f;
-            float flyDistanceY = slimeBombardment ? -450f : masterMode ? -360f : -405f;
+            float flyDistanceY = slimeBombardment ? -450f : death ? -360f : -405f;
             float flyDistanceX = slimeBombardment ? (ableToDropSlime ? (slimeBombardmentDistance * -npc.ai[2]) : (slimeBombardmentDistance * npc.ai[2])) : 0f;
             Vector2 destination = Main.player[npc.target].Center + new Vector2(flyDistanceX, flyDistanceY);
 

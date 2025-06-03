@@ -234,7 +234,7 @@ namespace CalamityMod.CalPlayer
                     Player.fishingSkill += 5;
 
             }
-            if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
+            if (alcoholPoisonLevel > 3)
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
@@ -250,12 +250,6 @@ namespace CalamityMod.CalPlayer
                 totalNegativeLifeRegen += 3 * alcoholPoisonLevel;
             }
             #endregion
-
-            if (manaOverloader)
-            {
-                if (Player.statMana > (int)(Player.statManaMax2 * 0.5))
-                    totalNegativeLifeRegen += 3;
-            }
 
             if (brimflameFrenzy)
             {
@@ -398,7 +392,7 @@ namespace CalamityMod.CalPlayer
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 6 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 8f : 12f), missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 10f : 12f), missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
                 radiantOozeRegen += lifeRegenToGive / 2f;
                 ambrosialAmpouleRegen += lifeRegenToGive / 2f;
@@ -715,13 +709,19 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
                 Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
             }
+            
+            if (manaOverloader)
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.lifeRegen += (int)(MathF.Round(MathHelper.Lerp(4f, -4f, manaRatio)) * (Player.HasBuff(BuffID.ManaSickness) ? 0.5f : 1f));
+            }
 
             #region Standing Still Life Regen
             // Standing still healing bonuses (all are exclusive with vanilla Shiny Stone, but all function similarly)
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
             {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking  || aAmpoule || purity;
+                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || aAmpoule || purity;
 
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
@@ -759,8 +759,8 @@ namespace CalamityMod.CalPlayer
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
-                    purityRegen += turboRegenPower/2f;
-                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower/2f;
+                    purityRegen += turboRegenPower / 2f;
+                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower / 2f;
                 }
 
             }

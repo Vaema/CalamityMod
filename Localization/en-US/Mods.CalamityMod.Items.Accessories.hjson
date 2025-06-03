@@ -106,7 +106,7 @@ AmbrosialAmpoule: {
 	Tooltip:
 		'''
 		+50 max life
-		Grants +2 to +5 HP/s life regen based on missing health
+		Grants +2 to +6 HP/s life regen based on missing health
 		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
 		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
@@ -1017,7 +1017,7 @@ InterstellarStompers: {
 		'''
 		6% increased movement speed, 20% increased jump speed, and negates fall damage
 		Hold DOWN to increase your maximum fall speed
-		Hold [KEY] for 0.5 seconds while midair to charge up a superspeed slam
+		Pressing [KEY] while midair charges up a superspeed slam over 0.33 seconds
 		While falling, you ram through enemies and don't take contact damage
 		Once you hit the ground, you create an explosion at your feet 
 		The explosion scales in both damage and size the longer you slam for
@@ -1120,10 +1120,12 @@ ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 50 and magic damage by 6%
-		-1.5 HP/s life regen if mana is above 50% of its maximum
+		Increases max mana by 50
+		Provides life regeneration and magic damage that scales based on how much mana you have
+		Lower mana means more life regeneration, but less magic damage
+		These scale from -2 to 2 HP/sec, and 5% to 15% damage
+		The provided regeneration is halved when under Mana Sickness
 		Magic projectiles steal enemy life while holding a magic weapon
-		The more mana you have, the more you heal
 		'''
 }
 
@@ -1419,7 +1421,7 @@ Radiance: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
+		[c/CDF69C:Grants +2 to +6 HP/s life regen based on missing health]
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
 		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
@@ -1527,15 +1529,6 @@ RuinMedallion: {
 		'''
 }
 
-RustyMedallion: {
-	DisplayName: Rusty Medallion
-	Tooltip:
-		'''
-		Causes most ranged weapons to release acid droplets from the sky
-		Grants immunity to Irradiated
-		'''
-}
-
 SandCloak: {
 	DisplayName: Sand Cloak
 	Tooltip:
@@ -1553,6 +1546,17 @@ SandSharkToothNecklace: {
 		'''
 		Increases armor penetration by 10
 		10% increased damage
+		'''
+}
+
+ScionsCurio: {
+	DisplayName: Scions Curio
+	Tooltip:
+		'''
+		Ranged hits increase the effectiveness of the Irradiated debuff
+		Irradiated damage over time scales off of your ranged damage and crit chance
+		On kill, enemies burst, spreading Irradiated
+		Taking damage causes the curio to explode in retaliation
 		'''
 }
 
@@ -1876,7 +1880,7 @@ TheAmalgam: {
 	Tooltip:
 		'''
 		10% increased damage
-		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3.5x
+		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3x
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -1916,7 +1920,7 @@ TheCommunity: {
 		'''
 		[STATS]
 		'The heart of (most of) the Terraria community'
-		[c/B00BA5:Thank you to all of my supporters who made this mod a reality!]
+		Thank you to all of our supporters who made this mod a reality!
 		'''
 	StatsList:
 		'''
@@ -2146,11 +2150,6 @@ AbandonedWulfrumHelmet: {
 		'''
 }
 
-CrystalHeartVodka: {
-	DisplayName: Crystal Heart Vodka
-	Tooltip: "'Tastes like strawberry cream liqueur (and estrogen)'"
-}
-
 GhostBracelet: {
 	DisplayName: Ghost Bracelet
 	Tooltip: Wow.... It looks at me with its hollow eyes full of curiosity
@@ -2208,7 +2207,7 @@ XyksBlessingBlue: {
 	DisplayName: Xyk's Blessing (Blue)
 	Tooltip:
 		'''
-		Applies visual effects to your dashes and deaths
+		Applies visual effects to your dashes, wings, and deaths
 		<right> to transform
 		'It's simply too much to turn back now; passion and time have long since stained it.
 		[c/5f8ae1:Have I always been so selfish?']
@@ -2219,7 +2218,7 @@ XyksBlessingOrange: {
 	DisplayName: Xyk's Blessing (Orange)
 	Tooltip:
 		'''
-		Applies visual effects to your dashes and deaths
+		Applies visual effects to your dashes, wings, and deaths
 		<right> to transform
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories
             Item.defense = 15; // Why did this give 30 defense? This thing really needs a rework lol
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

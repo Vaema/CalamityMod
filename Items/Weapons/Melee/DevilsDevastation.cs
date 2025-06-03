@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.channel = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool MeleePrefix() => true;
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 41;

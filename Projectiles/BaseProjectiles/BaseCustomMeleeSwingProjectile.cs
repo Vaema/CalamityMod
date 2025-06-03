@@ -13,6 +13,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
+using System;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -269,8 +270,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.timeLeft = swingTime * 2;
             if (UsesBaseItem)
             {
-                Projectile.width = BaseItem.width;
-                Projectile.height = BaseItem.height;
+                Projectile.width = Projectile.height = Math.Max(BaseItem.height,BaseItem.width);
             }
             Projectile.friendly = true;
             Projectile.penetrate = -1;

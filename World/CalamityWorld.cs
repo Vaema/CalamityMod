@@ -73,8 +73,6 @@ namespace CalamityMod.World
 
         /// <summary> If true, the Bandit has lived in this world. Used to ensure their spawn condition is not required on subsequent respawns. </summary>
         public static bool spawnedBandit = false;
-        /// <summary> If true, the Drunk Princess has lived in this world. Used to ensure her spawn condition is not required on subsequent respawns. </summary>
-        public static bool spawnedCirrus = false;
         /// <summary> If true, the Archmage has lived in a house in this world. Solely used as a condition for dialogue. </summary>
         public static bool foundHomePermafrost = false;
 

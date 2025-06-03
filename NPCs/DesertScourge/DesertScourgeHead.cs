@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public const float SegmentVelocity_Normal = 10f;
         public const float SegmentVelocity_Expert = 12.5f;
-        public const float SegmentVelocity_Master = 15f;
+        public const float SegmentVelocity_Death = 15f;
         public const float SegmentVelocity_GoodWorld = 21f;
         public const float SegmentVelocity_ZenithSeed = 24f;
 
@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 104;
             NPC.height = 104;
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
@@ -126,7 +126,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void BossHeadSlot(ref int index)
         {
-            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !Main.masterMode)
+            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !CalamityWorld.death)
                 index = -1;
         }
 
@@ -167,12 +167,11 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Check for Nuisances
-            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !masterMode;
+            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !death;
             if (hide)
             {
                 NPC.Calamity().newAI[0] = 0f;
@@ -544,7 +543,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
                 Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                death ? SegmentVelocity_Death :
                 expertMode ? SegmentVelocity_Expert :
                 SegmentVelocity_Normal;
             if (burrow || lungeUpward)
