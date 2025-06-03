@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
@@ -18,6 +17,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("GreatswordofBlah")]
+    [LegacyName("IridescentExcalibur")]
     public class Orderbringer : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
@@ -34,9 +34,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 112;
-            Item.damage = 755;
+            Item.damage = 840;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = Item.useTime = 18;
+            Item.useAnimation = Item.useTime = 16;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTurn = true;
             Item.knockBack = 8f;
@@ -77,7 +77,6 @@ namespace CalamityMod.Items.Weapons.Melee
             playSound = true;
             int dir = -Math.Sign(player.Center.X - player.Calamity().mouseWorld.X);
             float startRot = MathHelper.ToRadians(-90) * dir * (swingCount % 2 == 0 ? 1 : -1);
-            //player.itemRotation = player.Center.DirectionTo(player.Calamity().mouseWorld).ToRotation() + startRot;
         }
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
@@ -143,7 +142,7 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.5f);
+            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.4f);
             Vector2 mouseClamped = player.ClampedMouseWorld();
             SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f)}, player.Center);
             for (int i = 0; i < 2; i++)

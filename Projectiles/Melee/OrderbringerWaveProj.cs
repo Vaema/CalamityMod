@@ -1,16 +1,11 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
-using CalamityMod.Particles;
-using Terraria.ModLoader;
-using CalamityMod.Projectiles.Ranged;
-using Microsoft.Xna.Framework.Graphics;
-using System.ComponentModel;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Build.ObjectModelRemoting;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
