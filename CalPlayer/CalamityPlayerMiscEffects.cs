@@ -3829,11 +3829,15 @@ namespace CalamityMod.CalPlayer
             {
                 Player.GetDamage<GenericDamageClass>() += PrimordialEarth.BuffDamageBoost;
                 Player.statDefense += PrimordialEarth.BuffDefenseBoost;
+                Player.manaRegenDelayBonus += 1;
+                Player.manaRegenBonus += 50 + (int)(400 * (float)Math.Pow((1 - ((float)Player.statMana / (float)Player.statManaMax2)), 2));
             }
             if (aeolianEarthBuff)
             {
                 Player.GetDamage<GenericDamageClass>() += PrimordialAncient.BuffDamageBoost;
                 Player.endurance += PrimordialAncient.BuffDamageReductionBoost;
+                Player.manaRegenDelayBonus += 1;
+                Player.manaRegenBonus += 75 + (int)(600 * (float)Math.Pow((1 - ((float)Player.statMana / (float)Player.statManaMax2)), 2));
             }
 
             if (frostFlare)
