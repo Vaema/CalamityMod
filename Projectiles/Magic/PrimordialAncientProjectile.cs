@@ -245,6 +245,8 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PrimordialAncientExplosion>(), Projectile.damage, Projectile.knockBack * 1.5f, Projectile.owner);
                 SoundStyle explo = new("CalamityMod/Sounds/Item/MineralMortarExplode");
                 SoundEngine.PlaySound(explo with { Volume = 0.9f }, Projectile.Center);
+                SoundStyle explo2 = new("CalamityMod/Sounds/Item/EarthMeteor");
+                SoundEngine.PlaySound(explo2 with { Volume = 0.9f, Pitch = -0.3f }, Projectile.Center);
 
                 Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Purple, Color.White, 0.5f) * 0.55f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 2.56f * 2.3f, 18);
                 GeneralParticleHandler.SpawnParticle(bolt2);
