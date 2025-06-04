@@ -12,7 +12,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaWireHemmedVisage : ModItem, ILocalizedModType
+    [LegacyName("AuricTeslaSpaceHelmet")]
+    public class AuricTeslaHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
@@ -20,7 +21,7 @@ namespace CalamityMod.Items.Armor.Auric
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 24; //132
+            Item.defense = 12; //132
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
@@ -39,17 +40,26 @@ namespace CalamityMod.Items.Armor.Auric
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
-            modPlayer.tarraMage = true;
+            modPlayer.tarraSummon = true;
             modPlayer.bloodflareSet = true;
-            modPlayer.bloodflareMage = true;
+            modPlayer.bloodflareSummon = true;
             modPlayer.silvaSet = true;
-            modPlayer.silvaMage = true;
+            modPlayer.silvaSummon = true;
             modPlayer.auricSet = true;
+            modPlayer.WearingPostMLSummonerSet = true;
             player.thorns += 3f;
             player.ignoreWater = true;
             player.crimsonRegen = true;
+            player.GetDamage<SummonDamageClass>() += 0.75f;
+            player.maxMinions += 6;
         }
 
+        public override void UpdateEquip(Player player)
+        {
+            var modPlayer = player.Calamity();
+            modPlayer.auricBoost = true;
+            player.GetDamage<SummonDamageClass>() += 0.15f;
+        }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             ref var holdingShift = ref AuricTeslaBodyArmor.holdingShift;
@@ -77,25 +87,16 @@ namespace CalamityMod.Items.Armor.Auric
                 holdingShift = false;
             }
         }
-        public override void UpdateEquip(Player player)
-        {
-            var modPlayer = player.Calamity();
-            modPlayer.auricBoost = true;
-            player.manaCost *= 0.8f;
-            player.GetDamage<MagicDamageClass>() += 0.3f;
-            player.GetCritChance<MagicDamageClass>() += 20;
-            player.statManaMax2 += 100;
-        }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SilvaHeadMagic>().
-                AddIngredient<BloodflareHeadMagic>().
-                AddIngredient<TarragonHeadMagic>().
+                AddIngredient<SilvaHeadSummon>().
+                AddIngredient<BloodflareHeadSummon>().
+                AddIngredient<TarragonHeadSummon>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
-                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaSpaceHelmet>()).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHeadRogue>()).
                 Register();
         }
     }

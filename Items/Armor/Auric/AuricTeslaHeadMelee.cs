@@ -8,12 +8,15 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Auric
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AuricTeslaPlumedHelm : ModItem, ILocalizedModType
+    [LegacyName("AuricTeslaHelm")]
+    [LegacyName("AuricTeslaRoyalHelm")]
+    public class AuricTeslaHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public override void SetDefaults()
@@ -21,7 +24,7 @@ namespace CalamityMod.Items.Armor.Auric
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 34; //132
+            Item.defense = 54; //132
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
@@ -39,18 +42,19 @@ namespace CalamityMod.Items.Armor.Auric
         {
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
+            player.GetAttackSpeed<MeleeDamageClass>() += 0.28f;
             modPlayer.tarraSet = true;
-            modPlayer.tarraThrowing = true;
+            modPlayer.tarraMelee = true;
             modPlayer.bloodflareSet = true;
-            modPlayer.bloodflareThrowing = true;
+            modPlayer.bloodflareMelee = true;
             modPlayer.godSlayer = true;
-            modPlayer.godSlayerThrowing = true;
+            modPlayer.godSlayerDamage = true;
             modPlayer.auricSet = true;
-            modPlayer.rogueStealthMax += 1.3f;
-            modPlayer.wearingRogueArmor = true;
+            modPlayer.auricSetMelee = true;
             player.thorns += 3f;
             player.ignoreWater = true;
             player.crimsonRegen = true;
+            player.aggro += 1200;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
                 modPlayer.DeferredDashID = GodslayerArmorDash.ID;
@@ -60,9 +64,8 @@ namespace CalamityMod.Items.Armor.Auric
         {
             var modPlayer = player.Calamity();
             modPlayer.auricBoost = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.2f;
-            player.GetCritChance<ThrowingDamageClass>() += 20;
-            player.moveSpeed += 0.05f;
+            player.GetDamage<MeleeDamageClass>() += 0.2f;
+            player.GetCritChance<MeleeDamageClass>() += 10;
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -96,12 +99,12 @@ namespace CalamityMod.Items.Armor.Auric
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<GodSlayerHeadRogue>().
-                AddIngredient<BloodflareHeadRogue>().
-                AddIngredient<TarragonHeadRogue>().
+                AddIngredient<GodSlayerHeadMelee>().
+                AddIngredient<BloodflareHeadMelee>().
+                AddIngredient<TarragonHeadMelee>().
                 AddIngredient<AuricBar>(12).
                 AddTile<CosmicAnvil>().
-                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaBodyArmor>()).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<AuricTeslaHeadMagic>()).
                 Register();
         }
     }

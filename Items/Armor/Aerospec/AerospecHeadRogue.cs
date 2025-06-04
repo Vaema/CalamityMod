@@ -7,7 +7,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AerospecHeadgear : ModItem, ILocalizedModType
+    [LegacyName("AerospecHeadgear")]
+    public class AerospecHeadRogue : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetStaticDefaults()
@@ -60,7 +61,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient(ItemID.SunplateBlock, 3).
                 AddIngredient(ItemID.Feather).
                 AddTile(TileID.Anvils).
-                SortAfterFirstRecipesOf(ModContent.ItemType<AerospecHat>()).
+                SortAfterFirstRecipesOf(ModContent.ItemType<AerospecBreastplate>()).
                 Register();
         }
     }

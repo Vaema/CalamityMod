@@ -960,6 +960,7 @@ namespace CalamityMod.CalPlayer
         public bool XykVisualsOrange = false;
         public Color XykFXColor = Color.Black;
         public int XykWingTimer = 0;
+        public Color lightRGB = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
         public bool royalGel = false;

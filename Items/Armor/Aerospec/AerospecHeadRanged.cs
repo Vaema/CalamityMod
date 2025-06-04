@@ -7,7 +7,8 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Armor.Aerospec
 {
     [AutoloadEquip(EquipType.Head)]
-    public class AerospecHelm : ModItem, ILocalizedModType
+    [LegacyName("AerospecHood")]
+    public class AerospecHeadRanged : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public override void SetDefaults()
@@ -16,7 +17,7 @@ namespace CalamityMod.Items.Armor.Aerospec
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
-            Item.defense = 7; //20
+            Item.defense = 5; //18
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -36,13 +37,12 @@ namespace CalamityMod.Items.Armor.Aerospec
             modPlayer.aeroSet = true;
             player.noFallDmg = true;
             player.moveSpeed += 0.05f;
-            player.GetCritChance<MeleeDamageClass>() += 5;
-            player.aggro += 300;
+            player.GetCritChance<RangedDamageClass>() += 5;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MeleeDamageClass>() += 0.1f;
+            player.GetDamage<RangedDamageClass>() += 0.1f;
         }
 
         public override void AddRecipes()
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Armor.Aerospec
                 AddIngredient(ItemID.SunplateBlock, 3).
                 AddIngredient(ItemID.Feather).
                 AddTile(TileID.Anvils).
-                SortBeforeFirstRecipesOf(ModContent.ItemType<AerospecHat>()).
+                SortAfterFirstRecipesOf(ModContent.ItemType<AerospecHeadMagic>()).
                 Register();
         }
     }
