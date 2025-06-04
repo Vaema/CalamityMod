@@ -89,6 +89,23 @@ namespace CalamityMod.Projectiles.Magic
                     dust.noGravity = true;
                     dust.alpha = Main.rand.Next(70, 90 + 1);
                 }
+                if (modPlayer.fleshTotemManaStorage == 600)
+                {
+                    int Dusts = 8;
+                    float radians = MathHelper.TwoPi / Dusts;
+                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f));
+                    for (int i = 0; i < Dusts; i++)
+                    {
+                        Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
+                        GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, dustVelocity * 0.7f, false, 12, 0.009f, Color.Cyan, new Vector2(3.5f, 1.3f), true);
+                        GeneralParticleHandler.SpawnParticle(spark);
+
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 59, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)), 0, default, 0.9f);
+                        dust.noGravity = true;
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 59, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)) * 0.4f, 0, default, 1.2f);
+                        dust2.noGravity = true;
+                    }
+                }
                 int manaGained = 30;
                 player.statMana += manaGained;
                 if (Main.myPlayer == player.whoAmI)
@@ -105,6 +122,8 @@ namespace CalamityMod.Projectiles.Magic
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Texture2D totemEyes = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/FleshTotemEyes").Value;
+            Vector2 eyesDrawPosition = player.Center - Main.screenPosition + Vector2.UnitY * -69f;
             Vector2 drawPosition = player.Center - Main.screenPosition + Vector2.UnitY * -67f;
             Vector2 origin = texture.Size() * 0.5f;
 
@@ -125,6 +144,8 @@ namespace CalamityMod.Projectiles.Magic
                 dust.color = Color.Cyan;
             }
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            if (modPlayer.fleshTotemManaStorage == 600)
+                Main.EntitySpriteDraw(totemEyes, eyesDrawPosition + Vector2.UnitX * -2f, null, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
         public override bool? CanDamage() => false;
