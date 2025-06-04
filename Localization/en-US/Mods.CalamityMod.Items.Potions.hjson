@@ -163,8 +163,8 @@ BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
 		'''
-		Increased enemy spawn rates increased by {0}
-		Piercing attacks lose {1} of their damage for each enemy hit
+		Increased enemy spawn rates increased by {0}%
+		Piercing attacks lose {1}% of their damage for each enemy hit
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -173,8 +173,8 @@ CaribbeanRum: {
 	DisplayName: Caribbean Rum
 	Tooltip:
 		'''
-		Increases move speed by {0}
-		Reduces your gravity by {1}
+		Increases move speed by {0}%
+		Reduces your gravity by {1}%
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -183,18 +183,17 @@ CinnamonRoll: {
 	DisplayName: Cinnamon Roll
 	Tooltip:
 		'''
-		{0} increased maximum Mana
-		{1} increased mana consumption
+		{0}% increased maximum Mana
+		{1}% increased mana consumption
 		{$Common.AlcoholWarning}
 		'''
 }
 
 PurpleHaze: {
-	DisplayName: purpleHaze
+	DisplayName: Purple Haze
 	Tooltip:
 		'''
-		Damage increased by {0} for a short time after a stealth strike
-		Stealth Strike damage reduced by {1}
+		For 5 seconds after a stealth strike, all damage increased by {0}%, but stealth strike damage reduced by {1}%
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -214,8 +213,8 @@ EvergreenGin: {
 	DisplayName: Evergreen Gin
 	Tooltip:
 		'''
-		{0} increased Water and Sickness debuff damage
-		{1} decreased Electric and Heat debuff damage
+		{0}% increased Water and Sickness debuff damage
+		{1}% decreased Electric and Heat debuff damage
 		'''
 }
 
@@ -223,8 +222,8 @@ Fireball: {
 	DisplayName: Fireball
 	Tooltip:
 		'''
-		{0} increased Heat debuff damage
-		{1} decreased Sickness debuff damage
+		{0}% increased Heat debuff damage
+		{1}% decreased Sickness debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -234,7 +233,8 @@ GrapeBeer: {
 	Tooltip:
 		'''
 		Bullets, Arrows, Darts, and Rockets gain homing
-		{0} reduced critical strike chance
+		If many are fired at the same time, this only applies to five of them
+		{0}% reduced critical strike chance
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -243,8 +243,8 @@ Margarita: {
 	DisplayName: Margarita
 	Tooltip:
 		'''
-		Reduces duration of harmful debuffs by {0}
-		Reduces damage of debuffs you inflict by {1}
+		Reduces duration of harmful debuffs by {0}%
+		Reduces damage of debuffs you inflict by {1}%
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -254,7 +254,7 @@ Moonshine: {
 	Tooltip:
 		'''
 		Increases defense by {0} and damage reduction by {1}%
-		Reduces flight time by {2}
+		Reduces flight time by {2}%
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -263,8 +263,8 @@ MoscowMule: {
 	DisplayName: Moscow Mule
 	Tooltip:
 		'''
-		{0} increased knockback, all attacks infict Heavy Knockback
-		Piercing attacks lose {1} of their damage for each enemy hit
+		{0}% increased knockback, all attacks infict Heavy Knockback
+		Piercing attacks lose {1}% of their damage for each enemy hit
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -284,8 +284,8 @@ OldFashioned: {
 	DisplayName: Old Fashioned
 	Tooltip:
 		'''
-		{0} increase to most non-weapon, non-debuff damage
-		{1} decreased weapon damage
+		{0}% increase to most non-weapon, non-debuff damage
+		{1}% decreased weapon damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -294,8 +294,8 @@ RedWine: {
 	DisplayName: Red Wine
 	Tooltip:
 		'''
-		{0} increased vertical speed
-		{1} reduced flight time
+		{0}% increased vertical speed
+		{1}% reduced flight time
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -304,8 +304,8 @@ Rum: {
 	DisplayName: Rum
 	Tooltip:
 		'''
-		{0} increased non-minion Summon damage
-		{1} decreased minion damage
+		{0}% increased non-minion Summon damage
+		{1}% decreased minion damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -314,8 +314,8 @@ Screwdriver: {
 	DisplayName: Screwdriver
 	Tooltip:
 		'''
-		{0} increased Cold debuff damage
-		{1} decreased Water debuff damage
+		{0}% increased Cold debuff damage
+		{1}% decreased Water debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -324,8 +324,8 @@ StarBeamRye: {
 	DisplayName: Star Beam Rye
 	Tooltip:
 		'''
-		{0} increased Mana regeneration
-		{1} decreased maximum Mana
+		{0}% increased Mana regeneration
+		{1}% decreased maximum Mana
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -334,8 +334,8 @@ Tequila: {
 	DisplayName: Tequila
 	Tooltip:
 		'''
-		{0} increased Electric debuff damage
-		{1} decreased Cold debuff damage
+		{0}% increased Electric debuff damage
+		{1}% decreased Cold debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -345,7 +345,7 @@ TequilaSunrise: {
 	Tooltip:
 		'''
 		Greatly increases natural regeneration after suffering a damaging debuff
-		{0} increased damage taken from debuffs
+		{0}% increased damage taken from debuffs
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -354,8 +354,8 @@ Vodka: {
 	DisplayName: Vodka
 	Tooltip:
 		'''
-		{0} increased Typeless debuff damage
-		{1} decreased other debuff damage
+		{0}% increased Typeless debuff damage
+		{1}% decreased other debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -364,8 +364,12 @@ Whiskey: {
 	DisplayName: Whiskey
 	Tooltip:
 		'''
-		{0} increased damage, which decays to {1} decreased damage the longer you hold the same class weapon
-		This does not apply when not holding a weapon
+		Provides between {0}% and {1}% damage to the held weapon's class
+		Each class tracks this boost individually
+		This boost lowers the longer you hold weapons of the same class
+		It takes {2} seconds for the damage to fully decay
+		This boost recharges when holding weapons of a different class
+		It takes {3} seconds for the damage to fully recharge
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -374,8 +378,8 @@ WhiteWine: {
 	DisplayName: White Wine
 	Tooltip:
 		'''
-		{0} reduced mana consumption
-		{1} reduced maximum mana
+		You regain flight time the closer you are to an enemy
+		      {0}% reduced flight time
 		{$Common.AlcoholWarning}
 		'''
 }

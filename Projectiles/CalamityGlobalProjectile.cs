@@ -4173,6 +4173,16 @@ namespace CalamityMod.Projectiles
             if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
 
+            if (modPlayer.rum && projectile.DamageType.CountsAsClass(DamageClass.Summon))
+            {
+                if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type])
+                {
+                    modifiers.SourceDamage *= Rum.MinionBoost;
+                }
+                else
+                    modifiers.SourceDamage *= Rum.NonMinionBoost;
+            }
+
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
                 // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula

@@ -3511,20 +3511,17 @@ namespace CalamityMod.CalPlayer
 
             if (purpleHazeStealthTimer > 0)
             {
-                Player.GetDamage<RogueDamageClass>() += PurpleHaze.DamageBoost;
-                stealthDamage -= PurpleHaze.StealthDamageLoss;
+                //this is so janky looking but it's the only way I could get it to work properly
+                if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                else 
+                    stealthDamage -= PurpleHaze.StealthDamageLoss;
             }
 
             if (moonshine)
             {
                 Player.statDefense += Moonshine.DefenseBoost;
                 Player.endurance += Moonshine.DamageReductionBoost;
-            }
-
-            if (whiskey)
-            {
-                Player.GetDamage<GenericDamageClass>() += Whiskey.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Whiskey.CritBoost;
             }
 
             if (everclear)
@@ -3571,7 +3568,32 @@ namespace CalamityMod.CalPlayer
             }
 
             if (whiteWine)
-                Player.GetDamage<MagicDamageClass>() += WhiteWine.MagicDamageBoost;
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+
+                float bonus = 0f;
+                float MaxDistance = 640f;
+                NPC closestTarget = Player.Center.ClosestNPCAt(MaxDistance * 7); // extra range is to account for bonus range from massive targets
+                if (closestTarget != null)
+                {
+                    float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
+                    bonus = Utils.Remap(Utils.Distance(Player.Center, closestTarget.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 0, 1, true);
+                }
+                else
+                    bonus = 0;
+                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                while (whiteWineTimer > 1)
+                {
+                    if (Player.wingTime < Player.wingTimeMax)
+                        Player.wingTime++;
+                    whiteWineTimer--;
+                }
+             }
+
+            if (redWine)
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
+            }
 
             if (giantPearl)
             {

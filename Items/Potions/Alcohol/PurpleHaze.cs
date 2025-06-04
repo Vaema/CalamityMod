@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public new string LocalizationCategory => "Items.Potions";
 
         public static float DamageBoost = 0.25f;
-        public static float StealthDamageLoss = 0.15f;
+        public static float StealthDamageLoss = 0.25f;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(),StealthDamageLoss.ToPercent());
 
