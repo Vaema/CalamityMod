@@ -45,6 +45,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     Projectile spore = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * Main.rand.NextFloat(0.15f, 0.35f) + Vector2.UnitX.RotatedByRandom(MathHelper.Pi), ProjectileID.SporeGas + Main.rand.Next(3), (int)(Projectile.damage * 0.5), Projectile.knockBack, Projectile.owner);
                     spore.DamageType = DamageClass.MeleeNoSpeed;
                     spore.usesLocalNPCImmunity = true;
+                    spore.usesIDStaticNPCImmunity = false;
                     spore.localNPCHitCooldown = 30;
                 }
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using CalamityMod.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -28,6 +29,27 @@ namespace CalamityMod.Particles
         private static List<Particle> batchedNonPremultipliedParticles;
         private static List<Particle> batchedAdditiveBlendParticles;
 
+        private static ManagedRenderTarget PixelationTarget_AlphaBlend;
+        private static ManagedRenderTarget PixelationTarget_NonPremultiplied;
+        private static ManagedRenderTarget PixelationTarget_AdditiveBlend;
+
+        /// <summary>
+        /// Whether or not the system is currently rendering any pixelated prticles to the render target or not.
+        /// </summary>
+        private static bool CurrentlyRendering { get; set; }
+
+        /// <summary>
+        /// The resolution ratio at which pixelated particles should draw.<br/>
+        /// <c>0.5f</c> will draw at half resolution, <c>0.25f</c> will draw at quarter resolution, etc.
+        /// </summary>
+        private const float PixelationResolution = 0.5f;
+
+        /// <summary>
+        /// Creates a render target at half the screen's dimensions.
+        /// This is done due to the fact that when the target itself drawn, it needs to be drawn at double the original scale in order to pixelate its contents
+        /// </summary>
+        private static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.instance.GraphicsDevice, (int)(width * PixelationResolution), (int)(height * PixelationResolution));
+
         public override void PostSetupContent()
         {
             Type baseParticleType = typeof(Particle);
@@ -49,6 +71,8 @@ namespace CalamityMod.Particles
                     texturePath = instance.Texture;
                 particleTextures[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
             });
+
+            On_Main.CheckMonoliths += DrawToTarget;
         }
 
         public override void Load()
@@ -62,6 +86,13 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles = [];
             batchedNonPremultipliedParticles = [];
             batchedAdditiveBlendParticles = [];
+
+            Main.QueueMainThreadAction(() =>
+            {
+                PixelationTarget_AlphaBlend = new(true, CreatePixelTarget);
+                PixelationTarget_NonPremultiplied = new(true, CreatePixelTarget);
+                PixelationTarget_AdditiveBlend = new(true, CreatePixelTarget);
+            });
         }
 
         public override void Unload()
@@ -75,6 +106,8 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles = null;
             batchedNonPremultipliedParticles = null;
             batchedAdditiveBlendParticles = null;
+
+            On_Main.CheckMonoliths -= DrawToTarget;
         }
 
         /// <summary>
@@ -135,6 +168,90 @@ namespace CalamityMod.Particles
             particlesToKill.Add(particle);
         }
 
+        private static void DrawToTarget(On_Main.orig_CheckMonoliths orig)
+        {
+            if (Main.gameMenu)
+            {
+                orig();
+                return;
+            }
+
+            List<Particle> pixelatedAlphaBlendParticles = [];
+            List<Particle> pixelatedNonPremultipliedParticles = [];
+            List<Particle> pixelatedAdditiveBlendParticles = [];
+
+            // Add each particle to their respective lists.
+            foreach (Particle particle in particles)
+            {
+                if (particle != null && particle.Pixelate)
+                {
+                    pixelatedAlphaBlendParticles.AddWithCondition(particle, !particle.UseAdditiveBlend && !particle.UseHalfTransparency);
+                    pixelatedNonPremultipliedParticles.AddWithCondition(particle, !particle.UseAdditiveBlend && particle.UseHalfTransparency);
+                    pixelatedAdditiveBlendParticles.AddWithCondition(particle, particle.UseAdditiveBlend && !particle.UseHalfTransparency);
+                }
+            }
+
+            CurrentlyRendering = true;
+
+            Matrix pixelationMatrix = Main.GameViewMatrix.TransformationMatrix
+                * Matrix.CreateScale(PixelationResolution / Main.GameViewMatrix.Zoom.X, PixelationResolution / Main.GameViewMatrix.Zoom.Y, 1f)
+                * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
+
+            DrawParticlesToRenderTarget(PixelationTarget_AlphaBlend, pixelatedAlphaBlendParticles, BlendState.AlphaBlend, pixelationMatrix);
+            DrawParticlesToRenderTarget(PixelationTarget_NonPremultiplied, pixelatedNonPremultipliedParticles, BlendState.NonPremultiplied, pixelationMatrix);
+            DrawParticlesToRenderTarget(PixelationTarget_AdditiveBlend, pixelatedAdditiveBlendParticles, BlendState.Additive, pixelationMatrix);
+
+            Main.instance.GraphicsDevice.SetRenderTarget(null);
+            CurrentlyRendering = false;
+
+            orig();
+        }
+
+        private static void DrawParticlesToRenderTarget(RenderTarget2D target, List<Particle> particles, BlendState blendStateToUse, Matrix pixelationMatrix)
+        {
+            target.SwapTo();
+
+            if (particles.Count > 0)
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, blendStateToUse, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
+
+                foreach (Particle particle in particles)
+                {
+                    if (particle.UseCustomDraw)
+                    {
+                        particle.CustomDraw(Main.spriteBatch);
+                    }
+                    else
+                    {
+                        Color lightColor = particle.Color;
+                        if (particle.AffectedByLight)
+                            lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
+
+                        Rectangle frame = particleTextures[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
+                        Main.spriteBatch.Draw(particleTextures[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
+                    }
+                }
+
+                Main.spriteBatch.End();
+            }
+        }
+
+        private static void DrawPixelatedParticles()
+        {
+            DrawScaledTarget(PixelationTarget_AlphaBlend, Main.spriteBatch, BlendState.AlphaBlend);
+            DrawScaledTarget(PixelationTarget_NonPremultiplied, Main.spriteBatch, BlendState.NonPremultiplied);
+            DrawScaledTarget(PixelationTarget_AdditiveBlend, Main.spriteBatch, BlendState.Additive);
+        }
+
+        private static void DrawScaledTarget(ManagedRenderTarget targetToDraw, SpriteBatch spriteBatch, BlendState blendState)
+        {
+            const float inversePixelationScale = 1f / PixelationResolution;
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Draw(targetToDraw, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, inversePixelationScale, SpriteEffects.None, 0f);
+            spriteBatch.End();
+        }
+
         public static void DrawAllParticles(SpriteBatch sb)
         {
             if (Main.dedServ)
@@ -153,6 +270,9 @@ namespace CalamityMod.Particles
             foreach (Particle particle in particles)
             {
                 if (particle == null)
+                    continue;
+
+                if (particle.Pixelate)
                     continue;
 
                 if (particle.UseAdditiveBlend)
@@ -232,6 +352,9 @@ namespace CalamityMod.Particles
             batchedAlphaBlendParticles.Clear();
             batchedNonPremultipliedParticles.Clear();
             batchedAdditiveBlendParticles.Clear();
+
+            // Draw all pixelated particles.
+            DrawPixelatedParticles();
 
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
         }

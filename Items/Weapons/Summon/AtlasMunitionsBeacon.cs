@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Summon;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.sentry = true;
         }
 

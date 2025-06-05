@@ -92,6 +92,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             CreateRecipe().
                 AddIngredient(ItemID.FlareGun).
                 AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.IllegalGunParts).
                 AddTile(TileID.Anvils).
                 Register();
         }

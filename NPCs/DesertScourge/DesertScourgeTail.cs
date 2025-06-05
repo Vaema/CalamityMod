@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 9;
             NPC.DR_NERD(0.1f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
+            bool death = CalamityWorld.death || bossRush;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -180,7 +180,7 @@ namespace CalamityMod.NPCs.DesertScourge
             // Calculate contact damage based on velocity
             float maxChaseSpeed = Main.zenithWorld ? DesertScourgeHead.SegmentVelocity_ZenithSeed :
                 Main.getGoodWorld ? DesertScourgeHead.SegmentVelocity_GoodWorld :
-                masterMode ? DesertScourgeHead.SegmentVelocity_Master :
+                death ? DesertScourgeHead.SegmentVelocity_Death :
                 expertMode ? DesertScourgeHead.SegmentVelocity_Expert :
                 DesertScourgeHead.SegmentVelocity_Normal;
             if (burrow || lungeUpward)

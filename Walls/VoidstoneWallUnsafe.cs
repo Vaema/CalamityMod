@@ -55,8 +55,7 @@ namespace CalamityMod.Walls
             int yPos = tile.WallFrameY;
 
             Rectangle frame = new Rectangle(xPos, yPos, xLength, 32);
-            Color drawcolor;
-            drawcolor = WorldGen.paintColor(tile.WallColor);
+            Color drawcolor = WorldGen.paintColor(tile.WallColor);
             drawcolor.A = 255;
             Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
 
@@ -76,12 +75,9 @@ namespace CalamityMod.Walls
                 brightness *= (float)MathF.Sin(j / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 brightness *= (float)MathF.Sin(i * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
-                drawcolor *= brightness;
-                Color glowColor = drawcolor * 0.4f;
 
-                if (lightColor.R > glowColor.R) glowColor.R = lightColor.R;
-                if (lightColor.G > glowColor.G) glowColor.G = lightColor.G;
-                if (lightColor.B > glowColor.B) glowColor.B = lightColor.B;
+                brightness = MathHelper.Clamp(brightness, 0f, 1f);
+                Color glowColor = drawcolor *= brightness;
 
                 if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
                     return;
@@ -90,7 +86,7 @@ namespace CalamityMod.Walls
                 // But maybe we could squeeze bit more by removing the loop
                 for (int k = 0; k < 3; k++)
                 {
-                    Vector2 offset = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f)) * 0.2f * k;
+                    Vector2 offset = new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f)) * (0.2f * k);
                     spriteBatch.Draw(GlowMask.Texture, pos + offset + new Vector2(-8 + xOff, -8), frame, glowColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }

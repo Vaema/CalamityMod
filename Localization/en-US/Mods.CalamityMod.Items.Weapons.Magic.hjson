@@ -246,13 +246,8 @@ DeathValleyDuster: {
 		'''
 		Casts an enchanted blast of sand that passes through enemies and tiles
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the Sand's Wind Buff
-		The Sand's Wind Buff increases your defense by 10 and damage by 12%
+		The Sand's Wind Buff increases your defense by 10, damage by 12%, and greatly buffs mana regen
 		'''
-}
-
-DivineRetribution: {
-	DisplayName: Divine Retribution
-	Tooltip: Mage is superior to rogue; look, we got a donor weapon to prove it!
 }
 
 Downpour: {
@@ -311,11 +306,6 @@ EventHorizon: {
 EvergladeSpray: {
 	DisplayName: Everglade Spray
 	Tooltip: Fires a stream of burning green ichor
-}
-
-Fabstaff: {
-	DisplayName: Fabstaff
-	Tooltip: Casts a bouncing beam that splits when enemies are near it
 }
 
 FaceMelter: {
@@ -664,7 +654,7 @@ PrimordialAncient: {
 		'''
 		Casts five primordial sand blasts that converge at your cursor after a moment and create a giant explosion
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.AeolianEarthBuff.DisplayName} buff
-		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}% and damage by {1}%
+		The {$Buffs.AeolianEarthBuff.DisplayName} buff increases your damage reduction by {0}%, damage by {1}%, and massively buffs mana regen
 		'''
 }
 
@@ -674,7 +664,7 @@ PrimordialEarth: {
 		'''
 		Casts two enchanted blasts of sand that coverge with each other and explode
 		Casting this spell at max mana while without mana sickness will cause it to give you and any player it hits the {$Buffs.SandsWindBuff.DisplayName} buff
-		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0} and damage by {1}%
+		The {$Buffs.SandsWindBuff.DisplayName} buff increases your defense by {0}, damage by {1}%, and greatly buffs mana regen
 		'''
 }
 
@@ -858,6 +848,15 @@ SubsumingVortex: {
 		When enemies are near the vortex, it sends multiple fast-moving smaller vortices towards them
 		Releasing <right> fires the vortex towards the mouse if enough time has passed
 		Damage scales based on how long the vortex was held out
+		'''
+}
+
+Sylvestaff: {
+	DisplayName: Sylvestaff
+	Tooltip:
+		'''
+		Casts a bouncing beam that splits when enemies are near it
+		'Also known as the Karma Staff!'
 		'''
 }
 

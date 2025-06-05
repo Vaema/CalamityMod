@@ -191,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
             // Draw souls around the gun as a sort of indicator of how many you have sucked in
             if (SoulColors.Count > 0)
             {
-                Texture2D sq = SoulSquare.Value;
+                Texture2D orbitingSoulTexture = SoulSquare.Value;
                 for (int i = 0; i < SoulColors.Count; i++)
                 {
                     int soulsInRing = SoulColors.Count > MaxSoulsRing ? (SoulColors.Count - i > SoulColors.Count % MaxSoulsRing ? MaxSoulsRing : SoulColors.Count % MaxSoulsRing) : SoulColors.Count;
@@ -203,7 +203,10 @@ namespace CalamityMod.Projectiles.Magic
                     // Makes the souls disappear when they go "behind" the gun
                     bool shouldDraw = posOffset.RotatedBy(-rotation).X <= 2.7f;
                     if (shouldDraw)
-                        Main.EntitySpriteDraw(sq, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, sq.Size() / 2f, 1f, SpriteEffects.None);
+                    {
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, orbitingSoulTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, Color.White, 0f, orbitingSoulTexture.Size() * 0.5f, 0.5f, SpriteEffects.None);
+                    }
                 }
             }
             return false;

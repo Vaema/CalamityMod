@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 35;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateEquip(Player player)

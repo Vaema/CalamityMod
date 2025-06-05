@@ -57,10 +57,17 @@ namespace CalamityMod.Particles
         public virtual int FrameVariants => 1;
         public int Variant = 0;
         public virtual string Texture => "";
+
+        /// <summary>
+        /// Whether or not your particle should be drawn slightly pixelated to match Terraria's pixel size.
+        /// </summary>
+        public virtual bool Pixelate => false;
+
         /// <summary>
         /// Set this to true to disable default particle drawing, thus calling Particle.CustomDraw() instead.
         /// </summary>
         public virtual bool UseCustomDraw => false;
+
         /// <summary>
         /// Use this method if you want to handle the particle drawing yourself. Only called if Particle.UseCustomDraw is set to true.
         /// </summary>

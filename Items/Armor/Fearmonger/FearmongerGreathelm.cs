@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.defense = 38; // 132 total
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateEquip(Player player)

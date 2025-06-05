@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<ExoObeliskTile>());
             Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
             Item.vanity = true;
         }

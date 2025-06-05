@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
 
         public const float SegmentVelocity_Expert = 10f;
-        public const float SegmentVelocity_Master = 12f;
+        public const float SegmentVelocity_Death = 12f;
         public const float SegmentVelocity_GoodWorld = 16f;
         public const float SegmentVelocity_ZenithSeed = 18f;
 
@@ -108,7 +108,6 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -172,12 +171,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * (revenge ? 10f : 8f);
                         int numProj = death ? 6 : getMad ? 4 : 3;
-                        int spread = masterMode ? 28 : getMad ? 22 : 20;
-                        if (masterMode)
-                        {
-                            numProj += 2;
-                            spread += 8;
-                        }
+                        int spread = death ? 28 : getMad ? 22 : 20;
 
                         float rotation = MathHelper.ToRadians(spread);
                         int type = ModContent.ProjectileType<DesertScourgeSpit>();
@@ -318,10 +312,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
                 Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             if (Main.player[NPC.target].dead)
@@ -363,7 +357,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (!shouldFly)
             {
-                NPC.velocity.Y += 0.15f;
+                NPC.velocity.Y += 0.1f;
                 if (NPC.velocity.Y > maxChaseSpeed)
                     NPC.velocity.Y = maxChaseSpeed;
 

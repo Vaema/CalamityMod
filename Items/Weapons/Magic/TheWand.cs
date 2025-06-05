@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.shoot = ModContent.ProjectileType<SparkInfernal>();
             Item.shootSpeed = 24f;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player)

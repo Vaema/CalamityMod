@@ -37,12 +37,53 @@ namespace CalamityMod.Systems
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
             // Better Underworld (similar to Don't Dig Up seed but with some adjustments)
-            int UnderworldIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Underworld"));
-            tasks[UnderworldIndex] = new PassLegacy("Underworld", (progress, config) =>
+            int underworldIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Underworld"));
+            if (underworldIndex != -1)
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterUnderworld").Value;
-                CustomUnderworld.NewUnderworld();
-            });
+                tasks[underworldIndex] = new PassLegacy("Underworld", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterUnderworld").Value;
+                    CustomUnderworld.NewUnderworld();
+                });
+            }
+
+            // Replace the shimmer gen to make it place sanely
+            int shimmerIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shimmer"));
+            if (shimmerIndex != -1)
+            {
+                tasks[shimmerIndex] = new PassLegacy("Shimmer", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterShimmer").Value;
+                    CustomShimmer.NewShimmer();
+                });
+            }
+
+            // Better Underworld structures after the world has been smoothed
+            int underworldStructuresIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Smooth World"));
+            if (underworldStructuresIndex != -1)
+            {
+                tasks.Insert(underworldStructuresIndex + 1, new PassLegacy("Underworld Structures", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
+                    CustomUnderworld.NewUnderworldStructures();
+
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldPillars").Value;
+                    CustomUnderworld.NewUnderworldPillars();
+
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
+                    CustomUnderworld.AshTreesAndGrass();
+
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldGeyserTraps").Value;
+                    CustomUnderworld.PlaceGeyserTraps();
+                }));
+
+                // Generate the Shimmer Shrine directly above the center of the underground Shimmer lake
+                tasks.Insert(underworldStructuresIndex + 2, new PassLegacy("Shimmer Shrine", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.ShimmerShrine").Value;
+                    ShimmerShrine.PlaceShimmerShrine(GenVars.structures);
+                }));
+            }
 
             // Evil Floating Island
             int islandIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Floating Island Houses"));
@@ -56,47 +97,59 @@ namespace CalamityMod.Systems
             }
 
             // Generate the Astral Chest right after the dungeon has finished generating
-            int DungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));
-            tasks.Insert(DungeonIndex + 1, new PassLegacy("Astral Chest", (progress, config) =>
+            int dungeonIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Dungeon"));
+            if (dungeonIndex != -1)
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AstralChest").Value;
-                AstralChestGeneration.PlaceAstralChest();
-            }));
+                tasks.Insert(dungeonIndex + 1, new PassLegacy("Astral Chest", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AstralChest").Value;
+                    AstralChestGeneration.PlaceAstralChest();
+                }));
+            }
 
             // Larger Jungle Temple
-            int JungleTempleIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
-            tasks[JungleTempleIndex] = new PassLegacy("Jungle Temple", (progress, config) =>
+            int jungleTempleIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Jungle Temple"));
+            if (jungleTempleIndex != -1)
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
-                CustomTemple.NewJungleTemple();
-            });
+                tasks[jungleTempleIndex] = new PassLegacy("Jungle Temple", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
+                    CustomTemple.NewJungleTemple();
+                });
 
-            // Floral Paradise Biome
-            tasks.Insert(JungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
-            {
-                progress.Message = "Growing a floral paradise underground";
-                if (FloralParadiseMinibiome.SHOULD_GENERATE)
-                    FloralParadiseMinibiome.GenerateInstances();
-            }));
+                // Floral Paradise Biome
+                tasks.Insert(jungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
+                {
+                    progress.Message = "Growing a floral paradise underground";
+                    if (FloralParadiseMinibiome.SHOULD_GENERATE)
+                        FloralParadiseMinibiome.GenerateInstances();
+                }));
+            }
 
             // Improved Golem Arena
-            int JungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
-            tasks[JungleTempleIndex2] = new PassLegacy("Temple", (progress, config) =>
+            int jungleTempleIndex2 = tasks.FindIndex(genpass => genpass.Name.Equals("Temple"));
+            if (jungleTempleIndex2 != -1)
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
-                Main.tileSolid[162] = false;
-                Main.tileSolid[226] = true;
-                CustomTemple.NewJungleTemplePart2();
-                Main.tileSolid[232] = false;
-            });
+                tasks[jungleTempleIndex2] = new PassLegacy("Temple", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
+                    Main.tileSolid[162] = false;
+                    Main.tileSolid[226] = true;
+                    CustomTemple.NewJungleTemplePart2();
+                    Main.tileSolid[232] = false;
+                });
+            }
 
             // Better Lihzahrd Altar (consistency?)
-            int LihzahrdAltarIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
-            tasks[LihzahrdAltarIndex] = new PassLegacy("Lihzahrd Altars", (progress, config) =>
+            int lihzahrdAltarIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Lihzahrd Altars"));
+            if (lihzahrdAltarIndex != -1)
             {
-                progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.JungleTempleAltar").Value;
-                CustomTemple.NewJungleTempleLihzahrdAltar();
-            });
+                tasks[lihzahrdAltarIndex] = new PassLegacy("Lihzahrd Altars", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.JungleTempleAltar").Value;
+                    CustomTemple.NewJungleTempleLihzahrdAltar();
+                });
+            }
 
             // Big Hive
             int giantHiveIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Hives"));
@@ -163,12 +216,11 @@ namespace CalamityMod.Systems
             }
 
             // Sunken Sea
-            int SunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
-            if (SunkenSeaIndex != -1)
+            int sunkenSeaIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Cactus, Palm Trees, & Coral"));
+            if (sunkenSeaIndex != -1)
             {
-                tasks.Insert(SunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
+                tasks.Insert(sunkenSeaIndex + 1, new PassLegacy("Sunken Sea", (progress, config) =>
                 {
-
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
@@ -204,10 +256,10 @@ namespace CalamityMod.Systems
             }
 
             // All further tasks occur right before vanilla worldgen is completed (which includes The Dirtiest Block and final secret seed adjustments)
-            int FinalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
-            if (FinalIndex != -1)
+            int finalIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Final Cleanup"));
+            if (finalIndex != -1)
             {
-                int currentFinalIndex = FinalIndex - 1;
+                int currentFinalIndex = finalIndex - 1;
 
                 // Reallocate gems so rarity corresponds to depth
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Gem Depth Adjustment", (progress, config) =>
@@ -229,10 +281,10 @@ namespace CalamityMod.Systems
                 tasks.Insert(++currentFinalIndex, new PassLegacy("Planetoids", Planetoid.GenerateAllBasePlanetoids));
 
                 // Sulphurous Sea (Step 1)
-                int SulphurIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
-                if (SulphurIndex != -1)
+                int sulphurIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Micro Biomes"));
+                if (sulphurIndex != -1)
                 {
-                    tasks.Insert(SulphurIndex + 1, new PassLegacy("Sulphur Sea", (progress, config) =>
+                    tasks.Insert(sulphurIndex + 1, new PassLegacy("Sulphur Sea", (progress, config) =>
                     {
                         progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SulphurSea").Value;
 
@@ -395,9 +447,7 @@ namespace CalamityMod.Systems
                 // Could just not add/remove gen pass, but that could lead to mod conflicts
                 // in case whatever mod targets this specific gen pass.
                 if (!CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
-                {
                     hardmodeOreT1Pass.Disable();
-                }
 
                 tasks.Insert(announceIndex, hardmodeOreT1Pass);
             }
@@ -484,6 +534,20 @@ namespace CalamityMod.Systems
                         {
                             chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
                             chest.item[0].Prefix(-1);
+                        }
+                    }
+
+                    // Fix vanilla's stupidity with Gold Chests being able to have Meteorite Bars in them near the Underworld
+                    if (isGoldChest)
+                    {
+                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
+                        {
+                            if (chest.item[inventoryIndex].type == ItemID.MeteoriteBar)
+                            {
+                                int oldStack = chest.item[inventoryIndex].stack;
+                                chest.item[inventoryIndex].SetDefaults(WorldGen.genRand.NextBool() ? ItemID.PlatinumBar : ItemID.GoldBar);
+                                chest.item[inventoryIndex].stack = oldStack;
+                            }
                         }
                     }
 

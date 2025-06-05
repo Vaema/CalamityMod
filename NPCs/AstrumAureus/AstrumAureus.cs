@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
@@ -413,7 +414,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             // Relic
             npcLoot.DefineConditionalDropSet(DropHelper.RevAndMaster).Add(ModContent.ItemType<AstrumAureusRelic>());
 
-            // GFB Crab Banner drop
+            // GFB troll drops: Crab Banners and a random item which uses Luminite Bars
+            // Luminite Bar item drop is handled in a separate mod system
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
                 GFBOnly.Add(DropHelper.PerPlayer(ItemID.CrabBanner, 1, 1, 9999), true);
@@ -430,8 +432,6 @@ namespace CalamityMod.NPCs.AstrumAureus
                 return;
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
-
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Cirrus>() }, DownedBossSystem.downedAstrumAureus);
 
             // If Astrum Aureus has not yet been killed, notify players of new Astral enemy drops
             if (!DownedBossSystem.downedAstrumAureus)
@@ -582,6 +582,27 @@ namespace CalamityMod.NPCs.AstrumAureus
         {
             if (hurtInfo.Damage > 0)
                 target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 360);
+        }
+    }
+
+    // This ModSystem is used to allow Aureus to drop a random item which uses Luminite Bars in its recipe in Get fixed boi.
+    // This cannot be placed in ModifyNPCLoot, because ModifyNPCLoot is run before modded recipes are initialized. Thus, placing it there would only drop vanilla items.
+    // As a funny side effect, this also allows for dropping items from other mods which use Luminite Bars in their recipes.
+    public class AddAureusGFBDrop : ModSystem
+    {
+        public override void PostSetupRecipes()
+        {
+            // Iterate through all recipes, and list the items which use Luminite Bars in their recipes.
+            List<int> luminiteStuff = [];
+            for (int i = 0; i < Main.recipe.Length; i++)
+            {
+                if (Main.recipe[i].ContainsIngredient(ItemID.LunarBar) && !luminiteStuff.Contains(Main.recipe[i].createItem.type))
+                    luminiteStuff.Add(Main.recipe[i].createItem.type);
+            }
+            // Define the conditional for GFB.
+            LeadingConditionRule GFBOnly = new LeadingConditionRule(DropHelper.GFB);
+            GFBOnly.OnSuccess(ItemDropRule.OneFromOptionsNotScalingWithLuck(1, luminiteStuff.ToArray()));
+            Main.ItemDropsDB.RegisterToNPCNetId(ModContent.NPCType<AstrumAureus>(), GFBOnly);
         }
     }
 }

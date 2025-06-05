@@ -340,7 +340,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             bool immuneToSlowingDebuffs = AIState == (float)Phase.FinalPhase || AIState == (float)Phase.ShadowFireballSpin;
             NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<KamiFlu>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
@@ -1480,6 +1479,13 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void BossLoot(ref string name, ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
+        }
+
+        public override void OnKill()
+        {
+            // Mark Primordial Wyrm as dead
+            DownedBossSystem.downedPrimordialWyrm = true;
+            CalamityNetcode.SyncWorld();
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

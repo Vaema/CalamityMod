@@ -2,6 +2,7 @@ SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
 // Main Menu Name
 MainMenu: Calamity Style
 MainMenuClassic: Calamity Style - Classic
+MainMenuSunken: Calamity Style - Sunken
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -94,6 +95,7 @@ Cooldowns: {
 	FleshTotem: Contact Damage Halving Cooldown
 	FuryFuel: Crystal Powder
 	GaelsRage: Gael's Greatsword Rage Cooldown
+	BandCooldown: Band Cooldown
 	GlobalDodge: Dodge Cooldown
 	GodSlayerDash: God Slayer Dash Cooldown
 	HellbornShots: Hellborn Shots
@@ -589,8 +591,13 @@ Lecherous: {
 
 Disenchant: Disenchant
 // Worldgen Tasks
-BetterUnderworld: Creating a smoother underworld
-AshIslandLavaRemoval: Removing lava from ash island
+BetterUnderworld: Creating a smoother Underworld
+BetterShimmer: Placing shimmer in a sane location
+UnderworldStructures: Remnants of an Azafurian and Demonic war
+UnderworldPillars: Constructing Underworld pillars
+UnderworldTreesAndGrass: Growing Underworld flora
+UnderworldGeyserTraps: Adding an Underworld minefield
+ShimmerShrine: Excavating an ancient shimmer well
 EvilIslandCorrupt: Adding a putrid floating island
 EvilIslandCrimson: Adding a grotesque floating island
 AstralChest: Placing an astral chest

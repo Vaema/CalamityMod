@@ -6,6 +6,8 @@ using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -14,6 +16,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -31,6 +34,26 @@ namespace CalamityMod.Items.Accessories
 
         public const int maxMinionRequirement = 10;
         public const int maxPscAnimTime = 120;
+        public static SummonTag SummonTag = new() { MultiplicativeTagDamage = 0.2f, TagModifyHitEffects = ApplyTagModifyHit, AutoDrawTooltip = false };
+
+        public static void ApplyTagModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
+        {
+            if (Main.player[proj.owner].Calamity().pscState >= (int)ProfanedSoulCrystalState.Buffs)
+            {
+                var empowered = Main.player[proj.owner].Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;
+                //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
+                //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
+                modifiers.ScalingBonusDamage += (empowered ? 0.4f : SummonTag.MultiplicativeTagDamage) * tagDamageMult;
+                if (!Main.dedServ)
+                {
+                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
+                    float power = Math.Min(npc.height / 100f, 3f);
+                    var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
+                    var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
+                    GeneralParticleHandler.SpawnParticle(particle);
+                }
+            }
+        }
 
         // Interface stuff.
         public int OwnerPlayer { get; set; }
@@ -192,6 +215,8 @@ namespace CalamityMod.Items.Accessories
 
         public override void SetDefaults()
         {
+            SummonTag.TagItem = Item.type;
+            SummonTag.TagTexture = TextureAssets.Item[Type];
             Item.width = 50;
             Item.height = 50;
             Item.accessory = true;

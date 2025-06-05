@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
@@ -92,6 +93,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else if (Projectile.ai[0] <= 0f)
                 {
+                    Projectile.Calamity().conditionalHomingRange = 750f;
                     Projectile.netUpdate = true;
                     float speed = 12f;
                     Vector2 projCenter = Projectile.Center;
@@ -103,7 +105,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     Vector2 mouseVec = new Vector2(mouseDistX, mouseDistY);
                     float mouseDist = mouseVec.Length();
-                    if (mouseDist == 0f || Projectile.ai[0] < 0f)
+                    if (mouseDist <= 2f || Projectile.ai[0] < 0f)
                     {
                         projCenter = player.Center;
                         mouseVec = Projectile.Center - projCenter;

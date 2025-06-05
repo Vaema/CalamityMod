@@ -116,7 +116,6 @@ namespace CalamityMod.CalPlayer
         public int searedPanTimer = 0;
         /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
         public int potionTimer = 0;
-        public bool cirrusDress = false;
         /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
@@ -125,7 +124,7 @@ namespace CalamityMod.CalPlayer
         public bool noLifeRegen = false;
         public bool reducedDaybrokenDamage = false;
         public bool reducedNightwitherDamage = false;
-        public float rangedAmmoCost = 1f;
+        public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
         /// Tracks whether or not the player is currently holding Gael's Greatsword.<br/>
@@ -244,7 +243,6 @@ namespace CalamityMod.CalPlayer
         public bool newPrincessInventory = false;
         public bool newSkeletonMerchantInventory = false;
         public bool newPermafrostInventory = false;
-        public bool newCirrusInventory = false;
         public bool newAmidiasInventory = false;
         public bool newBanditInventory = false;
         public bool newCalamitasInventory = false;
@@ -467,7 +465,6 @@ namespace CalamityMod.CalPlayer
         #region Mount
         public bool onyxExcavator = false;
         public bool rimehound = false;
-        public bool fab = false;
         public bool crysthamyr = false;
         public bool ExoChair = false;
         public AndromedaPlayerState andromedaState;
@@ -728,15 +725,13 @@ namespace CalamityMod.CalPlayer
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
+        public int generalBandCooldown = 0;
         public bool bGlassBand = false; // Obsidian band
         public bool bGlassBandVisual = false;
-        public int bGlassbandCooldown = 0;
         public bool batholithBangle = false; // Granite band
         public bool batholithBangleVisual = false;
-        public int batholithBangleCooldown = 0;
         public bool protolithBangle = false; // Marble band
         public bool protolithBangleVisual = false;
-        public int protolithBangleCooldown = 0;
         /// <summary> Used to prevent dodges from triggering The Bee's full health damage reduction cooldown. </summary>
         public bool shouldTriggerBeeCooldown = false;
         public int theBeeCooldown = 0;
@@ -808,6 +803,12 @@ namespace CalamityMod.CalPlayer
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
         public int transformerStoredKills = 0;
+        public bool bloomStone = false;
+        public bool bloomStoneHookVisuals = false;
+        public int bloomStoneHealInc = 0;
+        public int bloomStoneTotalHeal = 0;
+        public int bloomStoneHealTimer = 0;
+        public int bloomStoneDR = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -844,7 +845,7 @@ namespace CalamityMod.CalPlayer
         public int raiderCritLifespan = 0;
         public int raiderSoundCooldown = 0;
         public bool gSabaton = false;
-        public int gSabatonHotkeyHoldTime = 0;
+        public int gSabatonHotkeyFallWindup = -1;
         public int gSabatonFall = 0;
         public bool gSabatonFalling = false;
         public int gSabatonTempJumpSpeed = 0;
@@ -958,6 +959,8 @@ namespace CalamityMod.CalPlayer
         public bool XykVisualsBlue = false;
         public bool XykVisualsOrange = false;
         public Color XykFXColor = Color.Black;
+        public int XykWingTimer = 0;
+        public Color lightRGB = Color.Black;
         public bool manaOverloader = false;
         /// <summary> Used for allowing Calamity slimes to be affected by Royal Gel. </summary>
         public bool royalGel = false;
@@ -1021,6 +1024,9 @@ namespace CalamityMod.CalPlayer
         public bool veneratedLocket = false;
         public bool camper = false;
         public bool corrosiveSpine = false;
+        public bool scionsCurio = false;
+        public bool scionsCurioGotHit = false;
+        public bool scionsCurioVisuals = false;
         public bool miniOldDuke = false;
         public bool miniOldDukeVanity = false;
         public bool starbusterCore = false;
@@ -1037,7 +1043,6 @@ namespace CalamityMod.CalPlayer
         public int phantomicHeartRegen = 0;
         /// <summary> General cooldown variable for spawning projectiles from wing bonus effects. Used by Soul of Cryogen, Tattered Fairy Wings, and Festive Wings. </summary>
         public int wingProjectileCooldown = 0;
-        public bool RustyMedallionDroplets = false;
         public bool noStupidNaturalARSpawns = false;
         /// <summary> Used for animating Void Concentration Staff's draw layer. </summary>
         public int voidFrameCounter = 0;
@@ -1324,7 +1329,7 @@ namespace CalamityMod.CalPlayer
         public bool zen = false;
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
-        public bool cirrusVodka = false;
+        public bool purpleHaze = false;
         public bool mushy = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
@@ -1386,7 +1391,6 @@ namespace CalamityMod.CalPlayer
         public int bloodfinTimer = 30;
         public bool hallowedRegen = false;
         public bool hallowedPower = false;
-        public bool kamiBoost = false;
         public bool avertorBonus = false;
         public bool divineBless = false;
         public bool infiniteFlight = false;
@@ -1535,6 +1539,16 @@ namespace CalamityMod.CalPlayer
         public bool FlarebatBool = false;
         public bool FrostbatBool = false;
         public bool AmphibiansGuitarBool = false;
+        #endregion
+
+        #region Whip
+        public bool forceSummonTagCrit = false; //Forces whip multiplicative effects to function as crit chance
+        public bool forceSummonTagMultiplicative = false; //Forces whip multiplicative effects to function as multiplicative damage
+
+        //Allows providing flat, crit, and multiplicative tag values on gear. These will apply on *any* minion or sentry hit, not just if the target is tagged.
+        public int bonusFlatTag = 0;
+        public float bonusCritTag = 0;
+        public float bonusMultTag = 0;
         #endregion
 
         #region Biome
@@ -1770,7 +1784,6 @@ namespace CalamityMod.CalPlayer
             newPrincessInventory = false;
             newSkeletonMerchantInventory = false;
             newPermafrostInventory = false;
-            newCirrusInventory = false;
             newAmidiasInventory = false;
             newBanditInventory = false;
             newCalamitasInventory = false;
@@ -1824,7 +1837,6 @@ namespace CalamityMod.CalPlayer
             boost.AddWithCondition("newPrincessInventory", newPrincessInventory);
             boost.AddWithCondition("newSkeletonMerchantInventory", newSkeletonMerchantInventory);
             boost.AddWithCondition("newPermafrostInventory", newPermafrostInventory);
-            boost.AddWithCondition("newCirrusInventory", newCirrusInventory);
             boost.AddWithCondition("newAmidiasInventory", newAmidiasInventory);
             boost.AddWithCondition("newBanditInventory", newBanditInventory);
             boost.AddWithCondition("newCalamitasInventory", newCalamitasInventory);
@@ -1916,7 +1928,6 @@ namespace CalamityMod.CalPlayer
             newPrincessInventory = boost.Contains("newPrincessInventory");
             newSkeletonMerchantInventory = boost.Contains("newSkeletonMerchantInventory");
             newPermafrostInventory = boost.Contains("newPermafrostInventory");
-            newCirrusInventory = boost.Contains("newCirrusInventory");
             newAmidiasInventory = boost.Contains("newAmidiasInventory");
             newBanditInventory = boost.Contains("newBanditInventory");
             newCalamitasInventory = boost.Contains("newCalamitasInventory");
@@ -2091,7 +2102,6 @@ namespace CalamityMod.CalPlayer
 
             onyxExcavator = false;
             rimehound = false;
-            fab = false;
             crysthamyr = false;
             ExoChair = false;
             miniOldDuke = false;
@@ -2155,7 +2165,6 @@ namespace CalamityMod.CalPlayer
             shadowSpeed = false;
             dsSetBonus = false;
             wearingRogueArmor = false;
-            cirrusDress = false;
 
             blockAllDashes = false;
             blazingCursorDamage = false;
@@ -2174,6 +2183,10 @@ namespace CalamityMod.CalPlayer
             arcFlashRingVisual = false;
             bGlassBand = false;
             bGlassBandVisual = false;
+            batholithBangle = false; // Granite band
+            batholithBangleVisual = false;
+            protolithBangle = false; // Marble band
+            protolithBangleVisual = false;
             aFossil = false;
             aPowder = false;
             fallingBlockProtection = false;
@@ -2193,6 +2206,8 @@ namespace CalamityMod.CalPlayer
             ilSpark = false;
             transformer = false;
             transformerVisual = false;
+            bloomStone = false;
+            bloomStoneHookVisuals = false;
             hideOfDeus = false;
             dAmulet = false;
             rampartOfDeities = false;
@@ -2291,7 +2306,6 @@ namespace CalamityMod.CalPlayer
             phantomicArtifact = false;
             hallowedRegen = false;
             hallowedPower = false;
-            kamiBoost = false;
             tracersDust = false;
             tracersCelestial = false;
             tracersElysian = false;
@@ -2309,7 +2323,7 @@ namespace CalamityMod.CalPlayer
             starTaintedGenerator = false;
             camper = false;
             corrosiveSpine = false;
-            RustyMedallionDroplets = false;
+            scionsCurio = false;
             rottenDogTooth = false;
             angelicAlliance = false;
             BloomStoneRegen = false;
@@ -2332,7 +2346,7 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
 
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
 
             avertorBonus = false;
@@ -2532,7 +2546,7 @@ namespace CalamityMod.CalPlayer
             trippy = false;
             amidiasBlessing = false;
             flaskBrimstone = false;
-            cirrusVodka = false;
+            purpleHaze = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2699,6 +2713,13 @@ namespace CalamityMod.CalPlayer
             AmphibiansGuitarBool = false;
             #endregion
 
+            //On GFB both are enabled to cause the game to pick between multiplicative and crit at random
+            forceSummonTagMultiplicative = (Main.zenithWorld ? true : false);
+            forceSummonTagCrit = (Main.zenithWorld ? true : false);
+            bonusFlatTag = 0;
+            bonusCritTag = 0;
+            bonusMultTag = 0;
+
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
             disableVoodooSpawns = false;
@@ -2850,8 +2871,11 @@ namespace CalamityMod.CalPlayer
             auralisAurora = 0;
             necroReviveCounter = -1;
             hideOfDeusTimer = 0;
+            bloomStoneHealInc = 0;
+            bloomStoneTotalHeal = 0;
+            bloomStoneHealTimer = 0;
+            bloomStoneDR = 0;
             murasamaHitCooldown = 0;
-            RustyMedallionCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;
             spiritOriginCritBoost = 0;
@@ -2860,7 +2884,7 @@ namespace CalamityMod.CalPlayer
             adrenaline = 0f;
             raiderCritLifespan = 0;
             raiderSoundCooldown = 0;
-            gSabatonHotkeyHoldTime = 0;
+            gSabatonHotkeyFallWindup = -1;
             gSabatonFall = 0;
             gSabatonFalling = false;
             gSabatonTempJumpSpeed = 0;
@@ -2988,7 +3012,6 @@ namespace CalamityMod.CalPlayer
             hallowedPower = false;
             onyxExcavator = false;
             rimehound = false;
-            fab = false;
             crysthamyr = false;
             ExoChair = false;
             abyssalDivingSuitPlates = false;
@@ -3002,7 +3025,6 @@ namespace CalamityMod.CalPlayer
             crimEffigy = false;
             rRage = false;
             xWrath = false;
-            kamiBoost = false;
             graxDefense = false;
             encased = false;
             brutalCarnage = false;
@@ -3026,7 +3048,7 @@ namespace CalamityMod.CalPlayer
             sulphurskin = false;
             baguette = false;
             flaskBrimstone = false;
-            cirrusVodka = false;
+            purpleHaze = false;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -3071,7 +3093,7 @@ namespace CalamityMod.CalPlayer
             bloodfinTimer = 0;
             healCounter = 300;
             danceOfLightCharge = 0;
-            rangedAmmoCost = 1f;
+            ammoCost = 1f;
             healingPotionMultiplier = 1f;
             avertorBonus = false;
             divineBless = false;
@@ -3321,18 +3343,20 @@ namespace CalamityMod.CalPlayer
                 
             }
 
-            //Only increment hotkey holdtime if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset hold time to zero
-            if (CalamityKeybinds.GravistarSabatonHotkey.Current && gSabaton && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
+            //Only increment the slam if not on ground, not mounted, not on rope, not hooked, not tongued, otherwise reset slam time to zero
+            if (CalamityKeybinds.GravistarSabatonHotkey.JustPressed && gSabatonHotkeyFallWindup < 0)
+                gSabatonHotkeyFallWindup = 0;
+            if (gSabaton && gSabatonHotkeyFallWindup >= 0 && Main.myPlayer == Player.whoAmI && (Player.velocity.Y != 0) && !Player.pulley && !Player.mount.Active && Player.grappling[0] == -1 && !Player.tongued)
             {
-                gSabatonHotkeyHoldTime++;
-                if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime % 3f == 0)
+                gSabatonHotkeyFallWindup++;
+                if (gSabatonHotkeyFallWindup < 20 && gSabatonHotkeyFallWindup % 2f == 0)
                 {
                     SpawnGravistarParticle();
                 }
             }
             else if (Main.myPlayer == Player.whoAmI)
             {
-                gSabatonHotkeyHoldTime = 0;
+                gSabatonHotkeyFallWindup = -1;
             }
 
             if (CalamityKeybinds.NormalityRelocatorHotKey.JustPressed && normalityRelocator && Main.myPlayer == Player.whoAmI)
@@ -4108,16 +4132,16 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    // While holding hotkey, but before slam, bring Y velocity closer to 0
-                    if (gSabatonHotkeyHoldTime < 30 && gSabatonHotkeyHoldTime != 0 && !gSabatonFalling)
-                        Player.velocity.Y *= (60 - (gSabatonHotkeyHoldTime / 2f)) / 60f;
+                    // While preparing slam, bring Y velocity closer to 0
+                    if (gSabatonHotkeyFallWindup < 20 && gSabatonHotkeyFallWindup != 0 && !gSabatonFalling)
+                        Player.velocity.Y *= (60 - (gSabatonHotkeyFallWindup * 0.75f)) / 60f;
 
                     // Play sound a bit early so it goes in time with the fall
-                    if (gSabatonHotkeyHoldTime == 15 && !gSabatonFalling)
+                    if (gSabatonHotkeyFallWindup == 5 && !gSabatonFalling)
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
 
                     // 0.5 seconds passed, falling time
-                    if (gSabatonHotkeyHoldTime == 30)
+                    if (gSabatonHotkeyFallWindup == 20)
                     {
                         gSabatonFalling = true;
                         Player.velocity.Y = 0.01f;
@@ -4129,6 +4153,7 @@ namespace CalamityMod.CalPlayer
                     {
                         gSabatonFall = 0;
                         gSabatonFalling = false;
+                        gSabatonHotkeyFallWindup = -1;
                     }
 
                     if (gSabatonFalling)
@@ -4156,6 +4181,7 @@ namespace CalamityMod.CalPlayer
                             Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<StomperSlam>(), damage, 4f, Player.whoAmI, gSabatonFall);
                             gSabatonFall = 0;
                             gSabatonFalling = false;
+                            gSabatonHotkeyFallWindup = -1;
 
                             // Temporary jump speed is granted for 40 frames
                             gSabatonTempJumpSpeed = 40;
@@ -4167,6 +4193,7 @@ namespace CalamityMod.CalPlayer
             {
                 gSabatonFall = 0;
                 gSabatonFalling = false;
+                gSabatonHotkeyFallWindup = -1;
             }
 
             // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
@@ -4357,6 +4384,17 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Star in a Bottle gives Mana Regeneration instead of it's usual effect when you don't already have Mana Regeneration
+            if (!Player.manaRegenBuff && Player.HasBuff(BuffID.StarInBottle)) 
+            {
+                //Cancel out Star In A Bottle's normal effect
+				Player.manaRegenDelayBonus -= 0.5f;
+				Player.manaRegenBonus -= 10;
+                //Apply Mana Regen Potion effect
+                Player.manaRegenBuff = true;
+                
+            }
+
             ForceVariousEffects();
         }
         #endregion
@@ -4435,7 +4473,6 @@ namespace CalamityMod.CalPlayer
                     (laudanum && Player.HasBuff(BuffID.VortexDebuff) ? 0.15f : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
-                    (kamiBoost ? YanmeisKnife.RunAccelerationBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
@@ -4456,7 +4493,6 @@ namespace CalamityMod.CalPlayer
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
-                    (kamiBoost ? YanmeisKnife.RunSpeedBoost : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? 0.05f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
@@ -4523,6 +4559,8 @@ namespace CalamityMod.CalPlayer
         public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
         {
             healValue = (int)(healValue * healingPotionMultiplier);
+            if (bloomStone)
+                healValue = 0;
         }
         #endregion
 
@@ -4828,21 +4866,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            if (RustyMedallionDroplets && RustyMedallionCooldown <= 0)
-            {
-                if (item.CountsAsClass<RangedDamageClass>())
-                {
-                    var MedallionSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RustyMedallion>()));
-                    int d = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(RustyMedallion.AcidDropBaseDamage);
-
-                    Vector2 mouse = Player.ClampedMouseWorld();
-                    Vector2 startingPosition = mouse - Vector2.UnitY.RotatedByRandom(0.3f) * 1250f;
-                    Vector2 directionToMouse = (mouse - startingPosition).SafeNormalize(Vector2.UnitX);
-                    Projectile.NewProjectile(MedallionSource, startingPosition, directionToMouse * 15f, ProjectileType<RustyMedallionDroplet>(), d, 0f, Player.whoAmI, 3);
-                    RustyMedallionCooldown = RustyMedallion.AcidCreationCooldown;
-                }
-            }
             return true;
         }
         #endregion
@@ -4887,8 +4910,6 @@ namespace CalamityMod.CalPlayer
                         abyssalDivingSuitForce = true;
                     if (vanity.type == ModContent.ItemType<AquaticHeart>())
                         aquaticHeartForce = true;
-                    if (vanity.type == ModContent.ItemType<CrystalHeartVodka>())
-                        Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped = true;
                     if (vanity.type == ModContent.ItemType<GhostBracelet>())
                         ghostBracelet = true;
                     if (vanity.type == ModContent.ItemType<HapuFruit>())
@@ -5292,7 +5313,7 @@ namespace CalamityMod.CalPlayer
         public override void PostNurseHeal(NPC nurse, int health, bool removeDebuffs, int price)
         {
             // Remove excess alcohol
-            if (removeDebuffs && alcoholPoisonLevel > (cirrusDress ? 5 : 3))
+            if (removeDebuffs && alcoholPoisonLevel > 3)
             {
                 List<int[]> Alcohol = new List<int[]>();
                 for (int i = 0; i < Player.MaxBuffs; i++)
@@ -5311,7 +5332,7 @@ namespace CalamityMod.CalPlayer
                     poison -= relation[1]; // Cancel the poison level
                     Alcohol.RemoveAt(0);
                 }
-                while (poison > (cirrusDress ? 5 : 3));
+                while (poison > 3);
             }
         }
         #endregion

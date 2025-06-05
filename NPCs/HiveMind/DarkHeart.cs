@@ -63,7 +63,6 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -77,12 +76,6 @@ namespace CalamityMod.NPCs.HiveMind
             float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : death ? 7f : revenge ? 6f : 4f;
             float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
             float deceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
-            if (masterMode)
-            {
-                velocity += 2f;
-                acceleration += 0.2f;
-                deceleration -= 0.05f;
-            }
             if (BossRushEvent.BossRushActive)
             {
                 velocity *= 2f;
@@ -105,7 +98,7 @@ namespace CalamityMod.NPCs.HiveMind
             }
 
             bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 350f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
-            float distanceX = masterMode ? 200f : 400f;
+            float distanceX = death ? 200f : 400f;
             if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
                 dropRain = false;

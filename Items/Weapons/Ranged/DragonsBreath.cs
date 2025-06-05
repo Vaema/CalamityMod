@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 3.5f;
             Item.useAmmo = AmmoID.Gel;
 
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0;

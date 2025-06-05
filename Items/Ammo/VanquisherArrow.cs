@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Ammo
             Item.shoot = ModContent.ProjectileType<VanquisherArrowProj>();
             Item.shootSpeed = 0.1f;
             Item.ammo = AmmoID.Arrow;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

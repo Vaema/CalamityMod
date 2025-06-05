@@ -159,7 +159,6 @@ namespace CalamityMod.NPCs.HiveMind
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -202,17 +201,6 @@ namespace CalamityMod.NPCs.HiveMind
                 driftSpeed = 6f;
                 driftBoost = 1f;
                 vileSpitFireRate = 12;
-            }
-
-            if (masterMode)
-            {
-                lungeRots += 0.1;
-                minimumDriftTime /= 2;
-                reelbackFade *= 2;
-                lungeTime -= 5;
-                driftSpeed += ((death && !bossRush) ? 0.5f : 1f);
-                driftBoost += ((death && !bossRush) ? 0.5f : 1f);
-                vileSpitFireRate -= 6;
             }
 
             if (Main.getGoodWorld)
@@ -370,32 +358,33 @@ namespace CalamityMod.NPCs.HiveMind
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
             {
-                int type = 0;
-                int choice = masterMode ? 1 : -1;
+                int type;
+                int choice = -1;
                 do
                 {
                     choice++;
                     switch (choice)
                     {
                         case 0:
+                            type = !NPC.AnyNPCs(NPCID.EaterofSouls) ? NPCID.EaterofSouls : 0;
+                            break;
+
                         case 1:
-                            type = NPC.CountNPCS(NPCID.EaterofSouls) < 2 ? NPCID.EaterofSouls : 0;
+                            type = !NPC.AnyNPCs(NPCID.DevourerHead) ? NPCID.DevourerHead : 0;
                             break;
 
                         case 2:
-                            type = NPC.CountNPCS(NPCID.DevourerHead) < 2 ? NPCID.DevourerHead : 0;
+                            type = !NPC.AnyNPCs(ModContent.NPCType<DankCreeper>()) ? ModContent.NPCType<DankCreeper>() : 0;
                             break;
 
                         case 3:
-                        case 4:
-                            type = NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < 2 ? ModContent.NPCType<DankCreeper>() : 0;
+                            type = (!NPC.AnyNPCs(NPCID.Corruptor) && death) ? NPCID.Corruptor : 0;
                             break;
 
                         default:
@@ -457,7 +446,6 @@ namespace CalamityMod.NPCs.HiveMind
 
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
@@ -629,7 +617,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+                            int maxSpawns = bossRush ? 16 : death ? 8 : revenge ? 6 : expertMode ? Main.rand.Next(4, 6) : Main.rand.Next(3, 5);
                             int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
                             for (int i = 0; i < maxSpawns; i++)
@@ -884,7 +872,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                     phase2timer--;
 
-                    if (masterMode)
+                    if (death)
                     {
                         // Use an attack sooner if being hit
                         if (NPC.justHit)
@@ -932,7 +920,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y = NPC.ai[2] * 16 - NPC.height / 2;
                         }
 
-                        phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                        phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                         NPC.ForceNetUpdate();
                     }
                     else if (NPC.ai[1] == 0f && NPC.ai[2] == 0f)
@@ -1001,7 +989,7 @@ namespace CalamityMod.NPCs.HiveMind
                         {
                             NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
 
-                            if (masterMode)
+                            if (death)
                             {
                                 NPC.localAI[2] += 1f;
                                 if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
@@ -1040,7 +1028,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 {
                                     NPC.Center = player.Center + new Vector2(teleportRadius, 0).RotatedBy(rotation);
 
-                                    if (masterMode)
+                                    if (death)
                                     {
                                         NPC.localAI[2] += 1f;
                                         if (Collision.CanHitLine(NPC.Center, 1, 1, player.Center, 1, 1) && NPC.Distance(player.Center) > 160f && NPC.localAI[2] % vileSpitFireRate == 0)
@@ -1084,7 +1072,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.Y += teleportRadius;
                         }
 
-                        NPC.alpha -= masterMode ? 10 : 5;
+                        NPC.alpha -= 5;
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
@@ -1115,13 +1103,6 @@ namespace CalamityMod.NPCs.HiveMind
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
-                                if (Main.netMode != NetmodeID.MultiplayerClient && Collision.CanHit(NPC.Center, 1, 1, player.position, player.width, player.height))
-                                {
-                                    int maxEaters = revenge ? 3 : 2;
-                                    if (NPC.CountNPCS(NPCID.EaterofSouls) < maxEaters && NPC.Distance(Main.player[NPC.target].Center) > 80f)
-                                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
-                                }
-
                                 if (NPC.ai[0] == 6f)
                                 {
                                     NPC.velocity = NPC.velocity.RotatedBy(MathHelper.Pi / arcTime * -rotationDirection);
@@ -1153,7 +1134,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.position.X += (death ? (teleportRadius * 1.5f) : teleportRadius) * (rainDashesPerformed == 0 ? rotationDirection : -rotationDirection);
                         }
 
-                        NPC.alpha -= masterMode ? 10 : 5;
+                        NPC.alpha -= 5;
                         if (NPC.alpha < 0)
                             NPC.alpha = 0;
 
@@ -1222,7 +1203,7 @@ namespace CalamityMod.NPCs.HiveMind
                             }
                             else
                             {
-                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                                 performingRainDashCombo = false;
                                 rainDashesPerformed = 0;
                                 state = 0;
@@ -1237,7 +1218,7 @@ namespace CalamityMod.NPCs.HiveMind
                             }
                             else
                             {
-                                phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                                phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                                 performingLungeCombo = false;
                                 lungesPerformed = 0;
                                 state = 0;
@@ -1245,7 +1226,7 @@ namespace CalamityMod.NPCs.HiveMind
                         }
                         else
                         {
-                            phase2timer = minimumDriftTime + Main.rand.Next(masterMode ? 61 : 121);
+                            phase2timer = minimumDriftTime + Main.rand.Next(death ? 61 : 121);
                             state = 0;
                         }
 
@@ -1362,19 +1343,20 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(30))
+                    if (Main.rand.NextBool(15))
                     {
-                        if (NPC.CountNPCS(NPCID.EaterofSouls) < 3)
+                        int hiveBlobCount = NPC.CountNPCS(ModContent.NPCType<HiveBlob>()) + NPC.CountNPCS(ModContent.NPCType<HiveBlob2>());
+                        if (hiveBlobCount < 3)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
                     }
 
-                    if (Main.rand.NextBool(60))
+                    if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.EaterofSouls);
                     }
 
-                    if (Main.rand.NextBool(150))
+                    if (Main.rand.NextBool(45))
                     {
                         if (!NPC.AnyNPCs(NPCID.DevourerHead))
                             NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.DevourerHead);
