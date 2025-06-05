@@ -225,12 +225,7 @@ namespace CalamityMod.Effects
 
         // The underwater rays seen at the top of the Sunken Sea Mod Menu.
         internal static Effect UnderwaterRaysShader;
-        #endregion
 
-        //
-        // All below shaders created by fryzahh
-        //
-        #region fryzahh's Shaders
         internal static Effect AbyssalFireShader;
         #endregion
 
@@ -454,9 +449,7 @@ namespace CalamityMod.Effects
 
             UnderwaterRaysShader = LoadShader("UnderwaterRaysShader");
             RegisterMiscShader(UnderwaterRaysShader, "UnderwaterRayPass", "UnderwaterRays");
-            #endregion
 
-            #region Loading fryzahh's Shaders
             AbyssalFireShader = LoadShader("AbyssalFireShader");
             RegisterMiscShader(AbyssalFireShader, "LaserPass", "AbyssalFire");
             #endregion
