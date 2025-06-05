@@ -830,6 +830,7 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        public bool hadLifeRegenHinderingDebuff = false;
         public bool alwaysHoneyRegen = false;
         public float alwaysHoneyRegenAmount = 0;
         public bool honeyTurboRegen = false;

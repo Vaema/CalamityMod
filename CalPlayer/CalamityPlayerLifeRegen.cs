@@ -271,8 +271,12 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen = (int)(0.8f * totalNegativeLifeRegen);
+            if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
+
+            bool hasLifeRegenHinderingDebuff = Player.lifeRegenTime == 0;
 
             #region Life Regen That Works Even During DoT Debuffs
 
@@ -467,6 +471,16 @@ namespace CalamityMod.CalPlayer
                         Player.lifeRegenTime = 1800;
                 }
             }
+
+            //If a player had a life regen hindering debuff, add 30 seconds to their regen time when under Tequila Sunrise
+            //This stacks with all other post-debuff boosts due to Tequila Sunrise increasing DoT damage taken
+            if (tequilaSunrise)
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
             #endregion
 
             // During Silva revive or God Slayer dash, all negative life regen is canceled
@@ -540,16 +554,15 @@ namespace CalamityMod.CalPlayer
             // Chalice of the Blood God bleedout
             // The bleedout is applied by directly reducing the player's health. It is not canceled by anything.
             ChaliceOfTheBloodGod.HandleBleedout(Player);
+
+            //Finally, update the state of hadLifeRegenHinderingDebuff for next frame.
+            hadLifeRegenHinderingDebuff = hasLifeRegenHinderingDebuff;
         }
         #endregion
 
         #region Update Life Regen
         public override void UpdateLifeRegen()
         {
-
-            if (caribbeanRum)
-                Player.lifeRegen += CaribbeanRum.RegenBoost;
-
             if (mushy)
                 Player.lifeRegen += Mushy.RegenBoost;
 

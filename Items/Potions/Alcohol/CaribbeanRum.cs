@@ -12,10 +12,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int RegenBoost = 2;
-        public static float MoveSpeedBoost = 0.1f;
-        public static float DefenseLossPercent = 0.1f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), MoveSpeedBoost.ToPercent(), DefenseLossPercent.ToPercent());
+        public static float MoveSpeedBoost = 0.25f;
+        public static float GravityMultiplier = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), (1-GravityMultiplier).ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -30,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 32, ModContent.BuffType<CaribbeanRumBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(14, 32, ModContent.BuffType<CaribbeanRumBuff>(), CalamityUtils.MinutesToFrames(5), true);
 
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;

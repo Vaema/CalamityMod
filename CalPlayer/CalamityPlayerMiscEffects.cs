@@ -3527,26 +3527,12 @@ namespace CalamityMod.CalPlayer
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
-                    Player.moveSpeed += BloodyMary.MoveSpeedBoost;
-                }
-            }
-
-            if (tequilaSunrise)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += TequilaSunrise.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += TequilaSunrise.CritBoost;
-                }
-            }
 
             if (caribbeanRum)
+            {
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
                 Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
+            }
 
             if (cinnamonRoll)
             {
@@ -3556,9 +3542,8 @@ namespace CalamityMod.CalPlayer
 
             if (starBeamRye)
             {
-                Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost *= (1f - StarBeamRye.ManaCostReduction);
-                Player.statManaMax2 += StarBeamRye.MaxManaBoost;
+                Player.manaRegenBonus += (int)((Player.statManaMax2/3f + 1) *2f );
+                Player.statManaMax2 = (int)(Player.statManaMax2 * StarBeamRye.MaxManaBoost);
             }
 
             if (moscowMule)
@@ -3769,7 +3754,7 @@ namespace CalamityMod.CalPlayer
             if (molluskLegs)
                 Player.velocity.X *= 0.995f;
 
-            if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
+            if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
                 float velocityYMultiplier = (warped && Main.getGoodWorld) ? 1.02f : 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;

@@ -163,8 +163,8 @@ BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
 		'''
-		Increased enemy spawn rates increased by {0}%
-		Piercing attacks lose {1}% of their damage for each enemy hit
+		Increased enemy spawn rates by 7x
+		Greatly reduced piercing weapon effectiveness
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -264,7 +264,7 @@ MoscowMule: {
 	Tooltip:
 		'''
 		{0}% increased knockback, all attacks infict Heavy Knockback
-		Piercing attacks lose {1}% of their damage for each enemy hit
+		Reduces the effectiveness of piercing weapons
 		{$Common.AlcoholWarning}
 		'''
 }
