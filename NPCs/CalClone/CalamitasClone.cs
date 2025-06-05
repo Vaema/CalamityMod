@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod, BulletHellWarnSlot);
+            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, BulletHellWarnSlot);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
