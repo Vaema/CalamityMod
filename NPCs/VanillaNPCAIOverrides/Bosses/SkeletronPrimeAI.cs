@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Spawn arms
             if (calamityGlobalNPC.newAI[1] == 0f)
             {
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 calamityGlobalNPC.newAI[1] = 1f;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -269,6 +270,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.ai[2] = 0f;
                             npc.ai[1] = shouldSpinAround ? 5f : 1f;
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                             npc.netUpdate = true;
                         }
                     }
@@ -650,13 +652,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                             damage = (int)(damage * firstMechMultiplier);
                                         else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
                                             damage = (int)(damage * secondMechMultiplier);
-                                    }
-
-                                    if (npc.localAI[0] % 3f == 0f)
-                                    {
-                                        int probeLimit = death ? 3 : 2;
-                                        if (NPC.CountNPCS(NPCID.Probe) < probeLimit)
-                                            NPC.NewNPC(npc.GetSource_FromAI(), (int)headCenter.X, (int)headCenter.Y + 30, NPCID.Probe);
                                     }
 
                                     int enragedSkulls = Projectile.NewProjectile(npc.GetSource_FromAI(), headCenter.X, headCenter.Y + 30f, enragedHeadSkullTargetX, enragedHeadSkullTargetY, type, damage, 0f, Main.myPlayer, -3f, 0f);

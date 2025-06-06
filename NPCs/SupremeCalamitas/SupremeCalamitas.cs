@@ -3180,10 +3180,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         for (int x = 0; x < 5; x++)
                         {
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX += spawnXAdd;
 
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX2 -= spawnXAdd;
                             tempSpawnY += spawnYAdd;
                         }

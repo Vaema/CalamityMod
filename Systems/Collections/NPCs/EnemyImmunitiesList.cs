@@ -162,7 +162,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<RavagerHead>(),
                 NPCType<ProfanedGuardianDefender>(),
                 NPCType<ProfanedGuardianHealer>(),
-                NPCType<Bumblefuck2>(),
+                NPCType<DraconicSwarmer>(),
                 NPCType<ProvSpawnDefense>(),
                 NPCType<ProvSpawnHealer>(),
                 NPCType<ProvSpawnOffense>(),
