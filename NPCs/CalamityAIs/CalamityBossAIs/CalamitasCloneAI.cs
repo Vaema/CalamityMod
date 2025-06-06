@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
 {
     public static class CalamitasCloneAI
     {
-        public static void VanillaCalamitasCloneAI(NPC npc, Mod mod, SlotId warn)
+        public static void VanillaCalamitasCloneAI(NPC npc, SlotId warn)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
@@ -386,7 +386,8 @@ namespace CalamityMod.NPCs.CalamityAIs.CalamityBossAIs
                             int type = ModContent.ProjectileType<BrimstoneHellblast2>();
                             int damage = npc.GetProjectileDamage(type);
                             float projSpeed = bossRush ? 4.5f : 4f;
-                            if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
+                            // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
+                            if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f && calamityGlobalNPC.newAI[2] != 2f)
                             {
                                 float distance = Main.rand.NextBool() ? -1000f : 1000f;
                                 float velocity = distance == -1000f ? projSpeed : -projSpeed;
