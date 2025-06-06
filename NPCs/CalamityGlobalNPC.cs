@@ -8218,7 +8218,6 @@ namespace CalamityMod.NPCs
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -8457,10 +8456,10 @@ namespace CalamityMod.NPCs
                             opacity = 1f;
 
                         opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                        currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                        currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                        currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                        currentColor.A = (byte)((float)(int)currentColor.A * opacity);
+                        currentColor.R = (byte)(currentColor.R * opacity);
+                        currentColor.G = (byte)(currentColor.G * opacity);
+                        currentColor.B = (byte)(currentColor.B * opacity);
+                        currentColor.A = (byte)(currentColor.A * opacity);
                         int totalAfterimages = 4;
                         for (int i = 0; i < totalAfterimages; i++)
                         {
@@ -8483,90 +8482,6 @@ namespace CalamityMod.NPCs
                             int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
                             int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
                             spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                        }
-
-                        float secondAfterimageSetHealthValue = (int)(Main.npc[NPC.crimsonBoss].lifeMax * 0.8f);
-                        if (Main.npc[NPC.crimsonBoss].life < secondAfterimageSetHealthValue)
-                        {
-                            currentColor = npc.GetAlpha(drawColor);
-                            float opacityScale = 1f - Main.npc[NPC.crimsonBoss].life / (float)secondAfterimageSetHealthValue;
-                            opacity = Main.getGoodWorld ? 1f : opacityScale;
-
-                            opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                            currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                            currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                            currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                            currentColor.A = (byte)((float)(int)currentColor.A * opacity);
-                            totalAfterimages = death ? 12 : 4;
-                            for (int i = 0; i < totalAfterimages; i++)
-                            {
-                                Vector2 position = npc.position;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
-                                if (i > 3)
-                                {
-                                    currentColor *= 0.5f;
-                                    distanceFromTargetX *= 0.5f;
-                                    distanceFromTargetY *= 0.5f;
-                                }
-
-                                switch (i)
-                                {
-                                    case 0:
-                                    case 4:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
-                                        break;
-
-                                    case 1:
-                                    case 5:
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
-                                        break;
-
-                                    case 2:
-                                    case 6:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
-                                        break;
-
-                                    case 3:
-                                    case 7:
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
-                                        break;
-
-                                    case 8:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        break;
-
-                                    case 9:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        break;
-
-                                    case 10:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        break;
-
-                                    case 11:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-
-                                position.X -= npc.width / 2;
-                                position.Y -= npc.height / 2;
-
-                                int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
-                                int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
-                                spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                            }
                         }
                     }
 
