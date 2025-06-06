@@ -1,5 +1,4 @@
-﻿using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
-using CalamityMod.Projectiles.Boss;
+﻿using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

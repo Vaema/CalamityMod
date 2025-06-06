@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.SummonItems;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.NPCs.Other;
 using CalamityMod.World;
 using Terraria;

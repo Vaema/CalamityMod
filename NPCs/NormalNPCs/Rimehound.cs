@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Terraria;
 using Terraria.Audio;
