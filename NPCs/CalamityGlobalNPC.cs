@@ -1614,7 +1614,7 @@ namespace CalamityMod.NPCs
                 { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<Bumblefuck>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
@@ -9002,7 +9002,7 @@ namespace CalamityMod.NPCs
             {
                 return DownedBossSystem.downedGuardians;
             }
-            else if (type == NPCType<Bumblefuck>())
+            else if (type == NPCType<Dragonfolly>())
             {
                 return DownedBossSystem.downedDragonfolly;
             }

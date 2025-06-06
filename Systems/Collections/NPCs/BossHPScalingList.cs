@@ -80,7 +80,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<CryogenShield>(),
                 NPCType<OldDukeToothBall>(),
                 NPCType<SulphurousSharkron>(),
-                NPCType<Bumblefuck2>(),
+                NPCType<DraconicSwarmer>(),
                 NPCType<AureusSpawn>(),
                 NPCType<Brimling>(),
                 NPCType<CrabShroom>(),

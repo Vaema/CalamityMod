@@ -2026,8 +2026,8 @@ namespace CalamityMod.NPCs.Yharon
                             {
                                 if (CalamityWorld.LegendaryMode && revenge)
                                 {
-                                    if (!NPC.AnyNPCs(ModContent.NPCType<Bumblefuck>()))
-                                        NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<Bumblefuck>());
+                                    if (!NPC.AnyNPCs(ModContent.NPCType<Dragonfolly>()))
+                                        NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<Dragonfolly>());
                                 }
 
                                 float bulletHellTeleportLocationDistance = 540f;
