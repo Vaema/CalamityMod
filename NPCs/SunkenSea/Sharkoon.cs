@@ -234,6 +234,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 6f,
+                };
+            }
             CurrentBehavior?.Invoke();
 
             // Leans the Sharkoon towards the direction it's going.

@@ -37,6 +37,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Spawn arms
             if (calamityGlobalNPC.newAI[1] == 0f)
             {
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 calamityGlobalNPC.newAI[1] = 1f;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -182,73 +183,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Phases
             bool phase2 = lifeRatio < 0.66f;
-            bool spawnDestroyer = lifeRatio < 0.75f && death && !bossRush && npc.localAI[2] == 0f;
             bool phase3 = lifeRatio < 0.33f;
-            bool spawnRetinazer = lifeRatio < 0.5f && death && !bossRush && npc.localAI[2] == 1f;
-
-            // Spawn The Destroyer in Master Mode (just like Oblivion from Avalon)
-            if (spawnDestroyer)
-            {
-                Player destroyerSpawnPlayer = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
-                SoundEngine.PlaySound(SoundID.Roar, destroyerSpawnPlayer.Center);
-
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int destroyer = NPC.NewNPC(NPC.GetBossSpawnSource(destroyerSpawnPlayer.whoAmI), (int)destroyerSpawnPlayer.Center.X, (int)destroyerSpawnPlayer.Center.Y + 810, NPCID.TheDestroyer, 1);
-                    if (destroyer != Main.maxNPCs)
-                    {
-                        Main.npc[destroyer].target = destroyerSpawnPlayer.whoAmI;
-                        Main.npc[destroyer].timeLeft *= 20;
-                        Main.npc[destroyer].localAI[3] = 1f;
-                        Main.npc[destroyer].SyncVanillaLocalAI();
-                        string typeName = Main.npc[destroyer].TypeName;
-                        if (Main.dedServ && destroyer < Main.maxNPCs)
-                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, destroyer);
-
-                        AchievementsHelper.CheckMechaMayhem();
-
-                        if (Main.netMode == NetmodeID.SinglePlayer)
-                            Main.NewText(Language.GetTextValue("Announcement.HasAwoken", typeName), 175, 75);
-                        else if (Main.dedServ)
-                            ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[destroyer].GetTypeNetName()), new Color(175, 75, 255));
-                    }
-                }
-
-                npc.localAI[2] = 1f;
-                npc.SyncVanillaLocalAI();
-            }
-
-            // Spawn Retinazer in Master Mode (just like Oblivion from Avalon)
-            if (spawnRetinazer)
-            {
-                Player retinazerSpawnPlayer = Main.player[Player.FindClosest(npc.position, npc.width, npc.height)];
-                SoundEngine.PlaySound(SoundID.Roar, retinazerSpawnPlayer.Center);
-
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int retinazer = NPC.NewNPC(NPC.GetBossSpawnSource(retinazerSpawnPlayer.whoAmI), (int)retinazerSpawnPlayer.Center.X, (int)retinazerSpawnPlayer.Center.Y - 810, NPCID.Retinazer, 1);
-                    if (retinazer != Main.maxNPCs)
-                    {
-                        Main.npc[retinazer].target = retinazerSpawnPlayer.whoAmI;
-                        Main.npc[retinazer].timeLeft *= 20;
-                        Main.npc[retinazer].localAI[3] = 1f;
-                        Main.npc[retinazer].SyncVanillaLocalAI();
-                        string typeName = Main.npc[retinazer].TypeName;
-                        if (Main.dedServ && retinazer < Main.maxNPCs)
-                            NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazer);
-
-                        AchievementsHelper.CheckMechaMayhem();
-
-                        if (Main.netMode == NetmodeID.SinglePlayer)
-                            Main.NewText(Lang.misc[48].Value, 175, 75);
-                        else if (Main.dedServ)
-                            ChatHelper.BroadcastChatMessage(Lang.misc[48].ToNetworkText(), new Color(175, 75, 255));
-                    }
-                }
-
-                npc.localAI[2] = 2f;
-                npc.SyncVanillaLocalAI();
-            }
 
             // Despawn
             if (npc.ai[1] != 3f)
@@ -335,6 +270,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.ai[2] = 0f;
                             npc.ai[1] = shouldSpinAround ? 5f : 1f;
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                             npc.netUpdate = true;
                         }
                     }
@@ -716,13 +652,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                             damage = (int)(damage * firstMechMultiplier);
                                         else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
                                             damage = (int)(damage * secondMechMultiplier);
-                                    }
-
-                                    if (npc.localAI[0] % 3f == 0f)
-                                    {
-                                        int probeLimit = death ? 3 : 2;
-                                        if (NPC.CountNPCS(NPCID.Probe) < probeLimit)
-                                            NPC.NewNPC(npc.GetSource_FromAI(), (int)headCenter.X, (int)headCenter.Y + 30, NPCID.Probe);
                                     }
 
                                     int enragedSkulls = Projectile.NewProjectile(npc.GetSource_FromAI(), headCenter.X, headCenter.Y + 30f, enragedHeadSkullTargetX, enragedHeadSkullTargetY, type, damage, 0f, Main.myPlayer, -3f, 0f);

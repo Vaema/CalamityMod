@@ -1147,7 +1147,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
             float inertia = 30f;
-            float velocity = 23f;
+            float velocity = 20f;
             npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
             
             npc.scale = npc.ai[3];

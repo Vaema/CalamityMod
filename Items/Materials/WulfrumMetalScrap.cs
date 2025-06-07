@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Materials
                 return true;
             else
             {
-                spriteBatch.Draw(altTexture.Value, position, null, drawColor, 0, origin, altTexture.Size() / 2, SpriteEffects.None, 0);
+                spriteBatch.Draw(altTexture.Value, position, null, drawColor, 0, altTexture.Size() / 2, scale, SpriteEffects.None, 0);
                 return false;
             }
         }

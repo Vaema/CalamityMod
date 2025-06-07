@@ -193,8 +193,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static float normalDR = 0.25f;
         public static float enragedDR = 0.9999f;
 
-        public static readonly Color textColor = Color.LightCyan;
-        public static readonly Color permafrostTextColor = Color.Pink;
+        public static readonly Color textColor = Color.Orange;
+        public static readonly Color permafrostTextColor = Color.LightCyan;
         public const int sepulcherSpawnCastTime = 75;
         public const int brothersSpawnCastTime = 150;
 
@@ -3180,10 +3180,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         for (int x = 0; x < 5; x++)
                         {
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX += spawnXAdd;
 
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX2 -= spawnXAdd;
                             tempSpawnY += spawnYAdd;
                         }

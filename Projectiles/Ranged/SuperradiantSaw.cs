@@ -243,7 +243,10 @@ namespace CalamityMod.Projectiles.Ranged
                 PierceBeforeReturn--;
                 Projectile.numHits++;
                 if (PierceBeforeReturn <= 0)
+                {
+                    Projectile.localNPCHitCooldown = 20;
                     Returning = true;
+                }
             }
 
             return false;
@@ -290,15 +293,18 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 PierceBeforeReturn--;
                 if (PierceBeforeReturn <= 0)
+                {
+                    Projectile.localNPCHitCooldown = 20;
                     Returning = true;
+                }
             }
         }
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // The saw deals less damage while returning, to prevent its damage being too crazy
-            if (PierceBeforeReturn <= 0)
-                modifiers.SourceDamage *= 0.33f;
+            // The saw also deals less damage while homing
+            modifiers.SourceDamage *= Returning ? 0.2f : Empowered ? 0.75f : 1f;
         }
 
         public override void OnKill(int timeLeft)

@@ -19,7 +19,6 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> DestroyerHeadGlowmask;
         public static Asset<Texture2D> DestroyerBodyGlowmask;
         public static Asset<Texture2D> DestroyerTailGlowmask;
-        public static Asset<Texture2D> ProbeGlowmask;
 
         // Master Rev+ Skeletron Prime
         public static Asset<Texture2D> ChadPrime;
@@ -61,8 +60,6 @@ namespace CalamityMod.ExtraTextures
             DestroyerHeadGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
             DestroyerBodyGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerTailGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
-
-            ProbeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/ProbeGlow", AssetRequestMode.AsyncLoad);
 
             ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);
             ChadPrimeEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrimeHeadGlow", AssetRequestMode.AsyncLoad);

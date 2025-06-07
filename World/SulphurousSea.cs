@@ -1402,7 +1402,7 @@ namespace CalamityMod.World
                 Chest chest = MiscWorldgenRoutines.AddChestWithLoot(x, y, (ushort)ModContent.TileType<RustyChestTile>());
                 if (chest != null)
                 {
-                    chest.item[0].SetDefaults(ModContent.ItemType<RustyMedallion>());
+                    chest.item[0].SetDefaults(ModContent.ItemType<ScionsCurio>());
                     chest.item[0].Prefix(-1);
                     break;
                 }

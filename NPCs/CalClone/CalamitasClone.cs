@@ -14,14 +14,14 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Sounds;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Utilities;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -134,7 +134,719 @@ namespace CalamityMod.NPCs.CalClone
 
         public override void AI()
         {
-            CalamitasCloneAI.VanillaCalamitasCloneAI(NPC, Mod, BulletHellWarnSlot);
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+
+            // Emit light
+            Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
+
+            // Variables for increasing difficulty
+            bool bossRush = BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || bossRush;
+            bool revenge = CalamityWorld.revenge || bossRush;
+            bool expertMode = Main.expertMode || bossRush;
+
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+
+            // Phases
+            bool phase2 = lifeRatio < 0.7f || death;
+            bool phase3 = lifeRatio < 0.35f;
+            bool phase4 = lifeRatio <= 0.1f && death;
+
+            // Don't take damage during bullet hells
+            NPC.dontTakeDamage = calamityGlobalNPC.newAI[2] > 0f;
+
+            // Variable for live brothers
+            bool brotherAlive = false;
+
+            // For seekers
+            CalamityGlobalNPC.calamitas = NPC.whoAmI;
+
+            // Seeker ring
+            if (calamityGlobalNPC.newAI[1] == 0f && phase3 && expertMode)
+            {
+                SoundEngine.PlaySound(SoundID.Item72, NPC.Center);
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    int seekerAmt = death ? 10 : 5;
+                    int seekerSpread = 360 / seekerAmt;
+                    int seekerDistance = death ? 180 : 150;
+                    for (int i = 0; i < seekerAmt; i++)
+                    {
+                        int spawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(NPC.Center.X + (Math.Sin(i * seekerSpread) * seekerDistance)), (int)(NPC.Center.Y + (Math.Cos(i * seekerSpread) * seekerDistance)), ModContent.NPCType<SoulSeeker>(), NPC.whoAmI, 0, 0, 0, -1);
+                        Main.npc[spawn].ai[0] = i * seekerSpread;
+                    }
+                }
+
+                string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText3";
+                Color messageColor = Color.Orange;
+                CalamityUtils.DisplayLocalizedText(key, messageColor);
+
+                calamityGlobalNPC.newAI[1] = 1f;
+            }
+
+            // CIT 14SEP2024: Fixed bug where her phases would get offset by dealing a large amount of damage in a single hit to take her into a new phase.
+            // newAI[0] now starts at 1 and has 0.3 subtracted from it for each phase, instead of it storing her current health when she enters a new phase.
+
+            // Do bullet hell or spawn brothers
+            if (calamityGlobalNPC.newAI[0] == 0f && NPC.life > 0)
+                calamityGlobalNPC.newAI[0] = 1f;
+
+            // Bullet hells at 70% and 10%, brothers at 40%
+            if (NPC.life > 0)
+            {
+                int calClonePhaseThreshold = (int)(NPC.lifeMax * 0.3);
+                if (((NPC.life + calClonePhaseThreshold) / (float)NPC.lifeMax) < calamityGlobalNPC.newAI[0])
+                {
+                    calamityGlobalNPC.newAI[0] -= 0.3f;
+                    if (calamityGlobalNPC.newAI[0] <= 0.1f)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
+                        calamityGlobalNPC.newAI[2] = 2f;
+
+                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            calamityGlobalNPC.newAI[3] = 0f;
+
+                        SpawnDust();
+                    }
+                    else if (calamityGlobalNPC.newAI[0] <= 0.4f)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.position.Y + NPC.height, ModContent.NPCType<Cataclysm>(), NPC.whoAmI);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.position.Y + NPC.height, ModContent.NPCType<Catastrophe>(), NPC.whoAmI);
+                        }
+
+                        string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText2";
+                        Color messageColor = Color.Orange;
+                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+
+                        SpawnDust();
+                    }
+                    else
+                    {
+                        SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
+                        calamityGlobalNPC.newAI[2] = 1f;
+
+                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            calamityGlobalNPC.newAI[3] = 0f;
+
+                        SpawnDust();
+                    }
+                }
+            }
+
+            // Immunity if brothers are alive
+            if (CalamityGlobalNPC.cataclysm != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.cataclysm].active)
+                    brotherAlive = true;
+            }
+            if (CalamityGlobalNPC.catastrophe != -1)
+            {
+                if (Main.npc[CalamityGlobalNPC.catastrophe].active)
+                    brotherAlive = true;
+            }
+
+            if (brotherAlive)
+                NPC.dontTakeDamage = true;
+
+            void SpawnDust()
+            {
+                int dustAmt = 50;
+                int random = 3;
+
+                for (int j = 0; j < 10; j++)
+                {
+                    random += j;
+                    int dustAmtSpawned = 0;
+                    int scale = random * 6;
+                    float dustPositionX = NPC.Center.X - (scale / 2);
+                    float dustPositionY = NPC.Center.Y - (scale / 2);
+                    while (dustAmtSpawned < dustAmt)
+                    {
+                        float dustVelocityX = Main.rand.Next(-random, random);
+                        float dustVelocityY = Main.rand.Next(-random, random);
+                        float dustVelocityScalar = random * 2f;
+                        float dustVelocity = (float)Math.Sqrt(dustVelocityX * dustVelocityX + dustVelocityY * dustVelocityY);
+                        dustVelocity = dustVelocityScalar / dustVelocity;
+                        dustVelocityX *= dustVelocity;
+                        dustVelocityY *= dustVelocity;
+                        int dust = Dust.NewDust(new Vector2(dustPositionX, dustPositionY), scale, scale, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                        Main.dust[dust].noGravity = true;
+                        Main.dust[dust].position.X = NPC.Center.X;
+                        Main.dust[dust].position.Y = NPC.Center.Y;
+                        Main.dust[dust].position.X += Main.rand.Next(-10, 11);
+                        Main.dust[dust].position.Y += Main.rand.Next(-10, 11);
+                        Main.dust[dust].velocity.X = dustVelocityX;
+                        Main.dust[dust].velocity.Y = dustVelocityY;
+                        dustAmtSpawned++;
+                    }
+                }
+            }
+
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
+            // Target variable
+            Player player = Main.player[NPC.target];
+
+            float enrageScale = bossRush ? 1f : 0f;
+            if (Main.IsItDay() || bossRush)
+            {
+                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                enrageScale += 2f;
+            }
+
+            // Rotation
+            Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.position.Y + NPC.height - 59f);
+            Vector2 lookAt = new Vector2(player.position.X - (player.width / 2), player.position.Y - (player.height / 2));
+            Vector2 rotationVector = npcCenter - lookAt;
+
+            // Boss Rush predictive charge rotation
+            if (NPC.ai[1] == 4f && phase4 && bossRush)
+            {
+                // Velocity
+                float chargeVelocity = 30f;
+                chargeVelocity += 5f * enrageScale;
+                lookAt += Main.player[NPC.target].velocity * 20f;
+                rotationVector = Vector2.Normalize(npcCenter - lookAt) * chargeVelocity;
+            }
+
+            float rotation = (float)Math.Atan2(rotationVector.Y, rotationVector.X) + MathHelper.PiOver2;
+            if (rotation < 0f)
+                rotation += MathHelper.TwoPi;
+            else if (rotation > MathHelper.TwoPi)
+                rotation -= MathHelper.TwoPi;
+
+            float rotationAmt = 0.1f;
+            if (NPC.rotation < rotation)
+            {
+                if ((rotation - NPC.rotation) > MathHelper.Pi)
+                    NPC.rotation -= rotationAmt;
+                else
+                    NPC.rotation += rotationAmt;
+            }
+            else if (NPC.rotation > rotation)
+            {
+                if ((NPC.rotation - rotation) > MathHelper.Pi)
+                    NPC.rotation += rotationAmt;
+                else
+                    NPC.rotation -= rotationAmt;
+            }
+
+            if (NPC.rotation > rotation - rotationAmt && NPC.rotation < rotation + rotationAmt)
+                NPC.rotation = rotation;
+            if (NPC.rotation < 0f)
+                NPC.rotation += MathHelper.TwoPi;
+            else if (NPC.rotation > MathHelper.TwoPi)
+                NPC.rotation -= MathHelper.TwoPi;
+            if (NPC.rotation > rotation - rotationAmt && NPC.rotation < rotation + rotationAmt)
+                NPC.rotation = rotation;
+
+            // Despawn
+            if (!player.active || player.dead)
+            {
+                NPC.TargetClosest(false);
+                player = Main.player[NPC.target];
+                if (!player.active || player.dead)
+                {
+                    if (SoundEngine.TryGetActiveSound(BulletHellWarnSlot, out var warningSound) && warningSound.IsPlaying)
+                        warningSound.Stop();
+
+                    if (NPC.velocity.Y > 3f)
+                        NPC.velocity.Y = 3f;
+                    NPC.velocity.Y -= 0.1f;
+                    if (NPC.velocity.Y < -12f)
+                        NPC.velocity.Y = -12f;
+
+                    if (NPC.timeLeft > 60)
+                        NPC.timeLeft = 60;
+
+                    if (NPC.ai[1] != 0f)
+                    {
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
+                        NPC.ai[3] = 0f;
+                        calamityGlobalNPC.newAI[2] = 0f;
+                        calamityGlobalNPC.newAI[3] = 0f;
+                        NPC.alpha = 0;
+                        NPC.netUpdate = true;
+                    }
+                    return;
+                }
+            }
+            else if (NPC.timeLeft < 1800)
+                NPC.timeLeft = 1800;
+
+            // Distance from destination where Cal Clone stops moving
+            float movementDistanceGateValue = 100f;
+
+            // How fast Cal Clone moves to the destination
+            float baseVelocity = (expertMode ? 10f : 8.5f) * (NPC.ai[1] == 4f ? 1.4f : 1f);
+            float baseAcceleration = (expertMode ? 0.18f : 0.155f) * (NPC.ai[1] == 4f ? 1.4f : 1f);
+            baseVelocity += 4f * enrageScale;
+            baseAcceleration += 0.1f * enrageScale;
+            if (revenge)
+            {
+                baseVelocity += 1.5f * (1f - lifeRatio);
+                baseAcceleration += 0.03f * (1f - lifeRatio);
+            }
+            if (death)
+            {
+                baseVelocity += 1.5f * (1f - lifeRatio);
+                baseAcceleration += 0.03f * (1f - lifeRatio);
+            }
+            if (Main.getGoodWorld)
+            {
+                baseVelocity *= 1.15f;
+                baseAcceleration *= 1.15f;
+            }
+
+            // What side Cal Clone should be on, relative to the target
+            int xPos = 1;
+            if (NPC.Center.X < player.Center.X)
+                xPos = -1;
+
+            // How far Cal Clone should be from the target
+            float averageDistance = 500f;
+            float chargeDistance = phase4 ? 300f : 400f;
+
+            // This is where Cal Clone should be
+            Vector2 destination = (calamityGlobalNPC.newAI[2] > 0f || NPC.ai[1] == 0f) ? new Vector2(player.Center.X, player.Center.Y - averageDistance) :
+                NPC.ai[1] == 1f ? new Vector2(player.Center.X + averageDistance * xPos, player.Center.Y) :
+                new Vector2(player.Center.X + chargeDistance * xPos, player.Center.Y);
+
+            // Add some random distance to the destination after certain attacks
+            if (NPC.localAI[0] == 1f)
+            {
+                NPC.localAI[0] = 0f;
+                NPC.localAI[2] = Main.rand.Next(-50, 51);
+                NPC.localAI[3] = Main.rand.Next(-300, 301);
+                NPC.netUpdate = true;
+            }
+
+            // Add a bit of randomness to the destination
+            if (death)
+            {
+                destination.X += NPC.ai[1] == 0f ? NPC.localAI[3] : NPC.localAI[2];
+                destination.Y += NPC.ai[1] == 0f ? NPC.localAI[2] : NPC.localAI[3];
+            }
+
+            // How far Cal Clone is from where she's supposed to be
+            Vector2 distanceFromDestination = destination - NPC.Center;
+
+            // Movement
+            if (NPC.ai[1] == 0f || NPC.ai[1] == 1f || NPC.ai[1] == 4f || calamityGlobalNPC.newAI[2] > 0f)
+                CalamityUtils.SmoothMovement(NPC, movementDistanceGateValue, distanceFromDestination, baseVelocity, baseAcceleration, true);
+
+            // Bullet hell phase
+            if (calamityGlobalNPC.newAI[2] > 0f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                if (calamityGlobalNPC.newAI[3] < 900f)
+                {
+                    calamityGlobalNPC.newAI[3] += 1f;
+                    NPC.dontTakeDamage = true;
+                    NPC.alpha = 255;
+
+                    float rotX = player.Center.X - NPC.Center.X;
+                    float rotY = player.Center.Y - NPC.Center.Y;
+                    NPC.rotation = (float)Math.Atan2(rotY, rotX) - MathHelper.PiOver2;
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (calamityGlobalNPC.newAI[2] == 2f)
+                        {
+                            int type = ModContent.ProjectileType<SCalBrimstoneFireblast>();
+                            int damage = NPC.GetProjectileDamage(type);
+                            if (Main.zenithWorld)
+                                type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
+
+                            float gigaBlastFrequency = (Main.getGoodWorld ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
+                            float projSpeed = bossRush ? 6.25f : 5f;
+                            if (calamityGlobalNPC.newAI[3] <= 300f)
+                            {
+                                if (calamityGlobalNPC.newAI[3] % gigaBlastFrequency == 0f) // Blasts from top
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer);
+                            }
+                            else if (calamityGlobalNPC.newAI[3] <= 600f && calamityGlobalNPC.newAI[3] > 300f)
+                            {
+                                if (calamityGlobalNPC.newAI[3] % gigaBlastFrequency == 0f) // Blasts from right
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -projSpeed, 0f, type, damage, 0f, Main.myPlayer);
+                            }
+                            else if (calamityGlobalNPC.newAI[3] > 600f)
+                            {
+                                if (calamityGlobalNPC.newAI[3] % gigaBlastFrequency == 0f) // Blasts from top
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer);
+                            }
+                        }
+                    }
+
+                    NPC.ai[0] += 1f;
+                    float hellblastGateValue = (expertMode ? 12f : 16f) - enrageScale;
+                    if (NPC.ai[0] >= hellblastGateValue)
+                    {
+                        NPC.ai[0] = 0f;
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                            int damage = NPC.GetProjectileDamage(type);
+                            float projSpeed = bossRush ? 4.5f : 4f;
+                            // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
+                            if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f && calamityGlobalNPC.newAI[2] != 2f)
+                            {
+                                float distance = Main.rand.NextBool() ? -1000f : 1000f;
+                                float velocity = distance == -1000f ? projSpeed : -projSpeed;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            }
+
+                            if (calamityGlobalNPC.newAI[3] < 300f) // Blasts from above
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            }
+                            else if (calamityGlobalNPC.newAI[3] < 600f) // Blasts from left and right
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 0.5f), 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 0.5f, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            }
+                            else // Blasts from above, left, and right
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed - 1f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 1f), 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 1f, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            }
+                        }
+                    }
+
+                    if (calamityGlobalNPC.newAI[3] == 900f - 360f)
+                        BulletHellWarnSlot = SoundEngine.PlaySound(CalamitasClone.BulletHellWarning, player.Center);
+                    if (calamityGlobalNPC.newAI[3] > 900f - 360f)
+                    {
+                        if (SoundEngine.TryGetActiveSound(BulletHellWarnSlot, out var warningSound) && warningSound.IsPlaying)
+                            warningSound.Position = player.Center;
+                    }
+                }
+                else
+                {
+                    NPC.ai[0] = 0f;
+                    NPC.ai[3] = 0f;
+                    NPC.localAI[1] = 0f;
+                    calamityGlobalNPC.newAI[2] = 0f;
+                    calamityGlobalNPC.newAI[3] = 0f;
+                    SoundEngine.PlaySound(CalamitasClone.BulletHellEnd, player.Center);
+
+                    // Prevent bullshit charge hits when second bullet hell ends.
+                    if (phase4)
+                    {
+                        NPC.ai[1] = 4f;
+                        NPC.ai[2] = -105f;
+                        NPC.TargetClosest();
+                    }
+                    else
+                    {
+                        if (death)
+                        {
+                            int AIState = Main.rand.Next(3);
+                            switch (AIState)
+                            {
+                                case 0:
+                                    NPC.ai[1] = 0f;
+                                    NPC.ai[2] = 0f;
+                                    break;
+                                case 1:
+                                    NPC.ai[1] = 1f;
+                                    NPC.ai[2] = 0f;
+                                    break;
+                                case 2:
+                                    NPC.ai[1] = 4f;
+                                    NPC.ai[2] = -105f;
+                                    NPC.TargetClosest();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            NPC.ai[1] = 0f;
+                            NPC.ai[2] = 0f;
+                        }
+
+                        if (death)
+                            NPC.localAI[0] = 1f;
+                    }
+
+                    NPC.netUpdate = true;
+
+                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    {
+                        Projectile projectile = Main.projectile[x];
+                        if (projectile.active)
+                        {
+                            if (projectile.type == ModContent.ProjectileType<BrimstoneHellblast2>() || projectile.type == ModContent.ProjectileType<BrimstoneBarrage>())
+                            {
+                                if (projectile.timeLeft > 60)
+                                    projectile.timeLeft = 60;
+                            }
+                            else if (projectile.type == ModContent.ProjectileType<SCalBrimstoneFireblast>())
+                            {
+                                projectile.ai[2] = 1f;
+
+                                if (projectile.timeLeft > 60)
+                                    projectile.timeLeft = 60;
+                            }
+                        }
+                    }
+                }
+
+                return;
+            }
+            else if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            {
+                if (calamityGlobalNPC.newAI[3] < 900f)
+                    calamityGlobalNPC.newAI[3] += 1f;
+                else
+                    calamityGlobalNPC.newAI[3] = 0f;
+
+                NPC.ai[0] += 1f;
+                float hellblastGateValue = 30f - enrageScale;
+                if (NPC.ai[0] >= hellblastGateValue)
+                {
+                    NPC.ai[0] = 0f;
+
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        float projSpeed = bossRush ? 5f : 4f;
+                        if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
+                        {
+                            float distance = Main.rand.NextBool() ? -1000f : 1000f;
+                            float velocity = distance == -1000f ? projSpeed : -projSpeed;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                        }
+
+                        if (calamityGlobalNPC.newAI[3] < 300f) // Blasts from above
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                        }
+                        else if (calamityGlobalNPC.newAI[3] < 600f) // Blasts from left and right
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 0.5f), 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 0.5f, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                        }
+                        else // Blasts from above, left, and right
+                        {
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, projSpeed - 1f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -(projSpeed - 1f), 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), projSpeed - 1f, 0f, type, damage, 0f, Main.myPlayer, 2f, 0f);
+                        }
+                    }
+                }
+            }
+
+            NPC.alpha = NPC.dontTakeDamage ? 255 : 0;
+
+            // Float above target and fire hellfireballs
+            if (NPC.ai[1] == 0f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.ai[2] += 1f;
+                float phaseTimer = 400f - (death ? 120f * (1f - lifeRatio) : 0f);
+                if (NPC.ai[2] >= phaseTimer || phase4)
+                {
+                    if (death && !phase4 && Main.rand.NextBool() && !brotherAlive)
+                        NPC.ai[1] = 4f;
+                    else
+                        NPC.ai[1] = 1f;
+
+                    NPC.ai[2] = 0f;
+                    if (death)
+                        NPC.localAI[0] = 1f;
+
+                    NPC.netUpdate = true;
+                }
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.localAI[1] += 1f;
+                    if (!brotherAlive)
+                    {
+                        if (expertMode)
+                            NPC.localAI[1] += death ? 2f * (1f - lifeRatio) : 1f - lifeRatio;
+                        if (revenge)
+                            NPC.localAI[1] += 0.5f;
+                    }
+
+                    if (NPC.localAI[1] >= (brotherAlive ? 180f : 120f))
+                    {
+                        NPC.localAI[1] = 0f;
+                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
+
+                        float projectileVelocity = expertMode ? 14f : 12.5f;
+                        projectileVelocity += 3f * enrageScale;
+                        int type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        bool shootPredictiveShot = CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool();
+                        Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
+                        Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
+                        Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
+                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                        Main.projectile[proj].netUpdate = true;
+                    }
+                }
+            }
+
+            // Float to the side of the target and fire
+            else if (NPC.ai[1] == 1f)
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    NPC.localAI[1] += 1f;
+                    if (!brotherAlive)
+                    {
+                        if (revenge)
+                            NPC.localAI[1] += 0.5f;
+                        if (expertMode)
+                            NPC.localAI[1] += 0.5f;
+                    }
+
+                    if (NPC.localAI[1] >= (brotherAlive ? 75f : 50f) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
+                    {
+                        NPC.localAI[1] = 0f;
+
+                        float projectileVelocity = expertMode ? 12.5f : 11f;
+                        projectileVelocity += 3f * enrageScale;
+                        int type = brotherAlive ? ModContent.ProjectileType<BrimstoneHellfireball>() : ModContent.ProjectileType<BrimstoneHellblast>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
+                        Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
+
+                        if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
+                        {
+                            type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                            damage = NPC.GetProjectileDamage(type);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                        }
+                        else
+                        {
+                            float ai0 = type == ModContent.ProjectileType<BrimstoneHellblast>() ? 1f : player.position.X;
+                            float ai1 = type == ModContent.ProjectileType<BrimstoneHellblast>() ? 0f : player.position.Y;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, ai0, ai1);
+                        }
+                    }
+                }
+
+                NPC.ai[2] += 1f;
+                float phaseTimer = 240f - (death ? 60f * (1f - lifeRatio) : 0f);
+                if (NPC.ai[2] >= phaseTimer || phase4)
+                {
+                    if (death && !phase4 && Main.rand.NextBool() && !brotherAlive)
+                        NPC.ai[1] = 0f;
+                    else
+                        NPC.ai[1] = !brotherAlive && phase2 && revenge ? 4f : 0f;
+
+                    NPC.ai[2] = 0f;
+                    if (death)
+                        NPC.localAI[0] = 1f;
+
+                    NPC.netUpdate = true;
+                }
+            }
+            else if (NPC.ai[1] == 2f)
+            {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+                SoundEngine.PlaySound(CalamitasClone.ChargeSound, NPC.Center);
+                NPC.rotation = rotation;
+
+                float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
+                chargeVelocity += 5f * enrageScale;
+
+                Vector2 vector = Vector2.Normalize(player.Center + (phase4 && bossRush ? player.velocity * 20f : Vector2.Zero) - NPC.Center);
+                NPC.velocity = vector * chargeVelocity;
+
+                NPC.ai[1] = 3f;
+                NPC.netUpdate = true;
+            }
+            else if (NPC.ai[1] == 3f)
+            {
+                // Set damage
+                NPC.damage = NPC.defDamage;
+
+                NPC.ai[2] += 1f;
+
+                float chargeTime = phase4 ? 35f : death ? 40f : 45f;
+                if (NPC.ai[2] >= chargeTime)
+                {
+                    // Avoid cheap bullshit
+                    NPC.damage = 0;
+
+                    NPC.velocity *= 0.9f;
+                    if (NPC.velocity.X > -0.1 && NPC.velocity.X < 0.1)
+                        NPC.velocity.X = 0f;
+                    if (NPC.velocity.Y > -0.1 && NPC.velocity.Y < 0.1)
+                        NPC.velocity.Y = 0f;
+                }
+                else
+                {
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
+
+                    // Leave behind slow hellblasts in Death Mode
+                    if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
+                    {
+                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
+                        int damage = NPC.GetProjectileDamage(type);
+                        Vector2 fireballVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                    }
+                }
+
+                if (NPC.ai[2] >= chargeTime + 10f)
+                {
+                    if (!phase4)
+                        NPC.ai[3] += 1f;
+
+                    NPC.ai[2] = 0f;
+
+                    NPC.rotation = rotation;
+                    NPC.netUpdate = true;
+
+                    if (NPC.ai[3] >= 2f)
+                    {
+                        NPC.TargetClosest();
+                        NPC.ai[1] = 0f;
+                        NPC.ai[3] = 0f;
+                        return;
+                    }
+
+                    NPC.ai[1] = 4f;
+                }
+            }
+            else
+            {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= (phase4 ? 15f : 30f))
+                {
+                    NPC.ai[1] = 2f;
+                    NPC.ai[2] = 0f;
+                    if (death)
+                        NPC.localAI[0] = 1f;
+
+                    NPC.netUpdate = true;
+                }
+            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

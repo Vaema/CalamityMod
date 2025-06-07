@@ -44,17 +44,15 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 36;
             Item.height = 34;
             Item.accessory = true;
-            Item.consumable = true;
             Item.vanity = true;
             Item.rare = ModContent.RarityType<DarkOrange>();
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.Calamity().devItem = true;
         }
         public override bool CanRightClick() => true;
-
-        public override void ModifyItemLoot(ItemLoot itemLoot)
+        public override void RightClick(Player player)
         {
-            itemLoot.Add(ModContent.ItemType<XyksBlessingBlue>());
+            player.PutItemInInventoryFromItemUsage(ModContent.ItemType<XyksBlessingBlue>(), 1);
         }
         public override void UpdateVanity(Player player)
         {

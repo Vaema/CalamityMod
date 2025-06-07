@@ -8,7 +8,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.DataStructures;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.Enums;
 using System.Collections.Generic;
 using Steamworks;
@@ -124,15 +123,18 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentVariant = Main.rand.Next(1, 4);
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.5f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.5f,
+                    MaxSpeed = 4f,
+                };
+            }
             if (NPC.ai[3] <= 0)
             {
                 lavaLine = FindLavaLine();

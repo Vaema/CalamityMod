@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
@@ -147,6 +148,7 @@ namespace CalamityMod.NPCs
             "Mihai", // <@!373941893467209730> (cmihaii.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
             "Wamy", // Fab added this name with no Discord ID. May be a donor who has no Discord account.
+            "Baggute", // <@!535140564174110720> (thebaggutegamer)
         };
         private static readonly string[] MechanicNames =
         {
@@ -185,6 +187,7 @@ namespace CalamityMod.NPCs
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
+            "Yarrim", // <@!290061123137306624> (borb9834)
         };
         private static readonly string[] PrincessNames =
         {
@@ -196,6 +199,7 @@ namespace CalamityMod.NPCs
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
+            "Vela", // <@!208719047146209281> (nyxxynightstar)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -216,6 +220,7 @@ namespace CalamityMod.NPCs
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
+            "Kreutz", // <@!553445849149997056> (red_r_kreutz)
         };
         private static readonly string[] StylistNames =
         {
@@ -272,6 +277,8 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
+            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
+            "Daxie", // <@!465438861103988737> (daxie626)
         };
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
@@ -1201,7 +1208,11 @@ namespace CalamityMod.NPCs
             {
                 shop.Add(ItemType<AstralSolution>(), Condition.NotRemixWorld)
                 .Add(ItemID.PurpleSolution, Condition.InGraveyard, Condition.CrimsonWorld, Condition.NotRemixWorld)
-                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld);
+                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld)
+                .Add(ItemType<LucisHairstyle>())
+                .Add(ItemType<LucisMilitaryUniform>())
+                .Add(ItemType<LucisBoots>())
+                .Add(ItemType<LucisSight>());
             }
 
             if (type == NPCID.Wizard)
@@ -1245,6 +1256,7 @@ namespace CalamityMod.NPCs
                 musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
+                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), Condition.InHallow)
                 .Add(ItemType<LanternCenter>())
                 .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)

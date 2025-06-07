@@ -5,7 +5,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -71,14 +71,17 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void OnSpawn(IEntitySource source)
         {
             NPC.frameCounter = Main.rand.NextFloat(Main.npcFrameCount[Type]);
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.6f,
-                MaxSpeed = 5f,
-            };
         }
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.6f,
+                    MaxSpeed = 5f,
+                };
+            }
             NPC owner = Main.npc[(int)NPC.ai[2]];
             if (NPC.wet)
             {

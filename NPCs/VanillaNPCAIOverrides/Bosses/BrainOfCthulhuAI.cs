@@ -527,7 +527,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!despawn)
                             npc.localAI[1] += 1f;
 
-                        float teleportGateValue = npc.ai[0] == -6f ? 300f : 210f;
+                        float teleportGateValue = npc.ai[0] == -6f ? 270f : 210f;
                         if (npc.localAI[1] >= teleportGateValue)
                         {
                             npc.localAI[1] = 0f;

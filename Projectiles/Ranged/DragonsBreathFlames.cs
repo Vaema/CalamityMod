@@ -229,7 +229,18 @@ namespace CalamityMod.Projectiles.Ranged
             target.AddBuff(ModContent.BuffType<Dragonfire>(), 240);
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.ai[1] == 1 ? 4 : Projectile.width + Time * 0.1f, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Player Owner = Main.player[Projectile.owner];
+            if (Time <= 1)
+            {
+                float _ = float.NaN;
+                return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Owner.Center, Projectile.width, ref _);
+            }
+            else
+                return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.ai[1] == 1 ? 4 : Projectile.width + Time * 0.1f, targetHitbox);
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)

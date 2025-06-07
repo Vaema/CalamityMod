@@ -73,9 +73,7 @@ using CalamityMod.UI;
 using CalamityMod.UI.DebuffSystem;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
-using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -319,6 +317,7 @@ namespace CalamityMod.NPCs
         public int marked = 0;
         public int absorberAffliction = 0;
         public int irradiated = 0;
+        public double irradiatedContactBoost = 1.5;
         public int bFlames = 0;
         public int demonicFlames = 0;
         public int demonicFlamesBonusDamage = 0;
@@ -329,6 +328,7 @@ namespace CalamityMod.NPCs
         public int crumble = 0;
 
         public int antlionCloudDebuffTimer = 0;
+        public bool scionsCurioEffected = false;
         public int warbannerBurnTime = 0; // Determines the rate that the enemy is damaged
         public int warbannerBurnTimer = 0; // The duration of the debuff
         public int warbannerBurnStacks = 0; // The stacks increase how fast the debuff hits
@@ -605,6 +605,7 @@ namespace CalamityMod.NPCs
             myClone.marked = marked;
             myClone.absorberAffliction = absorberAffliction;
             myClone.irradiated = irradiated;
+            myClone.irradiatedContactBoost = irradiatedContactBoost;
             myClone.bFlames = bFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
@@ -614,6 +615,7 @@ namespace CalamityMod.NPCs
             myClone.crumble = crumble;
 
             myClone.antlionCloudDebuffTimer = antlionCloudDebuffTimer;
+            myClone.scionsCurioEffected = scionsCurioEffected;
             myClone.warbannerBurnTime = warbannerBurnTime;
             myClone.warbannerBurnTimer = warbannerBurnTimer;
             myClone.warbannerBurnStacks = warbannerBurnStacks;
@@ -901,11 +903,26 @@ namespace CalamityMod.NPCs
                         projectileCount++;
                     }
                 }
-
+                int baseIrradiatedDoTValue = (int)(scionsCurioEffected ? 30 : 20);
+                if (scionsCurioEffected)
+                {
+                    for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                    {
+                        Player player = Main.player[playerIndex];
+                        if (player.active)
+                        {
+                            float playerRangedDamage = player.GetTotalDamage(DamageClass.Ranged).ApplyTo(baseIrradiatedDoTValue * (1 + player.GetTotalCritChance(DamageClass.Ranged) * 0.01f));
+                            if (playerRangedDamage > baseIrradiatedDoTValue && player.Calamity().scionsCurio)
+                            {
+                                baseIrradiatedDoTValue = (int)playerRangedDamage;
+                            }
+                        }
+                    }
+                }
                 if (projectileCount > 0)
-                    ApplyDPSDebuff(projectileCount * 20, projectileCount * 4, ref npc.lifeRegen, ref damage);
+                    ApplyDPSDebuff(projectileCount * baseIrradiatedDoTValue, projectileCount * 4, ref npc.lifeRegen, ref damage);
                 else
-                    ApplyDPSDebuff(20, 4, ref npc.lifeRegen, ref damage);
+                    ApplyDPSDebuff(baseIrradiatedDoTValue, baseIrradiatedDoTValue / 20, ref npc.lifeRegen, ref damage);
             }
             #endregion
 
@@ -939,15 +956,14 @@ namespace CalamityMod.NPCs
                     coldDamageMult *= ResistantToDoTDamageMult;
             }
 
-            double sicknessDamageMult = irradiated > 0 ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
+            double sicknessDamageMult = BaseDoTDamageMult;
             if (VulnerableToSickness.HasValue)
             {
                 if (VulnerableToSickness.Value)
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 1.25 : 1.5) : (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult);
+                    sicknessDamageMult *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
                 else
-                    sicknessDamageMult *= irradiated > 0 ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
+                    sicknessDamageMult *= ResistantToDoTDamageMult;
             }
-
             bool increasedElectricityDamage = npc.wet || npc.honeyWet || npc.lavaWet || npc.dripping;
             double electricityDamageMult = increasedElectricityDamage ? (wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult) : BaseDoTDamageMult;
             if (VulnerableToElectricity.HasValue)
@@ -957,7 +973,6 @@ namespace CalamityMod.NPCs
                 else
                     electricityDamageMult *= increasedElectricityDamage ? (wormBoss ? 0.66 : ResistantToDoTDamageMult) : ResistantToDoTDamageMult;
             }
-
             double waterDamageMult = BaseDoTDamageMult;
             if (VulnerableToWater.HasValue)
             {
@@ -999,6 +1014,12 @@ namespace CalamityMod.NPCs
             {
                 sicknessDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
                 waterDamageMult += EvergreenGin.SicknessWaterDebuffBoost;
+            }
+
+            if (irradiated > 0)
+            {
+                double irradiatedBoost = scionsCurioEffected ? 1.75 : 1;
+                sicknessDamageMult += irradiatedBoost;
             }
 
             //Amalgam triples all elemental debuff damage. Ironically this excludes Elemental Mix 
@@ -1593,7 +1614,7 @@ namespace CalamityMod.NPCs
                 { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
-                { NPCType<Bumblefuck>(), 7200 }, // 2:00 (120 seconds)
+                { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<DarkEnergy>(), 1200 }, // 0:20 (20 seconds)
@@ -1879,7 +1900,7 @@ namespace CalamityMod.NPCs
             else if (DestroyerIDList.Includes(npc.type))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
-                npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
+                npc.scale *= Main.zenithWorld ? 2f : 1.2f;
                 npc.npcSlots = 10f;
             }
             else if (npc.type == NPCID.Probe)
@@ -1887,7 +1908,7 @@ namespace CalamityMod.NPCs
                 if (CalamityWorld.death)
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 2D);
 
-                npc.scale *= Main.zenithWorld ? 2f : CalamityWorld.death ? 1.4f : 1.2f;
+                npc.scale *= Main.zenithWorld ? 2f : 1.2f;
             }
             else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
             {
@@ -2902,9 +2923,10 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
+                // Make Fishron and Anahita Bubbles have actual health in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = CalamityWorld.death;
+                    if (CalamityWorld.death)
+                        npc.lifeMax = 300;
                     break;
 
                 default:
@@ -3772,10 +3794,13 @@ namespace CalamityMod.NPCs
             ApplyDR(npc, ref modifiers);
 
             // Damage reduction on spawn for certain worm bosses.
-            if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
-                modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
-            if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
-                modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
+            if (CalamityWorld.revenge)
+            {
+                if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
+                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
+                if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
+                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
+            }
             if (AstrumDeusIDList.Includes(npc.type))
             {
                 float drTime = newAI[0] != 0f ? 300f : 600f;
@@ -4111,73 +4136,6 @@ namespace CalamityMod.NPCs
             {
                 if (npc.type == NPCID.DetonatingBubble)
                     return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
-            }
-
-            // Expert+ Hive Mind Vile Spits
-            if (npc.type == NPCID.VileSpitEaterOfWorlds)
-            {
-                if (Main.expertMode || BossRushEvent.BossRushActive)
-                {
-                    if (npc.ai[1] >= 69f)
-                    {
-                        if (npc.target == Main.maxPlayers)
-                        {
-                            npc.TargetClosest();
-
-                            float velocity = CalamityWorld.LegendaryMode ? 12f : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 10.5f : 9f;
-                            if (npc.ai[1] == 70f)
-                                velocity *= 0.4f;
-
-                            npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                        }
-
-                        if (CalamityWorld.LegendaryMode && !npc.dontTakeDamage)
-                        {
-                            if ((double)(npc.Center.Y / 16f) < Main.worldSurface)
-                                npc.dontTakeDamage = true;
-                        }
-
-                        npc.damage = npc.GetAttackDamage_ScaledByStrength(32f);
-
-                        npc.ai[0] += 1f;
-                        if (npc.ai[0] > 3f)
-                            npc.ai[0] = 3f;
-
-                        if (npc.ai[0] == 2f)
-                        {
-                            npc.position += npc.velocity;
-                            SoundEngine.PlaySound(SoundID.NPCDeath9, npc.Center);
-                            for (int i = 0; i < 20; i++)
-                            {
-                                int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f) + npc.netOffset, npc.width, npc.height, DustID.CorruptGibs, 0f, 0f, 100, default, 1.8f);
-                                Main.dust[dust].velocity *= 1.3f;
-                                Main.dust[dust].velocity += npc.velocity;
-                                Main.dust[dust].noGravity = true;
-                            }
-                        }
-
-                        if (Collision.SolidCollision(npc.position, npc.width, npc.height))
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                npc.StrikeInstantKill();
-                        }
-
-                        npc.EncourageDespawn(100);
-
-                        npc.position += npc.netOffset;
-                        for (int i = 0; i < 2; i++)
-                        {
-                            int dust = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 2f), npc.width, npc.height, DustID.CorruptGibs, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 1.3f);
-                            Main.dust[dust].velocity *= 0.3f;
-                            Main.dust[dust].noGravity = true;
-                        }
-
-                        npc.rotation += 0.4f * npc.direction;
-                        npc.position -= npc.netOffset;
-
-                        return false;
-                    }
-                }
             }
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
@@ -5599,6 +5557,8 @@ namespace CalamityMod.NPCs
                 absorberAffliction--;
             if (irradiated > 0)
                 irradiated--;
+            if (scionsCurioEffected)
+                irradiatedContactBoost = 2f;
             if (bFlames > 0)
                 bFlames--;
             if (demonicFlames > 0)
@@ -6607,7 +6567,6 @@ namespace CalamityMod.NPCs
 
         #endregion
 
-
         #region Summon Tag 
         //doze 03-15-2025: A full refactor of the summon tag system to make it easier to use and more flexible. Ping me with any questions.
         private void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
@@ -6860,6 +6819,148 @@ namespace CalamityMod.NPCs
                                 target.AddBuff(BuffType<Plague>(), 300);
                                 DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
                                 GeneralParticleHandler.SpawnParticle(pulse);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (scionsCurioEffected && npc.life <= 0 && npc.realLife == -1)
+            {
+                for (int g = 0; g < 17; g++)
+                {
+                    int DustID = ModContent.DustType<SquashDust>();
+                    Dust dust = Dust.NewDustPerfect(npc.Center, DustID);
+                    dust.scale = Main.rand.NextFloat(1.1f, 1.35f);
+                    dust.velocity = new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.9f) + Vector2.UnitY * -10;
+                    dust.noGravity = false;
+                    dust.color = Main.rand.NextBool() ? Color.Green : Color.Chartreuse;
+                    dust.fadeIn = Main.rand.NextFloat(0.2f, 2f);
+                }
+                Particle blastvfx = new CustomPulse(npc.Center, Vector2.Zero, Color.Chartreuse * 0.9f, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.15f, 10, true);
+                GeneralParticleHandler.SpawnParticle(blastvfx);
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 0.5f, Pitch = Main.rand.NextFloat(0.5f, 0.7f), MaxInstances = 6 }, npc.Center);
+
+                int explosionDamage = 12;
+                float highestDamage = 0;
+                Player Owner = null;
+                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                {
+                    Player player = Main.player[playerIndex];
+
+                    float playerRangedDamage = player.GetTotalDamage(DamageClass.Ranged).ApplyTo(explosionDamage);
+                    if (playerRangedDamage > highestDamage && player.Calamity().scionsCurio)
+                    {
+                        highestDamage = playerRangedDamage;
+                        Owner = player;
+                    }
+                }
+
+                // Create Blast
+                float blastSize = 115;
+                float minMultiplier = 0.5f;
+                int hitsToMinMult = 5;
+                int debuff = ModContent.BuffType<Irradiated>();
+                int debuffTime = 300;
+                Projectile blast = Projectile.NewProjectileDirect((Owner != null ? Owner.GetSource_FromThis() : npc.GetSource_FromThis()), npc.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(highestDamage), 7, (Owner != null ? Owner.whoAmI : -1), blastSize, minMultiplier, hitsToMinMult);
+                blast.localAI[0] = debuff;
+                blast.localAI[1] = debuffTime;
+                blast.timeLeft = 15;
+                blast.DamageType = DamageClass.Ranged;
+            }
+
+            bool fakeAbbadon = false; // Will be used for abbadon revamp
+            if (fakeAbbadon && npc.life <= 0 && npc.realLife == -1)
+            {
+                float areaOfEffect = 500;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Color color1 = Color.Crimson;
+                    Color color2 = Color.OrangeRed;
+                    for (int r = 0; r < Main.maxNPCs; r++)
+                    {
+                        NPC target = Main.npc[r];
+
+                        if (target != null && target.IsAnEnemy(true, true) && Vector2.Distance(target.Center, npc.Center) <= areaOfEffect)
+                        {
+                            if (target.life <= 0)
+                            {
+                                target.Calamity().scionsCurioEffected = true;
+                            }
+                            else
+                            {
+                                for (int g = 0; g < 7; g++)
+                                {
+                                    int DustID = ModContent.DustType<LightDust>();
+                                    Dust dust2 = Dust.NewDustDirect(target.Center, target.width, target.height, DustID);
+                                    dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
+                                    dust2.velocity = new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
+                                    dust2.noGravity = true;
+                                    dust2.color = Main.rand.NextBool() ? color2 : color1;
+                                }
+
+                                Vector2 start = npc.Center;
+                                Vector2 end = target.Center;
+                                Color color = Main.rand.NextBool() ? color2 : color1;
+
+                                Vector2 lerpVel = Vector2.Lerp(start, end, 0.5f);
+                                float scale = 0.015f;
+                                Particle spark = new CustomSpark(lerpVel, npc.SafeDirectionTo(target.Center), "CalamityMod/Particles/BloomLineThick", false, 18, scale, color, new Vector2(1.2f, (Utils.Distance(start, end) * 0.034f)), true, true, shrinkSpeed: 0.25f, glowOpacity: 0.75f);
+                                GeneralParticleHandler.SpawnParticle(spark);
+                                for (int u = 0; u < 2; u++)
+                                {
+                                    Vector2 pos = start;
+                                    if (u == 0) pos = end;
+                                    Particle spark2 = new CustomSpark(pos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, color, Vector2.One, true, true, glowOpacity: 0.85f);
+                                    GeneralParticleHandler.SpawnParticle(spark2);
+                                }
+
+                                float distance = Vector2.Distance(target.Center, npc.Center);
+                                int maxDusts = (int)distance;
+                                int dustCaper = 60;
+                                int dustDivisor = maxDusts / dustCaper;
+                                if (dustDivisor < 2)
+                                    dustDivisor = 2;
+
+                                Vector2 dustLineStart = target.Center;
+                                Vector2 dustLineEnd = npc.Center;
+                                Vector2 currentDustPos = default;
+                                Vector2 dustVel = npc.Center.DirectionTo(target.Center);
+                                int startingPoint = Main.rand.Next(0, 400 + 1);
+                                Vector2 lastDustPos = default;
+                                for (int i = 0; i < maxDusts; i++)
+                                {
+                                    float sine = (float)Math.Sin((i + startingPoint) * 0.425f / MathHelper.Pi);
+                                    float endStartFade = Math.Min(Utils.GetLerpValue(maxDusts * 0.8f, 0, i), Utils.GetLerpValue(0 + maxDusts * 0.2f, maxDusts, i));
+                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 6 * sine * endStartFade;
+                                    if (i == 0)
+                                        lastDustPos = currentDustPos;
+
+                                    /*Dust dustLine = Dust.NewDustPerfect(currentDustPos, ModContent.DustType<SquashDust>());
+                                    dustLine.position = currentDustPos;
+                                    dustLine.velocity = Vector2.Zero;
+                                    dustLine.noGravity = true;
+                                    dustLine.scale = 1.5f * Math.Max(endStartFade, 0.7f);
+                                    dustLine.fadeIn = Main.rand.NextFloat() * 2f;
+                                    dustLine.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));*/
+
+                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 55 * sine * endStartFade;
+                                    Dust dustLinger = Dust.NewDustPerfect(currentDustPos, ModContent.DustType<SquashDust>());
+                                    dustLinger.position = currentDustPos;
+                                    dustLinger.velocity = currentDustPos.DirectionTo(lastDustPos) * (Main.rand.NextBool(5) ? 4f : Main.rand.NextFloat(0.2f, 0.8f));
+                                    dustLinger.noGravity = true;
+                                    dustLinger.scale = Main.rand.NextFloat(0.8f, 1f) * 1.5f;
+                                    dustLinger.fadeIn = Main.rand.NextFloat(0.6f, 1f) * 4;
+                                    dustLinger.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));
+                                    
+                                    lastDustPos = currentDustPos;
+                                }
+
+                                target.Calamity().scionsCurioEffected = true;
+                                if (target.Calamity().irradiated > 0)
+                                    target.Calamity().irradiated += 90;
+                                else
+                                    target.AddBuff(BuffType<Irradiated>(), 180);
                             }
                         }
                     }
@@ -7919,7 +8020,7 @@ namespace CalamityMod.NPCs
                     shouldDrawBool = false;
             }
 
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || npc.type == NPCID.Probe || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
+            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
             {
                 Texture2D texture = TextureAssets.Npc[npc.type].Value;
 
@@ -8118,7 +8219,6 @@ namespace CalamityMod.NPCs
 
         public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -8274,10 +8374,8 @@ namespace CalamityMod.NPCs
                         }
                         else if (npc.type == NPCID.TheDestroyerBody && revenge)
                         {
-                            float shootProjectileTime = death ? (phase5 ? 120f : phase4 ? 150f : 180f) : 450f;
-                            float bodySegmentTime = npc.ai[0] * (death ? 20f : 30f);
-                            float shootProjectileGateValue = bodySegmentTime + shootProjectileTime;
-                            float telegraphGateValue = shootProjectileGateValue - DestroyerAI.LaserTelegraphTime;
+                            float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
+                            float telegraphGateValue = shootProjectileTime - DestroyerAI.LaserTelegraphTime;
                             if (newAI[0] > telegraphGateValue)
                             {
                                 switch (destroyerLaserColor)
@@ -8321,124 +8419,24 @@ namespace CalamityMod.NPCs
             }
 
             // Laser telegraph
-            else if (npc.type == NPCID.Probe && CalamityClientConfig.Instance.EnableVanillaTextureEdits)
+            else if (npc.type == NPCID.Probe)
             {
                 float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
-                Texture2D glowTexture = ExtraTextureRefs.ProbeGlowmask.Value;
+                Texture2D glowTexture = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (npc.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
 
+                Vector2 drawPosition = npc.Center - screenPos + Vector2.UnitX.RotatedBy(npc.rotation) * (npc.width * 0.45f * npc.spriteDirection) + Vector2.UnitY * npc.gfxOffY;
                 float colorScale = MathHelper.Clamp((npc.localAI[0] - eyeTelegraphGateValue) / DestroyerAI.ProbeLaserTelegraphTime, 0f, 1f);
-                Color drawColor2 = Color.Lerp(new Color(150, 0, 0, 192), new Color(255, 100, 150, 192), colorScale);
-                for (int i = 0; i < 2; i++)
-                {
-                    spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame,
-                        drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                }
+                Color drawColor2 = new Color(255, 100, 150, 192) * colorScale;
+                spriteBatch.SetBlendState(BlendState.Additive);
+                spriteBatch.Draw(glowTexture, drawPosition, npc.frame, drawColor2, npc.rotation, halfSize, npc.scale * 1.1f, SpriteEffects.None, 0f);
+                spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
 
             if (revenge)
             {
-                // Create additional afterimages in the cardinal directions in Rev+
-                if (npc.type == NPCID.BrainofCthulhu)
-                {
-                    float secondAfterimageSetHealthValue = (int)(npc.lifeMax * 0.8f);
-                    if (npc.life < secondAfterimageSetHealthValue)
-                    {
-                        int totalAfterimages = death ? 12 : 4;
-                        for (int i = 0; i < totalAfterimages; i++)
-                        {
-                            Color currentColor = npc.GetAlpha(drawColor);
-                            float opacityScale = 1f - MathHelper.Lerp(0.34f, 1f, npc.life / (float)secondAfterimageSetHealthValue);
-                            float opacity = CalamityWorld.LegendaryMode ? 0.7f : opacityScale;
-
-                            opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                            currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                            currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                            currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                            currentColor.A = (byte)((float)(int)currentColor.A * opacity);
-
-                            Vector2 position = npc.position;
-                            float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
-                            float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
-                            if (i > 3)
-                            {
-                                currentColor *= 0.5f;
-                                distanceFromTargetX *= 0.5f;
-                                distanceFromTargetY *= 0.5f;
-                            }
-                            if (i > 7)
-                                currentColor *= 0.5f;
-
-                            switch (i)
-                            {
-                                case 0:
-                                case 4:
-                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y;
-                                    break;
-
-                                case 1:
-                                case 5:
-                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                    position.X = Main.LocalPlayer.Center.X;
-                                    break;
-
-                                case 2:
-                                case 6:
-                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y;
-                                    break;
-
-                                case 3:
-                                case 7:
-                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                    position.X = Main.LocalPlayer.Center.X;
-                                    break;
-
-                                case 8:
-                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                    break;
-
-                                case 9:
-                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                    break;
-
-                                case 10:
-                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                    break;
-
-                                case 11:
-                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            position.X -= npc.width / 2;
-                            position.Y -= npc.height / 2;
-
-                            Vector2 halfSize = npc.frame.Size() / 2;
-                            SpriteEffects spriteEffects = SpriteEffects.None;
-                            if (npc.spriteDirection == 1)
-                                spriteEffects = SpriteEffects.FlipHorizontally;
-
-                            int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
-                            int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
-                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                        }
-                    }
-                }
-
                 // Telegraph for charge and blood shots
-                else if (npc.type == NPCID.Creeper)
+                if (npc.type == NPCID.Creeper)
                 {
                     if (NPC.crimsonBoss < 0)
                         return;
@@ -8459,10 +8457,10 @@ namespace CalamityMod.NPCs
                             opacity = 1f;
 
                         opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                        currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                        currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                        currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                        currentColor.A = (byte)((float)(int)currentColor.A * opacity);
+                        currentColor.R = (byte)(currentColor.R * opacity);
+                        currentColor.G = (byte)(currentColor.G * opacity);
+                        currentColor.B = (byte)(currentColor.B * opacity);
+                        currentColor.A = (byte)(currentColor.A * opacity);
                         int totalAfterimages = 4;
                         for (int i = 0; i < totalAfterimages; i++)
                         {
@@ -8485,90 +8483,6 @@ namespace CalamityMod.NPCs
                             int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
                             int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
                             spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                        }
-
-                        float secondAfterimageSetHealthValue = (int)(Main.npc[NPC.crimsonBoss].lifeMax * 0.8f);
-                        if (Main.npc[NPC.crimsonBoss].life < secondAfterimageSetHealthValue)
-                        {
-                            currentColor = npc.GetAlpha(drawColor);
-                            float opacityScale = 1f - Main.npc[NPC.crimsonBoss].life / (float)secondAfterimageSetHealthValue;
-                            opacity = CalamityWorld.LegendaryMode ? 1f : opacityScale;
-
-                            opacity = MathHelper.Clamp(opacity, 0f, 1f);
-                            currentColor.R = (byte)((float)(int)currentColor.R * opacity);
-                            currentColor.G = (byte)((float)(int)currentColor.G * opacity);
-                            currentColor.B = (byte)((float)(int)currentColor.B * opacity);
-                            currentColor.A = (byte)((float)(int)currentColor.A * opacity);
-                            totalAfterimages = death ? 12 : 4;
-                            for (int i = 0; i < totalAfterimages; i++)
-                            {
-                                Vector2 position = npc.position;
-                                float distanceFromTargetX = Math.Abs(npc.Center.X - Main.LocalPlayer.Center.X);
-                                float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.LocalPlayer.Center.Y);
-                                if (i > 3)
-                                {
-                                    currentColor *= 0.5f;
-                                    distanceFromTargetX *= 0.5f;
-                                    distanceFromTargetY *= 0.5f;
-                                }
-
-                                switch (i)
-                                {
-                                    case 0:
-                                    case 4:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
-                                        break;
-
-                                    case 1:
-                                    case 5:
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
-                                        break;
-
-                                    case 2:
-                                    case 6:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromBrain.Y;
-                                        break;
-
-                                    case 3:
-                                    case 7:
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromBrain.X;
-                                        break;
-
-                                    case 8:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        break;
-
-                                    case 9:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                                        break;
-
-                                    case 10:
-                                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        break;
-
-                                    case 11:
-                                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-
-                                position.X -= npc.width / 2;
-                                position.Y -= npc.height / 2;
-
-                                int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
-                                int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
-                                spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
-                            }
                         }
                     }
 
@@ -9089,7 +9003,7 @@ namespace CalamityMod.NPCs
             {
                 return DownedBossSystem.downedGuardians;
             }
-            else if (type == NPCType<Bumblefuck>())
+            else if (type == NPCType<Dragonfolly>())
             {
                 return DownedBossSystem.downedDragonfolly;
             }
@@ -10028,35 +9942,6 @@ namespace CalamityMod.NPCs
             }
             result += " " + CalamityUtils.GetTextValue("UI.DebuffSystem.To") + " " + name;
             return result;
-        }
-        #endregion
-
-        #region Type Name Changes
-        public override void ModifyTypeName(NPC npc, ref string typeName)
-        {
-            if (CalamityWorld.death || BossRushEvent.BossRushActive)
-            {
-                if (npc.type == NPCID.SkeletronPrime)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.SkeletronOmega.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeSaw)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaSaw.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeLaser)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.OmegaLaser.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeVice)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaVice.DisplayName");
-                }
-                if (npc.type == NPCID.PrimeCannon)
-                {
-                    typeName = CalamityUtils.GetTextValue("NPCs.AlphaCannon.DisplayName");
-                }
-            }
         }
         #endregion
     }
