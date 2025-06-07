@@ -2677,7 +2677,7 @@ namespace CalamityMod.Projectiles
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 0.3f;
                         Main.dust[dust].velocity += projectile.velocity * 0.1f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             Main.dust[dust].noLight = true;
                     }
 
@@ -2727,7 +2727,7 @@ namespace CalamityMod.Projectiles
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].position = dustPosition;
                         Main.dust[dust].velocity = dustVelocity;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             Main.dust[dust].noLight = true;
                     }
 
@@ -4824,7 +4824,7 @@ namespace CalamityMod.Projectiles
                     projectile.position = vector76;
                     projectile.width = projectile.height = 22;
 
-                    if (Main.getGoodWorld && !Main.remixWorld)
+                    if (CalamityWorld.LegendaryMode && !Main.remixWorld)
                     {
                         int num1011 = 4;
                         Vector2 center3 = projectile.position;

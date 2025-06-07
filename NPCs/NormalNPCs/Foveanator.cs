@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 100;
             if (Main.tenthAnniversaryWorld)
                 NPC.scale *= 0.5f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.8f;
 
             NPC.defense = 10;
@@ -243,7 +243,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     maxVelocity += phase1MaxSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     acceleration += phase1MaxAccelerationIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -298,7 +298,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (!Main.player[NPC.target].dead)
                         {
                             NPC.ai[3] += 1f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 NPC.ai[3] += 0.5f;
                         }
 
@@ -340,8 +340,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     float chargeSpeed = 4f;
                     chargeSpeed += 1f * enrageScale;
-                    chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
+                        chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed += 1f;
 
                     NPC.velocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * chargeSpeed;
@@ -373,9 +374,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                         // Accelerative charge
                         float maxVelocity = 24f;
                         maxVelocity += 6f * enrageScale;
-                        maxVelocity += (phase1MaxChargeSpeedIncrease * 6f) * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                        if (Main.getGoodWorld)
-                            maxVelocity += 6f;
+
+                        if (CalamityWorld.LegendaryMode)
+                            maxVelocity += (phase1MaxChargeSpeedIncrease * 6f) * ((1f - lifeRatio) / (1f - phase2LifeRatio));
 
                         if (NPC.velocity.Length() < maxVelocity)
                         {
@@ -566,7 +567,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (distanceFromDestination > distanceFromTarget)
                             maxVelocity += MathHelper.Lerp(0f, 12f, MathHelper.Clamp((distanceFromDestination - distanceFromTarget) / 1000f, 0f, 1f));
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             maxVelocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -665,7 +666,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     float chargeSpeed = 4.5f + (1.25f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio));
                     chargeSpeed += 4f * enrageScale;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed *= 1.2f;
 
                     NPC.velocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * chargeSpeed;
@@ -702,9 +703,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         // Accelerative charge
                         float maxVelocity = 27f;
                         maxVelocity += 6f * enrageScale;
-                        maxVelocity += 7.5f * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                        if (Main.getGoodWorld)
-                            maxVelocity *= 1.2f;
+                        if (CalamityWorld.LegendaryMode)
+                            maxVelocity += 7.5f * ((1f - lifeRatio) / (1f - phase2LifeRatio));
 
                         // Spawn Energy Bombs along the way
                         float energyBombFireRate = 8f;
@@ -771,7 +771,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     maxVelocity += 6f * enrageScale;
                     acceleration += 0.08f * enrageScale;
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;

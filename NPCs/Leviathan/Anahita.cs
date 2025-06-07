@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.8f;
 
             if (Main.zenithWorld)
@@ -192,9 +192,9 @@ namespace CalamityMod.NPCs.Leviathan
             bubbleVelocity += 4f * enrageScale;
             if (!leviAlive)
                 bubbleVelocity += 2f * (1f - lifeRatio);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 bubbleVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 bubbleVelocity *= 2f;
 
             // Phases
@@ -617,14 +617,14 @@ namespace CalamityMod.NPCs.Leviathan
                 float velocity = death ? 13.5f : 12f;
                 velocity += 6f * enrageScale;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     velocity *= 1.15f;
 
                 Vector2 chargeSetupLocation = Vector2.Normalize(targetVector - NPC.Center - NPC.velocity) * velocity;
                 float acceleration = death ? 0.28f : 0.25f;
                 acceleration += 0.2f * enrageScale;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     acceleration *= 1.15f;
 
                 if (Math.Abs(NPC.Center.Y - targetVector.Y) > 50f * NPC.scale || Math.Abs(NPC.Center.X - player.Center.X) > 350f * NPC.scale)
@@ -654,7 +654,7 @@ namespace CalamityMod.NPCs.Leviathan
                         float telegraphDist = 500f;
 
                         // In Legendary, the projectiles she fires is randomized
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             LegendaryModeAttackChosen = Main.rand.Next(3);
                             if (LegendaryModeAttackChosen == 2)
@@ -708,7 +708,7 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalProjectiles = 8;
                         int projectileDistance = 600;
                         int type = ModContent.ProjectileType<WaterSpear>();
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int damage = NPC.GetProjectileDamage(type);
@@ -827,7 +827,7 @@ namespace CalamityMod.NPCs.Leviathan
                     if (revenge)
                         chargeVelocity += 2f + (death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio));
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeVelocity *= 1.15f;
 
                     NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
@@ -853,7 +853,7 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.Calamity().canBreakPlayerDefense = true;
                 NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
 
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge && NPC.ai[1] % 5f == 0f)
+                if (CalamityWorld.LegendaryMode && NPC.ai[1] % 5f == 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item85, NPC.Center);
                     Vector2 bubbleSpawnPos = new Vector2(NPC.position.X + (NPC.width / 2) + (15 * NPC.direction * NPC.scale), NPC.position.Y + 30 * NPC.scale);
@@ -923,7 +923,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             Vector2 chargeSetupLocation = Vector2.Normalize(player.Center + new Vector2(NPC.localAI[0], -distance) - NPC.Center - NPC.velocity) * 12f;
             float acceleration = revenge ? 0.75f : 0.5f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 acceleration *= 1.15f;
 
             NPC.SimpleFlyMovement(chargeSetupLocation, acceleration);
@@ -980,7 +980,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (DrawProjectileTelegraphTimer > 0)
             {
                 Color telegraphColor = Color.Black;
-                switch (CalamityWorld.LegendaryMode && CalamityWorld.revenge ? LegendaryModeAttackChosen : (int)NPC.localAI[3])
+                switch (CalamityWorld.LegendaryMode ? LegendaryModeAttackChosen : (int)NPC.localAI[3])
                 {
                     case 0:
                         telegraphColor = new Color(55, 70, 240);

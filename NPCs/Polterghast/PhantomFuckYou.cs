@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f;
@@ -98,11 +98,11 @@ namespace CalamityMod.NPCs.Polterghast
             direction *= 0.5f;
             NPC.rotation = direction.ToRotation();
 
-            if (!chargePhase || (CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (!chargePhase || CalamityWorld.LegendaryMode)
             {
                 NPC.ai[2] += 1f;
                 float shootMineGateValue = 150f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     shootMineGateValue *= 0.5f;
 
                 if (NPC.ai[2] >= shootMineGateValue)
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.Polterghast
             if (SPEEN < 0f)
                 SPEEN = 0f;
 
-            NPC.ai[1] += (Main.getGoodWorld ? 1.5f : 0.5f) + SPEEN;
+            NPC.ai[1] += (CalamityWorld.LegendaryMode ? 1.5f : 0.5f) + SPEEN;
         }
 
         public override Color? GetAlpha(Color drawColor) => new Color(200, 200, 200, 0);

@@ -24,10 +24,10 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 120;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
 
-            if ((CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (CalamityWorld.LegendaryMode)
                 NPC.reflectsProjectiles = true;
 
             NPC.aiStyle = -1;

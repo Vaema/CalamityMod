@@ -145,7 +145,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         acceleration += phase1MaxAccelerationIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -199,7 +199,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                         {
                             npc.ai[3] += 1f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.ai[3] += 0.5f;
                         }
 
@@ -244,7 +244,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     chargeSpeed += 10f * enrageScale;
                     if (death)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed += 2f;
 
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -435,7 +435,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxVelocity += 4.5f * enrageScale;
                     acceleration += 0.075f * enrageScale;
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -523,7 +523,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         maxVelocity += 4.5f * enrageScale;
                         acceleration += 0.15f * enrageScale;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             maxVelocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -596,7 +596,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         chargeSpeed += 10f * enrageScale;
                         if (!spazAlive)
                             chargeSpeed += 2f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeSpeed += 2f;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * chargeSpeed;
@@ -717,7 +717,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             chargeAcceleration *= 0.75f;
                         }
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             chargeSpeed *= 1.15f;
                             chargeAcceleration *= 1.15f;
@@ -875,7 +875,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         acceleration += phase1MaxAccelerationIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -920,7 +920,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                         {
                             npc.ai[3] += 1f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.ai[3] += 0.4f;
                         }
 
@@ -966,7 +966,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     chargeSpeed += 8f * enrageScale;
                     if (death)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed *= 1.2f;
 
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -1177,7 +1177,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (distanceFromDestination > distanceFromTarget)
                             maxVelocity += MathHelper.Lerp(0f, death ? 8f : 6f, MathHelper.Clamp((distanceFromDestination - distanceFromTarget) / 1000f, 0f, 1f));
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             maxVelocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -1284,7 +1284,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float chargeSpeed = 18f + (death ? 5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                         chargeSpeed += 16f * enrageScale;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeSpeed *= 1.2f;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -1368,7 +1368,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             spazmatismPhase3ChargeSpeed += 10f * enrageScale;
                             if (npc.ai[2] == -1f || (!retAlive && npc.ai[3] == secondFastCharge))
                                 spazmatismPhase3ChargeSpeed *= 1.3f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 spazmatismPhase3ChargeSpeed *= 1.2f;
 
                             Vector2 distanceVector = Main.player[npc.target].Center + (!retAlive && bossRush ? Main.player[npc.target].velocity * 20f : Vector2.Zero) - npc.Center;
@@ -1492,7 +1492,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             chargeAcceleration *= 0.75f;
                         }
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             chargeSpeed *= 1.15f;
                             chargeAcceleration *= 1.15f;

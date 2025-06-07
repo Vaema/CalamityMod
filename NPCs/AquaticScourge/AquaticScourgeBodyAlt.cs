@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.knockBackResist = 0f;
             NPC.alpha = 255;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -102,7 +102,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || Main.getGoodWorld)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -251,7 +251,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeMaxSpeed += Vector2.Distance(player.Center, NPC.Center) * 0.001f;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     scourgeMaxSpeed *= 1.15f;
             }
 

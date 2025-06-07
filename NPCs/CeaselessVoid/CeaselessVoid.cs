@@ -154,7 +154,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (phase4)
                 darkEnergyAmt += 1;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 darkEnergyAmt *= 2;
 
             // Spawn a few Dark Energies as soon as the fight starts
@@ -222,7 +222,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
 
             // Decides whether Ceaseless moves closer to its target or not
-            float distanceRequiredToMove = (Main.getGoodWorld || !anyDarkEnergies) ? 320f : bossRush ? 600f : 720f;
+            float distanceRequiredToMove = (CalamityWorld.LegendaryMode || !anyDarkEnergies) ? 320f : bossRush ? 600f : 720f;
             bool move = Vector2.Distance(NPC.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
 
             // Succ attack
@@ -540,7 +540,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     acceleration *= 2f;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     velocity *= 1.15f;
                     acceleration *= 1.15f;
@@ -550,8 +550,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
-                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
-                if (!succ && Main.getGoodWorld)
+                Vector2 moveToOffset = succ ? Vector2.Zero : CalamityWorld.LegendaryMode ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if (!succ && CalamityWorld.LegendaryMode)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -603,7 +603,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Vector2 distanceFromDestination = destination - NPC.Center;
 
                 // Movement
-                if (NPC.Distance(destination) > maxDistance || succ || !Main.getGoodWorld)
+                if (NPC.Distance(destination) > maxDistance || succ || !CalamityWorld.LegendaryMode)
                     CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
             }
 

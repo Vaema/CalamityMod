@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Total segment variable
-            int totalSegments = Main.getGoodWorld ? 100 : 80;
+            int totalSegments = CalamityWorld.LegendaryMode ? 100 : 80;
 
             // Calculate aggression based on how many broken segments there are
             float brokenSegmentAggressionMultiplier = 1f;
@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             speed *= brokenSegmentAggressionMultiplier;
             turnSpeed *= brokenSegmentAggressionMultiplier;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 segmentVelocity *= 1.2f;
                 speed *= 1.2f;
