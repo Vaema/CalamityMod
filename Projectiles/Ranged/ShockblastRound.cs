@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.light = 0.5f;
             Projectile.extraUpdates = 3;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

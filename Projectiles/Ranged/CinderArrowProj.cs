@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 600;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

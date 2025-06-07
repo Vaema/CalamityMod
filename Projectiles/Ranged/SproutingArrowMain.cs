@@ -30,7 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 80;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.ArmorPenetration = 8;
             Projectile.tileCollide = false;
         }

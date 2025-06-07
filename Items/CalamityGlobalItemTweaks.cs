@@ -453,7 +453,7 @@ namespace CalamityMod.Items
                 { ItemID.VortexChainsaw, trueMeleeNoSpeed },
                 #endregion
 
-                #region CATEGORY 6: Summoner Quality of Life
+                #region CATEGORY 5: Summoner Quality of Life
                 { ItemID.AbigailsFlower, autoReuse },
                 { ItemID.BabyBirdStaff, Do(AutoReuse, UseExact(35)) }, // Finch Staff
                 { ItemID.BlandWhip, autoReuse }, // Leather Whip
@@ -493,7 +493,7 @@ namespace CalamityMod.Items
                 { ItemID.XenoStaff, Do(AutoReuse, UseExact(20)) },
                 #endregion
 
-                #region CATEGORY 7: Other Quality of Life (AutoReuse / UseTurn)
+                #region CATEGORY 6: Other Quality of Life (AutoReuse / UseTurn)
                 { ItemID.Amarok, autoReuse },
                 { ItemID.BatBat, autoReuse },
                 { ItemID.BladeofGrass, Do(AutoReuse, UseTurn) },
@@ -540,7 +540,7 @@ namespace CalamityMod.Items
                 { ItemID.ZapinatorOrange, autoReuse },
                 #endregion
 
-                #region CATEGORY 8: Non-consumable Quality of Life
+                #region CATEGORY 7: Non-consumable Quality of Life
                 { ItemID.Abeemination, nonConsumableBossSummon },
                 { ItemID.BloodMoonStarter, nonConsumableBossSummon }, // Bloody Tear
                 { ItemID.BloodySpine, nonConsumableBossSummon },
@@ -562,7 +562,7 @@ namespace CalamityMod.Items
                 { ItemID.WormFood, nonConsumableBossSummon },
                 #endregion
 
-                #region CATEGORY 9: Sell Prices
+                #region CATEGORY 8: Sell Prices
                 { ItemID.EncumberingStone, Do(Worthless) },
                 { ItemID.FlareGun, Do(Value(Item.sellPrice(silver: 10))) },
                 { ItemID.GlowingMushroom, Do(Worthless) },
