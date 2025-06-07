@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<MagnaCannonHoldout>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

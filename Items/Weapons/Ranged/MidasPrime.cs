@@ -43,7 +43,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<MarksmanShot>();
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 14f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // This item has a right click.

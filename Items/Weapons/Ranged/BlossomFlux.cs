@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool AltFunctionUse(Player player)

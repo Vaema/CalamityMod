@@ -33,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<FlurrystormCannonShooting>();
             Item.useAmmo = AmmoID.Snowball;
             Item.shootSpeed = 18f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

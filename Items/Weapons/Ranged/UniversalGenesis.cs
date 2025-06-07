@@ -27,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 20f;
             Item.autoReuse = true;
-            Item.Calamity().canFirePointBlankShots = true;
 
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;

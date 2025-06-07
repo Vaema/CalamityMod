@@ -65,15 +65,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             //Distortion wind do whisper one truth...
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+        public override bool AltFunctionUse(Player player) => true;
 
         public override float UseSpeedMultiplier(Player player)
         {
