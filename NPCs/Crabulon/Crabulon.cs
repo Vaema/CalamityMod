@@ -982,7 +982,7 @@ namespace CalamityMod.NPCs.Crabulon
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.01 : CalamityWorld.LegendaryMode ? 0.02 : 0.05));
+                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.02 : 0.05));
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;

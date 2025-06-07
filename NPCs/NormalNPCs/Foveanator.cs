@@ -342,7 +342,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     chargeSpeed += 1f * enrageScale;
                     if (CalamityWorld.LegendaryMode)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed += 1f;
 
                     NPC.velocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * chargeSpeed;

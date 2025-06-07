@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || Main.getGoodWorld)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -282,7 +282,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeMaxSpeed += Vector2.Distance(player.Center, NPC.Center) * 0.001f;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     scourgeMaxSpeed *= 1.15f;
             }
 
