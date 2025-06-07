@@ -1212,7 +1212,7 @@ namespace CalamityMod.Projectiles
                         {
                             int sharkron = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center.X, (int)center.Y, NPCID.Sharkron2);
                             Main.npc[sharkron].velocity = projectile.velocity;
-                            Main.npc[sharkron].scale = death ? 2f : 1.5f;
+                            Main.npc[sharkron].scale = 1.5f;
                             Main.npc[sharkron].netUpdate = true;
                             Main.npc[sharkron].ai[2] = projectile.width;
                             Main.npc[sharkron].ai[3] = -1.5f;

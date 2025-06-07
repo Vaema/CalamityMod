@@ -9,6 +9,7 @@ using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -174,9 +175,44 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            // Note from CIT: I originally removed these entirely;
             cursor.Emit(OpCodes.Pop);
             cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+        }
+        #endregion
+
+        #region Disable Detonating Bubble StrikeNPC Hardcoded Override
+        private static void LetDetonatingBubblesTakeDamage(ILContext il)
+        {
+            // In vanilla's StrikeNPC function, Detonating Bubbles have a hardcoded type check which sets the damage of the strike to 0.
+            // This IL edit disables that type check in Death Mode.
+            var cursor = new ILCursor(il);
+
+            // Go to the point after the check for the Detonating Bubble NPC ID.
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR8(0.0)))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move after the NPC type check.");
+                return;
+            }
+
+            // Define the label.
+            var label = il.DefineLabel();
+
+            // Add a branch if it is Death Mode.
+            cursor.Emit(OpCodes.Ldsfld, typeof(CalamityWorld).GetField("death"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to the point after Detonating Bubble changes are implemented to place the branch label.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStfld<NPC>("dontTakeDamage")))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
         #endregion
 

@@ -106,19 +106,6 @@ namespace CalamityMod.Projectiles.Boss
                             int damage = (int)Math.Round(Projectile.damage * 0.85);
                             Vector2 laserVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
                             Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 16f, laserVelocity, type, damage, 0f, Main.myPlayer);
-
-                            if (Projectile.ai[0] == 2f)
-                            {
-                                Vector2 projectileVelocity = (Main.player[target].Center - Projectile.Center).SafeNormalize(Vector2.UnitY) * laserSpeed * 0.75f;
-                                int numProj = 2;
-                                int spread = 30;
-                                float rotation = MathHelper.ToRadians(spread);
-                                for (int i = 0; i < numProj; i++)
-                                {
-                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 16f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                }
-                            }
                         }
                     }
 

@@ -2923,9 +2923,10 @@ namespace CalamityMod.NPCs
                     npc.dontTakeDamage = true;
                     break;
 
-                // Make Fishron and Anahita Bubbles immune to damage in Death Mode
+                // Make Fishron and Anahita Bubbles have actual health in Death Mode
                 case NPCID.DetonatingBubble:
-                    npc.dontTakeDamage = CalamityWorld.death;
+                    if (CalamityWorld.death)
+                        npc.lifeMax = 300;
                     break;
 
                 default:
