@@ -1564,7 +1564,7 @@ namespace CalamityMod.NPCs
                 { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
                 { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
                 { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
+                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFleshEye, 7200 },
                 { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
@@ -1575,10 +1575,10 @@ namespace CalamityMod.NPCs
                 { NPCID.TheDestroyerTail, 10800 },
                 { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
                 { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
-                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
                 { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
                 { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
                 { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
+                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
                 { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
                 { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
                 { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
@@ -1604,7 +1604,7 @@ namespace CalamityMod.NPCs
                 { NPCType<AquaticScourgeBodyAlt>(), 9000 },
                 { NPCType<AquaticScourgeTail>(), 9000 },
                 { NPCType<BrimstoneElemental.BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
+                { NPCType<CalamitasClone>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<Leviathan.Leviathan>(), 10800 },
                 { NPCType<AstrumAureus.AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
@@ -1613,7 +1613,7 @@ namespace CalamityMod.NPCs
                 { NPCType<AstrumDeusTail>(), 7200 },
                 { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
+                { NPCType<ProfanedGuardianCommander>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
@@ -1627,7 +1627,7 @@ namespace CalamityMod.NPCs
                 { NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
                 { NPCType<DevourerofGodsTail>(), 14400 },
-                { NPCType<Yharon.Yharon>(), 14700 }, // 4:05 (245 seconds) -- he spends 5 seconds invincible where you can't do anything
+                { NPCType<Yharon.Yharon>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
                 { NPCType<Artemis>(), 21600 },
                 { NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)

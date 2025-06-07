@@ -276,9 +276,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Dust to show teleport
                 int ai3 = (int)npc.ai[3]; // 0 to 30, and -60
-                bool emitDust = false;
 
-                if (ai3 >= teleportGateValue && calamityGlobalNPC.newAI[2] == 0f && calamityGlobalNPC.newAI[3] == 0f)
+                if (npc.localAI[0] == 1f && calamityGlobalNPC.newAI[2] == 0f && calamityGlobalNPC.newAI[3] == 0f)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -312,6 +311,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
+                // Teleport location telegraph
                 if (calamityGlobalNPC.newAI[2] != 0f && calamityGlobalNPC.newAI[3] != 0f)
                 {
                     for (int m = 0; m < 5; m++)
@@ -322,24 +322,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                if (ai3 >= teleportGateValue + 90)
-                {
-                    emitDust = true;
-                }
-                else if (ai3 >= teleportGateValue + 30)
-                {
-                    if (Main.rand.Next(teleportGateValue + 10, ai3 + 1) >= teleportGateValue + 25)
-                        emitDust = true;
-                }
-
-                if (emitDust)
-                {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, dustType, 0f, 0f, 100, default, 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
-
                 // Teleport
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[3] >= teleportGateValue + 120 && (!(npc.ai[1] == 1f && phase3) || death))
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 0f && npc.ai[1] != 1f && calamityGlobalNPC.newAI[2] != 0f && calamityGlobalNPC.newAI[3] != 0f)
                 {
                     // Teleport dust
                     for (int m = 0; m < 30; m++)
@@ -351,10 +335,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // New location
                     npc.Center = new Vector2(calamityGlobalNPC.newAI[2], calamityGlobalNPC.newAI[3]);
-
-                    // Do not set velocity to zero during charge attacks
-                    if (npc.ai[1] != 1f)
-                        npc.velocity = Vector2.Zero;
+                    npc.velocity = Vector2.Zero;
 
                     npc.ai[3] = -60f;
                     calamityGlobalNPC.newAI[2] = calamityGlobalNPC.newAI[3] = 0f;
@@ -422,11 +403,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[1] = chargePhaseGateValue;
 
                 float forcedMoveAwayTime = death ? 15f : 45f;
-                float canChargeDistance = phase3 ? 480f : 320f; // 20 tile distance, 30 tile distance in phase 3
+                float canChargeDistance = 320f; // 20 tile distance
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
                 bool charge = npc.ai[2] >= chargePhaseGateValue && canCharge;
-                bool forceCharge = npc.ai[2] > chargePhaseGateValue + 120f * chargePhaseChangeRate;
+                bool forceCharge = npc.ai[2] > chargePhaseGateValue + 120f;
                 if (charge || forceCharge)
                 {
                     npc.localAI[2] += 1f;
@@ -434,6 +415,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[2] = 0f;
                         npc.ai[1] = 1f;
+                        npc.localAI[0] = 1f;
                         npc.localAI[1] = chargePhaseGateValue;
                         npc.localAI[2] = 0f;
                         calamityGlobalNPC.newAI[1] = 0f;
@@ -462,8 +444,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (!canCharge || !hasMovedForcedDistance)
                     {
-                        float phase5Multiplier = 1.33f;
-                        float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.008f);
+                        float phase5Multiplier = 1.2f;
+                        float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.002f);
                         if (phase5)
                             maxVelocity *= phase5Multiplier;
 
@@ -474,7 +456,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             maxVelocity = maxVelocityCap;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -maxVelocity;
-
                         npc.SyncMotionToServer();
                     }
 
@@ -497,7 +478,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Force net updates every frame during this movement to avoid despawning in multiplayer
                     // I'm doing this because npc.ai[2] changes every frame and that's used to calculate Skeletron's velocity here
                     npc.ForceNetUpdate();
-
                     return false;
                 }
 
