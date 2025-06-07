@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
                     SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = 0.25f , PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
-                    Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 10, true, 0.8f);
+                    Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.HotPink, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 5, true, 0.8f);
                     GeneralParticleHandler.SpawnParticle(sparker);
                     GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.SeaShell : Color.Silver * 0.9f, Color.HotPink, Main.rand.NextFloat(0.8f, 1.2f), 2, 0, 2.68f);
                     GeneralParticleHandler.SpawnParticle(sparker2);
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
                     framesBetweenShots = 3;
-                    OffsetLengthFromArm -= 3f;
+                    OffsetLengthFromArm -= 2f;
                     //Here we detect which ammo the bullets will use
                     Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     //Alternate between shooting bullets and water streams. Despite not having damage scaling, the fish gain movement speed based on the scaling, so we still need a Global Projectile

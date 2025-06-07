@@ -1063,9 +1063,9 @@ Seadragon: {
 	Tooltip:
 		'''
 		Loads a 50 round deluge of alternating bullets and pressurized water jets
-		Water jets summon a small fish that swims around and follows you
-		After firing, all fish rush toward enemies and explode before the gun reloads
-		Water jets consume no ammo
+		Water jets summon small fish that swim around you
+		Once your mag runs empty, all fish rush toward enemies and explode before the gun can reload
+		Water jets do not consume ammo
 		'''
 }
 
@@ -1419,11 +1419,11 @@ Voidragon: {
 	DisplayName: Voidragon
 	Tooltip:
 		'''
-		Loads a 50 round magazine of bullets and concentrated void blasts
-		After firing, the gun unleashes a beam of abyssal fire that erases foes from existence
-		The beam grows more powerful based on the amount of shots hit
-		At maximum damage, abyssal portals rotate around the user that constantly summon creatures from beyond
-		[c/C843E2: 'Fade to black']
+		Loads a 50 round onslaught of bullets and concentrated void blasts
+		Once your mag runs empty, an eruption of abyssal fire eviscerates wherever you look
+		The beam grows increasingly powerful with the amount of shots you hit
+		At maximum power, rifts from beyond are torn around you which summon otherworldly creatures
+		[c/620BB0: 'Fade to black']
 		'''
 }
 

@@ -27,14 +27,15 @@ namespace CalamityMod.Projectiles.Ranged
         public int Time = 0;
         public int shotCounter = 0;
         public int framesBetweenShots = 0;
-        public bool swapType = false;
+        public bool isTired = false;
 
         public override void KillHoldoutLogic()
         {
             //If the player is dead, kill the holdout.
-            if (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type && shotCounter <= 19)
+            if (!isTired && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
                 Projectile.Kill();
         }
+        
 
         public override void HoldoutAI()
         {
@@ -49,15 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
                     #region Visuals and Sounds
                     SoundEngine.PlaySound(SoundID.Item85, Projectile.Center);
-                    Particle sparker = new CritSpark(GunTipPosition, Vector2.Zero, Color.Gold, Color.LightGoldenrodYellow, 1.7f, 3, 0.5f, 3f);
-                    GeneralParticleHandler.SpawnParticle(sparker);
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
-                        dust.noGravity = true;
-                        dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
-                    }
-                    if (shotCounter > 14)
+                    if (shotCounter > 20)
                     {
                         for (int i = 0; i < 3; ++i)
                         {
@@ -86,14 +79,15 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<ArcherfishShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     shotCounter++;
                     //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
-                    if (shotCounter == 20)
+                    if (shotCounter == 25)
                         framesBetweenShots = 80;
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
-            if (shotCounter >= 19 && framesBetweenShots > 0)
+            if (shotCounter == 25 && framesBetweenShots > 0)
             {
+                isTired = true;
                 Owner.channel = true;
                 if (framesBetweenShots % 6 == 0)
                 {
@@ -127,7 +121,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
 
             }
-            if (shotCounter == 20 && framesBetweenShots == 0)
+            if (shotCounter == 25 && framesBetweenShots == 0)
             {
                 if (framesBetweenShots == 0)
                 {

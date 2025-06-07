@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 96;
             Item.height = 38;
-            Item.damage = 450;
+            Item.damage = 800;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 3;
@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.channel = true;
-            Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 18f;
             Item.useAmmo = AmmoID.Bullet;
             Item.shoot = ModContent.ProjectileType<VoidragonHoldout>();

@@ -14,6 +14,9 @@ using Steamworks;
 using Mono.Cecil;
 using Newtonsoft.Json.Serialization;
 using CalamityMod.Dusts;
+using static System.Net.Mime.MediaTypeNames;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -24,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetXUpwards => -5f;
         public override float BaseOffsetY => -1f;
         public override float OffsetYDownwards => 5f;
-        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 55).RotatedBy(-0.05f * Projectile.direction);
+        public override Vector2 GunTipPosition => Projectile.Center + (Projectile.velocity * 55).RotatedBy(-0.09f * Projectile.direction);
 
         public int Time = 0;
         public int beamTimer = 500;
@@ -76,18 +79,36 @@ namespace CalamityMod.Projectiles.Ranged
                     //Main.NewText(shotCounter);
                     //Main.NewText(Owner.Calamity().sharkGunDamageScaling);
                     #endregion
+                    //Do not look in here if you value your sanity
                     #region Visuals and Sounds
                     SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotTiny");
                     SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.1f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
-                    Particle sparker = new CritSpark(GunTipPosition, Vector2.Zero, Color.Gold, Color.LightGoldenrodYellow, 1.7f, 3, 0.5f, 3f);
+                    Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Purple, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 6, true, 0.8f);
                     GeneralParticleHandler.SpawnParticle(sparker);
-                    Particle spark2 = new GlowSparkParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(1.2f, 1.5f), false, 15, 0.017f, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet, new Vector2(1.5f, 0.7f), true, false, 1.3f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
+                    Particle center = new SnowflakeSparkle(GunTipPosition, Vector2.Zero, Color.White, Color.Indigo, 0.8f, 2, Main.rand.NextFloat(-10, 10), 0.5f, 6);
+                    GeneralParticleHandler.SpawnParticle(center);
+                    GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(1.4f, 1.6f), 2, 0, 2.22f);
+                    GeneralParticleHandler.SpawnParticle(sparker2);
+                    GenericSparkle sparker3 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(2.5f, 2.6f), 2, 0, 2.68f);
+                    GeneralParticleHandler.SpawnParticle(sparker3);
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        Particle spark = new VoidSparkParticle(GunTipPosition, shootVelocity.RotatedByRandom(0.8f) * Main.rand.NextFloat(1.2f, 1.5f), false, 25, 0.1f, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
                     for (int i = 0; i <= 4; i++)
                     {
                         Dust dust = Dust.NewDustPerfect(GunTipPosition, Main.rand.NextBool(3) ? 303 : 244, (shootVelocity * Main.rand.NextFloat(0.2f, 1.1f)).RotatedByRandom(0.4f));
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.8f, 1.4f);
+                        Particle smoke = new HeavySmokeParticle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Black : Color.Indigo * 0.6f, 10, 0.85f, 1.1f, 5f, false, 0, true);
+                        GeneralParticleHandler.SpawnParticle(smoke);
+                    }
+                    if (swapType)
+                    {
+                        float rotation = Projectile.velocity.ToRotation();
+                        Particle pulse = new CustomPulse(GunTipPosition, shootVelocity, Color.Indigo, "CalamityMod/Particles/FlameExplosion", new Vector2(0.4f, 1f), rotation, 0f, 0.07f, 10, true, 1.4f);
+                        GeneralParticleHandler.SpawnParticle(pulse);
                     }
                     #endregion
 
@@ -127,6 +148,11 @@ namespace CalamityMod.Projectiles.Ranged
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
+            if (shotCounter == 51 && !firingBeam)
+            {
+                Particle streak = new ManaDrainStreak(Owner, Main.rand.NextFloat(2f, 3f), Main.rand.NextVector2CircularEdge(20f, 20f) * Main.rand.NextFloat(2f, 4f), 0f, Color.Indigo, Color.BlueViolet, 7, GunTipPosition);
+                GeneralParticleHandler.SpawnParticle(streak);
+            }
             if (shotCounter == 51 && framesBetweenShots == 0)
             {
                 //Main.NewText(beamTimer);
@@ -161,12 +187,26 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time < 2)
                 return false;
             Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D sparkle = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 shake = Main.rand.NextVector2Circular(6, 6);
+
+            for (int i = 0; i < 22; i++)
+            {
+                Color auraColor = Color.Lerp(Color.Indigo, Color.BlueViolet, i * 0.01f) with { A = 0 } * 0.6f;
+                Vector2 drawOffset = ((MathHelper.TwoPi * i / 22f).ToRotationVector2() * 5) + Main.rand.NextVector2Circular(7, 7);
+                Main.EntitySpriteDraw(texture, drawPosition + drawOffset, null, auraColor, drawRotation, rotationPoint, Projectile.scale * Main.rand.NextFloat(0.02f, 0.025f) * Owner.Calamity().sharkGunDamageScaling, flipSprite);
+            }
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+
+            if (firingBeam)
+            {
+            }
             return false;
         }
     }

@@ -187,8 +187,9 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            Player Owner = Main.player[Projectile.owner];
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
-            int bonusDamage = 10000;
+            int bonusDamage = 200 * Owner.Calamity().sharkGunDamageScaling;
             if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
             {
                 target.Calamity().demonicFlamesBonusDamage = bonusDamage;

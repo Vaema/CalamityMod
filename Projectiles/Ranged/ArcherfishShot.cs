@@ -30,15 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            // Bubbles
-            if (Main.rand.NextBool())
-            {
-                Gore bubble = Gore.NewGorePerfect(Projectile.GetSource_FromAI(), Projectile.position, Projectile.velocity * 0.2f + Main.rand.NextVector2Circular(1f, 1f), 411);
-                bubble.timeLeft = 9 + Main.rand.Next(7);
-                bubble.scale = Main.rand.NextFloat(0.6f, 1f);
-                bubble.type = Main.rand.NextBool(3) ? 412 : 411;
-            }
-
             // Water trail
             for (int i = 0; i < 6; i++)
             {

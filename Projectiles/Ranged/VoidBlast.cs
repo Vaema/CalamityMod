@@ -67,21 +67,20 @@ namespace CalamityMod.Projectiles.Ranged
                 Player Owner = Main.player[Projectile.owner];
                 Owner.Calamity().sharkGunDamageScaling++;
             }
-            int bonusDamage = 10000;
-            if (target.Calamity().demonicFlamesBonusDamage <= bonusDamage)
-            {
-                target.Calamity().demonicFlamesBonusDamage = bonusDamage;
-                target.AddBuff(ModContent.BuffType<DemonicFlames>(), 180);
-                // Demonic Flames damage must be synced, because OnHitNPC is only run for the client that hit the NPC
-                if (Main.netMode != NetmodeID.SinglePlayer)
-                    DemonicFlamesSyncPacket.Send(target);
-            }
         }
 
         public override void OnKill(int timeLeft)
         {
-            //We can't set Demonic Flames damage with a Basic Burst projectile, so we'll have to use a new one
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<VoidBlastExplosion>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+            float blastSize = 170;
+            float minMultiplier = 0.25f;
+            int hitsToMinMult = -1;
+            int debuff1 = ModContent.BuffType<WhisperingDeath>();
+            int debuffTime = 180;
+            Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+            blast.localAI[0] = debuff1;
+            blast.localAI[1] = debuffTime;
+            blast.timeLeft = 2;
+            blast.DamageType = Projectile.DamageType;
             #region Visuals and Sounds
             SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
             SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);
@@ -126,8 +125,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (time == 0)
-                return false;
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
