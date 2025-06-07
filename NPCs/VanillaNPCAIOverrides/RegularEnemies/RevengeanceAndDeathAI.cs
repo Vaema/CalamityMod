@@ -6790,7 +6790,7 @@ PrepareToShoot:
 
                 int projType = ProjectileID.SandBallFalling;
 
-                // If FTW is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
+                // If Legendary is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
                 int projAmt = 1;
                 if (CalamityWorld.LegendaryMode)
                 {

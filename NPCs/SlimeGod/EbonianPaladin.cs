@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 setDamage += 22;
             }
 
-            float scale = CalamityWorld.LegendaryMode ? 0.6f : CalamityWorld.LegendaryMode ? 0.8f : 1f;
+            float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
             NPC.aiAction = 0;
 
             // Get a target

@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (CalamityWorld.LegendaryMode)
-                enrageScale += (CalamityWorld.LegendaryMode ? 1f : 0.5f);
+                enrageScale += 1f;
 
             if (bossRush)
                 enrageScale = 2f;

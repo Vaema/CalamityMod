@@ -1052,7 +1052,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static int GetBrainOfCthuluCreepersCountRevDeath()
         {
-            return CalamityWorld.LegendaryMode ? 40 : CalamityWorld.LegendaryMode ? 35 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 30 : 20;
+            return CalamityWorld.LegendaryMode ? 40 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 30 : 20;
         }
 
         private static float GetCrimsonBossKnockBack(NPC npc, int numPlayers, float lifeScale, float baseKnockBackResist)
