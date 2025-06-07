@@ -6476,7 +6476,8 @@ namespace CalamityMod.NPCs
             }
 
             // Any weapons that shoot projectiles from anywhere other than the player's center aren't affected by point-blank shot damage boost.
-            if (!Main.player[projectile.owner].ActiveItem().IsAir && Main.player[projectile.owner].ActiveItem().Calamity().canFirePointBlankShots && projectile.CountsAsClass<RangedDamageClass>())
+            // CIT 07JUN2025: Point-blank in its current state has been disabled. It will eventually be revived as something different.
+            /*if (!Main.player[projectile.owner].ActiveItem().IsAir && Main.player[projectile.owner].ActiveItem().Calamity().canFirePointBlankShots && projectile.CountsAsClass<RangedDamageClass>())
             {
                 if (projectile.Calamity().pointBlankShotDuration > 0 && projectile.Calamity().pointBlankShotDistanceTravelled < CalamityGlobalProjectile.PointBlankShotDistanceLimit)
                 {
@@ -6487,7 +6488,7 @@ namespace CalamityMod.NPCs
                     modifiers.SourceDamage *= pointBlankShotDamageMultiplier;
                     projectile.Calamity().pointBlankShotDuration = 0;
                 }
-            }
+            }*/
 
             // Apply balancing resists/vulnerabilities.
             BalancingChangesManager.ApplyFromProjectile(npc, ref modifiers, projectile);
