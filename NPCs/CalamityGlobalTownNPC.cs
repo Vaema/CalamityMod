@@ -110,6 +110,7 @@ namespace CalamityMod.NPCs
             "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
+            "Kanna", // <@!730203712898859018> (cosmoredeathwish)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
