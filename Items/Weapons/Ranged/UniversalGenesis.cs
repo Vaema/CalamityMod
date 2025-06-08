@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-50f, -8f);

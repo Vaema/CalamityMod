@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

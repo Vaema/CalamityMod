@@ -48,7 +48,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 6.5f;
             Item.useAmmo = AmmoID.Bullet;
             Item.crit = 8;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void UpdateInventory(Player player)

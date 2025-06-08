@@ -63,7 +63,7 @@ namespace CalamityMod.Items
                 { ItemID.BoneSword, Do(AutoReuse, UseTurn, DamageExact(25)) },
                 { ItemID.BookofSkulls, Do(DamageExact(27), ManaExact(13), ShootSpeedExact(5.5f)) },
                 { ItemID.BookStaff, Do(ManaExact(14)) }, // Tome of Infinite Wisdom
-                { ItemID.Boomstick, Do(PointBlank, DamageExact(11)) },
+                { ItemID.Boomstick, Do(DamageExact(11)) },
                 { ItemID.BreakerBlade, Do(AutoReuse, UseTurn, DamageExact(140)) },
                 { ItemID.CandyCornRifle, Do(DamageExact(66)) },
                 { ItemID.Cascade, Do(AutoReuse, DamageExact(31)) },
@@ -207,7 +207,7 @@ namespace CalamityMod.Items
                 { ItemID.PurplePhaseblade, Do(AutoReuse, UseTurn, DamageExact(48)) },
                 { ItemID.PurplePhasesaber, Do(DamageExact(132)) },
                 { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
-                { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
+                { ItemID.QuadBarrelShotgun, Do(DamageExact(11)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
                 { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13), KnockbackExact(8f)) },
                 { ItemID.Rally, Do(AutoReuse, DamageExact(18)) },
@@ -227,7 +227,7 @@ namespace CalamityMod.Items
                 { ItemID.ShadowFlameHexDoll, Do(DamageExact(40), ShootSpeedExact(30)) },
                 { ItemID.ShadowFlameKnife, Do(DamageExact(50)) },
                 { ItemID.SharpTears, Do(DamageExact(49)) }, // Blood Thorn
-                { ItemID.Shotgun, Do(PointBlank, DamageExact(36), AutoReuse) },
+                { ItemID.Shotgun, Do(DamageExact(36), AutoReuse) },
                 { ItemID.Shroomerang, Do(ShootSpeedExact(11)) },
                 { ItemID.SilverBullet, Do(DamageExact(8)) },
                 { ItemID.SilverShortsword, Do(AutoReuse, TrueMelee, DamageExact(14)) },
@@ -248,7 +248,7 @@ namespace CalamityMod.Items
                 { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, DamageExact(21)) }, // Stylish Scissors
                 { ItemID.Stynger, Do(DamageExact(75)) },
                 { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(24)) },
-                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
+                { ItemID.TacticalShotgun, Do(DamageExact(41)) },
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(DamageExact(17), AutoReuse) },
                 { ItemID.TerraBlade, Do(DamageExact(92)) },
@@ -434,7 +434,7 @@ namespace CalamityMod.Items
                 { ItemID.WoodenHammer, Do(HammerPower(25), UseTimeExact(11), TileBoostExact(+0)) },
                 #endregion
 
-                #region CATEGORY 4: True Melee and Point Blank support
+                #region CATEGORY 4: True Melee support
                 { ItemID.Arkhalis, trueMeleeNoSpeed },
                 { ItemID.CopperShortsword, Do(AutoReuse, TrueMelee) },
                 { ItemID.Gladius, Do(AutoReuse, TrueMelee) },
@@ -442,7 +442,6 @@ namespace CalamityMod.Items
                 { ItemID.JoustingLance, trueMelee },
                 { ItemID.NebulaChainsaw, trueMeleeNoSpeed },
                 { ItemID.ObsidianSwordfish, Do(AutoReuse, TrueMelee) },
-                { ItemID.OnyxBlaster, Do(PointBlank) },
                 { ItemID.PiercingStarlight, trueMelee }, // Starlight
                 { ItemID.Ruler, trueMelee },
                 { ItemID.ShadowJoustingLance, trueMelee },
@@ -990,15 +989,6 @@ namespace CalamityMod.Items
             }
         }
         internal static IItemTweak PickPower(int p) => new PickPowerRule(p);
-        #endregion
-
-        #region Point Blank
-        internal class PointBlankRule : IItemTweak
-        {
-            public bool AppliesTo(Item it) => true;
-            public void ApplyTweak(Item it) => it.Calamity().canFirePointBlankShots = true;
-        }
-        internal static IItemTweak PointBlank => new PointBlankRule();
         #endregion
 
         #region Scale (True Melee)

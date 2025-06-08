@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 3;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 90;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -37,7 +37,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             AIType = ProjectileID.Bullet;
             Projectile.ignoreWater = true;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

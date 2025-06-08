@@ -19,7 +19,7 @@ namespace CalamityMod.Projectiles
             IProjectileTweak[] trueMelee = Do(TrueMelee, DefaultIDStaticIFrames); // All the tweaked true melee projectiles need to be changed from global to static as well
             IProjectileTweak[] trueMeleeNoSpeed = Do(TrueMeleeNoSpeed, DefaultIDStaticIFrames);
             IProjectileTweak[] defaultIFrames = Do(DefaultIDStaticIFrames);
-            IProjectileTweak[] standardBulletTweaks = Do(PointBlank, ExtraUpdatesDelta(+2));
+            IProjectileTweak[] standardBulletTweaks = Do(ExtraUpdatesDelta(+2));
             IProjectileTweak[] standardChainsawTweaks = Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(5));
             IProjectileTweak[] standardDrillTweaks = Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+25), LocalIFrames(5));
             IProjectileTweak[] counterweightTweaks = Do(MaxUpdatesExact(2), DefaultIDStaticIFrames);
@@ -121,8 +121,8 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlackCounterweight, counterweightTweaks },
                 { ProjectileID.BlueCounterweight, counterweightTweaks },
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
-                { ProjectileID.Bullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.BulletHighVelocity, Do(PointBlank, LocalIFrames(-1)) },
+                { ProjectileID.Bullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.BulletHighVelocity, Do(LocalIFrames(-1)) },
                 { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(5), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
@@ -130,10 +130,10 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CobaltChainsaw, standardChainsawTweaks },
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
                 { ProjectileID.CobaltNaginata, Do(TrueMelee, LocalIFrames(9)) },
-                { ProjectileID.CrystalBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.CrystalBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.CrystalVileShardHead, Do(LocalIFrames(23)) },
                 { ProjectileID.CrystalVileShardShaft, Do(LocalIFrames(23)) },
-                { ProjectileID.CursedBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.CursedBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.ClusterRocketI, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterFragmentsI, Do(IDStaticIFrames(15)) },
                 { ProjectileID.ClusterRocketII, Do(LocalIFrames(15)) },
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
-                { ProjectileID.ExplosiveBullet, Do(PointBlank, ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
+                { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.FruitcakeChakram, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.GiantBee, Do(PiercingExact(2), DefaultIDStaticIFrames) },
                 { ProjectileID.GladiusStab, Do(TrueMelee, LocalIFrames(-1)) },
-                { ProjectileID.GoldenBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.GoldenBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.GoldenShowerFriendly, Do(PiercingExact(2), DefaultIDStaticIFrames) },
                 { ProjectileID.GreenCounterweight, counterweightTweaks },
                 { ProjectileID.Hamdrax, standardDrillTweaks }, // Drax (never internally renamed since 1.1)
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.HellfireArrow, Do(ExtraUpdatesDelta(+2)) },
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
-                { ProjectileID.IchorBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.IchorBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
@@ -183,14 +183,14 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.MythrilChainsaw, standardChainsawTweaks },
                 { ProjectileID.MythrilDrill, standardDrillTweaks },
                 { ProjectileID.MythrilHalberd, Do(TrueMelee, LocalIFrames(8)) },
-                { ProjectileID.NanoBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.NanoBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.NebulaDrill, standardDrillTweaks },
                 { ProjectileID.NebulaLaser, Do(ExtraUpdatesDelta(-1)) },
                 { ProjectileID.OrichalcumChainsaw, standardChainsawTweaks },
                 { ProjectileID.OrichalcumDrill, standardDrillTweaks },
                 { ProjectileID.PalladiumChainsaw, standardChainsawTweaks },
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
-                { ProjectileID.PartyBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.PoisonFang, Do(LocalIFrames(10)) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
@@ -215,7 +215,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.TitaniumDrill, standardDrillTweaks },
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.TrueNightsEdge, Do(PiercingExact(4)) },
-                { ProjectileID.VenomBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
+                { ProjectileID.VenomBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
@@ -225,8 +225,6 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 3: True Melee and Point Blank support
-                { ProjectileID.Blizzard, Do(PointBlank, DefaultIDStaticIFrames) }, // Blizzard Staff projectiles, re-used in Frostbite Blaster.
-                { ProjectileID.ChlorophyteBullet, Do(PointBlank, DefaultIDStaticIFrames) },
                 { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
@@ -308,6 +306,7 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.BeeHive, defaultIFrames},
                 {ProjectileID.Beenade, defaultIFrames},
                 {ProjectileID.BlackCat, defaultIFrames},
+                { ProjectileID.Blizzard, defaultIFrames }, // Blizzard Staff projectiles, re-used in Frostbite Blaster.
                 {ProjectileID.BloodArrow, defaultIFrames},
                 {ProjectileID.BloodButcherer, defaultIFrames},
                 {ProjectileID.BloodNautilusTears, defaultIFrames},
@@ -345,6 +344,7 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.ChargedBlasterLaser, defaultIFrames},
                 {ProjectileID.ChargedBlasterOrb, defaultIFrames},
                 { ProjectileID.ChlorophyteArrow, defaultIFrames },
+                { ProjectileID.ChlorophyteBullet, defaultIFrames },
                 {ProjectileID.ChlorophytePartisan, defaultIFrames},
                 {ProjectileID.ClothiersCurse, defaultIFrames},
                 {ProjectileID.ClusterMineI, defaultIFrames},
@@ -844,16 +844,6 @@ namespace CalamityMod.Projectiles
         internal static IProjectileTweak PiercingExact(int p) => new PiercingExactRule(p);
         internal static IProjectileTweak NoPiercing = new PiercingExactRule(1);
         internal static IProjectileTweak InfinitePiercing = new PiercingExactRule(-1);
-        #endregion
-
-        #region Point Blank
-        internal class PointBlankRule : IProjectileTweak
-        {
-            public bool AppliesTo(Projectile proj) => true;
-            public void ApplyTweak(Projectile proj)
-                => proj.Calamity().pointBlankShotDuration = DefaultPointBlankDuration;
-        }
-        internal static IProjectileTweak PointBlank => new PointBlankRule();
         #endregion
 
         #region Scale

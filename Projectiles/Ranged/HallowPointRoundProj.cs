@@ -30,7 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Invisible for the first few frames
             Projectile.alpha = 255;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

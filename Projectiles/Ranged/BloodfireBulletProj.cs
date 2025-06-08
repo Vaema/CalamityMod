@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 12;
             Projectile.timeLeft = Lifetime;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.tileCollide = false;
         }
 

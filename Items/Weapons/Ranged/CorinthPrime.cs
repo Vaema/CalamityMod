@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
             Item.shoot = ModContent.ProjectileType<RealmRavagerBullet>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-20, 5);

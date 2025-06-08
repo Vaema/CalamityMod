@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<Projectiles.Ranged.WulfrumScrapBullet>();
             Item.shootSpeed = 15f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void HoldItem(Player player)

@@ -47,7 +47,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.UseSound = null; //does so in Shoot
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.altFunctionUse == 2 ? false : true;
