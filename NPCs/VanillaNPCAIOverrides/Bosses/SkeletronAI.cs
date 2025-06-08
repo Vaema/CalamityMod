@@ -155,39 +155,39 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Hand variables
             bool handsDead = numHandsAlive == 0;
-            int numProj = Main.getGoodWorld ? 22 : death ? 5 : 3;
-            float spread = Main.getGoodWorld ? 180 : 60;
+            int numProj = CalamityWorld.LegendaryMode ? 22 : death ? 5 : 3;
+            float spread = CalamityWorld.LegendaryMode ? 180 : 60;
             float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 12f : 4.5f);
 
             switch (numHandsAlive)
             {
                 case 0:
-                    numProj = Main.getGoodWorld ? 36 : death ? 9 : 7;
-                    spread = Main.getGoodWorld ? 180 : death ? 90 : 82;
+                    numProj = CalamityWorld.LegendaryMode ? 36 : death ? 9 : 7;
+                    spread = CalamityWorld.LegendaryMode ? 180 : death ? 90 : 82;
                     headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 12f : 6f);
                     break;
 
                 case 1:
-                    numProj = Main.getGoodWorld ? 27 : death ? 7 : 5;
-                    spread = Main.getGoodWorld ? 150 : death ? 76 : 68;
+                    numProj = CalamityWorld.LegendaryMode ? 27 : death ? 7 : 5;
+                    spread = CalamityWorld.LegendaryMode ? 150 : death ? 76 : 68;
                     headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 11.5f : 5f);
                     break;
 
                 case 2:
-                    numProj = Main.getGoodWorld ? 18 : death ? 6 : 4;
-                    spread = Main.getGoodWorld ? 140 : death ? 70 : 62;
+                    numProj = CalamityWorld.LegendaryMode ? 18 : death ? 6 : 4;
+                    spread = CalamityWorld.LegendaryMode ? 140 : death ? 70 : 62;
                     headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 11f : 4.5f);
                     break;
 
                 case 3:
-                    numProj = Main.getGoodWorld ? 15 : death ? 5 : 3;
-                    spread = Main.getGoodWorld ? 130 : death ? 64 : 56;
+                    numProj = CalamityWorld.LegendaryMode ? 15 : death ? 5 : 3;
+                    spread = CalamityWorld.LegendaryMode ? 130 : death ? 64 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 10.5f : 4f);
                     break;
 
                 case 4:
-                    numProj = Main.getGoodWorld ? 12 : death ? 4 : 3;
-                    spread = Main.getGoodWorld ? 120 : 56;
+                    numProj = CalamityWorld.LegendaryMode ? 12 : death ? 4 : 3;
+                    spread = CalamityWorld.LegendaryMode ? 120 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 10f : 7f) : (phase3 ? 10f : 3.5f);
                     break;
             }
@@ -367,7 +367,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
             {
                 float skullProjFrequency = bossRush ? 15f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
 
@@ -444,11 +444,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                float headYAcceleration = (Main.getGoodWorld ? 0.07f : death ? (0.06f + 0.04f * (1f - lifeRatio)) : 0.04f);
+                float headYAcceleration = (CalamityWorld.LegendaryMode ? 0.07f : death ? (0.06f + 0.04f * (1f - lifeRatio)) : 0.04f);
                 float headYTopSpeed = headYAcceleration * 100f;
-                float headXAcceleration = (Main.getGoodWorld ? 0.21f : death ? (0.16f + 0.08f * (1f - lifeRatio)) : 0.08f);
+                float headXAcceleration = (CalamityWorld.LegendaryMode ? 0.21f : death ? (0.16f + 0.08f * (1f - lifeRatio)) : 0.08f);
                 float headXTopSpeed = headXAcceleration * 100f;
-                float deceleration = Main.getGoodWorld ? 0.83f : death ? 0.86f : 0.89f;
+                float deceleration = CalamityWorld.LegendaryMode ? 0.83f : death ? 0.86f : 0.89f;
 
                 if (bossRush)
                 {
@@ -545,7 +545,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Set damage
                 npc.damage = npc.defDamage;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     npc.reflectsProjectiles = true;
                     if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == 0f)
@@ -646,7 +646,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float dashPhaseTime = death ? 210f : 300f;
                 if (npc.ai[2] >= dashPhaseTime)
                 {
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient && NPC.CountNPCS(NPCID.DarkCaster) < 6)
                         {
@@ -737,7 +737,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     headSpinVelocityMult *= baseDistanceVelocityMult;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     headSpinVelocityMult *= 1.3f;
 
                 headSpinTargetDist = headSpinVelocityMult / headSpinTargetDist;
@@ -902,7 +902,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float velocityMultiplier = MathHelper.Lerp(death ? 0.6f : 0.7f, 1f, skeletronLifeRatio);
             float velocityIncrement = MathHelper.Lerp(0.2f, death ? 0.4f : 0.3f, 1f - skeletronLifeRatio);
             float handSwipeVelocity = MathHelper.Lerp(16f, death ? 24f : 20f, 1f - skeletronLifeRatio);
-            float deceleration = Main.getGoodWorld ? 0.78f : death ? 0.82f : 0.86f;
+            float deceleration = CalamityWorld.LegendaryMode ? 0.78f : death ? 0.82f : 0.86f;
 
             if (death)
             {

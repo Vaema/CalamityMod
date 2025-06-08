@@ -1212,7 +1212,7 @@ namespace CalamityMod.Projectiles
                         {
                             int sharkron = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center.X, (int)center.Y, NPCID.Sharkron2);
                             Main.npc[sharkron].velocity = projectile.velocity;
-                            Main.npc[sharkron].scale = death ? 2f : 1.5f;
+                            Main.npc[sharkron].scale = 1.5f;
                             Main.npc[sharkron].netUpdate = true;
                             Main.npc[sharkron].ai[2] = projectile.width;
                             Main.npc[sharkron].ai[3] = -1.5f;
@@ -2677,7 +2677,7 @@ namespace CalamityMod.Projectiles
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].velocity *= 0.3f;
                         Main.dust[dust].velocity += projectile.velocity * 0.1f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             Main.dust[dust].noLight = true;
                     }
 
@@ -2727,7 +2727,7 @@ namespace CalamityMod.Projectiles
                         Main.dust[dust].noGravity = true;
                         Main.dust[dust].position = dustPosition;
                         Main.dust[dust].velocity = dustVelocity;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             Main.dust[dust].noLight = true;
                     }
 
@@ -4824,7 +4824,7 @@ namespace CalamityMod.Projectiles
                     projectile.position = vector76;
                     projectile.width = projectile.height = 22;
 
-                    if (Main.getGoodWorld && !Main.remixWorld)
+                    if (CalamityWorld.LegendaryMode && !Main.remixWorld)
                     {
                         int num1011 = 4;
                         Vector2 center3 = projectile.position;

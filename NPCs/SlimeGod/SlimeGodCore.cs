@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.npcSlots = 10f;
             NPC.width = 96;
             NPC.height = 98;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale = 2f;
 
             NPC.defense = 6;
@@ -548,7 +548,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 flySpeed *= 1.1f;
             if (bossRush)
                 flySpeed *= 1.2f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 flySpeed *= 1.3f;
 
             Vector2 flyDestination = aggressionLevel >= (int)AggressionLevel.ChargeAtPlayer ? player.Center : player.Center - Vector2.UnitY * 320f;
@@ -590,9 +590,9 @@ namespace CalamityMod.NPCs.SlimeGod
                 float maxInertiaDistance = 600f;
                 float totalInertiaAdjustmentDistance = maxInertiaDistance - minInertiaDistance;
                 float distanceFromInertiaAdjustmentCutoff = distanceFromFlyDestination - minInertiaDistance;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     maxInertia *= 0.8f;
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     maxInertia *= Main.rand.NextFloat(0.2f, 1f);
 
                 float inertia = distanceFromFlyDestination >= maxInertiaDistance ? maxInertia :

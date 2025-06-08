@@ -95,7 +95,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
@@ -208,7 +208,7 @@ namespace CalamityMod.NPCs.Crabulon
                 enrageScale += 1f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrageScale += 0.5f;
 
             if (NPC.ai[0] < 2f)
@@ -285,7 +285,7 @@ namespace CalamityMod.NPCs.Crabulon
                     walkingVelocity += 0.75f;
                 if (phase4)
                     walkingVelocity += 1f;
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     walkingVelocity *= 2f;
 
                 bool shouldWalkSlower = false;
@@ -982,7 +982,7 @@ namespace CalamityMod.NPCs.Crabulon
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.01 : Main.getGoodWorld ? 0.02 : 0.05));
+                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.02 : 0.05));
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;
@@ -994,8 +994,8 @@ namespace CalamityMod.NPCs.Crabulon
                             int npcType = ModContent.NPCType<CrabShroom>();
                             int crabShroom = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, npcType);
                             Main.npc[crabShroom].SetDefaults(npcType);
-                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (Main.getGoodWorld ? 0.2f : 0.1f);
-                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (Main.getGoodWorld ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
                             if (Main.dedServ && crabShroom < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, crabShroom);
                         }

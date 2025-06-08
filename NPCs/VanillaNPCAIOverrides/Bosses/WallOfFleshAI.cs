@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase2 = lifeRatio < 0.66f;
             bool phase3 = lifeRatio < 0.33f;
 
-            if (Main.getGoodWorld && Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(180))
+            if (CalamityWorld.LegendaryMode && Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(180))
             {
                 if (NPC.CountNPCS(NPCID.FireImp) < 4)
                 {
@@ -327,7 +327,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (death)
                 velocityX *= 1.2f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 velocityX *= 1.1f;
                 velocityX += 0.1f;

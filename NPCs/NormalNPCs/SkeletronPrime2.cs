@@ -50,7 +50,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 102;
             if (Main.tenthAnniversaryWorld)
                 NPC.scale *= 0.5f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.1f;
 
             NPC.defense = 24;

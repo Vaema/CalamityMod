@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 30;
             if (Main.tenthAnniversaryWorld)
                 NPC.scale *= 0.5f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.1f;
 
             NPC.defense = 5;
@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             bool charging = (attemptingToCharge && farEnoughForCharge && closeEnoughForCharge) || NPC.ai[1] > 0f;
 
             float projectileShootGateValue = CalamityWorld.death ? 180f : 270f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 projectileShootGateValue *= 0.5f;
 
             Vector2 lookAt = target.Center - NPC.Center;

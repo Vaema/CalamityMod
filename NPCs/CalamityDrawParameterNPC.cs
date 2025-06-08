@@ -45,8 +45,8 @@ namespace CalamityMod.NPCs
         #region Load / Unload
         public override void Load()
         {
-            DrawingMiracleBlight = new bool[Main.maxNPCs];
-            DrawingPolarity = new bool[Main.maxNPCs];
+            DrawingMiracleBlight = new bool[Main.maxNPCs + 1];
+            DrawingPolarity = new bool[Main.maxNPCs + 1];
         }
 
         public override void Unload()

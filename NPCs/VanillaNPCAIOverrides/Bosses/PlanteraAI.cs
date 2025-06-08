@@ -173,7 +173,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 velocity *= 1.15f;
                 acceleration *= 1.15f;
@@ -649,7 +649,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (enrage)
                         npc.localAI[1] += 2f;
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         npc.localAI[1] += 1f;
 
                     float shootProjectileGateValue = death ? 30f : 60f;
@@ -729,7 +729,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.localAI[0] = 2f;
                         int totalTentacles = death ? 12 : 8;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             totalTentacles += 6;
                         if (CalamityWorld.LegendaryMode)
                             totalTentacles *= 2;
@@ -737,7 +737,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (int i = 0; i < totalTentacles; i++)
                             NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI);
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             foreach (NPC n in Main.ActiveNPCs)
                             {
@@ -1095,7 +1095,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float hookMoveDistance = (float)Math.Sqrt(hookMoveX * hookMoveX + hookMoveY * hookMoveY);
                 if (hookMoveDistance < 12f + velocity)
                 {
-                    if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld && npc.localAI[3] == 1f)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && npc.localAI[3] == 1f)
                     {
                         npc.localAI[3] = 0f;
                         WorldGen.SpawnPlanteraThorns(npc.Center);
@@ -1106,7 +1106,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else
                 {
-                    if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
                         npc.localAI[3] = 1f;
 
                     hookMoveDistance = velocity / hookMoveDistance;
@@ -1140,7 +1140,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 if (Main.rand.NextBool(5))
                     npc.reflectsProjectiles = true;
@@ -1218,7 +1218,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 deceleration *= 0.75f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 tentacleAcceleration += 4f;
 
             // Fast retraction

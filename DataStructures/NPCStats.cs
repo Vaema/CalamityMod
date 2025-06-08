@@ -261,7 +261,7 @@ namespace CalamityMod
 
                 { ModContent.NPCType<ProfanedGuardianCommander>(), 0.8 },
 
-                { ModContent.NPCType<Bumblefuck>(), 0.8 },
+                { ModContent.NPCType<Dragonfolly>(), 0.8 },
 
                 { ModContent.NPCType<StormWeaverBody>(), 0.8 },
                 { ModContent.NPCType<StormWeaverTail>(), 0.8 },
@@ -510,8 +510,8 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianHealer>(), new int[] { 100, 200, 220, 240, 300 } },
                 { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
-                { ModContent.NPCType<Bumblefuck>(), new int[] { 170, 256, 288, 320, 504 } },
-                { ModContent.NPCType<Bumblefuck2>(), new int[] { 145, 220, 242, 264, 435 } },
+                { ModContent.NPCType<Dragonfolly>(), new int[] { 170, 256, 288, 320, 504 } },
+                { ModContent.NPCType<DraconicSwarmer>(), new int[] { 145, 220, 242, 264, 435 } },
 
                 { ModContent.NPCType<CeaselessVoid>(), new int[] { 240, 360, 396, 432, 720 } },
                 { ModContent.NPCType<DarkEnergy>(), new int[] { 175, 260, 288, 316, 525 } },
@@ -769,8 +769,8 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.ProjectileType<HolyBurnOrb>()), new int[] { 120, 192, 220, 248, 360 } },
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.ProjectileType<HolyLight>()), new int[] { 35, 50, 50, 0, 0 } },
 
-                { new Tuple<int, int>(ModContent.NPCType<Bumblefuck>(), ModContent.ProjectileType<RedLightningFeather>()), new int[] { 140, 220, 244, 268, 420 } },
-                { new Tuple<int, int>(ModContent.NPCType<Bumblefuck>(), ModContent.ProjectileType<BirbAuraFlare>()), new int[] { 200, 300, 332, 364, 600 } },
+                { new Tuple<int, int>(ModContent.NPCType<Dragonfolly>(), ModContent.ProjectileType<RedLightningFeather>()), new int[] { 140, 220, 244, 268, 420 } },
+                { new Tuple<int, int>(ModContent.NPCType<Dragonfolly>(), ModContent.ProjectileType<BirbAuraFlare>()), new int[] { 200, 300, 332, 364, 600 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<Providence>(), ModContent.ProjectileType<HolyBlast>()), new int[] { 150, 264, 288, 312, 450 } }, // Split holy fire does: 113, 198, 216, 234, 338
                 { new Tuple<int, int>(ModContent.NPCType<Providence>(), ModContent.ProjectileType<HolyFire>()), new int[] { 120, 192, 220, 248, 360 } },

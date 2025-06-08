@@ -108,7 +108,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<AuroraSpirit>();
                     break;
                 case 11:
-                    npc = NPCType<WildBumblefuck>(); // There's also the boss variant but I dont think we want banners to affect them?
+                    npc = NPCType<WildBumblebirb>(); // There's also the boss variant but I dont think we want banners to affect them?
                     break;
                 /*case 12:
                     npc = NPCType<Unused>(); - Formerly Sea Urchin

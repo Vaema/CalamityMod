@@ -1,85 +1,144 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
     public class GreatswordofJudgement : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        private float swingRoatation = 0;
-        private int time = 0;
-        private Color mainColor;
-        private int swordDirection;
-        private int useTime = 20;
-        private int opacityAdjust = 0;
-        private float smearOpacity = 0;
+        public int time = 0;
+        public Vector2 bladeHitboxPos;
+        public float bladeRotation = 0;
+        public int bladeDirection = 0;
+        public float completion = 0;
+        public bool canHit => (completion >= 0.35f && completion <= 0.8f);
+        public int swingCount = 0;
+        public bool spawnProj = true;
+        public bool playSound = true;
+
+        public Color clr = Color.MediumOrchid;
+
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 155;
+            Item.damage = 240;
             Item.DamageType = DamageClass.Melee;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = Item.useTime = useTime;
+            Item.useAnimation = Item.useTime = 20;
             Item.useTurn = true;
             Item.knockBack = 7f;
-            Item.UseSound = SoundID.Item60;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.shoot = ModContent.ProjectileType<JudgementProj>();
-            Item.shootSpeed = 5f;
+            Item.shootSpeed = 5.5f;
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            return false;
         }
         public override void UseItemHitbox(Player player, ref Rectangle hitbox, ref bool noHitbox)
         {
-            float scale = 1.1f;
+            // Basically just insures the enemy is always able to be hit if they're in range, the actual collision check is done in CanHitNPC
+            float scale = 8f;
             Vector2 newSize = new Point(hitbox.Width, hitbox.Height).ToVector2() * scale;
-            hitbox = new Rectangle(hitbox.X - (int)((newSize.X - hitbox.Width) / 2f), hitbox.Y - (int)((newSize.Y - hitbox.Height) / 2f), (int)newSize.X, (int)newSize.Y);
+            hitbox = new Rectangle((int)(bladeHitboxPos.X - newSize.X / 2f), (int)(bladeHitboxPos.Y - newSize.Y / 2f), (int)newSize.X, (int)newSize.Y);
+        }
+        public override bool? CanHitNPC(Player player, NPC target)
+        {
+            Vector2 mPos = player.Calamity().mouseWorld;
+            Vector2 shootDir = player.Center.DirectionTo(mPos);
+            float _ = float.NaN;
+            bool hitCheck = Collision.CheckAABBvLineCollision(target.Hitbox.TopLeft(), target.Hitbox.Size(), player.Center - shootDir * 30, player.Center + shootDir * 145, Item.width * 3f, ref _);
+            return ((canHit && hitCheck) ? null : false);
         }
         public override void UseAnimation(Player player)
         {
-            swordDirection = player.direction;
+            swingCount++;
             time = 0;
-            swingRoatation = 0;
-            mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
-            opacityAdjust = 0;
-            smearOpacity = 0;
+            bladeDirection = player.direction;
+            bladeHitboxPos = player.Center;
+            bladeRotation = 0;
+            spawnProj = true;
+            playSound = true;
+            int dir = -Math.Sign(player.Center.X - player.Calamity().mouseWorld.X);
+            float startRot = MathHelper.ToRadians(-90) * dir * (swingCount % 2 == 0 ? 1 : -1);
+
+            clr = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
         }
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            opacityAdjust++;
-            if (opacityAdjust >= 5 && opacityAdjust <= 15 && smearOpacity < 0.9f)
-                smearOpacity += 0.1f;
-            else if (smearOpacity > 0)
-                smearOpacity -= 0.2f;
+            Vector2 mPos = player.Calamity().mouseWorld;
+            completion = (float)((float)time / ((float)(Item.useAnimation / player.GetAttackSpeed(DamageClass.Melee))));
+            int dir = -Math.Sign(player.Center.X - mPos.X);
+
+            float startRot = MathHelper.ToRadians(-110) * dir * (swingCount % 2 == 0 ? 1 : -1);
+            float endRot = MathHelper.ToRadians(-110) * dir * (swingCount % 2 == 0 ? -1 : 1);
+            float minRot = MathHelper.ToRadians(-150) * dir * (swingCount % 2 == 0 ? 1 : -1);
+            float cutoff = 0.2f;
+            float cutoff2 = 0.95f;
+
+            Vector2 shootDir = player.Center.DirectionTo(mPos) * Item.shootSpeed;
+
+            if (completion <= cutoff)
+            {
+                float lerp = Utils.GetLerpValue(0, cutoff, completion, true);
+                player.itemRotation = player.Center.DirectionTo(mPos).ToRotation() + MathHelper.Lerp(startRot, minRot, CalamityUtils.EaseInOutExp(lerp, 4f, 4f));
+                player.itemRotation += (MathHelper.Pi) * (dir == 1 ? 0 : 1) + MathHelper.PiOver4 * dir;
+            }
+            else
+            {
+                if (playSound)
+                {
+                    SoundStyle swing = new("CalamityMod/Sounds/Item/SwooshMid");
+                    SoundEngine.PlaySound(swing with { Pitch = Main.rand.NextFloat(0.1f, 0.3f), Volume = 1f }, player.Center);
+                    playSound = false;
+                }
+                if (completion >= 0.65f && spawnProj)
+                {
+                    Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, shootDir, Item.shoot, Item.damage, Item.knockBack, player.whoAmI, 0f);
+
+                    Particle swipe = new CustomSpark(player.Center - shootDir * 5, shootDir.RotatedBy(0.4f * (dir * (swingCount % 2 == 0 ? 1 : -1))) * 2.5f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.6f, clr, new Vector2(1f, 1f), true, false, 0, false, false);
+                    GeneralParticleHandler.SpawnParticle(swipe);
+
+                    SoundEngine.PlaySound(SoundID.Item60, player.Center);
+                    spawnProj = false;
+                }
+                float lerp = Utils.GetLerpValue(cutoff, cutoff2, completion, true);
+                player.itemRotation = player.Center.DirectionTo(mPos).ToRotation() + MathHelper.Lerp(minRot, endRot, CalamityUtils.EaseInOutExp(lerp, 6f, 2f));
+                player.itemRotation += (MathHelper.Pi) * (dir == 1 ? 0 : 1) + MathHelper.PiOver4 * dir;
+            }
+
+            float extraRot = (dir == 1 ? -MathHelper.PiOver4 : MathHelper.ToRadians(225));
+            bladeHitboxPos = player.Center + (player.itemRotation + extraRot).ToRotationVector2() * 180;
+
+            player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, player.itemRotation + MathHelper.ToRadians(-130) * dir);
+            player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, player.itemRotation + MathHelper.ToRadians(-130) * dir);
+
+            player.itemLocation = player.Center;
+            player.direction = dir;
 
             time++;
-            swingRoatation += swordDirection == 1 ? 0.13f : -0.13f;
-
-            float Rot = (swordDirection == -1 ? 1.8f : -1.8f) + swingRoatation;
-            if (swordDirection != player.direction)
+        }
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            int beamDamage = player.CalcIntDamage<MeleeDamageClass>(Item.damage * 0.4f);
+            Vector2 mouseClamped = player.ClampedMouseWorld();
+            SoundEngine.PlaySound(SoundID.Item84 with { Volume = 1f, Pitch = Main.rand.NextFloat(0.5f, 0.7f) }, player.Center);
+            for (int i = 0; i < 2; i++)
             {
-                swingRoatation *= -1;
-                swordDirection = player.direction;
-            }
-            Particle Smear = new SemiCircularSmearFade(player.Center, Vector2.Zero, mainColor * smearOpacity, Rot, Main.rand.NextFloat(1.95f, 2.2f), new Vector2(1, 1), 2, true, false, true, player.direction);
-            GeneralParticleHandler.SpawnParticle(Smear);
-
-            if (Main.rand.NextBool(3))
-            {
-                Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f);
-                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, 278);
-                dust.scale = Main.rand.NextFloat(0.4f, 0.55f);
-                dust.velocity = dustVel * 0.55f;
-                dust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
-                dust.noGravity = true;
+                Vector2 vel = player.Center.DirectionFrom(target.Center).RotatedByRandom(0.7f) * Main.rand.NextFloat(18, 20);
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.Center, vel, ModContent.ProjectileType<StarofJudgement>(), beamDamage, 0, player.whoAmI, 0, (i == 0 ? -1 : 1), 1);
             }
         }
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
@@ -90,6 +149,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 7).
+                AddIngredient<CoreofCalamity>().
+                AddIngredient<GalacticaSingularity>(5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }
