@@ -229,20 +229,20 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.dontTakeDamage = true;
                 if (bossRush)
                 {
-                    if (!Main.dedServ)
+                    foreach (Player p in Main.ActivePlayers)
                     {
-                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
-                            Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                        if (!p.dead && revenge)
+                            p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                     }
                 }
             }
             else
             {
                 NPC.dontTakeDamage = false;
-                if (!Main.dedServ)
+                foreach (Player p in Main.ActivePlayers)
                 {
-                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
-                        Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                    if (!p.dead && revenge)
+                        p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                 }
             }
 
