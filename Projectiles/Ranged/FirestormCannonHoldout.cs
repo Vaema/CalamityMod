@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Owner.PickAmmo(HeldItem, out int flareType, out _, out _, out _, out _, Main.rand.Next(100) >= 70);
-                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.05f * (1f + firingLerp * 0.5f)) * Owner.ActiveItem().shootSpeed;
+                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.04f * (1f + firingLerp * 0.5f)) * Owner.ActiveItem().shootSpeed;
                         Projectile flare = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, flareType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f, 1f);
                         flare.penetrate = 3;
                         flare.MaxUpdates = 2;
