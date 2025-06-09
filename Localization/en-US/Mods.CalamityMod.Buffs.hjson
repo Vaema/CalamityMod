@@ -1595,3 +1595,8 @@ PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
 }
+
+ForbiddenStealthSummonTagBuff: {
+	DisplayName: Forbidden Stealth Summon Tag Buff
+	Description: Mods.CalamityMod.Buffs.ForbiddenStealthSummonTagBuff.Description
+}

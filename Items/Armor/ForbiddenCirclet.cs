@@ -1,4 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
+using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,10 +16,41 @@ namespace CalamityMod.Items.Armor
         public const int tornadoBaseDmg = 80;
         public const float tornadoBaseKB = 1f;
 
+        public static SummonTag summonTag = new SummonTag()
+        {
+            //These tag damage fields determine the damage of the spawned eater. The resulting number from each is added together
+            //So, 0.5 multiplicative and 10 flat would make the damage be 50% of the spawning hit's damage, plus 10 more.
+            //If you want entirely flt, set multiplicative to 0. If you want entirely multiplicative, set flat to 0.
+            MultiplicativeTagDamage = 0.25f,
+            FlatTagDamage = 5,
+            AllowsWhipStacking = true,
+            TagOnHit = tagOnHit,
+            TagModifyHitEffects = SummonTag.BlankTagModifyHit
+        };
+
+        public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+
+            if (Main.rand.NextBool(5))
+            {
+                float xVector = Main.rand.Next(-35, 36) * 0.02f;
+                float yVector = Main.rand.Next(-35, 36) * 0.02f;
+                xVector *= 10f;
+                yVector *= 10f;
+
+                int damage = (int)Main.player[projectile.owner].GetBestClassDamage().ApplyTo(damageDone * summonTag.MultiplicativeTagDamage) + summonTag.FlatTagDamage;
+                Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center.X, npc.Center.Y, xVector, yVector, ModContent.ProjectileType<ForbiddenCircletEater>(), damage, 3, projectile.owner);
+
+            }
+                
+        }
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
+            summonTag.TagItem = Type;
+            SummonTagDebuffDict.Add(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(),summonTag);
         }
 
         public override void SetDefaults()
@@ -48,13 +82,15 @@ namespace CalamityMod.Items.Armor
             player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, stormMana);
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.forbiddenCirclet = true;
-            modPlayer.rogueStealthMax += 0.4f;
+            modPlayer.rogueStealthMax += 1f;
+            player.GetDamage<RogueDamageClass>() += 0.1f;
             modPlayer.wearingRogueArmor = true;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<RogueDamageClass>() += 0.1f;
             player.Calamity().rogueVelocity += 0.15f;
         }
 
@@ -66,6 +102,18 @@ namespace CalamityMod.Items.Armor
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
+        }
+    }
+
+    public class ForbiddenStealthSummonTagBuff : ModBuff
+    {
+        public override string Texture => "CalamityMod/Buffs/Summon/Whips/SentinalLash";
+
+        public override void SetStaticDefaults()
+        {
+            BuffID.Sets.IsATagBuff[Type] = true;
+            Main.debuff[Type] = true;
+            Main.buffNoSave[Type] = true;
         }
     }
 }

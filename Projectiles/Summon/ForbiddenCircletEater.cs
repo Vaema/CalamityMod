@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true; //This marks it as a minion shot, which allows it to proc summon tag effects.
         }
 
         public override void SetDefaults()

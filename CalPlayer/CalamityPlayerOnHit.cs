@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -412,6 +413,11 @@ namespace CalamityMod.CalPlayer
                 globalProj.spawnArcFlash = false;
                 // This is really only used for long lasting projectiles and contact damage minions
                 globalProj.arcFlashCooldown = 90;
+            }
+
+            if (forbiddenCirclet && globalProj.stealthStrike)
+            {
+                target.AddBuff(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(), 600);
             }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
@@ -1123,23 +1129,6 @@ namespace CalamityMod.CalPlayer
                     spawnedFeathers = true;
                 }
                 rogueCrownCooldown = spawnedFeathers ? 15 : 60;
-            }
-
-            if (forbiddenCirclet && modProj.stealthStrike && forbiddenCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
-            {
-                for (int index2 = 0; index2 < 6; index2++)
-                {
-                    float xVector = Main.rand.Next(-35, 36) * 0.02f;
-                    float yVector = Main.rand.Next(-35, 36) * 0.02f;
-                    xVector *= 10f;
-                    yVector *= 10f;
-                    int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
-
-                    int eater = Projectile.NewProjectile(spawnSource, proj.Center.X, proj.Center.Y, xVector, yVector, ProjectileType<ForbiddenCircletEater>(), damage, proj.knockBack, proj.owner);
-                    if (eater.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[eater].DamageType = DamageClass.Generic;
-                    forbiddenCooldown = 15;
-                }
             }
 
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)

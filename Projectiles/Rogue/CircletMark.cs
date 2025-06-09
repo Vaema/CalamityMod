@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             Projectile.velocity = Vector2.Zero;
             Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] == 60f && Projectile.owner == Main.myPlayer)
+            if (Projectile.localAI[1] == 10f && Projectile.owner == Main.myPlayer)
             {
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CircletTornado>(), Projectile.damage, 2f, Projectile.owner, 0f, 0f);
             }
