@@ -32,8 +32,21 @@ CurrentlySelected: Currently Selected : {0}
 DifficultyClickText: "[c/919191:Click to select a difficulty mode]"
 ExpertDifficultyLock: "[c/919191:Higher difficulty modes can only be toggled in Expert Mode or above]"
 ChangingTheRules: "[c/919191:You cannot change the rules now!]"
-NoDifficulty: None
-NoDifficultyInfo: The classic Terraria experience, with no Calamity difficulty changes
+Classic: Classic
+ClassicEnabled: Classic Mode is enabled
+ClassicInfo: The classic Terraria experience, with no difficulty changes
+Expert: Expert
+ExpertEnabled: Expert Mode is enabled
+ExpertShortInfo: "[c/#b8860b:Attack changes and such]"
+ExpertExpandedInfo: what
+ExpertActivate: Expert is active
+ExpertDeactivate: Expert is not active
+Master: Master
+MasterEnabled: Master Mode is enabled
+MasterShortInfo: "[c/#556b2f:3x stats]"
+MasterExpandedInfo: What else do you want me to say really
+MasterActivate: Master is active
+MasterDeactivate: Master is not active
 Revengeance: Revengeance
 RevengeanceEnabled: Revengeance Mode is enabled
 RevengeanceShortInfo: "[c/F54254:The intended Calamity experience! Can only be enabled in Expert Mode!]"

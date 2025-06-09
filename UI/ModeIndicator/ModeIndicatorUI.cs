@@ -229,12 +229,7 @@ namespace CalamityMod.UI.ModeIndicator
         {
             locked = false;
             text = CalamityUtils.GetText("UI.DifficultyClickText");
-            if (!Main.expertMode && GetCurrentDifficulty == Difficulties[0])
-            {
-                locked = true;
-                text = CalamityUtils.GetText("UI.ExpertDifficultyLock");
-            }
-            else if (CalamityPlayer.areThereAnyDamnBosses || BossRushEvent.BossRushActive)
+            if (CalamityPlayer.areThereAnyDamnBosses || BossRushEvent.BossRushActive)
             {
                 locked = true;
                 text = CalamityUtils.GetText("UI.ChangingTheRules");
@@ -355,10 +350,7 @@ namespace CalamityMod.UI.ModeIndicator
 
                         text = GetDifficultyText(mode);
 
-                        // Cannot switch to Death Mode if Master Mode isn't active.
-                        // Cannot switch to Revengeance Mode if Master Mode is active.
-                        bool cannotSwitchTo = (!Main.masterMode && mode == Difficulties[2]) || (Main.masterMode && mode == Difficulties[1]);
-                        if (ClickingMouse && !cannotSwitchTo)
+                        if (ClickingMouse)
                             SwitchToDifficulty(mode);
                     }
                 }
@@ -372,7 +364,7 @@ namespace CalamityMod.UI.ModeIndicator
         {
             Texture2D lockTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicatorLock").Value;
             float rotationShift = lockClickTime == 0 ? 0f : (float)Math.Sin((1 - lockClickTime / (float)LockAnimLength) * MathHelper.TwoPi * 2f) * 0.5f * (lockClickTime / (float)LockAnimLength);
-            spriteBatch.Draw(lockTexture, DrawCenter + Vector2.UnitY * 12 * MainIconScale, null, Color.White, 0f + rotationShift, lockTexture.Size() * 0.5f, LockShakeScale * MainIconScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(lockTexture, DrawCenter + Vector2.UnitY * 24 * MainIconScale, null, Color.White, 0f + rotationShift, lockTexture.Size() * 0.5f, LockShakeScale * MainIconScale, SpriteEffects.None, 0f);
         }
         #endregion
 
@@ -440,8 +432,11 @@ namespace CalamityMod.UI.ModeIndicator
                     for (int j = 0; j < DifficultyTiers[i].Length; j++)
                         DifficultyTiers[i][j].Enabled = false;
 
-                    // Enable the one favored by the mode.
-                    DifficultyTiers[i][mode.FavoredDifficultyAtTier(i)].Enabled = true;
+                    // Enable the ones favored by the mode.
+                    for (int j = 0; j < mode.FavoredDifficultyAtTier(i).Length; j++)
+                    {
+                        DifficultyTiers[i][mode.FavoredDifficultyAtTier(i)[j]].Enabled = true;
+                    }
                 }
             }
 
