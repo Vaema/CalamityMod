@@ -45,8 +45,16 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Projectile.timeLeft <= Lifetime - 4)
             {
-                Particle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.05f, false, 10, 1.1f, Color.Aquamarine);
-                GeneralParticleHandler.SpawnParticle(spark);
+                if (Main.zenithWorld)
+                {
+                    Particle transspark = new SparkParticle(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.05f, false, 10, 1.1f, Main.rand.NextBool() ? Color.DeepSkyBlue : (Main.rand.NextBool() ? Color.White : Color.DeepPink));
+                    GeneralParticleHandler.SpawnParticle(transspark);
+                }
+                else
+                {
+                    Particle spark = new SparkParticle(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * 0.05f, false, 10, 1.1f, Color.Aquamarine);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
                 if (Main.rand.NextBool(8))
                 {
                     MediumMistParticle smoke = new MediumMistParticle(Projectile.Center + Main.rand.NextVector2Circular(25, 25), -Projectile.velocity * 0.05f, Main.rand.NextBool(3) ? Color.SeaGreen : Color.SkyBlue, Color.DarkBlue, 0.5f, 180, 3f);

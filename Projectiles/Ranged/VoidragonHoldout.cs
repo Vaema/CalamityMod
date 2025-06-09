@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.1f, PitchVariance = 0.1f, MaxInstances = -1 }, Projectile.Center);
                     Particle sparker = new CustomPulse(GunTipPosition, Vector2.Zero, Color.Purple, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.02f, 0.5f, 6, true, 0.8f);
                     GeneralParticleHandler.SpawnParticle(sparker);
-                    Particle center = new SnowflakeSparkle(GunTipPosition, Vector2.Zero, Color.White, Color.Indigo, 0.8f, 2, Main.rand.NextFloat(-10, 10), 0.5f, 6);
+                    Particle center = new SnowflakeSparkle(GunTipPosition, Vector2.Zero, Color.White, Color.Indigo, 0.8f, 2, Main.rand.NextFloat(-10, 10), 0.5f, 7);
                     GeneralParticleHandler.SpawnParticle(center);
                     GenericSparkle sparker2 = new GenericSparkle(GunTipPosition, Vector2.Zero, Main.rand.NextBool() ? Color.Indigo : Color.BlueViolet * 0.9f, Color.Indigo, Main.rand.NextFloat(1.4f, 1.6f), 2, 0, 2.22f);
                     GeneralParticleHandler.SpawnParticle(sparker2);
@@ -168,10 +168,10 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         Owner.Calamity().sharkGunDamageScaling++;
                     }
-                    //Spawn the laser. Change beamTimer to edit its lifetime
+                    //Spawn the laser only once at the start of the timer. Change beamTimer to edit its lifetime
                     //I fucking hate this laser by the way
                     if (Main.myPlayer == Projectile.owner && beamTimer == 500)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.05f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, Projectile.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<AbyssalFire>(), (int)(Projectile.damage * 0.03f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner, Projectile.whoAmI);
                     beamTimer--;
                 }
                 else
