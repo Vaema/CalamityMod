@@ -6492,13 +6492,13 @@ namespace CalamityMod.NPCs
             if (GrenadeResistIDList.Includes(projectile.type))
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
-                // Note that Calamity reduces the vanilla resist from 80% to 60%
+                // Note that Calamity reduces the vanilla resist from 80% to 66%
                 bool hasResist = EaterOfWorldsIDList.Includes(npc.type) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
                 if (npc.type == NPCID.Creeper || DesertScourgeIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type))
                     hasResist = true;
                 if (hasResist)
-                    modifiers.SourceDamage *= 0.4f;
+                    modifiers.SourceDamage *= 0.33f;
             }
 
             if (modPlayer.camper && !player.StandingStill())
