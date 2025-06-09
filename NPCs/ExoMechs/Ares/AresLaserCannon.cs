@@ -184,6 +184,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             bool nerfedAttacks = false;
             if (exoTwinsAlive)
                 nerfedAttacks = Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].Calamity().newAI[1] != (float)Apollo.Apollo.SecondaryPhase.PassiveAndImmune;
+            // Used to make the beam only sweep horizontally during mecha mayhem phase
+            bool mechaMayhem = nerfedAttacks && exoWormAlive && Main.npc[CalamityGlobalNPC.draedonExoMechWorm].Calamity().newAI[1] != (float)ThanatosHead.SecondaryPhase.PassiveAndImmune;
 
             // Phases
             bool berserk = lifeRatio < 0.4f || (otherExoMechsAlive == 0 && lifeRatio < 0.7f);
@@ -346,7 +348,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             else if (shouldGetBuffedByBerserkPhase)
                 deathrayPhaseGateValue *= 0.5f;
 
-            float deathrayPhaseVelocity = (nerfedAttacks ? 6f : passivePhase ? 9f : 12f) * baseVelocityMult;
+            float deathrayPhaseVelocity = (nerfedAttacks ? 8f : passivePhase ? 9f : 12f) * baseVelocityMult;
             if (lastMechAlive)
                 deathrayPhaseVelocity *= 1.2f;
             else if (shouldGetBuffedByBerserkPhase)
@@ -512,10 +514,21 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         AIState = (float)Phase.Nothing;
                         calamityGlobalNPC.newAI[2] = 0f;
 
-                        // Change deathray sweep type for next deathray phase
+                        // Change deathray sweep type for next deathray phase; this does not affect anything during mecha mayhem
                         calamityGlobalNPC.newAI[3] += 1f;
                         if (calamityGlobalNPC.newAI[3] > 1f)
                             calamityGlobalNPC.newAI[3] = 0f;
+
+                        // If mecha mayhem, make Ares swap the position of the laser and gauss arms, and ensure the beam always sweeps horizontal
+                        if (mechaMayhem)
+                        {
+                            calamityGlobalNPC.newAI[3] = 0f;
+                            if (Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] == 0f)
+                                Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] = 1f;
+                            else
+                                Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] = 0f;
+                            Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ForceNetUpdate();
+                        }
                     }
 
                     break;

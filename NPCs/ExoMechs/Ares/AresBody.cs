@@ -505,11 +505,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Prevent mechs from being respawned
-            if (otherExoMechWasFirst)
+            // CIT 08JUN2025: This code is pointless and makes me unable to work swapping the laser arm position. Commenting it out.
+            /*if (otherExoMechWasFirst)
             {
                 if (NPC.ai[3] < 1f)
                     NPC.ai[3] = 1f;
-            }
+            }*/
 
             // Phases
             bool spawnOtherExoMechs = lifeRatio < 0.7f && NPC.ai[3] == 0f;
