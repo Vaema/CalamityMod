@@ -28,6 +28,15 @@ namespace CalamityMod.Projectiles.Ranged
         private bool displayOverheat = false;
         private const int WarningTime = FirestormCannon.OverheatLevel - 100;
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 15;
+        }
         public override void KillHoldoutLogic()
         {
             // What kills the holdout:
@@ -107,6 +116,15 @@ namespace CalamityMod.Projectiles.Ranged
                 HeavySmokeParticle smoke = new(GunTipPosition, -Vector2.UnitY * 7.5f, Color.DarkGray, 25, 0.4f, 0.75f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
+        }
+
+        // Pan-searing mechanic
+        public override bool? CanDamage() => BuiltHeat >= 120;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.OnFire, 300);
+            // Reduce the heat slightly
+            (Owner.HeldItem.ModItem as FirestormCannon).BuiltUpHeat -= 6;
         }
 
         public override bool PreDraw(ref Color lightColor)

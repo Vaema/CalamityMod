@@ -31,6 +31,15 @@ namespace CalamityMod.Projectiles.Ranged
         private bool displayOverheat = false;
         private const int WarningTime = SpectralstormCannon.OverheatLevel - 100;
 
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.friendly = true;
+            Projectile.penetrate = -1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 15;
+        }
         public override void KillHoldoutLogic()
         {
             // What kills the holdout:
@@ -148,6 +157,15 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
+        // Pan-searing mechanic
+        public override bool? CanDamage() => BuiltHeat >= 120;
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.OnFire3, 300);
+            // Reduce the heat slightly
+            (Owner.HeldItem.ModItem as SpectralstormCannon).BuiltUpHeat -= 6;
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
@@ -156,7 +174,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             Color tintColor = displayOverheat ? Color.Black :
-                BuiltHeat >= WarningTime ? Color.Lerp(Color.LightPink, Color.White, MathF.Abs(MathF.Sin(Owner.miscCounter * MathHelper.Pi / 30f))) : Color.LightPink;
+                BuiltHeat >= WarningTime ? Color.Lerp(Color.LightSalmon, Color.White, MathF.Abs(MathF.Sin(Owner.miscCounter * MathHelper.Pi / 30f))) : Color.LightSalmon;
             float opacity = Utils.GetLerpValue(0, WarningTime, BuiltHeat, true);
 
             Projectile.DrawBackglow(Color.HotPink * opacity, 4f, null, null, (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipVertically : SpriteEffects.None);

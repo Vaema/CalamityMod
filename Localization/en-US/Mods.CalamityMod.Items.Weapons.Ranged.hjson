@@ -453,9 +453,8 @@ FirestormCannon: {
 	DisplayName: Firestorm Cannon
 	Tooltip:
 		'''
-		Fires a barrage of flares that gets faster and more inaccurate over time
-		The weapon builds up heat as it fires, and cools down while not firing
-		Firing for too long overheats the weapon, burning you and leaving it unusable for a short period
+		Fires a rapid barrage of flares that builds up a searing heat in the weapon
+		Firing for too long overheats the weapon, leaving it unusable for a short period
 		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
 		'What could go wrong?'
@@ -1157,10 +1156,9 @@ SpectralstormCannon: {
 	DisplayName: Spectralstorm Cannon
 	Tooltip:
 		'''
-		Fires a barrage of spectral flares that gets faster over time
-		The weapon builds up heat as it fires, and cools down while not firing
+		Fires a barrage of spectral flares that builds up a searing heat in the weapon
 		While cooling down, heat-seeking phantoms are continuously released
-		Firing for too long overheats the weapon, burning you and leaving it unusable for a short period
+		Firing for too long overheats the weapon, leaving it unusable for a short period
 		However, triggering overheat releases a powerful burst of souls and resets heat
 		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo

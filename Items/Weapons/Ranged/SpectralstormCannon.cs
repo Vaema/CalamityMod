@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<SpectralstormCannonHoldout>();
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Flare;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void HoldItem(Player player)
