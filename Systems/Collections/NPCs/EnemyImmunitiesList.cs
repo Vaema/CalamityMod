@@ -59,7 +59,6 @@ namespace CalamityMod.Systems.Collections
                 NPCID.Probe,
                 NPCID.Retinazer,
                 NPCID.Spazmatism,
-                NPCType<Foveanator>(),
                 NPCID.SkeletronPrime,
                 NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,

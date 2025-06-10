@@ -200,7 +200,6 @@ namespace CalamityMod
 
                 { NPCID.Spazmatism, 0.85 },
                 { NPCID.Retinazer, 0.85 },
-                { ModContent.NPCType<Foveanator>(), 0.85 },
 
                 { ModContent.NPCType<AquaticScourgeHead>(), 1.1 },
                 { ModContent.NPCType<AquaticScourgeBody>(), 0.8 },
@@ -399,12 +398,6 @@ namespace CalamityMod
                     102, // 153 in phase 2
                     119, // 178 in phase 2
                     153 } }, // 229 in phase 2
-                { ModContent.NPCType<Foveanator>(), new int[] {
-                    62, // 93 in phase 2
-                    94, // 141 in phase 2
-                    110, // 165 in phase 2
-                    128, // 192 in phase 2
-                    178 } }, // 267 in phase 2
 
                 { ModContent.NPCType<AquaticScourgeHead>(), new int[] { 110, 176, 187, 198, 330 } },
                 { ModContent.NPCType<AquaticScourgeBody>(), new int[] { 75, 112, 136, 160, 240 } },
@@ -649,9 +642,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<CursedFire>()), new int[] { 60, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<Shadowflamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 60, 100, 128, 156, 234 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorLaser>()), new int[] { 50, 108, 132, 156, 234 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorEnergyBomb>()), new int[] { 70, 120, 148, 176, 264 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorFlamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SulphuricAcidMist>()), new int[] { 60, 100, 120, 140, 210 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SandPoisonCloud>()), new int[] { 70, 120, 136, 152, 228 } },

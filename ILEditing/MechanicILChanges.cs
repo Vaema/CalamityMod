@@ -1849,67 +1849,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Revengeance Master Mode Twins Shenanigans
-        public static void TripletsSpawnTextOverride(On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
-        {
-            if (CalamityWorld.death && type == NPCID.Retinazer)
-            {
-                int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
-                if (retinazerIndex == 200)
-                {
-                    return;
-                }
-                Main.npc[retinazerIndex].target = targetPlayerIndex;
-                Main.npc[retinazerIndex].timeLeft *= 20;
-
-                if (Main.dedServ && retinazerIndex < 200)
-                {
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
-                }
-
-                AchievementsHelper.CheckMechaMayhem();
-
-                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.TripletsBossText", new Color(175, 75, 255));
-                return;
-            }
-            else
-            {
-                orig(x, y, type, targetPlayerIndex);
-            }
-        }
-
-        public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
-        {
-            if (CalamityWorld.death && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
-            {
-                self.value = 0f;
-                self.boss = false;
-                return;
-            }
-            else
-            {
-                orig(self, closestPlayer);
-            }
-        }
-
-        public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
-        {
-            bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
-            if (CalamityWorld.death && correctNPCType)
-            {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                    Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);
-                else if (Main.dedServ)
-                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasBeenDefeated_Plural", NetworkText.FromKey("Mods.CalamityMod.Status.Boss.TripletsDefeatName")), new Color(175, 75, 255));
-                return;
-            }
-            else
-            {
-                orig(self, typeName);
-            }
-        }
-        #endregion
-
         #region Optimized GlowMask Rendering on Tile
         private static void GlowMaskTileRender(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
         {

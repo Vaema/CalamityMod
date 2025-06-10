@@ -69,7 +69,6 @@ namespace CalamityMod.Systems.Collections
 
                 { NPCID.Spazmatism, 150000 }, // 30 seconds
                 { NPCID.Retinazer, 125000 },
-                { NPCType<Foveanator>(), 137500 },
 
                 { NPCID.TheDestroyer, 600000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 600000 },
