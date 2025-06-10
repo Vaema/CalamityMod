@@ -60,7 +60,6 @@ namespace CalamityMod.Systems.Collections
                 NPCID.Retinazer,
                 NPCID.Spazmatism,
                 NPCID.SkeletronPrime,
-                NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
                 NPCID.PrimeSaw,
                 NPCID.PrimeLaser,

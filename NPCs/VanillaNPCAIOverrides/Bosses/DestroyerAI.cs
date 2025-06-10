@@ -1062,7 +1062,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || bossRush;
-            bool oblivionAlive = npc.ai[1] == 1f;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -1104,12 +1103,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (death && !bossRush && npc.ai[1] == 0f)
-                {
-                    if (Main.npc[i].active && (Main.npc[i].type == ModContent.NPCType<SkeletronPrime2>() || Main.npc[i].type == NPCID.SkeletronPrime))
-                        npc.ai[1] = 1f;
-                }
-
                 if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)
                 {
                     Vector2 otherProbeDist = Main.npc[i].Center - npc.Center;
@@ -1202,7 +1195,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             damage = (int)(damage * secondMechMultiplier);
                     }
 
-                    int totalProjectiles = oblivionAlive ? 2 : death ? 3 : 1;
+                    int totalProjectiles = death ? 3 : 1;
                     Vector2 projectileVelocity = (targetData.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (NPC.IsMechQueenUp)
                     {

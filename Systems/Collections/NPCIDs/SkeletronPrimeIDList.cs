@@ -15,7 +15,6 @@ namespace CalamityMod.Systems.Collections
             List =
             [
                 NPCID.SkeletronPrime,
-                NPCType<SkeletronPrime2>(),
                 NPCID.PrimeCannon,
                 NPCID.PrimeLaser,
                 NPCID.PrimeSaw,
