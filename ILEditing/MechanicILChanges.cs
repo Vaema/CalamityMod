@@ -358,19 +358,14 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Enabling of Triggered NPC Platform Fallthrough
-        // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
-        private static void AllowTriggeredFallthrough(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
+        #region Enabling of Fusion Feeder Sand Digging
+        private static void AllowFusionFeederToDigThroughSand(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
         {
             if (self.active && self.type == ModContent.NPCType<FusionFeeder>())
             {
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
-            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
-                fall = true;
-
             orig(self, fall, cPosition, cWidth, cHeight);
         }
         #endregion
@@ -513,18 +508,6 @@ namespace CalamityMod.ILEditing
 
             // If it's anything else, let vanilla and/or TML handle it.
             return orig(i, j, forced);
-        }
-        #endregion
-
-        #region Platform Collision Checks for Grounded Bosses
-        private static bool EnableCalamityBossPlatformCollision(On_NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
-        {
-            if ((self.type == ModContent.NPCType<AstrumAureus>() || self.type == ModContent.NPCType<Crabulon>() || self.type == ModContent.NPCType<RavagerBody>() ||
-                self.type == ModContent.NPCType<RockPillar>() || self.type == ModContent.NPCType<FlamePillar>()) &&
-                self.target >= 0 && Main.player[self.target].position.Y > self.position.Y + self.height)
-                return true;
-
-            return orig(self);
         }
         #endregion
 

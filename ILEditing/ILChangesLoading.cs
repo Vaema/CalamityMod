@@ -70,7 +70,7 @@ namespace CalamityMod.ILEditing
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
             // Mechanics / features
-            On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
+            On_NPC.ApplyTileCollision += AllowFusionFeederToDigThroughSand;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
@@ -84,8 +84,6 @@ namespace CalamityMod.ILEditing
             On_Item.AffixName += IncorporateEnchantmentInAffix;
             On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
             On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
-            // TODO -- This should be unnecessary. There is now a TML hook for platform collision for ModNPCs.
-            On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
