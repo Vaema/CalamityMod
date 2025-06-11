@@ -4,6 +4,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -22,7 +23,9 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYDownwards => 5f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.35f;
 
+        public static readonly SoundStyle WarningSound = new SoundStyle("CalamityMod/Sounds/Item/FireImplosion") with { Volume = 0.75f };
         public static readonly SoundStyle OverheatSound = new("CalamityMod/Sounds/Item/HeliumFlashSteamRelease");
+        public SlotId WarningSlot;
         public ref float Timer => ref Projectile.ai[0];
         private int BuiltHeat => (Owner.ActiveItem().ModItem as FirestormCannon).BuiltUpHeat;
         private bool displayOverheat = false;
@@ -47,6 +50,9 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type ||
                 (Owner.Calamity().mouseRight && !displayOverheat) || (BuiltHeat == 0 && !Main.mouseLeft))
             {
+                if (SoundEngine.TryGetActiveSound(WarningSlot, out var warn))
+                    warn.Stop();
+
                 Projectile.Kill();
             }
         }
@@ -68,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Overheat yourself if you fire too long
                 if (BuiltHeat >= FirestormCannon.OverheatLevel)
                 {
-                    SoundEngine.PlaySound(OverheatSound, Owner.Center);
+                    WarningSlot = SoundEngine.PlaySound(OverheatSound, Owner.Center);
                     for (int e = 0; e < 7; e++)
                     {
                         Vector2 dustVel = -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.Pi * 0.15f) * Main.rand.NextFloat(3.8f, 5.5f);
@@ -82,6 +88,12 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.Calamity().flareGunOverheat = FirestormCannon.OverheatCooldown;
                     displayOverheat = true;
                     return;
+                }
+
+                // Play a warning sound
+                if (BuiltHeat == WarningTime)
+                {
+                    WarningSlot = SoundEngine.PlaySound(WarningSound, Owner.Center);
                 }
 
                 // Controls the escalating firing speed
@@ -116,6 +128,9 @@ namespace CalamityMod.Projectiles.Ranged
                 HeavySmokeParticle smoke = new(GunTipPosition, -Vector2.UnitY * 7.5f, Color.DarkGray, 25, 0.4f, 0.75f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
+            // Constantly move the warning sound on top of the player
+            if (SoundEngine.TryGetActiveSound(WarningSlot, out var warning) && warning.IsPlaying)
+                warning.Position = Projectile.Center;
         }
 
         // Pan-searing mechanic

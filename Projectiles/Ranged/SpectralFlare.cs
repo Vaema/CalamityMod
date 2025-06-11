@@ -14,10 +14,12 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 6;
+            Projectile.scale = 1.15f;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.netImportant = true;
             Projectile.aiStyle = ProjAIStyleID.Flare;
+            Projectile.alpha = 255;
             Projectile.penetrate = 3;
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 600;
@@ -30,7 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.alpha > 0)
             {
-                Projectile.alpha -= 50;
+                Projectile.alpha -= 80;
                 if (Projectile.alpha < 0)
                     Projectile.alpha = 0;
             }
@@ -46,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.alpha < 70)
             {
-                Dust dust = Dust.NewDustDirect(Projectile.position - Vector2.UnitY * 2f, 6, 6, DustID.SpectreStaff, Projectile.velocity.X, Projectile.velocity.Y, Scale: 1.1f);
+                Dust dust = Dust.NewDustDirect(Projectile.position - Vector2.UnitY * 2f, 7, 7, DustID.SpectreStaff, Projectile.velocity.X, Projectile.velocity.Y, Scale: 1.15f);
                 dust.noGravity = true;
                 dust.velocity *= 0.3f;
                 dust.position.X -= xVel;

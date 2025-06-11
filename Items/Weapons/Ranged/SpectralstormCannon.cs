@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 66;
             Item.height = 26;
-            Item.damage = 48;
+            Item.damage = 82;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 11;
             Item.knockBack = 1.5f;
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.shoot = ModContent.ProjectileType<SpectralstormCannonHoldout>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 10f;
             Item.useAmmo = AmmoID.Flare;
         }
 

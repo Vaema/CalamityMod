@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -24,7 +25,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYDownwards => 5f;
         public override Vector2 GunTipPosition => Projectile.Center + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.35f;
 
-        public static readonly SoundStyle OverheatSound = new SoundStyle("CalamityMod/Sounds/Custom/AbilitySounds/OmegaBlueAbility") with { Pitch = -0.3f };
+        public static readonly SoundStyle OverheatSound = new SoundStyle("CalamityMod/Sounds/Custom/AbilitySounds/OmegaBlueAbility") with { Pitch = -0.5f };
+        public SlotId WarningSlot;
         public ref float Timer => ref Projectile.ai[0];
         public ref float SoulTimer => ref Projectile.ai[1];
         private int BuiltHeat => (Owner.ActiveItem().ModItem as SpectralstormCannon).BuiltUpHeat;
@@ -50,6 +52,9 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type ||
                 (Owner.Calamity().mouseRight && !displayOverheat) || (BuiltHeat == 0 && !Main.mouseLeft))
             {
+                if (SoundEngine.TryGetActiveSound(WarningSlot, out var warn))
+                    warn.Stop();
+
                 Projectile.Kill();
             }
         }
@@ -85,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Overheat yourself if you fire too long
                 if (BuiltHeat >= SpectralstormCannon.OverheatLevel)
                 {
-                    SoundEngine.PlaySound(OverheatSound, Owner.Center);
+                    WarningSlot = SoundEngine.PlaySound(OverheatSound, Owner.Center);
                     for (int e = 0; e < 7; e++)
                     {
                         Vector2 dustVel = -Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.Pi * 0.15f) * Main.rand.NextFloat(3.8f, 5.5f);
@@ -116,6 +121,12 @@ namespace CalamityMod.Projectiles.Ranged
                     return;
                 }
 
+                // Play a warning sound
+                if (BuiltHeat == WarningTime)
+                {
+                    WarningSlot = SoundEngine.PlaySound(FirestormCannonHoldout.WarningSound, Owner.Center);
+                }
+
                 // Controls the escalating firing speed
                 float firingLerp = Utils.GetLerpValue(0, 90, Timer - 30, true);
                 int firingFrequency = (int)MathHelper.Lerp(HeldItem.useTime, HeldItem.useTime / 2, firingLerp);
@@ -126,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.Next(100) >= 70);
-                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.02f * (1f + firingLerp * 0.25f)) * Owner.ActiveItem().shootSpeed;
+                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.015f * (1f + firingLerp * 0.25f)) * Owner.ActiveItem().shootSpeed;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<SpectralFlare>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                 }
@@ -155,6 +166,9 @@ namespace CalamityMod.Projectiles.Ranged
                 HeavySmokeParticle smoke = new(GunTipPosition, -Vector2.UnitY * 7.5f, Color.DarkCyan, 25, 0.4f, 0.75f);
                 GeneralParticleHandler.SpawnParticle(smoke);
             }
+            // Constantly move the warning sound on top of the player
+            if (SoundEngine.TryGetActiveSound(WarningSlot, out var warning) && warning.IsPlaying)
+                warning.Position = Projectile.Center;
         }
 
         // Pan-searing mechanic
