@@ -115,16 +115,12 @@ namespace CalamityMod.ILEditing
         private static void RunSpeedAdjustments(ILContext il)
         {
             var cursor = new ILCursor(il);
-            float asphaltTopSpeedMultiplier = 1.75f; // +75%. Vanilla is +250%
+            float asphaltTopSpeedMultiplier = 2.25f; // +125%. Vanilla is +250%
             float asphaltSlowdown = 1f; // Vanilla is 2f. This should actually make asphalt faster.
-
-            // Dunerider Boots multiply all run stats by 1.75f in vanilla
-            float duneRiderBootsMultiplier = 1.25f; // Change to 1.25f
 
             // Multiplied by 0.6 on frozen slime, for +26% acceleration
             // Multiplied by 0.7 on ice, for +47% acceleration
             float iceSkateAcceleration = 2.1f;
-            float iceSkateTopSpeed = 1f; // no boost at all
 
             //
             // ASPHALT
@@ -154,22 +150,6 @@ namespace CalamityMod.ILEditing
             }
 
             //
-            // DUNERIDER BOOTS + SAND BLOCKS
-            //
-            {
-                // Find the multiplier for Dunerider Boots on Sand Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate the Dunerdier Boots multiplier.");
-                    return;
-                }
-
-                // Massively reduce the increased speed of Dunerider Boots while on Sand Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, duneRiderBootsMultiplier);
-            }
-
-            //
             // ICE SKATES + FROZEN SLIME BLOCKS
             //
             {
@@ -183,17 +163,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Frozen Slime Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Frozen Slime Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Frozen Slime Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Frozen Slime Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
 
             //
@@ -210,17 +179,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Ice Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Ice Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Ice Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Ice Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
         }
 
