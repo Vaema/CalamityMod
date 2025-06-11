@@ -11,8 +11,8 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        // This is intentionally stored on the item instead of the holdout to prevent swapping items to instantly reset the charge
-        // This could be theoretically exploited using multiple items, but the charge dissipates fast enough that I can't really care
+        // This is intentionally stored on the item instead of the holdout to prevent swapping items to instantly reset the heat
+        // This could be theoretically exploited using multiple items, but the heat dissipates fast enough that I can't really care
         public int BuiltUpHeat = 0;
         public const int OverheatLevel = 480;
         public const int OverheatCooldown = 180;
@@ -43,9 +43,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void HoldItem(Player player)
         {
             player.Calamity().rightClickListener = true;
-            // Charges increments if
-            // Charge decrements if:
-            // The holdout exists, the player is not firing, the player is not in overcharge, and there is charge in the weapon
+            // Heat decrements if:
+            // The holdout exists, the player is not firing, the player is not in overheat, and there is heat in the weapon
             if (player.ownedProjectileCounts[Item.shoot] > 0 && !Main.mouseLeft && player.Calamity().flareGunOverheat == 0 && BuiltUpHeat > 0)
             {
                 BuiltUpHeat -= player.miscCounter % 2 == 0 ? 3 : 2;

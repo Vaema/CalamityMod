@@ -171,12 +171,11 @@ namespace CalamityMod.Projectiles.Ranged
                 warning.Position = Projectile.Center;
         }
 
-        // Pan-searing mechanic
+        // Pan-searing mechanic; reduces heat a bit
         public override bool? CanDamage() => BuiltHeat >= 120 && Owner.Calamity().flareGunOverheat == 0;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire3, 300);
-            // Reduce the heat slightly
             (Owner.HeldItem.ModItem as SpectralstormCannon).BuiltUpHeat -= 6;
         }
 
