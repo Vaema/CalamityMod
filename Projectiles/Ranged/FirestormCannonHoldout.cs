@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
 
         // Pan-searing mechanic
-        public override bool? CanDamage() => BuiltHeat >= 120;
+        public override bool? CanDamage() => BuiltHeat >= 120 && Owner.Calamity().flareGunOverheat == 0;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire, 300);
