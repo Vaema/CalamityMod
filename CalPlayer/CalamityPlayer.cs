@@ -70,6 +70,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.NPCs.Ravager;
 
 namespace CalamityMod.CalPlayer
 {
@@ -4312,6 +4313,111 @@ namespace CalamityMod.CalPlayer
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
+            }
+
+            foreach (var npc in Main.ActiveNPCs)
+            {
+                //This is the ravager rock pillar collision logic. It should only apply to rock pillars that are mostly opaque to ensure players don't get stopped by invisible pillars right when they spawn.
+                //This could also potentially be limited to only run with the pillar is stationary if desired.
+                if (npc.type == ModContent.NPCType<RockPillar>() && npc.Opacity > 0.9f)
+                {
+                    float origX = Player.velocity.X;
+                    float origY = Player.velocity.Y;
+                    //Yes, testing intercepts on th X, Y, and X+Y individually has a purpose. It makes it far more stable and consistent.
+                    bool intersectX = false;
+                    Player.position.X += Player.velocity.X;
+                    if (Player.Hitbox.Intersects(npc.Hitbox))
+                        intersectX = true;
+                    Player.position.X -= Player.velocity.X;
+                    bool intersectY = false;
+                    Player.position.Y += Player.velocity.Y;
+                    if (Player.Hitbox.Intersects(npc.Hitbox))
+                        intersectY = true;
+                    Player.position.Y -= Player.velocity.Y;
+                    bool intersect = false;
+                    //We only bother checking the X+Y together if individually they return false.
+                    //This accounts for moving diagonal onto a corner.
+                    if (!intersectX && !intersectY)
+                    {
+                        Player.position += Player.velocity;
+                        if (Player.Hitbox.Intersects(npc.Hitbox))
+                            intersect = true;
+                        Player.position -= Player.velocity;
+                    }
+                    if (intersectX || intersect)
+                    {
+                        //This checks if the player is to the left of the pillar
+                        if (Player.Center.X < npc.Center.X)
+                        {
+                            float playerEdge = Player.Hitbox.X + Player.Hitbox.Width;
+                            float pillarEdge = npc.Hitbox.X;
+                            float goalEdge = playerEdge + Player.velocity.X;
+                            if (goalEdge > pillarEdge)
+                            {
+                                Player.velocity.X += pillarEdge - goalEdge;
+                                if (Player.velocity.X < 0)
+                                    if (!Collision.SolidCollision(Player.position + new Vector2(Player.velocity.X, 0), Player.Hitbox.Width, Player.Hitbox.Height))
+                                    {
+                                        Player.position.X += Player.velocity.X;
+                                        Player.velocity.X = 0;
+                                    }
+                                    else
+                                    {
+                                        Player.velocity.X = origX;
+                                    }
+                            }
+                        }
+                        //This is for if the player is to the right of the pillar
+                        else
+                        {
+                            float playerEdge = Player.Hitbox.X;
+                            float pillarEdge = npc.Hitbox.X + npc.Hitbox.Width;
+                            float goalEdge = playerEdge + Player.velocity.X;
+                            if (goalEdge < pillarEdge)
+                            {
+                                Player.velocity.X += pillarEdge - goalEdge;
+                                if (Player.velocity.X > 0)
+                                    if (!Collision.SolidCollision(Player.position + new Vector2(Player.velocity.X, 0), Player.Hitbox.Width, Player.Hitbox.Height))
+                                    {
+                                        Player.position.X += Player.velocity.X;
+                                        Player.velocity.X = 0;
+                                    }
+                                    else
+                                    {
+                                        Player.velocity.X = origX;
+                                    }
+                            }
+                        }
+                    }
+                    //For the vertical axis, we don't distinguish between top and bottom, and always move players to the top
+                    //This is so being placed inside a pillar teleports a player to the top, which applies primarily to teleporting or pillar spawning
+                    //Additionally, this is set to only work when the pillar is stationary vertically to prevent janky interations when pillars are moving.
+                    if ((intersectY || intersect) && npc.velocity.Y == 0)
+                    {
+                        float playerEdge = Player.Hitbox.Y + Player.Hitbox.Height;
+                        float pillarEdge = npc.Hitbox.Y;
+                        float goalEdge = playerEdge + Player.velocity.Y;
+                        if (goalEdge > pillarEdge)
+                        {
+                            Player.velocity.Y += pillarEdge - goalEdge;
+                            if (Player.velocity.Y < 0)
+                                if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
+                                {
+                                    Player.position.Y += Player.velocity.Y;
+                                    Player.velocity.Y = 0;
+                                }
+                                else
+                                {
+                                    Player.velocity.Y = origY;
+                                }
+                        }
+                    }
+                    //This is to guarantee we can stand on top of rock pillars instead of looking like we're "floating" on top of them.
+                    if (intersectY && Player.velocity.Y < 0.25f && Player.velocity.Y > -0.25f)
+                    {
+                        Player.velocity.Y = 0;
+                    }
+                }
             }
         }
         #endregion

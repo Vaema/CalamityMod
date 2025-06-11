@@ -42,6 +42,13 @@ namespace CalamityMod.NPCs.Ravager
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
+        //Disable dmg when stationary vertically or before jumping
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            if (NPC.velocity.Y == 0 || NPC.ai[0] == 0f)
+                return false;
+            return base.CanHitPlayer(target, ref cooldownSlot);
+        }
         public override void AI()
         {
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
