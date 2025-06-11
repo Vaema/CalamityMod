@@ -344,17 +344,40 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
-        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        private static void PreventVanillaBossDeathsInBossRush(ILContext il)
         {
-            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
-            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
-            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
-            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
-            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
-            if (BossRushEvent.BossRushActive)
-                return;
+            // GOAL: Prevent vanilla boss defeated flags from getting set during Boss Rush.
+            // All of this is handled within a switch case directly in the DoDeathEvents function.
+            // Thus, the objective here is to add a branch past the entire switch case if it is Boss Rush.
+            var cursor = new ILCursor(il);
 
-            orig(self, closestPlayer);
+            // Move to the point right before the switch case.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnOnPlayer")))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to before the switch case.");
+                return;
+            }
+
+            // Define a branch label, load the Boss Rush check, and create the branch if it is true.
+            var label = il.DefineLabel();
+            cursor.Emit(OpCodes.Ldsfld, typeof(BossRushEvent).GetField("BossRushActive"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to after the switch case to place the label.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnBoss")))
+                {
+                    LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
         #endregion
 
