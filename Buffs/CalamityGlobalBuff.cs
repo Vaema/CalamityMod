@@ -115,6 +115,19 @@ namespace CalamityMod.Buffs
             else if (type == BuffID.Rabies)
             {
                 player.GetDamage<GenericDamageClass>() -= 0.2f;
+
+                // Reimplementation of random debuff infliction; now occurs on a consistent timer and with a different debuff list
+                if (player.buffTime[buffIndex] % 600 == 300)
+                {
+                    int debuffType = Main.rand.Next(4) switch
+                    {
+                        0 => BuffID.Weak,
+                        1 => BuffID.Bleeding,
+                        2 => BuffID.Darkness,
+                        _ => BuffID.BrokenArmor,
+                    };
+                    player.AddBuff(debuffType, Main.rand.Next(90, 211));
+                }
             }
             else if (type == BuffID.Werewolf)
             {

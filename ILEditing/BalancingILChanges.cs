@@ -452,7 +452,7 @@ namespace CalamityMod.ILEditing
             // This IL edit accomplishes three things:
             // 1. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
             // 2. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
-            // 3. Remove the ability for Feral Bite to randomly inflict debuffs.
+            // 3. Remove the vanilla implementation of Feral Bite inflicting random debuffs.
             var cursor = new ILCursor(il);
 
             // First, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
@@ -511,7 +511,7 @@ namespace CalamityMod.ILEditing
             // There are multiple branches pointing to this instruction, so it cannot be removed. Instead, swap its value directly.
             cursor.Next.Operand = BalancingConstants.NebulaDamagePerBooster;
 
-            // Finally, removing Feral Bite's debuffs.
+            // Finally, removing Feral Bite's vanilla debuff infliction.
             // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
             {
@@ -520,6 +520,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
+            // Calamity reimplements a different version of this in CalamityGlobalBuff.Update
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
