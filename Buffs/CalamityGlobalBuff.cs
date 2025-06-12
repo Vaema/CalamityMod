@@ -255,6 +255,10 @@ namespace CalamityMod.Buffs
                     tip = tip.Replace("45", "22.5");
                     break;
 
+                case BuffID.Rabies:
+                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.Rabies");
+                    break;
+
                 case BuffID.SugarRush:
                     tip = tip.Replace("20", "10");
                     break;
