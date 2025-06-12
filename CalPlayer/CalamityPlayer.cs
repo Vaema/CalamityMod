@@ -4394,22 +4394,44 @@ namespace CalamityMod.CalPlayer
                     //Additionally, this is set to only work when the pillar is stationary vertically to prevent janky interations when pillars are moving.
                     if ((intersectY || intersect) && npc.velocity.Y == 0)
                     {
-                        float playerEdge = Player.Hitbox.Y + Player.Hitbox.Height;
-                        float pillarEdge = npc.Hitbox.Y;
-                        float goalEdge = playerEdge + Player.velocity.Y;
-                        if (goalEdge > pillarEdge)
+                        if (Player.Center.X < npc.Center.X)
                         {
-                            Player.velocity.Y += pillarEdge - goalEdge;
-                            if (Player.velocity.Y < 0)
-                                if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
-                                {
-                                    Player.position.Y += Player.velocity.Y;
-                                    Player.velocity.Y = 0;
-                                }
-                                else
-                                {
-                                    Player.velocity.Y = origY;
-                                }
+                            float playerEdge = Player.Hitbox.Y + Player.Hitbox.Height;
+                            float pillarEdge = npc.Hitbox.Y;
+                            float goalEdge = playerEdge + Player.velocity.Y;
+                            if (goalEdge > pillarEdge)
+                            {
+                                Player.velocity.Y += pillarEdge - goalEdge;
+                                if (Player.velocity.Y < 0)
+                                    if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
+                                    {
+                                        Player.position.Y += Player.velocity.Y;
+                                        Player.velocity.Y = 0;
+                                    }
+                                    else
+                                    {
+                                        Player.velocity.Y = origY;
+                                    }
+                            }
+                        } else
+                        {
+                            float playerEdge = Player.Hitbox.Y;
+                            float pillarEdge = npc.Hitbox.Y + npc.Hitbox.Height;
+                            float goalEdge = playerEdge + Player.velocity.Y;
+                            if (goalEdge < pillarEdge)
+                            {
+                                Player.velocity.Y += pillarEdge - goalEdge;
+                                if (Player.velocity.Y > 0)
+                                    if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
+                                    {
+                                        Player.position.Y += Player.velocity.Y;
+                                        Player.velocity.Y = 0;
+                                    }
+                                    else
+                                    {
+                                        Player.velocity.Y = origY;
+                                    }
+                            }
                         }
                     }
                     //This is to guarantee we can stand on top of rock pillars instead of looking like we're "floating" on top of them.
