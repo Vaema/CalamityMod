@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idleTime = 20;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 iceMistFireRate = 30;
                 iceMistSpeed = 15f;

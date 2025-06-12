@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseVelocity = 10f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 idlePhaseAcceleration *= 1.15f;
                 idlePhaseVelocity *= 1.15f;
@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 chargeVelocity *= 1.13f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargeVelocity *= 1.15f;
 
             int bubbleBelchPhaseTimer = death ? 60 : 80;
@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float bubbleBelchPhaseAcceleration = death ? 0.35f : 0.3f;
             float bubbleBelchPhaseVelocity = death ? 5.5f : 5f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 bubbleBelchPhaseAcceleration *= 1.5f;
                 bubbleBelchPhaseVelocity *= 1.5f;
@@ -112,7 +112,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float bubbleSpinPhaseVelocity = 20f;
             float bubbleSpinPhaseRotation = MathHelper.TwoPi / (bubbleSpinPhaseTimer / 2);
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 bubbleSpinBubbleVelocity *= 1.5f;
 
             int spawnEffectPhaseTimer = 75;
@@ -192,7 +192,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 chargeTime += Main.rand.Next(5, 66);
 
             // Spawn cthulhunadoes in phase 3
-            if (phase3AI && ((!phase4 && !deathModeSurprise) || Main.getGoodWorld))
+            if (phase3AI && ((!phase4 && !deathModeSurprise) || CalamityWorld.LegendaryMode))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 float timeGateValue = 600f;
@@ -1147,7 +1147,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
             float inertia = 30f;
-            float velocity = 23f;
+            float velocity = 20f;
             npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
             
             npc.scale = npc.ai[3];

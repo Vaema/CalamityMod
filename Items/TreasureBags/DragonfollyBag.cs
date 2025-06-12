@@ -57,7 +57,7 @@ namespace CalamityMod.Items.TreasureBags
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
             // Money
-            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Bumblefuck>()));
+            itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Dragonfolly>()));
 
             // Materials
             itemLoot.Add(ModContent.ItemType<EffulgentFeather>(), 1, 30, 35);

@@ -20,10 +20,6 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> DestroyerBodyGlowmask;
         public static Asset<Texture2D> DestroyerTailGlowmask;
 
-        // Master Rev+ Skeletron Prime
-        public static Asset<Texture2D> ChadPrime;
-        public static Asset<Texture2D> ChadPrimeEyeGlowmask;
-
         // WoF, These are not "exactly" the ExtraTextures. But 
         public static Asset<Texture2D> WallOfFleshEyeGlowmask;
         public static Asset<Texture2D> WallOfFleshDemonSickleTexture;
@@ -43,16 +39,6 @@ namespace CalamityMod.ExtraTextures
         public static Asset<Texture2D> CircularSmearFire2;
         public static Asset<Texture2D> CircularSmearFire3;
 
-        // Boss Heads
-        // I know it's not exactly a Texture2D but it belongs to ExtraTextures.
-        public static int BossHeadIndex_ChadPrime;
-
-        public override void Load()
-        {
-            string chadPrimeIconPath = "CalamityMod/ExtraTextures/ChadPrime_Head_Boss";
-            BossHeadIndex_ChadPrime = CalamityMod.Instance.AddBossHeadTexture(chadPrimeIconPath, -1);
-        }
-
 
         // TODO: - Every other ExtraTextures Reference could be move in here
         public override void OnModLoad()
@@ -60,9 +46,6 @@ namespace CalamityMod.ExtraTextures
             DestroyerHeadGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerHeadGlow", AssetRequestMode.AsyncLoad);
             DestroyerBodyGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerBodyGlow", AssetRequestMode.AsyncLoad);
             DestroyerTailGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/DestroyerTailGlow", AssetRequestMode.AsyncLoad);
-
-            ChadPrime = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrime", AssetRequestMode.AsyncLoad);
-            ChadPrimeEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/ChadPrimeHeadGlow", AssetRequestMode.AsyncLoad);
 
             WallOfFleshEyeGlowmask = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/VanillaBossGlowmasks/WallOfFleshEyeTelegraphGlow", AssetRequestMode.AsyncLoad);
             WallOfFleshDemonSickleTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ForbiddenOathbladeProjectile", AssetRequestMode.AsyncLoad);

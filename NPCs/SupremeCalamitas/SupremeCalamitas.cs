@@ -454,7 +454,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             bool teleport = false;
 
             // permafrost and zenith scal are mutually exclusive unless it's legendary
-            bool zenithAI = Main.zenithWorld && (!permafrost || (CalamityWorld.LegendaryMode && revenge && permafrost));
+            bool zenithAI = Main.zenithWorld && (!permafrost || (CalamityWorld.LegendaryMode && permafrost));
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -489,7 +489,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             int bodyHeight = 42;
             int baseBulletHellProjectileGateValue = revenge ? 8 : expertMode ? 9 : 10;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseBulletHellProjectileGateValue -= 2;
 
             Vector2 vectorCenter = NPC.Center;
@@ -1970,9 +1970,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         else
                         {
                             SoundEngine.PlaySound(SoundID.Item74, NPC.Center);
-                            int totalSeekers = Main.getGoodWorld ? 20 : 10;
+                            int totalSeekers = CalamityWorld.LegendaryMode ? 20 : 10;
                             int degreesBetweenEachSeeker = 360 / totalSeekers;
-                            int distanceFromSCal = Main.getGoodWorld ? 300 : 225;
+                            int distanceFromSCal = CalamityWorld.LegendaryMode ? 300 : 225;
                             for (int i = 0; i < totalSeekers; i++)
                             {
                                 int FireEye = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(vectorCenter.X + (Math.Sin(i * degreesBetweenEachSeeker) * distanceFromSCal)), (int)(vectorCenter.Y + (Math.Cos(i * degreesBetweenEachSeeker) * distanceFromSCal)), ModContent.NPCType<SoulSeekerSupreme>(), NPC.whoAmI, 0, 0, 0, -1);
@@ -2182,7 +2182,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 12f;
                         float acceleration = 0.12f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -2296,7 +2296,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                         float chargeVelocity = (wormAlive ? 26f : 30f) + (1f - lifeRatio) * 8f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeVelocity *= 1.15f;
 
                         if (!canDespawn)
@@ -2398,7 +2398,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 32f;
                         float acceleration = 1.2f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -2477,7 +2477,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 32f;
                         float acceleration = 1.2f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -2748,7 +2748,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 12f;
                         float acceleration = 0.12f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -2857,7 +2857,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                         float chargeVelocity = (wormAlive ? 26f : 30f) + (1f - lifeRatio) * 8f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeVelocity *= 1.15f;
 
                         if (!canDespawn)
@@ -2931,7 +2931,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 32f;
                         float acceleration = 1.2f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -3015,7 +3015,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         float velocity = 32f;
                         float acceleration = 1.2f;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             velocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -3180,10 +3180,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         for (int x = 0; x < 5; x++)
                         {
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX += spawnXAdd;
 
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX2 -= spawnXAdd;
                             tempSpawnY += spawnYAdd;
                         }

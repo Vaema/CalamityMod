@@ -107,7 +107,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phase 2
             if (npc.ai[0] < 0f)
             {
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     NPC.brainOfGravity = npc.whoAmI;
 
                 // Spawn gore
@@ -237,7 +237,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float velocityScale = death ? 6f : 4.5f;
                             float velocityBoost = velocityScale * (1f - lifeRatio);
                             float nonChargeSpeed = (death ? 24f : 18f) + velocityBoost + 3f * enrageScale;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 nonChargeSpeed *= 1.15f;
 
                             float minInertia = death ? 50f : 75f;
@@ -291,7 +291,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             // Velocity
                             npc.velocity = (Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 20f * enrageScale : Vector2.Zero) - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.velocity *= 1.15f;
                         }
                     }
@@ -336,7 +336,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (-chargeVelocity - 2f * enrageScale);
                             if (death)
                                 npc.velocity *= 1.5f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.velocity *= 1.15f;
                         }
                     }
@@ -728,7 +728,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float targetYDistPhase1 = Main.player[npc.target].Center.Y - brainCenterPhase1.Y;
                     float targetDistancePhase1 = (float)Math.Sqrt(targetXDistPhase1 * targetXDistPhase1 + targetYDistPhase1 * targetYDistPhase1);
                     float maxMoveVelocity = (death ? 4f : 1.5f) + velocityScale;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         maxMoveVelocity *= 2f;
 
                     if (targetDistancePhase1 < maxMoveVelocity)
@@ -997,7 +997,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 destination = Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 20f : Vector2.Zero);
                     Vector2 targetDirection = destination - npc.Center;
                     targetDirection = targetDirection.SafeNormalize(Vector2.UnitY);
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         targetDirection *= chargeVelocity + 6f;
                         npc.velocity = (npc.velocity * 49f + targetDirection) / 50f;
@@ -1052,7 +1052,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static int GetBrainOfCthuluCreepersCountRevDeath()
         {
-            return CalamityWorld.LegendaryMode ? 40 : Main.getGoodWorld ? 35 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 30 : 20;
+            return CalamityWorld.LegendaryMode ? 40 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 30 : 20;
         }
 
         private static float GetCrimsonBossKnockBack(NPC npc, int numPlayers, float lifeScale, float baseKnockBackResist)

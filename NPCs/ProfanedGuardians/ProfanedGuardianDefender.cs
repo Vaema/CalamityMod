@@ -262,7 +262,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Charge variables
             float chargeVelocityMult = 0.25f;
             float maxChargeVelocity = bossRush ? 25f : death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 maxChargeVelocity *= 1.15f;
 
             // Whether the commander is calling all guardians together for the laser attack
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             float moveVelocity = bossRush ? 24f : death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 moveVelocity *= 1.25f;
             if (healerAlive)
                 moveVelocity *= 0.8f;
@@ -457,7 +457,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = (commanderUsingLaser || commanderGoingLowOrHighInPhase1) ? 10f : 15f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -489,7 +489,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[1] >= -throwRocksGateValue)
                 {
                     NPC.velocity *= 0.8f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         NPC.velocity *= 0.5f;
                 }
 
@@ -555,7 +555,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (distanceFromDestination.Length() > 40f)
                     {
                         float inertia = commanderGoingLowOrHighInPhase2 ? 8f : 15f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             inertia *= 0.8f;
 
                         NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;

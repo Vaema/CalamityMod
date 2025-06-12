@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.owner == Main.myPlayer)
             {
                 int totalProjectiles = !ProvUtils.StandardAI() ? 8 : 6;
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     totalProjectiles *= 2;
 
                 float radians = MathHelper.TwoPi / totalProjectiles;

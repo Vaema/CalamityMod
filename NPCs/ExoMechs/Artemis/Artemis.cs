@@ -457,7 +457,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             float attackPhaseGateValue = shouldGetBuffedByBerserkPhase ? berserkAttackTime : normalAttackTime;
             float timeToLineUpAttack = phase2 ? 30f : 45f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 timeToLineUpAttack *= 0.5f;
 
             // Spin variables
@@ -496,7 +496,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             // Charge variables
             float chargeVelocity = nerfedAttacks ? 60f : bossRush ? 81f : death ? 74f : revenge ? 70.5f : expertMode ? 67f : 60f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargeVelocity *= 1.15f;
 
             float chargeDistance = 2000f;
@@ -521,7 +521,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             float baseVelocity = ((AIState == (int)Phase.Deathray || lineUpAttack || AIState == (int)Phase.LaserShotgun) ? 40f : 20f) * baseVelocityMult;
             float decelerationVelocityMult = 0.85f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.5f;
 
             // Laser shotgun variables
@@ -535,7 +535,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 int randomLocationVarianceX = shouldGetBuffedByBerserkPhase ? 50 : 20;
                 int randomLocationVarianceY = shouldGetBuffedByBerserkPhase ? 250 : 100;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     randomLocationVarianceX *= 2;
                     randomLocationVarianceY *= 2;

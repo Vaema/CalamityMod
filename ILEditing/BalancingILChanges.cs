@@ -241,18 +241,7 @@ namespace CalamityMod.ILEditing
             }
             cursor.Next.Operand = BalancingConstants.SoaringInsigniaRunAccelerationMultiplier;
 
-            // Second: Magiluminescence. Find the check for whether it's equipped for run speeds.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("hasMagiluminescence")))
-            {
-                LogFailure("Run Acceleration Nerfs", "Could not locate the Magiluminescence bool.");
-                return;
-            }
-
-            //
-            // Don't actually do anything. Magiluminescence is not intended to be nerfed by Calamity.
-            //
-
-            // Third: Shadow Armor. Find the check for whether it's equipped for run speeds.
+            // Second: Shadow Armor. Find the check for whether it's equipped for run speeds.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("shadowArmor")))
             {
                 LogFailure("Run Acceleration Nerfs", "Could not locate the Shadow Armor bool.");
@@ -396,75 +385,27 @@ namespace CalamityMod.ILEditing
         private static void PrefixChanges(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
         {
             orig(self, item);
+            // Defense accessory prefixes have slightly scaling defense boosts through progression
+            if (item.prefix >= PrefixID.Hard && item.prefix <= PrefixID.Warding)
+            {
+                if (DownedBossSystem.downedDoG)
+                    self.statDefense += 3;
+                else if (NPC.downedMoonlord)
+                    self.statDefense += 2;
+                else if (Main.hardMode)
+                    self.statDefense += 1;
+            }
             // Hard / Guarding / Armored / Warding give 0.25% / 0.5% / 0.75% / 1% DR
             if (item.prefix == PrefixID.Hard)
-            {
-                /* Prehardmode = 1
-                 * Hardmode = 2
-                 * Post-Moon Lord = 3
-                 * Post-DoG = 4
-                 */
-
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-
                 self.endurance += 0.0025f;
-            }
             if (item.prefix == PrefixID.Guarding)
-            {
-                /* Prehardmode = 2
-                 * Hardmode = 3
-                 * Post-Moon Lord = 4
-                 * Post-DoG = 5
-                 */
-
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-
                 self.endurance += 0.005f;
-            }
             if (item.prefix == PrefixID.Armored)
-            {
-                /* Prehardmode = 3
-                 * Hardmode = 4
-                 * Post-Moon Lord = 5
-                 * Post-DoG = 6
-                 */
-
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-
                 self.endurance += 0.0075f;
-            }
             if (item.prefix == PrefixID.Warding)
-            {
-                /* Prehardmode = 4
-                 * Hardmode = 5
-                 * Post-Moon Lord = 6
-                 * Post-DoG = 7
-                 */
-
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
                 self.endurance += 0.01f;
-            }
 
+            // Lucky prefix increases luck
             if (item.prefix == PrefixID.Lucky)
                 self.Calamity().calamityBonusLuck += 0.05f;
         }
@@ -501,7 +442,7 @@ namespace CalamityMod.ILEditing
         private static void VanillaBossResistChanges(ILContext il)
         {
             // This IL edit accomplishes two things:
-            // 1. Reduces Expert+ Eater of Worlds' resist to explosives from 80% to 60%.
+            // 1. Reduces Expert+ Eater of Worlds' resist to explosives from 80% to 66%.
             // 2. Effectively removes Lunatic Cultist's resistance to homing projectiles.
             var cursor = new ILCursor(il);
 
@@ -514,17 +455,15 @@ namespace CalamityMod.ILEditing
                     return;
                 }
             }
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchDiv()))
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR4(5f)))
             {
                 LogFailure("Reduce EoW Grenade Resist", "Could not move to the resist factor.");
                 return;
             }
 
-            // Remove the division instruction, then pop the 5 off the stack to destroy it. Replace it with loading a 0.4 and then multiplying by it.
-            cursor.Remove();
+            // Pop the 5 off the stack, and replace it with a 3.
             cursor.EmitPop();
-            cursor.EmitLdcR4(0.4f);
-            cursor.EmitMul();
+            cursor.EmitLdcR4(3f);
 
             // Now, move to the Cultist resist which is right below it.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(typeof(ProjectileID.Sets), "CultistIsResistantTo")))

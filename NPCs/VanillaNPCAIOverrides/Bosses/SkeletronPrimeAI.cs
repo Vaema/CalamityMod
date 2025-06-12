@@ -37,117 +37,40 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Spawn arms
             if (calamityGlobalNPC.newAI[1] == 0f)
             {
+                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                 calamityGlobalNPC.newAI[1] = 1f;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    // Spawn second head in Master Mode
-                    // The main head owns the Saw and the Laser in Master Mode
-                    if (death)
-                    {
-                        int head = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<SkeletronPrime2>(), npc.whoAmI);
-                        Main.npc[head].ai[0] = npc.whoAmI;
-                        Main.npc[head].target = npc.target;
-                        Main.npc[head].netUpdate = true;
-                        npc.ai[0] = head;
+                    int arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeCannon, npc.whoAmI);
+                    Main.npc[arm].ai[0] = -1f;
+                    Main.npc[arm].ai[1] = npc.whoAmI;
+                    Main.npc[arm].target = npc.target;
+                    Main.npc[arm].netUpdate = true;
 
-                        int arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeSaw, npc.whoAmI);
-                        Main.npc[arm].ai[0] = 1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].netUpdate = true;
+                    arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeSaw, npc.whoAmI);
+                    Main.npc[arm].ai[0] = 1f;
+                    Main.npc[arm].ai[1] = npc.whoAmI;
+                    Main.npc[arm].target = npc.target;
+                    Main.npc[arm].netUpdate = true;
 
-                        arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeLaser, npc.whoAmI);
-                        Main.npc[arm].ai[0] = 1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].netUpdate = true;
-                        Main.npc[arm].ai[3] = 150f;
+                    arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeVice, npc.whoAmI);
+                    Main.npc[arm].ai[0] = -1f;
+                    Main.npc[arm].ai[1] = npc.whoAmI;
+                    Main.npc[arm].target = npc.target;
+                    Main.npc[arm].ai[3] = 150f;
+                    Main.npc[arm].netUpdate = true;
 
-                        if (Main.netMode == NetmodeID.SinglePlayer)
-                            Main.NewText(Language.GetTextValue("Announcement.HasAwoken", Main.npc[head].TypeName), 175, 75);
-                        else if (Main.dedServ)
-                            ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", Main.npc[head].GetTypeNetName()), new Color(175, 75, 255));
-                    }
-                    else
-                    {
-                        int arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeCannon, npc.whoAmI);
-                        Main.npc[arm].ai[0] = -1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].netUpdate = true;
-
-                        arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeSaw, npc.whoAmI);
-                        Main.npc[arm].ai[0] = 1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].netUpdate = true;
-
-                        arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeVice, npc.whoAmI);
-                        Main.npc[arm].ai[0] = -1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].ai[3] = 150f;
-                        Main.npc[arm].netUpdate = true;
-
-                        arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeLaser, npc.whoAmI);
-                        Main.npc[arm].ai[0] = 1f;
-                        Main.npc[arm].ai[1] = npc.whoAmI;
-                        Main.npc[arm].target = npc.target;
-                        Main.npc[arm].netUpdate = true;
-                        Main.npc[arm].ai[3] = 150f;
-                    }
+                    arm = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PrimeLaser, npc.whoAmI);
+                    Main.npc[arm].ai[0] = 1f;
+                    Main.npc[arm].ai[1] = npc.whoAmI;
+                    Main.npc[arm].target = npc.target;
+                    Main.npc[arm].netUpdate = true;
+                    Main.npc[arm].ai[3] = 150f;
                 }
 
                 npc.netUpdate = true;
                 npc.SyncExtraAI();
-            }
-
-            if (death)
-            {
-                if (!Main.npc[(int)npc.ai[0]].active || Main.npc[(int)npc.ai[0]].aiStyle != NPCAIStyleID.SkeletronPrimeHead)
-                {
-                    npc.life = 0;
-                    npc.HitEffect();
-                    npc.active = false;
-                    npc.netUpdate = true;
-                }
-                else
-                {
-                    // Link the HP of both heads
-                    if (npc.life > Main.npc[(int)npc.ai[0]].life)
-                        npc.life = Main.npc[(int)npc.ai[0]].life;
-
-                    // Push away from the lead head if too close, pull closer if too far, if Mechdusa isn't real
-                    if (!NPC.IsMechQueenUp)
-                    {
-                        float pushVelocity = 0.25f;
-                        if (Vector2.Distance(npc.Center, Main.npc[(int)npc.ai[0]].Center) < 80f * npc.scale)
-                        {
-                            if (npc.position.X < Main.npc[(int)npc.ai[0]].position.X)
-                                npc.velocity.X -= pushVelocity;
-                            else
-                                npc.velocity.X += pushVelocity;
-
-                            if (npc.position.Y < Main.npc[(int)npc.ai[0]].position.Y)
-                                npc.velocity.Y -= pushVelocity;
-                            else
-                                npc.velocity.Y += pushVelocity;
-                        }
-                        else if (Vector2.Distance(npc.Center, Main.npc[(int)npc.ai[0]].Center) > 240f * npc.scale)
-                        {
-                            if (npc.position.X < Main.npc[(int)npc.ai[0]].position.X)
-                                npc.velocity.X += pushVelocity;
-                            else
-                                npc.velocity.X -= pushVelocity;
-
-                            if (npc.position.Y < Main.npc[(int)npc.ai[0]].position.Y)
-                                npc.velocity.Y += pushVelocity;
-                            else
-                                npc.velocity.Y -= pushVelocity;
-                        }
-                    }
-                }
             }
 
             // Check if arms are alive
@@ -231,9 +154,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool normalLaserRotation = npc.localAI[1] % 2f == 0f;
 
-            // Prevents cheap hits
-            bool canUseAttackInMaster = npc.position.Y < Main.player[npc.target].position.Y - 350f;
-
             // Float near player
             if (npc.ai[1] == 0f || npc.ai[1] == 4f)
             {
@@ -241,25 +161,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 // Start other phases; if arms are dead, start with spin phase
-                bool otherHeadChargingOrSpinning = Main.npc[(int)npc.ai[0]].ai[1] == 5f || Main.npc[(int)npc.ai[0]].ai[1] == 1f;
-                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead || death)
+                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
                 {
                     // Start spin phase after 1.5 seconds
                     npc.ai[2] += phase3 ? 1.5f : 1f;
-                    if (npc.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)) && (!otherHeadChargingOrSpinning || !death || phase3) && (canUseAttackInMaster || !death))
+                    if (npc.ai[2] >= (90f - (death ? 15f * (1f - lifeRatio) : 0f)))
                     {
                         bool shouldSpinAround = npc.ai[1] == 4f && npc.position.Y < Main.player[npc.target].position.Y - 320f &&
                             Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 600f && Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 400f;
 
-                        bool shouldCharge = death && !phase2 && !allArmsDead && !CalamityWorld.LegendaryMode;
-                        if (shouldCharge)
-                        {
-                            npc.ai[2] = 0f;
-                            npc.ai[1] = 1f;
-                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                            npc.netUpdate = true;
-                        }
-                        else if (shouldSpinAround || npc.ai[1] != 4f)
+                        if (shouldSpinAround || npc.ai[1] != 4f)
                         {
                             if (shouldSpinAround)
                             {
@@ -269,6 +180,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.ai[2] = 0f;
                             npc.ai[1] = shouldSpinAround ? 5f : 1f;
+                            CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                             npc.netUpdate = true;
                         }
                     }
@@ -652,13 +564,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                             damage = (int)(damage * secondMechMultiplier);
                                     }
 
-                                    if (npc.localAI[0] % 3f == 0f)
-                                    {
-                                        int probeLimit = death ? 3 : 2;
-                                        if (NPC.CountNPCS(NPCID.Probe) < probeLimit)
-                                            NPC.NewNPC(npc.GetSource_FromAI(), (int)headCenter.X, (int)headCenter.Y + 30, NPCID.Probe);
-                                    }
-
                                     int enragedSkulls = Projectile.NewProjectile(npc.GetSource_FromAI(), headCenter.X, headCenter.Y + 30f, enragedHeadSkullTargetX, enragedHeadSkullTargetY, type, damage, 0f, Main.myPlayer, -3f, 0f);
                                     Main.projectile[enragedSkulls].timeLeft = 480;
                                     Main.projectile[enragedSkulls].tileCollide = false;
@@ -703,8 +608,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[3] += 1f;
                     if (Vector2.Distance(npc.Center, destination) < 80f || npc.ai[2] > 0f || npc.localAI[3] > 120f)
                     {
-                        float missileSpawnDivisor = death ? 10f : 12f;
-                        float totalMissiles = death ? 12f : 10f;
+                        float missileSpawnDivisor = 12f;
+                        float totalMissiles = 10f;
                         npc.ai[2] += 1f;
                         if (npc.ai[2] % missileSpawnDivisor == 0f)
                         {

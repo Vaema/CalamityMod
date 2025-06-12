@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         hoverAcceleration += 0.15f * (1f - lifeRatio);
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         hoverSpeed += 3f;
                         hoverAcceleration += 0.08f;
@@ -173,7 +173,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] += 1f;
 
                         float servantSpawnGateValue = death ? 10f : 40f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             servantSpawnGateValue *= 0.8f;
 
                         if (npc.ai[3] >= servantSpawnGateValue && shootProjectile)
@@ -226,7 +226,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     chargeSpeed += 5f * enrageScale;
                     if (death)
                         chargeSpeed += 10f * (1f - lifeRatio);
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed += 4f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
@@ -240,7 +240,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = npc.defDamage;
 
                     int chargeDelay = death ? (75 - (int)Math.Round(30f * (1f - lifeRatio))) : 95;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeDelay -= 30;
 
                     float slowDownGateValue = chargeDelay * (death ? 0.85f : 0.65f);
@@ -256,7 +256,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             decelerationScalar = 0f;
 
                         npc.velocity *= (MathHelper.Lerp(death ? 0.76f : 0.92f, death ? 0.88f : 0.96f, decelerationScalar));
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             npc.velocity *= 0.99f;
 
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
@@ -307,7 +307,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Avoid cheap bullshit
                 npc.damage = 0;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     npc.reflectsProjectiles = true;
 
                 if (npc.ai[0] == 1f)
@@ -326,13 +326,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation += npc.ai[2];
 
                 float phaseChangeRate = death ? 2f : 1f;
-                float servantSpawnGateValue = Main.getGoodWorld ? 4f : 20f;
+                float servantSpawnGateValue = CalamityWorld.LegendaryMode ? 4f : 20f;
                 npc.ai[1] += phaseChangeRate;
                 if (npc.ai[1] % servantSpawnGateValue == 0f)
                 {
                     float servantVelocity = death ? 11.3f : 5.65f;
                     Vector2 servantSpawnVelocity = Main.rand.NextVector2CircularEdge(servantVelocity, servantVelocity);
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         servantSpawnVelocity *= 3f;
 
                     Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
@@ -457,7 +457,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         hoverSpeed += 1f;
                         hoverAcceleration += 0.1f;
@@ -520,7 +520,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         chargeSpeed *= 1.15f;
                     if (npc.ai[3] == 2f)
                         chargeSpeed *= 1.3f;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed *= 1.2f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
