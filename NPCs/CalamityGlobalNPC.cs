@@ -296,7 +296,6 @@ namespace CalamityMod.NPCs
         public int tSad = 0;
         public int eutrophication = 0;
         public int webbed = 0;
-        public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
         /// <summary>
@@ -593,7 +592,6 @@ namespace CalamityMod.NPCs
             myClone.tSad = tSad;
             myClone.eutrophication = eutrophication;
             myClone.webbed = webbed;
-            myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
             myClone.pearlAuraCounter = pearlAuraCounter;
@@ -5516,8 +5514,6 @@ namespace CalamityMod.NPCs
                 eutrophication--;
             if (webbed > 0)
                 webbed--;
-            if (slowed > 0)
-                slowed--;
             if (vaporfied > 0)
                 vaporfied--;
 
@@ -5896,9 +5892,6 @@ namespace CalamityMod.NPCs
                     }
                     velocitySlownessFactor += baseSlownessFactor;
                 }
-
-                if (slowed > 0)
-                    velocitySlownessFactor += 0.05f;
 
                 if (tesla > 0)
                 {
@@ -7647,21 +7640,6 @@ namespace CalamityMod.NPCs
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
                 }
             }
-            if (slowed > 0)
-            {
-                if (Main.rand.Next(5) < 4)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.SpookyWood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 225, default, 3f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.1f;
-                    Main.dust[dust].velocity.Y += 0.25f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[dust].noGravity = false;
-                        Main.dust[dust].scale *= 0.5f;
-                    }
-                }
-            }
             if (webbed > 0)
             {
                 if (Main.rand.Next(5) < 4)
@@ -7894,8 +7872,6 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (slowed > 0)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Slow].Value);
                     if (webbed > 0)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)

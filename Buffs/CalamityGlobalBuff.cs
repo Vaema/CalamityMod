@@ -151,15 +151,6 @@ namespace CalamityMod.Buffs
                 npc.DelBuff(buffIndex);
                 buffIndex--;
             }
-            else if (type == BuffID.Slow)
-            {
-                if (npc.Calamity().slowed < npc.buffTime[buffIndex])
-                    npc.Calamity().slowed = npc.buffTime[buffIndex];
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().slowed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
-            }
             if (type == BuffID.Electrified)
             {
                 if (npc.Calamity().electrified < npc.buffTime[buffIndex])
