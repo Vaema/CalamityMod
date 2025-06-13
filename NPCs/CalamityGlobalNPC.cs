@@ -1109,7 +1109,7 @@ namespace CalamityMod.NPCs
             if (vermillionFlux > 0)
             {
                 int baseVermillionFluxDoTValue = (int)(100 * (npc.velocity.X == 0 ? 1 : 4) * electricityDamageMult); // 400 on moving targets
-                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 40, ref npc.lifeRegen, ref damage);
+                ApplyDPSDebuff(baseVermillionFluxDoTValue, baseVermillionFluxDoTValue / 4, ref npc.lifeRegen, ref damage);
             }
 
             // Auric Rebuke
