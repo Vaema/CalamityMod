@@ -4394,7 +4394,7 @@ namespace CalamityMod.CalPlayer
                     //Additionally, this is set to only work when the pillar is stationary vertically to prevent janky interations when pillars are moving.
                     if ((intersectY || intersect) && npc.velocity.Y == 0)
                     {
-                        if (Player.Center.X < npc.Center.X)
+                        if (Player.Center.Y < npc.Center.Y)
                         {
                             float playerEdge = Player.Hitbox.Y + Player.Hitbox.Height;
                             float pillarEdge = npc.Hitbox.Y;
