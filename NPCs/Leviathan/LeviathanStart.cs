@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -58,7 +59,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().ProvidesProximityRage = false;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.8f;
         }
 

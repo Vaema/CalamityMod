@@ -110,9 +110,6 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
         public override bool? CanDamage() => Projectile.numHits == 0 ? null : false;
-
-        // Fuck off stupid Vile Spits
-        public override bool? CanHitNPC(NPC target) => NPCID.Sets.ProjectileNPC[target.type] ? false : null;
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.OnFire, 120);

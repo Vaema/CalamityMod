@@ -25,7 +25,7 @@ namespace CalamityMod.Systems.Collections
                 ItemType<Effervescence>(),
                 ItemType<EidolicWail>(),
                 ItemType<GatlingLaser>(),
-                ItemType<GaussPistol>(),
+                ItemType<Vulcan>(),
                 ItemType<Genesis>(),
                 ItemType<IonBlaster>(),
                 ItemType<NanoPurge>(),

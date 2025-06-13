@@ -91,9 +91,6 @@ namespace CalamityMod.ILEditing
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;
-            On_NPC.SpawnBoss += TripletsSpawnTextOverride;
-            On_NPC.DoDeathEvents_BeforeLoot += PreventFoveanatorDefeatMessageIfNotKilledLast;
-            On_NPC.DoDeathEvents_CelebrateBossDeath += TripletsDefeatTextOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
@@ -192,6 +189,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
+            IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;

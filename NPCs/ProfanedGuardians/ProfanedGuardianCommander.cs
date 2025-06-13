@@ -368,9 +368,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Charge variables
             float chargeVelocityMult = 0.25f;
             float maxChargeVelocity = bossRush ? 32f : death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 maxChargeVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.LegendaryMode)
                 maxChargeVelocity *= 2f;
 
             float inertia = bossRush ? 40f : death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;
@@ -378,7 +378,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 inertia *= 0.8f;
             if (!phase1)
                 inertia *= 0.75f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 inertia *= 0.8f;
 
             bool speedUp = Vector2.Distance(NPC.Center, player.Center) > 960f;
@@ -457,7 +457,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     calamityGlobalNPC.newAI[0] = -NPC.direction;
 
                 float velocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     velocity *= 1.25f;
                 if (healerAlive)
                     velocity *= 0.8f;
@@ -792,7 +792,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 bool targetRanAwayAndWillNowBeFucked = NPC.ai[2] == 1f;
                 bool boostVelocityToCatchUp = NPC.ai[1] == 0f || targetRanAwayAndWillNowBeFucked;
                 float velocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     velocity *= 1.25f;
                 if (boostVelocityToCatchUp)
                     velocity *= 2f;
@@ -849,7 +849,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     else if (NPC.ai[1] % spearShootDivisor == 0f)
                     {
                         float spearVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             spearVelocity *= 1.25f;
                         if (boostVelocityToCatchUp)
                             spearVelocity *= 1.5f;
@@ -906,7 +906,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 float velocity = bossRush ? 4.5f : death ? 4f : revenge ? 3.75f : expertMode ? 3.5f : 3f;
                 if (NPC.ai[1] < laserGateValue)
                     velocity *= 6f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     velocity *= 1.25f;
 
                 calamityGlobalNPC.newAI[0] = -NPC.direction;
@@ -924,7 +924,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 // Limit Y velocity while firing laser
                 if (NPC.ai[1] >= laserGateValue)
                 {
-                    float speedCap = Main.getGoodWorld ? 4f : 2f;
+                    float speedCap = CalamityWorld.LegendaryMode ? 4f : 2f;
                     if (NPC.velocity.Y > speedCap)
                         NPC.velocity.Y = speedCap;
                     if (NPC.velocity.Y < -speedCap)
@@ -984,7 +984,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             if (revenge)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, type, damage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
 
-                            if (CalamityWorld.LegendaryMode && revenge)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 rotation *= 0.33f;
                                 laserVelocity = laserVelocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 2f);

@@ -577,6 +577,22 @@ namespace CalamityMod.CalPlayer
             if (heldGaelsLastFrame)
                 rageDiff += rageMax * GaelsGreatsword.RagePerSecond / 60f;
 
+            float rate = Main.GlobalTimeWrappedHourly * 29;
+            List<Color> eColors = new List<Color>()
+            {
+                Color.PaleVioletRed,
+                Color.Coral,
+                Color.Khaki,
+                Color.PaleGreen,
+                Color.Turquoise,
+                Color.Violet
+            };
+
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            lightRGB = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
             // Calculate and grant proximity rage.
             // Regular enemies can give up to 1x proximity rage. Bosses can give up to 3x. Multiple regular enemies don't stack.
             // Proximity rage is maxed out when within 10 blocks (160 pixels) of the enemy's hitbox.
@@ -3101,7 +3117,7 @@ namespace CalamityMod.CalPlayer
                 abyssDeath = false;
 
                 // Signus headcrab darkness
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                 {
                     if (CalamityGlobalNPC.signus != -1)
                     {
@@ -3813,11 +3829,15 @@ namespace CalamityMod.CalPlayer
             {
                 Player.GetDamage<GenericDamageClass>() += PrimordialEarth.BuffDamageBoost;
                 Player.statDefense += PrimordialEarth.BuffDefenseBoost;
+                Player.manaRegenDelayBonus += 1;
+                Player.manaRegenBonus += 50 + (int)(400 * (float)Math.Pow((1 - ((float)Player.statMana / (float)Player.statManaMax2)), 2));
             }
             if (aeolianEarthBuff)
             {
                 Player.GetDamage<GenericDamageClass>() += PrimordialAncient.BuffDamageBoost;
                 Player.endurance += PrimordialAncient.BuffDamageReductionBoost;
+                Player.manaRegenDelayBonus += 1;
+                Player.manaRegenBonus += 75 + (int)(600 * (float)Math.Pow((1 - ((float)Player.statMana / (float)Player.statManaMax2)), 2));
             }
 
             if (frostFlare)

@@ -89,7 +89,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.dontCountMe = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
 
             // Scale HP in Master
@@ -275,7 +275,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 segmentVelocity *= 1.1f;
 
             // Calculate contact damage based on velocity
