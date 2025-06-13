@@ -39,9 +39,22 @@ namespace CalamityMod.Items
                 TryDropBoosterItem(player, ref calPlayer.mFruit, ModContent.ItemType<MiracleFruit>());
                 TryDropBoosterItem(player, ref calPlayer.tCloudberry, ModContent.ItemType<TaintedCloudberry>());
                 TryDropBoosterItem(player, ref calPlayer.sStrawberry, ModContent.ItemType<SacredStrawberry>());
+                for (int i = 0; i < player.ConsumedLifeFruit; i++)
+                {
+                    int drop = Item.NewItem(player.GetSource_DropAsItem(), player.Hitbox, ItemID.LifeFruit);
+                    Main.item[drop].noGrabDelay = 100;
+                }
+                player.ConsumedLifeFruit = 0;
+
                 TryDropBoosterItem(player, ref calPlayer.cShard, ModContent.ItemType<CometShard>());
                 TryDropBoosterItem(player, ref calPlayer.eCore, ModContent.ItemType<EtherealCore>());
                 TryDropBoosterItem(player, ref calPlayer.pHeart, ModContent.ItemType<PhantomHeart>());
+                for (int j = 0; j < player.ConsumedManaCrystals; j++)
+                {
+                    int drop = Item.NewItem(player.GetSource_DropAsItem(), player.Hitbox, ItemID.ManaCrystal);
+                    Main.item[drop].noGrabDelay = 100;
+                }
+                player.ConsumedManaCrystals = 0;
             }
 
             return null;
