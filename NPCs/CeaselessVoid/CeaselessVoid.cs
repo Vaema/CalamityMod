@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
         public bool playedbuildsound = false;
 
-        public bool madeItToLocaation = true;
+        public bool madeItToLocation = true;
 
         public override void SetStaticDefaults()
         {
@@ -467,9 +467,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.damage = 0;
                 if (move)
                 {
-                    madeItToLocaation = false;
+                    madeItToLocation = false;
                 }
-                if (!madeItToLocaation)
+                if (!madeItToLocation)
                 {
                     Movement(false);
                 }
@@ -546,7 +546,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     acceleration *= 2f;
                 }
 
-                if (!madeItToLocaation)
+                if (!madeItToLocation)
                 {
 
                     velocity *= 2f;
@@ -564,7 +564,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
                 Vector2 moveToOffset = succ ? Vector2.Zero : CalamityWorld.LegendaryMode ? new Vector2(0f, -maxDistance) : Vector2.Zero;
-                if ((!succ && CalamityWorld.LegendaryMode) || !madeItToLocaation)
+                if ((!succ && CalamityWorld.LegendaryMode) || !madeItToLocation)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -616,11 +616,11 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Vector2 distanceFromDestination = destination - NPC.Center;
 
                 // Movement
-                if (NPC.Distance(destination) > maxDistance || succ || (!CalamityWorld.LegendaryMode && !madeItToLocaation))
+                if (NPC.Distance(destination) > maxDistance || succ || (!CalamityWorld.LegendaryMode && !madeItToLocation))
                     CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
                 if (NPC.Distance(destination) < 16)
                 {
-                    madeItToLocaation = true;
+                    madeItToLocation = true;
                 }
             }
 
@@ -648,7 +648,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     {
                         if (phase4)
                         {
-                            madeItToLocaation = false;
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)
@@ -659,7 +659,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         }
                         else if (phase3)
                         {
-                            madeItToLocaation = false;
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)
@@ -670,7 +670,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         }
                         else
                         {
-                            madeItToLocaation = false;
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)
