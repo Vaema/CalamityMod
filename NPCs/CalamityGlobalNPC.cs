@@ -7351,16 +7351,6 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
-
-            if (spawnInfo.PlayerSafe)
-                return;
-
-            // Voodoo Demon changes (including partial Voodoo Demon Voodoo Doll implementation)
-            bool voodooDemonDollActive = spawnInfo.Player.Calamity().disableVoodooSpawns;
-
-            // If the doll is active, Voodoo Demons cannot spawn (via modded means).
-            if (voodooDemonDollActive)
-                pool.Remove(NPCID.VoodooDemon);
         }
         #endregion
 
@@ -7387,32 +7377,6 @@ namespace CalamityMod.NPCs
                         n.netUpdate = true;
                     }
                 }
-            }
-
-            if (npc.type != NPCID.VoodooDemon)
-                return;
-
-            // This entity source does not provide a player. So we have to find out if anyone close enough has a doll.
-            if (source is EntitySource_SpawnNPC)
-            {
-                bool voodooDemonDollActive = false;
-                Vector2 v = npc.Center;
-                for (int i = 0; i < Main.maxPlayers; ++i)
-                {
-                    Player p = Main.player[i];
-                    if (p is null || !p.active)
-                        continue;
-                    if (p.DistanceSQ(v) < 4000000f && p.Calamity().disableVoodooSpawns) // 2000 pixel radius
-                    {
-                        voodooDemonDollActive = true;
-                        break;
-                    }
-                }
-                if (!voodooDemonDollActive)
-                    return;
-
-                npc.Transform(NPCID.Demon);
-                npc.netUpdate = true;
             }
         }
         #endregion

@@ -137,7 +137,6 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         internal bool hadNanomachinesLastFrame = false;
         public bool combHair;
-        public bool disableVoodooSpawns = false;
         public bool disablePerfCystSpawns = false;
         public bool disableHiveCystSpawns = false;
         public bool disableNaturalScourgeSpawns = false;
@@ -2722,7 +2721,6 @@ namespace CalamityMod.CalPlayer
 
             /* Spawn blockers from back when they used to work by being favorited and not a toggleable item
             noStupidNaturalARSpawns = false
-            disableVoodooSpawns = false;
             disablePerfCystSpawns = false;
             disableHiveCystSpawns = false;
             disableNaturalScourgeSpawns = false;

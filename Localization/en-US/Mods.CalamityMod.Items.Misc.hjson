@@ -369,16 +369,6 @@ SirenproofEarMuffs: {
 		'''
 }
 
-VoodooDemonVoodooDoll: {
-	DisplayName: Voodoo Demon Voodoo Doll
-	Tooltip:
-		'''
-		Toggle this item to prevent voodoo demons from spawning near you
-		Press <right> to toggle
-		[STATE]
-		'''
-}
-
 // Uncategorized
 ExhumeShortTooltip:
 	'''
