@@ -39,6 +39,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         {
             Projectile.width = Projectile.height = 138;
             Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
+            Projectile.noEnchantmentVisuals = true;
         }
         public override void Spawn(IEntitySource source)
         {
@@ -90,7 +91,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 else
                 {
                     if (timer == StartupTime - 1)
-                        Projectile.damage = (int)(Projectile.damage * 0.75 * (0.75f + channelCharge / 60f));
+                        Projectile.damage = (int)(Projectile.damage * 0.75 * (channelCharge / 60f)); //scales from 0x to 3.75x power
                 }
                 //Make the sprite rotation look right in game
                 Projectile.rotation -= (MathHelper.PiOver2) * (angle.X > 0 ? 1 : -1);
