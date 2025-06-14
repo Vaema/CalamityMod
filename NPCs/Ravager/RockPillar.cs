@@ -223,7 +223,8 @@ namespace CalamityMod.NPCs.Ravager
         {
             if (item.pick > 0)
             {
-                modifiers.ScalingBonusDamage += item.pick / 5f;
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += (NPC.lifeMax / 2000f) * item.pick;
             }
             base.ModifyHitByItem(player, item, ref modifiers);
         }
@@ -233,7 +234,8 @@ namespace CalamityMod.NPCs.Ravager
             var item = Main.player[projectile.owner].HeldItem;
             if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
             {
-                modifiers.ScalingBonusDamage += item.pick / 5f;
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += (NPC.lifeMax / 2000f) * item.pick;
             }
             base.ModifyHitByProjectile(projectile, ref modifiers);
         }
