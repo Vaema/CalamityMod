@@ -578,36 +578,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             NPC.ai[0] = 0f;
                     }
                     moveToOffset += new Vector2(maxDistance, 0).RotatedBy(NPC.ai[0] / 8f * MathHelper.TwoPi);
-                    /*switch ((int)NPC.ai[0])
-                    {
-                        case 0:
-                            break;
-                        case 1:
-                            moveToOffset.X = -maxDistance;
-                            break;
-                        case 2:
-                            moveToOffset.X = -maxDistance;
-                            moveToOffset.Y = 0f;
-                            break;
-                        case 3:
-                            moveToOffset.X = -maxDistance;
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 4:
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 5:
-                            moveToOffset.X = maxDistance;
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 6:
-                            moveToOffset.X = maxDistance;
-                            moveToOffset.Y = 0f;
-                            break;
-                        case 7:
-                            moveToOffset.X = maxDistance;
-                            break;
-                    }*/
                 }
 
                 destination += moveToOffset;
