@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
-    public class GildedProboscisProj : BaseSwordHoldoutProjectile
+    public class GildedProboscisProj : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override bool useMeleeSpeed => false;
@@ -27,6 +27,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
+
 
         public override float lineCollisionLength => 196;
 
@@ -103,6 +104,15 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 if (inCooldown)
                 {
                     OffsetDistance = (int)MathHelper.SmoothStep(90, 60, MathF.Pow(CooldownCompletion, 1));
+
+                    if (CooldownCompletion > 0.5f && Main.LocalPlayer.whoAmI == Projectile.owner && player.HeldItem.type == ModContent.ItemType<GildedProboscis>() && Main.mouseRight)
+                    {
+                        player.itemAnimation = 1;
+                        player.itemTime = 1;
+                        Projectile.timeLeft = 1;
+                        timer = StartupTime + swingTime + CooldownTime;
+                        return;
+                    }
                 }
 
                 if (inSwing)

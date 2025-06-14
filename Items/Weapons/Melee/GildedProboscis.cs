@@ -37,4 +37,5 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             return true;
         }
+    }
 }
