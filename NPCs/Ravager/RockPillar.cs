@@ -79,11 +79,11 @@ namespace CalamityMod.NPCs.Ravager
                     NPC.damage = NPC.defDamage;
             }
 
-            if (NPC.ai[0] == 0f)
+            if (NPC.ai[0] == 0)
             {
                 if (NPC.velocity.Y == 0f)
                 {
-                    if (NPC.ai[1] == -1f)
+                    if (NPC.ai[1] >= 2)
                     {
                         SoundEngine.PlaySound(SoundID.Item62, NPC.Center);
 
@@ -217,6 +217,25 @@ namespace CalamityMod.NPCs.Ravager
                     Main.dust[rockDust2].velocity *= 2f;
                 }
             }
+        }
+
+        public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+        {
+            if (item.pick > 0)
+            {
+                modifiers.ScalingBonusDamage += item.pick / 5f;
+            }
+            base.ModifyHitByItem(player, item, ref modifiers);
+        }
+
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            var item = Main.player[projectile.owner].HeldItem;
+            if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
+            {
+                modifiers.ScalingBonusDamage += item.pick / 5f;
+            }
+            base.ModifyHitByProjectile(projectile, ref modifiers);
         }
     }
 }

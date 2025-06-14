@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
@@ -591,7 +592,7 @@ namespace CalamityMod.NPCs.Ravager
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool anyRockPillars = NPC.AnyNPCs(ModContent.NPCType<RockPillar>());
+                        bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 1);
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
 
                         if (CalamityWorld.LegendaryMode)
@@ -624,7 +625,7 @@ namespace CalamityMod.NPCs.Ravager
                             {
                                 if (n.type == ModContent.NPCType<RockPillar>() && n.ai[0] == 0f)
                                 {
-                                    n.ai[1] = -1f;
+                                    n.ai[1]++;
                                     n.direction = NPC.direction;
                                     n.netUpdate = true;
                                 }

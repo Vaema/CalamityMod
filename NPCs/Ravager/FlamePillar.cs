@@ -214,5 +214,24 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
+
+        public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+        {
+            if (item.pick > 0)
+            {
+                modifiers.ScalingBonusDamage += item.pick / 5f;
+            }
+            base.ModifyHitByItem(player, item, ref modifiers);
+        }
+
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            var item = Main.player[projectile.owner].HeldItem;
+            if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
+            {
+                modifiers.ScalingBonusDamage += item.pick / 5f;
+            }
+            base.ModifyHitByProjectile(projectile, ref modifiers);
+        }
     }
 }
