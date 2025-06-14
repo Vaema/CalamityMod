@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             DevourerofGodsHead modNPC = head?.ModNPC<DevourerofGodsHead>() ?? null;
 
             index = -1;
-            if (head is null)
+            if (head is null || NPC.Opacity < 0.1f)
                 return;
 
             if (!modNPC.Phase2Started)

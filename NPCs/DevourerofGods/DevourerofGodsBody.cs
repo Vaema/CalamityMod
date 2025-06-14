@@ -100,7 +100,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             NPC head = CalamityGlobalNPC.DoGHead >= 0 ? Main.npc[CalamityGlobalNPC.DoGHead] : null;
             DevourerofGodsHead modNPC = head?.ModNPC<DevourerofGodsHead>() ?? null;
-            if (head is null || modNPC.AwaitingPhase2Teleport || !modNPC.Phase2Started)
+            if (head is null || modNPC.AwaitingPhase2Teleport || !modNPC.Phase2Started || NPC.Opacity < 0.1f)
             {
                 index = -1;
                 return;

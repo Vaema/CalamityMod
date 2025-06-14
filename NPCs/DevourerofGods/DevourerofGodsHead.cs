@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Phase variables
         private const int idleCounterMax = 300;
         private int idleCounter = idleCounterMax;
-        public const float LaserWallCooldown = 1200f;
+        public const float LaserWallCooldown = 1800f;
         private int postTeleportTimer = 0;
         private int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 120;
@@ -143,7 +143,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const int TimeBeforeTeleport_Expert = 160;
         private const int TimeBeforeTeleport_Normal = 180;
         private bool spawnedGuardians3 = false;
-        private const float AlphaGateValue = 1060f;
+        private const float AlphaGateValue = 1660f;
         public const float SkyColorTransitionTime = 90f;
 
         // Death animation variables
@@ -211,6 +211,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = SoundID.NPCDeath14;
+            NPC.ai[3] = 1;
             NPC.netAlways = true;
 
             if (CalamityWorld.LegendaryMode)
@@ -222,7 +223,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void BossHeadSlot(ref int index)
         {
-            if (Phase2Started && (NPC.localAI[2] > 60f || AwaitingPhase2Teleport))
+            if ((Phase2Started && (NPC.localAI[2] > 60f || AwaitingPhase2Teleport)) || NPC.Opacity < 0.1f)
                 index = -1;
             else if (Phase2Started && !AwaitingPhase2Teleport)
                 index = phase2IconIndex;
@@ -425,6 +426,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             groundPhaseTurnSpeed += Vector2.Distance(destination, NPC.Center) * 0.0002f;
 
+            if (Vector2.Distance(destination, NPC.Center) < 320)
+                groundPhaseTurnSpeed *= 0.75f;
+
             if (CalamityWorld.LegendaryMode)
             {
                 segmentVelocity *= 1.1f;
@@ -437,12 +441,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             // How long it takes before swapping phases
             int phaseLimit = death ? 600 : 900;
-            if (expertMode && NPC.ai[3] == 0f)
-            {
-                phaseLimit /= 1 + (int)((death ? 4f : 5f) * (1f - lifeRatio));
-                if (phaseLimit < 180)
-                    phaseLimit = 180;
-            }
 
             // Continuously reset certain things.
             AttemptingToEnterPortal = false;
@@ -751,7 +749,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || CalamityWorld.LegendaryMode) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
+                    if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                     {
                         calamityGlobalNPC.newAI[0] += 1f;
                         if (calamityGlobalNPC.newAI[0] >= (CalamityWorld.LegendaryMode ? 30f : 150f) && calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : phase7 ? 30f : 60f) == 0f)
@@ -1035,7 +1033,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (!Main.dedServ)
                         {
                             if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1063,51 +1061,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                         Vector2 npcCenter = NPC.Center;
                         float targetX = destination.X;
                         float targetY = destination.Y;
-                        int flyYLevel = -1;
                         int destinationTileX = (int)(destination.X / 16f);
                         int destinationTileY = (int)(destination.Y / 16f);
-
-                        // Charge at target for 1.5 seconds
-                        bool flyAtTarget = (!phase4 || spawnedGuardians3) && calamityGlobalNPC.newAI[2] > phaseLimit - 90 && revenge;
-
-                        for (int i = destinationTileX - 2; i <= destinationTileX + 2; i++)
-                        {
-                            for (int j = destinationTileY; j <= destinationTileY + 15; j++)
-                            {
-                                if (WorldGen.SolidTile2(i, j))
-                                {
-                                    flyYLevel = j;
-                                    break;
-                                }
-                            }
-                            if (flyYLevel > 0)
-                                break;
-                        }
-
-                        if (!flyAtTarget && destination == player.Center)
-                        {
-                            if (flyYLevel > 0)
-                            {
-                                flyYLevel *= 16;
-                                float chaseFlyLevel = flyYLevel - 800;
-                                if (player.position.Y > chaseFlyLevel)
-                                {
-                                    targetY = chaseFlyLevel;
-                                    if (Math.Abs(NPC.Center.X - destination.X) < 500f)
-                                    {
-                                        if (NPC.velocity.X > 0f)
-                                            targetX = destination.X + 600f;
-                                        else
-                                            targetX = destination.X - 600f;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            speedCopy = homingSpeed;
-                            turnSpeedCopy = homingTurnSpeed;
-                        }
+                       
+                        
+                        speedCopy = homingSpeed;
+                        turnSpeedCopy = homingTurnSpeed;
+                        
 
                         speedCopy += Vector2.Distance(destination, NPC.Center) * 0.005f;
                         turnSpeedCopy += Vector2.Distance(destination, NPC.Center) * 0.00025f;
@@ -1245,7 +1205,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (!Main.dedServ)
                         {
                             if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                                Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                                Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                         }
 
                         // Charge in a direction for a second until the timer is back at 0
@@ -1812,7 +1772,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (!Main.dedServ)
                     {
                         if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
                     }
 
                     // Flying movement
@@ -1825,45 +1785,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                     Vector2 npcCenter = NPC.Center;
                     float targetX = player.position.X + (player.width / 2);
                     float targetY = player.position.Y + (player.height / 2);
-                    int flyYLevel = -1;
-                    int destinationTileX = (int)(destination.X / 16f);
-                    int destinationTileY = (int)(destination.Y / 16f);
-
-                    for (int i = destinationTileX - 2; i <= destinationTileX + 2; i++)
-                    {
-                        for (int j = destinationTileY; j <= destinationTileY + 15; j++)
-                        {
-                            if (WorldGen.SolidTile2(i, j))
-                            {
-                                flyYLevel = j;
-                                break;
-                            }
-                        }
-                        if (flyYLevel > 0)
-                            break;
-                    }
-
-                    if (flyYLevel > 0)
-                    {
-                        flyYLevel *= 16;
-                        float chaseFlyLevel = flyYLevel - 800;
-                        if (player.position.Y > chaseFlyLevel)
-                        {
-                            targetY = chaseFlyLevel;
-                            if (Math.Abs(NPC.Center.X - destination.X) < 500f)
-                            {
-                                if (NPC.velocity.X > 0f)
-                                    targetX = destination.X + 600f;
-                                else
-                                    targetX = destination.X - 600f;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        speedCopy = homingSpeed;
-                        turnSpeedCopy = homingTurnSpeed;
-                    }
+                    
+                    speedCopy = homingSpeed;
+                    turnSpeedCopy = homingTurnSpeed;
 
                     if (expertMode)
                     {
@@ -2004,7 +1928,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (!Main.dedServ)
                     {
                         if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
-                            Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                            Main.LocalPlayer.AddBuff(ModContent.BuffType<Warped>(), 2);
                     }
 
                     calamityGlobalNPC.newAI[2] += 1f;
