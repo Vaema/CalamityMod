@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
@@ -13,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
