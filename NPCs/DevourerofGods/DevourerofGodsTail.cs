@@ -477,14 +477,5 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-            {
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120, true);
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 360, true);
-            }
-        }
     }
 }
