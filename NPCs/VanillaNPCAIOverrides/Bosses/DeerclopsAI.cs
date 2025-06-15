@@ -407,16 +407,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = (death ? 11 : 9) + (int)MathHelper.Lerp(0f, 7f, 1f - lifeRatio);
+                            int totalProjectiles = (death ? 20 : 16) + (int)MathHelper.Lerp(0f, 7f, 1f - lifeRatio);
                             float velocityMultIncrement = ((totalProjectiles + 1) / (float)totalProjectiles) - 1f;
-                            float randomRadialOffset = MathHelper.ToRadians(MathHelper.Lerp(0f, death ? 360f : 270f, 1f - lifeRatio));
+                            float randomRadialOffset = Main.rand.NextFloat(MathHelper.ToRadians(MathHelper.Lerp(0f, death ? 360f : 270f, 1f - lifeRatio)));
                             float radians = MathHelper.TwoPi / totalProjectiles + randomRadialOffset;
-                            float velocity = (death ? 10.5f : 8f) + MathHelper.Lerp(0f, 4f, 1f - lifeRatio);
+                            float velocity = 12f + MathHelper.Lerp(0f, 4f, 1f - lifeRatio);
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 actualVelocity = spinningPoint.RotatedBy(radians * k);
-                                float velocityMultiplier = 1f - k * velocityMultIncrement;
+                                float velocityMultiplier = 1f - (k * velocityMultIncrement * 0.5f);
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), Main.player[npc.target].Center + Vector2.Normalize(actualVelocity) * 550f, actualVelocity * velocityMultiplier * -1f, shadowHand, shadowHandDamage, 0f, Main.myPlayer);
                             }
                         }
