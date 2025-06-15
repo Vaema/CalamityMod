@@ -55,7 +55,7 @@ DeathEnabled: Death Mode is enabled
 DeathShortInfo: "[c/C82DF7:A far more difficult challenge than Revengeance Mode! Can only be enabled in Master Mode!]"
 DeathExpandedInfo:
 	'''
-	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs and increased damage]
+	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs]
 	[c/B834E0:Bosses have substantially harder AI changes. Enemies are even more numerous and can easily overwhelm you]
 	[c/B834E0:Debuffs are especially lethal and the Abyss is significantly more dangerous]
 	[c/E945FF:Vigilance and tenacity are crucial to survival]
