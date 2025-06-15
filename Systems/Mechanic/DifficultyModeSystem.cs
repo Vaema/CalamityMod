@@ -140,6 +140,7 @@ namespace CalamityMod.Systems
         }
 
         public abstract Asset<Texture2D> Texture { get; }
+        public abstract Asset<Texture2D> TextureDisabled { get; }
         public virtual LocalizedText ExpandedDescription => LocalizedText.Empty;
 
         public float DifficultyScale;
@@ -182,6 +183,17 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
+
+                return _textureDisabled;
+            }
+        }
 
         public NoDifficulty()
         {
@@ -218,6 +230,17 @@ namespace CalamityMod.Systems
                     _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert");
 
                 return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
+
+                return _textureDisabled;
             }
         }
 
@@ -266,6 +289,17 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
+
+                return _textureDisabled;
+            }
+        }
 
         public override LocalizedText ExpandedDescription
         {
@@ -310,6 +344,17 @@ namespace CalamityMod.Systems
                     _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev");
 
                 return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
+
+                return _textureDisabled;
             }
         }
 
@@ -358,6 +403,17 @@ namespace CalamityMod.Systems
                     _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death");
 
                 return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
+
+                return _textureDisabled;
             }
         }
 

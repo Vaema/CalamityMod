@@ -49,7 +49,7 @@ namespace CalamityMod.UI.ModeIndicator
         internal static int MenuAnimLength => MostAlternateDifficulties > 1 ? 60 : 40;
         private static int menuOpenTransitionTime = 0;
         private static DifficultyMode previouslyHoveredMode = null;
-        public static float WidthForTier(int alts) => (alts - 1) * 40f;
+        public static float WidthForTier(int alts) => (alts - 1) * 44f;
 
         private static void ClearVariables()
         {
@@ -298,7 +298,7 @@ namespace CalamityMod.UI.ModeIndicator
         public static void ManageHexIcons(SpriteBatch spriteBatch, out string text)
         {
             int tiers = DifficultyTiers.Count();
-            float barLength = 60 * tiers * BarExpansionProgress;
+            float barLength = 68 * tiers * BarExpansionProgress;
             float progress = menuOpen ? 1 - menuOpenTransitionTime / (float)MenuAnimLength : menuOpenTransitionTime / (float)MenuAnimLength;
             Vector2 basePosition = DrawCenter + (barLength / (float)(tiers + 1f)) * Vector2.UnitY;
 
@@ -317,7 +317,7 @@ namespace CalamityMod.UI.ModeIndicator
                 for (int j = 0; j < modesAtTier; j++)
                 {
                     DifficultyMode mode = DifficultyTiers[i][j];
-                    Texture2D hexIcon = mode.Texture.Value;
+                    Texture2D hexIcon = mode.Enabled ? mode.Texture.Value : mode.TextureDisabled.Value;
                     Vector2 hexIconSize = hexIcon.Size();
 
                     // Get position.
@@ -327,7 +327,7 @@ namespace CalamityMod.UI.ModeIndicator
 
                     bool hovered = MouseScreenArea.Intersects(Utils.CenteredRectangle(iconPosition, hexIconSize));
 
-                    float usedOpacity = mode.Enabled ? 0.85f : 0.55f;
+                    float usedOpacity = 0.85f;
                     if (hovered)
                         usedOpacity = MathHelper.Lerp(usedOpacity, 1f, 0.7f);
 
