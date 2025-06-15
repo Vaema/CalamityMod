@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Items.Armor.Victide;
-using CalamityMod.Particles;
 using CalamityMod.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,18 +30,17 @@ namespace CalamityMod.Cooldowns
 
         public override void OnCompleted()
         {
-            // need to have proper visuals
-            // currently not a lot of ideas rn
             Vector2 playerVelocity = instance.player.velocity / 8f;
-            Vector2 particleGravity = Vector2.UnitY * 0.03f;
-            for (int i = 0; i < 16; i++)
+            if (!Main.dedServ)
             {
-                Vector2 dustDisplace = Main.rand.NextVector2Circular(80f, 50f);
-                Vector2 dustPosition = instance.player.MountedCenter + dustDisplace;
-                Vector2 dustSpeed = Main.rand.NextVector2Circular(0.5f, 0.5f) + playerVelocity - Vector2.UnitY.RotatedByRandom(MathHelper.PiOver4) * 0.06f;
-                dustSpeed.X += 1.4f * (float)Math.Sin(((dustDisplace.X + 80f) / 160f) * MathHelper.Pi) * (Main.rand.NextBool() ? -1 : 1);
-                Particle dust = new SandyDustParticle(dustPosition, dustSpeed, Color.White, Main.rand.NextFloat(0.7f, 1.2f), Main.rand.Next(20, 50), 0.03f, particleGravity);
-                GeneralParticleHandler.SpawnParticle(dust);
+                for (int i = 0; i < 16; i++)
+                {
+                    Vector2 bubblePos = instance.player.MountedCenter + Main.rand.NextVector2Circular(50f, 50f);
+                    Vector2 bubbleSpeed = Main.rand.NextVector2Circular(1f, 1f) + playerVelocity;
+                    Gore bubble = Gore.NewGoreDirect(instance.player.GetSource_Misc("1"), bubblePos, bubbleSpeed, 411, Main.rand.NextFloat(0.8f, 1.6f));
+                    bubble.timeLeft = 24 + Main.rand.Next(13);
+                    bubble.type = 411;
+                }
             }
         }
 

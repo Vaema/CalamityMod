@@ -3793,7 +3793,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
-            if (victideBurrowSet && !Player.HasCooldown(BubblyBurrow.ID))
+            if (victideBurrowSet && !Player.shimmering && !Player.HasCooldown(BubblyBurrow.ID))
             {
                 SoundEngine.PlaySound(SoundID.Item154, Player.Center);
                 if (Player.whoAmI == Main.myPlayer)

@@ -48,6 +48,13 @@ namespace CalamityMod.Projectiles.Typeless
                     Projectile.Kill();
                     return;
                 }
+                // Shimmer interaction (Immediately ends if Chromatic Cloak isn't active)
+                else if (Owner.shimmering)
+                {
+                    cd.timeLeft = VictideHeadBurrow.BurrowCooldown;
+                    Projectile.Kill();
+                    return;
+                }
                 Projectile.timeLeft = cd.timeLeft - VictideHeadBurrow.BurrowCooldown;
 
                 #region Movement and Controls
@@ -123,7 +130,8 @@ namespace CalamityMod.Projectiles.Typeless
                 Owner.mount?.Dismount(Owner);
                 Owner.RemoveAllGrapplingHooks();
 
-                // Give immunity frames
+                // Give immunity frames and kill suffocation
+                Owner.suffocateDelay = 0;
                 Owner.immune = true;
                 Owner.immuneNoBlink = true;
                 Owner.immuneTime = 4;
