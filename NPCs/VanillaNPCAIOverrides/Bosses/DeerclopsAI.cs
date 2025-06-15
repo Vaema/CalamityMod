@@ -178,7 +178,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Deerclops must be this close to its target on the X axis to do the ice spike attack
                         // This distance increases at lower HP because the ice spikes get bigger
-                        float iceSpikesDistanceGateValue = 120f + MathHelper.Lerp(0f, 120f, 1f - lifeRatio);
+                        float iceSpikesDistanceGateValue = 120f + MathHelper.Lerp(0f, 60f, 1f - lifeRatio);
                         if (Math.Abs(distanceFromTarget2.X) < iceSpikesDistanceGateValue && useEitherIceSpikeAttack && npc.velocity.Y == 0f && npc.localAI[1] >= 2f)
                         {
                             npc.velocity.X = 0f;
