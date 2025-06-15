@@ -44,7 +44,7 @@ namespace CalamityMod.Items.SummonItems
             Color messageColor = Color.Cyan;
             CalamityUtils.DisplayLocalizedText(key, messageColor);
 
-            CalamityUtils.SpawnBossUsingItem<DevourerofGodsHead>(player, DevourerofGodsHead.SpawnSound);
+            CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
 
