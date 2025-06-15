@@ -374,9 +374,7 @@ namespace CalamityMod.NPCs.Perforator
                                 if (blobVelocity.Y < 2f)
                                     blobVelocity.Y = 2f + blobVelocityYAdd;
 
-                                // Fall a bit further or shorter depending on which blob it is
-                                float fallFurtherDistance = 48f * (i - numBlobs / 2);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y + fallFurtherDistance);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
 
