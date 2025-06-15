@@ -171,8 +171,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool useFrontIceSpikeAttack = Math.Abs(distanceFromTarget2.X) >= Math.Abs(distanceFromTarget2.Y) * distanceCheckMultiplier || distanceFromTarget2.Length() < 48f;
                     bool useEitherIceSpikeAttack = distanceFromTarget2.Y <= (float)(100 + targetData.Height) && distanceFromTarget2.Y >= -200f;
 
-                    // Can only use ice spikes a maximum of twice in a row before doing something else
-                    float iceSpikeAttackLimit = 2f;
+                    // Can only use ice spikes a maximum of three times in a row before doing something else
+                    float iceSpikeAttackLimit = 3f;
                     bool doNotUseIceSpikes = calamityGlobalNPC.newAI[1] >= iceSpikeAttackLimit;
                     if (!doNotUseIceSpikes)
                     {
@@ -206,9 +206,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    // Can only use rubble a maximum of thrice in a row before doing something else
-                    // This also takes into account the ice spike limit
-                    float rubbleAttackLimit = 3f;
+                    // Can only use rubble and ice spikes a maximum of four times in a row before doing something else
+                    float rubbleAttackLimit = 4f;
                     bool doNotUseRubble = calamityGlobalNPC.newAI[1] >= rubbleAttackLimit;
                     float rubbleGateValue = death ? 160f : 200f;
                     if (!doNotUseRubble)
