@@ -410,9 +410,6 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.localAI[0] = 0f;
                     SoundEngine.PlaySound(GeyserShoot, NPC.Center);
 
-                    bool ichor = Main.rand.NextBool();
-                    int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                    int damage = NPC.GetProjectileDamage(type);
                     int numProj = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
                     if (CalamityWorld.LegendaryMode)
                         numProj *= 2;
@@ -426,6 +423,10 @@ namespace CalamityMod.NPCs.Perforator
                     Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
                     for (int i = 0; i < numProj; i++)
                     {
+                        bool ichor = Main.rand.NextBool();
+                        int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                        int damage = NPC.GetProjectileDamage(type);
+
                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                         Vector2 randomVelocity = new Vector2(Main.rand.NextFloat() - 0.5f, Main.rand.NextFloat() - 0.5f);
                         Vector2 projectileSpawnLocation = NPC.Center + Vector2.Normalize(perturbedSpeed) * 50f;
