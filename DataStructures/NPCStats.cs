@@ -527,12 +527,12 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), new int[] { 192, 288, 328, 368, 576 } },
                 { ModContent.NPCType<SulphurousSharkron>(), new int[] { 192, 288, 328, 368, 576 } },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), new int[] { 470, 700, 750, 800, 1410 } },
-                { ModContent.NPCType<DevourerofGodsBody>(), new int[] { 250, 374, 425, 476, 714 } },
-                { ModContent.NPCType<DevourerofGodsTail>(), new int[] { 204, 306, 340, 374, 612 } },
-                { ModContent.NPCType<CosmicGuardianHead>(), new int[] { 240, 360, 396, 432, 720 } },
-                { ModContent.NPCType<CosmicGuardianBody>(), new int[] { 175, 260, 290, 320, 525 } },
-                { ModContent.NPCType<CosmicGuardianTail>(), new int[] { 135, 200, 230, 260, 405 } },
+                { ModContent.NPCType<DevourerofGodsHead>(), new int[] { 250, 500, 550, 600, 750 } },
+                { ModContent.NPCType<DevourerofGodsBody>(), new int[] { 100, 200, 220, 270, 300 } },
+                { ModContent.NPCType<DevourerofGodsTail>(), new int[] { 100, 200, 220, 270, 300 } },
+                { ModContent.NPCType<CosmicGuardianHead>(), new int[] { 150, 300, 330, 360, 450 } },
+                { ModContent.NPCType<CosmicGuardianBody>(), new int[] { 150, 300, 330, 360, 450 } },
+                { ModContent.NPCType<CosmicGuardianTail>(), new int[] { 150, 300, 330, 360, 450 } },
 
                 { ModContent.NPCType<Yharon>(), new int[] { 300, 448, 480, 512, 900 } },
 
@@ -796,8 +796,8 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<OldDukeToothBall>(), ModContent.ProjectileType<SandPoisonCloudOldDuke>()), new int[] { 180, 316, 348, 380, 540 } },
                 { new Tuple<int, int>(ModContent.NPCType<SulphurousSharkron>(), ModContent.ProjectileType<OldDukeGore>()), new int[] { 170, 296, 324, 352, 510 } },
 
-                { new Tuple<int, int>(ModContent.NPCType<DevourerofGodsHead>(), ModContent.ProjectileType<DoGDeath>()), new int[] { 180, 316, 348, 380, 540 } },
-                { new Tuple<int, int>(ModContent.NPCType<DevourerofGodsHead>(), ModContent.ProjectileType<DoGFire>()), new int[] { 200, 340, 376, 412, 600 } },
+                { new Tuple<int, int>(ModContent.NPCType<DevourerofGodsHead>(), ModContent.ProjectileType<DoGDeath>()), new int[] { 150, 300, 320, 380, 450 } },
+                { new Tuple<int, int>(ModContent.NPCType<DevourerofGodsHead>(), ModContent.ProjectileType<DoGFire>()), new int[] { 125, 250, 250, 300, 375 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<Yharon>(), ModContent.ProjectileType<SkyFlareRevenge>()), new int[] { 300, 520, 548, 576, 900 } },
                 { new Tuple<int, int>(ModContent.NPCType<Yharon>(), ModContent.ProjectileType<FlareBomb>()), new int[] { 220, 384, 424, 464, 660 } },

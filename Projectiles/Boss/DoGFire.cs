@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 160);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), CalamityUtils.SecondsToFrames(8));
         }
 
         public override void OnKill(int timeLeft)
