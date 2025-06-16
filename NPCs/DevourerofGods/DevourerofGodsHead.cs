@@ -425,7 +425,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float groundPhaseTurnSpeed = bossRush ? 0.3f : death ? 0.24f : 0.18f;
 
             if (expertMode)
-                groundPhaseTurnSpeed += 0.1f * (1f - lifeRatio);
+                groundPhaseTurnSpeed += 0.1f * (1f - (lifeRatio * 0.75f + 0.25f));
 
             groundPhaseTurnSpeed += Vector2.Distance(destination, NPC.Center) * 0.0002f;
 
