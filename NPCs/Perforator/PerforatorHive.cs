@@ -71,7 +71,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 110;
             NPC.height = 100;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(6000, 7200, 270000);
+            NPC.LifeMaxNERB(4800, 5750, 270000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
