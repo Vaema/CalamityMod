@@ -92,7 +92,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             colorChangeProgress = 1f;
 
                         bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-                        Color regularSkyColor = (Main.npc[DoGIndex].ai[3] == 0f ? Color.Lerp(Color.Cyan, Color.Fuchsia, colorChangeProgress) : Color.Lerp(Color.Fuchsia, Color.Cyan, colorChangeProgress)) * intensity;
+                        Color regularSkyColor = (Main.npc[DoGIndex].ai[3] == 0f ^ !Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>().Phase2Started ? Color.Lerp(Color.Cyan, Color.Fuchsia, colorChangeProgress) : Color.Lerp(Color.Fuchsia, Color.Cyan, colorChangeProgress)) * intensity;
                         if (Main.npc[DoGIndex].life < Main.npc[DoGIndex].lifeMax * blackScreenLife_GateValue || death || Main.npc[DoGIndex].localAI[3] > 0f)
                         {
                             float blackSkyTransitionProgress = death ? 1f : Main.npc[DoGIndex].localAI[3] / timeToReachNextColor;

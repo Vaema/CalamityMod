@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
@@ -24,6 +25,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Sounds;
@@ -145,6 +147,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private bool spawnedGuardians3 = false;
         private const float AlphaGateValue = 1660f;
         public const float SkyColorTransitionTime = 90f;
+        public Vector2 PortalEntryLocation = Vector2.Zero;
 
         // Death animation variables
         public bool Dying;
@@ -452,7 +455,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Despawn
             if (player.dead)
             {
-                NPC.ai[3] = 0f;
+                NPC.ai[3] = 3f;
                 calamityGlobalNPC.newAI[2] = 0f;
 
                 NPC.velocity.Y -= 4f;
@@ -496,6 +499,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             float timeWhenDoGShouldTeleportDuringPhase2Countdown = 61f;
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
+            if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown - 30)
+            {
+                Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
+                GeneralParticleHandler.SpawnParticle(pulse);
+            }
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
                 Teleport(player, bossRush, death, revenge, expertMode, phase5);
 
@@ -554,11 +562,26 @@ namespace CalamityMod.NPCs.DevourerofGods
                     Color messageColor = Color.Cyan;
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                 }
+                if (NPC.localAI[2] > 0 && NPC.localAI[2] < 60 )
+                {
+                    var Size = 1.6f;
+                    if (NPC.localAI[2] == 1)
+                    {
+                        Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
+                        GeneralParticleHandler.SpawnParticle(pulse);
+                    }
+                    Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
+                    GeneralParticleHandler.SpawnParticle(jaws);
+                    Particle jaws2 = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 56, NPC.velocity, Color.Aqua, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size - 0.3f, Size - 0.3f, 2);
+                    GeneralParticleHandler.SpawnParticle(jaws2);
+                }
             }
 
             // Begin phase 2
+            #region Phase 2
             if (Phase2Started)
             {
+                #region Transition
                 // Go immune and invisible
                 if (NPC.localAI[2] > 5f)
                 {
@@ -605,7 +628,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     AttemptingToEnterPortal = true;
                 }
-
+                #endregion
+                
                 // Phase 2
                 else
                 {
@@ -616,7 +640,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (teleportTimer > 0)
                     {
                         teleportTimer--;
+                        if (teleportTimer == 30)
+                        {
 
+                            Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
+                            GeneralParticleHandler.SpawnParticle(pulse);
+                        }
                         // Teleport
                         if (teleportTimer == 0)
                             Teleport(player, bossRush, death, revenge, expertMode, phase5);
@@ -640,6 +669,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
 
                     // Laser walls
+                    #region Laser Walls
                     float adjustedAlphaGateValue = AlphaGateValue - (bossRush ? 360f : death ? 180f : 0f);
                     if (phase4 && !spawnedGuardians3 && postTeleportTimer <= 0)
                     {
@@ -650,7 +680,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 calamityGlobalNPC.newAI[3] = adjustedAlphaGateValue;
 
                             // Increment next laser wall phase timer
-                            calamityGlobalNPC.newAI[3] += 1f;
+                            if (NPC.ai[3] == 2)
+                                calamityGlobalNPC.newAI[3] += 1f;
 
                             // Set alpha value prior to firing laser walls
                             if (calamityGlobalNPC.newAI[3] > adjustedAlphaGateValue)
@@ -661,15 +692,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     GetRiftLocation(false);
                                     teleportTimer = 0;
                                 }
-
-                                NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[3] - adjustedAlphaGateValue) * 5f, 0f, 255f) / 255f);
                             }
 
                             // Fire laser walls every X seconds after a laser wall phase ends
                             float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
                             if (calamityGlobalNPC.newAI[3] >= laserWallGateValue)
                             {
-                                NPC.Opacity = 0f;
 
                                 // Reset laser wall timer to 0
                                 calamityGlobalNPC.newAI[1] = 0f;
@@ -684,9 +712,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                             idleCounter--;
                             if (idleCounter <= 0)
                             {
-                                SpawnTeleportLocation(player);
                                 laserWallPhase = (int)LaserWallPhase.End;
                                 idleCounter = idleCounterMax;
+                                NPC.ai[3] = 3;
+                                calamityGlobalNPC.newAI[2] = 0;
                             }
                         }
                         else if (laserWallPhase == (int)LaserWallPhase.End)
@@ -718,14 +747,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         CalamityUtils.DisplayLocalizedText(key, messageColor);
                                     }
 
-                                    // Summon Cosmic Guardians
-                                    SoundEngine.PlaySound(AttackSound with { Pitch = AttackSound.Pitch + extrapitch }, player.Center);
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        for (int i = 0; i < 3; i++)
-                                            NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<CosmicGuardianHead>());
-                                    }
-
                                     spawnedGuardians3 = true;
                                 }
                             }
@@ -736,8 +757,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Set opacity after teleport
                         if (postTeleportTimer > 0)
                         {
+                            var Size = 1.6f;
+                            if (postTeleportTimer == 1)
+                            {
+                                Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
+                                GeneralParticleHandler.SpawnParticle(pulse);
+                            }
+                            Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
+                            GeneralParticleHandler.SpawnParticle(jaws);
+                            Particle jaws2 = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 56, NPC.velocity, Color.Aqua, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size - 0.3f, Size - 0.3f, 2);
+                            GeneralParticleHandler.SpawnParticle(jaws2);
                             postTeleportTimer--;
                             NPC.Opacity = 1f - (postTeleportTimer / 255f);
+                            NPC.ai[3] = 0;
+                            calamityGlobalNPC.newAI[2] = 0;
                         }
                         else
                         {
@@ -814,6 +847,11 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (calamityGlobalNPC.newAI[1] % divisor == 0f)
                         {
+                            int bonusLenience = 0;
+                            if (calamityGlobalNPC.newAI[1] == 0)
+                            {
+                                bonusLenience = 16;
+                            }
                             SoundEngine.PlaySound(SoundID.Item12, player.Center);
 
                             // Side walls
@@ -837,7 +875,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2;
+                                        shotSpacing_Phase2[0] -= spacingVar_Phase2+ bonusLenience;
                                     }
 
                                     if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
@@ -859,7 +897,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2;
+                                        shotSpacing_Phase2[0] -= spacingVar_Phase2 + bonusLenience;
                                     }
 
                                     if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
@@ -887,7 +925,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         if (Main.netMode != NetmodeID.MultiplayerClient)
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
 
-                                        shotSpacing_Phase2[0] -= diagonalSpacingVar;
+                                        shotSpacing_Phase2[0] -= diagonalSpacingVar + bonusLenience;
                                     }
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -908,7 +946,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
                                         }
 
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2;
+                                        shotSpacing_Phase2[0] -= spacingVar_Phase2 + bonusLenience;
                                     }
 
                                     int totalBonusLasers = totalShots_Phase2 / 2;
@@ -948,7 +986,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         if (Main.netMode != NetmodeID.MultiplayerClient)
                                             Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
 
-                                        shotSpacing_Phase2[0] -= diagonalSpacingVar;
+                                        shotSpacing_Phase2[0] -= diagonalSpacingVar + bonusLenience;
                                     }
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -978,7 +1016,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + shotSpacing_Phase2[1], player.position.Y + spawnOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
 
-                                shotSpacing_Phase2[1] -= spacingVar_Phase2;
+                                shotSpacing_Phase2[1] -= spacingVar_Phase2 + bonusLenience;
                             }
 
                             // Upper wall
@@ -987,7 +1025,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + shotSpacing_Phase2[2], player.position.Y - spawnOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
 
-                                shotSpacing_Phase2[2] -= spacingVar_Phase2;
+                                shotSpacing_Phase2[2] -= spacingVar_Phase2 + bonusLenience;
                             }
 
                             for (int i = 0; i < shotSpacing_Phase2.Length; i++)
@@ -1006,6 +1044,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 Main.LocalPlayer.Calamity().infiniteFlight = true;
                         }
                     }
+                    #endregion
 
                     // Movement
                     int tilePositionX = (int)(NPC.position.X / 16f) - 1;
@@ -1027,7 +1066,29 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else if (NPC.velocity.X > 0f)
                         NPC.spriteDirection = 1;
 
+                    var VelocityRotation = NPC.velocity.ToRotation();
+                    void TurnTowards(Vector2 goal, float offset = 0, float maxSpeed = 1)
+                    {
+                        float goal2 = (goal - NPC.Center).ToRotation() + offset;
+                        maxSpeed *= (float)Math.PI / 180f;
+                        var dif = MathF.Atan2(MathF.Sin(goal2 - VelocityRotation), MathF.Cos(goal2 - VelocityRotation));
+                        if (dif < 0)
+                        {
+                            if (-dif > maxSpeed)
+                                VelocityRotation -= maxSpeed;
+                            else
+                                VelocityRotation += dif;
+                        } else
+                        {
+                            if (dif > maxSpeed)
+                                VelocityRotation += maxSpeed;
+                            else
+                                VelocityRotation += dif;
+                        }
+                    }
+
                     // Flight
+                    #region Air AI
                     if (NPC.ai[3] == 0f)
                     {
                         if (!Main.dedServ)
@@ -1094,7 +1155,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 NPC.velocity *= slowerSpeedMult;
                             }
                         }
-
                         targetX = (int)(targetX / 16f) * 16;
                         targetY = (int)(targetY / 16f) * 16;
                         npcCenter.X = (int)(npcCenter.X / 16f) * 16;
@@ -1108,6 +1168,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         targetX *= timeToReachTarget;
                         targetY *= timeToReachTarget;
 
+                        turnSpeedCopy *= NPC.Distance(player.Center) / ( death ? 600 : 1000f);
                         if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f) || (NPC.velocity.Y > 0f && targetY > 0f) || (NPC.velocity.Y < 0f && targetY < 0f))
                         {
                             if (NPC.velocity.X < targetX)
@@ -1198,9 +1259,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.ForceNetUpdate(false);
                         }
                     }
-
+                    #endregion
                     // Ground
-                    else
+                    #region Ground AI
+                    else if (NPC.ai[3] == 1f)
                     {
                         if (!Main.dedServ)
                         {
@@ -1236,6 +1298,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 segmentVelocity *= 2f;
                         }
 
+                        #region Digging AI
                         if (!flies)
                         {
                             for (int r = tilePositionX; r < tileWidthPosX; r++)
@@ -1344,6 +1407,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     NPC.velocity.X = 0f;
                             }
                         }
+                        #endregion
+
+                        #region Flying AI
                         else
                         {
                             double maximumSpeed1 = bossRush ? 0.52 : death ? 0.46 : 0.4;
@@ -1434,7 +1500,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 }
                             }
                         }
-
+                        #endregion
                         // Set velocity so that DoG cannot speed burst instantly at the start of a phase swap
                         if (calamityGlobalNPC.velocityPriorToPhaseSwap > 0f)
                         {
@@ -1468,15 +1534,63 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (calamityGlobalNPC.newAI[2] > phaseLimit)
                         {
+
+                            
                             calamityGlobalNPC.velocityPriorToPhaseSwap = NPC.velocity.Length();
                             NPC.ai[3] = 0f;
                             calamityGlobalNPC.newAI[2] = 0f;
+
+                            if ((phase4 && !spawnedGuardians3))
+                            {
+                                calamityGlobalNPC.newAI[3] = AlphaGateValue-120;
+                                NPC.ai[3] = 2f;
+
+                            }
                             NPC.TargetClosest();
                             NPC.ForceNetUpdate(false);
                         }
                     }
+                    #endregion
+
+                    #region Laser Wall AI
+                    else if (NPC.ai[3] == 2)
+                    {
+                        calamityGlobalNPC.newAI[2]++;
+                        if (laserWallPhase != (int)LaserWallPhase.End)
+                        {
+                            
+
+                            var dogRotation = player.DirectionTo(NPC.Center).ToRotation();
+                            var DOGDIR = 1;
+
+                            var goalpos = player.Center + new Vector2(1000, 0).RotatedBy(dogRotation + 0.05f * DOGDIR);
+
+                            var currentVelLength = NPC.velocity.Length();
+                            var goalVel = NPC.DirectionTo(goalpos) * currentVelLength;
+
+
+                            TurnTowards(goalpos,maxSpeed: 6f * calamityGlobalNPC.newAI[2] / 120f);
+                            NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength);
+
+                            NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+                        }
+                    }
+                    #endregion
+                    #region Portal AI
+                    else
+                    {
+                        if (calamityGlobalNPC.newAI[2] == 0)
+                        {
+                            SpawnTeleportLocation(player);
+                        }
+                        NPC.velocity *= 1.02f;
+                        calamityGlobalNPC.newAI[2]++;
+                    }
+                    #endregion
                 }
             }
+            #endregion
+            #region Phase 1
             else
             {
                 // Spawn Guardians
@@ -1503,20 +1617,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.TargetClosest();
                         spawnedGuardians = true;
                     }
-
-                    if (spawnDoGCountdown > 0)
-                    {
-                        spawnDoGCountdown--;
-                        if (spawnDoGCountdown == 0)
-                        {
-                            SoundEngine.PlaySound(AttackSound with { Pitch = AttackSound.Pitch + extrapitch }, player.Center);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                for (int i = 0; i < 2; i++)
-                                    NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<CosmicGuardianHead>());
-                            }
-                        }
-                    }
                 }
                 else if (phase2)
                 {
@@ -1528,17 +1628,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                         spawnedGuardians2 = true;
                     }
 
-                    if (spawnDoGCountdown > 0)
-                    {
-                        spawnDoGCountdown--;
-                        if (spawnDoGCountdown == 0)
-                        {
-                            SoundEngine.PlaySound(AttackSound with { Pitch = AttackSound.Pitch + extrapitch }, player.Center);
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<CosmicGuardianHead>());
-                        }
-                    }
                 }
 
                 // Laser barrage attack variables
@@ -1582,12 +1671,17 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (phase2)
                 {
                     float spawnOffset = 1200f;
-
-                    calamityGlobalNPC.newAI[1] += 1f;
+                    if (NPC.ai[3] == 2)
+                        calamityGlobalNPC.newAI[1] += 1f;
                     if (calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue)
                     {
                         if (calamityGlobalNPC.newAI[1] >= laserBarrageGateValue)
+                        {
                             calamityGlobalNPC.newAI[1] = 0f;
+                            NPC.ai[3] = 0;
+                            calamityGlobalNPC.newAI[2] = 0;
+                            NPC.velocity += player.DirectionTo(NPC.Center) * 15;
+                        }
 
                         if (calamityGlobalNPC.newAI[1] % (laserBarrageShootGateValue * 0.5f) == 0f && calamityGlobalNPC.newAI[1] > 0f)
                         {
@@ -1733,12 +1827,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Opacity
-                if (phase2 && calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue)
-                {
-                    // Adjust opacity upon entering laser barrage phase
-                    NPC.Opacity = 1f - (MathHelper.Clamp((calamityGlobalNPC.newAI[1] - laserBarragePhaseGateValue) * 5f, 0f, 255f) / 255f);
-                }
-                else
+                if (!(phase2 && calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue))
+                
                 {
                     // 2 seconds to become fully visible again
                     NPC.Opacity += 0.0083f;
@@ -1766,8 +1856,31 @@ namespace CalamityMod.NPCs.DevourerofGods
                 else if (NPC.velocity.X > 0f)
                     NPC.spriteDirection = 1;
 
+                var VelocityRotation = NPC.velocity.ToRotation();
+                void TurnTowards(Vector2 goal, float offset = 0, float maxSpeed = 1)
+                {
+                    float goal2 = (goal - NPC.Center).ToRotation() + offset;
+                    maxSpeed *= (float)Math.PI / 180f;
+                    var dif = MathF.Atan2(MathF.Sin(goal2 - VelocityRotation), MathF.Cos(goal2 - VelocityRotation));
+                    if (dif < 0)
+                    {
+                        if (-dif > maxSpeed)
+                            VelocityRotation -= maxSpeed;
+                        else
+                            VelocityRotation += dif;
+                    }
+                    else
+                    {
+                        if (dif > maxSpeed)
+                            VelocityRotation += maxSpeed;
+                        else
+                            VelocityRotation += dif;
+                    }
+                }
+
                 // Flight
-                if (NPC.ai[3] == 0f)
+                #region Phase 1 Air AI
+                if (NPC.ai[3] == 1f)
                 {
                     if (!Main.dedServ)
                     {
@@ -1831,6 +1944,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     targetX *= timeToReachTarget;
                     targetY *= timeToReachTarget;
 
+                    turnSpeedCopy *= NPC.Distance(player.Center) / 1000;
                     if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f) || (NPC.velocity.Y > 0f && targetY > 0f) || (NPC.velocity.Y < 0f && targetY < 0f))
                     {
                         if (NPC.velocity.X < targetX)
@@ -1915,15 +2029,21 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (calamityGlobalNPC.newAI[2] > phaseLimit)
                     {
                         calamityGlobalNPC.velocityPriorToPhaseSwap = NPC.velocity.Length();
-                        NPC.ai[3] = 1f;
-                        calamityGlobalNPC.newAI[2] = 0f;
+                        NPC.ai[3] = 0f;
+                        calamityGlobalNPC.newAI[2] = 0f; 
+                        if (phase2)
+                        {
+                            NPC.ai[3] = 2;
+                            calamityGlobalNPC.newAI[1] = laserBarragePhaseGateValue - 120;
+                        }
                         NPC.TargetClosest();
                         NPC.ForceNetUpdate(false);
                     }
                 }
-
+                #endregion
                 // Ground
-                else
+                #region Phase 1 Ground AI
+                else if (NPC.ai[3] == 0)
                 {
                     if (!Main.dedServ)
                     {
@@ -2178,14 +2298,50 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (calamityGlobalNPC.newAI[2] > phaseLimit)
                     {
                         calamityGlobalNPC.velocityPriorToPhaseSwap = NPC.velocity.Length();
-                        NPC.ai[3] = 0f;
+                        NPC.ai[3] = 1f;
                         calamityGlobalNPC.newAI[2] = 0f;
                         NPC.TargetClosest();
                         NPC.netUpdate = true;
                     }
                 }
-            }
+                #endregion
+                #region Laser Wall AI
+                else if (NPC.ai[3] == 2)
+                {
+                    calamityGlobalNPC.newAI[2]++;
+                    if (laserWallPhase != (int)LaserWallPhase.End)
+                    {
 
+
+                        var dogRotation = player.DirectionTo(NPC.Center).ToRotation();
+                        var DOGDIR = 1;
+
+                        var goalpos = player.Center + new Vector2(1000, 0).RotatedBy(dogRotation + 0.05f * DOGDIR);
+
+                        var currentVelLength = NPC.velocity.Length();
+                        var goalVel = NPC.DirectionTo(goalpos) * currentVelLength;
+
+
+                        TurnTowards(goalpos, maxSpeed: 6f * calamityGlobalNPC.newAI[2] / 120f);
+                        NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength);
+
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+                    }
+                }
+                #endregion
+                #region Portal AI
+                else
+                {
+                    if (calamityGlobalNPC.newAI[2] == 0)
+                    {
+                        SpawnTeleportLocation(player);
+                    }
+                    NPC.velocity *= 1.02f;
+                    calamityGlobalNPC.newAI[2]++;
+                }
+                #endregion
+            }
+            #endregion
             // There is no escape...
             if (NPC.Distance(player.Center) > 2400f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
@@ -2276,13 +2432,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.TargetClosest();
             NPC.position = newPosition;
             float chargeVelocity = bossRush ? 30f : death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
+            chargeVelocity *= death ? 3 : 2.25f;
             float maxChargeDistance = 1600f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
-            // Prediction is Death Mode only for now because it's weird without the line telegraph that Shayy spoke about
-            Vector2 predictionVector = death ? player.velocity * 40f : Vector2.Zero;
-            NPC.velocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * chargeVelocity;
+            NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
             NPC.ForceNetUpdate(false);
 
             foreach (NPC n in Main.ActiveNPCs)
@@ -2417,6 +2572,19 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (proj.ai[2] == 1f)
                         continue;
 
+                    realSpot = proj.Center;
+                }
+            }
+            return realSpot;
+        }
+
+        private Vector2 GetRiftLocationSafe()
+        {
+            Vector2 realSpot = default;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
+                {
                     realSpot = proj.Center;
                 }
             }
