@@ -407,7 +407,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Velocity variables
             float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
             if (expertMode)
-                segmentVelocity += 4f * (1f - lifeRatio);
+                segmentVelocity += 4f * (1f - (lifeRatio * 0.75f + 0.25f));
 
             float speed = bossRush ? 18f : death ? 16.5f : 15f;
             float turnSpeed = bossRush ? 0.36f : death ? 0.33f : 0.3f;
@@ -416,10 +416,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (expertMode)
             {
-                speed += 3f * (1f - lifeRatio);
-                turnSpeed += 0.06f * (1f - lifeRatio);
-                homingSpeed += 12f * (1f - lifeRatio);
-                homingTurnSpeed += 0.15f * (1f - lifeRatio);
+                speed += 3f * (1f - (lifeRatio * 0.75f + 0.25f));
+                turnSpeed += 0.06f * (1f - (lifeRatio * 0.75f + 0.25f));
+                homingSpeed += 12f * (1f - (lifeRatio * 0.75f + 0.25f));
+                homingTurnSpeed += 0.15f * (1f - (lifeRatio * 0.75f + 0.25f));
             }
 
             float groundPhaseTurnSpeed = bossRush ? 0.3f : death ? 0.24f : 0.18f;
