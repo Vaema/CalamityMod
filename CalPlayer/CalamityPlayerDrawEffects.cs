@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -7,6 +8,7 @@ using CalamityMod.CalPlayer.DrawLayers;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
@@ -56,6 +58,29 @@ namespace CalamityMod.CalPlayer
                 AndromedaMechLayer.DrawTheStupidFuckingRobot(ref drawInfo);
 
             CalamityPlayer calamityPlayer = Player.Calamity();
+
+            //DoG Boss Cursor
+            DevourerofGodsHead DoG = null;
+            foreach (var item in Main.ActiveNPCs)
+            {
+                if (item.type == ModContent.NPCType<DevourerofGodsHead>()) {
+                    DoG = item.ModNPC<DevourerofGodsHead>();
+                    break;
+                }
+            }
+            if (DoG != null && Main.mapStyle != 2)
+            {
+                Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+                var dis = Player.Distance(DoG.NPC.Center);
+                if (DoG.NPC.ai[3] < 3 && DoG.NPC.Opacity > 0.1f && !DoG.Dying)
+                {
+                    string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                    string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
+                    var tex = ModContent.Request<Texture2D>(DoG.Phase2Started ? phase2IconPath : phase1IconPath).Value;
+
+                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.5f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                }
+            }
 
             // Dust modifications while high.
             if (calamityPlayer.trippy)
