@@ -103,7 +103,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 180);
+                    target.AddBuff(BuffID.OnFire3, 90);
                     break;
 
                 case ItemID.IceSickle:
