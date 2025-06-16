@@ -613,7 +613,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int maxSpawns = bossRush ? 16 : death ? 8 : revenge ? 6 : expertMode ? Main.rand.Next(4, 6) : Main.rand.Next(3, 5);
+                            int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
                             int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
                             for (int i = 0; i < maxSpawns; i++)
@@ -743,8 +743,8 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 case 0: // Slowdrift
 
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
 
                     if (NPC.alpha > 0)
                     {
@@ -1289,13 +1289,6 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(15))
-                    {
-                        int hiveBlobCount = NPC.CountNPCS(ModContent.NPCType<HiveBlob>()) + NPC.CountNPCS(ModContent.NPCType<HiveBlob2>());
-                        if (hiveBlobCount < 3)
-                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
-                    }
-
                     if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)
