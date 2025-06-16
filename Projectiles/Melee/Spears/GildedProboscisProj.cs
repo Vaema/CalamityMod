@@ -53,6 +53,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
             modplayer.swingNum = 0;
             OffsetDistance = 70;
             angle = new Vector2(angle.X > 0 ? 1 : -1, 0);
+            if (player.dashDelay == -1)
+            {
+                angle = new Vector2(-MathF.Sign(player.velocity.X), 0 );
+            }
             RotateInStartup = 0;
             RotateInCooldown = 0;
 
