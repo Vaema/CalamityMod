@@ -102,7 +102,7 @@ namespace CalamityMod.Items
                 { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(82), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(PointBlank, DamageExact(12), AutoReuse) },
-                { ItemID.DemonScythe, Do(AutoReuse, DamageExact(33)) },
+                { ItemID.DemonScythe, Do(AutoReuse, DamageExact(28)) },
                 { ItemID.DyeTradersScimitar, Do(AutoReuse, UseTurn, DamageExact(24)) }, // Exotic Scimitar
                 { ItemID.ElectrosphereLauncher, Do(DamageExact(44)) },
                 { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
@@ -240,7 +240,7 @@ namespace CalamityMod.Items
                 { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
                 { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
-                { ItemID.SpaceGun, Do(DamageExact(25)) },
+                { ItemID.SpaceGun, Do(DamageExact(23)) },
                 { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageExact(14)) },
                 { ItemID.SpectreStaff, Do(DamageExact(78)) },
                 { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
