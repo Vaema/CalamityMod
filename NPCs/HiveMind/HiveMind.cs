@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         // This block of values can be modified in SetDefaults() based on difficulty mode or something
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private int burrowTimer = 420;
+        private int burrowTimer = 120;
         private int minimumDriftTime = 300;
         private int teleportRadius = 300;
         private int decelerationTime = 30;
