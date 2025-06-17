@@ -556,7 +556,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.Opacity = 0f;
                 NPC.dontTakeDamage = true;
             }
-            Main.NewText(NPC.localAI[2]);
             // Start phase 2, only run things that have to happen once in here
             if (bigDaddyPhase2)
             {
