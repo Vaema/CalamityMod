@@ -527,7 +527,7 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), new int[] { 192, 288, 328, 368, 576 } },
                 { ModContent.NPCType<SulphurousSharkron>(), new int[] { 192, 288, 328, 368, 576 } },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), new int[] { 250, 500, 550, 600, 750 } },
+                { ModContent.NPCType<DevourerofGodsHead>(), new int[] { 250, 500, 535, 600, 750 } },
                 { ModContent.NPCType<DevourerofGodsBody>(), new int[] { 150, 300, 330, 380, 450 } },
                 { ModContent.NPCType<DevourerofGodsTail>(), new int[] { 100, 200, 220, 270, 300 } },
                 { ModContent.NPCType<CosmicGuardianHead>(), new int[] { 150, 300, 330, 360, 450 } },

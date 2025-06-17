@@ -72,11 +72,11 @@ namespace CalamityMod.CalPlayer
             {
                 Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
                 var dis = Player.Distance(DoG.NPC.Center);
-                if (DoG.NPC.ai[3] < 3 && DoG.NPC.Opacity > 0.1f && !DoG.Dying)
+                if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
                 {
                     string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
                     string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
-                    var tex = ModContent.Request<Texture2D>(DoG.Phase2Started ? phase2IconPath : phase1IconPath).Value;
+                    var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
 
                     Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.5f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
                 }

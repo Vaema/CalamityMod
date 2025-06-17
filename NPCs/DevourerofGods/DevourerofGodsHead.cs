@@ -216,7 +216,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.ai[3] = 1;
             NPC.netAlways = true;
-
+            if (Main.rand.NextBool())
+                NPC.velocity = new Vector2(-60, 0);
+            else
+                NPC.velocity = new Vector2(60, 0);
             if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
 
@@ -1678,7 +1681,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (calamityGlobalNPC.newAI[1] >= laserBarrageGateValue)
                         {
                             calamityGlobalNPC.newAI[1] = 0f;
-                            NPC.ai[3] = 0;
+                            NPC.ai[3] = 3;
                             calamityGlobalNPC.newAI[2] = 0;
                             NPC.velocity += player.DirectionTo(NPC.Center) * 15;
                         }
@@ -1827,7 +1830,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Opacity
-                if (!(phase2 && calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue))
+                if (!(phase2 && calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue) && !bigDaddyPhase2)
                 
                 {
                     // 2 seconds to become fully visible again
@@ -2329,15 +2332,16 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                 }
                 #endregion
-                #region Portal AI
+                #region Decoil AI
                 else
                 {
-                    if (calamityGlobalNPC.newAI[2] == 0)
-                    {
-                        SpawnTeleportLocation(player);
-                    }
-                    NPC.velocity *= 1.02f;
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
                     calamityGlobalNPC.newAI[2]++;
+                    if (calamityGlobalNPC.newAI[2] >= 30)
+                    {
+                        NPC.ai[3] = 0;
+                        calamityGlobalNPC.newAI[2] = 0;
+                    }
                 }
                 #endregion
             }
