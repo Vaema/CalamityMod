@@ -222,7 +222,7 @@ namespace CalamityMod.NPCs.Polterghast
             // Velocity and acceleration
             calamityGlobalNPC.newAI[0] += 1f;
             float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = calamityGlobalNPC.newAI[0] >= chargePhaseGateValue;
@@ -1120,7 +1120,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

@@ -101,6 +101,8 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 60 * 5);
+        //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+        //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HolyFlames>(), CalamityUtils.SecondsToFrames(15));
     }
 }

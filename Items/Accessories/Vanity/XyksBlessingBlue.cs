@@ -22,7 +22,6 @@ namespace CalamityMod.Items.Accessories.Vanity
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Projectiles/InvisibleProj", EquipType.Wings, this);
             }
         }
-
         public override void SetStaticDefaults()
         {
             if (Main.dedServ)
@@ -44,17 +43,15 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 36;
             Item.height = 34;
             Item.accessory = true;
-            Item.consumable = true;
             Item.vanity = true;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.Calamity().devItem = true;
         }
         public override bool CanRightClick() => true;
-
-        public override void ModifyItemLoot(ItemLoot itemLoot)
+        public override void RightClick(Player player)
         {
-            itemLoot.Add(ModContent.ItemType<XyksBlessingOrange>());
+            player.PutItemInInventoryFromItemUsage(ModContent.ItemType<XyksBlessingOrange>(), 1);
         }
         public override void UpdateVanity(Player player)
         {

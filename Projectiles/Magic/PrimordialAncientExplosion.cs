@@ -28,6 +28,9 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            Vector2 launchVel = Utils.DirectionTo(Projectile.Center, target.Center);
+            target.MoveNPC(launchVel, 40, true);
+
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.95f);
             if (Projectile.damage < 1)

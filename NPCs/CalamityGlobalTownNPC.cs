@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
@@ -74,7 +75,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] ArmsDealerNames =
         {
-            "Drifter",
             "Finchi",
             "Heniek", // <@!363404700445442050> (kazurgundu)
             "Fire", // <@!354362326947856384> (ultimatefirewaster)
@@ -89,6 +89,7 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
+			"Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
@@ -109,6 +110,7 @@ namespace CalamityMod.NPCs
             "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
+            "Kanna", // <@!730203712898859018> (cosmoredeathwish)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -341,6 +343,7 @@ namespace CalamityMod.NPCs
         {
             "Felix", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Tardo", // <@!739343546867384391> (midnight295)
+            "Dali", // <@!460238880436781061> (darthlego)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
@@ -1207,7 +1210,11 @@ namespace CalamityMod.NPCs
             {
                 shop.Add(ItemType<AstralSolution>(), Condition.NotRemixWorld)
                 .Add(ItemID.PurpleSolution, Condition.InGraveyard, Condition.CrimsonWorld, Condition.NotRemixWorld)
-                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld);
+                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld)
+                .Add(ItemType<LucisHairstyle>())
+                .Add(ItemType<LucisMilitaryUniform>())
+                .Add(ItemType<LucisBoots>())
+                .Add(ItemType<LucisSight>());
             }
 
             if (type == NPCID.Wizard)
@@ -1251,6 +1258,7 @@ namespace CalamityMod.NPCs
                 musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
+                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), Condition.InHallow)
                 .Add(ItemType<LanternCenter>())
                 .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)

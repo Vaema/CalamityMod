@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;

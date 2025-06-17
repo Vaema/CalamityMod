@@ -200,7 +200,6 @@ namespace CalamityMod
 
                 { NPCID.Spazmatism, 0.85 },
                 { NPCID.Retinazer, 0.85 },
-                { ModContent.NPCType<Foveanator>(), 0.85 },
 
                 { ModContent.NPCType<AquaticScourgeHead>(), 1.1 },
                 { ModContent.NPCType<AquaticScourgeBody>(), 0.8 },
@@ -214,7 +213,6 @@ namespace CalamityMod
                 { ModContent.NPCType<BrimstoneElemental>(), 0.8 },
 
                 { NPCID.SkeletronPrime, 0.85 },
-                { ModContent.NPCType<SkeletronPrime2>(), 0.85 },
                 { NPCID.PrimeCannon, 0.85 },
                 { NPCID.PrimeLaser, 0.85 },
                 { NPCID.PrimeSaw, 0.85 },
@@ -261,7 +259,7 @@ namespace CalamityMod
 
                 { ModContent.NPCType<ProfanedGuardianCommander>(), 0.8 },
 
-                { ModContent.NPCType<Bumblefuck>(), 0.8 },
+                { ModContent.NPCType<Dragonfolly>(), 0.8 },
 
                 { ModContent.NPCType<StormWeaverBody>(), 0.8 },
                 { ModContent.NPCType<StormWeaverTail>(), 0.8 },
@@ -399,12 +397,6 @@ namespace CalamityMod
                     102, // 153 in phase 2
                     119, // 178 in phase 2
                     153 } }, // 229 in phase 2
-                { ModContent.NPCType<Foveanator>(), new int[] {
-                    62, // 93 in phase 2
-                    94, // 141 in phase 2
-                    110, // 165 in phase 2
-                    128, // 192 in phase 2
-                    178 } }, // 267 in phase 2
 
                 { ModContent.NPCType<AquaticScourgeHead>(), new int[] { 110, 176, 187, 198, 330 } },
                 { ModContent.NPCType<AquaticScourgeBody>(), new int[] { 75, 112, 136, 160, 240 } },
@@ -418,12 +410,6 @@ namespace CalamityMod
                 { ModContent.NPCType<BrimstoneElemental>(), new int[] { 75, 112, 136, 160, 240 } },
 
                 { NPCID.SkeletronPrime, new int[] {
-                    50, // 100 while spinning
-                    85, // 170 while spinning
-                    102, // 204 while spinning
-                    119, // 238 while spinning
-                    153 } }, // 306 while spinning
-                { ModContent.NPCType<SkeletronPrime2>(), new int[] {
                     50, // 100 while spinning
                     85, // 170 while spinning
                     102, // 204 while spinning
@@ -510,8 +496,8 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedGuardianHealer>(), new int[] { 100, 200, 220, 240, 300 } },
                 { ModContent.NPCType<ProfanedRocks>(), new int[] { 100, 200, 220, 232, 300 } },
 
-                { ModContent.NPCType<Bumblefuck>(), new int[] { 170, 256, 288, 320, 504 } },
-                { ModContent.NPCType<Bumblefuck2>(), new int[] { 145, 220, 242, 264, 435 } },
+                { ModContent.NPCType<Dragonfolly>(), new int[] { 170, 256, 288, 320, 504 } },
+                { ModContent.NPCType<DraconicSwarmer>(), new int[] { 145, 220, 242, 264, 435 } },
 
                 { ModContent.NPCType<CeaselessVoid>(), new int[] { 240, 360, 396, 432, 720 } },
                 { ModContent.NPCType<DarkEnergy>(), new int[] { 175, 260, 288, 316, 525 } },
@@ -649,9 +635,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<CursedFire>()), new int[] { 60, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<Shadowflamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 60, 100, 128, 156, 234 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorLaser>()), new int[] { 50, 108, 132, 156, 234 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorEnergyBomb>()), new int[] { 70, 120, 148, 176, 264 } },
-                { new Tuple<int, int>(ModContent.NPCType<Foveanator>(), ModContent.ProjectileType<FoveanatorFlamethrower>()), new int[] { 70, 120, 148, 176, 264 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SulphuricAcidMist>()), new int[] { 60, 100, 120, 140, 210 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SandPoisonCloud>()), new int[] { 70, 120, 136, 152, 228 } },
@@ -676,9 +659,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.Skull), new int[] { 50, 108, 124, 140, 210 } },
                 { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.DeathLaser), new int[] { 50, 108, 124, 140, 210 } },
                 { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.RocketSkeleton), new int[] { 60, 120, 148, 176, 264 } },
-                { new Tuple<int, int>(ModContent.NPCType<SkeletronPrime2>(), ProjectileID.Skull), new int[] { 50, 108, 124, 140, 210 } },
-                { new Tuple<int, int>(ModContent.NPCType<SkeletronPrime2>(), ProjectileID.BombSkeletronPrime), new int[] { 80, 160, 180, 200, 300 } },
-                { new Tuple<int, int>(ModContent.NPCType<SkeletronPrime2>(), ProjectileID.FrostBeam), new int[] { 50, 108, 124, 140, 210 } },
                 { new Tuple<int, int>(NPCID.PrimeCannon, ProjectileID.RocketSkeleton), new int[] { 60, 120, 148, 176, 264 } },
                 { new Tuple<int, int>(NPCID.PrimeCannon, ProjectileID.BombSkeletronPrime), new int[] { 80, 160, 0, 0, 300 } },
                 { new Tuple<int, int>(NPCID.PrimeLaser, ProjectileID.DeathLaser), new int[] { 50, 108, 124, 140, 210 } },
@@ -769,8 +749,8 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.ProjectileType<HolyBurnOrb>()), new int[] { 120, 192, 220, 248, 360 } },
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianHealer>(), ModContent.ProjectileType<HolyLight>()), new int[] { 35, 50, 50, 0, 0 } },
 
-                { new Tuple<int, int>(ModContent.NPCType<Bumblefuck>(), ModContent.ProjectileType<RedLightningFeather>()), new int[] { 140, 220, 244, 268, 420 } },
-                { new Tuple<int, int>(ModContent.NPCType<Bumblefuck>(), ModContent.ProjectileType<BirbAuraFlare>()), new int[] { 200, 300, 332, 364, 600 } },
+                { new Tuple<int, int>(ModContent.NPCType<Dragonfolly>(), ModContent.ProjectileType<RedLightningFeather>()), new int[] { 140, 220, 244, 268, 420 } },
+                { new Tuple<int, int>(ModContent.NPCType<Dragonfolly>(), ModContent.ProjectileType<BirbAuraFlare>()), new int[] { 200, 300, 332, 364, 600 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<Providence>(), ModContent.ProjectileType<HolyBlast>()), new int[] { 150, 264, 288, 312, 450 } }, // Split holy fire does: 113, 198, 216, 234, 338
                 { new Tuple<int, int>(ModContent.NPCType<Providence>(), ModContent.ProjectileType<HolyFire>()), new int[] { 120, 192, 220, 248, 360 } },

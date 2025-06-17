@@ -878,7 +878,7 @@ namespace CalamityMod.CalPlayer
                     contactDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
 
                 // Contact damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                // In GFB, as defense damage is uncapped, DR damage is also uncapped.
+                // In FTW, as defense damage is uncapped, DR damage is also uncapped.
                 int currentDefense = Player.GetCurrentDefense(false);
                 if (totalDefenseDamage > 0 && currentDefense > 0)
                 {

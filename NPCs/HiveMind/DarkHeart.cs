@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 75;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1800;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
 
             NPC.aiStyle = -1;
@@ -73,9 +73,9 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : death ? 7f : revenge ? 6f : 4f;
-            float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
-            float deceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
+            float velocity = CalamityWorld.LegendaryMode ? 10f : death ? 7f : revenge ? 6f : 4f;
+            float acceleration = CalamityWorld.LegendaryMode ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
+            float deceleration = CalamityWorld.LegendaryMode ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
             if (BossRushEvent.BossRushActive)
             {
                 velocity *= 2f;
@@ -121,7 +121,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                float rainDropRate = Main.getGoodWorld ? 10f : death ? 15f : revenge ? 20f : 30f;
+                float rainDropRate = CalamityWorld.LegendaryMode ? 10f : death ? 15f : revenge ? 20f : 30f;
                 if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;
@@ -129,7 +129,7 @@ namespace CalamityMod.NPCs.HiveMind
                     int shaderainYos = (int)(NPC.position.Y + NPC.height + 4f);
                     int type = ModContent.ProjectileType<ShaderainHostile>();
                     int damage = NPC.GetProjectileDamage(type);
-                    float randomXVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.rand.NextFloat() * 5f : 0f;
+                    float randomXVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextFloat() * 5f : 0f;
                     float velocityY = 8f;
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
                 }

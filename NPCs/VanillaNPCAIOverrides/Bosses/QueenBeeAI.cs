@@ -47,8 +47,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 enrageScale += 0.5f;
             }
 
-            if (Main.getGoodWorld)
-                enrageScale += ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 1f : 0.5f);
+            if (CalamityWorld.LegendaryMode)
+                enrageScale += 1f;
 
             if (bossRush)
                 enrageScale = 2f;
@@ -145,7 +145,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            npc.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             npc.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // Always start in enemy spawning phase

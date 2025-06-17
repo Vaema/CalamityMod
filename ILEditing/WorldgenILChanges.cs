@@ -8,6 +8,7 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.UI.States;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.ILEditing
@@ -66,7 +67,7 @@ namespace CalamityMod.ILEditing
         #endregion Fixing of Living Tree/Sulphurous Sea Interactions
 
         #region Removal of Hardmode Ore Generation from Evil Altars
-        private static void PreventSmashAltarCode(Terraria.On_WorldGen.orig_SmashAltar orig, int i, int j)
+        private static void PreventSmashAltarCode(On_WorldGen.orig_SmashAltar orig, int i, int j)
         {
             if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 return;
@@ -135,10 +136,8 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Pop original value off.
+            // Pop original value off. Push '2' to the stack.
             c.Emit(OpCodes.Pop);
-
-            // Push '2' to the stack.
             c.Emit(OpCodes.Ldc_I4_2);
 
             // OBJECTIVE 2
@@ -181,13 +180,11 @@ namespace CalamityMod.ILEditing
 
             // Emit our new string "Mods.CalamityMod.UI.SmallWorldWarning".
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
-
-
         }
         #endregion
 
         #region Clear temporary modded tiles
-        private static void ClearModdedTempTiles(Terraria.IO.On_WorldFile.orig_ClearTempTiles orig)
+        private static void ClearModdedTempTiles(On_WorldFile.orig_ClearTempTiles orig)
         {
             orig();
 

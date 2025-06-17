@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idleTime = 20;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 iceMistFireRate = 30;
                 iceMistSpeed = 15f;
@@ -157,13 +157,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, options);
 
                 npc.netUpdate = true;
-
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    if (!NPC.AnyNPCs(NPCID.AncientCultistSquidhead))
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)Main.projectile[(int)npc.ai[2]].Center.X, (int)Main.projectile[(int)npc.ai[2]].Center.Y, NPCID.AncientCultistSquidhead);
-                }
-
                 Main.projectile[(int)npc.ai[2]].ai[1] = -1f;
                 Main.projectile[(int)npc.ai[2]].netUpdate = true;
             }

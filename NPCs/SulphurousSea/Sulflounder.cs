@@ -2,7 +2,7 @@
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;

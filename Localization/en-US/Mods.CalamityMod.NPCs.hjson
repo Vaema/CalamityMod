@@ -168,7 +168,6 @@ CryoSlime.DisplayName: Cryo Slime
 EbonianBlightSlime.DisplayName: Ebonian Blight Slime
 Eidolist.DisplayName: Eidolist
 FearlessGoldfishWarrior.DisplayName: Fearless Goldfish Warrior
-Foveanator.DisplayName: Foveanator
 Frogfish.DisplayName: Frogfish
 Horse.DisplayName: Earth Elemental
 IceClasper.DisplayName: Ice Clasper
@@ -189,12 +188,6 @@ Rotdog.DisplayName: Rotdog
 ScornEater.DisplayName: Scorn Eater
 ShockstormShuttle.DisplayName: Shockstorm Shuttle
 Shroomble.DisplayName: Shroomble
-SkeletronOmega.DisplayName: Skeletron Omega
-OmegaSaw.DisplayName: Omega Saw
-OmegaLaser.DisplayName: Omega Laser
-SkeletronPrime2.DisplayName: Skeletron Alpha
-AlphaVice.DisplayName: Alpha Vice
-AlphaCannon.DisplayName: Alpha Cannon
 Stormlion.DisplayName: Stormlion
 StormlionSentry.DisplayName: Stormlion Sentry
 Sunskater.DisplayName: Sunskater
@@ -568,3 +561,7 @@ SeaKing: {
 		Princess_LovesNPC: "{NPCName} always smiles when I'm nearby, I like being around him just for that!"
 	}
 }
+
+WildBumblebirb.DisplayName: Wild Bumblebirb
+DraconicSwarmer.DisplayName: Draconic Swarmer
+Dragonfolly.DisplayName: Dragonfolly

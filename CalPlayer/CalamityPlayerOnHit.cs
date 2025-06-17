@@ -843,8 +843,9 @@ namespace CalamityMod.CalPlayer
             if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
                 MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
-
-                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                Vector2 directionToMouse = Main.MouseWorld - Player.Center;
+                directionToMouse.Normalize();
+                Vector2 velocity = directionToMouse * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
                 Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
