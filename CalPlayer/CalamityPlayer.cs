@@ -4442,7 +4442,8 @@ namespace CalamityMod.CalPlayer
                 Player.manaRegenBuff = true;
                 
             }
-
+            if (moonshine)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
         }
         #endregion

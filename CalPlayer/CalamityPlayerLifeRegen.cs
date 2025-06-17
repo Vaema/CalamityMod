@@ -194,8 +194,6 @@ namespace CalamityMod.CalPlayer
                 if (AlcoholsDict.TryGet(buff, out var level))
                     alcoholPoisonLevel += level;
             }
-            if (moonshine)
-                totalNegativeLifeRegen += Moonshine.RegenLoss;
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
 

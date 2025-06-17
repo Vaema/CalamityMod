@@ -253,8 +253,8 @@ Moonshine: {
 	DisplayName: Moonshine
 	Tooltip:
 		'''
-		Increases defense by {0} and damage reduction by {1}%
-		Reduces flight time by {2}%
+		Increases maximum health by {0}%
+		Attacks always take at least half your defense worth of defense damage, and slows defense damage recovery slightly
 		{$Common.AlcoholWarning}
 		'''
 }

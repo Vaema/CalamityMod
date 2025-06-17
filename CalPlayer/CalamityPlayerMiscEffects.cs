@@ -3543,12 +3543,6 @@ namespace CalamityMod.CalPlayer
                     stealthDamage -= PurpleHaze.StealthDamageLoss;
             }
 
-            if (moonshine)
-            {
-                Player.statDefense += Moonshine.DefenseBoost;
-                Player.endurance += Moonshine.DamageReductionBoost;
-            }
-
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
@@ -4806,7 +4800,7 @@ namespace CalamityMod.CalPlayer
                         {
                             totalDefenseDamage = 0;
                             defenseDamageRecoveryFrames = 0;
-                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime;
+                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime * (moonshine ? 2 : 1);
                             defenseDamageDelayFrames = 0;
                         }
                     }
