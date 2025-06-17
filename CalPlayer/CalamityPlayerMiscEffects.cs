@@ -3055,6 +3055,8 @@ namespace CalamityMod.CalPlayer
                     abyssBreathLossRateStat = (float)tick;
 
                     float resistanceSlowdownFactor = 1f;
+                    if (hPressure)
+                        resistanceSlowdownFactor -= abyssalDivingSuit ? 0.2f : 0.5f;
 
                     // Reduce breath over ticks (frames)
                     abyssBreathCD++;    
@@ -3067,9 +3069,6 @@ namespace CalamityMod.CalPlayer
                         if (Player.breath > 0)
                         {
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
-
-                            if (hPressure)
-                                resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
                         }
                     }
 
