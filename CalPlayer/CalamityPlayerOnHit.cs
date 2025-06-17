@@ -1149,9 +1149,9 @@ namespace CalamityMod.CalPlayer
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
-                for (int dustexplode = 0; dustexplode < 180; dustexplode++)
+                for (int dustexplode = 0; dustexplode < 120; dustexplode++)
                 {
-                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 3)) * 1.7f;
                     Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
                     dust.noGravity = true;
                 }
