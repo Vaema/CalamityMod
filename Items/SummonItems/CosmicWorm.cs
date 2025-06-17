@@ -5,6 +5,7 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
@@ -43,7 +44,8 @@ namespace CalamityMod.Items.SummonItems
             string key = "Mods.CalamityMod.Status.Boss.EdgyBossText7";
             Color messageColor = Color.Cyan;
             CalamityUtils.DisplayLocalizedText(key, messageColor);
-
+            var subtitle = Main.combatText[CombatText.NewText(player.Hitbox, messageColor, Language.GetTextValue(key), true)];
+            player.Calamity().subtitletext = subtitle;
             CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }

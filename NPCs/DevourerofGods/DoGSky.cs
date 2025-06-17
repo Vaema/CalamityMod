@@ -14,7 +14,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private bool isActive = false;
         private float intensity = 0f;
         private int DoGIndex = -1;
-
+        private Color currentColor = Color.Black;
         public override void Update(GameTime gameTime)
         {
             if (DoGIndex == -1)
@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override Color OnTileColor(Color inColor)
         {
             float intensity = GetIntensity();
-            return new Color(Vector4.Lerp(new Vector4(0.5f, 0.8f, 1f, 1f), inColor.ToVector4(), 1f - intensity));
+            return Color.Lerp(inColor, currentColor, intensity);
         }
 
         private bool UpdateDoGIndex()
@@ -75,11 +75,13 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            // (new Color(48, 9, 66), new Color(26, 4, 31)
             if (maxDepth >= 0 && minDepth < 0)
             {
                 if (DoGIndex != -1)
                 {
-                    if (Main.npc[DoGIndex].active)
+                    var DoG = Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>();
+                    if (DoG.NPC.active)
                     {
                         float intensity = GetIntensity();
                         float lifeRatio = Main.npc[DoGIndex].life / (float)Main.npc[DoGIndex].lifeMax;
@@ -91,15 +93,18 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (colorChangeProgress > 1f)
                             colorChangeProgress = 1f;
 
-                        bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-                        Color regularSkyColor = (Main.npc[DoGIndex].ai[3] == 0f ^ !Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>().Phase2Started ? Color.Lerp(Color.Cyan, Color.Fuchsia, colorChangeProgress) : Color.Lerp(Color.Fuchsia, Color.Cyan, colorChangeProgress)) * intensity;
-                        if (Main.npc[DoGIndex].life < Main.npc[DoGIndex].lifeMax * blackScreenLife_GateValue || death || Main.npc[DoGIndex].localAI[3] > 0f)
-                        {
-                            float blackSkyTransitionProgress = death ? 1f : Main.npc[DoGIndex].localAI[3] / timeToReachNextColor;
-                            spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Lerp(regularSkyColor, Color.Black * (intensity + 0.5f), blackSkyTransitionProgress));
-                        }
-                        else
-                            spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), regularSkyColor);
+
+                        Color goalSkyColor = Color.Black;
+                        if (DoG.isInAgressiveState)
+                            goalSkyColor = Color.Fuchsia;
+                        if (DoG.isInPassiveState)
+                            goalSkyColor = Color.Cyan;
+                        if (DoG.isInLaserWallState)
+                            goalSkyColor = new Color(48, 9, 66);
+                        if (DoG.isInPostWallState)
+                            goalSkyColor = new Color(26, 4, 31);
+                            currentColor = Color.Lerp(currentColor, goalSkyColor, 0.1f);
+                            spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Lerp(currentColor,Color.Black, 0.5f) * intensity);
                     }
                 }
                 else

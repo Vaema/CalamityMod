@@ -64,11 +64,12 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameInput;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Graphics.Effects;
+using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -175,6 +176,8 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
+
+        public CombatText subtitletext = null;
         #endregion
 
         #region Speedrun Timer
@@ -5655,7 +5658,19 @@ namespace CalamityMod.CalPlayer
         }
 
         public override void PostUpdate() //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
-        {   
+        {
+            if (subtitletext != null)
+            {
+                if (!subtitletext.active)
+                {
+                    subtitletext = null;
+                } else
+                {      
+                    subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
+                    subtitletext.color = Color.Lerp(Color.Fuchsia, Color.Cyan, subtitletext.lifeTime/120f);// MathF.Sin(Main.GlobalTimeWrappedHourly)/2f + 0.5f);
+                    //Main.NewText(subtitletext.lifeTime);
+                }
+            }
             bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
                                   Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
             if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)

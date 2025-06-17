@@ -158,7 +158,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            bool phase2 = lifeRatio < 0.6f;
+            bool phase2 = lifeRatio < 0.65f;
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
@@ -323,16 +323,15 @@ namespace CalamityMod.NPCs.DevourerofGods
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            if (!NPC.dontTakeDamage)
+            if (!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInPassiveState && NPC.Opacity > 0.25f && useOtherTextures)
             {
-                if (useOtherTextures)
-                {
-                    texture2D15 = Phase2Texture_Glow.Value;
-                    Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
+                texture2D15 = Phase2Texture_Glow.Value;
+                Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
-                    spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
-
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            }
+            if ((!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInAgressiveState || !useOtherTextures) && NPC.Opacity > 0.25f)
+            {
                 texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow.Value;
                 Color glowmaskColor2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
