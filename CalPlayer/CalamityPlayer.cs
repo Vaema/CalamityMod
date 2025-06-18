@@ -178,6 +178,8 @@ namespace CalamityMod.CalPlayer
         public float momentumCapacitorBoost = 0f;
 
         public CombatText subtitletext = null;
+        public Color[] subtitleColors = new Color[] { Color.White, Color.White };
+        public int DoGHeadHitCounter = 0;
         #endregion
 
         #region Speedrun Timer
@@ -2002,6 +2004,10 @@ namespace CalamityMod.CalPlayer
         #region ResetEffects
         public override void ResetEffects()
         {
+            if (!areThereAnyDamnBosses)
+            {
+                DoGHeadHitCounter = 0;
+            }
             if (fleshKnuckles)
                 Player.statLifeMax2 += 45;
 
@@ -5657,7 +5663,7 @@ namespace CalamityMod.CalPlayer
             return profanedCrystalAnimCounter.Key;
         }
 
-        public override void PostUpdate() //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
+        public override void PostUpdate() 
         {
             if (subtitletext != null)
             {
@@ -5667,10 +5673,11 @@ namespace CalamityMod.CalPlayer
                 } else
                 {      
                     subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
-                    subtitletext.color = Color.Lerp(Color.Fuchsia, Color.Cyan, subtitletext.lifeTime/120f);// MathF.Sin(Main.GlobalTimeWrappedHourly)/2f + 0.5f);
-                    //Main.NewText(subtitletext.lifeTime);
+                    subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime/120f);
                 }
             }
+
+            //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
             bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
                                   Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
             if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)

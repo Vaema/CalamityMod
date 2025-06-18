@@ -550,11 +550,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Dialogue the moment the second phase starts
                 if (NPC.localAI[2] == 60f && !bossRush)
                 {
-                    string key = "Mods.CalamityMod.Status.Boss.EdgyBossText5";
+                    string key = "Mods.CalamityMod.Status.Boss.DoGPhase2";
                     Color messageColor = Color.Cyan;
                     var ctid = CombatText.NewText(NPC.Hitbox,messageColor, Language.GetTextValue(key),true);
                     if (ctid < Main.maxCombatText)
                         player.Calamity().subtitletext = Main.combatText[ctid];
+                    player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                 }
                 if (NPC.localAI[2] > 0 && NPC.localAI[2] < 60 )
@@ -742,11 +743,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     // Anger message
                                     if (!bossRush)
                                     {
-                                        string key = "Mods.CalamityMod.Status.Boss.EdgyBossText6";
+                                        string key = "Mods.CalamityMod.Status.Boss.DoGPhase3";
                                         Color messageColor = Color.Cyan;
                                         var ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
                                         if (ctid < Main.maxCombatText)
                                             player.Calamity().subtitletext = Main.combatText[ctid];
+                                        player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                                         CalamityUtils.DisplayLocalizedText(key, messageColor);
                                     }
 
@@ -1459,11 +1461,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (!bossRush)
                         {
-                            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText";
+                            string key = "Mods.CalamityMod.Status.Boss.DoGSubphase1";
                             Color messageColor = Color.Cyan;
                             int ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
                             if (ctid < Main.maxCombatText)
                                 player.Calamity().subtitletext = Main.combatText[ctid];
+                            player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                             CalamityUtils.DisplayLocalizedText(key, messageColor);
                         }
 
@@ -2630,18 +2633,66 @@ namespace CalamityMod.NPCs.DevourerofGods
                 return;
 
             target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
-
+            
             if (target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
             {
-                string text = Utils.SelectRandom(Main.rand, new string[]
+                string[] headHitKeys = new string[]
                 {
-                    "Mods.CalamityMod.Status.Boss.EdgyBossText2",
-                    "Mods.CalamityMod.Status.Boss.EdgyBossText3",
-                    "Mods.CalamityMod.Status.Boss.EdgyBossText4"
-                });
+                    "Mods.CalamityMod.Status.Boss.DoGHead1",
+                    "Mods.CalamityMod.Status.Boss.DoGHead2",
+                    "Mods.CalamityMod.Status.Boss.DoGHead3",
+                    "Mods.CalamityMod.Status.Boss.DoGHead4",
+                    "Mods.CalamityMod.Status.Boss.DoGHead5",
+                    "Mods.CalamityMod.Status.Boss.DoGHead6",
+                    "Mods.CalamityMod.Status.Boss.DoGHead7",
+                    "Mods.CalamityMod.Status.Boss.DoGHead8",
+                    "Mods.CalamityMod.Status.Boss.DoGHead9",
+                    "Mods.CalamityMod.Status.Boss.DoGHead10",
+                    "Mods.CalamityMod.Status.Boss.DoGHead11",
+                    "Mods.CalamityMod.Status.Boss.DoGHead12",
+                    "Mods.CalamityMod.Status.Boss.DoGHead13",
+                    
+
+                };
                 Color messageColor = Color.Cyan;
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
-
+                var counter = target.Calamity().DoGHeadHitCounter;
+                 string text = headHitKeys[Main.rand.Next(10, 13)];
+                if (target.statLife - hurtInfo.Damage <= 0)
+                {
+                    if (counter == 0)
+                        if (NPC.GetLifePercent() <= 0.25f)
+                            text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
+                        else
+                            text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
+                    else if (NPC.GetLifePercent() <= 0.25f || counter >= 10)
+                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath4"; //WEAK.
+                    else if (Phase2Started)
+                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath3"; //And STAY dead!
+                    else if (!spawnedGuardians)
+                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
+                    else
+                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath2"; //A feast worthy of a god!
+                } else
+                {
+                    if (counter == 0 && Phase2Started)
+                    {
+                        if (NPC.GetLifePercent() <= 0.25f)
+                            text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
+                        else
+                            text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning"; //You can't run forever!
+                    } else
+                    {
+                        if (counter > 9)
+                            text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
+                        else if (counter == 9)
+                            text = headHitKeys[9]; //DogHead10
+                        else if (counter > 4)
+                            text = headHitKeys[Main.rand.Next(4, 9)]; //DogHead5-9
+                        else 
+                            text = headHitKeys[Main.rand.Next(0, 4)]; //DogHead1-4
+                    }
+                }
                 // Speak in Wingdings if the Punch Card is equipped
                 if (target.Calamity().punchCard && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 {
@@ -2654,7 +2705,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         positionY = (float)location.Y + (float)location.Height * 0.75f + vector.Y * 0.5f;
                     }
                     // Spawn a projectile that mimmicks combat text behaviour
-                    int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f , - 14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
+                    int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f, -14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
                     Projectile proj = Main.projectile[p];
                     proj.rotation = proj.velocity.X < 0 ? -0.06f : 0.06f;
 
@@ -2667,9 +2718,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                     var ctid = CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
                     if (ctid < Main.maxCombatText)
                         target.Calamity().subtitletext = Main.combatText[ctid];
+                    target.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                 }
                 target.Calamity().dogTextCooldown = 60;
             }
+             target.Calamity().DoGHeadHitCounter++;
         }
     }
 }

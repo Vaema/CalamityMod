@@ -41,11 +41,12 @@ namespace CalamityMod.Items.SummonItems
 
         public override bool? UseItem(Player player)
         {
-            string key = "Mods.CalamityMod.Status.Boss.EdgyBossText7";
+            string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
             Color messageColor = Color.Cyan;
             CalamityUtils.DisplayLocalizedText(key, messageColor);
             var subtitle = Main.combatText[CombatText.NewText(player.Hitbox, messageColor, Language.GetTextValue(key), true)];
             player.Calamity().subtitletext = subtitle;
+            player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
             CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
