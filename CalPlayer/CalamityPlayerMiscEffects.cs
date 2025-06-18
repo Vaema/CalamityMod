@@ -2978,22 +2978,6 @@ namespace CalamityMod.CalPlayer
                     // Record the final defense reduction for the stat meter
                     abyssDefenseLossStat = defenseLoss;
 
-                    // Bleed effect based on abyss layer
-                    if (ZoneAbyssLayer4)
-                    {
-                        Player.bleed = true;
-                    }
-                    else if (ZoneAbyssLayer3)
-                    {
-                        if (!abyssalDivingSuit)
-                            Player.bleed = true;
-                    }
-                    else if (ZoneAbyssLayer2)
-                    {
-                        if (!depthCharm)
-                            Player.bleed = true;
-                    }
-
                     // Ticks (frames) until breath is deducted from the breath meter
                     double tick = 10D * (1D - depthRatio);
 
@@ -3055,8 +3039,8 @@ namespace CalamityMod.CalPlayer
 
                     // Resistance to life loss at zero breath
                     int lifeLossAtZeroBreathResist = 0 +
-                        (depthCharm ? 3 : 0) +
-                        (abyssalDivingSuit ? 6 : 0);
+                        (depthCharm ? 4 : 0) +
+                        (abyssalDivingSuit ? 5 : 0);
 
                     // Reduce life loss, depending on gear
                     lifeLossAtZeroBreath -= lifeLossAtZeroBreathResist;
