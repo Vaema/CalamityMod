@@ -1822,9 +1822,9 @@ StatMeter: {
 	AbyssStats:
 		'''
 		Abyss Light Strength: {0}
-		Breath Lost Per Tick: {1} | Breath Loss Rate: {2}
-		Life Lost Per Tick at Zero Breath: {3}
-		Defense Lost From Pressure: {4}
+		Breath Loss Rate: {1}
+		Life Lost Per Tick at Zero Breath: {2}
+		Defense Lost From Pressure: {3}
 		'''
 	AbyssStatsHidden: Abyss stats are only displayed while in the Abyss
 }

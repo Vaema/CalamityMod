@@ -2959,9 +2959,6 @@ namespace CalamityMod.CalPlayer
                     // Breath lost while at zero breath
                     double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 1D : 0D) : (point.Y > abyssLevel1 ? 1D : 0D);
 
-                    // Record the final breath loss for the stat meter
-                    abyssBreathLossStat = (float)breathLoss;
-
                     // Defense loss
                     int defenseLoss = (int)(120D * depthRatio);
 
@@ -3013,7 +3010,7 @@ namespace CalamityMod.CalPlayer
                         (Player.arcticDivingGear ? 5D : 0D) +
                         (aquaticEmblem ? 5D : 0D) +
                         (Player.accMerman ? 8D : 0D) +
-                        (victideSet ? 3D : 0D) +
+                        (victideSet ? 2D : 0D) +
                         ((aquaticHeart && NPC.downedBoss3) ? 8D : 0D) +
                         (abyssalDivingSuit ? 8D : 0D) +
                         externalBreathTickBoost;
