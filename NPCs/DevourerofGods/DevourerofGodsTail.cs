@@ -70,7 +70,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.width = 66;
             NPC.height = 66;
             NPC.defense = 50;
-            NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
+            NPC.LifeMaxNERB(750000, 900000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -82,7 +82,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.netAlways = true;
             NPC.boss = true;
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.takenDamageMultiplier = 1.25f;
             NPC.dontCountMe = true;
 
             if (CalamityWorld.LegendaryMode)
@@ -196,16 +195,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-
-            float distanceFromTarget = Vector2.Distance(player.Center, NPC.Center);
-            float takeLessDamageDistance = 1600f;
-            if (distanceFromTarget > takeLessDamageDistance)
-            {
-                float damageTakenScalar = MathHelper.Clamp(1f - ((distanceFromTarget - takeLessDamageDistance) / takeLessDamageDistance), 0f, 1f);
-                NPC.takenDamageMultiplier = MathHelper.Lerp(1f, 1.25f, damageTakenScalar);
-            }
-            else
-                NPC.takenDamageMultiplier = 1.25f;
 
             // Check if other segments are still alive, if not, die
             bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>());
