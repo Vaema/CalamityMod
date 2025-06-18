@@ -854,8 +854,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 250, bType);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 0, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 170, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 0, bType);
                             }
                         }
                         calamityGlobalNPC.newAI[1] += 1f;
@@ -1553,7 +1553,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 if (phase2)
                 {
-                    float spawnOffset = 1200f;
                     if (NPC.ai[3] == 2)
                         calamityGlobalNPC.newAI[1] += 1f;
                     if (calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue)
@@ -1581,8 +1580,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.4f : 0.45f, 250, bType);
-                                //Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.3f : 0.4f, 250, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.4f : 0.45f, 170, bType);
                             }
                         }
                     }

@@ -56,7 +56,6 @@ namespace CalamityMod.Projectiles.Boss
             if (time == 0)
             {
                 targeted = Main.player[Player.FindClosest(Projectile.Center, 1, 1)];
-                Projectile.Center += Main.rand.NextVector2CircularEdge(400, 400);
                 // Some default values for if the projectile spawns without them set
                 if (attackSpeed == 0)
                     attackSpeed = 0.5f;
@@ -72,9 +71,9 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (time >= attackTime && !doneAttack)
             {
-                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallAttack");
+                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallLightAttack");
                 for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = -1 }, targetPos);
+                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = 0, MaxInstances = -1 }, targetPos);
                 laserFX = 3;
                 doneAttack = true;
                 storedTime = time;
