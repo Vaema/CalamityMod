@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Boss
             Texture2D beam = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineThick").Value;
             Texture2D bBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick").Value;
             Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-            float opacity = (doneAttack ? 1 : 0.3f) * (float)Math.Pow(Math.Min(laserFX, 1), 2);
+            float opacity = (doneAttack ? 0.5f : 0.3f) * (float)Math.Pow(Math.Min(laserFX, 1), 2);
             Color beamColor = drawColor with { A = 0 };
             Vector2 X = Vector2.UnitX.RotatedBy((laserType == 1 || laserType == 3 || laserType == 5) ? MathHelper.PiOver4 : 0);
             Vector2 Y = Vector2.UnitY.RotatedBy((laserType == 1 || laserType == 3 || laserType == 5) ? MathHelper.PiOver4 : 0);
