@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -10,12 +8,10 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
 using CalamityMod.Items.Placeables.FurnitureCosmilite;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -32,7 +28,6 @@ using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -40,7 +35,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.Graphics;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
@@ -74,22 +68,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         // Phase 1 variables
 
-        // Enums
-        private enum LaserWallType
-        {
-            DiagonalRight = 0,
-            DiagonalLeft = 1,
-            DiagonalHorizontal = 2,
-            DiagonalCross = 3
-        }
-
         // Laser spread variables
-        private const int shotSpacingMax = 1440;
-        private int shotSpacing = shotSpacingMax;
         private const int totalShots = 10;
-        private const int spacingVar = shotSpacingMax / totalShots * 2;
-        private int laserWallType = 0;
-        private const float laserWallSpacingOffset = 16f;
 
         // Continuously reset variables
         public bool AttemptingToEnterPortal = false;
@@ -117,23 +97,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             FireLaserWalls = 1,
             End = 2
         }
-        private enum LaserWallType_Phase2
-        {
-            Normal = 0,
-            Offset = 1,
-            DiagonalHorizontal = 2,
-            MultiLayered = 3,
-            DiagonalVertical = 4
-        }
 
         // Laser wall variables
-        private const int shotSpacingMax_Phase2 = 1440;
-        private int[] shotSpacing_Phase2 = new int[4] { shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2, shotSpacingMax_Phase2 };
-        private const int spacingVar_Phase2 = 120;
-        private const int totalShots_Phase2 = 24;
-        private const int totalDiagonalShots = 6;
-        private const int diagonalSpacingVar = shotSpacingMax_Phase2 / totalDiagonalShots * 2;
-        private int laserWallType_Phase2 = 0;
         public int laserWallPhase = 0;
 
         // Phase variables
@@ -304,8 +269,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             writer.Write(hasCreatedPhase1Portal);
             writer.Write(AwaitingPhase2Teleport);
             writer.Write(spawnDoGCountdown);
-            writer.Write(shotSpacing);
-            writer.Write(laserWallType);
             writer.Write(PortalIndex);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
@@ -313,13 +276,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Phase 2 syncs
             writer.Write(NPC.localAI[2]);
             writer.Write(NPC.localAI[3]);
-            writer.Write(shotSpacing_Phase2[0]);
-            writer.Write(shotSpacing_Phase2[1]);
-            writer.Write(shotSpacing_Phase2[2]);
-            writer.Write(shotSpacing_Phase2[3]);
             writer.Write(idleCounter);
             writer.Write(laserWallPhase);
-            writer.Write(laserWallType_Phase2);
             writer.Write(postTeleportTimer);
             writer.Write(teleportTimer);
             writer.Write(NPC.Opacity);
@@ -357,8 +315,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             hasCreatedPhase1Portal = reader.ReadBoolean();
             AwaitingPhase2Teleport = reader.ReadBoolean();
             spawnDoGCountdown = reader.ReadInt32();
-            shotSpacing = reader.ReadInt32();
-            laserWallType = reader.ReadInt32();
             PortalIndex = reader.ReadInt32();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
@@ -366,13 +322,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Phase 2 syncs
             NPC.localAI[2] = reader.ReadSingle();
             NPC.localAI[3] = reader.ReadSingle();
-            shotSpacing_Phase2[0] = reader.ReadInt32();
-            shotSpacing_Phase2[1] = reader.ReadInt32();
-            shotSpacing_Phase2[2] = reader.ReadInt32();
-            shotSpacing_Phase2[3] = reader.ReadInt32();
             idleCounter = reader.ReadInt32();
             laserWallPhase = reader.ReadInt32();
-            laserWallType_Phase2 = reader.ReadInt32();
             postTeleportTimer = reader.ReadInt32();
             teleportTimer = reader.ReadInt32();
             NPC.Opacity = reader.ReadSingle();
@@ -892,197 +843,21 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Laser walls
                     if (laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                     {
-                        float spawnOffset = 1200f;
-                        float divisor = bossRush || death ? 125f : 150f;
+                        float divisor = bossRush || death ? 100f : 120f;
                         if (phase6)
-                            divisor -= 50;
+                            divisor -= 15;
                         if (calamityGlobalNPC.newAI[1] % divisor == 0f)
                         {
-                            int bonusLenience = 0;
-                            if (calamityGlobalNPC.newAI[1] == 0 || phase6)
-                            {
-                                bonusLenience = 16;
-                            }
-                            SoundEngine.PlaySound(SoundID.Item12, player.Center);
-
-                            // Side walls
-                            float targetPosY = player.position.Y;
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
-                            int halfTotalDiagonalShots = totalDiagonalShots / 2;
-                            Vector2 start = default;
-                            Vector2 velocity = default;
-                            Vector2 aim = expertMode ? player.Center + player.velocity * 20f : Vector2.Zero;
 
-                            switch (laserWallType_Phase2)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                case (int)LaserWallType_Phase2.Normal:
-
-                                    for (int x = 0; x < totalShots_Phase2; x++)
-                                    {
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        {
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, targetPosY + shotSpacing_Phase2[0], -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        }
-
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2+ bonusLenience;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
-
-                                case (int)LaserWallType_Phase2.Offset:
-
-                                    targetPosY += 50f;
-                                    for (int x = 0; x < totalShots_Phase2; x++)
-                                    {
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        {
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, targetPosY + shotSpacing_Phase2[0], -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        }
-
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2 + bonusLenience;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
-
-                                case (int)LaserWallType_Phase2.DiagonalHorizontal:
-
-                                    for (int x = 0; x < totalDiagonalShots + 1; x++)
-                                    {
-                                        start = new Vector2(player.position.X + spawnOffset, targetPosY + shotSpacing_Phase2[0]);
-                                        aim.Y += laserWallSpacingOffset * (x - halfTotalDiagonalShots);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        start = new Vector2(player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0]);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        shotSpacing_Phase2[0] -= diagonalSpacingVar + bonusLenience;
-                                    }
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X, targetPosY + spawnOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X, targetPosY - spawnOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
-
-                                case (int)LaserWallType_Phase2.MultiLayered:
-
-                                    for (int x = 0; x < totalShots_Phase2; x++)
-                                    {
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        {
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, targetPosY + shotSpacing_Phase2[0], -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[0], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        }
-
-                                        shotSpacing_Phase2[0] -= spacingVar_Phase2 + bonusLenience;
-                                    }
-
-                                    int totalBonusLasers = totalShots_Phase2 / 2;
-                                    for (int x = 0; x < totalBonusLasers; x++)
-                                    {
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        {
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, targetPosY + shotSpacing_Phase2[3], -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, targetPosY + shotSpacing_Phase2[3], laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        }
-
-                                        shotSpacing_Phase2[3] -= Main.rand.NextBool() ? 215 : 235;
-                                    }
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
-
-                                case (int)LaserWallType_Phase2.DiagonalVertical:
-
-                                    for (int x = 0; x < totalDiagonalShots + 1; x++)
-                                    {
-                                        start = new Vector2(player.position.X + shotSpacing_Phase2[0], targetPosY + spawnOffset);
-                                        aim.X += laserWallSpacingOffset * (x - halfTotalDiagonalShots);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        start = new Vector2(player.position.X + shotSpacing_Phase2[0], targetPosY - spawnOffset);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        shotSpacing_Phase2[0] -= diagonalSpacingVar + bonusLenience;
-                                    }
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
+                                int bType = Main.rand.Next(0, 5 + 1);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 250, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 0, bType);
                             }
-
-                            // Pick a random laser wall phase in expert+
-                            if (expertMode)
-                            {
-                                int laserWallPhase;
-                                int choices = revenge ? 5 : 3;
-                                do laserWallPhase = Main.rand.Next(choices);
-                                while (laserWallPhase == laserWallType_Phase2);
-                                laserWallType_Phase2 = laserWallPhase;
-                            }
-                            else
-                                laserWallType_Phase2 = laserWallType_Phase2 == (int)LaserWallType_Phase2.Normal ? (int)LaserWallType_Phase2.Offset : (int)LaserWallType_Phase2.Normal;
-
-                            // Lower wall
-                            for (int x = 0; x < totalShots_Phase2; x++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + shotSpacing_Phase2[1], player.position.Y + spawnOffset, 0f, -laserVelocity, type, damage, 0f, Main.myPlayer);
-
-                                shotSpacing_Phase2[1] -= spacingVar_Phase2 + bonusLenience;
-                            }
-
-                            // Upper wall
-                            for (int x = 0; x < totalShots_Phase2; x++)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + shotSpacing_Phase2[2], player.position.Y - spawnOffset, 0f, laserVelocity, type, damage, 0f, Main.myPlayer);
-
-                                shotSpacing_Phase2[2] -= spacingVar_Phase2 + bonusLenience;
-                            }
-
-                            for (int i = 0; i < shotSpacing_Phase2.Length; i++)
-                                shotSpacing_Phase2[i] = shotSpacingMax_Phase2;
                         }
-
                         calamityGlobalNPC.newAI[1] += 1f;
                     }
 
@@ -1798,143 +1573,17 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (calamityGlobalNPC.newAI[1] % (int)(laserBarrageShootGateValue * (death ? 0.33f : 0.5f)) == 0f && calamityGlobalNPC.newAI[1] > 0f)
                         {
-                            SoundEngine.PlaySound(SoundID.Item12, player.Center);
-
+                            
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
-                            Vector2 start = default;
-                            Vector2 velocity = default;
-                            Vector2 aim = expertMode ? player.Center + player.velocity * 20f : Vector2.Zero;
-                            Vector2 aimClone = aim;
 
-                            switch (laserWallType)
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                case (int)LaserWallType.DiagonalRight:
-
-                                    for (int x = 0; x < totalShots + 1; x++)
-                                    {
-                                        start = new Vector2(player.position.X + spawnOffset, player.position.Y + shotSpacing);
-                                        aim.Y += laserWallSpacingOffset * (x - 3);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        shotSpacing -= spacingVar;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-
-                                    break;
-
-                                case (int)LaserWallType.DiagonalLeft:
-
-                                    for (int x = 0; x < totalShots + 1; x++)
-                                    {
-                                        start = new Vector2(player.position.X - spawnOffset, player.position.Y + shotSpacing);
-                                        aim.Y += laserWallSpacingOffset * (x - 3);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        shotSpacing -= spacingVar;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-
-                                    break;
-
-                                case (int)LaserWallType.DiagonalHorizontal:
-
-                                    for (int x = 0; x < totalShots + 1; x++)
-                                    {
-                                        start = new Vector2(player.position.X + spawnOffset, player.position.Y + shotSpacing);
-                                        aim.Y += laserWallSpacingOffset * (x - 3);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        start = new Vector2(player.position.X - spawnOffset, player.position.Y + shotSpacing);
-                                        velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                        shotSpacing -= spacingVar;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
-
-                                case (int)LaserWallType.DiagonalCross:
-
-                                    int randomLaserGap = Main.rand.Next(3) + 3; // 3, 4, 5, 6
-                                    for (int x = 0; x < totalShots + 1; x++)
-                                    {
-                                        if (x != randomLaserGap && x != randomLaserGap + 1)
-                                        {
-                                            start = new Vector2(player.position.X + spawnOffset, player.position.Y + shotSpacing);
-                                            aim.Y += laserWallSpacingOffset * (x - 3);
-                                            velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                            start = new Vector2(player.position.X - spawnOffset, player.position.Y + shotSpacing);
-                                            velocity = Vector2.Normalize(aim - start) * laserVelocity;
-
-                                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                            start = new Vector2(player.position.X + shotSpacing, player.position.Y + spawnOffset);
-                                            aimClone.X += laserWallSpacingOffset * (x - 3);
-                                            velocity = Vector2.Normalize(aimClone - start) * laserVelocity;
-
-                                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-
-                                            start = new Vector2(player.position.X + shotSpacing, player.position.Y - spawnOffset);
-                                            velocity = Vector2.Normalize(aimClone - start) * laserVelocity;
-
-                                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), start, velocity, type, damage, 0f, Main.myPlayer);
-                                        }
-
-                                        shotSpacing -= spacingVar;
-                                    }
-
-                                    if (expertMode && Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + spawnOffset, player.Center.Y, -laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - spawnOffset, player.Center.Y, laserVelocity, 0f, type, damage, 0f, Main.myPlayer);
-                                    }
-
-                                    break;
+                                int bType = Main.rand.Next(0, 5 + 1);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.4f : 0.45f, 250, bType);
+                                //Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.3f : 0.4f, 250, bType);
                             }
-
-                            // Pick a random laser wall phase in expert+
-                            if (expertMode)
-                            {
-                                int laserWallPhase;
-                                int choices = revenge ? 4 : 3;
-                                do laserWallPhase = Main.rand.Next(choices);
-                                while (laserWallPhase == laserWallType);
-                                laserWallType = laserWallPhase;
-                            }
-                            else
-                                laserWallType = laserWallType == (int)LaserWallType.DiagonalRight ? (int)LaserWallType.DiagonalLeft : (int)LaserWallType.DiagonalRight;
-
-                            shotSpacing = shotSpacingMax;
                         }
                     }
                 }

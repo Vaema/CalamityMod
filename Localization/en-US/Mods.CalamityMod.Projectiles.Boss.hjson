@@ -52,6 +52,8 @@ DoGBeamPortal.DisplayName: Beam Portal
 DoGDeath.DisplayName: Death Beam
 DoGDeathBoom.DisplayName: Cosmic Explosion
 DoGFire.DisplayName: Death Fire
+DoGLaserWalls.DisplayName: God's Bane Doombeam Array
+DoGLaserWallsBigBeam.DisplayName: Hyperdeath Rift Ripper
 DoGP1EndPortal.DisplayName: Portal
 DoGTeleportRift.DisplayName: Rift
 DoGWingdings.DisplayName: Ramblings of Wing DoGster
