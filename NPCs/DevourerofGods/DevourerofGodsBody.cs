@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 global.unbreakableDR = true;
                 NPC.chaseable = false;
             }
-            NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
+            NPC.LifeMaxNERB(750000, 900000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

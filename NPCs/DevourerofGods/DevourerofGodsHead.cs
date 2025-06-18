@@ -214,8 +214,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.width = 104;
             NPC.height = 104;
             NPC.defense = 50;
-            NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
-            NPC.takenDamageMultiplier = 1.1f;
+            NPC.LifeMaxNERB(750000, 900000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -471,15 +470,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             float distanceFromTarget = Vector2.Distance(destination, NPC.Center);
             bool increaseSpeed = distanceFromTarget > CalamityGlobalNPC.CatchUpDistance200Tiles;
             bool increaseSpeedMore = distanceFromTarget > CalamityGlobalNPC.CatchUpDistance350Tiles;
-
-            float takeLessDamageDistance = 1600f;
-            if (distanceFromTarget > takeLessDamageDistance)
-            {
-                float damageTakenScalar = MathHelper.Clamp(1f - ((distanceFromTarget - takeLessDamageDistance) / takeLessDamageDistance), 0f, 1f);
-                NPC.takenDamageMultiplier = MathHelper.Lerp(1f, 1.1f, damageTakenScalar);
-            }
-            else
-                NPC.takenDamageMultiplier = 1.1f;
 
             // Close DoG's HP bar during P2 transition and decrement the countdown.
             if (NPC.localAI[2] > 0f)
