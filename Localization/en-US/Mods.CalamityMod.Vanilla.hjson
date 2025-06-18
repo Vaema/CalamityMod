@@ -175,7 +175,7 @@ EditedTooltip: {
 	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
 	AleSake:
 		'''
-		Increases melee damage by 10% and reduces defense by 5%
+		Increases melee size by 15%, but decreases melee speed by 10%
 		Counts as an alcohol for Alcohol Poisoning
 		{$Common.AlcoholWarning}
 		'''
