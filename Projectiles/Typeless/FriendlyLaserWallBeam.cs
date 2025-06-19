@@ -1,18 +1,20 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.BaseProjectiles;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.NPCs.Abyss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Magic
+namespace CalamityMod.Projectiles.Typeless
 {
-    public class DeathhailBeam : ModProjectile, ILocalizedModType
+    public class FriendlyLaserWallBeam : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public new string LocalizationCategory => "Projectiles.Boss";
@@ -58,24 +60,24 @@ namespace CalamityMod.Projectiles.Magic
                 laserType = 1;
                 if (CalamityWorld.LegendaryMode)
                     Projectile.scale = 6;
-                laserRot = Main.rand.NextFloat(-0.4f, 0.4f);
+                laserRot = Projectile.velocity.ToRotation();
 
-                beamStart = targetPos + ((laserType == 0 || laserType == 4 || laserType == 5) ? Vector2.UnitX : Vector2.UnitY).RotatedBy(laserRot) * laserLength;
+                beamStart = targetPos + Vector2.UnitX.RotatedBy(laserRot) * laserLength;
                 directionToTarget = beamStart.DirectionTo(targetPos);
 
-                Projectile.Center += Main.rand.NextVector2CircularEdge(400, 400);
+                //Projectile.Center += Main.rand.NextVector2CircularEdge(400, 400);
                 // Some default values for if the projectile spawns without them set
                 if (attackSpeed == 0)
-                    attackSpeed = 0.5f;
+                    attackSpeed = 3f;
                 Projectile.velocity = Vector2.Zero;
                 laserFX = 1f;
                 Projectile.ForceNetUpdate();
             }
             if (time >= attackTime && !doneAttack)
             {
-                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallLightAttack");
                 for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.3f, Pitch = 0, MaxInstances = -1 }, targetPos);
+                    SoundEngine.PlaySound(attack with { Volume = 0.3f, Pitch = 0, MaxInstances =  -1}, targetPos);
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
@@ -136,15 +138,15 @@ namespace CalamityMod.Projectiles.Magic
 
             if (CalamityClientConfig.Instance.Photosensitivity)
                 opacity = 0.2f;
-            for (int t = 0; t < (!doneAttack ? 1 : 4 * Projectile.scale); t++)
-            {
-                bool black = (t > 0 + (Projectile.scale - 1));
-                if (black)
-                    beam = bBeam;
+             for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
+                    {
+                        bool black = (t > 0);
+                        Texture2D usedTex = (black ? bBeam : beam);
 
-                float beamThickness = 0.09f * (black ? (0.8f - 0.15f * t / Projectile.scale) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
-                Main.EntitySpriteDraw(beam, beamStart - Main.screenPosition, null, (black ? Color.Black * opacity : beamColor * (1 - t * 0.3f) * opacity) * (black ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness, laserLength / 975) * Projectile.scale, SpriteEffects.None);
-            }
+                        float beamThickness = 0.03f * (black ? (0.8f - 0.15f * t) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
+                        float rot = beamStart.DirectionTo(targetPos).ToRotation() + (MathHelper.PiOver2);
+                        Main.EntitySpriteDraw(usedTex, beamStart - Main.screenPosition, null, (black ? Color.Black * opacity : beamColor * opacity) * (black ? (0.2f + 0.15f * t) : 1), rot, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness, laserLength / 975) * Projectile.scale, SpriteEffects.None);
+                    }
             //Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Color.Red with { A = 0 }, 0, bloom.Size() / 2, 0.3f, SpriteEffects.None);
             return false;
         }

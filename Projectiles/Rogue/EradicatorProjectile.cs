@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -135,19 +136,13 @@ namespace CalamityMod.Projectiles.Rogue
             if (randomLaserCharge >= 1f)
             {
                 randomLaserCharge -= 1f;
-                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                Vector2 velocity = Vector2.UnitX.RotatedBy(Projectile.timeLeft / 120f * MathHelper.TwoPi);
 
                 int laserDamage = (int)(Projectile.damage * 0.12D);
-                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NebulaShot>(), laserDamage, 0f, Projectile.owner);
+                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, 1.5f);
                 if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                 {
                     laser.DamageType = RogueDamageClass.Instance;
-                    laser.aiStyle = Main.rand.NextBool() ? ProjAIStyleID.Arrow : -1;
-                    laser.penetrate = -1;
-                    laser.usesLocalNPCImmunity = true;
-
-                    // This projectile has a hefty amount of extra updates, which will influence the hit cooldown.
-                    laser.localNPCHitCooldown = 120;
                 }
             }
 
