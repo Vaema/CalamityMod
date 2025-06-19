@@ -12,8 +12,7 @@ namespace CalamityMod.Projectiles.Rogue
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Items/Weapons/Rogue/InfernalKris";
-
-        public static int spinTime = 280;
+        private bool hasSpawnedCinders = false;
 
         public override void SetStaticDefaults()
         {
@@ -35,7 +34,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Projectile.timeLeft < spinTime)
+            if (Projectile.timeLeft < 280)
             {
                 Projectile.rotation += 0.4f * Projectile.direction;
 
@@ -56,59 +55,37 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
-        {
-            if (Projectile.timeLeft < spinTime)
-            {
-                modifiers.SourceDamage *= 1.75f;
-            }
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
-            {
-                int sparkCount = Main.rand.Next(3, 7);
-                for (int i = 0; i < sparkCount; i++)
-                {
-                    int sparkScatter = 1;
-                    Vector2 sparkVelocity = new Vector2(Main.rand.NextFloat(-sparkScatter, sparkScatter), Main.rand.NextFloat(-sparkScatter - 2, sparkScatter + 2));
-
-                    sparkVelocity.Normalize();
-                    sparkVelocity *= 3;
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkVelocity, ModContent.ProjectileType<InfernalKrisCinder>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
-                }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<InfernalKrisExplosion>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
-                SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
-            }
+                StealthEffect();
         }
-
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             int debuffTime = 60 * (Projectile.Calamity().stealthStrike ? Main.rand.Next(4, 8) : Main.rand.Next(3, 6));
             target.AddBuff(BuffID.OnFire, debuffTime);
 
             if (Projectile.Calamity().stealthStrike)
-            {
-                int sparkCount = Main.rand.Next(3, 7);
-                for (int i = 0; i < sparkCount; i++)
-                {
-                    int sparkScatter = 1;
-                    Vector2 sparkVelocity = new Vector2(Main.rand.NextFloat(-sparkScatter, sparkScatter), Main.rand.NextFloat(-sparkScatter - 2, sparkScatter + 2));
-
-                    sparkVelocity.Normalize();
-                    sparkVelocity *= 3;
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkVelocity, ModContent.ProjectileType<InfernalKrisCinder>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
-                }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<InfernalKrisExplosion>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
-                SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
-            }
+                StealthEffect();
         }
+        private void StealthEffect()
+        {
+            hasSpawnedCinders = true;
+            int sparkCount = Main.rand.Next(4, 5 + 1);
+            for (int i = 0; i < sparkCount; i++)
+            {
+                Vector2 sparkVelocity = Main.rand.NextVector2Circular(1f, 3f);
+                sparkVelocity = sparkVelocity.SafeNormalize(Vector2.UnitY) * 3f;
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkVelocity, ModContent.ProjectileType<InfernalKrisCinder>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0, 0);
+            }
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<InfernalKrisExplosion>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0, 0);
+            SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
+        }
+
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -167,13 +144,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft)
         {
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.Calamity().stealthStrike && !hasSpawnedCinders)
             {
-                int sparkCount = Main.rand.Next(3, 7);
+                int sparkCount = Main.rand.Next(4, 5+1);
                 for (int i = 0; i < sparkCount; i++)
                 {
-                    int sparkScatter = 1;
-                    Vector2 sparkVelocity = new Vector2(Main.rand.NextFloat(-sparkScatter, sparkScatter), Main.rand.NextFloat(-sparkScatter, sparkScatter));
+                    Vector2 sparkVelocity = Main.rand.NextVector2Circular(1f, 3f);
+                    sparkVelocity = sparkVelocity.SafeNormalize(Vector2.UnitY) * 3f;
 
                     if (Projectile.ai[0] != 0)
                     {
@@ -184,14 +161,9 @@ namespace CalamityMod.Projectiles.Rogue
                         sparkVelocity.Y *= -1;
                     }
 
-                    sparkVelocity.X += Projectile.ai[0];
-                    sparkVelocity.Y += Projectile.ai[1];
-                    sparkVelocity.Normalize();
-                    sparkVelocity *= 3;
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkVelocity, ModContent.ProjectileType<InfernalKrisCinder>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, sparkVelocity, ModContent.ProjectileType<InfernalKrisCinder>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0, 0);
                 }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<InfernalKrisExplosion>(), (int)(Projectile.damage * 0.4f), 0, Projectile.owner, 0, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<InfernalKrisExplosion>(), (int)(Projectile.damage * 0.5f), 0, Projectile.owner, 0, 0);
                 SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
             }
         }
