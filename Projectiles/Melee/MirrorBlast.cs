@@ -142,6 +142,12 @@ namespace CalamityMod.Projectiles.Melee
             else
             {
                 float homingStrength = 0.025f; // Adjust this value for stronger or weaker homing
+                if (Projectile.timeLeft < 1000)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 800)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 600)
+                    homingStrength *= 2f;
                 NPC target = FindClosestNPC(3200f);
                 if (target != null)
                 {

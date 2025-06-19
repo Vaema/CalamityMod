@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -71,11 +72,20 @@ namespace CalamityMod.Projectiles.Melee
             if (!inStartup && !inCooldown)
                 foreach (var proj in Main.ActiveProjectiles)
                 {
-                    if (proj.Hitbox.Intersects(Projectile.Hitbox) && proj.hostile && !reflectedProjectiles.Contains(proj.whoAmI))
+                    if (proj.type == ModContent.ProjectileType<DoGLaserWalls>() && proj.ModProjectile<DoGLaserWalls>().canDamage && !reflectedProjectiles.Contains(proj.whoAmI))
+                    {
+                        reflectedProjectiles.Add(proj.whoAmI);
+                        for (var i = 0; i < 3; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), proj.Center, proj.velocity * -1, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+                            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact, Projectile.Center);
+                        }
+                    } 
+                    else if (proj.Hitbox.Intersects(Projectile.Hitbox) && proj.hostile && !reflectedProjectiles.Contains(proj.whoAmI))
                     {
                         reflectedProjectiles.Add(proj.whoAmI);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), proj.Center, proj.velocity * -1, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
-                        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact, Projectile.Center);
                     }
                 }
                 
