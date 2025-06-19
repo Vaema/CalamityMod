@@ -293,6 +293,8 @@ namespace CalamityMod.Projectiles
 
         public int BloodstoneOrbValue = 0;
 
+        public int HomingTarget = -1;
+
         #region On Spawn
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -348,6 +350,8 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
+            HomingTarget = -1;
             #region Vanilla Summons AI Changes
 
             //
@@ -4289,6 +4293,13 @@ namespace CalamityMod.Projectiles
                 return false;
             }
             return true;
+        }
+
+        public override bool? CanHitNPC(Projectile projectile, NPC target)
+        {
+            if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
+                return false;
+            return null;
         }
         #endregion
 
