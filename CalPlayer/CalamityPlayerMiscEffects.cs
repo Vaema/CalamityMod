@@ -2047,6 +2047,8 @@ namespace CalamityMod.CalPlayer
                 --fullRageSoundCountdownTimer;
             if (plagueTaintedSMGDroneCooldown > 0)
                 plagueTaintedSMGDroneCooldown--;
+            if (flareGunOverheat > 0)
+                flareGunOverheat--;
             if (momentumCapacitorTime > 0)
                 --momentumCapacitorTime;
             if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)
@@ -2955,36 +2957,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // Breath lost while at zero breath
-                    double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D) : (point.Y > abyssLevel1 ? 50D * depthRatioFromAbyssLayer1 : 0D);
-
-                    // Breath Loss Multiplier, depending on gear
-                    // 27AUG2024: Ozzatron: fixed this being subtractive like mining speed. now doesn't stack exponentially
-                    // It is now a multiplier for the time it takes to lose any unit amount of breath
-                    double breathLossTimeMult = 1D +
-                        (Player.gills ? 0.2 : 0D) + // 1.2
-                        (oceanCrest ? 0.2 : 0D) + // 1.2
-                        (victideBurrowHead ? 0.2 : 0D) + // 1.2
-                        (Player.accDivingHelm ? 0.25 : 0D) + // 1.25
-                        (Player.arcticDivingGear ? 0.25 : 0D) + // 1.25
-                        (aquaticEmblem ? 0.25 : 0D) + // 1.25
-                        (Player.accMerman ? 0.3 : 0D) + // 1.3
-                        (reaverExplore ? 0.3 : 0D) + // 1.3
-                        ((aquaticHeart && NPC.downedBoss3) ? 0.3 : 0D) + // 1.3
-                        (abyssalDivingSuit ? 0.3 : 0D) + // 1.3
-                        externalBreathLossMultBoost;
-
-                    // Invert the breath loss time multiplier, to get the multiplier for the speed at which breath is actually lost
-                    double breathLossMult = 1D / breathLossTimeMult;
-
-                    // Limit the multiplier to 5%
-                    if (breathLossMult < 0.05)
-                        breathLossMult = 0.05;
-
-                    // Reduce breath lost while at zero breath, depending on gear
-                    breathLoss *= breathLossTimeMult;
-
-                    // Record the final breath loss for the stat meter
-                    abyssBreathLossStat = (float)breathLoss;
+                    double breathLoss = Main.remixWorld ? (point.Y < abyssLevel1 ? 1D : 0D) : (point.Y > abyssLevel1 ? 1D : 0D);
 
                     // Defense loss
                     int defenseLoss = (int)(120D * depthRatio);
@@ -3005,24 +2978,8 @@ namespace CalamityMod.CalPlayer
                     // Record the final defense reduction for the stat meter
                     abyssDefenseLossStat = defenseLoss;
 
-                    // Bleed effect based on abyss layer
-                    if (ZoneAbyssLayer4)
-                    {
-                        Player.bleed = true;
-                    }
-                    else if (ZoneAbyssLayer3)
-                    {
-                        if (!abyssalDivingSuit)
-                            Player.bleed = true;
-                    }
-                    else if (ZoneAbyssLayer2)
-                    {
-                        if (!depthCharm)
-                            Player.bleed = true;
-                    }
-
                     // Ticks (frames) until breath is deducted from the breath meter
-                    double tick = 12D * (1D - depthRatio);
+                    double tick = 10D * (1D - depthRatio);
 
                     // Prevent 0
                     if (tick < 1D)
@@ -3030,16 +2987,16 @@ namespace CalamityMod.CalPlayer
 
                     // Tick (frame) multiplier, depending on gear
                     double tickMult = 1D +
-                        (Player.gills ? 4D : 0D) + // 5
-                        (oceanCrest ? 4D : 0D) + // 5
-                        (Player.ignoreWater ? 5D : 0D) + // 10
-                        (Player.accDivingHelm ? 10D : 0D) + // 20
-                        (Player.arcticDivingGear ? 10D : 0D) + // 30
-                        (aquaticEmblem ? 10D : 0D) + // 40
-                        (Player.accMerman ? 15D : 0D) + // 55
-                        (victideBurrowHead ? 5D : 0D) + // 60
-                        ((aquaticHeart && NPC.downedBoss3) ? 15D : 0D) + // 75
-                        (abyssalDivingSuit ? 15D : 0D) + // 90
+                        (Player.gills ? 2D : 0D) +
+                        (oceanCrest ? 2D : 0D) +
+                        (Player.ignoreWater ? 3D : 0D) +
+                        (Player.accDivingHelm ? 5D : 0D) +
+                        (Player.arcticDivingGear ? 5D : 0D) +
+                        (aquaticEmblem ? 5D : 0D) +
+                        (Player.accMerman ? 8D : 0D) +
+                        (victideSet ? 2D : 0D) +
+                        ((aquaticHeart && NPC.downedBoss3) ? 8D : 0D) +
+                        (abyssalDivingSuit ? 8D : 0D) +
                         externalBreathTickBoost;
 
                     // Limit the multiplier to 50
@@ -3053,6 +3010,8 @@ namespace CalamityMod.CalPlayer
                     abyssBreathLossRateStat = (float)tick;
 
                     float resistanceSlowdownFactor = 1f;
+                    if (hPressure)
+                        resistanceSlowdownFactor -= abyssalDivingSuit ? 0.2f : 0.5f;
 
                     // Reduce breath over ticks (frames)
                     abyssBreathCD++;    
@@ -3065,9 +3024,6 @@ namespace CalamityMod.CalPlayer
                         if (Player.breath > 0)
                         {
                             Player.breath -= (int)(cDepth && !depthCharm ? breathLoss + 1D : breathLoss);
-
-                            if (hPressure)
-                                resistanceSlowdownFactor -= (int)(!abyssalDivingSuit ? 1.2f : 0.5f);
                         }
                     }
 
@@ -3083,8 +3039,8 @@ namespace CalamityMod.CalPlayer
 
                     // Resistance to life loss at zero breath
                     int lifeLossAtZeroBreathResist = 0 +
-                        (depthCharm ? 3 : 0) +
-                        (abyssalDivingSuit ? 6 : 0);
+                        (depthCharm ? 4 : 0) +
+                        (abyssalDivingSuit ? 5 : 0);
 
                     // Reduce life loss, depending on gear
                     lifeLossAtZeroBreath -= lifeLossAtZeroBreathResist;

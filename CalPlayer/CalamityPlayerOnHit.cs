@@ -103,7 +103,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 180);
+                    target.AddBuff(BuffID.OnFire3, 90);
                     break;
 
                 case ItemID.IceSickle:
@@ -838,8 +838,9 @@ namespace CalamityMod.CalPlayer
             if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
                 MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
-
-                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                Vector2 directionToMouse = Main.MouseWorld - Player.Center;
+                directionToMouse.Normalize();
+                Vector2 velocity = directionToMouse * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
                 Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
@@ -1148,9 +1149,9 @@ namespace CalamityMod.CalPlayer
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
-                for (int dustexplode = 0; dustexplode < 180; dustexplode++)
+                for (int dustexplode = 0; dustexplode < 120; dustexplode++)
                 {
-                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 3)) * 1.7f;
                     Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
                     dust.noGravity = true;
                 }

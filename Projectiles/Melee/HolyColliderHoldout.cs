@@ -432,7 +432,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     for (int i = 0; i < 4; i++)
                     {
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0);
                     }
                 }
             }
