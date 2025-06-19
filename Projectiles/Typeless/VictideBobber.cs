@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreAI()
         {
             // Snap if the snail is shelled, or just nowhere to be found
-            if (!Parent.active || Parent == null || Parent.frame < 6)
+            if (!Parent.active || Parent.ActiveItem().fishingPole <= 0 || Parent == null || Parent.frame < 6)
             {
                 Projectile.Kill();
                 return false;
