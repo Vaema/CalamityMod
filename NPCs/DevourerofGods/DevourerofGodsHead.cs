@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
@@ -777,7 +778,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
+                    if (NPC.ai[3] < 2 && NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
                     {
                         float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
                         if (dotProduct > 0.8f)
@@ -810,14 +811,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
-                            float spacing = 240;
+                            float spacing = 256;
                             float miniInterval = 15;
                             float megaInterval = 120;
                             float time = 0.45f;
                             for (var i = 0; i < 3; i++)
                                 if ((int)(calamityGlobalNPC.newAI[1] - miniInterval * i) % megaInterval == 0f)
                                 {
-                                    Main.NewText(i);
                                     Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, spacing, 2-i);
                                     if (i == 2) 
                                         Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, time, 0, i);
@@ -834,19 +834,19 @@ namespace CalamityMod.NPCs.DevourerofGods
                             {
                                 int type = ModContent.ProjectileType<DoGDeath>();
                                 int damage = NPC.GetProjectileDamage(type);
-                                float spacing = 128;
-                                if (divisor == 0 && !phase6)
+                                float spacing = death ? 144 : 160;
+                                if (divisor == 0)
                                     spacing += 64;
                                 if (phase6)
-                                    spacing += 32;
+                                    spacing += death ? 64 : 32;
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
 
                                     {
                                         int bType = Main.rand.Next(0, 5 + 1);
-                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, spacing, bType);
+                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, spacing, bType);
                                         if (phase6 || death)
-                                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush || death) ? 0.55f : 0.5f, 0, bType);
+                                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 0, bType);
                                     }
                                 }
                             }
@@ -1543,7 +1543,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush || death) ? 0.4f : 0.45f, 170, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.4f : 0.45f, 170, bType);
                             }
                         }
                     }
@@ -1667,7 +1667,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     targetX *= timeToReachTarget;
                     targetY *= timeToReachTarget;
 
-                    turnSpeedCopy *= NPC.Distance(player.Center) / 1000;
+                    turnSpeedCopy *= NPC.Distance(player.Center) / (death ? 800 : 1000);
                     if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f) || (NPC.velocity.Y > 0f && targetY > 0f) || (NPC.velocity.Y < 0f && targetY < 0f))
                     {
                         if (NPC.velocity.X < targetX)
@@ -2127,11 +2127,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
                     int damage = NPC.GetProjectileDamage(type);
-                    float finalVelocity = death ? 15f : 10f;
+                    float finalVelocity = death ? 12f : 10f;
                     int totalSpreads = revenge ? 6 : 3;
                     float mult = revenge ? 1.5f : 3f;
                     for (int i = 0; i < totalSpreads; i++)
                     {
+                        if (!death && i % 3 == 2)
+                            continue;
                         int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : bossRush ? 18 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float newVelocity = finalVelocity - i * mult;
@@ -2515,6 +2517,8 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Can only hit the target if within certain distance
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
+            if (Phase2Started && NPC.localAI[2] > 60f)
+                return false;
             cooldownSlot = ImmunityCooldownID.Bosses;
 
             Rectangle targetHitbox = target.Hitbox;
