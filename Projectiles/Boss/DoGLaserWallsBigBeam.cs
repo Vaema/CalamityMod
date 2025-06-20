@@ -70,6 +70,8 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (time >= attackTime && !doneAttack)
             {
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7f)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f;
                 SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = 0, MaxInstances = -1 }, targetPos);

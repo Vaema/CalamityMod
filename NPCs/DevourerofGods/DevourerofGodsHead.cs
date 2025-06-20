@@ -118,6 +118,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const float AlphaGateValue = 1660f;
         public const float SkyColorTransitionTime = 90f;
         public Vector2 PortalEntryLocation = Vector2.Zero;
+        public bool doTpFX = true;
 
         // Death animation variables
         public bool Dying;
@@ -548,13 +549,23 @@ namespace CalamityMod.NPCs.DevourerofGods
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
                 }
-                if (NPC.localAI[2] > 0 && NPC.localAI[2] < 60 )
+                if (NPC.localAI[2] > 0 && NPC.localAI[2] < 60)
                 {
+                    if (doTpFX)
+                    {
+                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
+                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
+                        SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                        for (int i = 0; i < 2; i++)
+                            SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
+                        doTpFX = false;
+                    }
                     var Size = 1.6f;
                     if (NPC.localAI[2] == 1)
                     {
                         Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
                         GeneralParticleHandler.SpawnParticle(pulse);
+                        doTpFX = true;
                     }
                     Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
                     GeneralParticleHandler.SpawnParticle(jaws);
@@ -752,11 +763,21 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Set opacity after teleport
                         if (postTeleportTimer > 0)
                         {
+                            if (doTpFX)
+                            {
+                                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
+                                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
+                                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                                for (int i = 0; i < 2; i++)
+                                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
+                                doTpFX = false;
+                            }
                             var Size = 1.6f;
                             if (postTeleportTimer == 1 && NPC.localAI[2] < 1)
                             {
                                 Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
                                 GeneralParticleHandler.SpawnParticle(pulse);
+                                doTpFX = true;
                             }
                             Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
                             GeneralParticleHandler.SpawnParticle(jaws);
