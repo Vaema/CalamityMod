@@ -1263,7 +1263,6 @@ namespace CalamityMod.CalPlayer
         public bool pFlames = false;
         public bool hFlames = false;
         public bool hInferno = false;
-        public bool gState = false;
         public bool bBlood = false;
         public bool brainRot = false;
         public bool heavybleeding = false;
@@ -2480,7 +2479,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;
@@ -2948,7 +2946,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;

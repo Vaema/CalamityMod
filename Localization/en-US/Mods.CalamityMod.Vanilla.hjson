@@ -27,7 +27,7 @@ AddedTooltip: {
 		This grants +1.5 HP/s life regen and accelerates natural life regen
 		Life drain stacks based on the number of enemies being hit
 		'''
-	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
+	WarmthPotion: Greatly reduces the duration of Chilled and Frozen
 	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
 	// Step Stool
