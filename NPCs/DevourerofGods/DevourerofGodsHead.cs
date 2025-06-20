@@ -346,6 +346,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void AI()
         {
+
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             // whoAmI variable
@@ -776,32 +777,38 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
 
                     // Fireballs
-                    // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.ai[3] < 2 && NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
+                    if (isInPassiveState)
                     {
-                        float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
-                        if (dotProduct > 0.8f)
+                        calamityGlobalNPC.newAI[0] += 1f;
+                        if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
                         {
-                            calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : 60f) == 0f)
+                            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+                            if (dotProduct > 0.8f)
                             {
-                                float fireballSpeed = 8f;
-                                Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
+                                if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
+                                {
+                                    float fireballSpeed = 8f;
+                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
 
-                                Vector2 dustVelocity = fireballVelocity * 2f;
-                                for (int k = 0; k < 50; k++)
-                                    Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
+                                    Vector2 dustVelocity = fireballVelocity * 2f;
+                                    for (int k = 0; k < 50; k++)
+                                        Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
-                                int type = ModContent.ProjectileType<DoGFire>();
-                                int damage = NPC.GetProjectileDamage(type);
+                                    int type = ModContent.ProjectileType<DoGFire>();
+                                    int damage = NPC.GetProjectileDamage(type);
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+
+                                    calamityGlobalNPC.newAI[0] = 0f;
+                                }
                             }
                         }
                     }
-                    else if (distanceFromTarget < 240f)
+                    else
+                    {
                         calamityGlobalNPC.newAI[0] = 0f;
+                    }
 
                     // Laser walls
                     if (laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
@@ -810,7 +817,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
-                            float spacing = 256;
+                            float spacing = 320;
                             float miniInterval = 15;
                             float megaInterval = 120;
                             float time = 0.45f;
@@ -1416,32 +1423,37 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (phase3)
                 {
                     // Fireballs
-                    // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
+                    if (isInPassiveState)
                     {
-                        float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
-                        if (dotProduct > 0.8f)
+                        calamityGlobalNPC.newAI[0] += 1f;
+                        if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
                         {
-                            calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : 60f) == 0f)
+                            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+                            if (dotProduct > 0.8f)
                             {
-                                float fireballSpeed = 8f;
-                                Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
+                                if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
+                                {
+                                    float fireballSpeed = 8f;
+                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
 
-                                Vector2 dustVelocity = fireballVelocity * 2f;
-                                for (int k = 0; k < 50; k++)
-                                    Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
+                                    Vector2 dustVelocity = fireballVelocity * 2f;
+                                    for (int k = 0; k < 50; k++)
+                                        Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
-                                int type = ModContent.ProjectileType<DoGFire>();
-                                int damage = NPC.GetProjectileDamage(type);
+                                    int type = ModContent.ProjectileType<DoGFire>();
+                                    int damage = NPC.GetProjectileDamage(type);
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+
+                                    calamityGlobalNPC.newAI[0] = 0f;
+                                }
                             }
                         }
-                    }
-                    else if (distanceFromTarget < 240f)
+                    } else
+                    {
                         calamityGlobalNPC.newAI[0] = 0f;
+                    }
 
                     if (!spawnedGuardians)
                     {
