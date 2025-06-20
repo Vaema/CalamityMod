@@ -225,7 +225,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
 
             // Decides whether Ceaseless moves closer to its target or not
-            float distanceRequiredToMove = CalamityWorld.LegendaryMode ? 300 : 600;
+            float distanceRequiredToMove = CalamityWorld.LegendaryMode ? 300f : 720f;
             bool move = Vector2.Distance(NPC.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
 
             // Succ attack
@@ -588,7 +588,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 // Movement
                 if (NPC.Distance(destination) > maxDistance || succ || (!CalamityWorld.LegendaryMode && !madeItToLocation))
                     CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
-                if (NPC.Distance(destination) < 16)
+                if (NPC.Distance(destination) < 80)
                 {
                     madeItToLocation = true;
                 }
