@@ -69,6 +69,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (DoGIndex != -1)
                 {
                     var DoG = Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>();
+                    if (DoG == null)
+                    {
+                        DoGIndex = -1;
+                        return;
+                    }
                     if (DoG.NPC.active)
                     {
                         Color goalSkyColor = Color.Black;
@@ -78,10 +83,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                             goalSkyColor = Color.Cyan;
                         if (DoG.isInLaserWallState)
                             goalSkyColor = new Color(117, 21, 161);
-                        if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0)
+                        if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || (DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60))
                         {
                             if (DoG.Phase2Started)
-                                goalSkyColor = Color.Red;
+                                goalSkyColor = Color.Black;
                             else
                                 goalSkyColor = new Color(117, 21, 161);
                         }
@@ -136,7 +141,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
             var cplayer = Main.LocalPlayer.Calamity();
-            if (Main.shimmerDarken > 0.7f && (cplayer.monolithDevourerBShader > 0 || cplayer.monolithDevourerPShader > 0 || Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
+            if (Main.shimmerDarken > 0.4f && (cplayer.monolithDevourerBShader > 0 || cplayer.monolithDevourerPShader > 0 || Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
             {
                 FillProgress += 0.05f;
             } else
