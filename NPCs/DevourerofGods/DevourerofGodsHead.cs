@@ -108,8 +108,8 @@ namespace CalamityMod.NPCs.DevourerofGods
         private const int idleCounterMax = 300;
         private int idleCounter = idleCounterMax;
         public const float LaserWallCooldown = 1800f;
-        private int postTeleportTimer = 0;
-        private int teleportTimer = -1;
+        public int postTeleportTimer = 0;
+        public int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 150;
         private const int TimeBeforeTeleport_Revengeance = 140;
         private const int TimeBeforeTeleport_Expert = 160;
@@ -390,7 +390,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             bool phase4 = lifeRatio < 0.65f;
             bool phase5 = lifeRatio < 0.5f;
             bool phase6 = lifeRatio < 0.25f;
-            bool phase7 = lifeRatio < 0.15f;
 
             // Sound pitch
             extrapitch = Main.zenithWorld ? 0.3f : 0f;
@@ -784,7 +783,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (dotProduct > 0.8f)
                         {
                             calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : phase7 ? 30f : 60f) == 0f)
+                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : 60f) == 0f)
                             {
                                 float fireballSpeed = 8f;
                                 Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
@@ -1424,7 +1423,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (dotProduct > 0.8f)
                         {
                             calamityGlobalNPC.newAI[0] += 1f;
-                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : phase7 ? 30f : 60f) == 0f)
+                            if (calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : 60f) == 0f)
                             {
                                 float fireballSpeed = 8f;
                                 Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;

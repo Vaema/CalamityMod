@@ -1,4 +1,5 @@
-﻿using CalamityMod.Events;
+﻿using System.Linq;
+using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,6 +7,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
+using XPT.Core.Audio.MP3Sharp.Decoding.Decoders.LayerI;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
@@ -15,6 +17,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         private float intensity = 0f;
         private int DoGIndex = -1;
         private Color currentColor = Color.Black;
+        public static Color DoGSkyColor = Color.Black;
         public override void Update(GameTime gameTime)
         {
             if (DoGIndex == -1)
@@ -24,7 +27,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     isActive = false;
             }
 
-            if (isActive && intensity < 1f)
+            if (isActive && intensity < 1f && Main.shimmerBrightenDelay <= 0)
             {
                 intensity += 0.01f;
             }
@@ -32,25 +35,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 intensity -= 0.01f;
             }
+            //Main.NewText($"[c/{DoGSkyColor.Hex3()}:COLOR]");
         }
 
-        private float GetIntensity()
+        public override Color OnTileColor(Color inColor) 
         {
-            if (UpdateDoGIndex())
-            {
-                float x = 0f;
-                if (DoGIndex != -1)
-                    x = Vector2.Distance(Main.LocalPlayer.Center, Main.npc[DoGIndex].Center);
-
-                float intensityScalar = 0.5f;
-                return (1f - Utils.SmoothStep(3000f, 6000f, x)) * intensityScalar;
-            }
-            return 0f;
-        }
-
-        public override Color OnTileColor(Color inColor)
-        {
-            float intensity = GetIntensity();
             return Color.Lerp(inColor, currentColor, intensity);
         }
 
@@ -75,7 +64,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            // (new Color(48, 9, 66), new Color(26, 4, 31)
             if (maxDepth >= 0 && minDepth < 0)
             {
                 if (DoGIndex != -1)
@@ -83,45 +71,36 @@ namespace CalamityMod.NPCs.DevourerofGods
                     var DoG = Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>();
                     if (DoG.NPC.active)
                     {
-                        float intensity = GetIntensity();
-                        float lifeRatio = Main.npc[DoGIndex].life / (float)Main.npc[DoGIndex].lifeMax;
-                        double blackScreenLife_GateValue = (lifeRatio < 0.6f && Main.npc[DoGIndex].localAI[2] <= 2f) ? 0.15 : 0.75;
-
-                        float timeToReachNextColor = DevourerofGodsHead.SkyColorTransitionTime;
-                        float phaseTimer = Main.npc[DoGIndex].Calamity().newAI[2];
-                        float colorChangeProgress = phaseTimer / timeToReachNextColor;
-                        if (colorChangeProgress > 1f)
-                            colorChangeProgress = 1f;
-
-
                         Color goalSkyColor = Color.Black;
                         if (DoG.isInAgressiveState)
                             goalSkyColor = Color.Fuchsia;
                         if (DoG.isInPassiveState)
                             goalSkyColor = Color.Cyan;
                         if (DoG.isInLaserWallState)
-                            goalSkyColor = new Color(48, 9, 66);
-                        if (DoG.isInPostWallState)
-                            goalSkyColor = new Color(26, 4, 31);
+                            goalSkyColor = new Color(117, 21, 161);
+                        if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0)
+                        {
+                            if (DoG.Phase2Started)
+                                goalSkyColor = Color.Red;
+                            else
+                                goalSkyColor = new Color(117, 21, 161);
+                        }
                             currentColor = Color.Lerp(currentColor, goalSkyColor, 0.1f);
                             spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Lerp(currentColor,Color.Black, 0.5f) * intensity);
                     }
                 }
                 else
                 {
-                    if (Main.LocalPlayer.Calamity().monolithDevourerBShader > 0)
-                    {
-                        float intensity = MathHelper.Min(MathHelper.Lerp(0, 0.5f, (float)Main.LocalPlayer.Calamity().monolithDevourerBShader / 15), 0.45f);
-                        Color regularSkyColor = Color.Cyan;
-                        spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), regularSkyColor * intensity);
-                    }
+
+                    Color goalSkyColor = Color.Black;
                     if (Main.LocalPlayer.Calamity().monolithDevourerPShader > 0)
-                    {
-                        float intensity = MathHelper.Min(MathHelper.Lerp(0, 0.5f, (float)Main.LocalPlayer.Calamity().monolithDevourerPShader / 15), 0.45f);
-                        Color regularSkyColor = Color.Fuchsia;
-                        spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), regularSkyColor * intensity);
-                    }
+                        goalSkyColor = Color.Fuchsia;
+                    if (Main.LocalPlayer.Calamity().monolithDevourerBShader > 0)
+                        goalSkyColor = Color.Cyan;
+                    currentColor = Color.Lerp(currentColor, goalSkyColor, 0.1f);
+                    spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Lerp(currentColor, Color.Black, 0.5f) * intensity);
                 }
+                DoGSkyColor = currentColor;
             }
         }
 
@@ -148,6 +127,29 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override bool IsActive()
         {
             return isActive || intensity > 0f;
+        }
+    }
+
+    public class DoGSkySunlightEnabler : ModSystem
+    {
+        public float FillProgress = 0;
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
+        {
+            var cplayer = Main.LocalPlayer.Calamity();
+            if (Main.shimmerDarken > 0.7f && (cplayer.monolithDevourerBShader > 0 || cplayer.monolithDevourerPShader > 0 || Main.npc.Any(x => x.active && x.type == ModContent.NPCType<DevourerofGodsHead>())))
+            {
+                FillProgress += 0.05f;
+            } else
+            {
+                FillProgress = 0;
+            }
+            FillProgress = MathHelper.Clamp(FillProgress, 0, 1);
+            if (FillProgress > 0)
+            {
+                backgroundColor = Color.Lerp(backgroundColor, DoGSky.DoGSkyColor, FillProgress);
+                tileColor = Color.Lerp(tileColor, DoGSky.DoGSkyColor, FillProgress);
+            }
+
         }
     }
 }
