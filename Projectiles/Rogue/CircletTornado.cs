@@ -19,6 +19,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.minion = true;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 1200;
             Projectile.usesLocalNPCImmunity = true;
@@ -29,33 +30,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             //only 1 tornado can exist at a time
             Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] >= 10f)
-            {
-                Projectile.localAI[1] = 0f;
-                int projCount = 0;
-                int oldestTornado = 0;
-                float tornadoAge = 0f;
-                int projType = Projectile.type;
-                for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
-                {
-                    Projectile proj = Main.projectile[projIndex];
-                    if (proj.active && proj.owner == Projectile.owner && proj.type == projType && proj.ai[0] < 900f)
-                    {
-                        projCount++;
-                        if (proj.ai[0] > tornadoAge)
-                        {
-                            oldestTornado = projIndex;
-                            tornadoAge = proj.ai[0];
-                        }
-                    }
-                }
-                if (projCount > 1)
-                {
-                    Main.projectile[oldestTornado].netUpdate = true;
-                    Main.projectile[oldestTornado].ai[0] = 36000f;
-                    return;
-                }
-            }
 
             float lifeSpan = 900f;
             if (Projectile.soundDelay == 0)
@@ -64,10 +38,6 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item122, Projectile.Center);
             }
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= lifeSpan)
-            {
-                Projectile.Kill();
-            }
             if (Projectile.localAI[0] >= 30f)
             {
                 Projectile.damage = 0;
@@ -113,14 +83,11 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.netUpdate = true;
                 }
             }
-            if (Projectile.ai[0] < lifeSpan - 120f)
-            {
-                return;
-            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
+            float OPACITY = MathHelper.Clamp(Projectile.timeLeft / 20f,0,1);
             float aiTracker = Projectile.ai[0];
             float trackerClamp = MathHelper.Clamp(aiTracker / 30f, 0f, 1f);
             if (aiTracker > 540f)
@@ -163,12 +130,11 @@ namespace CalamityMod.Projectiles.Rogue
                     newSandYellow = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, sandYellow, 2f - colorChanger * 2f);
                 }
                 newSandYellow.A = (byte)((float)newSandYellow.A * 0.5f);
-                newSandYellow *= trackerClamp;
                 spinArea *= colorChangeVector * 100f;
                 spinArea.Y = 0f;
                 spinArea.X = 0f;
                 spinArea += new Vector2(sizeModdingVector2.X, k) - Main.screenPosition;
-                Main.spriteBatch.Draw(texture2D23, spinArea, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), newSandYellow, aiTrackMult + incStorageMult, smallRect, 1f + lowerColorChanger, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(texture2D23, spinArea, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), newSandYellow * OPACITY, aiTrackMult + incStorageMult, smallRect, 1f + lowerColorChanger, SpriteEffects.None, 0);
             }
             return false;
         }

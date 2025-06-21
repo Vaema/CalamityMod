@@ -186,14 +186,14 @@ FathomSwarmerVisage: {
 
 ForbiddenCirclet: {
 	DisplayName: Forbidden Circlet
-	Tooltip: 10% increased summon damage and 15% increased rogue velocity
+	Tooltip: 10% increased summon and rogue damage and 15% increased rogue velocity
 	SetBonus:
 		'''
-		+40 maximum stealth
-		Press {0} to call an ancient storm to the cursor location
+		+100 maximum stealth and 10% increased Rogue damage
+		{0} to call an ancient storm to the cursor location
 		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
-		Rogue stealth strikes spawn homing eaters on enemy hits
-		Rogue and summon attacks will scale off of the stat with a higher boost
+		Rogue stealth strikes will tag enemies, causing summons to spawn homing eaters on hit
+		Using summon weapons no longer reset your stealth
 		Minions no longer deal less damage while wielding rogue weapons
 		'''
 }

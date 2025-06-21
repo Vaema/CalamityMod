@@ -14,6 +14,8 @@ RogueVelocity: "{0}% increased rogue velocity"
 SummonTagDamageFlat: "{0} summon tag damage"
 SummonTagDamageMult: "{0}x summon tag damage"
 SummonTagCrit: "{0}% summon tag critcal strike chance"
+VanillaArmorSetBonus: Double tap {0}
+CalamityArmorSetBonus: Press {0}
 DodgeInformation:
 	'''
 	Attacks that deal less than 5% of your max life in damage will not be dodged

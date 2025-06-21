@@ -4,6 +4,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor
@@ -13,7 +14,7 @@ namespace CalamityMod.Items.Armor
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public const int manaCost = 60;
-        public const int tornadoBaseDmg = 80;
+        public const int tornadoBaseDmg = 60;
         public const float tornadoBaseKB = 1f;
 
         public static SummonTag summonTag = new SummonTag()
@@ -25,7 +26,8 @@ namespace CalamityMod.Items.Armor
             FlatTagDamage = 5,
             AllowsWhipStacking = true,
             TagOnHit = tagOnHit,
-            TagModifyHitEffects = SummonTag.BlankTagModifyHit
+            TagModifyHitEffects = SummonTag.BlankTagModifyHit,
+            AutoDrawTooltip = false
         };
 
         public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
@@ -79,7 +81,7 @@ namespace CalamityMod.Items.Armor
         {
             int stormMana = (int)(manaCost * player.manaCost);
             string hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, stormMana);
+            player.setBonus = this.GetLocalization("SetBonus").Format(FormatHotkeyWithVanillaSupport(hotkey), stormMana);
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.forbiddenCirclet = true;
             modPlayer.rogueStealthMax += 1f;
@@ -87,6 +89,14 @@ namespace CalamityMod.Items.Armor
             modPlayer.wearingRogueArmor = true;
         }
 
+        public string FormatHotkeyWithVanillaSupport(string hotkey)
+        {
+            if (hotkey == CalamityUtils.GetText("Misc.HotkeyNotBound").Value)
+            {
+                return CalamityUtils.GetText("Common.VanillaArmorSetBonus").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN"));
+            }
+            return CalamityUtils.GetText("Common.CalamityArmorSetBonus").Format(hotkey);
+        }
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += 0.1f;

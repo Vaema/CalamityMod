@@ -3915,7 +3915,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
                 Player.AddCooldown(PlagueBlackout.ID, 1800);
             }
-            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletMark>()] < 2)
+            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {
                 int stormMana = (int)(ForbiddenCirclet.manaCost * Player.manaCost);
                 if (Player.statMana < stormMana)
@@ -3939,16 +3939,16 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        if (Player.ownedProjectileCounts[ProjectileType<CircletMark>()] > 0 )
+                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0 )
                         {
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.owner != Player.whoAmI || item.type != ProjectileType<CircletMark>())
+                                if (item.owner != Player.whoAmI || item.type != ProjectileType<CircletTornado>())
                                     continue;
                                 item.timeLeft = 60;
                             }
                         }
-                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
+                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
                     }
                 }
             }
