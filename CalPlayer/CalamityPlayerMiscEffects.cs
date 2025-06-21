@@ -1121,34 +1121,11 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Life Steal nerf in difficulties above Expert
-            // Reduces the max possible life steal before the cooldown occurs (this mostly just nerfs how much life steal the player can get in bursts)
-            // Master Mode nerfs this by an additional 10
-            float lifeStealCap =
-                CalamityWorld.death ? BalancingConstants.LifeStealCap_Death :
-                CalamityWorld.revenge ? BalancingConstants.LifeStealCap_Revengeance :
-                Main.expertMode ? BalancingConstants.LifeStealCap_Expert :
-                BalancingConstants.LifeStealCap_Classic;
-
-            if (Main.masterMode)
-                lifeStealCap -= BalancingConstants.LifeStealCapReduction_Master;
-
-            if (Player.lifeSteal > lifeStealCap)
-                Player.lifeSteal = lifeStealCap;
-
-            // Normal Mode life steal recovery rate is 0.2/s
-            // Expert Mode life steal recovery rate is 0.15/s
-            // Revengeance Mode life steal recovery rate is 0.125/s
-            // Death Mode life steal recovery rate is 0.1/s
-            // Master Mode life steal recovery rate is nerfed by an additional 0.05/s
-            float lifeStealRecoveryRateReduction =
-                    CalamityWorld.death ? BalancingConstants.LifeStealRecoveryRateReduction_Death :
-                    CalamityWorld.revenge ? BalancingConstants.LifeStealRecoveryRateReduction_Revengeance :
-                    Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert :
-                    BalancingConstants.LifeStealRecoveryRateReduction_Classic;
-
-            if (Main.masterMode)
-                lifeStealRecoveryRateReduction += BalancingConstants.LifeStealRecoveryRateReduction_Master;
+            // Reduce the rate of recovery of the Lifesteal variable
+            // Classic Mode: 36 HP/s to 12 HP/s
+            // Expert Mode: 30 HP/s to 9 HP/s
+            float lifeStealRecoveryRateReduction = Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert : BalancingConstants.LifeStealRecoveryRateReduction_Classic;
+            float lifeStealCap = Main.expertMode ? BalancingConstants.LifeStealCap_Expert : BalancingConstants.LifeStealCap_Classic;
 
             if (Player.lifeSteal < lifeStealCap)
                 Player.lifeSteal -= lifeStealRecoveryRateReduction;

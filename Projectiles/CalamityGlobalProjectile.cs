@@ -4715,34 +4715,5 @@ namespace CalamityMod.Projectiles
             }
         }
         #endregion
-
-        #region Life Steal
-        public static bool CanSpawnLifeStealProjectile(double healMultiplier, float healAmount) => healMultiplier > 0D && (int)healAmount > 0;
-
-        public static void SpawnLifeStealProjectile(Projectile projectile, Player player, float healAmount, int healProjectileType, float distanceRequired, float cooldownMultiplier = 1f)
-        {
-            if (Main.LocalPlayer.moonLeech)
-                return;
-
-            Main.LocalPlayer.lifeSteal -= healAmount * cooldownMultiplier;
-
-            float lowestHealthCheck = 0f;
-            int healTarget = projectile.owner;
-            foreach (Player otherPlayer in Main.ActivePlayers)
-            {
-                if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
-                {
-                    float playerDist = Vector2.Distance(projectile.Center, otherPlayer.Center);
-                    if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
-                    {
-                        lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
-                        healTarget = otherPlayer.whoAmI;
-                    }
-                }
-            }
-
-            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, healProjectileType, 0, 0f, projectile.owner, healTarget, healAmount);
-        }
-        #endregion
     }
 }
