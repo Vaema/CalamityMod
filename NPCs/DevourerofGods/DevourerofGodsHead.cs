@@ -839,9 +839,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
                             float spacing = 320;
-                            float miniInterval = 15;
+                            float miniInterval = 12;
                             float megaInterval = 120;
-                            float time = 0.45f;
+                            float time = 0.35f;
                             for (var i = 0; i < 3; i++)
                                 if ((int)(calamityGlobalNPC.newAI[1] - miniInterval * i) % megaInterval == 0f)
                                 {
