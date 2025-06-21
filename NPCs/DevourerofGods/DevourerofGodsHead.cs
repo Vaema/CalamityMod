@@ -809,7 +809,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
                                 {
                                     float fireballSpeed = 8f;
-                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
+                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
 
                                     Vector2 dustVelocity = fireballVelocity * 2f;
                                     for (int k = 0; k < 50; k++)
@@ -1455,7 +1455,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
                                 {
                                     float fireballSpeed = 8f;
-                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
+                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
 
                                     Vector2 dustVelocity = fireballVelocity * 2f;
                                     for (int k = 0; k < 50; k++)
