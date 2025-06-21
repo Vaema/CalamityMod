@@ -104,7 +104,6 @@ namespace CalamityMod.Systems.Collections
                 NPCType<KingSlimeJewelRuby>(),
                 NPCType<KingSlimeJewelSapphire>(),
                 NPCType<PlanterasFreeTentacle>(),
-                NPCType<SkeletronPrime2>(),
                 NPCType<PlagueHomingMissile>(),
                 NPCType<PlagueMine>(),
                 NPCType<ProfanedRocks>(),

@@ -171,14 +171,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool useFrontIceSpikeAttack = Math.Abs(distanceFromTarget2.X) >= Math.Abs(distanceFromTarget2.Y) * distanceCheckMultiplier || distanceFromTarget2.Length() < 48f;
                     bool useEitherIceSpikeAttack = distanceFromTarget2.Y <= (float)(100 + targetData.Height) && distanceFromTarget2.Y >= -200f;
 
-                    // Can only use ice spikes a maximum of twice in a row before doing something else
-                    float iceSpikeAttackLimit = 2f;
+                    // Can only use ice spikes a maximum of three times in a row before doing something else
+                    float iceSpikeAttackLimit = 3f;
                     bool doNotUseIceSpikes = calamityGlobalNPC.newAI[1] >= iceSpikeAttackLimit;
                     if (!doNotUseIceSpikes)
                     {
                         // Deerclops must be this close to its target on the X axis to do the ice spike attack
                         // This distance increases at lower HP because the ice spikes get bigger
-                        float iceSpikesDistanceGateValue = 120f + MathHelper.Lerp(0f, 120f, 1f - lifeRatio);
+                        float iceSpikesDistanceGateValue = 120f + MathHelper.Lerp(0f, 60f, 1f - lifeRatio);
                         if (Math.Abs(distanceFromTarget2.X) < iceSpikesDistanceGateValue && useEitherIceSpikeAttack && npc.velocity.Y == 0f && npc.localAI[1] >= 2f)
                         {
                             npc.velocity.X = 0f;
@@ -206,9 +206,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    // Can only use rubble a maximum of thrice in a row before doing something else
-                    // This also takes into account the ice spike limit
-                    float rubbleAttackLimit = 3f;
+                    // Can only use rubble and ice spikes a maximum of four times in a row before doing something else
+                    float rubbleAttackLimit = 4f;
                     bool doNotUseRubble = calamityGlobalNPC.newAI[1] >= rubbleAttackLimit;
                     float rubbleGateValue = death ? 160f : 200f;
                     if (!doNotUseRubble)
@@ -408,16 +407,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.TargetClosest();
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = (death ? 11 : 9) + (int)MathHelper.Lerp(0f, 7f, 1f - lifeRatio);
+                            int totalProjectiles = (death ? 20 : 16) + (int)MathHelper.Lerp(0f, 7f, 1f - lifeRatio);
                             float velocityMultIncrement = ((totalProjectiles + 1) / (float)totalProjectiles) - 1f;
-                            float randomRadialOffset = MathHelper.ToRadians(MathHelper.Lerp(0f, death ? 360f : 270f, 1f - lifeRatio));
+                            float randomRadialOffset = Main.rand.NextFloat(MathHelper.ToRadians(MathHelper.Lerp(0f, death ? 360f : 270f, 1f - lifeRatio)));
                             float radians = MathHelper.TwoPi / totalProjectiles + randomRadialOffset;
-                            float velocity = (death ? 10.5f : 8f) + MathHelper.Lerp(0f, 4f, 1f - lifeRatio);
+                            float velocity = 12f + MathHelper.Lerp(0f, 4f, 1f - lifeRatio);
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 actualVelocity = spinningPoint.RotatedBy(radians * k);
-                                float velocityMultiplier = 1f - k * velocityMultIncrement;
+                                float velocityMultiplier = 1f - (k * velocityMultIncrement * 0.5f);
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), Main.player[npc.target].Center + Vector2.Normalize(actualVelocity) * 550f, actualVelocity * velocityMultiplier * -1f, shadowHand, shadowHandDamage, 0f, Main.myPlayer);
                             }
                         }

@@ -103,9 +103,6 @@ namespace CalamityMod.NPCs.AcidRain
         {
             NPC.TargetClosest(false);
 
-            // Fall through platforms.
-            NPC.Calamity().ShouldFallThroughPlatforms = true;
-
             // Play a slither sound from time to time.
             if (Main.rand.NextBool(480))
                 SoundEngine.PlaySound(SoundID.Zombie32, NPC.Center);
@@ -168,6 +165,8 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.velocity.X = (NPC.velocity.X * 24f + NPC.direction * swimSpeed) / 25f;
         }
+
+        public override bool? CanFallThroughPlatforms() => true;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {

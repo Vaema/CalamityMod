@@ -315,7 +315,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
             OnHitHealEffect(info.Damage);
         }
         #endregion Hit Effects and Collision

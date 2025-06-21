@@ -75,7 +75,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] ArmsDealerNames =
         {
-            "Drifter",
             "Finchi",
             "Heniek", // <@!363404700445442050> (kazurgundu)
             "Fire", // <@!354362326947856384> (ultimatefirewaster)
@@ -90,6 +89,7 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
+			"Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
@@ -192,7 +192,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] PrincessNames =
         {
-            "Catalyst", // <@!156672312425316352> (xaqult)
             "Nyapano", // <@!120976656826368003> (nyapano)
             "Jade", // <@!187395834625785869> (verymasterninja)
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
@@ -222,6 +221,7 @@ namespace CalamityMod.NPCs
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
+            "Cathlyn", // <@!156672312425316352> (xaqult)
         };
         private static readonly string[] StylistNames =
         {

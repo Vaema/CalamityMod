@@ -198,7 +198,7 @@ namespace CalamityMod.Projectiles.Ranged
                     {
                         if (improvedHeal)
                         {
-                            BloodstoneHealOrb.Heal(player, 8);
+                            BloodstoneHealOrb.Heal(player, 6);
                         }
 
                         Projectile.Kill();

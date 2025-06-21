@@ -64,7 +64,7 @@ namespace CalamityMod.Items.DraedonMisc
                     rangedDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 2, rangedDisplay);
 
-                    int mageItem = ModContent.ItemType<GaussPistol>();
+                    int mageItem = ModContent.ItemType<Vulcan>();
                     TooltipLine mageDisplay = new TooltipLine(this.Mod, "CalamityMod:MageDisplay", $"[i:{mageItem}] {CalamityUtils.GetItemName(mageItem)}");
                     mageDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 3, mageDisplay);

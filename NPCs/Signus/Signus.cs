@@ -288,8 +288,8 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 0f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
+                // Set damage
+                NPC.damage = NPC.defDamage;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {

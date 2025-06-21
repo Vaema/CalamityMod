@@ -188,8 +188,6 @@ namespace CalamityMod.NPCs
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
-        public bool ShouldFallThroughPlatforms;
-
         /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
@@ -296,7 +294,6 @@ namespace CalamityMod.NPCs
         public int tSad = 0;
         public int eutrophication = 0;
         public int webbed = 0;
-        public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
         /// <summary>
@@ -556,8 +553,6 @@ namespace CalamityMod.NPCs
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
-            myClone.ShouldFallThroughPlatforms = ShouldFallThroughPlatforms;
-
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
@@ -593,7 +588,6 @@ namespace CalamityMod.NPCs
             myClone.tSad = tSad;
             myClone.eutrophication = eutrophication;
             myClone.webbed = webbed;
-            myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
             myClone.pearlAuraCounter = pearlAuraCounter;
@@ -1564,7 +1558,7 @@ namespace CalamityMod.NPCs
                 { NPCID.Creeper, 1800 }, // 0:30 (30 seconds, length of Creepers phase)
                 { NPCID.Deerclops, 5400 }, // 1:30 (90 seconds)
                 { NPCID.QueenBee, 7200 }, // 2:00 (120 seconds)
-                { NPCID.SkeletronHead, 9000 }, // 2:30 (150 seconds)
+                { NPCID.SkeletronHead, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFlesh, 7200 }, // 2:00 (120 seconds)
                 { NPCID.WallofFleshEye, 7200 },
                 { NPCID.QueenSlimeBoss, 7200 }, // 2:00 (120 seconds)
@@ -1575,10 +1569,10 @@ namespace CalamityMod.NPCs
                 { NPCID.TheDestroyerTail, 10800 },
                 { NPCID.SkeletronPrime, 10800 }, // 3:00 (180 seconds)
                 { NPCID.Plantera, 10800 }, // 3:00 (180 seconds)
-                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
                 { NPCID.Golem, 9000 }, // 2:30 (150 seconds)
                 { NPCID.GolemHead, 3600 }, // 1:00 (60 seconds)
                 { NPCID.DukeFishron, 9000 }, // 2:30 (150 seconds)
+                { NPCID.HallowBoss, 10800 }, // 3:00 (180 seconds)
                 { NPCID.CultistBoss, 9000 }, // 2:30 (150 seconds)
                 { NPCID.MoonLordCore, 14400 }, // 4:00 (240 seconds)
                 { NPCID.MoonLordHand, 7200 }, // 2:00 (120 seconds)
@@ -1604,7 +1598,7 @@ namespace CalamityMod.NPCs
                 { NPCType<AquaticScourgeBodyAlt>(), 9000 },
                 { NPCType<AquaticScourgeTail>(), 9000 },
                 { NPCType<BrimstoneElemental.BrimstoneElemental>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<CalamitasClone>(), 14400 }, // 4:00 (240 seconds)
+                { NPCType<CalamitasClone>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<Anahita>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<Leviathan.Leviathan>(), 10800 },
                 { NPCType<AstrumAureus.AstrumAureus>(), 10800 }, // 3:00 (180 seconds)
@@ -1613,7 +1607,7 @@ namespace CalamityMod.NPCs
                 { NPCType<AstrumDeusTail>(), 7200 },
                 { NPCType<PlaguebringerGoliath.PlaguebringerGoliath>(), 10800 }, // 3:00 (180 seconds)
                 { NPCType<RavagerBody>(), 10800 }, // 3:00 (180 seconds)
-                { NPCType<ProfanedGuardianCommander>(), 5400 }, // 1:30 (90 seconds)
+                { NPCType<ProfanedGuardianCommander>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Dragonfolly>(), 7200 }, // 2:00 (120 seconds)
                 { NPCType<Providence.Providence>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<CeaselessVoid.CeaselessVoid>(), 10800 }, // 3:00 (180 seconds)
@@ -1627,7 +1621,7 @@ namespace CalamityMod.NPCs
                 { NPCType<DevourerofGodsHead>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<DevourerofGodsBody>(), 14400 }, // DoG Phase 1 is 1:30, DoG Phase 2 is 2:30
                 { NPCType<DevourerofGodsTail>(), 14400 },
-                { NPCType<Yharon.Yharon>(), 14700 }, // 4:05 (245 seconds) -- he spends 5 seconds invincible where you can't do anything
+                { NPCType<Yharon.Yharon>(), 14400 }, // 4:00 (240 seconds)
                 { NPCType<Apollo>(), 21600 }, // 6:00 (360 seconds)
                 { NPCType<Artemis>(), 21600 },
                 { NPCType<AresBody>(), 21600 }, // 6:00 (360 seconds)
@@ -1655,8 +1649,6 @@ namespace CalamityMod.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            ShouldFallThroughPlatforms = false;
-
             for (int i = 0; i < maxPlayerImmunities; i++)
                 dashImmunityTime[i] = 0;
 
@@ -1910,17 +1902,16 @@ namespace CalamityMod.NPCs
 
                 npc.scale *= Main.zenithWorld ? 2f : 1.2f;
             }
-            else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
+            else if (npc.type == NPCID.SkeletronPrime)
             {
-                // HP boosted in Death Mode due to having two heads (piercing can make them die faster than normal here since they share an HP bar)
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 1.7 : 1.2));
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                 npc.npcSlots = 12f;
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.55);
             }
-            else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism || npc.type == NPCType<Foveanator>())
+            else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                 npc.npcSlots = 10f;
@@ -2938,7 +2929,7 @@ namespace CalamityMod.NPCs
             {
                 if (!NPC.downedMechBossAny)
                 {
-                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -2948,7 +2939,7 @@ namespace CalamityMod.NPCs
                 }
                 else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
                 {
-                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+                    if (DestroyerIDList.Includes(npc.type) || npc.type == NPCID.Probe || SkeletronPrimeIDList.Includes(npc.type) || npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
                     {
                         double multiplier = Main.expertMode ? EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert : EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Classic;
                         npc.lifeMax = (int)Math.Round(npc.lifeMax * multiplier);
@@ -3941,9 +3932,6 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime && (CalamityWorld.death || BossRushEvent.BossRushActive))
-                    index = ExtraTextureRefs.BossHeadIndex_ChadPrime;
-
                 if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
                 {
                     float lifeRatio = npc.life / (float)npc.lifeMax;
@@ -3959,7 +3947,7 @@ namespace CalamityMod.NPCs
         public override bool PreAI(NPC npc)
         {
             // Change Spaz and Ret weaknesses and resistances when phase 2 starts.
-            if (npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer || npc.type == NPCType<Foveanator>())
+            if (npc.type == NPCID.Spazmatism || npc.type == NPCID.Retinazer)
             {
                 if (npc.ai[0] >= 2f)
                 {
@@ -3989,9 +3977,6 @@ namespace CalamityMod.NPCs
                 {
                     if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
                         Main.LocalPlayer.AddBuff(BuffType<BossEffects>(), 2);
-
-                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && npc.type == NPCType<RavagerBody>() && Vector2.Distance(Main.LocalPlayer.Center, npc.Center) < BossZenDistance)
-                        Main.LocalPlayer.AddBuff(BuffType<WeakPetrification>(), 2);
                 }
 
                 if (npc.type != NPCType<Draedon>())
@@ -5523,8 +5508,6 @@ namespace CalamityMod.NPCs
                 eutrophication--;
             if (webbed > 0)
                 webbed--;
-            if (slowed > 0)
-                slowed--;
             if (vaporfied > 0)
                 vaporfied--;
 
@@ -5903,9 +5886,6 @@ namespace CalamityMod.NPCs
                     }
                     velocitySlownessFactor += baseSlownessFactor;
                 }
-
-                if (slowed > 0)
-                    velocitySlownessFactor += 0.05f;
 
                 if (tesla > 0)
                 {
@@ -6495,13 +6475,13 @@ namespace CalamityMod.NPCs
             if (GrenadeResistIDList.Includes(projectile.type))
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
-                // Note that Calamity reduces the vanilla resist from 80% to 60%
+                // Note that Calamity reduces the vanilla resist from 80% to 66%
                 bool hasResist = EaterOfWorldsIDList.Includes(npc.type) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
                 if (npc.type == NPCID.Creeper || DesertScourgeIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type))
                     hasResist = true;
                 if (hasResist)
-                    modifiers.SourceDamage *= 0.4f;
+                    modifiers.SourceDamage *= 0.33f;
             }
 
             if (modPlayer.camper && !player.StandingStill())
@@ -6654,26 +6634,6 @@ namespace CalamityMod.NPCs
         #region Check Dead
         public override bool CheckDead(NPC npc)
         {
-            if (npc.type == NPCID.SkeletronPrime)
-            {
-                if (CalamityWorld.death || BossRushEvent.BossRushActive)
-                {
-                    // Kill the other head if he's still alive when this head dies
-                    for (int i = 0; i < Main.maxNPCs; i++)
-                    {
-                        NPC nPC = Main.npc[i];
-                        if (nPC.active && nPC.type == NPCType<SkeletronPrime2>() && nPC.life > 0)
-                        {
-                            nPC.life = 0;
-                            nPC.HitEffect();
-                            nPC.checkDead();
-                            nPC.active = false;
-                            nPC.netUpdate = true;
-                        }
-                    }
-                }
-            }
-
             if (npc.lifeMax > 1000 && npc.type != NPCID.DungeonSpirit &&
                 npc.type != NPCType<PhantomSpirit>() &&
                 npc.type != NPCType<PhantomSpiritS>() &&
@@ -7401,11 +7361,6 @@ namespace CalamityMod.NPCs
             // If the doll is active, Voodoo Demons cannot spawn (via modded means).
             if (voodooDemonDollActive)
                 pool.Remove(NPCID.VoodooDemon);
-            // Otherwise, if it's pre-Hardmode, provide a modded spawn entry that makes them much more common.
-            else if (!Main.hardMode && spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone)
-            {
-                pool[NPCID.VoodooDemon] = SpawnCondition.Underworld.Chance * 0.15f;
-            }
         }
         #endregion
 
@@ -7465,11 +7420,11 @@ namespace CalamityMod.NPCs
         #region Drawing
         public override void FindFrame(NPC npc, int frameHeight)
         {
-            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            /*if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
+                if (npc.type == NPCID.SkeletronPrime)
                     npc.frameCounter = 0D;
-            }
+            }*/
             // Increment the bestiary worm timer when hovering over the NPC or having their entry open. Pauses otherwise
             if (npc.IsABestiaryIconDummy)
             {
@@ -7672,21 +7627,6 @@ namespace CalamityMod.NPCs
                 if (Main.rand.NextBool())
                 {
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
-                }
-            }
-            if (slowed > 0)
-            {
-                if (Main.rand.Next(5) < 4)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.SpookyWood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 225, default, 3f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.1f;
-                    Main.dust[dust].velocity.Y += 0.25f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[dust].noGravity = false;
-                        Main.dust[dust].scale *= 0.5f;
-                    }
                 }
             }
             if (webbed > 0)
@@ -7921,8 +7861,6 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (slowed > 0)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Slow].Value);
                     if (webbed > 0)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)
@@ -8016,8 +7954,43 @@ namespace CalamityMod.NPCs
 
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>() || DestroyerIDList.Includes(npc.type))
+                if (DestroyerIDList.Includes(npc.type))
                     shouldDrawBool = false;
+
+                // Allows correct frames to draw in Rev+ phases
+                // GFB can rot for all I care
+                if (npc.type == NPCID.SkeletronPrime && !NPC.IsMechQueenUp)
+                {
+                    int frameHeight = TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type];
+                    if (npc.ai[1] == 0f || npc.ai[1] == 4f)
+                    {
+                        newAI[2] += 1f;
+                        if (newAI[2] >= 12f)
+                        {
+                            newAI[2] = 0f;
+                            newAI[3] += frameHeight;
+
+                            if (newAI[3] / frameHeight >= 2f)
+                                newAI[3] = 0f;
+                        }
+                    }
+
+                    // Spinning probe spawn or fly over phase
+                    else if (npc.ai[1] == 5f || npc.ai[1] == 6f)
+                    {
+                        newAI[2] = 0f;
+                        newAI[3] = frameHeight;
+                    }
+
+                    // Spinning phase
+                    else
+                    {
+                        newAI[2] = 0f;
+                        newAI[3] = frameHeight * 2;
+                    }
+
+                    npc.frame.Y = (int)newAI[3];
+                }
             }
 
             if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
@@ -8566,83 +8539,6 @@ namespace CalamityMod.NPCs
                                 drawColor2, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                         }
                     }
-                }
-
-                // His afterimages I can't get to work, so fuck it
-                else if (npc.type == NPCID.SkeletronPrime || npc.type == NPCType<SkeletronPrime2>())
-                {
-                    Texture2D npcTexture = (death && npc.type == NPCID.SkeletronPrime) ? ExtraTextureRefs.ChadPrime.Value : TextureAssets.Npc[npc.type].Value;
-                    int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
-
-                    npc.frame.Y = (int)newAI[3];
-
-                    // Mechdusa drawing
-                    if (NPC.IsMechQueenUp)
-                    {
-                        if (npc.ai[1] == 0f || npc.ai[1] == 4f)
-                        {
-                            newAI[2] += 1f;
-                            if (newAI[2] >= 12f)
-                            {
-                                newAI[2] = 0f;
-                                newAI[3] += frameHeight;
-                                if (newAI[3] / frameHeight >= 5)
-                                    newAI[3] = frameHeight * 3;
-                            }
-                        }
-                        else
-                        {
-                            newAI[2] = 0f;
-                            newAI[3] = frameHeight * 5;
-                        }
-                    }
-
-                    // Floating phase
-                    else if (npc.ai[1] == 0f || npc.ai[1] == 4f)
-                    {
-                        newAI[2] += 1f;
-                        if (newAI[2] >= 12f)
-                        {
-                            newAI[2] = 0f;
-                            newAI[3] += frameHeight;
-
-                            if (newAI[3] / frameHeight >= 2f)
-                                newAI[3] = 0f;
-                        }
-                    }
-
-                    // Spinning probe spawn or fly over phase
-                    else if (npc.ai[1] == 5f || npc.ai[1] == 6f)
-                    {
-                        newAI[2] = 0f;
-                        newAI[3] = frameHeight;
-                    }
-
-                    // Spinning phase
-                    else
-                    {
-                        newAI[2] = 0f;
-                        newAI[3] = frameHeight * 2;
-                    }
-
-                    npc.frame.Y = (int)newAI[3];
-
-                    SpriteEffects spriteEffects = SpriteEffects.None;
-                    if (npc.spriteDirection == 1)
-                        spriteEffects = SpriteEffects.FlipHorizontally;
-
-                    spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
-
-                    Color eyesColor = new Color(200, 200, 200, 0);
-                    if (death)
-                    {
-                        int alpha = 192;
-                        eyesColor = npc.type == NPCType<SkeletronPrime2>() ? new Color(150, 100, 255, alpha) : new Color(255, 255, 0, alpha);
-                        Texture2D glowTexture = npc.type == NPCID.SkeletronPrime ? ExtraTextureRefs.ChadPrimeEyeGlowmask.Value : SkeletronPrime2.EyeTexture.Value;
-                        spriteBatch.Draw(glowTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
-                    }
-                    else
-                        spriteBatch.Draw(TextureAssets.BoneEyes.Value, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, eyesColor, npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
                 }
 
                 else if (npc.type == NPCID.Plantera)

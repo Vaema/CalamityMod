@@ -331,15 +331,13 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Pick a location to teleport to
             else if (NPC.ai[0] == 0f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
+                // Set damage
+                NPC.damage = NPC.defDamage;
 
                 NPC.chaseable = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     NPC.localAI[1] += 1f;
-                    if (NPC.Distance(player.Center) < 160f)
-                        NPC.localAI[1] += death ? 4f : expertMode ? 2f : 1f;
 
                     if (NPC.localAI[1] >= (bossRush ? 90f : death ? 120f : 180f))
                     {
