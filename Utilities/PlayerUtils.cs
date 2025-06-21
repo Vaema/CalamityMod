@@ -623,13 +623,13 @@ namespace CalamityMod
         /// This obeys the spawn behaviour of lifesteal and incurs cooldown.
         /// </summary>
         /// <param name="player">The player being healed.</param>
-        /// <param name="target">The target being hit.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
         /// <param name="amount">The amount of life being healed.</param>
         /// <param name="cooldownMultiplier">The multiplier to the rate of lifesteal. Increase above 1 to make it weaker and below 1 to make it stronger.</param>
         public static void DoLifestealDirect(this Player player, NPC target, int amount, float cooldownMultiplier = 1f)
         {
             // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
-            if (!target.IsAnEnemy(false) || !target.canGhostHeal)
+            if ((!target.IsAnEnemy(false) || !target.canGhostHeal) && target != null)
                 return;
 
             // Limit the amount of heal to the player's max health
@@ -653,7 +653,7 @@ namespace CalamityMod
         /// This applies as a projectile on-hit effect. Use DoLifestealDirect for direct lifestealing.
         /// </summary>
         /// <param name="player">The player being healed.</param>
-        /// <param name="target">The target being hit.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
         /// <param name="projSource">The source projectile performing this heal.</param>
         /// <param name="projType">The type of healing projectile spawned.</param>
         /// <param name="amount">The amount of life to heal.</param>
@@ -663,7 +663,7 @@ namespace CalamityMod
         public static void SpawnLifeStealProjectile(this Player player, NPC target, Projectile projSource, int projType, int amount, float cooldownMultiplier = 1f, bool shared = false, float distanceRequired = 3000f)
         {
             // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
-            if (!target.IsAnEnemy(false) || !target.canGhostHeal)
+            if ((!target.IsAnEnemy(false) || !target.canGhostHeal) && target != null)
                 return;
 
             int lowestHealthCheck = player.statLifeMax2 - player.statLife;
