@@ -77,8 +77,7 @@ ArkoftheCosmos: {
 		'''
 		<left> to perform a 5-swing combo that ends by throwing the blade
 		The thrown blade will follow your cursor
-		Releasing or pressing <right> while the blade is out will cause an exploding snap
-        Pressing <right> to cause the snap will empower your next swings if you have an avaliable parry
+		Releasing while the blade is out will cause an exploding snap
 		'''
 	ParryInfo:
 		'''
