@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
@@ -273,6 +274,15 @@ namespace CalamityMod.Projectiles.Melee
                     float extraRotations = (direction.ToRotation() + MathHelper.PiOver4 > Projectile.velocity.ToRotation()) ? -MathHelper.TwoPi : 0f;
 
                     Projectile.rotation = MathHelper.Lerp(Projectile.velocity.ToRotation(), direction.ToRotation() + extraRotations, orientateProperly);
+                    if (ChanceMissed == 0f && Owner.controlUseTile && ThrowCompletion > 0.99f)
+                    {
+                        ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
+                        Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == Owner.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+                        if (sword is not null && parrier is null)
+                        {
+                            int parryID = Projectile.NewProjectile(Owner.GetSource_ItemUse(sword.Item), Owner.Center, Owner.DirectionTo(Projectile.Center), ModContent.ProjectileType<ArkoftheCosmosParryHoldout>(), 0, 0, Owner.whoAmI);
+                        }
+                    }
                 }
 
                 //Sharticles
