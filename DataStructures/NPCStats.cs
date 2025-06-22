@@ -308,7 +308,6 @@ namespace CalamityMod
                     40, // 48 in phase 2, 56 in phase 3
                     75 } }, // Vanilla: 113 in phase 2; Rev+: 90 in phase 2, 105 in phase 3
                 { NPCID.ServantofCthulhu, new int[] { 18, 24, 30, 54 } },
-                { ModContent.NPCType<BloodlettingServant>(), new int[] { 20, 26, 34, 63 } }, // In phase 2: 26, 34, 44, 82
 
                 { ModContent.NPCType<Crabulon>(), new int[] { 40, 64, 80, 144 } },
                 { ModContent.NPCType<CrabShroom>(), new int[] { 25, 50, 62, 111 } },
@@ -541,7 +540,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<DesertNuisanceHeadYoung>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 26, 36, 44, 84 } },
 
                 { new Tuple<int, int>(NPCID.EyeofCthulhu, ProjectileID.BloodNautilusShot), new int[] { 26, 44, 60, 114 } },
-                { new Tuple<int, int>(ModContent.NPCType<BloodlettingServant>(), ProjectileID.BloodShot), new int[] { 26, 36, 44, 84 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBomb>()), new int[] { 32, 48, 60, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombFall>()), new int[] { 32, 48, 60, 108 } },
