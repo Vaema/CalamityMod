@@ -479,13 +479,17 @@ namespace CalamityMod.CalPlayer
                 IsFirstDashFrame = false;
             else
                 IsFirstDashFrame = true;
-                
+
             // THIS MUST BE NEAR THE END OF PostUpdateMiscEffects SO ALL OTHER RUN SPEED IS DONE FIRST. DO NOT PUT ANY RUN SPEED AFTER THIS
-            
+
             // Multiplies movement speed by 1.5x so that you don't feel like a snail in the early game.
             // This applies to movement speed boosts as well as base speed to ensure they are actually worth their listed value compared to base speed
+            //
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
+            // 22JUN2025: Ozzatron: Disabled while Remnants is enabled, because Remnants has its own move speed reworks.
+
+            bool ignoreSpeedConfig = ExternalMods.overhaul is not null || ExternalMods.remnants is not null;
+            if (!ignoreSpeedConfig && CalamityServerConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
 
             // This is used to increase horizontal velocity based on the player's movement speed stat.
