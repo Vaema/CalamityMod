@@ -274,7 +274,6 @@ namespace CalamityMod.Projectiles.Melee
                     float extraRotations = (direction.ToRotation() + MathHelper.PiOver4 > Projectile.velocity.ToRotation()) ? -MathHelper.TwoPi : 0f;
 
                     Projectile.rotation = MathHelper.Lerp(Projectile.velocity.ToRotation(), direction.ToRotation() + extraRotations, orientateProperly);
-                    Main.NewText(ThrowCompletion);
                     if (ChanceMissed == 0f && Owner.controlUseTile && ThrowCompletion > 0.99f)
                     {
                         ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
