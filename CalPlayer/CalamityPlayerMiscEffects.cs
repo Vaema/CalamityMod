@@ -2012,7 +2012,7 @@ namespace CalamityMod.CalPlayer
                 SyncCooldownRemoval(Main.dedServ, expiredCooldowns);
 
             // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
-            if (Player.stoned || Player.frozen || Player.webbed || gState)
+            if (Player.stoned || Player.frozen || Player.webbed)
             {
                 ImmobilityDebuffImmunityTimer = ImmobilityDebuffImmunityTimerMax;
             }
@@ -2022,7 +2022,6 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[BuffID.Stoned] = true;
                 Player.buffImmune[BuffID.Frozen] = true;
                 Player.buffImmune[BuffID.Webbed] = true;
-                Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
             if (arsenalCooldown > 0)
@@ -2623,7 +2622,6 @@ namespace CalamityMod.CalPlayer
 
                 Player.buffImmune[BuffID.Frozen] = true;
                 Player.buffImmune[BuffID.Chilled] = true;
-                Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
             // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Glacial State debuff
@@ -3319,12 +3317,12 @@ namespace CalamityMod.CalPlayer
             if (AdamantiteSet)
                 Player.statDefense += AdamantiteSetDefenseBoost;
 
-            // Warmth makes Chilled, Frozen, and Glacial State tick down 3x as fast
+            // Warmth makes Chilled and Frozen tick down 3x as fast
             if (Player.HasBuff(BuffID.Warmth))
             {
                 for (int b = 0; b < Player.MaxBuffs; b++)
                 {
-                    if (Player.buffType[b] == BuffID.Chilled || Player.buffType[b] == BuffID.Frozen || Player.buffType[b] == ModContent.BuffType<GlacialState>())
+                    if (Player.buffType[b] == BuffID.Chilled || Player.buffType[b] == BuffID.Frozen)
                     {
                         if (Player.buffTime[b] > 3)
                         {
@@ -3715,14 +3713,6 @@ namespace CalamityMod.CalPlayer
             if (wither && !purity)
             {
                 Player.statDefense -= RemsRevenge.WitherDefenseReduction;
-            }
-
-            if (gState)
-            {
-                Player.velocity.X *= 0.5f;
-                Player.velocity.Y += 0.05f;
-                if (Player.velocity.Y > 15f)
-                    Player.velocity.Y = 15f;
             }
 
             if (eutrophication && !purity)

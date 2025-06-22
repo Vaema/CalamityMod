@@ -97,23 +97,23 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
             #endregion
 
-            #region Brain of Cthulhu: Creepers
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(ResistTrueMelee(0.5f))));
-
-            // 50% resist to Demon Scythe.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
-            #endregion
-
             #region Eater of Worlds
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(ResistTrueMelee(0.5f))));
-
             // 50% resist to Demon Scythe.
             NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
 
             // 40% resist to Sky Glaze.
             NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<StickyFeather>()))));
+
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(ResistTrueMelee(0.75f))));
+            #endregion
+
+            #region Brain of Cthulhu: Creepers
+            // 50% resist to Demon Scythe.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
+
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(ResistTrueMelee(0.75f))));
             #endregion
 
             #region The Perforators
