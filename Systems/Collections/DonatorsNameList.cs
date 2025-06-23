@@ -517,7 +517,6 @@ namespace CalamityMod.Systems.Collections
                 "Nanaki",
                 "Natalie",
                 "Nathan",
-                "Nathaniel",
                 "Navigator",
                 "Ne'er Dowell",
                 "NEBULA",
@@ -668,6 +667,7 @@ namespace CalamityMod.Systems.Collections
                 "That Katsafaros",
                 "The Buildmonger",
                 "The Davester",
+                "The Evolution", // previously "Nathaniel"
                 "The Goliath",
                 "The Illustrious Sqouinchuousor",
                 "The Infinity",
