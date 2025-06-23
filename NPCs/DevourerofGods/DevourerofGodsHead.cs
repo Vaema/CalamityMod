@@ -119,6 +119,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public const float SkyColorTransitionTime = 90f;
         public Vector2 PortalEntryLocation = Vector2.Zero;
         public bool doTpFX = true;
+        public int dashes = 0;
 
         // Death animation variables
         public bool Dying;
@@ -556,9 +557,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
                             Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
-                        SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                        SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
                         for (int i = 0; i < 2; i++)
-                            SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
+                            SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
                         doTpFX = false;
                     }
                     var Size = 1.6f;
@@ -764,18 +765,19 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Set opacity after teleport
                         if (postTeleportTimer > 0)
                         {
-                            if (doTpFX)
+                            if (doTpFX && dashes > 0)
                             {
                                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
                                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
-                                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
                                 for (int i = 0; i < 2; i++)
-                                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
+                                    SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
                                 doTpFX = false;
                             }
                             var Size = 1.6f;
                             if (postTeleportTimer == 1 && NPC.localAI[2] < 1)
                             {
+                                dashes++;
                                 Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
                                 GeneralParticleHandler.SpawnParticle(pulse);
                                 doTpFX = true;

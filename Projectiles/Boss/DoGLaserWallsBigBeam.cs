@@ -72,9 +72,9 @@ namespace CalamityMod.Projectiles.Boss
             {
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7f)
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f;
-                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
                 for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = 0, MaxInstances = -1 }, targetPos);
+                    SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = 0, MaxInstances = -1 }, targetPos);
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
