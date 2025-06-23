@@ -2702,19 +2702,23 @@ namespace CalamityMod.CalPlayer
                 }
                 if (inkBomb && !abyssalMirror && !eclipseMirror)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
-                    SoundEngine.PlaySound(SoundID.Item1, Player.Center);
-                    for (int i = 0; i < 3; i++)
+                    if (Player.whoAmI == Main.myPlayer)
                     {
-                        int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
-                        if (ink.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[ink].DamageType = DamageClass.Generic;
-                    }
-                    if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(Cooldowns.InkBomb.ID))
-                    {
-                        Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
-                        rogueStealth += 0.5f;
-                        SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
+                        if (!Player.HasCooldown(Cooldowns.InkBomb.ID))
+                        {
+                            Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
+                            rogueStealth += 0.5f;
+                            SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
+                        }
+
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                        SoundEngine.PlaySound(SoundID.Item1, Player.Center);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                            if (ink.WithinBounds(Main.maxProjectiles))
+                                Main.projectile[ink].DamageType = DamageClass.Generic;
+                        }
                     }
                 }
                 if (ataxiaBlaze)

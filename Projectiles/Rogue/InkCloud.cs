@@ -20,8 +20,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 100;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
