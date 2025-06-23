@@ -3691,11 +3691,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (tarraSet)
-            {
-                if (!tarraMelee)
-                    Player.calmed = true;
                 Player.lifeMagnet = true;
-            }
 
             if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
