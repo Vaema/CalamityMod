@@ -4076,14 +4076,6 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
-            // Heat Ray damage falloff
-            if (projectile.type == ProjectileID.HeatRay && projectile.numHits > 0)
-            {
-                projectile.damage = (int)(projectile.damage * 0.9f);
-                if (projectile.damage < 1)
-                    projectile.damage = 1;
-            }
-
             // Stardust Wings buff the Stardust Guardian's damage
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
