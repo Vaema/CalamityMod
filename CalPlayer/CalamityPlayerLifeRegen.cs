@@ -625,6 +625,9 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += Main.eclipse ? 2 : 4;
             }
 
+            if (silvaSet)
+                Player.lifeRegen += 6;
+
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
