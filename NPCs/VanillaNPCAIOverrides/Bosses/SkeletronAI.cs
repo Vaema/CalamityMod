@@ -155,39 +155,39 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Hand variables
             bool handsDead = numHandsAlive == 0;
-            int numProj = Main.getGoodWorld ? 22 : death ? 5 : 3;
-            float spread = Main.getGoodWorld ? 180 : 60;
+            int numProj = CalamityWorld.LegendaryMode ? 22 : death ? 5 : 3;
+            float spread = CalamityWorld.LegendaryMode ? 180 : 60;
             float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 12f : 4.5f);
 
             switch (numHandsAlive)
             {
                 case 0:
-                    numProj = Main.getGoodWorld ? 36 : death ? 9 : 7;
-                    spread = Main.getGoodWorld ? 180 : death ? 90 : 82;
+                    numProj = CalamityWorld.LegendaryMode ? 36 : death ? 9 : 7;
+                    spread = CalamityWorld.LegendaryMode ? 180 : death ? 90 : 82;
                     headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 12f : 6f);
                     break;
 
                 case 1:
-                    numProj = Main.getGoodWorld ? 27 : death ? 7 : 5;
-                    spread = Main.getGoodWorld ? 150 : death ? 76 : 68;
+                    numProj = CalamityWorld.LegendaryMode ? 27 : death ? 7 : 5;
+                    spread = CalamityWorld.LegendaryMode ? 150 : death ? 76 : 68;
                     headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 11.5f : 5f);
                     break;
 
                 case 2:
-                    numProj = Main.getGoodWorld ? 18 : death ? 6 : 4;
-                    spread = Main.getGoodWorld ? 140 : death ? 70 : 62;
+                    numProj = CalamityWorld.LegendaryMode ? 18 : death ? 6 : 4;
+                    spread = CalamityWorld.LegendaryMode ? 140 : death ? 70 : 62;
                     headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 11f : 4.5f);
                     break;
 
                 case 3:
-                    numProj = Main.getGoodWorld ? 15 : death ? 5 : 3;
-                    spread = Main.getGoodWorld ? 130 : death ? 64 : 56;
+                    numProj = CalamityWorld.LegendaryMode ? 15 : death ? 5 : 3;
+                    spread = CalamityWorld.LegendaryMode ? 130 : death ? 64 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 10.5f : 4f);
                     break;
 
                 case 4:
-                    numProj = Main.getGoodWorld ? 12 : death ? 4 : 3;
-                    spread = Main.getGoodWorld ? 120 : 56;
+                    numProj = CalamityWorld.LegendaryMode ? 12 : death ? 4 : 3;
+                    spread = CalamityWorld.LegendaryMode ? 120 : 56;
                     headSpinVelocityMult = bossRush ? (phase3 ? 10f : 7f) : (phase3 ? 10f : 3.5f);
                     break;
             }
@@ -276,9 +276,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Dust to show teleport
                 int ai3 = (int)npc.ai[3]; // 0 to 30, and -60
-                bool emitDust = false;
 
-                if (ai3 >= teleportGateValue && calamityGlobalNPC.newAI[2] == 0f && calamityGlobalNPC.newAI[3] == 0f)
+                if (npc.localAI[0] == 1f && calamityGlobalNPC.newAI[2] == 0f && calamityGlobalNPC.newAI[3] == 0f)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -312,6 +311,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
+                // Teleport location telegraph
                 if (calamityGlobalNPC.newAI[2] != 0f && calamityGlobalNPC.newAI[3] != 0f)
                 {
                     for (int m = 0; m < 5; m++)
@@ -322,24 +322,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                if (ai3 >= teleportGateValue + 90)
-                {
-                    emitDust = true;
-                }
-                else if (ai3 >= teleportGateValue + 30)
-                {
-                    if (Main.rand.Next(teleportGateValue + 10, ai3 + 1) >= teleportGateValue + 25)
-                        emitDust = true;
-                }
-
-                if (emitDust)
-                {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, dustType, 0f, 0f, 100, default, 1.5f);
-                    Main.dust[dust].noGravity = true;
-                }
-
                 // Teleport
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[3] >= teleportGateValue + 120 && (!(npc.ai[1] == 1f && phase3) || death))
+                if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 0f && npc.ai[1] != 1f && calamityGlobalNPC.newAI[2] != 0f && calamityGlobalNPC.newAI[3] != 0f)
                 {
                     // Teleport dust
                     for (int m = 0; m < 30; m++)
@@ -351,10 +335,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // New location
                     npc.Center = new Vector2(calamityGlobalNPC.newAI[2], calamityGlobalNPC.newAI[3]);
-
-                    // Do not set velocity to zero during charge attacks
-                    if (npc.ai[1] != 1f)
-                        npc.velocity = Vector2.Zero;
+                    npc.velocity = Vector2.Zero;
 
                     npc.ai[3] = -60f;
                     calamityGlobalNPC.newAI[2] = calamityGlobalNPC.newAI[3] = 0f;
@@ -367,7 +348,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
             {
                 float skullProjFrequency = bossRush ? 15f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
 
@@ -410,9 +391,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = 0;
 
                 calamityGlobalNPC.newAI[1] += 1f;
-                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 14f) : phase4 ? (death ? 8f : 6f) : ((death ? 6f : 4f) * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
+                float chargePhaseChangeRateBoost = phase5 ? (death ? 24f : 8f) : phase4 ? (death ? 6f : 4f) : ((death ? 4.5f : 3f) * ((1f - lifeRatio) / (1f - phase4LifeRatio)));
                 if (!handsDead)
-                    chargePhaseChangeRateBoost *= 0.5f;
+                    chargePhaseChangeRateBoost *= 0.25f;
 
                 float chargePhaseChangeRate = chargePhaseChangeRateBoost + 1f;
                 npc.ai[2] += chargePhaseChangeRate;
@@ -422,11 +403,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[1] = chargePhaseGateValue;
 
                 float forcedMoveAwayTime = death ? 15f : 45f;
-                float canChargeDistance = phase3 ? 480f : 320f; // 20 tile distance, 30 tile distance in phase 3
+                float canChargeDistance = 320f; // 20 tile distance
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
                 bool charge = npc.ai[2] >= chargePhaseGateValue && canCharge;
-                bool forceCharge = npc.ai[2] > chargePhaseGateValue + 120f * chargePhaseChangeRate;
+                bool forceCharge = npc.ai[2] > chargePhaseGateValue + 120f;
                 if (charge || forceCharge)
                 {
                     npc.localAI[2] += 1f;
@@ -434,6 +415,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.ai[2] = 0f;
                         npc.ai[1] = 1f;
+                        npc.localAI[0] = 1f;
                         npc.localAI[1] = chargePhaseGateValue;
                         npc.localAI[2] = 0f;
                         calamityGlobalNPC.newAI[1] = 0f;
@@ -444,11 +426,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
 
-                float headYAcceleration = (Main.getGoodWorld ? 0.07f : death ? (0.06f + 0.04f * (1f - lifeRatio)) : 0.04f);
+                float headYAcceleration = (CalamityWorld.LegendaryMode ? 0.07f : death ? (0.06f + 0.04f * (1f - lifeRatio)) : 0.04f);
                 float headYTopSpeed = headYAcceleration * 100f;
-                float headXAcceleration = (Main.getGoodWorld ? 0.21f : death ? (0.16f + 0.08f * (1f - lifeRatio)) : 0.08f);
+                float headXAcceleration = (CalamityWorld.LegendaryMode ? 0.21f : death ? (0.16f + 0.08f * (1f - lifeRatio)) : 0.08f);
                 float headXTopSpeed = headXAcceleration * 100f;
-                float deceleration = Main.getGoodWorld ? 0.83f : death ? 0.86f : 0.89f;
+                float deceleration = CalamityWorld.LegendaryMode ? 0.83f : death ? 0.86f : 0.89f;
 
                 if (bossRush)
                 {
@@ -462,8 +444,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (!canCharge || !hasMovedForcedDistance)
                     {
-                        float phase5Multiplier = 1.33f;
-                        float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.008f);
+                        float phase5Multiplier = 1.2f;
+                        float maxVelocity = (npc.ai[2] - moveAwayGateValue) * (moveAwayVelocity * 0.002f);
                         if (phase5)
                             maxVelocity *= phase5Multiplier;
 
@@ -474,7 +456,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             maxVelocity = maxVelocityCap;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -maxVelocity;
-
                         npc.SyncMotionToServer();
                     }
 
@@ -494,6 +475,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else
                         npc.rotation = npc.velocity.X / 15f;
 
+                    // Force net updates every frame during this movement to avoid despawning in multiplayer
+                    // I'm doing this because npc.ai[2] changes every frame and that's used to calculate Skeletron's velocity here
+                    npc.ForceNetUpdate();
                     return false;
                 }
 
@@ -541,7 +525,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Set damage
                 npc.damage = npc.defDamage;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     npc.reflectsProjectiles = true;
                     if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == 0f)
@@ -642,7 +626,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float dashPhaseTime = death ? 210f : 300f;
                 if (npc.ai[2] >= dashPhaseTime)
                 {
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient && NPC.CountNPCS(NPCID.DarkCaster) < 6)
                         {
@@ -733,7 +717,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     headSpinVelocityMult *= baseDistanceVelocityMult;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     headSpinVelocityMult *= 1.3f;
 
                 headSpinTargetDist = headSpinVelocityMult / headSpinTargetDist;
@@ -898,7 +882,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float velocityMultiplier = MathHelper.Lerp(death ? 0.6f : 0.7f, 1f, skeletronLifeRatio);
             float velocityIncrement = MathHelper.Lerp(0.2f, death ? 0.4f : 0.3f, 1f - skeletronLifeRatio);
             float handSwipeVelocity = MathHelper.Lerp(16f, death ? 24f : 20f, 1f - skeletronLifeRatio);
-            float deceleration = Main.getGoodWorld ? 0.78f : death ? 0.82f : 0.86f;
+            float deceleration = CalamityWorld.LegendaryMode ? 0.78f : death ? 0.82f : 0.86f;
 
             if (death)
             {
@@ -1206,606 +1190,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                 }
             }
-        }
-
-        public static bool VanillaSkeletronAI(NPC npc, Mod mod)
-        {
-            npc.reflectsProjectiles = false;
-            npc.defense = npc.defDefense;
-
-            // Get a target
-            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-
-            if (npc.ai[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                npc.ai[0] = 1f;
-                int num148 = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)npc.Center.Y, NPCID.SkeletronHand, npc.whoAmI);
-                Main.npc[num148].ai[0] = -1f;
-                Main.npc[num148].ai[1] = npc.whoAmI;
-                Main.npc[num148].target = npc.target;
-                Main.npc[num148].netUpdate = true;
-                num148 = NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.Center.X), (int)npc.Center.Y, NPCID.SkeletronHand, npc.whoAmI);
-                Main.npc[num148].ai[0] = 1f;
-                Main.npc[num148].ai[1] = npc.whoAmI;
-                Main.npc[num148].ai[3] = 150f;
-                Main.npc[num148].target = npc.target;
-                Main.npc[num148].netUpdate = true;
-            }
-
-            if (Main.netMode == NetmodeID.MultiplayerClient && npc.localAI[0] == 0f)
-            {
-                npc.localAI[0] = 1f;
-                SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
-            }
-
-            if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 2000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
-            {
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                if (Main.player[npc.target].dead || Math.Abs(npc.position.X - Main.player[npc.target].position.X) > 2000f || Math.Abs(npc.position.Y - Main.player[npc.target].position.Y) > 2000f)
-                    npc.ai[1] = 3f;
-            }
-
-            if (Main.IsItDay() && npc.ai[1] != 3f && npc.ai[1] != 2f)
-            {
-                npc.ai[1] = 2f;
-                SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
-            }
-
-            int numHands = 0;
-            int maxHands = 2;
-            if (Main.expertMode)
-            {
-                for (int num150 = 0; num150 < Main.maxNPCs; num150++)
-                {
-                    if (Main.npc[num150].active && Main.npc[num150].type == NPCID.SkeletronHand)
-                        numHands++;
-                }
-
-                npc.defense += numHands * (Main.masterMode ? 15 : 10);
-                npc.Calamity().CurrentlyIncreasingDefenseOrDR = numHands > 0;
-                npc.chaseable = numHands == 0;
-                if ((numHands < maxHands || (double)npc.life < (double)npc.lifeMax * 0.75 || Main.masterMode) && npc.ai[1] == 0f)
-                {
-                    float num151 = 80f;
-                    if (numHands == 0 || Main.masterMode)
-                        num151 /= 2f;
-
-                    if (Main.getGoodWorld)
-                        num151 *= 0.8f;
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] % num151 == 0f)
-                    {
-                        Vector2 center3 = npc.Center;
-                        float num152 = Main.player[npc.target].Center.X - center3.X;
-                        float num153 = Main.player[npc.target].Center.Y - center3.Y;
-                        float num154 = (float)Math.Sqrt(num152 * num152 + num153 * num153);
-                        if (Collision.CanHit(center3, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                        {
-                            float num155 = 3f;
-                            if (numHands == 0 || Main.masterMode)
-                                num155 += 2f;
-
-                            float num156 = Main.player[npc.target].Center.X - center3.X + (float)Main.rand.Next(-5, 6);
-                            float num157 = Main.player[npc.target].Center.Y - center3.Y + (float)Main.rand.Next(-5, 6);
-                            float num158 = (float)Math.Sqrt(num156 * num156 + num157 * num157);
-                            num158 = num155 / num158;
-                            num156 *= num158;
-                            num157 *= num158;
-                            Vector2 vector19 = new Vector2(num156 * 1f + (float)Main.rand.Next(-50, 51) * 0.01f, num157 * 1f + (float)Main.rand.Next(-50, 51) * 0.01f).SafeNormalize(Vector2.UnitY);
-                            vector19 *= num155;
-                            vector19 += npc.velocity;
-                            num156 = vector19.X;
-                            num157 = vector19.Y;
-                            int type = ProjectileID.Skull;
-                            center3 += vector19 * 5f;
-                            int num160 = Projectile.NewProjectile(npc.GetSource_FromAI(), center3.X, center3.Y, num156, num157, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer, -1f);
-                            Main.projectile[num160].timeLeft = 300;
-                        }
-                    }
-                }
-            }
-
-            if (npc.ai[1] == 0f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.ai[2] += 1f;
-                float chargeGateValue = Main.masterMode ? (600f - (maxHands - numHands) * 200f) : 800f;
-                if (npc.ai[2] >= chargeGateValue)
-                {
-                    npc.ai[2] = 0f;
-                    npc.ai[1] = 1f;
-                    npc.netUpdate = true;
-                }
-
-                npc.rotation = npc.velocity.X / 15f;
-                float accelerationY = Main.getGoodWorld ? 0.05f : Main.masterMode ? 0.04f : Main.expertMode ? 0.03f : 0.02f;
-                float maxVelocityY = accelerationY * 100f;
-                float accelerationX = Main.getGoodWorld ? 0.093f : Main.masterMode ? 0.088f : Main.expertMode ? 0.076f : 0.064f;
-                float maxVelocityX = accelerationX * 100f;
-                float deceleration = Main.getGoodWorld ? 0.83f : Main.masterMode ? 0.86f : Main.expertMode ? 0.89f : 0.92f;
-
-                if (npc.position.Y > Main.player[npc.target].position.Y - 250f)
-                {
-                    if (npc.velocity.Y > 0f)
-                        npc.velocity.Y *= deceleration;
-
-                    npc.velocity.Y -= accelerationY;
-                    if (npc.velocity.Y > maxVelocityY)
-                        npc.velocity.Y = maxVelocityY;
-                }
-                else if (npc.position.Y < Main.player[npc.target].position.Y - 250f)
-                {
-                    if (npc.velocity.Y < 0f)
-                        npc.velocity.Y *= deceleration;
-
-                    npc.velocity.Y += accelerationY;
-                    if (npc.velocity.Y < -maxVelocityY)
-                        npc.velocity.Y = -maxVelocityY;
-                }
-
-                if (npc.Center.X > Main.player[npc.target].Center.X)
-                {
-                    if (npc.velocity.X > 0f)
-                        npc.velocity.X *= deceleration;
-
-                    npc.velocity.X -= accelerationX;
-                    if (npc.velocity.X > maxVelocityX)
-                        npc.velocity.X = maxVelocityX;
-                }
-
-                if (npc.Center.X < Main.player[npc.target].Center.X)
-                {
-                    if (npc.velocity.X < 0f)
-                        npc.velocity.X *= deceleration;
-
-                    npc.velocity.X += accelerationX;
-                    if (npc.velocity.X < 0f - maxVelocityX)
-                        npc.velocity.X = 0f - maxVelocityX;
-                }
-            }
-            else if (npc.ai[1] == 1f)
-            {
-                if (Main.getGoodWorld)
-                {
-                    if (numHands > 0)
-                    {
-                        npc.reflectsProjectiles = true;
-                    }
-                    else if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] % 200f == 0f && NPC.CountNPCS(NPCID.DarkCaster) < 6)
-                    {
-                        int num165 = 1;
-                        for (int num166 = 0; num166 < num165; num166++)
-                        {
-                            int num167 = 1000;
-                            for (int num168 = 0; num168 < num167; num168++)
-                            {
-                                int num169 = (int)(npc.Center.X / 16f) + Main.rand.Next(-50, 51);
-                                int num170;
-                                for (num170 = (int)(npc.Center.Y / 16f) + Main.rand.Next(-50, 51); num170 < Main.maxTilesY - 10 && !WorldGen.SolidTile(num169, num170); num170++)
-                                {
-                                }
-
-                                num170--;
-                                if (!WorldGen.SolidTile(num169, num170))
-                                {
-                                    int num171 = NPC.NewNPC(npc.GetSource_FromAI(), num169 * 16 + 8, num170 * 16, NPCID.DarkCaster);
-                                    if (Main.dedServ && num171 < Main.maxNPCs)
-                                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, num171);
-
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                npc.defense -= 10;
-                npc.ai[2] += 1f;
-                if (npc.ai[2] == 2f)
-                    SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
-
-                float idlePhaseGateValue = Main.masterMode ? (300f - (maxHands - numHands) * 100f) : 400f;
-                if (npc.ai[2] >= idlePhaseGateValue)
-                {
-                    npc.ai[2] = 0f;
-                    npc.ai[1] = 0f;
-                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                }
-
-                npc.rotation += (float)npc.direction * 0.3f;
-                Vector2 vector20 = npc.Center;
-                float num172 = Main.player[npc.target].Center.X - vector20.X;
-                float num173 = Main.player[npc.target].Center.Y - vector20.Y;
-                float num174 = (float)Math.Sqrt(num172 * num172 + num173 * num173);
-                float num175 = 3f;
-                npc.damage = (int)Math.Round(npc.defDamage * 1.3);
-                if (Main.expertMode)
-                {
-                    num175 = Main.masterMode ? (5f - numHands * 0.5f) : 3.5f;
-                    if (num174 > 150f)
-                        num175 *= 1.05f;
-
-                    if (num174 > 200f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 250f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 300f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 350f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 400f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 450f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 500f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 550f)
-                        num175 *= 1.1f;
-
-                    if (num174 > 600f)
-                        num175 *= 1.1f;
-
-                    switch (numHands)
-                    {
-                        case 0:
-                            num175 *= 1.1f;
-                            break;
-                        case 1:
-                            num175 *= 1.05f;
-                            break;
-                    }
-                }
-
-                if (Main.getGoodWorld)
-                    num175 *= 1.3f;
-
-                num174 = num175 / num174;
-                npc.velocity.X = num172 * num174;
-                npc.velocity.Y = num173 * num174;
-            }
-            else if (npc.ai[1] == 2f)
-            {
-                npc.damage = 1000;
-                npc.defense = 9999;
-
-                npc.Calamity().CurrentlyEnraged = true;
-                npc.Calamity().CurrentlyIncreasingDefenseOrDR = true;
-
-                npc.rotation += (float)npc.direction * 0.3f;
-                Vector2 vector21 = npc.Center;
-                float num176 = Main.player[npc.target].Center.X - vector21.X;
-                float num177 = Main.player[npc.target].Center.Y - vector21.Y;
-                float num178 = (float)Math.Sqrt(num176 * num176 + num177 * num177);
-                num178 = 8f / num178;
-                npc.velocity.X = num176 * num178;
-                npc.velocity.Y = num177 * num178;
-            }
-            else if (npc.ai[1] == 3f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.velocity.Y += 0.1f;
-                if (npc.velocity.Y < 0f)
-                    npc.velocity.Y *= 0.95f;
-
-                npc.velocity.X *= 0.95f;
-                npc.EncourageDespawn(50);
-            }
-
-            if (npc.ai[1] != 2f && npc.ai[1] != 3f && (numHands != 0 || !Main.expertMode))
-            {
-                int num179 = Dust.NewDust(new Vector2(npc.Center.X - 15f - npc.velocity.X * 5f, npc.position.Y + (float)npc.height - 2f), 30, 10, DustID.Blood, (0f - npc.velocity.X) * 0.2f, 3f, 0, default(Color), 2f);
-                Main.dust[num179].noGravity = true;
-                Main.dust[num179].velocity.X *= 1.3f;
-                Main.dust[num179].velocity.X += npc.velocity.X * 0.4f;
-                Main.dust[num179].velocity.Y += 2f + npc.velocity.Y;
-                for (int num180 = 0; num180 < 2; num180++)
-                {
-                    num179 = Dust.NewDust(new Vector2(npc.position.X, npc.position.Y + 120f), npc.width, 60, DustID.Blood, npc.velocity.X, npc.velocity.Y, 0, default(Color), 2f);
-                    Main.dust[num179].noGravity = true;
-                    Dust dust = Main.dust[num179];
-                    dust.velocity -= npc.velocity;
-                    Main.dust[num179].velocity.Y += 5f;
-                }
-            }
-
-            return false;
-        }
-
-        public static bool VanillaSkeletronHandAI(NPC npc, Mod mod)
-        {
-            npc.spriteDirection = -(int)npc.ai[0];
-            if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != NPCAIStyleID.SkeletronHead)
-            {
-                npc.ai[2] += 10f;
-                if (npc.ai[2] > 50f || !Main.dedServ)
-                {
-                    npc.life = -1;
-                    npc.HitEffect();
-                    npc.active = false;
-                }
-            }
-
-            // Get a target
-            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-
-            if (npc.ai[2] == 0f || npc.ai[2] == 3f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                if (Main.npc[(int)npc.ai[1]].ai[1] == 3f)
-                    npc.EncourageDespawn(10);
-
-                if (Main.npc[(int)npc.ai[1]].ai[1] != 0f)
-                {
-                    float accelerationY = Main.getGoodWorld ? 0.1f : Main.masterMode ? 0.09f : Main.expertMode ? 0.08f : 0.07f;
-                    float maxVelocityY = accelerationY * 100f;
-                    float accelerationX = Main.getGoodWorld ? 0.16f : Main.masterMode ? 0.14f : Main.expertMode ? 0.12f : 0.1f;
-                    float maxVelocityX = accelerationX * 100f;
-                    float deceleration = Main.getGoodWorld ? 0.81f : Main.masterMode ? 0.84f : Main.expertMode ? 0.87f : 0.9f;
-
-                    if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y - 100f)
-                    {
-                        if (npc.velocity.Y > 0f)
-                            npc.velocity.Y *= deceleration;
-
-                        npc.velocity.Y -= accelerationY;
-                        if (npc.velocity.Y > maxVelocityY)
-                            npc.velocity.Y = maxVelocityY;
-                    }
-                    else if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y - 100f)
-                    {
-                        if (npc.velocity.Y < 0f)
-                            npc.velocity.Y *= deceleration;
-
-                        npc.velocity.Y += accelerationY;
-                        if (npc.velocity.Y < -maxVelocityY)
-                            npc.velocity.Y = -maxVelocityY;
-                    }
-
-                    if (npc.Center.X > Main.npc[(int)npc.ai[1]].Center.X - 120f * npc.ai[0])
-                    {
-                        if (npc.velocity.X > 0f)
-                            npc.velocity.X *= deceleration;
-
-                        npc.velocity.X -= accelerationX;
-                        if (npc.velocity.X > maxVelocityX)
-                            npc.velocity.X = maxVelocityX;
-                    }
-
-                    if (npc.Center.X < Main.npc[(int)npc.ai[1]].Center.X - 120f * npc.ai[0])
-                    {
-                        if (npc.velocity.X < 0f)
-                            npc.velocity.X *= deceleration;
-
-                        npc.velocity.X += accelerationX;
-                        if (npc.velocity.X < -maxVelocityX)
-                            npc.velocity.X = -maxVelocityX;
-                    }
-                }
-                else
-                {
-                    npc.ai[3] += 1f;
-                    if (Main.expertMode)
-                        npc.ai[3] += 0.5f;
-                    if (Main.masterMode)
-                        npc.ai[3] += 0.5f;
-
-                    if (npc.ai[3] >= 300f)
-                    {
-                        npc.target = Main.npc[(int)npc.ai[1]].target;
-                        npc.ai[2] += 1f;
-                        npc.ai[3] = 0f;
-                        npc.netUpdate = true;
-                    }
-
-                    float accelerationY = Main.getGoodWorld ? 0.07f : Main.masterMode ? 0.06f : Main.expertMode ? 0.05f : 0.04f;
-                    float maxVelocityY = accelerationY * 100f;
-                    float accelerationX = Main.getGoodWorld ? 0.13f : Main.masterMode ? 0.11f : Main.expertMode ? 0.09f : 0.07f;
-                    float maxVelocityX = accelerationX * 100f;
-                    float deceleration = Main.getGoodWorld ? 0.88f : Main.masterMode ? 0.9f : Main.expertMode ? 0.92f : 0.94f;
-
-                    if (Main.expertMode)
-                    {
-                        if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 230f)
-                        {
-                            if (npc.velocity.Y > 0f)
-                                npc.velocity.Y *= deceleration;
-
-                            npc.velocity.Y -= accelerationY;
-                            if (npc.velocity.Y > maxVelocityY)
-                                npc.velocity.Y = maxVelocityY;
-                        }
-                        else if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y + 230f)
-                        {
-                            if (npc.velocity.Y < 0f)
-                                npc.velocity.Y *= deceleration;
-
-                            npc.velocity.Y += accelerationY;
-                            if (npc.velocity.Y < -maxVelocityY)
-                                npc.velocity.Y = -maxVelocityY;
-                        }
-
-                        if (npc.Center.X > Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0])
-                        {
-                            if (npc.velocity.X > 0f)
-                                npc.velocity.X *= deceleration;
-
-                            npc.velocity.X -= accelerationX;
-                            if (npc.velocity.X > maxVelocityX)
-                                npc.velocity.X = maxVelocityX;
-                        }
-
-                        if (npc.Center.X < Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0])
-                        {
-                            if (npc.velocity.X < 0f)
-                                npc.velocity.X *= deceleration;
-
-                            npc.velocity.X += accelerationX;
-                            if (npc.velocity.X < -maxVelocityX)
-                                npc.velocity.X = -maxVelocityX;
-                        }
-                    }
-
-                    if (npc.position.Y > Main.npc[(int)npc.ai[1]].position.Y + 230f)
-                    {
-                        if (npc.velocity.Y > 0f)
-                            npc.velocity.Y *= deceleration;
-
-                        npc.velocity.Y -= accelerationY;
-                        if (npc.velocity.Y > maxVelocityY)
-                            npc.velocity.Y = maxVelocityY;
-                    }
-                    else if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y + 230f)
-                    {
-                        if (npc.velocity.Y < 0f)
-                            npc.velocity.Y *= deceleration;
-
-                        npc.velocity.Y += accelerationY;
-                        if (npc.velocity.Y < -maxVelocityY)
-                            npc.velocity.Y = -maxVelocityY;
-                    }
-
-                    if (npc.Center.X > Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0])
-                    {
-                        if (npc.velocity.X > 0f)
-                            npc.velocity.X *= deceleration;
-
-                        npc.velocity.X -= accelerationX;
-                        if (npc.velocity.X > maxVelocityX)
-                            npc.velocity.X = maxVelocityX;
-                    }
-
-                    if (npc.Center.X < Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0])
-                    {
-                        if (npc.velocity.X < 0f)
-                            npc.velocity.X *= deceleration;
-
-                        npc.velocity.X += accelerationX;
-                        if (npc.velocity.X < -maxVelocityX)
-                            npc.velocity.X = -maxVelocityX;
-                    }
-                }
-
-                Vector2 vector22 = npc.Center;
-                float num181 = Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0] - vector22.X;
-                float num182 = Main.npc[(int)npc.ai[1]].position.Y + 230f - vector22.Y;
-                float num183 = (float)Math.Sqrt(num181 * num181 + num182 * num182);
-                npc.rotation = (float)Math.Atan2(num182, num181) + MathHelper.PiOver2;
-            }
-            else if (npc.ai[2] == 1f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                Vector2 vector23 = npc.Center;
-                float num184 = Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0] - vector23.X;
-                float num185 = Main.npc[(int)npc.ai[1]].position.Y + 230f - vector23.Y;
-                float num186 = (float)Math.Sqrt(num184 * num184 + num185 * num185);
-                npc.rotation = (float)Math.Atan2(num185, num184) + MathHelper.PiOver2;
-                npc.velocity.X *= 0.95f;
-                npc.velocity.Y -= 0.1f;
-                if (Main.expertMode)
-                {
-                    npc.velocity.Y -= (Main.masterMode ? 0.09f : 0.06f);
-                    if (npc.velocity.Y < -13f)
-                        npc.velocity.Y = -13f;
-                }
-                else if (npc.velocity.Y < -8f)
-                    npc.velocity.Y = -8f;
-
-                if (npc.position.Y < Main.npc[(int)npc.ai[1]].position.Y - 200f)
-                {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
-                    npc.ai[2] = 2f;
-                    vector23 = npc.Center;
-                    num184 = Main.player[npc.target].Center.X - vector23.X;
-                    num185 = Main.player[npc.target].Center.Y - vector23.Y;
-                    num186 = (float)Math.Sqrt(num184 * num184 + num185 * num185);
-                    num186 = ((!Main.expertMode) ? (18f / num186) : ((Main.masterMode ? 24f : 21f) / num186));
-                    npc.velocity.X = num184 * num186;
-                    npc.velocity.Y = num185 * num186;
-                    npc.netUpdate = true;
-                }
-            }
-            else if (npc.ai[2] == 2f)
-            {
-                // Set damage
-                npc.damage = npc.defDamage;
-
-                if (npc.position.Y > Main.player[npc.target].position.Y || npc.velocity.Y < 0f)
-                {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-
-                    npc.ai[2] = 3f;
-                }
-            }
-            else if (npc.ai[2] == 4f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                Vector2 vector24 = npc.Center;
-                float num187 = Main.npc[(int)npc.ai[1]].Center.X - 200f * npc.ai[0] - vector24.X;
-                float num188 = Main.npc[(int)npc.ai[1]].position.Y + 230f - vector24.Y;
-                float num189 = (float)Math.Sqrt(num187 * num187 + num188 * num188);
-                npc.rotation = (float)Math.Atan2(num188, num187) + MathHelper.PiOver2;
-                npc.velocity.Y *= 0.95f;
-                npc.velocity.X += 0.1f * (0f - npc.ai[0]);
-                if (Main.expertMode)
-                {
-                    npc.velocity.X += (Main.masterMode ? 0.1f : 0.07f) * (0f - npc.ai[0]);
-                    if (npc.velocity.X < -12f)
-                        npc.velocity.X = -12f;
-                    else if (npc.velocity.X > 12f)
-                        npc.velocity.X = 12f;
-                }
-                else if (npc.velocity.X < -8f)
-                    npc.velocity.X = -8f;
-                else if (npc.velocity.X > 8f)
-                    npc.velocity.X = 8f;
-
-                if (npc.Center.X < Main.npc[(int)npc.ai[1]].Center.X - 500f || npc.Center.X > Main.npc[(int)npc.ai[1]].Center.X + 500f)
-                {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
-                    npc.ai[2] = 5f;
-                    vector24 = npc.Center;
-                    num187 = Main.player[npc.target].Center.X - vector24.X;
-                    num188 = Main.player[npc.target].Center.Y - vector24.Y;
-                    num189 = (float)Math.Sqrt(num187 * num187 + num188 * num188);
-                    num189 = ((!Main.expertMode) ? (17f / num189) : ((Main.masterMode ? 25f : 22f) / num189));
-                    npc.velocity.X = num187 * num189;
-                    npc.velocity.Y = num188 * num189;
-                    npc.netUpdate = true;
-                }
-            }
-            else if (npc.ai[2] == 5f && ((npc.velocity.X > 0f && npc.Center.X > Main.player[npc.target].Center.X) || (npc.velocity.X < 0f && npc.Center.X < Main.player[npc.target].Center.X)))
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.ai[2] = 0f;
-            }
-
-            return false;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.height = 20;
             Item.vanity = true;
             Item.value = Item.sellPrice(gold: 15);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

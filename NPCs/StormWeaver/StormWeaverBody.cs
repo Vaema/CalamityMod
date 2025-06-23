@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.StormWeaver
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;

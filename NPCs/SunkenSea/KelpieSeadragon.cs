@@ -60,6 +60,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 10;
             NPC.width = 20;
@@ -79,7 +80,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
@@ -93,17 +93,16 @@ namespace CalamityMod.NPCs.SunkenSea
             });
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.3f,
-                MaxSpeed = 3f,
-            };
-        }
-
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 3f,
+                };
+            }
             if (NPC.direction == 0)
             {
                 NPC.TargetClosest();
@@ -157,7 +156,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         SquishY = 0;
                         break;
                     }
-                    NPC.chaseable = true;
+                    if (currentTarget is Player)
+                        NPC.chaseable = true;
                     bool hasSight = Collision.CanHitLine(NPC.Center, 1, 1, target.Center, 1, 1);
                     // If the target is too far from its shooting range or a tile is in the way, move closer
                     if ((currentTarget.Distance(NPC.Center) > 300 || !hasSight) || currentTarget is NPC)
@@ -358,7 +358,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZonePolypForest && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+                return SpawnCondition.CaveJellyfish.Chance * 0.7f;
             }
             return 0f;
         }

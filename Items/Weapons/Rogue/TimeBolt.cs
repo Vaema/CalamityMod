@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient(ItemID.FastClock).
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<Necroplasm>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

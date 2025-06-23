@@ -32,16 +32,13 @@ namespace CalamityMod.Items.Weapons.Summon
         public static int Ariane_AoESize = 1050;
         public static float Ariane_AoEDMGMultiplier = 0.4f;
 
-        // Do not change this number, ever. - Fabsol
-        public const int TheNumber = 512;
-
         #endregion
 
         public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
 
         public override void SetDefaults()
         {
-            Item.damage = TheNumber;
+            Item.damage = 512;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ProjectileType<LiliesOfFinalityElster>();
             Item.knockBack = 5f;
@@ -52,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = new("CalamityMod/Sounds/Item/LiliesOfFinalitySummonSpawn");
         }

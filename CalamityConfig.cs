@@ -66,6 +66,10 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
+        public bool TextEffects { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
         public bool Afterimages { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
@@ -75,6 +79,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool EnableVanillaTextureEdits { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SunkenSeaBackgroundDistortion { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
@@ -258,8 +266,8 @@ namespace CalamityMod
         public float FlightBarPosY { get; set; }
         #endregion
 
-        #region Music Events
-        [Header("MusicEvents")]
+        #region Music Toggles
+        [Header("MusicToggles")]
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -276,6 +284,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool DevourerofGodsEulogy { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool AbyssLayer3Alt { get; set; }
 
         #endregion
 

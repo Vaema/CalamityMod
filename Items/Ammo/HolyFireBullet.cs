@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Ammo
             CreateRecipe(333).
                 AddIngredient(ItemID.ExplodingBullet, 333).
                 AddIngredient<UnholyEssence>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -41,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool spawnBoom = true;
         public bool finalFlip = false;
         public bool playSwingSound = true;
+        public int armoredHits = 0;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -100,6 +101,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 finalFlip = false;
+                armoredHits = 0;
             }
             else
             {
@@ -191,8 +193,10 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);
             target.MoveNPC(launchVel, 8, true);
@@ -237,7 +241,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float minMult = 0.3f;
             int hitsToMinMult = 5;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)

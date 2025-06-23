@@ -67,10 +67,6 @@ namespace CalamityMod.Systems
                     }
                 }
             }
-
-            // Bat Wings give stronger night vision
-            if (Main.LocalPlayer.wingsLogic == (int)VanillaWingID.BatWings)
-                scale *= 1.08f;
         }
 
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)

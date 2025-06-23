@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Events;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
@@ -14,6 +15,7 @@ using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -73,7 +75,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] ArmsDealerNames =
         {
-            "Drifter",
             "Finchi",
             "Heniek", // <@!363404700445442050> (kazurgundu)
             "Fire", // <@!354362326947856384> (ultimatefirewaster)
@@ -88,17 +89,19 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
+			"Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
             "Sylux", // <@!331812782183809025> (gonkachino)
-            "XL-39 Nemesis", // <@!1104036024063107082> (yashimayamanata)
+            "Nemesis", // <@!1104036024063107082> (yashimayamanata)
         };
         private static readonly string[] DemolitionistNames =
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
             "Fimmy", // <@!407348617079160832> (darkmega5)
             "Dorira", // <@!215269032360804352> (crimsoncb)
+            "John Helldiver", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] DryadNames =
         {
@@ -107,6 +110,7 @@ namespace CalamityMod.NPCs
             "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
+            "Kanna", // <@!730203712898859018> (cosmoredeathwish)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -121,6 +125,9 @@ namespace CalamityMod.NPCs
             "Him", // <@!931019614958256139> (himtheguy1)
             "Tooshiboots", // <@!333532730593771522> (ulmod)
             "Neesh", // <@!175803493464932352> (xjetty)
+            "Bars Boldia", // <@!332989575708540939> (careless_imp)
+            "Basel Raiden John Clive Fantasy 16", // <@!529392083136413696> (raiden_ii)
+            "Gobby, Destroyer of Wallets", // <@!429024941296582658> (bwlstorm)
         };
         private static readonly string[] GolferNames = null;
         private static readonly string[] GuideNames =
@@ -140,9 +147,9 @@ namespace CalamityMod.NPCs
             "Alfred Rend", // <@!606301806481375255> (deadsqurp300)
             "Leeman", // <@!281999243168841728> (tweee)
             "Mihai", // <@!373941893467209730> (cmihaii.)
-            "Cooler Kevin", // <@!614126424751603714> (exellent.)
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
-            "Wamy",
+            "Wamy", // Fab added this name with no Discord ID. May be a donor who has no Discord account.
+            "Baggute", // <@!535140564174110720> (thebaggutegamer)
         };
         private static readonly string[] MechanicNames =
         {
@@ -155,6 +162,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] MerchantNames =
         {
             "Morshu", // <@!194931581826236416> (uberransy)
+            "Spamton G. Spamton", // <@!497146350438318101> (j.u.n.e.s)
         };
         private static readonly string[] NurseNames =
         {
@@ -180,10 +188,10 @@ namespace CalamityMod.NPCs
             "Captain Billy Bones", // <@!699589229507772416> (djackv)
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
+            "Yarrim", // <@!290061123137306624> (borb9834)
         };
         private static readonly string[] PrincessNames =
         {
-            "Catalyst", // <@!156672312425316352> (xaqult)
             "Nyapano", // <@!120976656826368003> (nyapano)
             "Jade", // <@!187395834625785869> (verymasterninja)
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
@@ -191,6 +199,7 @@ namespace CalamityMod.NPCs
             "Gwynevere", // <@!142752927348424704> (nuclearchaosazathoth)
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
+            "Vela", // <@!208719047146209281> (nyxxynightstar)
         };
         private static readonly string[] SantaClausNames =
         {
@@ -200,7 +209,9 @@ namespace CalamityMod.NPCs
         {
             "Sans Undertale", // <@!145379091648872450> (shayy)
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
+            "Gaster Undertale", // <@!924706306093379614> (enamoured)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
+            "Freakbob", // <@!377863128140087296> (jevilamv)
         };
         private static readonly string[] SteampunkerNames =
         {
@@ -209,6 +220,8 @@ namespace CalamityMod.NPCs
             "Mòrag Ladair", // <@!161893929485074432> (jalapeno9)
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
+            "Kreutz", // <@!553445849149997056> (red_r_kreutz)
+            "Cathlyn", // <@!156672312425316352> (xaqult)
         };
         private static readonly string[] StylistNames =
         {
@@ -216,6 +229,7 @@ namespace CalamityMod.NPCs
             "Faith", // <@!509050283871961123> (toasty1007)
             "Xsiana", // <@!625780237489143839> (lokistic)
             "Lain", // <@!655201622863118337> (literallyadeerfr)
+            "Hamis", // <@!608455754093035521> (haefer)
         };
         private static readonly string[] TavernkeepNames =
         {
@@ -238,18 +252,17 @@ namespace CalamityMod.NPCs
         private static readonly string[] TruffleNames =
         {
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
+            "Wonton", // <@!1198092982923043040> (imonthatgudkush)
         };
         private static readonly string[] WitchDoctorNames =
         {
             "Sok'ar",
             "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
-            "Khatunz", // <@!303022375191183360> (jackshiz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
         };
         private static readonly string[] WizardNames =
         {
-            "Mage One-Trick", // <@!340996105460514816> (pixlgray)
             "Inorim, son of Ivukey",
             "Jensen",
             "Merasmus", // <@!288066987819663360> (spiderprovidence)
@@ -265,6 +278,8 @@ namespace CalamityMod.NPCs
             "Lacuna", // <@!790746689211203604> (_lacuna_)
             "Mae Borowski", //<@!219158690433990656> (justakkolite)
             "Fera", // <@!195850711567826945> (juneark_)
+            "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
+            "Daxie", // <@!465438861103988737> (daxie626)
         };
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
@@ -280,6 +295,8 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownDogNames =
         {
             "Ozymandias", // <@!146333264871686145> (ozzatron)
+            "Miss Throws a Lot", // <@!799345607847182400> (oakhamsam)
+            "Brikwilla", // <@!543803736909414438> (lavendercobra)
         };
         private static readonly string[] TownDogLabradorNames =
         {
@@ -320,14 +337,19 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatBlackNames =
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
+            "Storm", // <@!620383533516718085> (airwaveslr)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
             "Felix", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Tardo", // <@!739343546867384391> (midnight295)
+            "Dali", // <@!460238880436781061> (darthlego)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
-        private static readonly string[] TownCatSilverNames = null;
+        private static readonly string[] TownCatSilverNames =
+        {
+            "Archie", // <@!303022375191183360> (jackshiz)
+        };
         private static readonly string[] TownCatWhiteNames = null;
 
         private const int TownBunnyWhiteVanillaNames = 14;
@@ -336,7 +358,10 @@ namespace CalamityMod.NPCs
         private const int TownBunnyFlemishVanillaNames = 12;
         private const int TownBunnyLopVanillaNames = 13;
         private const int TownBunnySilverVanillaNames = 13;
-        private static readonly string[] TownBunnyNames = null;
+        private static readonly string[] TownBunnyNames =
+        {
+            "Poco", // <@!1192261996146593872> (tostitomuncher33)
+        };
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
         private static readonly string[] TownBunnyDutchNames = null;
@@ -688,7 +713,6 @@ namespace CalamityMod.NPCs
             (NPCID.SkeletonMerchant, (Player player) => player.Calamity().newSkeletonMerchantInventory, (Player player, bool enabled) =>{ player.Calamity().newSkeletonMerchantInventory = enabled; }),
             (NPCType<SeaKing>(), (Player player) => player.Calamity().newAmidiasInventory,(Player player, bool enabled) =>{ player.Calamity().newAmidiasInventory = enabled; }),
             (NPCType<Bandit>(), (Player player) => player.Calamity().newBanditInventory,(Player player, bool enabled) =>{ player.Calamity().newBanditInventory = enabled; }),
-            (NPCType<Cirrus>(), (Player player) => player.Calamity().newCirrusInventory,(Player player, bool enabled) =>{ player.Calamity().newCirrusInventory = enabled; }),
             (NPCType<Archmage>(), (Player player) => player.Calamity().newPermafrostInventory,(Player player, bool enabled) =>{ player.Calamity().newPermafrostInventory = enabled; }),
             (NPCType<BrimstoneWitch>(), (Player player) => player.Calamity().newCalamitasInventory,(Player player, bool enabled) =>{ player.Calamity().newCalamitasInventory = enabled; }) // lol
         };
@@ -768,7 +792,6 @@ namespace CalamityMod.NPCs
         #region NPC Chat
         public override void GetChat(NPC npc, ref string chat)
         {
-            int cirrus = NPC.FindFirstNPC(NPCType<Cirrus>());
             int permadong = NPC.FindFirstNPC(NPCType<Archmage>());
             int seahorse = NPC.FindFirstNPC(NPCType<SeaKing>());
             int thief = NPC.FindFirstNPC(NPCType<Bandit>());
@@ -824,9 +847,6 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.DarksunEclipse");
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.ZoneGlowshroom)
                     {
-                        if (Main.rand.NextBool() && cirrus != -1)
-                            chat = CalamityUtils.GetText("Vanilla.DryadChat.DrunkPrincessShroom").Format(Main.npc[cirrus].GivenName);
-                        else
                             chat = CalamityUtils.GetTextValue("Vanilla.DryadChat.Mushroom");
                     }
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Calamity().ZoneSulphur)
@@ -867,8 +887,6 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.Eclipse");
                     else if (Main.rand.NextBool(5) && AcidRainEvent.AcidRainEventIsOngoing)
                         chat = CalamityUtils.GetTextValue("Vanilla.MechanicChat.AcidRain");
-                    else if (Main.rand.NextBool(5) && cirrus != -1)
-                        chat = CalamityUtils.GetText("Vanilla.MechanicChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.Merchant:
@@ -917,8 +935,6 @@ namespace CalamityMod.NPCs
                 case NPCID.PartyGirl:
                     if (Main.rand.NextBool(4) && Main.eclipse)
                         chat = CalamityUtils.GetTextValue("Vanilla.PartyGirlChat.Eclipse" + Main.rand.Next(1, 2 + 1));
-                    else if (Main.rand.NextBool(10) && cirrus != -1)
-                        chat = CalamityUtils.GetText("Vanilla.PartyGirlChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.Pirate:
@@ -926,8 +942,6 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.PreLeviathan");
                     else if (Main.rand.NextBool(5) && DownedBossSystem.downedAquaticScourge)
                         chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.WetScourgeDefeated");
-                    else if (Main.rand.NextBool(5) && cirrus != -1)
-                        chat = CalamityUtils.GetTextValue("Vanilla.PirateChat.DrunkPrincess");
                     else if (Main.rand.NextBool(5) && seahorse != -1)
                         chat = CalamityUtils.GetText("Vanilla.PirateChat.SeaKing").Format(Main.npc[seahorse].GivenName);
                     else if (Main.rand.NextBool(5) && Main.LocalPlayer.Center.ToTileCoordinates().X < 380 && !Main.LocalPlayer.Calamity().ZoneSulphur)
@@ -954,12 +968,6 @@ namespace CalamityMod.NPCs
                     string worldEvil = Language.GetTextValue("LegacyMisc." + (WorldGen.crimson ? 102 : 101));
                     if (Main.rand.NextBool(15) && Main.hardMode)
                         chat = CalamityUtils.GetText("Vanilla.StylistChat.Hardmode").Format(worldEvil);
-                    if (Main.rand.NextBool(15) && cirrus != -1)
-                    {
-                        int noChildSafetyCirrusLines = NPC.downedMoonlord ? Main.rand.Next(2, 3 + 1) : Main.rand.Next(1, 2 + 1);
-                        int childSafetyCirrusLines = NPC.downedMoonlord ? 3 : 1;
-                        chat = CalamityUtils.GetText("Vanilla.StylistChat.DrunkPrincess" + (ChildSafety.Disabled ? noChildSafetyCirrusLines : childSafetyCirrusLines)).Format(Main.npc[cirrus].GivenName);
-                    }
                     if ((Main.rand.NextBool(npc.GivenName == "Amber" ? 10 : 15)) && Main.LocalPlayer.Calamity().pSoulArtifact)
                     {
                         if (Main.LocalPlayer.Calamity().profanedCrystalBuffs)
@@ -972,8 +980,6 @@ namespace CalamityMod.NPCs
                 case NPCID.DD2Bartender:
                     if (Main.rand.NextBool(5) && !Main.dayTime && Main.moonPhase == 0)
                         chat = CalamityUtils.GetTextValue("Vanilla.TavernkeepChat.FullMoon");
-                    else if (Main.rand.NextBool(10) && cirrus != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TavernkeepChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
                     break;
 
                 case NPCID.TaxCollector:
@@ -1002,15 +1008,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.TaxCollectorChat.Has100Plat");
                     break;
 
-                case NPCID.TravellingMerchant:
-                    if (Main.rand.NextBool(5) && cirrus != -1 && angelstatue != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TravellingMerchantChat.DrunkPrincessMerchant").Format(Main.npc[cirrus].GivenName, Main.npc[angelstatue].GivenName);
-                    break;
-
                 case NPCID.Truffle:
-                    if (Main.rand.NextBool(4) && cirrus != -1)
-                        chat = CalamityUtils.GetText("Vanilla.TruffleChat.DrunkPrincess").Format(Main.npc[cirrus].GivenName);
-                    else if (Main.rand.NextBool(8))
+                    if (Main.rand.NextBool(8))
                         chat = CalamityUtils.GetTextValue("Vanilla.TruffleChat.Normal");
                     break;
 
@@ -1156,9 +1155,7 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<WingTimeHairDye>(), wingedPlayer)
                 .Add(ItemType<AdrenalineHairDye>(), revengeance)
                 .Add(ItemType<RageHairDye>(), revengeance)
-                .AddWithCustomValue(ItemID.StylistKilLaKillScissorsIWish, Item.buyPrice(gold: 15))
-                .Add(ItemType<CirrusDress>(), Condition.NpcIsPresent(NPCType<Cirrus>()), drunk)
-                .AddWithCustomValue(ItemID.ChocolateChipCookie, Item.buyPrice(gold: 3), Condition.HappyEnoughToSellPylons, Condition.NpcIsPresent(NPCType<Cirrus>()));
+                .AddWithCustomValue(ItemID.StylistKilLaKillScissorsIWish, Item.buyPrice(gold: 15));
             }
 
             if (type == NPCID.Cyborg)
@@ -1213,7 +1210,11 @@ namespace CalamityMod.NPCs
             {
                 shop.Add(ItemType<AstralSolution>(), Condition.NotRemixWorld)
                 .Add(ItemID.PurpleSolution, Condition.InGraveyard, Condition.CrimsonWorld, Condition.NotRemixWorld)
-                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld);
+                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld)
+                .Add(ItemType<LucisHairstyle>())
+                .Add(ItemType<LucisMilitaryUniform>())
+                .Add(ItemType<LucisBoots>())
+                .Add(ItemType<LucisSight>());
             }
 
             if (type == NPCID.Wizard)
@@ -1223,7 +1224,11 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
                 .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem)
+                .Add(ItemType<ResilientCandle>())
+                .Add(ItemType<SpitefulCandle>())
+                .Add(ItemType<VigorousCandle>())
+                .Add(ItemType<WeightlessCandle>());
             }
 
             if (type == NPCID.WitchDoctor)
@@ -1246,14 +1251,19 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Princess)
             {
+                Mod musicMod = ExternalMods.musicMod;
+                musicMod.TryFind("Interlude1MusicBox", out ModItem interlude1Box);
+                musicMod.TryFind("Interlude2MusicBox", out ModItem interlude2Box);
+                musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
+                musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
+
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
+                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), Condition.InHallow)
                 .Add(ItemType<LanternCenter>())
-                .Add(ItemID.AppleJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
-                .Add(ItemID.FruitJuice, Condition.NpcIsPresent(NPCType<Cirrus>()))
-                .Add(ItemID.Lemonade, Condition.NpcIsPresent(NPCType<Cirrus>()))
-                .Add(ItemID.PrismaticPunch, Condition.NpcIsPresent(NPCType<Cirrus>()))
-                .Add(ItemID.SmoothieofDarkness, Condition.NpcIsPresent(NPCType<Cirrus>()))
-                .Add(ItemID.TropicalSmoothie, Condition.NpcIsPresent(NPCType<Cirrus>()));
+                .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
+                .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
+                .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
+                .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods);
             }
 
             if (type == NPCID.SkeletonMerchant)
@@ -1273,6 +1283,11 @@ namespace CalamityMod.NPCs
             if (type == NPCID.BestiaryGirl)
             {
                 shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
+            }
+
+            if (type == NPCID.Truffle)
+            {
+                shop.Add(ItemType<OddMushroom>());
             }
         }
         #endregion

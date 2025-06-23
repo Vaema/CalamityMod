@@ -55,7 +55,7 @@ namespace CalamityMod.Systems.Collections
                     ProjectileID.SporeGas3
                 ],
 
-                [ // Set 6: Astral Staff and Asteroid Staff
+                [ // Set 6: Astral Staff
                     ModContent.ProjectileType<AstralCrystal>(),
                     ModContent.ProjectileType<AstralCrystalInvisibleExplosion>()
                 ],

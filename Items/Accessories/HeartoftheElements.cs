@@ -183,6 +183,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<PearlofEnthrallment>().
                 AddIngredient<EyeoftheStorm>().
                 AddIngredient<RoseStone>().
+                AddIngredient(ItemID.FragmentStardust, 6).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

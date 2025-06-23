@@ -10,7 +10,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
@@ -26,12 +25,10 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -72,7 +69,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VulnerabilityHex>(), VulnerabilityHex.AflameDuration);
 
             target.Calamity().IncreasedColdEffects_EskimoSet = eskimoSet;
-            target.Calamity().IncreasedColdEffects_FrozenWings = frozenWingsCold;
             target.Calamity().IncreasedColdEffects_CryoStone = CryoStone;
 
             target.Calamity().IncreasedElectricityEffects_Unused = false;
@@ -80,7 +76,6 @@ namespace CalamityMod.CalPlayer
             target.Calamity().IncreasedHeatEffects_Fireball = fireball;
             target.Calamity().IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             target.Calamity().IncreasedHeatEffects_FireBoots = bootLevel;
-            target.Calamity().IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             target.Calamity().IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
@@ -108,7 +103,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 180);
+                    target.AddBuff(BuffID.OnFire3, 90);
                     break;
 
                 case ItemID.IceSickle:
@@ -143,19 +138,50 @@ namespace CalamityMod.CalPlayer
 
             ItemLifesteal(target, item, damageDone);
             ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
-            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
+            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit);
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - 180, 0, 300);
-            if (bGlassBand && bGlassbandCooldown == 0)
+
+            if (generalBandCooldown == 0)
             {
-                var source = item.GetSource_FromThis();
-                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
-                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
-                bGlassbandCooldown = BlackGlassBand.cooldown;
+                int cooldown = 0;
+                if (bGlassBand)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                    Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                    Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    if (cooldown < BlackGlassBand.cooldown)
+                        cooldown = BlackGlassBand.cooldown;
+                }
+                if (protolithBangle && item.DamageType == DamageClass.Ranged)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Ranged;
+                    if (cooldown < ProtolithBangle.cooldown)
+                        cooldown = ProtolithBangle.cooldown;
+                }
+                if (batholithBangle && item.DamageType == DamageClass.Magic)
+                {
+                    var source = item.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Magic;
+                    if (cooldown < BatholithBangle.cooldown)
+                        cooldown = BatholithBangle.cooldown;
+                }
+
+                if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
+                {
+                    generalBandCooldown = cooldown;
+                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                }
             }
+
             if (luxorsGift)
                 luxorHit = true;
 
@@ -209,7 +235,6 @@ namespace CalamityMod.CalPlayer
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
 
             cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
-            cgn.IncreasedColdEffects_FrozenWings = frozenWingsCold;
             cgn.IncreasedColdEffects_CryoStone = CryoStone;
 
             cgn.IncreasedElectricityEffects_Unused = false;
@@ -217,7 +242,6 @@ namespace CalamityMod.CalPlayer
             cgn.IncreasedHeatEffects_Fireball = fireball;
             cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
             cgn.IncreasedHeatEffects_FireBoots = bootLevel;
-            cgn.IncreasedHeatEffects_FlameWings = flameWingsHeat;
 
             cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
 
@@ -320,14 +344,47 @@ namespace CalamityMod.CalPlayer
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
                 ursaSergeantCooldown = (int)MathHelper.Clamp(ursaSergeantCooldown - UrsaSergeant.CooldownReducedPerKill, 0, UrsaSergeant.MaxCooldown);
-            if (bGlassBand && bGlassbandCooldown == 0)
+
+            if (generalBandCooldown == 0)
             {
-                var source = proj.GetSource_FromThis();
-                int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
-                Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
-                Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
-                bGlassbandCooldown = BlackGlassBand.cooldown;
+                int cooldown = 0;
+                // NOTE: Apparently Pulse Pistol/Pulse Rifle projectiles will set spawned projectiles here to inherit the proj ID???
+                // No clue why this happens or how to fix it, but it just breaks using multiple band types together on these two weapons
+                if (bGlassBand) 
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BlackGlassBand.damage);
+                    Vector2 launchVel = Utils.DirectionTo(Player.Center, target.Center) * 6;
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BlackGlassBandProjectile>(), damage, -1, Player.whoAmI, target.whoAmI, launchVel.X, launchVel.Y);
+                    if (cooldown < BlackGlassBand.cooldown)
+                        cooldown = BlackGlassBand.cooldown;
+                }
+                if (protolithBangle && proj.DamageType == DamageClass.Ranged)
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(ProtolithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<ProtolithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Ranged;
+                    if (cooldown < ProtolithBangle.cooldown)
+                        cooldown = ProtolithBangle.cooldown;
+                }
+                if (batholithBangle && proj.DamageType == DamageClass.Magic)
+                {
+                    var source = proj.GetSource_FromThis();
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BatholithBangle.damage);
+                    Projectile band = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<BatholithBangleProjectile>(), damage, -1, Player.whoAmI, target.whoAmI);
+                    band.DamageType = DamageClass.Magic;
+                    if (cooldown < BatholithBangle.cooldown)
+                        cooldown = BatholithBangle.cooldown;
+                }
+
+                if (cooldown > 0) // Check if a band effect went off, and apply the highest cooldown
+                {
+                    generalBandCooldown = cooldown;
+                    Player.AddCooldown(Cooldowns.GenericBandCooldown.ID, cooldown);
+                }
             }
+
             if (luxorsGift && proj.type != ModContent.ProjectileType<LuxorsGiftMelee>() && proj.type != ModContent.ProjectileType<LuxorsGiftRanged>() && proj.type != ModContent.ProjectileType<LuxorsGiftMagic>() && proj.type != ModContent.ProjectileType<LuxorsGiftSummon>() && proj.type != ModContent.ProjectileType<LuxorsGiftRogue>() && proj.type != ModContent.ProjectileType<LuxorsGiftClassless>())
                 luxorHit = true;
 
@@ -551,7 +608,7 @@ namespace CalamityMod.CalPlayer
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
                 ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), true, proj.noEnchantments);
+                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
                 if (targetIsDummy)
@@ -781,8 +838,9 @@ namespace CalamityMod.CalPlayer
             if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
                 MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
-
-                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                Vector2 directionToMouse = Main.MouseWorld - Player.Center;
+                directionToMouse.Normalize();
+                Vector2 velocity = directionToMouse * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
                 Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
@@ -1091,9 +1149,9 @@ namespace CalamityMod.CalPlayer
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
-                for (int dustexplode = 0; dustexplode < 180; dustexplode++)
+                for (int dustexplode = 0; dustexplode < 120; dustexplode++)
                 {
-                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 3)) * 1.7f;
                     Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
                     dust.noGravity = true;
                 }
@@ -1143,7 +1201,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Debuffs
-        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool proj = false, bool noFlask = false)
+        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool crit, bool proj = false, bool noFlask = false)
         {
             if (melee && !noFlask) // Prevents Deep Sea Dumbell from snagging true melee debuff memes
             {
@@ -1265,7 +1323,11 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                    target.AddBuff(BuffID.Venom, 120, false);
+                target.AddBuff(BuffID.Venom, 120, false);
+            }
+            if (snowRuffianSet && ranged && crit)
+            {
+                target.AddBuff(BuffID.Frostburn, 300, false);
             }
         }
         #endregion
@@ -1344,9 +1406,9 @@ namespace CalamityMod.CalPlayer
                 {
                     if (manaOverloader)
                     {
-                        double healMult = 0.2;
+                        double healMult = 0.1;
                         healMult -= proj.numHits * healMult * 0.25;
-                        int heal = (int)Math.Round(damage * healMult * (Player.statMana / (double)Player.statManaMax2));
+                        int heal = (int)Math.Round(damage * healMult);
                         if (heal > BalancingConstants.LifeStealCap)
                             heal = BalancingConstants.LifeStealCap;
 

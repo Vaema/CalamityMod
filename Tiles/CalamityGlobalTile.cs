@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
@@ -23,7 +25,6 @@ namespace CalamityMod.Tiles
 {
     public class CalamityGlobalTile : GlobalTile
     {
-
         public static List<int> GrowthTiles = new List<int>()
         {
             TileType<SeaPrism>(),
@@ -47,8 +48,10 @@ namespace CalamityMod.Tiles
 
         public override void PreShakeTree(int x, int y, TreeTypes treeType)
         {
-            // Add an additional 25% chance to drop vanilla fruits
-            if (WorldGen.genRand.NextBool(4))
+            // All trees have a 33% chance to drop extra fruit when using Feller of Evergreens
+            Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
+            Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
+            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = 0;
                 switch (treeType)
@@ -302,16 +305,53 @@ namespace CalamityMod.Tiles
 
                 // Drop Evil Smasher on every 12 alter smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
-                {
                     DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true);
-                }
             }
+
             // Drop Golden Bombs at a 0.33% chance from Pots
             if (type == TileID.Pots)
             {
                 if (Main.rand.NextBool(300))
-                {
                     DropItem(i, j, ItemType<GoldenBomb>(), quantity: 1, asStack: true);
+            }
+
+            // Mature herbs always drop 1 seed (Blooming herbs drop between 1 and 3 seeds, more with Regrowth items)
+            if (type == TileID.MatureHerbs)
+            {
+                int herbType = Main.tile[i, j].TileFrameX / 18;
+                int seedQuantity = Main.rand.Next(2) + 1;
+                switch (herbType)
+                {
+                    default:
+                        break;
+
+                    case (int)HerbType.Daybloom:
+                        DropItem(i, j, ItemID.DaybloomSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Moonglow:
+                        DropItem(i, j, ItemID.MoonglowSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Blinkroot:
+                        DropItem(i, j, ItemID.BlinkrootSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Deathweed:
+                        DropItem(i, j, ItemID.DeathweedSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Waterleaf:
+                        DropItem(i, j, ItemID.WaterleafSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Fireblossom:
+                        DropItem(i, j, ItemID.FireblossomSeeds, quantity: seedQuantity, asStack: true);
+                        break;
+
+                    case (int)HerbType.Shiverthorn:
+                        DropItem(i, j, ItemID.ShiverthornSeeds, quantity: seedQuantity, asStack: true);
+                        break;
                 }
             }
         }

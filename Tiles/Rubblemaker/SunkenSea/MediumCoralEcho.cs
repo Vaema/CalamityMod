@@ -11,6 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
     public class MediumCoralEcho : ModTile
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/MediumCoral";
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -28,37 +29,41 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
             base.SetStaticDefaults();
         }
+
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 2;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 229f / 350f;
-            g = 137f / 350f;
-            b = 204f / 350f;
+            r = 0.65f;
+            g = 0.39f;
+            b = 0.58f;
         }
     }
 
     public class MediumCoral2Echo : MediumCoralEcho
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/MediumCoral2";
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 60f / 400f;
-            g = 110f / 400f;
-            b = 146f / 400f;
+            r = 0.15f;
+            g = 0.28f;
+            b = 0.37f;
         }
     }
 
     public class MediumCoral3Echo : MediumCoralEcho
     {
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/MediumCoral3";
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 60f / 255f;
-            g = 110f / 255f;
-            b = 146f / 255f;
+            r = 0.24f;
+            g = 0.43f;
+            b = 0.57f;
         }
     }
 }

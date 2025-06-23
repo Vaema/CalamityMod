@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<ThaumaticChairTile>());
             Item.value = Item.sellPrice(gold: 10);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
         }
 

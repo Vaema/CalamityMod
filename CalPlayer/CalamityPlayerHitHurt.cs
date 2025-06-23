@@ -32,6 +32,7 @@ using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -512,6 +513,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit NPC
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
+            modifiers.CritDamage += critDamage;
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
 
@@ -534,7 +536,10 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
+
+            if (Player.Calamity().scionsCurio && item.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -593,6 +598,8 @@ namespace CalamityMod.CalPlayer
         {
             if (proj.npcProj || proj.trap)
                 return;
+                
+            modifiers.CritDamage += critDamage;
 
             // All Calamity multipliers are added together to prevent insane exponential stacking
             float totalDamageMult = 1f;
@@ -616,7 +623,7 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
@@ -634,6 +641,9 @@ namespace CalamityMod.CalPlayer
             // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
             if (proj.type == ProjectileID.InfernoFriendlyBlast)
                 modifiers.SourceDamage *= 1.2f;
+
+            if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -715,7 +725,7 @@ namespace CalamityMod.CalPlayer
             // Enemies deal less contact damage while sick, due to being weakened.
             if (npc.poisoned)
             {
-                float damageReductionFromPoison = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPoison = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -730,7 +740,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.venom)
             {
-                float damageReductionFromVenom = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromVenom = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -745,7 +755,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().astralInfection > 0)
             {
-                float damageReductionFromAstralInfection = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -760,7 +770,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().pFlames > 0)
             {
-                float damageReductionFromPlague = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPlague = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -775,7 +785,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().wDeath > 0)
             {
-                float damageReductionFromWhisperingDeath = npc.Calamity().irradiated > 0 ? 0.15f : 0.1f;
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -877,7 +887,7 @@ namespace CalamityMod.CalPlayer
                     contactDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
 
                 // Contact damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                // In GFB, as defense damage is uncapped, DR damage is also uncapped.
+                // In FTW, as defense damage is uncapped, DR damage is also uncapped.
                 int currentDefense = Player.GetCurrentDefense(false);
                 if (totalDefenseDamage > 0 && currentDefense > 0)
                 {
@@ -1782,7 +1792,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center); //metal hit noise
                     hurtSoundTimer = 10;
                 }
-                else if (((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide) || Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped)
+                else if ((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(SoundID.FemaleHit, Player.Center); //female hit noise
@@ -1915,6 +1925,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
                 ShieldoftheOcean.ActivateParry(Player);
             }
+
+            if (Player.Calamity().scionsCurio)
+                scionsCurioGotHit = true;
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
@@ -2371,7 +2384,7 @@ namespace CalamityMod.CalPlayer
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 
-                if (amidiasBlessing && hurtInfo.Damage > 50)
+                if (amidiasBlessing && (chaliceOfTheBloodGod ? chaliceBleedoutToApplyOnHurt : hurtInfo.Damage) > 50)
                 {
                     Player.ClearBuff(ModContent.BuffType<AmidiasBlessing>());
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
@@ -2607,7 +2620,8 @@ namespace CalamityMod.CalPlayer
                     Player.immuneTime += iFramesToAdd;
 
                 // Similar handle to 1.4 Star Cloak: these hits ie. spikes or lava cannot activate hit effects
-                if (hurtInfo.CooldownCounter != -1 && hurtInfo.CooldownCounter != 1)
+                bool canTriggerHitEffects = hurtInfo.CooldownCounter == -1 || hurtInfo.CooldownCounter == 1;
+                if (!canTriggerHitEffects)
                     return;
 
                 if (aeroSet && hurtInfo.Damage > 25)
@@ -2636,20 +2650,25 @@ namespace CalamityMod.CalPlayer
                     }
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
+                // In the meantime, gave them homing astral bombers instead of the lame falling stars
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));
-                    for (int n = 0; n < 3; n++)
+                    int projAmount = (rampartOfDeities ? 12 : 6);
+                    for (int n = 0; n < projAmount; n++)
                     {
                         int baseDamage = 130 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                        int deificStarDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
+                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
 
-                        Projectile star = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileID.StarVeilStar, deificStarDamage, 4f, Player.whoAmI);
-                        if (star.whoAmI.WithinBounds(Main.maxProjectiles))
+                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
+                        if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
-                            star.DamageType = DamageClass.Generic;
-                            star.usesLocalNPCImmunity = true;
-                            star.localNPCHitCooldown = 5;
+                            onHitProj.DamageType = DamageClass.Generic;
+                            onHitProj.usesLocalNPCImmunity = true;
+                            onHitProj.localNPCHitCooldown = 5;
+                            onHitProj.tileCollide = false;
+                            onHitProj.extraUpdates = 1;
+                            onHitProj.Calamity().conditionalHomingRange = 500f;
                         }
                     }
                 }
@@ -2685,15 +2704,20 @@ namespace CalamityMod.CalPlayer
                 }
                 if (inkBomb && !abyssalMirror && !eclipseMirror)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
-                    if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(Cooldowns.InkBomb.ID))
+                    if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
-                        rogueStealth += 0.5f;
+                        if (!Player.HasCooldown(Cooldowns.InkBomb.ID))
+                        {
+                            Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
+                            rogueStealth += 0.5f;
+                            SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
+                        }
+
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                        SoundEngine.PlaySound(SoundID.Item1, Player.Center);
                         for (int i = 0; i < 3; i++)
                         {
-                            SoundEngine.PlaySound(SoundID.Item61, Player.Center);
-                            int ink = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-0f, -4f), ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                            int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
                             if (ink.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[ink].DamageType = DamageClass.Generic;
                         }

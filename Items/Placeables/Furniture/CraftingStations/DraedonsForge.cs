@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.DraedonsForge>());
             Item.value = Item.sellPrice(platinum: 4);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
                 AddIngredient(ItemID.LunarCraftingStation).
                 AddIngredient<AuricBar>(15).
                 AddIngredient<ExoPrism>(12).
-                AddIngredient<AscendantSpiritEssence>(25).
+                AddIngredient<AscendantSpiritEssence>(15).
                 Register();
         }
     }

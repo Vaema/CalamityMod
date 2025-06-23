@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
             Item.defense = 48;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -57,6 +57,7 @@ namespace CalamityMod.Items.Accessories
                 modPlayer.adrenaline = 0f;
 
             modPlayer.draedonsHeart = true;
+            player.noKnockback = true;
             modPlayer.hadNanomachinesLastFrame = true;
             modPlayer.AdrenalineDuration = NanomachinesDuration;
             modPlayer.contactDamageReduction += ContactDamageReduction;

@@ -130,7 +130,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Frostburn2, 180);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
         }
 
         public override bool? CanDamage() => Projectile.ai[0] == 0f ? null : false;

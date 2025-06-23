@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<Onyxplate>(25).
                 AddIngredient<ExodiumCluster>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

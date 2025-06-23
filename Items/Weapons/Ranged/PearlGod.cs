@@ -159,7 +159,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient(ItemID.WhitePearl).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

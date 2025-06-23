@@ -234,7 +234,7 @@ namespace CalamityMod.CalPlayer
                     Player.fishingSkill += 5;
 
             }
-            if (alcoholPoisonLevel > (cirrusDress ? 5 : 3))
+            if (alcoholPoisonLevel > 3)
             {
                 // Independently of Calamity's nerfs to Nebula life regen, it is disabled entirely by alcohol poisoning.
                 Player.nebulaLevelLife = 0;
@@ -250,12 +250,6 @@ namespace CalamityMod.CalPlayer
                 totalNegativeLifeRegen += 3 * alcoholPoisonLevel;
             }
             #endregion
-
-            if (manaOverloader)
-            {
-                if (Player.statMana > (int)(Player.statManaMax2 * 0.5))
-                    totalNegativeLifeRegen += 3;
-            }
 
             if (brimflameFrenzy)
             {
@@ -393,7 +387,7 @@ namespace CalamityMod.CalPlayer
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 6 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 8f : 12f), missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 10f : 12f), missingLifeRatio));//Rounding is needed for it to ever actually give +6 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
                 radiantOozeRegen += lifeRegenToGive / 2f;
                 ambrosialAmpouleRegen += lifeRegenToGive / 2f;
@@ -680,24 +674,6 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegenTime += 4;
             }
 
-            if (silvaWings)
-            {
-                if (Player.velocity.Y == 0f || Player.wingTime == Player.wingTimeMax)
-                    silvaWingsLifeRegenTimer = 0;
-                else
-                {
-                    silvaWingsLifeRegenTimer++;
-                    if (silvaWingsLifeRegenTimer > SilvaWings.LifeRegenTimerMax)
-                        silvaWingsLifeRegenTimer = SilvaWings.LifeRegenTimerMax;
-                }
-
-                // Life regen boost scales up to 8 HP/s based on how long you stay in the air without resetting flight time
-                int lifeRegenBoost = (int)MathHelper.Lerp(0f, 16f, silvaWingsLifeRegenTimer / (float)SilvaWings.LifeRegenTimerMax);
-                Player.lifeRegen += lifeRegenBoost;
-            }
-            else
-                silvaWingsLifeRegenTimer = 0;
-
             if (pinkCandle && !noLifeRegen)
             {
                 // Every frame, add up 1/60th of the healing value (0.4% max HP per second)
@@ -728,13 +704,19 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
                 Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
             }
+            
+            if (manaOverloader)
+            {
+                float manaRatio = Player.statMana / (float)Player.statManaMax2;
+                Player.lifeRegen += (int)(MathF.Round(MathHelper.Lerp(4f, -4f, manaRatio)) * (Player.HasBuff(BuffID.ManaSickness) ? 0.5f : 1f));
+            }
 
             #region Standing Still Life Regen
             // Standing still healing bonuses (all are exclusive with vanilla Shiny Stone, but all function similarly)
             if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
             {
                 bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking  || aAmpoule || purity;
+                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || aAmpoule || purity;
 
                 // Divides all negative life regen by two before applying any other effects.
                 if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
@@ -772,53 +754,12 @@ namespace CalamityMod.CalPlayer
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
-                    purityRegen += turboRegenPower/2f;
-                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower/2f;
+                    purityRegen += turboRegenPower / 2f;
+                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower / 2f;
                 }
 
             }
             #endregion
-
-            // Life regen soft cap.
-            if (Player.statLife < actualMaxLife)
-            {
-                // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Regenator, or The Camper.
-                int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper || regenator) &&
-                    Player.StandingStill() && Player.itemAnimation == 0;
-
-                if (!noLifeRegenCap)
-                {
-                    // Calculate the % of HP the player has left.
-                    float maxLifeRatio = Player.statLife / (float)actualMaxLife;
-
-                    // Calculate the ratio of the player's current max life relative to the starting HP of 100.
-                    // This makes the soft cap far less harsh at lower amounts of max life.
-                    // Ranges from 20 (at 100 max life) to 4 (at 500 max life) to 2 (at 1000 max life) to 1 (at greater than 2000 max life).
-                    int lifeRegenSoftCapMax = 20;
-                    int lifeRegenSoftCapMin = (int)Math.Round(100f / actualMaxLife * lifeRegenSoftCapMax);
-
-                    // The soft cap for life regen which ranges from 20 (at less than 5% HP) to 1 (at greater than or equal to 95% HP).
-                    // This value is capped at a min and max amount.
-                    int lifeRegenSoftCap = (int)MathHelper.Clamp((int)Math.Round((1f - maxLifeRatio) * lifeRegenSoftCapMax), lifeRegenSoftCapMin, lifeRegenSoftCapMax);
-
-                    // If life regen is greater than the calculated soft cap, reduce it.
-                    if (Player.lifeRegen - baseLifeRegenBoost > lifeRegenSoftCap)
-                    {
-                        // The scalar used to calculate how much the life regen stat should be reduced by.
-                        // Ranges from 1 (at 0% HP) to 2 (at 100% HP).
-                        float lifeRegenScalar = 1f + maxLifeRatio;
-
-                        // Calculate the amount of life regen the player should get according to the soft cap and their current % HP remaining.
-                        // The higher the player's % HP remaining the less life regen they get and vice versa.
-                        int defLifeRegen = (int)((Player.lifeRegen - baseLifeRegenBoost) / lifeRegenScalar);
-
-                        // Set the player's life regen to the scaled amount.
-                        Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
-                    }
-                }
-            }
 
             if (regenator) // Gives special regen of it's own, but disables all regular life regen
             {

@@ -53,6 +53,9 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             set => NPC.Calamity().newAI[0] = value;
         }
 
+        // Store velocity for use with other segments
+        public static float PWHeadVelocity;
+
         // Base distance from the target for most attacks
         private const float baseDistance = 1000f;
 
@@ -326,7 +329,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             float ancientDoomGateValue = death ? 95f : revenge ? 100f : expertMode ? 105f : 120f;
             float lightningChargePhaseGateValue = death ? 120f : revenge ? 135f : expertMode ? 150f : 180f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 lightningRainDuration *= 0.5f;
                 eidolonWyrmPhaseDuration *= 0.25f;
@@ -337,12 +340,10 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             bool immuneToSlowingDebuffs = AIState == (float)Phase.FinalPhase || AIState == (float)Phase.ShadowFireballSpin;
             NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<KamiFlu>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // Adjust opacity
@@ -446,7 +447,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Velocity and turn speed values
             float velocityScale = death ? 1.8f : revenge ? 1.5f : expertMode ? 1.2f : 0f;
             float baseVelocity = (targetDownDeep ? 10f : 15f) + (targetDownDeep ? velocityScale : velocityScale * 1.5f);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.15f;
 
             float turnSpeed = baseVelocity * 0.015f;
@@ -1457,8 +1458,19 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)NPC.velocity.Length(), 6f, 8f);
+            PWHeadVelocity = saneVelocity;
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            // if anyone needs to debug this piece of shit code, i leave this to you
+            //Main.NewText("vec length: " + NPC.velocity.Length());
+            //Main.NewText("sane vel:   " + saneVelocity);
+            //Main.NewText("brightness: " + brightness, new Color(255, 0, brightness * 128)); // this line doesnt even work LMAO
 
             return false;
         }
@@ -1466,6 +1478,13 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void BossLoot(ref string name, ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
+        }
+
+        public override void OnKill()
+        {
+            // Mark Primordial Wyrm as dead
+            DownedBossSystem.downedPrimordialWyrm = true;
+            CalamityNetcode.SyncWorld();
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

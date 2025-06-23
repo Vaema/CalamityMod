@@ -99,7 +99,6 @@ GodSlayerSlugProj.DisplayName: God Slayer Slug
 HalleysComet.DisplayName: Halley's Comet
 HandheldTankShell.DisplayName: Tank Shell
 HeavenlyGaleProj.DisplayName: Heavenly Gale
-HighExplosivePeanutShell.DisplayName: High Explosive Peanut Shell
 HiveMissile.DisplayName: Hive Missile
 HiveNuke.DisplayName: Hive Nuke
 HolyFireBulletProj.DisplayName: Holy Fire Bullet
@@ -206,8 +205,8 @@ SicknessRound.DisplayName: Round
 SicknessRound2.DisplayName: Round
 SlagRound.DisplayName: Slag Round
 SlimeBolt.DisplayName: Slime Bolt
-SmallCoral.DisplayName: Small Coral
 SparkSpreaderFire.DisplayName: Sparked Flames
+SpectralFlare.DisplayName: Spectral Flare
 SpeedBlasterShot.DisplayName: Splatter Shot
 SporeBomb.DisplayName: Spore Bomb
 SproutingArrowMain.DisplayName: Sprouting Arrow

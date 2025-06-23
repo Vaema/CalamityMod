@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.Calamity().canFirePointBlankShots = true;
         }
@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PulseBow).
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
-                AddIngredient<AstralBow>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddIngredient<ExodiumCluster>(15).

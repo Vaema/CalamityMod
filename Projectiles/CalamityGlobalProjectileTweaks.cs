@@ -35,8 +35,6 @@ namespace CalamityMod.Projectiles
                 YoyoTopSpeed(topSpeed / (extraUpdates + 1)),
             };
 
-            // TODO -- Very few vanilla yoyos have range and speed tweaks. Looks like an unfinished job.
-
             // SORTING NOTES:
             // 1. Sort tweaks by categories first, then sort by the internal name in alphabetical order. Navigate through categories and names using the search function.
             // 2. Higher categories hold priority over lower ones (ie. Balancing with PB tweaks belong in balancing, rather than PB)
@@ -142,6 +140,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterFragmentsII, Do(IDStaticIFrames(15)) },
                 { ProjectileID.ClusterSnowmanRocketI, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
+                { ProjectileID.DangerousSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
@@ -169,6 +168,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.InfluxWaver, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.InfernoFriendlyBolt, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.InfernoFriendlyBlast, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
+                { ProjectileID.JumperSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.LaserDrill, Do(ArmorPenetrationDelta(+25), LocalIFrames(5)) },
                 { ProjectileID.LightDisc, Do(MaxUpdatesExact(3), DefaultIDStaticIFrames) },
                 { ProjectileID.LostSoulHostile, Do(TileCollide) }, // Ragged Caster
@@ -215,6 +215,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.TrueNightsEdge, Do(PiercingExact(4)) },
                 { ProjectileID.VenomBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
+                { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
                 { ProjectileID.WeatherPainShot, Do(ExtraUpdatesExact(3), TimeLeftExact(1920)) },
@@ -841,7 +842,7 @@ namespace CalamityMod.Projectiles
             public void ApplyTweak(Projectile proj)
             {
                 proj.penetrate = newPenetrate;
-                if (proj.penetrate < 1)
+                if (proj.penetrate == 0)
                     proj.penetrate = 1;
                 proj.maxPenetrate = proj.penetrate;
             }

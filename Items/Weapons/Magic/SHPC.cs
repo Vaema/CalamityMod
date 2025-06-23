@@ -20,9 +20,9 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBShot");
-        public static readonly SoundStyle VacuumStart = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumStart");
-        public static readonly SoundStyle VacuumLoop = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumLoop");
-        public static readonly SoundStyle VacuumEnd = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumEnd");
+        public static readonly SoundStyle VacuumStart = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumStart") with { Volume = 0.75f };
+        public static readonly SoundStyle VacuumLoop = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumLoop") with { Volume = 0.75f };
+        public static readonly SoundStyle VacuumEnd = new SoundStyle("CalamityMod/Sounds/Item/SHPCVacuumEnd") with { Volume = 0.75f };
 
         public const int ShotsPerSoul = 50;
         public int storedSoulpower = 0;
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 124;
             Item.height = 52;
-            Item.damage = 94;
+            Item.damage = 110;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 15;
             Item.useAnimation = Item.useTime = 60;
@@ -210,7 +210,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), 0, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SHPV>(), damage, 0f, player.whoAmI);
                 return false;
             }
             else

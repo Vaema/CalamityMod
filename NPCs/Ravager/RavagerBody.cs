@@ -229,20 +229,20 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.dontTakeDamage = true;
                 if (bossRush)
                 {
-                    if (!Main.dedServ)
+                    foreach (Player p in Main.ActivePlayers)
                     {
-                        if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
-                            Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                        if (!p.dead && revenge)
+                            p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                     }
                 }
             }
             else
             {
                 NPC.dontTakeDamage = false;
-                if (!Main.dedServ)
+                foreach (Player p in Main.ActivePlayers)
                 {
-                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && revenge)
-                        Main.LocalPlayer.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
+                    if (!p.dead && revenge)
+                        p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
                 }
             }
 
@@ -497,7 +497,7 @@ namespace CalamityMod.NPCs.Ravager
                             NPC.ai[1] += 1f;
                     }
 
-                    float jumpGateValue = Main.getGoodWorld ? 0f : 180f;
+                    float jumpGateValue = CalamityWorld.LegendaryMode ? 0f : 180f;
                     if (NPC.ai[1] >= jumpGateValue)
                     {
                         NPC.ai[1] = -20f;
@@ -594,7 +594,7 @@ namespace CalamityMod.NPCs.Ravager
                         bool anyRockPillars = NPC.AnyNPCs(ModContent.NPCType<RockPillar>());
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
 
-                        if (CalamityWorld.LegendaryMode && revenge)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             if (!expertMode || anyRockPillars || anyFlamePillars)
                                 SoundEngine.PlaySound(PillarSound, NPC.Center);
@@ -636,12 +636,12 @@ namespace CalamityMod.NPCs.Ravager
                             {
                                 SoundEngine.PlaySound(PillarSound, NPC.Center);
                             }
-                            if (!anyRockPillars || Main.getGoodWorld)
+                            if (!anyRockPillars || CalamityWorld.LegendaryMode)
                             {
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                             }
-                            else if (!anyFlamePillars || Main.getGoodWorld)
+                            else if (!anyFlamePillars || CalamityWorld.LegendaryMode)
                             {
                                 float distanceMultiplier = finalPhase ? 2.5f : 2f;
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)player.Center.X - (int)(spawnDistance * distanceMultiplier), (int)player.Center.Y - 100, ModContent.NPCType<FlamePillar>());
@@ -849,6 +849,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {

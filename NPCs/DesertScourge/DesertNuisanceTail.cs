@@ -26,11 +26,11 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.height = 88;
 
             NPC.defense = 8;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.defense += 34;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax = 4800;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
+            bool death = CalamityWorld.death || bossRush;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -137,11 +137,11 @@ namespace CalamityMod.NPCs.DesertScourge
 
             // Calculate contact damage based on velocity
             float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHead.SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
-                masterMode ? DesertNuisanceHead.SegmentVelocity_Master :
+                CalamityWorld.LegendaryMode ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
+                death ? DesertNuisanceHead.SegmentVelocity_Death :
                 DesertNuisanceHead.SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;

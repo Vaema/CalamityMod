@@ -29,9 +29,9 @@ namespace CalamityMod.Projectiles.Magic
         public ref float Timer => ref Projectile.ai[0];
 
         // The maximum distance in pixels out from the tip of the gun in which souls can be sucked in.
-        private const float Size = 480f;
-        // The spread of the suction on each side. 25 degrees on each side, 50 degrees total.
-        private const float Spread = MathHelper.Pi / 7.2f;
+        private const float Size = 576f;
+        // The spread of the suction on each side. 27 degrees on each side, 54 degrees total.
+        private const float Spread = MathHelper.Pi / 6.66f;
         // Maximum number of souls per visual ring drawn on the gun. Additional souls get moved into additional rings.
         private const int MaxSoulsRing = 10;
         // Manual offset used for drawing the gun.
@@ -89,14 +89,16 @@ namespace CalamityMod.Projectiles.Magic
                     {
                         if (Owner.HeldItem.ModItem is SHPC shpc && shpc.storedSoulpower > 0)
                         {
-                            shpc.storedSoulpower--;
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
                             Vector2 laserVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 20f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), Projectile.damage, 3f, Projectile.owner, SoulColors[0]);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.25f), 3f, Projectile.owner, SoulColors[0]);
 
                             if (ConsumeSoul)
+                            {
                                 SoulColors.RemoveAt(0);
+                                shpc.storedSoulpower--;
+                            }
                             ConsumeSoul = !ConsumeSoul;
                         }
                         else
@@ -107,8 +109,8 @@ namespace CalamityMod.Projectiles.Magic
             else
             {
                 // Debug code used for assessing the visual and functional area of the vacuum
-                /*BloomLineVFX l = new(Owner.Center, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(Spread) * Size, 0.4f, Color.Gray, 2, true);
-                BloomLineVFX l2 = new(Owner.Center, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(-Spread) * Size, 0.4f, Color.Gray, 2, true);
+                /*BloomLineVFX l = new(TipPosition, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(Spread) * Size, 0.4f, Color.Gray, 2, true);
+                BloomLineVFX l2 = new(TipPosition, Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld).RotatedBy(-Spread) * Size, 0.4f, Color.Gray, 2, true);
                 GeneralParticleHandler.SpawnParticle(l);
                 GeneralParticleHandler.SpawnParticle(l2);*/
 
@@ -134,7 +136,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Center = Owner.Center;
             // This is used to make the projectile naturally despawn with a delay after running out of souls or if you stop firing with no souls
             if (!FiringLasers || SoulColors.Count > 0)
-                Projectile.timeLeft = 50;
+                Projectile.timeLeft = 48;
         }
 
         public override void OnKill(int timeLeft)
@@ -145,12 +147,16 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
+            // You shouldn't be sucking in souls while firing
+            if (FiringLasers)
+                return false;
+
             bool withinAngle = Math.Abs(Utils.DirectionTo(TipPosition, Owner.Calamity().mouseWorld).ToRotation() - Utils.DirectionTo(TipPosition, targetHitbox.Center.ToVector2()).ToRotation()) <= Spread;
             // This extra safety hitbox is a square around the gun tip used so that the soul doesn't need to perfectly travel down the narrow end of the vacuum to get sucked in
             Rectangle extraSafetyHitbox = new Rectangle((int)TipPosition.X - (Projectile.width / 2), (int)TipPosition.Y - (Projectile.height / 2), Projectile.width, Projectile.height);
             return (CalamityUtils.CircularHitboxCollision(TipPosition, Size, targetHitbox) && withinAngle) || targetHitbox.Intersects(extraSafetyHitbox);
         }
-
+        public override bool? CanDamage() => false;
         public override bool PreDraw(ref Color lightColor)
         {
             // Draw spiraling smoke particles representing the suction radius
@@ -168,7 +174,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int j = 0; j < 3; j++)
                     {
                         float distRatio = 1f - (Main.GameUpdateCount + j * 10) % 30 / 30f;
-                        Vector2 posOffset = new Vector2(MathF.Sin(MathHelper.TwoPi / 6f * i) * 25f * distRatio, MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 30f + MathHelper.TwoPi / 6f * i) * 160f * distRatio).RotatedBy(rotation);
+                        Vector2 posOffset = new Vector2(MathF.Sin(MathHelper.TwoPi / 6f * i) * 25f * distRatio, MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 30f + MathHelper.TwoPi / 6f * i) * 240f * distRatio).RotatedBy(rotation);
                         float colorMult = 0.5f * Utils.GetLerpValue(1f, 0.8f, distRatio, true);
                         Main.EntitySpriteDraw(tex, Vector2.Lerp(TipPosition, farthestPos, distRatio) + posOffset - Main.screenPosition, frame, Color.Gray * colorMult, rotation + MathHelper.Pi, frame.Size() / 2f, 1.5f * distRatio, SpriteEffects.None);
                     }
@@ -185,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
             // Draw souls around the gun as a sort of indicator of how many you have sucked in
             if (SoulColors.Count > 0)
             {
-                Texture2D sq = SoulSquare.Value;
+                Texture2D orbitingSoulTexture = SoulSquare.Value;
                 for (int i = 0; i < SoulColors.Count; i++)
                 {
                     int soulsInRing = SoulColors.Count > MaxSoulsRing ? (SoulColors.Count - i > SoulColors.Count % MaxSoulsRing ? MaxSoulsRing : SoulColors.Count % MaxSoulsRing) : SoulColors.Count;
@@ -197,7 +203,10 @@ namespace CalamityMod.Projectiles.Magic
                     // Makes the souls disappear when they go "behind" the gun
                     bool shouldDraw = posOffset.RotatedBy(-rotation).X <= 2.7f;
                     if (shouldDraw)
-                        Main.EntitySpriteDraw(sq, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, sq.Size() / 2f, 1f, SpriteEffects.None);
+                    {
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, orbitingSoulTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, Color.White, 0f, orbitingSoulTexture.Size() * 0.5f, 0.5f, SpriteEffects.None);
+                    }
                 }
             }
             return false;

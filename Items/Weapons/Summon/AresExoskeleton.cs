@@ -78,13 +78,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 1f;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
 
             Item.UseSound = SoundID.Item117;
             Item.shoot = ModContent.ProjectileType<ExoskeletonPlasmaCannon>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
+
+        public override bool? CanAutoReuseItem(Player player) => false;
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {

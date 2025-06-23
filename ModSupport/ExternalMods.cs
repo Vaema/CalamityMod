@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 
 namespace CalamityMod
 {
@@ -31,6 +25,7 @@ namespace CalamityMod
         internal static Mod magicStorage = null;
         internal static Mod overhaul = null;
         internal static Mod redemption = null;
+        internal static Mod remnants = null;
         internal static Mod soa = null;
         internal static Mod subworldLibrary = null;
         internal static Mod summonersAssociation = null;
@@ -67,6 +62,8 @@ namespace CalamityMod
             ModLoader.TryGetMod("TerrariaOverhaul", out overhaul);
             redemption = null;
             ModLoader.TryGetMod("Redemption", out redemption);
+            remnants = null;
+            ModLoader.TryGetMod("Remnants", out remnants);
             soa = null;
             ModLoader.TryGetMod("SacredTools", out soa);
             subworldLibrary = null;
@@ -97,6 +94,7 @@ namespace CalamityMod
             magicStorage = null;
             overhaul = null;
             redemption = null;
+            remnants = null;
             soa = null;
             subworldLibrary = null;
             summonersAssociation = null;

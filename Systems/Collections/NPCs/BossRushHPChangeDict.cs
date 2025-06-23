@@ -32,7 +32,6 @@ namespace CalamityMod.Systems.Collections
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
-                { NPCType<BloodlettingServant>(), 12000 },
 
                 { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
                 { NPCID.EaterofWorldsBody, 10000 },
@@ -69,7 +68,6 @@ namespace CalamityMod.Systems.Collections
 
                 { NPCID.Spazmatism, 150000 }, // 30 seconds
                 { NPCID.Retinazer, 125000 },
-                { NPCType<Foveanator>(), 137500 },
 
                 { NPCID.TheDestroyer, 600000 }, // 30 seconds + immunity timer at start
                 { NPCID.TheDestroyerBody, 600000 },
@@ -77,7 +75,6 @@ namespace CalamityMod.Systems.Collections
                 { NPCID.Probe, 10000 },
 
                 { NPCID.SkeletronPrime, 160000 }, // 30 seconds
-                { NPCType<SkeletronPrime2>(), 160000 },
                 { NPCID.PrimeVice, 54000 },
                 { NPCID.PrimeCannon, 45000 },
                 { NPCID.PrimeSaw, 45000 },

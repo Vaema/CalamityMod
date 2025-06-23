@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 42;
             NPC.height = 62;
 
-            NPC.LifeMaxNERB(1200, 1440, 50000);
+            NPC.LifeMaxNERB(960, 1152, 50000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -141,14 +141,14 @@ namespace CalamityMod.NPCs.Perforator
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = 0.15f;
-            float turnSpeed = 0.1f;
+            float speed = revenge ? 0.2f : 0.15f;
+            float turnSpeed = revenge ? 0.15f : 0.1f;
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.15f : 0.1f) * enrageScale;
+                float velocityScale = (death ? 0.2f : 0.14f) * enrageScale;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.1f : 0.07f) * enrageScale;
+                float accelerationScale = (death ? 0.15f : 0.1f) * enrageScale;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 

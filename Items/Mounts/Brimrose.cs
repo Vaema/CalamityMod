@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Mounts
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item3;
             Item.noMelee = true;
-            Item.mountType = ModContent.MountType<PhuppersChair>();
+            Item.mountType = ModContent.MountType<BrimroseChair>();
 
             Item.value = Item.sellPrice(gold: 5);
             Item.rare = ItemRarityID.Yellow;
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Mounts
             CreateRecipe().
                 AddIngredient<UnholyCore>(5).
                 AddIngredient<Bloodstone>(20).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

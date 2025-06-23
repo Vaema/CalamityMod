@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.CraftingStations;
+using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.NPCs.SupremeCalamitas;
@@ -79,9 +80,9 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
         public static void HoverItemIcon(int i, int j)
         {
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
+            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld;
             if (vodka)
-                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CirrusVodka>();
+                Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<DeliciousMeat>();
             else if (Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()))
                 Main.LocalPlayer.cursorItemIconID = ModContent.ItemType<CeremonialUrn>();
             else
@@ -108,12 +109,12 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
         public static bool AttemptToSummonSCal(int i, int j)
         {
             if (!Main.LocalPlayer.HasItem(ModContent.ItemType<AshesofCalamity>()) &&
-                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld))
+                !Main.LocalPlayer.HasItem(ModContent.ItemType<CeremonialUrn>()) && !(Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld))
             {
                 return true;
             }
 
-            bool vodka = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<CirrusVodka>() && Main.zenithWorld;
+            bool meat = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<DeliciousMeat>() && Main.zenithWorld;
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) || BossRushEvent.BossRushActive)
                 return true;
@@ -130,14 +131,14 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             ritualSpawnPosition += new Vector2(0f, -24f);
 
             SoundEngine.PlaySound(SummonSound, ritualSpawnPosition);
-            Projectile.NewProjectile(new EntitySource_WorldEvent(), ritualSpawnPosition, Vector2.Zero, ModContent.ProjectileType<SCalRitualDrama>(), 0, 0f, Main.myPlayer, 0, vodka.ToInt());
+            Projectile.NewProjectile(new EntitySource_WorldEvent(), ritualSpawnPosition, Vector2.Zero, ModContent.ProjectileType<SCalRitualDrama>(), 0, 0f, Main.myPlayer, 0, meat.ToInt());
 
-            if (vodka)
+            if (meat)
             {
-                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<CirrusVodka>(), true);
+                Main.LocalPlayer.ConsumeItem(ModContent.ItemType<DeliciousMeat>(), true);
                 foreach (NPC n in Main.ActiveNPCs)
                 {
-                    if (n.type == ModContent.NPCType<Cirrus>())
+                    if (n.type == ModContent.NPCType<Archmage>())
                         n.active = false;
                 }
             }

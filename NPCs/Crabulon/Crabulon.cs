@@ -95,7 +95,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
@@ -136,7 +136,6 @@ namespace CalamityMod.NPCs.Crabulon
             bool death = CalamityWorld.death || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -146,7 +145,7 @@ namespace CalamityMod.NPCs.Crabulon
             // Phases
             bool phase2 = lifeRatio < 0.66f && expertMode;
             bool phase3 = lifeRatio < 0.33f && expertMode;
-            bool phase4 = lifeRatio < 0.15f && masterMode;
+            bool phase4 = lifeRatio < 0.15f && death;
 
             int despawnDistanceInTiles = 500;
 
@@ -209,7 +208,7 @@ namespace CalamityMod.NPCs.Crabulon
                 enrageScale += 1f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrageScale += 0.5f;
 
             if (NPC.ai[0] < 2f)
@@ -259,9 +258,9 @@ namespace CalamityMod.NPCs.Crabulon
                 if (phase3)
                     NPC.ai[1] += 1f;
                 if (NPC.Distance(player.Center) < 160f)
-                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+                    NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
-                // Gets tired easily in final phase. - Fabsol
+                // Gets tired easily in final phase.
                 float idleTime = phase4 ? 480f : death ? 60f : expertMode ? 90f : 120f;
                 if (NPC.ai[1] >= idleTime)
                 {
@@ -286,7 +285,7 @@ namespace CalamityMod.NPCs.Crabulon
                     walkingVelocity += 0.75f;
                 if (phase4)
                     walkingVelocity += 1f;
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     walkingVelocity *= 2f;
 
                 bool shouldWalkSlower = false;
@@ -355,7 +354,7 @@ namespace CalamityMod.NPCs.Crabulon
 
                 NPC.ai[1] += 1f;
                 if (NPC.Distance(player.Center) < 160f)
-                    NPC.ai[1] += masterMode ? 4f : expertMode ? 2f : 1f;
+                    NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
                 float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
@@ -530,7 +529,7 @@ namespace CalamityMod.NPCs.Crabulon
                             destination.Normalize();
                             destination *= projectileVelocity;
 
-                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                            // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
                             int numProj = bossRush ? 24 : phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
@@ -555,7 +554,7 @@ namespace CalamityMod.NPCs.Crabulon
                                 destination.Normalize();
                                 destination *= projectileVelocity;
 
-                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow. - Fabsol
+                                // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
                                 int numProj = bossRush ? 16 : phase4 ? 8 : (phase3 && death) ? 6 : 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
@@ -983,7 +982,7 @@ namespace CalamityMod.NPCs.Crabulon
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.01 : Main.getGoodWorld ? 0.02 : 0.05));
+                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.02 : 0.05));
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;
@@ -995,8 +994,8 @@ namespace CalamityMod.NPCs.Crabulon
                             int npcType = ModContent.NPCType<CrabShroom>();
                             int crabShroom = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, npcType);
                             Main.npc[crabShroom].SetDefaults(npcType);
-                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (Main.getGoodWorld ? 0.2f : 0.1f);
-                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (Main.getGoodWorld ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
                             if (Main.dedServ && crabShroom < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, crabShroom);
                         }
@@ -1004,6 +1003,7 @@ namespace CalamityMod.NPCs.Crabulon
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         // Can only hit the target if within certain distance
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

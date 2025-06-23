@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 75;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1300;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
 
             NPC.knockBackResist = 0.9f;
@@ -56,7 +56,6 @@ namespace CalamityMod.NPCs.HiveMind
         public override void AI()
         {
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -105,7 +104,7 @@ namespace CalamityMod.NPCs.HiveMind
             float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
             float acceleration = 0.8f;
-            float distanceFromMind = Main.getGoodWorld ? 192f : 96f;
+            float distanceFromMind = CalamityWorld.LegendaryMode ? 192f : 96f;
 
             float hiveMindX = Main.npc[hiveMind].Center.X;
             float hiveMindY = Main.npc[hiveMind].Center.Y;
@@ -165,7 +164,7 @@ namespace CalamityMod.NPCs.HiveMind
                     NPC.localAI[1] += 1f;
                     if (NPC.localAI[1] < ShowTelegraphValue)
                         NPC.localAI[1] += Main.rand.Next(2);
-                    if (masterMode)
+                    if (death)
                         NPC.localAI[1] += 1f;
                 }
 
@@ -178,9 +177,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
-                        if (masterMode)
-                            projSpeed += 2f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
@@ -190,7 +187,7 @@ namespace CalamityMod.NPCs.HiveMind
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
                         playerY *= playerDist;
-                        int type = (CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
+                        int type = (CalamityWorld.LegendaryMode && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
                         int damage = type == ProjectileID.CursedFlameHostile ? 30 : NPC.GetProjectileDamage(type);
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)

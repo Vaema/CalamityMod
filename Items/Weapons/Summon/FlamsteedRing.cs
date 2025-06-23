@@ -67,6 +67,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.Calamity().CannotBeEnchanted = true;
         }
 
+        public override bool? CanAutoReuseItem(Player player) => false;
+
         public static bool SpaceForLargeMech(Player player, bool visuals = true)
         {
             bool sufficientSpace = true;

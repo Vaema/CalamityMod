@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 75;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1800;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
 
             NPC.aiStyle = -1;
@@ -63,7 +63,6 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
@@ -74,15 +73,18 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10f : death ? 7f : revenge ? 6f : 4f;
-            float acceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
-            float deceleration = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
-            if (masterMode)
+            // Despawn if Hive Mind isn't present
+            if (CalamityGlobalNPC.hiveMind == -1)
             {
-                velocity += 2f;
-                acceleration += 0.2f;
-                deceleration -= 0.05f;
+                NPC.life = 0;
+                NPC.HitEffect();
+                NPC.checkDead();
+                NPC.active = false;
             }
+
+            float velocity = CalamityWorld.LegendaryMode ? 10f : death ? 7f : revenge ? 6f : 4f;
+            float acceleration = CalamityWorld.LegendaryMode ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
+            float deceleration = CalamityWorld.LegendaryMode ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
             if (BossRushEvent.BossRushActive)
             {
                 velocity *= 2f;
@@ -105,7 +107,7 @@ namespace CalamityMod.NPCs.HiveMind
             }
 
             bool dropRain = NPC.Bottom.Y < Main.player[NPC.target].position.Y - 350f && Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
-            float distanceX = masterMode ? 200f : 400f;
+            float distanceX = death ? 200f : 400f;
             if (NPC.Center.X > Main.player[NPC.target].Center.X + distanceX)
             {
                 dropRain = false;
@@ -128,7 +130,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (dropRain && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.ai[0] += 1f;
-                float rainDropRate = Main.getGoodWorld ? 10f : death ? 15f : revenge ? 20f : 30f;
+                float rainDropRate = CalamityWorld.LegendaryMode ? 10f : death ? 15f : revenge ? 20f : 30f;
                 if (NPC.ai[0] >= rainDropRate)
                 {
                     NPC.ai[0] = 0f;
@@ -136,7 +138,7 @@ namespace CalamityMod.NPCs.HiveMind
                     int shaderainYos = (int)(NPC.position.Y + NPC.height + 4f);
                     int type = ModContent.ProjectileType<ShaderainHostile>();
                     int damage = NPC.GetProjectileDamage(type);
-                    float randomXVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.rand.NextFloat() * 5f : 0f;
+                    float randomXVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextFloat() * 5f : 0f;
                     float velocityY = 8f;
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
                 }

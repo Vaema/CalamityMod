@@ -741,7 +741,7 @@ namespace CalamityMod
             {
                 string entryName = "Dragonfolly";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-                int type = NPCType<Bumblefuck>();
+                int type = NPCType<Dragonfolly>();
                 List<int> collection = new List<int>() { ItemType<DragonfollyRelic>(), ItemType<DragonfollyTrophy>(), ItemType<BumblefuckMask>(), ItemType<LoreDragonfolly>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedDragonfolly, type, new Dictionary<string, object>()
                 {

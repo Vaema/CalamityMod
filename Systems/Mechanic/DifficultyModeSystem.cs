@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.CalPlayer;
-using CalamityMod.Events;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,7 +29,7 @@ namespace CalamityMod.Systems
         {
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
-            Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
+            Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new ExpertDifficulty(), new MasterDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
 
             CalculateDifficultyData();
         }
@@ -38,6 +37,15 @@ namespace CalamityMod.Systems
         public override void Unload()
         {
             Difficulties = null;
+        }
+
+        // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
+        public override void PostUpdateWorld()
+        {
+            if (Main.expertMode && !Main.masterMode && GetCurrentDifficulty == DeathDifficulty.Instance)
+                ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
+            if (Main.masterMode && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
+                ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
         }
 
         public static DifficultyMode GetCurrentDifficulty
@@ -127,6 +135,7 @@ namespace CalamityMod.Systems
         }
 
         public abstract Asset<Texture2D> Texture { get; }
+        public abstract Asset<Texture2D> TextureDisabled { get; }
         public virtual LocalizedText ExpandedDescription => LocalizedText.Empty;
 
         public float DifficultyScale;
@@ -147,7 +156,7 @@ namespace CalamityMod.Systems
         /// </summary>
         public virtual bool RequiresDifficulty(DifficultyMode mode) => false;
 
-        public virtual int FavoredDifficultyAtTier(int tier) => 0;
+        public virtual int[] FavoredDifficultyAtTier(int tier) => [0];
     }
 
     public class NoDifficulty : DifficultyMode
@@ -155,7 +164,7 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => true;
-            set { }
+            set => Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
         }
 
         private Asset<Texture2D> _texture;
@@ -164,17 +173,28 @@ namespace CalamityMod.Systems
             get
             {
                 if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_None");
+                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic");
 
                 return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
+
+                return _textureDisabled;
             }
         }
 
         public NoDifficulty()
         {
             DifficultyScale = 0;
-            Name = CalamityUtils.GetText("UI.NoDifficulty");
-            ShortDescription = CalamityUtils.GetText("UI.NoDifficultyInfo");
+            Name = CalamityUtils.GetText("UI.Classic");
+            ShortDescription = CalamityUtils.GetText("UI.ClassicInfo");
 
             ActivationTextKey = string.Empty;
             DeactivationTextKey = string.Empty;
@@ -182,7 +202,124 @@ namespace CalamityMod.Systems
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
             ChatTextColor = Color.White;
+            Instance = this;
         }
+
+        public static NoDifficulty Instance { get; private set; } = null;
+    }
+
+    public class ExpertDifficulty : DifficultyMode
+    {
+        public override bool Enabled
+        {
+            get => Main.expertMode;
+            set => Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+        }
+
+        private Asset<Texture2D> _texture;
+        public override Asset<Texture2D> Texture
+        {
+            get
+            {
+                if (_texture == null)
+                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert");
+
+                return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
+
+                return _textureDisabled;
+            }
+        }
+
+        public override LocalizedText ExpandedDescription
+        {
+            get
+            {
+                return GetText("UI.ExpertExpandedInfo");
+            }
+        }
+
+        public ExpertDifficulty()
+        {
+            DifficultyScale = 0.1f;
+            Name = GetText("UI.Expert");
+            ShortDescription = GetText("UI.ExpertShortInfo");
+
+            ActivationTextKey = "Mods.CalamityMod.UI.ExpertActivate";
+            DeactivationTextKey = "Mods.CalamityMod.UI.ExpertDeactivate";
+
+            ActivationSound = SoundID.ForceRoarPitched;
+
+            ChatTextColor = Color.DarkGoldenrod;
+            Instance = this;
+        }
+
+        public static ExpertDifficulty Instance { get; private set; } = null;
+    }
+
+    public class MasterDifficulty : DifficultyMode
+    {
+        public override bool Enabled
+        {
+            get => Main.masterMode;
+            set => Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+        }
+
+        private Asset<Texture2D> _texture;
+        public override Asset<Texture2D> Texture
+        {
+            get
+            {
+                if (_texture == null)
+                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master");
+
+                return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
+
+                return _textureDisabled;
+            }
+        }
+
+        public override LocalizedText ExpandedDescription
+        {
+            get
+            {
+                return GetText("UI.MasterExpandedInfo");
+            }
+        }
+
+        public MasterDifficulty()
+        {
+            DifficultyScale = 0.25f;
+            Name = GetText("UI.Master");
+            ShortDescription = GetText("UI.MasterShortInfo");
+
+            ActivationTextKey = "Mods.CalamityMod.UI.MasterActivate";
+            DeactivationTextKey = "Mods.CalamityMod.UI.MasterDeactivate";
+
+            ActivationSound = SoundID.NPCDeath10;
+
+            ChatTextColor = Color.DarkOliveGreen;
+            Instance = this;
+        }
+
+        public static MasterDifficulty Instance { get; private set; } = null;
     }
 
     public class RevengeanceDifficulty : DifficultyMode
@@ -202,6 +339,17 @@ namespace CalamityMod.Systems
                     _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev");
 
                 return _texture;
+            }
+        }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
+
+                return _textureDisabled;
             }
         }
 
@@ -227,7 +375,10 @@ namespace CalamityMod.Systems
             ActivationSound = SoundID.Item119;
 
             ChatTextColor = Color.Crimson;
+            Instance = this;
         }
+
+        public static RevengeanceDifficulty Instance { get; private set; } = null;
     }
 
     public class DeathDifficulty : DifficultyMode
@@ -249,6 +400,17 @@ namespace CalamityMod.Systems
                 return _texture;
             }
         }
+        private Asset<Texture2D> _textureDisabled;
+        public override Asset<Texture2D> TextureDisabled
+        {
+            get
+            {
+                if (_textureDisabled == null)
+                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
+
+                return _textureDisabled;
+            }
+        }
 
         public override LocalizedText ExpandedDescription => CalamityUtils.GetText("UI.DeathExpandedInfo");
 
@@ -264,19 +426,26 @@ namespace CalamityMod.Systems
             ActivationSound = DemonshadeHelm.ActivationSound;
 
             ChatTextColor = Color.MediumOrchid;
+            Instance = this;
         }
 
-        public override int FavoredDifficultyAtTier(int tier)
+        public override int[] FavoredDifficultyAtTier(int tier)
         {
             DifficultyMode[] tierList = DifficultyModeSystem.DifficultyTiers[tier];
 
+            List<int> difficulties = new List<int>();
+
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i].Name == CalamityUtils.GetText("UI.Revengeance"))
-                    return i;
+                if (tierList[i].Name == CalamityUtils.GetText("UI.Master") || tierList[i].Name == CalamityUtils.GetText("UI.Revengeance"))
+                    difficulties.Add(i);
             }
 
-            return 0;
+            if (difficulties.Count <= 0)
+                difficulties.Add(0);
+
+            return difficulties.ToArray();
         }
+        public static DeathDifficulty Instance { get; private set; } = null;
     }
 }

@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<DraconicIncenseTile>());
             Item.value = Item.sellPrice(gold: 75);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
             Item.vanity = true;
         }
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             CreateRecipe().
                 AddIngredient<YharonSoulFragment>(15).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

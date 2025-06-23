@@ -17,8 +17,8 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
-            Projectile.timeLeft = 600;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 180 * Projectile.MaxUpdates;
         }
 
         public override void AI()

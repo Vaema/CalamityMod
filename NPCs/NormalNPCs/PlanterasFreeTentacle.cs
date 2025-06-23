@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 if (Main.rand.NextBool(5))
                     NPC.reflectsProjectiles = true;
@@ -135,7 +135,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Vector2 idealVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (death ? 7f : 5.5f);
             float acceleration = death ? 0.14f : 0.105f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 idealVelocity *= 1.2f;
                 acceleration *= 1.4f;

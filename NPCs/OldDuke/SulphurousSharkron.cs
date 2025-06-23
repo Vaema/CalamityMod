@@ -212,7 +212,7 @@ namespace CalamityMod.NPCs.OldDuke
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
+            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
             {
                 int spawnX = NPC.width / 2;
                 int type = ModContent.ProjectileType<OldDukeGore>();
@@ -251,6 +251,7 @@ namespace CalamityMod.NPCs.OldDuke
                     afterimageColor = Color.Lerp(afterimageColor, Color.Lime, 0.5f);
                     afterimageColor = NPC.GetAlpha(afterimageColor);
                     afterimageColor *= (afterimageAmt - i) / 15f;
+                    afterimageColor.A = 0;
                     Vector2 afterimagePos = NPC.oldPos[i] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
                     afterimagePos -= new Vector2(texture2D15.Width, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
                     afterimagePos += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);

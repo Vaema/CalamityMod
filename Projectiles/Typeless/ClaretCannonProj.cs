@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.friendly = true;
             Projectile.alpha = 0;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
             Projectile.DamageType = AverageDamageClass.Instance;
-            Projectile.extraUpdates = 1;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
             Projectile.aiStyle = 0;
         }
 
@@ -53,8 +53,8 @@ namespace CalamityMod.Projectiles.Typeless
 
          public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Laceration>(), ClaretCannon.ClaretCooldownMax);
-            target.AddBuff(BuffID.BetsysCurse, ClaretCannon.ClaretCooldownMax*2);
+            target.AddBuff(ModContent.BuffType<Laceration>(), ClaretCannon.ClaretCooldownMax / 2);
+            target.AddBuff(BuffID.BetsysCurse, ClaretCannon.ClaretCooldownMax);
             if (Projectile.penetrate == -1)
                 return;
             var player = Main.player[Projectile.owner];

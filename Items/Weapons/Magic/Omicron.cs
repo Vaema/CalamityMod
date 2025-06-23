@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<OmicronHoldout>();
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.ownedProjectileCounts[ModContent.ProjectileType<OmicronWingman>()] < 2;
 

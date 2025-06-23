@@ -20,8 +20,8 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            list.IntegrateHotkey(CalamityKeybinds.TransformerHotKey);
             list.FindAndReplace("[GFB]", Lang.SupportGlyphs(this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal")));
+            list.IntegrateHotkey(CalamityKeybinds.TransformerHotKey);
         }
         public override void SetStaticDefaults()
         {

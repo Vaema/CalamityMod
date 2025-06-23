@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.height = 80;
             NPC.defense = 40;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 10000;
+            NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.netAlways = true;
@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.Ravager
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.defense *= 2;
-                NPC.lifeMax *= 4;
+                NPC.lifeMax *= 3;
             }
             if (BossRushEvent.BossRushActive)
             {
@@ -122,7 +122,7 @@ namespace CalamityMod.NPCs.Ravager
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         SoundEngine.PlaySound(RavagerHead.MissileSound, NPC.Center);
-                        type = ModContent.ProjectileType<ScavengerNuke>();
+                        type = ModContent.ProjectileType<RavagerNuke>();
                         damage = NPC.GetProjectileDamage(type);
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity * 0.25f, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.scavenger].target, 0f);
                     }

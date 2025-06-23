@@ -67,7 +67,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<AnechoicPlating>().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<MolluskHusk>(15).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

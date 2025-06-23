@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Turret
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
+            target.AddBuff(BuffID.Frozen, 30);
             target.AddBuff(BuffID.Frostburn, 180);
             if (Projectile.hostile && Main.netMode == NetmodeID.MultiplayerClient) //hostile version pierces through players in multiplayer
                 return;

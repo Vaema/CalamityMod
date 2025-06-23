@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -60,9 +60,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.fireWalk = true;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
-            player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
-            modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersSeraph = true; // Grants immunity to Auric Rejection and other walk-on-block effects
         }
 
@@ -70,7 +68,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient<TracersElysian>().
-                AddIngredient<DrewsWings>().
+                AddIngredient<WingsofRebirth>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().
                 Register();

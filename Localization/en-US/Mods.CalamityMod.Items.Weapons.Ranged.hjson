@@ -124,11 +124,6 @@ AstralBlaster: {
 	Tooltip: Converts musket balls into homing astral rounds
 }
 
-AstralBow: {
-	DisplayName: Astral Bow
-	Tooltip: Fires a burst of three arrows
-}
-
 AstrealDefeat: {
 	DisplayName: Astreal Defeat
 	Tooltip: All arrows are converted to Astreal Arrows that emit flames as they travel
@@ -237,6 +232,7 @@ BulletFilledShotgun: {
 	Tooltip:
 		'''
 		Fires a massive spread of bouncing bullets
+		Bullets attempt to bounce towards enemies after bouncing twice
 		Consumes five bullets per-use
 		'Aim? What's that?'
 		'''
@@ -279,15 +275,6 @@ CleansingBlaze: {
 		'''
 		Unleashes a torrent of flames which can pass through tiles
 		Uses gel for ammo
-		'''
-}
-
-ClockGatlignum: {
-	DisplayName: Clock Gatlignum
-	Tooltip:
-		'''
-		Converts musket balls into strings of 3 high velocity bullets
-		33% chance to save ammo
 		'''
 }
 
@@ -411,15 +398,6 @@ DeepcoreGK2: {
 		'''
 }
 
-DodusHandcannon: {
-	DisplayName: Dodu's Handcannon
-	Tooltip:
-		'''
-		Fires high explosive peanut shells, literally
-		'The power of the nut rests in your hands'
-		'''
-}
-
 DragonsBreath: {
 	DisplayName: Dragon's Breath
 	Tooltip:
@@ -475,9 +453,11 @@ FirestormCannon: {
 	DisplayName: Firestorm Cannon
 	Tooltip:
 		'''
-		Releases a constant stream of weaponized flares
-		Press <right> to fire a condensed spread of flares
+		Fires a rapid barrage of flares that builds up a searing heat in the weapon
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'What could go wrong?'
 		'''
 }
 
@@ -1176,8 +1156,13 @@ SpectralstormCannon: {
 	DisplayName: Spectralstorm Cannon
 	Tooltip:
 		'''
-		Fires a storm of lost souls and flares
+		Fires a barrage of spectral flares that builds up a searing heat in the weapon
+		While cooling down, heat-seeking phantoms are continuously released
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		However, triggering overheat releases a powerful burst of souls and resets heat
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'Ectoplasmic blast rated visor mandatory'
 		'''
 }
 
@@ -1262,17 +1247,14 @@ SuperradiantSlaughterer: {
 	MainInfo:
 		'''
 		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
-		Release <left> to fire the buzzsaw to pierce through and lacerate foes
-		Fired buzzsaws bounce off tiles and return to the player after winding down
-		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
-		Revving up the saws increases their damage and allows them to pierce more enemies
+		Release <left> to fire the buzzsaw which bounces off tiles, releasing homing bolts when returning depending on hits
+		Revving up the saw increases its damage and allows it to pierce more enemies
 		'''
 	AltInfo:
 		'''
-		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
-		Using this ability rapidly propels you in the direction you are moving
-		This ability has a {0} second cooldown
-		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		Press <right> to eject a lingering buzzsaw towards the cursor on a {0} second cooldown
+		Double <right> to rapidly propel yourself in the direction you are moving
+		During the cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
 		'''
 }
 

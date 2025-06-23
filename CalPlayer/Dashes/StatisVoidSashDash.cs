@@ -3,6 +3,7 @@ using System.Security.Policy;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
@@ -47,7 +48,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
             if (strongVisuals)
             {
-                SoundStyle sound = new("CalamityMod/Sounds/Item/VoidDash");
+                SoundStyle sound = StatisVoidSash.VoidDash;
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, player.Center);
                 for (int i = 0; i < 40; i++)
                 {
@@ -109,6 +110,16 @@ namespace CalamityMod.CalPlayer.Dashes
                 }
             }
             player.velocity.X *= 0.912f;
+            if (player.velocity.X > 140)
+            {
+                player.velocity.X = 140;
+            }
+            if (player.velocity.X < -140)
+            {
+                player.velocity.X = -140;
+            }
+            if (Time > 8)
+                player.velocity.X *= 0.5f;
         }
     }
 }

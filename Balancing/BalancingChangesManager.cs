@@ -97,23 +97,23 @@ namespace CalamityMod.Balancing
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<Crabulon>(), ResistTrueMelee(0.8f)));
             #endregion
 
-            #region Brain of Cthulhu: Creepers
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(ResistTrueMelee(0.5f))));
-
-            // 50% resist to Demon Scythe.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
-            #endregion
-
             #region Eater of Worlds
-            // 50% resist to true melee.
-            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(ResistTrueMelee(0.5f))));
-
             // 50% resist to Demon Scythe.
             NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
 
             // 40% resist to Sky Glaze.
             NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<StickyFeather>()))));
+
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.AddRange(Bundle(EaterOfWorldsIDList.List, Do(ResistTrueMelee(0.75f))));
+            #endregion
+
+            #region Brain of Cthulhu: Creepers
+            // 50% resist to Demon Scythe.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.DemonScythe))));
+
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCID.Creeper, Do(ResistTrueMelee(0.75f))));
             #endregion
 
             #region The Perforators
@@ -157,9 +157,6 @@ namespace CalamityMod.Balancing
             // 50% resist to Adamantite Throwing Axe's lightning.
             // See Aquatic Scourge comment.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CultistBossLightningOrbArc))));
-
-            // 50% resist to Aftershock's rocks.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<AftershockRock>()))));
 
             // 50% resist to Dormant Brimseeker.
             NPCSpecificBalancingChanges.AddRange(Bundle(DestroyerIDList.List, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<DormantBrimseekerBab>()))));
@@ -340,9 +337,6 @@ namespace CalamityMod.Balancing
             // 35% resist to Sulphuric Acid Cannon's explosions.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<SulphuricAcidCannonExplosion>()))));
 
-            // 35% resist to Venusian Trident.
-            NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<VenusianBolt>()))));
-
             // 25% resist to Corinth Prime's grenades.
             NPCSpecificBalancingChanges.AddRange(Bundle(DevourerOfGodsIDList.List, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<CorinthPrimeAirburst>()))));
 
@@ -403,9 +397,6 @@ namespace CalamityMod.Balancing
             #region Exo Mechs: Thanatos
             // 65% resist to true melee.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(ResistTrueMelee(0.35f))));
-
-            // 65% resist to The Enforcer's projectiles.
-            NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<EssenceFlame2>()))));
 
             // 65% resist to The Final Dawn's lunge.
             NPCSpecificBalancingChanges.AddRange(Bundle(ThanatosIDList.List, Do(new ProjectileResistBalancingRule(0.35f, ProjectileType<FinalDawnThrow2>()))));

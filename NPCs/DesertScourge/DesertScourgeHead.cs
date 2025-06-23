@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public const float SegmentVelocity_Normal = 10f;
         public const float SegmentVelocity_Expert = 12.5f;
-        public const float SegmentVelocity_Master = 15f;
+        public const float SegmentVelocity_Death = 15f;
         public const float SegmentVelocity_GoodWorld = 21f;
         public const float SegmentVelocity_ZenithSeed = 24f;
 
@@ -94,8 +94,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 104;
             NPC.height = 104;
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
-            if (Main.getGoodWorld)
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.4f;
 
             if (Main.zenithWorld)
@@ -126,7 +126,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void BossHeadSlot(ref int index)
         {
-            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !Main.masterMode)
+            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !CalamityWorld.death)
                 index = -1;
         }
 
@@ -167,12 +167,11 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             bool bossRush = BossRushEvent.BossRushActive;
             bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
             // Check for Nuisances
-            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !masterMode;
+            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !death;
             if (hide)
             {
                 NPC.Calamity().newAI[0] = 0f;
@@ -258,7 +257,7 @@ namespace CalamityMod.NPCs.DesertScourge
             speed += 0.085f * enrageScale;
             turnSpeed += 0.17f * enrageScale;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 speed *= 1.1f;
                 turnSpeed *= 1.2f;
@@ -432,7 +431,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 {
                     int previous = NPC.whoAmI;
                     int minLength = death ? 24 : revenge ? 21 : expertMode ? 18 : 15;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         minLength *= 3;
 
                     int bodyTypeAIVariable = 0;
@@ -543,8 +542,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.spriteDirection = -1;
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                CalamityWorld.LegendaryMode ? SegmentVelocity_GoodWorld :
+                death ? SegmentVelocity_Death :
                 expertMode ? SegmentVelocity_Expert :
                 SegmentVelocity_Normal;
             if (burrow || lungeUpward)
@@ -602,15 +601,15 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 // Spit a huge spread of sand upwards that falls down
                 SoundEngine.PlaySound(SandBlastSound, NPC.Center);
-                float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 16f : bossRush ? 10f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
+                float velocity = CalamityWorld.LegendaryMode ? 16f : bossRush ? 10f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
                 int type = ModContent.ProjectileType<DesertScourgeSpit>();
                 int damage = NPC.GetProjectileDamage(type);
                 Vector2 projectileVelocity = (NPC.Center + NPC.velocity * 10f - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                 int numProj = bossRush ? 30 : death ? 24 : revenge ? 21 : expertMode ? 18 : 12;
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     numProj *= 2;
 
-                int spread = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 120 : 90;
+                int spread = CalamityWorld.LegendaryMode ? 120 : 90;
                 float rotation = MathHelper.ToRadians(spread);
                 for (int i = 0; i < numProj; i++)
                 {
@@ -662,7 +661,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
             else if (!shouldFly)
             {
-                NPC.velocity.Y += 0.15f;
+                NPC.velocity.Y += (death ? 0.125f : 0.1f);
                 if (NPC.Center.Y - player.Center.Y < -180f)
                 {
                     NPC.velocity.Y += 0.05f;

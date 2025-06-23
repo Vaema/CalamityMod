@@ -213,7 +213,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
 
             // Scale HP in Master
@@ -425,7 +425,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             groundPhaseTurnSpeed += Vector2.Distance(destination, NPC.Center) * 0.0002f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 segmentVelocity *= 1.1f;
                 speed *= 1.1f;
@@ -751,10 +751,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || (CalamityWorld.LegendaryMode && CalamityWorld.revenge)) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
+                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || CalamityWorld.LegendaryMode) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                     {
                         calamityGlobalNPC.newAI[0] += 1f;
-                        if (calamityGlobalNPC.newAI[0] >= ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : 150f) && calamityGlobalNPC.newAI[0] % ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : phase7 ? 30f : 60f) == 0f)
+                        if (calamityGlobalNPC.newAI[0] >= (CalamityWorld.LegendaryMode ? 30f : 150f) && calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : phase7 ? 30f : 60f) == 0f)
                         {
                             float fireballSpeed = 8f;
                             Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
@@ -769,7 +769,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
 
-                            if (CalamityWorld.LegendaryMode && revenge)
+                            if (CalamityWorld.LegendaryMode)
                             {
                                 for (int l = 0; l < 8; l++)
                                 {
@@ -1112,7 +1112,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         speedCopy += Vector2.Distance(destination, NPC.Center) * 0.005f;
                         turnSpeedCopy += Vector2.Distance(destination, NPC.Center) * 0.00025f;
 
-                        if (CalamityWorld.LegendaryMode && revenge)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 speedCopy *= 2f;
@@ -1270,7 +1270,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         else if (increaseSpeed)
                             groundPhaseTurnSpeed *= 2f;
 
-                        if (CalamityWorld.LegendaryMode && revenge)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 segmentVelocity *= 2f;
@@ -1871,7 +1871,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         turnSpeedCopy += distanceFromTarget * 0.0001f * (1f - lifeRatio);
                     }
 
-                    if (CalamityWorld.LegendaryMode && revenge)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             speedCopy *= 2f;
@@ -2015,7 +2015,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else if (increaseSpeed)
                         groundPhaseTurnSpeed *= 2f;
 
-                    if (CalamityWorld.LegendaryMode && revenge)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             segmentVelocity *= 2f;
@@ -2331,7 +2331,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     float mult = revenge ? 1.5f : 3f;
                     for (int i = 0; i < totalSpreads; i++)
                     {
-                        int totalProjectiles = (CalamityWorld.LegendaryMode && revenge) ? 30 : bossRush ? 18 : 12;
+                        int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : bossRush ? 18 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float newVelocity = finalVelocity - i * mult;
                         float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
@@ -2602,9 +2602,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             // Extraneous potions
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
-
-            // Alicorn Mount
-            npcLoot.AddIf((info) => info.player.Calamity().cirrusVodka, ModContent.ItemType<PrincessSpiritinaBottle>());
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
