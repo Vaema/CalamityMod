@@ -2738,23 +2738,19 @@ namespace CalamityMod.CalPlayer
             // Plagued Fuel Pack and Blunder Booster effects
             if (jetPackDash > 0 && Player.whoAmI == Main.myPlayer)
             {
-                int velocityAmt = blunderBooster ? 35 : 25;
-                int velocityMult = jetPackDash > 1 ? velocityAmt : 5;
-                Player.velocity = new Vector2(jetPackDirection, -1) * velocityMult;
+                int velocityMult = (int)((blunderBooster ? 35 : 25) * Utils.GetLerpValue(-4, 5, jetPackDash, true));
+                Player.velocity = new Vector2(jetPackDirection, -1f) * velocityMult;
 
                 if (blunderBooster)
                 {
-                    int lightningCount = Main.rand.Next(5, 7);
+                    int lightningCount = 4;
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<BlunderBooster>()));
                     for (int i = 0; i < lightningCount; i++)
                     {
-                        Vector2 lightningVel = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                        lightningVel.Normalize();
-                        lightningVel *= Main.rand.NextFloat(1f, 2f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(30);
+                        Vector2 lightningVel = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(7f, 10f);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, lightningVel, ModContent.ProjectileType<BlunderBoosterLightning>(), damage, 0, Player.whoAmI, Main.rand.Next(2), 0f);
-                        Main.projectile[projectile].timeLeft = Main.rand.Next(180, 240);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
@@ -2769,17 +2765,14 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (plaguedFuelPack)
                 {
-                    int numClouds = Main.rand.Next(8, 10);
+                    int numClouds = 3;
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<PlaguedFuelPack>()));
                     for (int i = 0; i < numClouds; i++)
                     {
-                        Vector2 cloudVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                        cloudVelocity.Normalize();
-                        cloudVelocity *= Main.rand.NextFloat(0f, 1f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
+                        Vector2 cloudVelocity = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(5f, 7f);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, cloudVelocity, ModContent.ProjectileType<PlaguedFuelPackCloud>(), damage, 0, Player.whoAmI, 0, 0);
-                        Main.projectile[projectile].timeLeft = Main.rand.Next(180, 240);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
