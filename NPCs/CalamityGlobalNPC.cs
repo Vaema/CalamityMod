@@ -925,21 +925,6 @@ namespace CalamityMod.NPCs
                     ApplyDPSDebuff(baseIrradiatedDoTValue, baseIrradiatedDoTValue / 20, ref npc.lifeRegen, ref damage);
             }
 
-            // Mana Burn
-            if (manaBurn > 0)
-            {
-                if (manaBurnPeak >= 0.1f)
-                {
-                    manaBurnPeak *= 0.999f;
-                }
-                manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
-                int burnPerSecond = (int)MathF.Ceiling(manaBurn * 0.5f);
-                manaBurn -= burnPerSecond/60f;
-                ApplyDPSDebuff(burnPerSecond, (int)(burnPerSecond*0.25f), ref npc.lifeRegen, ref damage);
-            } else {
-                manaBurnPeak = 0;
-                playerManaBurnIntensity = 0;
-            }
             #endregion
 
             // Debuff vulnerabilities and resistances.
@@ -1414,6 +1399,30 @@ namespace CalamityMod.NPCs
                 // Every other EoW body segment and the head segments are immune to DoT.
                 if (((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && (CalamityWorld.death || BossRushEvent.BossRushActive))
                     npc.lifeRegen = 0;
+            }
+
+            // Mana Burn
+            //This is at the end to leave it full effect on worms, and to force the DOT numbers to match mana burn
+            if (manaBurn > 0)
+            {
+                if (manaBurnPeak >= 0.1f)
+                {
+                    manaBurnPeak *= 0.999f;
+                }
+                manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
+                int burnPerSecond = (int)MathF.Ceiling(manaBurn*0.5f);
+                manaBurn -= burnPerSecond / 60f;
+
+                if (npc.lifeRegen > 0)
+                    npc.lifeRegen = 0;
+
+                npc.lifeRegen -= burnPerSecond*2;
+                    damage += (int)(burnPerSecond * 0.5f);
+            }
+            else
+            {
+                manaBurnPeak = 0;
+                playerManaBurnIntensity = 0;
             }
         }
 

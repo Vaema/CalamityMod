@@ -669,6 +669,11 @@ namespace CalamityMod.Items
                 if (item.type != ModContent.ItemType<EvilSmasher>())
                     player.Calamity().evilSmasherBoost = 0;
             }
+
+            if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
+            {
+                player.manaRegenDelay = player.maxRegenDelay;
+            }
         }
 
         public override bool? UseItem(Item item, Player player)
@@ -721,16 +726,12 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-
             return base.UseItem(item, player);
         }
 
         public override void UseAnimation(Item item, Player player)
         {
-             if (player.Calamity().ChaosStone && item.mana == 0)
-            {
-                player.manaRegenDelay = 0.7f * ((1 - (player.statMana / (float)player.statManaMax2)) * 240 + 45);
-            }
+             
         }
 
         public override bool AltFunctionUse(Item item, Player player)

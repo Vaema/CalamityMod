@@ -40,7 +40,7 @@ namespace CalamityMod.UI.ResourceSets
         {
             string folder = $"{baseFolder}MP";
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
-            if (modPlayer.ManaBurn)
+            if (Main.LocalPlayer.statMana < 0)
                 return folder + "ManaBurn";
             if (modPlayer.pHeart)
                 return folder + "PhantomHeart";
