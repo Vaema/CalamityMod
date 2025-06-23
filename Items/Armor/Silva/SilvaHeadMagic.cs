@@ -39,6 +39,7 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSet = true;
             modPlayer.silvaMage = true;
             player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<SilvaArmor>("CommonSetBonus");
+            player.lifeRegen += 6;
         }
 
         public override void UpdateEquip(Player player)

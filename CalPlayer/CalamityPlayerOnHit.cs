@@ -1356,10 +1356,7 @@ namespace CalamityMod.CalPlayer
                     Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2);
-
-                if (bloodflareMelee && proj.IsTrueMelee())
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2);
+                    Projectile.NewProjectile(proj.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((proj.velocity.Length() * proj.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
                 {
@@ -1368,33 +1365,11 @@ namespace CalamityMod.CalPlayer
                         double healMult = 0.1D - proj.numHits * 0.025D;
                         Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 1.5f);
                     }
-                }
 
-                if (silvaSet)
-                {
-                    double healMult = 0.1D - proj.numHits * 0.05D;
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileType<SilvaOrb>(), (int)Math.Round(damage * healMult), 0.75f);
-                }
-                else if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
-                {
-                    if (tarraMage)
-                    {
-                        double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ReaverHealOrb>(), (int)Math.Round(damage * healMult));
-                    }
-                    else if (ataxiaMage)
+                    if (ataxiaMage)
                     {
                         double healMult = 0.1D - proj.numHits * 0.05D;
                         Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), 1.25f);
-                    }
-                }
-
-                if (proj.CountsAsClass<ThrowingDamageClass>())
-                {
-                    if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
-                    {
-                        double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<EmpyreanHealOrb>(), (int)Math.Round(damage * healMult));
                     }
                 }
             }
@@ -1412,9 +1387,6 @@ namespace CalamityMod.CalPlayer
                         Item.NewItem(target.GetSource_Loot(), target.Hitbox, ItemID.Heart);
                     }
                 }
-
-                if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>())
-                    Player.DoLifestealDirect(target, 4);
 
                 if (gladiatorSword && target.life <= 0 && target.Calamity().gladiatorOnKill)
                 {

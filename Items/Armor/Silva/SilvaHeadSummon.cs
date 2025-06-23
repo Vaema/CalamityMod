@@ -48,6 +48,7 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
             player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<SilvaArmor>("CommonSetBonus");
+            player.lifeRegen += 6;
             player.GetDamage<SummonDamageClass>() += 0.65f;
             player.maxMinions += 5;
         }
