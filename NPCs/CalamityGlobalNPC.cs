@@ -2886,7 +2886,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Sharkron2:
                     npc.width = npc.height = 36;
                     npc.chaseable = false;
-                    canBreakPlayerDefense = true;
                     break;
 
                 // Fix drawing issues with Golem's Free Head

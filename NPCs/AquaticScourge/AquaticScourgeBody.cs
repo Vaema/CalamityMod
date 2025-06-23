@@ -29,7 +29,6 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.GetNPCDamage();
             NPC.width = 32;
             NPC.height = 32;
