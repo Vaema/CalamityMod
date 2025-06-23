@@ -1146,8 +1146,6 @@ namespace CalamityMod.CalPlayer
         public int titanCooldown = 0;
         public bool umbraphileSet = false;
         public bool reaverSpeed = false;
-        public bool reaverRegen = false;
-        public int reaverRegenCooldown = 0;
         public bool reaverDefense = false;
         public bool reaverExplore = false;
         public bool fathomSwarmer = false;
@@ -2347,7 +2345,6 @@ namespace CalamityMod.CalPlayer
 
             avertorBonus = false;
 
-            reaverRegen = false;
             reaverSpeed = false;
             reaverDefense = false;
             reaverExplore = false;
@@ -3138,8 +3135,6 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
             reaverSpeed = false;
-            reaverRegen = false;
-            reaverRegenCooldown = 0;
             reaverDefense = false;
             reaverExplore = false;
             shadeRegen = false;

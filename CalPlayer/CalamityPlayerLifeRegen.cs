@@ -693,14 +693,6 @@ namespace CalamityMod.CalPlayer
             else
                 pinkCandleHealFraction = 0D;
 
-            if (reaverRegen && reaverRegenCooldown >= 60)
-            {
-                reaverRegenCooldown = 0;
-
-                if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.HealPlayer(1, HealTextType.None);
-            }
-
             if (BloomStoneRegen)
             {
                 float dayTimeCompletion = !Main.dayTime ? 1f : (float)(Main.time / Main.dayLength);

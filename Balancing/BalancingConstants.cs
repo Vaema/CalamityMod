@@ -125,7 +125,6 @@
 
         // Life steal cooldown multipliers used for armor set bonuses
         internal static readonly float LifeStealSetBonusCooldownMultiplier = 2f;
-        internal static readonly float LifeStealReaverTankCooldownMultiplier = 4f;
 
         // Base life steal caps from vanilla (aka, how much life steal the player is allowed before it goes on cooldown)
         internal static readonly float LifeStealCap_Classic = 80f;

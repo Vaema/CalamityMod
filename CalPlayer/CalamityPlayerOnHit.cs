@@ -618,9 +618,6 @@ namespace CalamityMod.CalPlayer
             if (!item.CountsAsClass<MeleeDamageClass>() && Player.meleeEnchant == 7)
                 Projectile.NewProjectile(source, position, Player.velocity, ProjectileID.ConfettiMelee, 0, 0f, Player.whoAmI);
 
-            if (reaverDefense)
-                Player.lifeRegenTime += 1;
-
             if (npcCheck)
             {
                 if (item.CountsAsClass<MeleeDamageClass>() && hideOfDeus && hideOfDeusTimer == 0)
@@ -698,9 +695,6 @@ namespace CalamityMod.CalPlayer
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && lifeAndShieldCondition)
                 SoundEngine.PlaySound(SoundID.Item110, proj.Center);
-
-            if (reaverDefense)
-                Player.lifeRegenTime += 1;
 
             if (npcCheck)
             {
@@ -1395,12 +1389,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (reaverDefense)
-                {
-                    double healMult = 0.1D - proj.numHits * 0.05D;
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ReaverHealOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealReaverTankCooldownMultiplier);
-                }
-
                 if (proj.CountsAsClass<ThrowingDamageClass>())
                 {
                     if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
@@ -1438,9 +1426,6 @@ namespace CalamityMod.CalPlayer
                         gladiatorTimer = 300;
                     }
                 }
-
-                if (reaverDefense)
-                    Player.DoLifestealDirect(target, (int)Math.Round(damage * 0.1f), BalancingConstants.LifeStealReaverTankCooldownMultiplier);
             }
         }
         #endregion

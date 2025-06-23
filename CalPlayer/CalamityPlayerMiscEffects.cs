@@ -2209,10 +2209,6 @@ namespace CalamityMod.CalPlayer
                 canFireGodSlayerRangedProjectile = true;
                 canFireBloodflareRangedProjectile = true;
             }
-            if (reaverRegenCooldown < 60 && reaverRegen)
-                reaverRegenCooldown++;
-            else
-                reaverRegenCooldown = 0;
             if (auralisAurora > 0)
                 auralisAurora--;
             if (auralisAuroraCooldown > 0)
