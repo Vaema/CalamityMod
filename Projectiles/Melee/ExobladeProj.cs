@@ -628,7 +628,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<Exoboom>(), explosionDamage, 0f, Projectile.owner);
                 }
 
-                Owner.SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<ReaverHealOrb>(), (int)Math.Round(hit.Damage * 0.04));
+                Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.04), 0.4f);
             }
         }
 

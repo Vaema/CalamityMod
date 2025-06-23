@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                 {
                     if (AbleToHealOwner)
-                        Owner.DoLifestealDirect(null, Projectile.Calamity().stealthStrike ? 40 : 3);
+                        Owner.DoLifestealDirect(null, Projectile.Calamity().stealthStrike ? 40 : 3, 0.4f);
                     Projectile.Kill();
                 }
             }

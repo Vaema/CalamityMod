@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Melee
 
             SoundStyle fire = new("CalamityMod/Sounds/Item/WulfrumKnifeTileHit", 2);
             SoundEngine.PlaySound(fire with { Volume = 0.55f, Pitch = 0.3f }, Projectile.Center);
-            player.DoLifestealDirect(target, Main.rand.NextBool(4) ? 2 : 1);
+            player.DoLifestealDirect(target, Main.rand.NextBool(4) ? 2 : 1, 0.75f);
         }
 
         public void PlayChainsawSounds()

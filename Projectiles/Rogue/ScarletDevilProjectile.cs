@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Rogue
             SpawnOnStealthStrikeBullets();
 
             // Give on-heal effects from stealth strikes.
-            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.01));
+            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.01), 0.4f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)

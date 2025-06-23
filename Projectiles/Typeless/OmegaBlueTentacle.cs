@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.Typeless
                 modifiers.SetCrit();
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Owner.DoLifestealDirect(target, 10 * hit.Damage / Projectile.damage);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Owner.DoLifestealDirect(target, 10 * hit.Damage / Projectile.damage, 0.5f);
 
         public override bool PreDraw(ref Color lightColor)
         {

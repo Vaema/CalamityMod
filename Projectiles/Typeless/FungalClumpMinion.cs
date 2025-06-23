@@ -231,7 +231,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<FungalHeal>(), (int)Math.Round(hit.Damage * 0.25), BalancingConstants.LifeStealAccessoryCooldownMultiplier);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<FungalHeal>(), 1, 1.5f);
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 

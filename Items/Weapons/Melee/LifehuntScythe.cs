@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.CursedTorch);
         }
 
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => player.DoLifestealDirect(target, 5);
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone) => player.DoLifestealDirect(target, 5, 0.5f);
 
         public override void AddRecipes()
         {
