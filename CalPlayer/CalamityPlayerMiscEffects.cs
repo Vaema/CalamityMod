@@ -2748,7 +2748,7 @@ namespace CalamityMod.CalPlayer
                     for (int i = 0; i < lightningCount; i++)
                     {
                         Vector2 lightningVel = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(7f, 10f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(35);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, lightningVel, ModContent.ProjectileType<BlunderBoosterLightning>(), damage, 0, Player.whoAmI, Main.rand.Next(2), 0f);
                         if (projectile.WithinBounds(Main.maxProjectiles))
@@ -2770,7 +2770,7 @@ namespace CalamityMod.CalPlayer
                     for (int i = 0; i < numClouds; i++)
                     {
                         Vector2 cloudVelocity = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(5f, 7f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(55);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(30);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, cloudVelocity, ModContent.ProjectileType<PlaguedFuelPackCloud>(), damage, 0, Player.whoAmI, 0, 0);
                         if (projectile.WithinBounds(Main.maxProjectiles))
