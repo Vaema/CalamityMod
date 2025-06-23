@@ -2703,17 +2703,18 @@ namespace CalamityMod.CalPlayer
                 if (inkBomb && !abyssalMirror && !eclipseMirror)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                    SoundEngine.PlaySound(SoundID.Item1, Player.Center);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                        if (ink.WithinBounds(Main.maxProjectiles))
+                            Main.projectile[ink].DamageType = DamageClass.Generic;
+                    }
                     if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(Cooldowns.InkBomb.ID))
                     {
                         Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
                         rogueStealth += 0.5f;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item61, Player.Center);
-                            int ink = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-0f, -4f), ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
-                            if (ink.WithinBounds(Main.maxProjectiles))
-                                Main.projectile[ink].DamageType = DamageClass.Generic;
-                        }
+                        SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
                     }
                 }
                 if (ataxiaBlaze)

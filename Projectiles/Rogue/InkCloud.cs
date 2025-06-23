@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (!target.friendly)
             {
-                target.AddBuff(BuffID.Confused, 300);
+                target.AddBuff(BuffID.Confused, 60);
             }
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Confused, 300);

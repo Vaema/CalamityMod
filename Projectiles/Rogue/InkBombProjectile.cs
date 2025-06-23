@@ -10,6 +10,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class InkBombProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
+        public static readonly SoundStyle Explode = new("CalamityMod/Sounds/Custom/PlantyMushMine", 3);
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -49,8 +50,8 @@ namespace CalamityMod.Projectiles.Rogue
         private void CreateInk()
         {
             Player player = Main.player[Projectile.owner];
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int i = 0; i < 20; i++)
+            SoundEngine.PlaySound(SoundID.NPCHit25, Projectile.Center);
+            for (int i = 0; i < 2; i++)
             {
                 int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(22);
 
