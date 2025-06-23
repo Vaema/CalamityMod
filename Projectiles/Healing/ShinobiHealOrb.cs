@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.width = Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
             Projectile.MaxUpdates = 5;
             Projectile.timeLeft = 120 * Projectile.MaxUpdates;
         }
