@@ -591,7 +591,7 @@ namespace CalamityMod.CalPlayer
 
                     for (int i = 0; i <= 2; i++)
                     {
-                        Main.player[proj.owner].SpawnLifeStealProjectile(target, proj, ProjectileType<AltTransfusionTrail>(), (int)Math.Round(hit.Damage * 0.01));
+                        Main.player[proj.owner].SpawnLifeStealProjectile(target, proj, ProjectileType<AltTransfusionTrail>(), (int)Math.Round(hit.Damage * 0.01), 0.75f);
                     }
                 }
 
@@ -1349,43 +1349,43 @@ namespace CalamityMod.CalPlayer
                     if (proj.Calamity().stealthStrike)
                         heal /= 2; // Stealth strikes heal half due to generally dealing far more dmg
 
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, 1.25f);
                 }
 
                 if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike)
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, BalancingConstants.LifeStealAccessoryCooldownMultiplier);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2);
 
                 if (bloodflareMelee && proj.IsTrueMelee())
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2);
 
                 if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
                         double healMult = 0.1D - proj.numHits * 0.025D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealAccessoryCooldownMultiplier);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ManaPolarizerHealOrb>(), (int)Math.Round(damage * healMult), 1.5f);
                     }
                 }
 
                 if (silvaSet)
                 {
                     double healMult = 0.1D - proj.numHits * 0.05D;
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileType<SilvaOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileType<SilvaOrb>(), (int)Math.Round(damage * healMult), 0.75f);
                 }
                 else if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
                 {
                     if (tarraMage)
                     {
                         double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ReaverHealOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<ReaverHealOrb>(), (int)Math.Round(damage * healMult));
                     }
                     else if (ataxiaMage)
                     {
                         double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), 1.25f);
                     }
                 }
 
@@ -1394,7 +1394,7 @@ namespace CalamityMod.CalPlayer
                     if (xerocSet && xerocDmg <= 0 && Player.ownedProjectileCounts[ProjectileType<EmpyreanEmber>()] < 3 && Player.ownedProjectileCounts[ProjectileType<EmpyreanBlast>()] < 3)
                     {
                         double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<EmpyreanHealOrb>(), (int)Math.Round(damage * healMult), BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<EmpyreanHealOrb>(), (int)Math.Round(damage * healMult));
                     }
                 }
             }
@@ -1414,7 +1414,7 @@ namespace CalamityMod.CalPlayer
                 }
 
                 if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>())
-                    Player.DoLifestealDirect(target, 4, BalancingConstants.LifeStealSetBonusCooldownMultiplier);
+                    Player.DoLifestealDirect(target, 4);
 
                 if (gladiatorSword && target.life <= 0 && target.Calamity().gladiatorOnKill)
                 {

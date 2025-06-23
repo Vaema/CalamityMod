@@ -57,10 +57,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(Spark);
             }
 
-            if (Owner.moonLeech)
-                return;
-
-            Owner.HealPlayer(OmegaBiomeBlade.SuperPogoAttunementSliceLifesteal);
+            Owner.DoLifestealDirect(target, OmegaBiomeBlade.SuperPogoAttunementSliceLifesteal, 0.75f);
         }
 
         public override bool PreDraw(ref Color lightColor) //OMw to reuse way too much code from the entangling vines

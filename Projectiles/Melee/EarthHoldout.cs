@@ -306,7 +306,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.1f);
             }
 
             if (Projectile.numHits <= 2)
