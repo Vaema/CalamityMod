@@ -70,10 +70,6 @@ namespace CalamityMod.NPCs.Abyss
 
             if (Main.zenithWorld) // legg
                 NPC.height = (int)(NPC.height * 1.5f);
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

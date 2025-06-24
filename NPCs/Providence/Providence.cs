@@ -263,9 +263,6 @@ namespace CalamityMod.NPCs.Providence
 
             if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.25f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

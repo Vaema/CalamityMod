@@ -89,9 +89,6 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (Main.zenithWorld)
                 NPC.scale *= 0.3f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

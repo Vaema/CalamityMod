@@ -737,11 +737,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item17, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -770,11 +765,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item171, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -3109,97 +3099,6 @@ namespace CalamityMod.Projectiles
                     if (projectile.type == ProjectileID.Nail && Main.expertMode)
                         projectile.damage /= 2;
 
-                    // Nerf all these Master Mode enemy projectiles
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                    {
-                        switch (projectile.type)
-                        {
-                            case ProjectileID.DemonSickle:
-                            case ProjectileID.HarpyFeather:
-                            case ProjectileID.JavelinHostile:
-                            case ProjectileID.SalamanderSpit:
-                            case ProjectileID.SkeletonBone:
-                            case ProjectileID.IceSpike:
-                            case ProjectileID.JungleSpike:
-                            case ProjectileID.PinkLaser:
-                            case ProjectileID.FrostBlastHostile:
-                            case ProjectileID.GoldenShowerHostile:
-                            case ProjectileID.RainNimbus:
-                            case ProjectileID.FlamingArrow:
-                            case ProjectileID.BulletDeadeye:
-                            case ProjectileID.CannonballHostile:
-                            case ProjectileID.UnholyTridentHostile:
-                            case ProjectileID.FrostBeam:
-                            case ProjectileID.CursedFlameHostile:
-                            case ProjectileID.Stinger:
-                            case ProjectileID.BloodNautilusTears:
-                            case ProjectileID.RockGolemRock:
-                            case ProjectileID.IcewaterSpit:
-                            case ProjectileID.RocketSkeleton:
-                            case ProjectileID.SniperBullet:
-                            case ProjectileID.DrManFlyFlask:
-                            case ProjectileID.DesertDjinnCurse:
-                            case ProjectileID.InfernoHostileBlast:
-                            case ProjectileID.InfernoHostileBolt:
-                            case ProjectileID.Shadowflames:
-                            case ProjectileID.ShadowBeamHostile:
-                            case ProjectileID.PaladinsHammerHostile:
-                            case ProjectileID.LostSoulHostile:
-                            case ProjectileID.RuneBlast:
-                            case ProjectileID.DandelionSeed:
-                            case ProjectileID.SandnadoHostile:
-                            case ProjectileID.SandnadoHostileMark:
-                            case ProjectileID.SnowBallHostile:
-                            case ProjectileID.EyeLaser:
-                            case ProjectileID.Nail:
-                            case ProjectileID.BrainScramblerBolt:
-                            case ProjectileID.GigaZapperSpear:
-                            case ProjectileID.MartianWalkerLaser:
-                            case ProjectileID.RayGunnerLaser:
-                            case ProjectileID.MartianTurretBolt:
-                            case ProjectileID.NebulaSphere:
-                            case ProjectileID.NebulaLaser:
-                            case ProjectileID.NebulaBolt:
-                            case ProjectileID.StardustJellyfishSmall:
-                            case ProjectileID.StardustSoldierLaser:
-                            case ProjectileID.Twinkle:
-                            case ProjectileID.VortexAcid:
-                            case ProjectileID.VortexLaser:
-                            case ProjectileID.VortexLightning:
-                            case ProjectileID.VortexVortexLightning:
-                            case ProjectileID.FlamingWood:
-                            case ProjectileID.GreekFire1:
-                            case ProjectileID.GreekFire2:
-                            case ProjectileID.GreekFire3:
-                            case ProjectileID.FlamingScythe:
-                            case ProjectileID.OrnamentHostile:
-                            case ProjectileID.OrnamentHostileShrapnel:
-                            case ProjectileID.PineNeedleHostile:
-                            case ProjectileID.FrostShard:
-                            case ProjectileID.FrostWave:
-                            case ProjectileID.Missile:
-                            case ProjectileID.Present:
-                            case ProjectileID.Spike:
-                            case ProjectileID.SaucerDeathray:
-                            case ProjectileID.SaucerLaser:
-                            case ProjectileID.SaucerMissile:
-                            case ProjectileID.SaucerScrap:
-                            case ProjectileID.DD2GoblinBomb:
-                            case ProjectileID.DD2JavelinHostile:
-                            case ProjectileID.DD2JavelinHostileT3:
-                            case ProjectileID.DD2DarkMageBolt:
-                            case ProjectileID.DD2DrakinShot:
-                            case ProjectileID.DD2OgreSmash:
-                            case ProjectileID.DD2OgreSpit:
-                            case ProjectileID.DD2OgreStomp:
-                            case ProjectileID.DD2LightningBugZap:
-                            case ProjectileID.DD2BetsyFireball:
-                            case ProjectileID.DD2BetsyFlameBreath:
-                                projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                                break;
-                        }
-                    }
-
                     // Nerf several Hardmode enemy projectiles because they deal way too much damage
                     if (!CalamityPlayer.areThereAnyDamnBosses)
                     {
@@ -3217,6 +3116,8 @@ namespace CalamityMod.Projectiles
                             case ProjectileID.FrostBeam:
                             case ProjectileID.CursedFlameHostile:
                             case ProjectileID.Stinger:
+                            case ProjectileID.BloodShot:
+                            case ProjectileID.BloodNautilusShot:
                             case ProjectileID.BloodNautilusTears:
                             case ProjectileID.RockGolemRock:
                             case ProjectileID.IcewaterSpit:
