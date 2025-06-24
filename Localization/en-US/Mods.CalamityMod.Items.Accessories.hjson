@@ -1953,7 +1953,7 @@ TheSponge: {
 	Tooltip:
 		'''
 		Grants immunity to knockback
-		Gain a barrier with 180 health
+		Gain a barrier with 120 health
 		The barrier grants 15 defense and 10% damage reduction while active
 		[ADREN]
 		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate

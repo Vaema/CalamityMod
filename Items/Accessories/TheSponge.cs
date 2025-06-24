@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/RoverDriveActivate") { Volume = 0.85f };
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
-        public static int ShieldDurabilityMax = 180;
+        public static int ShieldDurabilityMax = 120;
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(8); // Was 6, then was 9
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(10); // Was 6
 
