@@ -3428,7 +3428,7 @@ namespace CalamityMod.CalPlayer
 
                 if (tortShellPostHit > 0)
                 {
-                    Player.statDefense -= 8;
+                    Player.statDefense -= 6;
                     tortShellPostHit--;
                 }
                 else
@@ -3789,7 +3789,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.statLife > (int)(Player.statLifeMax2 * 0.5))
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
                 if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.statDefense += 20;
+                    Player.statDefense += 15;
             }
 
             if (vexation)

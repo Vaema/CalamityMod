@@ -297,35 +297,16 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 2: Defense Balancing
-                { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.AnkhShield, Do(DefenseDelta(+4)) }, // 8 total
-                { ItemID.FrozenShield, Do(DefenseDelta(+4)) }, // 10 total (plus the Frozen Turtle Shell DR effect)
-                { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
-                { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
                 { ItemID.LavaSkull, Do(DefenseExact(3)) }, // Magma Skull
                 { ItemID.MoltenCharm, Do(DefenseExact(3)) }, //Magma Charm
                 { ItemID.MoltenSkullRose, Do(DefenseExact(4)) },
                 { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
                 { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
-                { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumLeggings, Do(DefenseDelta(+4)) },
-                { ItemID.OrichalcumMask, Do(DefenseDelta(+3)) },
-                { ItemID.PaladinsShield, Do(DefenseDelta(+2)) }, // 8 total
-                { ItemID.PalladiumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.PalladiumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
-                { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
-                { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
-                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) },
+                { ItemID.Shackle, Do(DefenseExact(3)) },
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set (converted into Rogue)
                 { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
                 { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
-                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
+                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) }, // (converted into Rogue)
                 { ItemID.SquireGreaves, Do(DefenseDelta(-2)) },
                 { ItemID.SquirePlating, Do(DefenseDelta(-4)) },
                 #endregion

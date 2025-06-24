@@ -93,10 +93,6 @@ namespace CalamityMod.Buffs
             {
                 player.Calamity().shine = true;
             }
-            else if (type == BuffID.IceBarrier)
-            {
-                player.endurance -= 0.1f;
-            }
 
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
             else if (type >= BuffID.BeetleEndurance1 && type <= BuffID.BeetleEndurance3 && player.beetleDefense)

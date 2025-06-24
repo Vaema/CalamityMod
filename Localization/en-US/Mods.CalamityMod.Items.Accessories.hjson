@@ -817,7 +817,7 @@ FrostFlare: {
 		All attacks and projectiles inflict Frostbite
 		Grants immunity to Frostburn, Chilled and Frozen
 		Being above 50% life grants 10% increased damage
-		Being below 50% life grants 20 defense and 15% increased max movement speed and acceleration
+		Being below 50% life grants 15 defense and 15% increased max movement speed and acceleration
 		Grants resistance against cold attacks
 		'''
 }
@@ -1507,7 +1507,7 @@ RoverDrive: {
 	DisplayName: Rover Drive
 	Tooltip:
 		'''
-		Gain a barrier with 20 health, which grants 10 defense while active
+		Gain a barrier with 20 health
 		[ADREN]
 		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
 		Getting hit resets the timer
