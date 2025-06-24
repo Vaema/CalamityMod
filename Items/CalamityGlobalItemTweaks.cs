@@ -300,19 +300,16 @@ namespace CalamityMod.Items
                 { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
                 { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
                 { ItemID.AnkhShield, Do(DefenseDelta(+4)) }, // 8 total
-                { ItemID.CobaltShield, Do(DefenseDelta(+3)) }, // 4 total
-                { ItemID.EoCShield, Do(DefenseDelta(+1)) }, // Shield of Cthulhu
                 { ItemID.FrozenShield, Do(DefenseDelta(+4)) }, // 10 total (plus the Frozen Turtle Shell DR effect)
                 { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
                 { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
                 { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
                 { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
-                { ItemID.LavaSkull, Do(DefenseExact(4)) }, // Magma Skull
-                { ItemID.MoltenCharm, Do(DefenseExact(4)) }, //Magma Charm
-                { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
-                { ItemID.ObsidianShield, Do(DefenseDelta(+4)) }, // 6 total
-                { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) }, // 2 total
-                { ItemID.ObsidianSkullRose, Do(DefenseExact(4)) },
+                { ItemID.LavaSkull, Do(DefenseExact(3)) }, // Magma Skull
+                { ItemID.MoltenCharm, Do(DefenseExact(3)) }, //Magma Charm
+                { ItemID.MoltenSkullRose, Do(DefenseExact(4)) },
+                { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
+                { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
                 { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
                 { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
                 { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
