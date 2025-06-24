@@ -422,7 +422,7 @@ namespace CalamityMod.CalPlayer
                     if (Player.lifeRegenTime < 1800)
                         Player.lifeRegenTime = 1800;
 
-                    intendedPurityDefense = 20 + (currentDebuffs - 1) * 8;
+                    intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
                     if (jewelBonusDefense < intendedPurityDefense)
                         jewelBonusDefense = intendedPurityDefense;
 

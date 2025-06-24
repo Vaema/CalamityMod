@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 60;
             Item.height = 54;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.defense = 12;
+            Item.defense = 6;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }

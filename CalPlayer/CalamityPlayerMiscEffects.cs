@@ -2569,7 +2569,7 @@ namespace CalamityMod.CalPlayer
             if (affliction || afflicted)
             {
                 Player.endurance += 0.07f;
-                Player.statDefense += 13;
+                Player.statDefense += 9;
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
             }
 
@@ -3381,7 +3381,7 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() += 0.12f;
                 Player.GetKnockback<SummonDamageClass>() += 1.2f;
                 if (Main.eclipse || !Main.dayTime)
-                    Player.statDefense += Main.eclipse ? 10 : 20;
+                    Player.statDefense += Main.eclipse ? 8 : 16;
             }
 
             if (AbsorberRegen)

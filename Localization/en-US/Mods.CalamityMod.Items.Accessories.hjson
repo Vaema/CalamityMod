@@ -65,7 +65,7 @@ AeroStone: {
 
 Affliction: {
 	DisplayName: Affliction
-	Tooltip: Gives all teammates +0.5 HP/s life regen, +10% max life, 7% damage reduction, 13 defense and 10% increased damage
+	Tooltip: Gives all teammates +0.5 HP/s life regen, +10% max life, 7% damage reduction, 9 defense and 10% increased damage
 }
 
 AlchemicalFlask: {
@@ -554,8 +554,8 @@ DarkSunRing: {
 	HoldShiftTooltip:
 		'''
 		  During the day, grants +2 HP/s life regen
-		  During the night, grants +20 defense
-		  During an eclipse, grants +1 HP/s life regen and +10 defense
+		  During the night, grants +16 defense
+		  During an eclipse, grants +1 HP/s life regen and +8 defense
 		'''
 	FlavorTooltip: "'Contains the power of the dark sun'"
 }
@@ -836,7 +836,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 8 defense and +1 HP/s life regen
+		Consuming mushrooms provides the Mushy buff, granting 5 defense and +1 HP/s life regen
 		10% increased damage while you have the Mushy buff
 		'''
 }
@@ -915,7 +915,7 @@ HallowedRune: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants 10% increased summon damage and rains stars on enemies]
-		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 8 defense and 4% damage reduction]
+		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 4 defense and 4% damage reduction]
 		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +1.5 HP/s life regen]
 		'''
 }
@@ -986,10 +986,10 @@ InfectedJewel: {
 	Tooltip:
 		'''
 		Passively grants +1 HP/s life regen
-		Grants 16 defense and +2 HP/s life regen while afflicted with any debuff
+		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
 		Massively boosts natural life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
-		Each debuff beyond the first grants 5 additional defense
+		Each debuff beyond the first grants 4 additional defense
 		Nullifies the Astral Infection debuff
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
@@ -1421,8 +1421,8 @@ Radiance: {
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
 		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
-		[c/CDF69C:+20 defense and faster natural regen recovery while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants 8 defense, which slowly decays while not debuffed]
+		[c/CDF69C:+15 defense and faster natural regen recovery while afflicted with any debuff]
+		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
 		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
@@ -1684,7 +1684,7 @@ SpiritGlyph: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants 10% increased summon damage]
-		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 6 defense and 3% damage reduction]
+		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 4 defense]
 		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +1 HP/s life regeneration]
 		'''
 }
@@ -1954,7 +1954,7 @@ TheSponge: {
 		'''
 		Grants immunity to knockback
 		Gain a barrier with 180 health
-		The barrier grants 20 defense and 10% damage reduction while active
+		The barrier grants 15 defense and 10% damage reduction while active
 		[ADREN]
 		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
 		Getting hit resets the timer
