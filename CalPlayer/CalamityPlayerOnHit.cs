@@ -1308,7 +1308,7 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
-            if (ilSpark && Player.IsUnderwater())
+            if (ilSpark && Player.Calamity().countsAsAnyWet)
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);

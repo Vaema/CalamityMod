@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
             player.spikedBoots = 2;
             player.maxMinions += 2;
             player.GetDamage<SummonDamageClass>() += 0.1f;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (modPlayer.countsAsAnyWet)
             {
                 player.GetDamage<SummonDamageClass>() += 0.2f;
                 player.statDefense += 10;
@@ -56,7 +56,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
                 player.breath = player.breathMax + 3;
             }
             modPlayer.fathomSwarmerVisage = true;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 Lighting.AddLight((int)player.Center.X / 16, (int)player.Center.Y / 16, 0.3f, 0.9f, 1.35f);
             }

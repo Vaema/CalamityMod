@@ -175,6 +175,8 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
+
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
         #endregion
 
         #region Speedrun Timer
@@ -2001,7 +2003,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
