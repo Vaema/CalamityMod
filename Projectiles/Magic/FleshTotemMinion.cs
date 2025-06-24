@@ -68,16 +68,11 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.rotation = 0f;
             }
             int pulseMax = 360;
-            if (modPlayer.fleshTotemManaStorage == 0)
-                pulseMax = 360;
-            else
-            {
-                pulseMax = 360 - (modPlayer.fleshTotemManaStorage / 2);
+            pulseMax = 360 - (modPlayer.fleshTotemManaStorage / 2);
 
-                if (pulseMax < 60)
-                {
-                    pulseMax = 60;
-                }
+            if (pulseMax < 60)
+            {
+                pulseMax = 60;
             }
             if (pulseTimer >= pulseMax)
             {
