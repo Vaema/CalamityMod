@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Accessories
     public class ProfanedSoulCrystal : ModItem, ILocalizedModType, IDyeableShaderRenderer
     {
         public static string[] contributorNames = new[] { "IbanPlay", "Chen", "Nincity", "Amber", "Mishiro", "LordMetarex", "Memes" };
-        public static int ShieldDurabilityMax = 125;
+        public static int ShieldDurabilityMax = 100;
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);

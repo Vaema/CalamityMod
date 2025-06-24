@@ -510,8 +510,8 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int hasBuff = Player.buffType[l];
-                            if (Player.buffTime[l] > 360 && hasBuff == BuffID.ShadowDodge)
-                                Player.buffTime[l] = 360;
+                            if (Player.buffTime[l] > 600 && hasBuff == BuffID.ShadowDodge)
+                                Player.buffTime[l] = 600;
                         }
                     }
 
@@ -1829,7 +1829,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (dOfTheDeepDefenseBuffTimer > 0)
                 {
-                    int maxDefense = 15;
+                    int maxDefense = 10;
                     int givenDefense = (int)Utils.Remap(dOfTheDeepDefenseBuffTimer, 0, dOfTheDeepDefenseBuffMax * 0.5f, 0, maxDefense);
                     Player.statDefense += givenDefense;
                     dOfTheDeepDefenseBuffTimer--;
@@ -3182,7 +3182,7 @@ namespace CalamityMod.CalPlayer
                         aquaticBoost = aquaticBoostMax;
                 }
 
-                Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 50f);
+                Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 20f);
                 Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
             }
             else
@@ -4416,7 +4416,7 @@ namespace CalamityMod.CalPlayer
                                 // Also gives acceleration, which is done in PostUpdateRunSpeeds
                                 break;
                             case BuffID.Ichor:
-                                Player.statDefense += 40; // +25 net defense
+                                Player.statDefense += 20; // +10 net defense
                                 break;
                             case BuffID.Bleeding:
                                 Player.bleed = false;
@@ -4434,7 +4434,7 @@ namespace CalamityMod.CalPlayer
                             case BuffID.Weak:
                                 Player.GetDamage<MeleeDamageClass>() += 0.051f; // Cancel melee damage nerf, add 10% all damage
                                 Player.GetDamage<GenericDamageClass>() += 0.1f;
-                                Player.statDefense += 14; // +10 net defense
+                                Player.statDefense += 10; // +6 net defense
                                 Player.moveSpeed += 0.25f; // +15% net move speed
                                 break;
                             case BuffID.Slow:
@@ -4443,7 +4443,7 @@ namespace CalamityMod.CalPlayer
                                 break;
                             case BuffID.Confused:
                                 Player.confused = false;
-                                Player.statDefense += 50;
+                                Player.statDefense += 10;
                                 break;
                             case BuffID.Cursed:
                                 Player.cursed = false;

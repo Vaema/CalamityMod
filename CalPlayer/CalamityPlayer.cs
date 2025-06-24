@@ -1998,7 +1998,7 @@ namespace CalamityMod.CalPlayer
         public override void ResetEffects()
         {
             if (fleshKnuckles)
-                Player.statLifeMax2 += 45;
+                Player.statLifeMax2 += 25;
 
             int percentMaxLifeIncrease = 0;
 

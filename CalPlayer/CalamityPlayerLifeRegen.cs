@@ -381,8 +381,8 @@ namespace CalamityMod.CalPlayer
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
             if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
             {
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegen += 6;
             }
@@ -419,8 +419,8 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
                         Player.Heal(1);
 
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
                     intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
                     if (jewelBonusDefense < intendedPurityDefense)
@@ -461,8 +461,8 @@ namespace CalamityMod.CalPlayer
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
                     intendedJewelDefense = 12 + (currentDebuffs - 1) * 4;
                     if (jewelBonusDefense < intendedJewelDefense)
@@ -487,8 +487,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.buffType.Any(DebuffsList.List.Contains))
                 {
                     Player.lifeRegen += 3;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
                 }
             }
             #endregion
@@ -673,8 +673,8 @@ namespace CalamityMod.CalPlayer
             {
                 Player.lifeRegen += 7;
 
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegenTime += 4;
             }
@@ -753,9 +753,9 @@ namespace CalamityMod.CalPlayer
 
                 if (turboRegenPower > 0)
                 {
-                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 1800 / 3600.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f)
-                        Player.lifeRegenTime = 1800f;
+                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 900 / 3600.
+                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 900f)
+                        Player.lifeRegenTime = 900f;
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;

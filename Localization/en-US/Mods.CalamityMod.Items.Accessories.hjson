@@ -955,7 +955,7 @@ HoneyDew: {
 	DisplayName: Honey Dew
 	Tooltip:
 		'''
-		+30 max life
+		+10 max life
 		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
 		Standing still in Honey grants +1.5 HP/s life regen
 		Sickness debuff durations are halved
@@ -1078,7 +1078,7 @@ LivingDew: {
 	DisplayName: Living Dew
 	Tooltip:
 		'''
-		+50 max life
+		+25 max life
 		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damaging debuff
 		Standing still in Honey grants +1.5 HP/s life regen
 		Fire and sickness debuff durations are halved
@@ -1095,7 +1095,7 @@ DiamondOfTheDeep: {
 		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
 		The spirits appear in order and have different effects based on color:
 		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
-		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 15 temporarily]
+		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 10 temporarily]
 		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
 		Spirits are transparent and silent when visibility is toggled off
 		'''
@@ -1531,7 +1531,7 @@ SandCloak: {
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
 		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		The veil slowly follows you, and any player inside it gains 10 defense and 1.75x acceleration
+		The veil slowly follows you, and any player inside it gains 4 defense and 1.75x acceleration
 		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
@@ -1954,7 +1954,7 @@ TheSponge: {
 		'''
 		Grants immunity to knockback
 		Gain a barrier with 120 health
-		The barrier grants 15 defense and 10% damage reduction while active
+		The barrier grants 10% damage reduction while active
 		[ADREN]
 		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
 		Getting hit resets the timer
