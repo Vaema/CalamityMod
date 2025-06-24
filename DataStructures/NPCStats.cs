@@ -472,13 +472,13 @@ namespace CalamityMod
 
                 { NPCID.HallowBoss, new int[] { 80, 110 } }, // Dash: 120, 165
 
-                { ModContent.NPCType<Leviathan>(), new int[] { 105 } },
+                { ModContent.NPCType<Leviathan>(), new int[] { 100 } },
                 { ModContent.NPCType<Anahita>(), new int[] { 75, 110 } }, // Dash: 113, 165
                 { ModContent.NPCType<AnahitasIceShield>(), new int[] { 60, 90 } },
                 { NPCID.DetonatingBubble, new int[] { 100, 150 } },
                 { ModContent.NPCType<AquaticAberration>(), new int[] { 70 } },
 
-                { ModContent.NPCType<AstrumAureus>(), new int[] { 105 } },
+                { ModContent.NPCType<AstrumAureus>(), new int[] { 100 } },
                 { ModContent.NPCType<AureusSpawn>(), new int[] { 75, 110 } },
 
                 { NPCID.Golem, new int[] { 72, 115 } },
