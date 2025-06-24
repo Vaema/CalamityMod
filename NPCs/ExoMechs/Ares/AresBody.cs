@@ -505,11 +505,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Prevent mechs from being respawned
-            if (otherExoMechWasFirst)
+            // CIT 08JUN2025: This code is pointless and makes me unable to work swapping the laser arm position. Commenting it out.
+            /*if (otherExoMechWasFirst)
             {
                 if (NPC.ai[3] < 1f)
                     NPC.ai[3] = 1f;
-            }
+            }*/
 
             // Phases
             bool spawnOtherExoMechs = lifeRatio < 0.7f && NPC.ai[3] == 0f;
@@ -888,7 +889,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     else
                     {
                         // Enrage if the target is more than the deathray length away
-                        if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode && revenge)) && EnragedState == (float)Enraged.No)
+                        if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode)) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
                             if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
@@ -908,7 +909,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         NPC.velocity *= decelerationVelocityMult;
 
                         int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             totalProjectiles += 4;
 
                         float radians = MathHelper.TwoPi / totalProjectiles;

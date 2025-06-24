@@ -75,7 +75,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] ArmsDealerNames =
         {
-            "Drifter",
             "Finchi",
             "Heniek", // <@!363404700445442050> (kazurgundu)
             "Fire", // <@!354362326947856384> (ultimatefirewaster)
@@ -90,6 +89,7 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
+			"Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
@@ -110,6 +110,7 @@ namespace CalamityMod.NPCs
             "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
+            "Kanna", // <@!730203712898859018> (cosmoredeathwish)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -191,7 +192,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] PrincessNames =
         {
-            "Catalyst", // <@!156672312425316352> (xaqult)
             "Nyapano", // <@!120976656826368003> (nyapano)
             "Jade", // <@!187395834625785869> (verymasterninja)
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
@@ -221,6 +221,7 @@ namespace CalamityMod.NPCs
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
+            "Cathlyn", // <@!156672312425316352> (xaqult)
         };
         private static readonly string[] StylistNames =
         {
@@ -342,6 +343,7 @@ namespace CalamityMod.NPCs
         {
             "Felix", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Tardo", // <@!739343546867384391> (midnight295)
+            "Dali", // <@!460238880436781061> (darthlego)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =

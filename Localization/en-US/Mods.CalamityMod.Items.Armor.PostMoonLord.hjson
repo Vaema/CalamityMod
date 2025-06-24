@@ -617,7 +617,6 @@ TarragonBreastplate: {
 		'''
 	CommonSetBonus:
 		'''
-		Reduces enemy spawn rates
 		Increased heart pickup range
 		Enemies have a chance to drop extra hearts on death
 		'''

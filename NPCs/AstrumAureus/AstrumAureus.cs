@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.8f;
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
@@ -217,7 +217,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 walkingVelocity += 1.5f * (1f - lifeRatio);
             if (revenge)
                 walkingVelocity += Math.Abs(NPC.Center.X - player.Center.X) * 0.0025f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 walkingVelocity *= 1.15f;
 
             float walkingProjectileVelocity = walkingVelocity * 0.8f;
@@ -653,7 +653,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         velocity += 6f * enrageScale;
                         if (expertMode)
                             velocity += death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             velocity *= 1.15f;
 
                         NPC.velocity = (new Vector2(player.Center.X, player.Center.Y - 500f) - NPC.Center).SafeNormalize(Vector2.Zero) * velocity;
@@ -1072,7 +1072,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 if (calamityGlobalNPC.newAI[1] > 0f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1] + 1f;
 
-                if (Main.getGoodWorld && !reduceFallSpeed)
+                if (CalamityWorld.LegendaryMode && !reduceFallSpeed)
                 {
                     gravity *= 1.15f;
                     maxFallSpeed *= 1.15f;
@@ -1083,6 +1083,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     NPC.velocity.Y = maxFallSpeed;
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         public override void FindFrame(int frameHeight)
         {

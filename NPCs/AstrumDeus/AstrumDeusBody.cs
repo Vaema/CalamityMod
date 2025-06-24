@@ -174,7 +174,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
             // Flight timer
-            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
+            float aiSwitchTimer = doubleWormPhase ? (CalamityWorld.LegendaryMode ? 600f : 1200f) : (CalamityWorld.LegendaryMode ? 900f : 1800f);
 
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
@@ -457,7 +457,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             // Need segment amount to get a smooth transition down the worm based on length
             int segmentAmt = Main.zenithWorld ? (CalamityWorld.death ? 8 : CalamityWorld.revenge ? 7 : Main.expertMode ? 6 : 5) : (CalamityWorld.death ? 40 : CalamityWorld.revenge ? 35 : Main.expertMode ? 30 : 25);
-            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
+            float cyanThreshold = CalamityWorld.LegendaryMode ? 300f : 600f;
             float transitionStart = MathHelper.Lerp(cyanThreshold * 0.75f, cyanThreshold * 0.95f, 1f - (NPC.ai[3] / (float)segmentAmt));
             float transitionEnd = MathHelper.Lerp(cyanThreshold * 0.8f, cyanThreshold, 1f - (NPC.ai[3] / (float)segmentAmt));
             bool drawCyan = NPC.Calamity().newAI[3] >= transitionEnd && NPC.Calamity().newAI[3] <= cyanThreshold + transitionEnd;

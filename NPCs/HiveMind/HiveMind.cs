@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         // This block of values can be modified in SetDefaults() based on difficulty mode or something
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private int burrowTimer = 420;
+        private int burrowTimer = 120;
         private int minimumDriftTime = 300;
         private int teleportRadius = 300;
         private int decelerationTime = 30;
@@ -147,7 +147,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = frameHeight_P1;
 
             NPC.defense = 8;
-            NPC.LifeMaxNERB(7700, 9200, 350000);
+            NPC.LifeMaxNERB(6150, 7350, 350000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -199,7 +199,7 @@ namespace CalamityMod.NPCs.HiveMind
                 driftBoost = 1f;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 reelbackFade *= 10;
                 arcTime *= 0.5f;
@@ -570,7 +570,7 @@ namespace CalamityMod.NPCs.HiveMind
                     {
                         NPC.localAI[0] = 1f;
                         int maxBlobs = death ? 15 : revenge ? 7 : expertMode ? 6 : 5;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             maxBlobs *= 2;
                         if (Main.zenithWorld)
                             maxBlobs = 50;
@@ -613,7 +613,7 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int maxSpawns = bossRush ? 16 : death ? 8 : revenge ? 6 : expertMode ? Main.rand.Next(4, 6) : Main.rand.Next(3, 5);
+                            int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
                             int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
                             for (int i = 0; i < maxSpawns; i++)
@@ -743,8 +743,8 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 case 0: // Slowdrift
 
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
+                    // Set damage
+                    NPC.damage = NPC.defDamage;
 
                     if (NPC.alpha > 0)
                     {
@@ -1114,7 +1114,7 @@ namespace CalamityMod.NPCs.HiveMind
                                     int type = ModContent.ProjectileType<ShadeNimbusHostile>();
                                     int damage = NPC.GetProjectileDamage(type);
                                     Vector2 cloudSpawnPos = new Vector2(NPC.position.X + Main.rand.Next(NPC.width), NPC.position.Y + Main.rand.Next(NPC.height));
-                                    Vector2 randomVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.rand.NextVector2CircularEdge(4f, 4f) : Vector2.Zero;
+                                    Vector2 randomVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(4f, 4f) : Vector2.Zero;
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), cloudSpawnPos, randomVelocity, type, damage, 0, Main.myPlayer, 11f);
                                 }
 
@@ -1289,13 +1289,6 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (Main.rand.NextBool(15))
-                    {
-                        int hiveBlobCount = NPC.CountNPCS(ModContent.NPCType<HiveBlob>()) + NPC.CountNPCS(ModContent.NPCType<HiveBlob2>());
-                        if (hiveBlobCount < 3)
-                            NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>());
-                    }
-
                     if (Main.rand.NextBool(30))
                     {
                         if (NPC.CountNPCS(NPCID.EaterofSouls) < 2)

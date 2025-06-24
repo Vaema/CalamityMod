@@ -439,7 +439,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses && NPC.downedPlantBoss && !NPC.AnyNPCs(ModContent.NPCType<ArmoredDiggerHead>()))
                 {
-                    float spawnRateDivisor = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 125f : CalamityWorld.revenge ? 425f : 500f;
+                    float spawnRateDivisor = CalamityWorld.LegendaryMode ? 125f : CalamityWorld.revenge ? 425f : 500f;
                     return 1 / spawnRateDivisor;
                 }
             }

@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] -= 1f;
 
                     int vileSpitGateValue = (int)MathHelper.Lerp(death ? 45f : 90f, 900f, lifeRatio);
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
 
                     Vector2 vileSpitShootLocation = npc.Center + npc.velocity;
@@ -414,7 +414,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 segmentAcceleration += (npc.justHit ? 0.16f : 0.04f);
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 segmentVelocity += 4f;
                 segmentAcceleration += 0.05f;
@@ -451,7 +451,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 int npcWidth = npc.width;
                 npcWidth = (int)(npcWidth * npc.scale);
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                     npcWidth = 62;
 
                 targetDistance = (targetDistance - npcWidth) / targetDistance;

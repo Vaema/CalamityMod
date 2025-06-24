@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (bossRush)
                 aggressionLevel = 5;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 aggressionLevel = 6;
 
             if (npc.type == NPCID.MoonLordCore)
@@ -811,7 +811,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] < 0f)
                         {
                             npc.localAI[1] = 0f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld && Main.remixWorld)
+                            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && Main.remixWorld)
                             {
                                 for (int k = 0; k < 30; k++)
                                 {

@@ -28,6 +28,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.UI;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
@@ -40,6 +41,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public static Asset<Texture2D> GlowTexture;
 
         public bool playedbuildsound = false;
+
+        public bool madeItToLocation = true;
 
         public override void SetStaticDefaults()
         {
@@ -154,7 +157,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (phase4)
                 darkEnergyAmt += 1;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 darkEnergyAmt *= 2;
 
             // Spawn a few Dark Energies as soon as the fight starts
@@ -222,7 +225,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
 
             // Decides whether Ceaseless moves closer to its target or not
-            float distanceRequiredToMove = (Main.getGoodWorld || !anyDarkEnergies) ? 320f : bossRush ? 600f : 720f;
+            float distanceRequiredToMove = CalamityWorld.LegendaryMode ? 300f : 720f;
             bool move = Vector2.Distance(NPC.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
 
             // Succ attack
@@ -462,8 +465,11 @@ namespace CalamityMod.NPCs.CeaselessVoid
             {
                 // Avoid cheap bullshit
                 NPC.damage = 0;
-
                 if (move)
+                {
+                    madeItToLocation = false;
+                }
+                if (!madeItToLocation)
                 {
                     Movement(false);
                 }
@@ -540,7 +546,14 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     acceleration *= 2f;
                 }
 
-                if (Main.getGoodWorld)
+                if (!madeItToLocation)
+                {
+
+                    velocity *= 2f;
+                    acceleration *= 5f;
+                }
+
+                if (CalamityWorld.LegendaryMode)
                 {
                     velocity *= 1.15f;
                     acceleration *= 1.15f;
@@ -550,8 +563,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
-                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
-                if (!succ && Main.getGoodWorld)
+                Vector2 moveToOffset = succ ? Vector2.Zero : CalamityWorld.LegendaryMode ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if ((!succ && CalamityWorld.LegendaryMode) || !madeItToLocation)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -564,37 +577,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         if (NPC.ai[0] > 7f)
                             NPC.ai[0] = 0f;
                     }
-
-                    switch ((int)NPC.ai[0])
-                    {
-                        case 0:
-                            break;
-                        case 1:
-                            moveToOffset.X = -maxDistance;
-                            break;
-                        case 2:
-                            moveToOffset.X = -maxDistance;
-                            moveToOffset.Y = 0f;
-                            break;
-                        case 3:
-                            moveToOffset.X = -maxDistance;
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 4:
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 5:
-                            moveToOffset.X = maxDistance;
-                            moveToOffset.Y = maxDistance;
-                            break;
-                        case 6:
-                            moveToOffset.X = maxDistance;
-                            moveToOffset.Y = 0f;
-                            break;
-                        case 7:
-                            moveToOffset.X = maxDistance;
-                            break;
-                    }
+                    moveToOffset += new Vector2(maxDistance, 0).RotatedBy(NPC.ai[0] / 8f * MathHelper.TwoPi);
                 }
 
                 destination += moveToOffset;
@@ -603,8 +586,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Vector2 distanceFromDestination = destination - NPC.Center;
 
                 // Movement
-                if (NPC.Distance(destination) > maxDistance || succ || !Main.getGoodWorld)
+                if (NPC.Distance(destination) > maxDistance || succ || (!CalamityWorld.LegendaryMode && !madeItToLocation))
                     CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
+                if (NPC.Distance(destination) < 80)
+                {
+                    madeItToLocation = true;
+                }
             }
 
             // Spawn more Dark Energies as the fight progresses
@@ -631,6 +618,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     {
                         if (phase4)
                         {
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)
@@ -641,6 +629,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         }
                         else if (phase3)
                         {
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)
@@ -651,6 +640,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         }
                         else
                         {
+                            madeItToLocation = false;
                             for (int i = 0; i < darkEnergyAmt; i++)
                             {
                                 for (int j = 0; j < 3; j++)

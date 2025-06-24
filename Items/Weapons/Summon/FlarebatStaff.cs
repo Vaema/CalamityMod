@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 18;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<FlarebatMinion>();
             Item.knockBack = 1f;

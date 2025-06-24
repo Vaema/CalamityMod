@@ -398,7 +398,7 @@ namespace CalamityMod.NPCs.CalClone
                 baseVelocity += 1.5f * (1f - lifeRatio);
                 baseAcceleration += 0.03f * (1f - lifeRatio);
             }
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 baseVelocity *= 1.15f;
                 baseAcceleration *= 1.15f;
@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.CalClone
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
-                            float gigaBlastFrequency = (Main.getGoodWorld ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
+                            float gigaBlastFrequency = (CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
                             float projSpeed = bossRush ? 6.25f : 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {

@@ -424,7 +424,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float timeToLineUpAttack = 30f;
             float timeToLineUpCharge = bossRush ? 45f : death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 timeToLineUpAttack *= 0.5f;
                 timeToLineUpCharge *= 0.5f;
@@ -445,7 +445,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             // Charge velocity
             float chargeVelocity = bossRush ? 115f : death ? 105f : revenge ? 101.25f : expertMode ? 97.5f : 90f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 baseVelocity *= 1.5f;
                 chargeVelocity *= 1.15f;
@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float rocketPhaseDuration = lastMechAlive ? 60f : 90f;
             int numRockets = nerfedAttacks ? 2 : 3;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 numRockets += 3;
 
             // Default vector to fly to
@@ -488,7 +488,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                 int randomLocationVarianceX = shouldGetBuffedByBerserkPhase ? 50 : 20;
                 int randomLocationVarianceY = shouldGetBuffedByBerserkPhase ? 250 : 100;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     randomLocationVarianceX *= 2;
                     randomLocationVarianceY *= 2;
@@ -1180,7 +1180,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
-                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge)))
+                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode)))
                         {
                             int totalProjectiles = bossRush ? 16 : death ? 12 : 8;
                             float radians = MathHelper.TwoPi / totalProjectiles;

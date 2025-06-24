@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 16, 0, 0);
@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || Main.getGoodWorld)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -306,7 +306,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // Spawn segments
@@ -449,7 +448,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeAcceleration *= accelerationMultiplier;
                 }
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     scourgeMaxSpeed *= 1.15f;
                     scourgeAcceleration *= 1.15f;
@@ -665,7 +664,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water)
             {
                 if (!NPC.AnyNPCs(ModContent.NPCType<AquaticScourgeHead>()))
-                    return (Main.getGoodWorld ? 0.05f : 0.01f);
+                    return (CalamityWorld.LegendaryMode ? 0.05f : 0.01f);
             }
 
             return 0f;

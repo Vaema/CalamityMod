@@ -76,6 +76,14 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[0]++;
             }
 
+            // Teleport to the owner if abnormally far away
+            if (!Projectile.WithinRange(Owner.Center, 2000f))
+            {
+                Projectile.position = Owner.Center;
+                Projectile.velocity *= 0.3f;
+                Projectile.netUpdate = true;
+            }
+
             CurrentBehavior.Invoke();
             Projectile.rotation = Projectile.rotation.AngleTowards(MathHelper.ToRadians(Projectile.velocity.X * 3f), 0.2f);
             Projectile.spriteDirection = MathF.Sign(Projectile.velocity.X);
@@ -118,14 +126,14 @@ namespace CalamityMod.Projectiles.Summon
             // The first stage is redirecting towards the target.
             if (!AttackState.HasFlag(AttackBehaviorFlags.HasDashed) && Vector2.Dot(Projectile.DirectionTo(Target.Center), Projectile.velocity.SafeNormalize(-Vector2.UnitY)) < 0.96f)
             {
-                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.DirectionTo(Target.Center).ToRotation(), 0.08f).ToRotationVector2() *
-                    Utils.Remap(Projectile.DistanceSQ(Target.Center), 6400f, 0f, 12f, 0f);
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.DirectionTo(Target.Center).ToRotation(), 0.095f).ToRotationVector2() *
+                    Utils.Remap(Projectile.DistanceSQ(Target.Center), 6400f, 0f, 14f, 0f);
             }
 
             // When it's whithin a distnce and it hasn't dashed yet, it'll dash.
             else if (!AttackState.HasFlag(AttackBehaviorFlags.HasDashed) && Projectile.DistanceSQ(Target.Center) < 57600f)
             {
-                Projectile.velocity = Projectile.DirectionTo(Target.Center) * 15f;
+                Projectile.velocity = Projectile.DirectionTo(Target.Center) * 19f;
                 AttackState |= AttackBehaviorFlags.HasDashed;
                 Projectile.netUpdate = true;
 
@@ -162,8 +170,8 @@ namespace CalamityMod.Projectiles.Summon
             // When it has arrived to it at a distance, reset the state and start over.
             if (AttackState.HasFlag(AttackBehaviorFlags.IsReturningToOwner))
             {
-                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.DirectionTo(IdlePosition).ToRotation(), 0.08f).ToRotationVector2() *
-                    Utils.Remap(Projectile.DistanceSQ(IdlePosition), 6400f, 0f, 12f, 0f);
+                Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.DirectionTo(IdlePosition).ToRotation(), 0.095f).ToRotationVector2() *
+                    Utils.Remap(Projectile.DistanceSQ(IdlePosition), 6400f, 0f, 14f, 0f);
 
                 if (Projectile.DistanceSQ(IdlePosition) < 6400f)
                 {

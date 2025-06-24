@@ -71,20 +71,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism || Main.npc[i].type == ModContent.NPCType<Foveanator>()) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
+                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
                         npc.timeLeft = Main.npc[i].timeLeft - 1;
                 }
             }
-
-            // Foveanator spawn
-            if (death && calamityGlobalNPC.newAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient && !bossRush)
-            {
-                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, ModContent.NPCType<Foveanator>());
-                calamityGlobalNPC.newAI[0] = 1f;
-                npc.SyncExtraAI();
-            }
-
-            bool foveanatorAlive = NPC.AnyNPCs(ModContent.NPCType<Foveanator>());
 
             // Phase HP ratios
             float phase2LifeRatio = death ? 0.85f : 0.7f;
@@ -145,7 +135,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         acceleration += phase1MaxAccelerationIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -174,7 +164,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.SimpleFlyMovement(idealVelocity * maxVelocity, acceleration);
                     
                     float phaseGateValue = death ? (300f - phase1MaxLaserPhaseDurationDecrease * ((1f - lifeRatio) / (1f - phase2LifeRatio))) : 450f;
-                    float laserGateValue = foveanatorAlive ? 45f : 30f;
+                    float laserGateValue = 30f;
                     if (NPC.IsMechQueenUp)
                     {
                         phaseGateValue = 900f;
@@ -199,7 +189,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                         {
                             npc.ai[3] += 1f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.ai[3] += 0.5f;
                         }
 
@@ -244,7 +234,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     chargeSpeed += 10f * enrageScale;
                     if (death)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed += 2f;
 
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -283,8 +273,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.rotation = hoverRotation;
 
                         float totalCharges = death ? 6f : 5f;
-                        if (foveanatorAlive)
-                            totalCharges -= 1f;
 
                         if (npc.ai[3] >= totalCharges)
                         {
@@ -347,8 +335,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         SoundEngine.PlaySound(SoundID.Item33, npc.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            bool shootLaser = npc.ai[1] % 20f == 0f;
-                            int type = shootLaser ? ProjectileID.DeathLaser : ModContent.ProjectileType<HomingLaserDart>();
+                            int type = ProjectileID.DeathLaser;
                             int damage = npc.GetProjectileDamage(type);
 
                             // Reduce mech boss projectile damage depending on the new ore progression changes
@@ -362,16 +349,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     damage = (int)(damage * secondMechMultiplier);
                             }
 
-                            Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * 7f;
-                            int numProj = shootLaser ? 6 : 2;
-                            int spread = shootLaser ? 20 : 80;
-                            float rotation = MathHelper.ToRadians(spread);
-                            float offset = shootLaser ? 90f : 50f;
-                            for (int i = 0; i < numProj; i++)
-                            {
-                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * offset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                            }
+                            Vector2 projectileVelocity = npc.rotation.ToRotationVector2() * 7f;
+                            float offset = 90f;
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projectileVelocity) * offset, projectileVelocity, type, damage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -443,7 +423,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxVelocity += 4.5f * enrageScale;
                     acceleration += 0.075f * enrageScale;
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -491,7 +471,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         npc.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                        if (npc.localAI[1] >= (spazAlive ? (foveanatorAlive ? 64f : 52f) : foveanatorAlive ? 39f : 26f))
+                        if (npc.localAI[1] >= (spazAlive ? 52f : 26f))
                         {
                             if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                             {
@@ -531,7 +511,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         maxVelocity += 4.5f * enrageScale;
                         acceleration += 0.15f * enrageScale;
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             maxVelocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -548,7 +528,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             npc.localAI[1] += 1f + (death ? (phase2LifeRatio - lifeRatio) / phase2LifeRatio : 0f);
-                            if (npc.localAI[1] > (spazAlive ? (foveanatorAlive ? 25f : 20f) : foveanatorAlive ? 15f : 10f))
+                            if (npc.localAI[1] > (spazAlive ? 20f : 10f))
                             {
                                 if (Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                                 {
@@ -604,7 +584,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         chargeSpeed += 10f * enrageScale;
                         if (!spazAlive)
                             chargeSpeed += 2f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeSpeed += 2f;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * chargeSpeed;
@@ -645,7 +625,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             if (npc.ai[3] % 3f == 0f)
                             {
-                                float fireRate = spazAlive ? 13f : foveanatorAlive ? 11f : 9f;
+                                float fireRate = spazAlive ? 13f : 9f;
                                 if (npc.ai[2] % fireRate == 0f)
                                 {
                                     SoundEngine.PlaySound(SoundID.Item33, npc.Center);
@@ -725,7 +705,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             chargeAcceleration *= 0.75f;
                         }
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             chargeSpeed *= 1.15f;
                             chargeAcceleration *= 1.15f;
@@ -813,12 +793,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism || Main.npc[i].type == ModContent.NPCType<Foveanator>()) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
+                    if (i != npc.whoAmI && Main.npc[i].active && (Main.npc[i].type == NPCID.Retinazer || Main.npc[i].type == NPCID.Spazmatism) && Main.npc[i].timeLeft - 1 > npc.timeLeft)
                         npc.timeLeft = Main.npc[i].timeLeft - 1;
                 }
             }
-
-            bool foveanatorAlive = NPC.AnyNPCs(ModContent.NPCType<Foveanator>());
 
             // Phase HP ratios
             float phase2LifeRatio = death ? 0.85f : 0.7f;
@@ -883,7 +861,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         acceleration += phase1MaxAccelerationIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
                     }
 
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                     {
                         maxVelocity *= 1.15f;
                         acceleration *= 1.15f;
@@ -928,11 +906,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                         {
                             npc.ai[3] += 1f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 npc.ai[3] += 0.4f;
                         }
 
-                        if (npc.ai[3] >= (foveanatorAlive ? 45f : 30f))
+                        if (npc.ai[3] >= 30f)
                         {
                             npc.ai[3] = 0f;
 
@@ -974,7 +952,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     chargeSpeed += 8f * enrageScale;
                     if (death)
                         chargeSpeed += phase1MaxChargeSpeedIncrease * ((1f - lifeRatio) / (1f - phase2LifeRatio));
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         chargeSpeed *= 1.2f;
 
                     npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -1015,7 +993,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         npc.rotation = hoverRotation;
 
-                        float totalCharges = foveanatorAlive ? 6f : 8f;
+                        float totalCharges = 8f;
                         if (death)
                             totalCharges -= (float)Math.Round(phase1MaxChargesDecrease * ((1f - lifeRatio) / (1f - phase2LifeRatio)));
 
@@ -1185,7 +1163,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (distanceFromDestination > distanceFromTarget)
                             maxVelocity += MathHelper.Lerp(0f, death ? 8f : 6f, MathHelper.Clamp((distanceFromDestination - distanceFromTarget) / 1000f, 0f, 1f));
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             maxVelocity *= 1.15f;
                             acceleration *= 1.15f;
@@ -1224,7 +1202,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[3] += 1f;
                                 npc.localAI[1] = 0f;
 
-                                float flamethrowerSpeed = foveanatorAlive ? 5f : 6f;
+                                float flamethrowerSpeed = 6f;
                                 flamethrowerSpeed += 3f * enrageScale;
                                 float timeForFlamethrowerToReachMaxVelocity = 60f;
                                 float flamethrowerSpeedScalar = MathHelper.Clamp(npc.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
@@ -1292,7 +1270,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float chargeSpeed = 18f + (death ? 5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                         chargeSpeed += 16f * enrageScale;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             chargeSpeed *= 1.2f;
 
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitX * direction) * chargeSpeed;
@@ -1336,7 +1314,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.rotation = hoverRotation;
 
-                            float totalCharges = foveanatorAlive ? 4f : 5f;
+                            float totalCharges = 5f;
                             if (npc.ai[3] >= totalCharges)
                             {
                                 npc.ai[1] = 0f;
@@ -1376,7 +1354,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             spazmatismPhase3ChargeSpeed += 10f * enrageScale;
                             if (npc.ai[2] == -1f || (!retAlive && npc.ai[3] == secondFastCharge))
                                 spazmatismPhase3ChargeSpeed *= 1.3f;
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 spazmatismPhase3ChargeSpeed *= 1.2f;
 
                             Vector2 distanceVector = Main.player[npc.target].Center + (!retAlive && bossRush ? Main.player[npc.target].velocity * 20f : Vector2.Zero) - npc.Center;
@@ -1500,7 +1478,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             chargeAcceleration *= 0.75f;
                         }
 
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                         {
                             chargeSpeed *= 1.15f;
                             chargeAcceleration *= 1.15f;
@@ -1513,7 +1491,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.ai[2] += 1f;
 
                         // Fire shadowflames and cursed fireballs
-                        float fireRate = retAlive ? 30f : foveanatorAlive ? 25f : 20f;
+                        float fireRate = retAlive ? 30f : 20f;
                         if (npc.ai[2] % fireRate == 0f)
                         {
                             npc.ai[3] += 1f;

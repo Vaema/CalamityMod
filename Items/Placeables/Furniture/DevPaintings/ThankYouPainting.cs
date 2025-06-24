@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
         public static IList<string> devList = new List<string>()
         {
 			"Altix",
-            "Angel",
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
@@ -90,6 +89,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Shayy",
             "Spider Prov",
             "StipulateVenus",
+            "Sunny",
             "Tobias",
             "Tomat",
             "Triangle",

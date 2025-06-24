@@ -221,9 +221,9 @@ namespace CalamityMod.NPCs.Yharon
             }
 
             // Phase booleans
-            float phase2GateValue = revenge ? 0.9f : expertMode ? 0.85f : 0.75f;
+            float phase2GateValue = revenge ? 0.9f : expertMode ? 0.85f : 0.8f;
             bool phase2Check = death || lifeRatio <= phase2GateValue;
-            bool phase3Check = lifeRatio <= (death ? 0.8f : revenge ? 0.75f : expertMode ? 0.7f : 0.625f);
+            bool phase3Check = lifeRatio <= (death ? 0.8f : revenge ? 0.75f : expertMode ? 0.7f : 0.65f);
             bool phase4Check = lifeRatio <= ai2GateValue;
             bool phase1Change = NPC.ai[0] > -1f;
             bool phase2Change = NPC.ai[0] > 5f;
@@ -369,12 +369,12 @@ namespace CalamityMod.NPCs.Yharon
                 enraged = false;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f));
+                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f));
                     safeBox.Y = (int)Main.topWorld;
-                    safeBox.Width = Main.zenithWorld ? 3000 : Main.getGoodWorld ? 2000 : bossRush ? 4000 : revenge ? 6000 : 7000;
+                    safeBox.Width = Main.zenithWorld ? 3000 : CalamityWorld.LegendaryMode ? 2000 : bossRush ? 4000 : revenge ? 6000 : 7000;
                     safeBox.Height = Main.maxTilesY * 16;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
                 }
 
                 // Force Yharon to send a sync packet so that the arena gets sent immediately
@@ -396,7 +396,7 @@ namespace CalamityMod.NPCs.Yharon
                     protectionBoost = false;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 phaseSwitchTimer /= 2;
 
             // Set DR based on protection boost (aka enrage)
@@ -1436,7 +1436,7 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        DoFlareDustBulletHell(1, flareDustPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), 8, 12f, 3.6f, false);
+                        DoFlareDustBulletHell(1, flareDustPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), 8, 13f, 3.6f, false);
                     }
                 }
 
@@ -1623,12 +1623,10 @@ namespace CalamityMod.NPCs.Yharon
         {
             CalamityGlobalNPC.yharonP2 = NPC.whoAmI;
 
-            float phase2GateValue = revenge ? 0.44f : expertMode ? 0.385f : 0.275f;
+            float phase2GateValue = revenge ? 0.45f : expertMode ? 0.35f : 0.3f;
             bool phase2 = death || lifeRatio <= phase2GateValue;
-            float phase3GateValue = death ? 0.358f : revenge ? 0.275f : expertMode ? 0.22f : 0.138f;
-            bool phase3 = lifeRatio <= phase3GateValue;
-            float phase4GateValue = death ? 0.165f : 0.11f;
-            bool phase4 = lifeRatio <= phase4GateValue && revenge;
+            bool phase3 = lifeRatio <= (death ? 0.35f : revenge ? 0.3f : expertMode ? 0.2f : 0.15f);
+            bool phase4 = lifeRatio <= (death ? 0.2f : 0.15f) && revenge;
 
             if (NPC.ai[0] != 5f && NPC.ai[0] != 8f)
             {
@@ -1786,7 +1784,7 @@ namespace CalamityMod.NPCs.Yharon
 
             int spinPhaseTimer = secondPhasePhase == 4 ? (bossRush ? 80 : death ? 100 : 120) : (bossRush ? 120 : death ? 150 : 180);
             int flareDustSpawnDivisor = spinPhaseTimer / 10;
-            int flareDustSpawnDivisor2 = spinPhaseTimer / 20 + (secondPhasePhase == 4 ? spinPhaseTimer / 60 : 0);
+            int flareDustSpawnDivisor2 = spinPhaseTimer / 15 + (secondPhasePhase == 4 ? spinPhaseTimer / 60 : 0);
 
             float increasedIdleTimeAfterBulletHell = (death ? 120f : 180f) + phaseSwitchTimer;
             bool moveSlowerAfterBulletHell = NPC.ai[1] < 0f;
@@ -1815,7 +1813,7 @@ namespace CalamityMod.NPCs.Yharon
                 chargeSpeed *= velocityMult;
             }
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 phaseSwitchTimer *= 0.5f;
 
             if (NPC.ai[0] == 0f)
@@ -2024,12 +2022,6 @@ namespace CalamityMod.NPCs.Yharon
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                if (CalamityWorld.LegendaryMode && revenge)
-                                {
-                                    if (!NPC.AnyNPCs(ModContent.NPCType<Dragonfolly>()))
-                                        NPC.SpawnOnPlayer(NPC.FindClosestPlayer(), ModContent.NPCType<Dragonfolly>());
-                                }
-
                                 float bulletHellTeleportLocationDistance = 540f;
                                 Vector2 teleportLocation = -Vector2.UnitY * bulletHellTeleportLocationDistance * (targetData.velocity.Y >= 0f).ToDirectionInt();
                                 Vector2 center = targetData.Center + teleportLocation;
@@ -2364,7 +2356,7 @@ namespace CalamityMod.NPCs.Yharon
                         if (NPC.ai[1] % flareDustSpawnDivisor2 == 0f)
                         {
                             int totalProjectiles = secondPhasePhase == 4 ? 12 : 10;
-                            float projectileVelocity = secondPhasePhase == 4 ? 16f : 12f;
+                            float projectileVelocity = secondPhasePhase == 4 ? 17f : 13f;
                             float radialOffset = secondPhasePhase == 4 ? 2.8f : 3.2f;
                             if (NPC.localAI[3] == 0f)
                             {
