@@ -305,17 +305,39 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
+            // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
+            if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
+            {
+                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
+                projectile.Calamity().supercritHits = -1;
+            }
+
             if (source is EntitySource_Parent { Entity: NPC npc })
             {
                 if (!npc.friendly)
                     ParentNPCIndex = npc.whoAmI;
             }
+            //
+            // SPECIFIC PROJECTILE BALANCE CHANGES
+            //
             else if (source is EntitySource_Parent { Entity: Projectile parent })
             {
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
                 if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
                     projectile.damage = (int)(projectile.damage * 0.55f);
+
+                // Nerf Mushroom Spear mushroom damage by 50%
+                if (parent.type == ProjectileID.MushroomSpear && projectile.type == ProjectileID.Mushroom)
+                    projectile.damage /= 2;
+
+                // Nerf Luminite Arrow trail damage by 50%
+                if (parent.type == ProjectileID.MoonlordArrow && projectile.type == ProjectileID.MoonlordArrowTrail)
+                    projectile.damage /= 2;
+
+                // Nerf Cursed Dart flame damage by 50%
+                if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
+                    projectile.damage /= 2;
             }
 
             if (source is EntitySource_OnHit e)
@@ -328,12 +350,9 @@ namespace CalamityMod.Projectiles
                     projectile.damage /= 2;
             }
 
-            // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
-            if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
-            {
-                projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
-                projectile.Calamity().supercritHits = -1;
-            }
+            // Nerfed Seedler projectile damage by 25%
+            if (source is EntitySource_ItemUse_WithAmmo ea && ea.Item.type == ItemID.Seedler)
+                projectile.damage = (int)(projectile.damage * 0.75f);
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
