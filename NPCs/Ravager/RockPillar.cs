@@ -79,10 +79,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
             }
 
             if (NPC.ai[0] == 0)
@@ -113,10 +109,14 @@ namespace CalamityMod.NPCs.Ravager
                         }
 
                         NPC.noTileCollide = true;
-                        NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
+                        if (NPC.rotation == 0)
+                            NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0;
+                        NPC.damage = NPC.defDamage;
+                        if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
+                            NPC.damage = (int)(NPC.defDamage * 1.5);
                     }
                 }
             }
@@ -141,7 +141,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
-        public override bool? CanFallThroughPlatforms() => (NPC.alpha > 10) || (NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height);
+        public override bool? CanFallThroughPlatforms() => NPC.ai[0] != 0 || ((NPC.alpha > 10) || (NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height));
         public override bool CheckActive() => false;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
