@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 104;
             Item.height = 34;
-            Item.damage = 9;
+            Item.damage = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 16;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<Slagfire>();
             Item.ArmorPenetration = 10;
             Item.shootSpeed = 14f;
-            Item.reuseDelay = 12;
+            Item.reuseDelay = 16;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-16, 0);
