@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 40;
             Item.height = 36;
-            Item.damage = 14;
+            Item.damage = 15;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<VileFeederSummon>();
             Item.knockBack = 0.5f;

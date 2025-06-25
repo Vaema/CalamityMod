@@ -2063,6 +2063,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.dontTakeDamage = true;
                         NPC.chaseable = false;
                         NPC.damage = 0;
+                        attackPause = 5;
 
                         if (!canDespawn)
                             NPC.velocity *= 0.95f;

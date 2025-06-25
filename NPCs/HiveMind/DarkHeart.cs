@@ -73,6 +73,15 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
+            // Despawn if Hive Mind isn't present
+            if (CalamityGlobalNPC.hiveMind == -1)
+            {
+                NPC.life = 0;
+                NPC.HitEffect();
+                NPC.checkDead();
+                NPC.active = false;
+            }
+
             float velocity = CalamityWorld.LegendaryMode ? 10f : death ? 7f : revenge ? 6f : 4f;
             float acceleration = CalamityWorld.LegendaryMode ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
             float deceleration = CalamityWorld.LegendaryMode ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;

@@ -21,9 +21,9 @@ namespace CalamityMod.Items.Mounts
             MountData.buff = ModContent.BuffType<OnyxExcavatorBuff>();
 
             // Horizontal movement
-            MountData.runSpeed = 5.5f;
+            MountData.runSpeed = 4.5f;
             MountData.swimSpeed = 0.5f;
-            MountData.acceleration = 0.2f;
+            MountData.acceleration = 0.1f;
 
             // Vertical movement
             MountData.fallDamage = 0f;

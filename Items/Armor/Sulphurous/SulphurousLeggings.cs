@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += Collision.DrownCollision(player.position, player.width, player.height, player.gravDir) ? 0.35f : 0.1f;
+            player.moveSpeed += player.Calamity().countsAsAnyWet ? 0.35f : 0.1f;
         }
 
         public override void AddRecipes()

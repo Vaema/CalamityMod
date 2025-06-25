@@ -42,7 +42,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 38;
             NPC.DR_NERD(0.05f);
             NPC.lifeMax = 9000;
-            NPC.knockBackResist = 0.1f;
+            NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.lavaImmune = true;
             NPC.value = Item.buyPrice(0, 0, 75, 0);
@@ -79,8 +79,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (NPC.velocity.Y == 0f)
             {
-                NPC.knockBackResist = 0f;
-
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
@@ -141,8 +139,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             else
             {
-                NPC.knockBackResist = 0.1f;
-
                 if (NPC.direction == 1 && NPC.velocity.X < 1f)
                 {
                     NPC.velocity.X += 0.1f;

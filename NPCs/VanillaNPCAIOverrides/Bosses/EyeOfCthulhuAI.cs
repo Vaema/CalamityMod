@@ -338,16 +338,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int spawnType = NPCID.ServantofCthulhu;
-                        if (death)
-                        {
-                            int maxBloodServants = 2;
-                            bool spawnBloodServant = NPC.CountNPCS(ModContent.NPCType<BloodlettingServant>()) < maxBloodServants;
-                            if (spawnBloodServant)
-                                spawnType = ModContent.NPCType<BloodlettingServant>();
-                        }
-
-                        int servantSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, spawnType, 0, 0f, 0f, enrageScale);
+                        int servantSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScale);
                         Main.npc[servantSpawn].velocity.X = servantSpawnVelocity.X;
                         Main.npc[servantSpawn].velocity.Y = servantSpawnVelocity.Y;
 
@@ -759,39 +750,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 servantSpawnVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity;
                         Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
 
-                        int spawnType = NPCID.ServantofCthulhu;
-                        bool spawnServant = false;
                         float enrageScaleToPass = enrageScale;
-                        if (death)
-                        {
-                            int maxBloodServants = 2;
-                            bool spawnBloodServant = NPC.CountNPCS(ModContent.NPCType<BloodlettingServant>()) < maxBloodServants;
-                            if (spawnBloodServant)
-                            {
-                                spawnType = ModContent.NPCType<BloodlettingServant>();
-                                spawnServant = true;
-                                enrageScaleToPass += 0.5f;
-                            }
-                            else
-                            {
-                                int maxServants = death ? 1 : 2;
-                                spawnServant = (penultimatePhaseDeath || finalPhaseRev) ? false : NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
-                            }
-                        }
-                        else
-                        {
-                            int maxServants = death ? (finalPhaseDeath ? 1 : penultimatePhaseDeath ? 2 : 3) : (finalPhaseRev ? 2 : 4);
-                            spawnServant = NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
-                        }
+                        int maxServants = death ? (finalPhaseDeath ? 1 : penultimatePhaseDeath ? 2 : 3) : (finalPhaseRev ? 2 : 4);
+                        bool spawnServant = NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
 
                         if (spawnServant)
+                        {
                             SoundEngine.PlaySound(SoundID.NPCDeath13, servantSpawnCenter);
+
+                            for (int m = 0; m < 10; m++)
+                                Dust.NewDust(servantSpawnCenter, 20, 20, DustID.Blood, servantSpawnVelocity.X * 0.4f, servantSpawnVelocity.Y * 0.4f, 0, default, 1f);
+                        }   
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             if (spawnServant)
                             {
-                                int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, spawnType, 0, 0f, 0f, enrageScaleToPass);
+                                int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScaleToPass);
                                 Main.npc[eye].velocity.X = servantSpawnVelocity.X;
                                 Main.npc[eye].velocity.Y = servantSpawnVelocity.Y;
 
@@ -820,12 +795,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     Main.projectile[proj].timeLeft = 600;
                                 }
                             }
-                        }
-
-                        if (spawnServant)
-                        {
-                            for (int m = 0; m < 10; m++)
-                                Dust.NewDust(servantSpawnCenter, 20, 20, DustID.Blood, servantSpawnVelocity.X * 0.4f, servantSpawnVelocity.Y * 0.4f, 0, default, 1f);
                         }
                     }
 

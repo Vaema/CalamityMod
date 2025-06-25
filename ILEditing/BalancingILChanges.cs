@@ -79,17 +79,6 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
-
-            // CIT 22SEP2024: Removed the edit intended to decrease Frog Leg's jump speed boost,
-            // as it was not doing anything due to vanilla changing how Frog Leg's jump speed boost is applied.
-
-            // Remove the jump height addition from the Werewolf buff (Moon Charm).
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Moon Charm jump height boost value.");
-                return;
-            }
-            cursor.Next.Operand = 0;
         }
 
         private const float VanillaBaseJumpSpeed = 5.01f;
@@ -115,16 +104,12 @@ namespace CalamityMod.ILEditing
         private static void RunSpeedAdjustments(ILContext il)
         {
             var cursor = new ILCursor(il);
-            float asphaltTopSpeedMultiplier = 1.75f; // +75%. Vanilla is +250%
+            float asphaltTopSpeedMultiplier = 2.25f; // +125%. Vanilla is +250%
             float asphaltSlowdown = 1f; // Vanilla is 2f. This should actually make asphalt faster.
-
-            // Dunerider Boots multiply all run stats by 1.75f in vanilla
-            float duneRiderBootsMultiplier = 1.25f; // Change to 1.25f
 
             // Multiplied by 0.6 on frozen slime, for +26% acceleration
             // Multiplied by 0.7 on ice, for +47% acceleration
             float iceSkateAcceleration = 2.1f;
-            float iceSkateTopSpeed = 1f; // no boost at all
 
             //
             // ASPHALT
@@ -154,22 +139,6 @@ namespace CalamityMod.ILEditing
             }
 
             //
-            // DUNERIDER BOOTS + SAND BLOCKS
-            //
-            {
-                // Find the multiplier for Dunerider Boots on Sand Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate the Dunerdier Boots multiplier.");
-                    return;
-                }
-
-                // Massively reduce the increased speed of Dunerider Boots while on Sand Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, duneRiderBootsMultiplier);
-            }
-
-            //
             // ICE SKATES + FROZEN SLIME BLOCKS
             //
             {
@@ -183,17 +152,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Frozen Slime Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Frozen Slime Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Frozen Slime Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Frozen Slime Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
 
             //
@@ -210,17 +168,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Ice Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Ice Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Ice Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Ice Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
         }
 
@@ -502,30 +449,13 @@ namespace CalamityMod.ILEditing
         #region UpdateBuffs Balancing Changes
         private static void UpdateBuffsBalancingChanges(ILContext il)
         {
-            // This IL edit accomplishes four things:
-            // 1. Nerf Sharpening Station's armor penetration boost from 12 to 5.
-            // 2. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
-            // 3. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
-            // 4. Remove the ability for Feral Bite to randomly inflict debuffs.
+            // This IL edit accomplishes three things:
+            // 1. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
+            // 2. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
+            // 3. Remove the vanilla implementation of Feral Bite inflicting random debuffs.
             var cursor = new ILCursor(il);
 
-            // First, find the code which applies Sharpened's armor penetration buff.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.Sharpened)))
-            {
-                LogFailure("Sharpening Station Nerf", "Could not locate the Sharpened buff ID.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(12f))) // The amount of armor penetration to grant.
-            {
-                LogFailure("Sharpening Station Nerf", "Could not locate the amount of armor penetration granted.");
-                return;
-            }
-
-            // Replace the value entirely.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.SharpeningStationArmorPenetration);
-
-            // Next, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
+            // First, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.BeetleMight1)))
             {
                 LogFailure("Beetle Scale Mail Nerf", "Could not locate the Beetle Might buff ID.");
@@ -581,7 +511,7 @@ namespace CalamityMod.ILEditing
             // There are multiple branches pointing to this instruction, so it cannot be removed. Instead, swap its value directly.
             cursor.Next.Operand = BalancingConstants.NebulaDamagePerBooster;
 
-            // Finally, removing Feral Bite's debuffs.
+            // Finally, removing Feral Bite's vanilla debuff infliction.
             // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
             {
@@ -590,6 +520,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
+            // Calamity reimplements a different version of this in CalamityGlobalBuff.Update
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0f);
         }

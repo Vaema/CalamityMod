@@ -162,7 +162,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.GoldenShowerFriendly, Do(PiercingExact(2), DefaultIDStaticIFrames) },
                 { ProjectileID.GreenCounterweight, counterweightTweaks },
                 { ProjectileID.Hamdrax, standardDrillTweaks }, // Drax (never internally renamed since 1.1)
-                { ProjectileID.HeatRay, Do(InfinitePiercing, IDStaticIFrames(6)) }, // Due to the weapon's fast use speed, the lasers need to give less than 10 iframes
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IchorBullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
@@ -434,6 +433,7 @@ namespace CalamityMod.Projectiles
                 {ProjectileID.Grenade, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.HallowSpray, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.HallowStar, Do(DefaultIDStaticIFrames)},
+                {ProjectileID.HeatRay, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.HolyWater, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.HoneyBomb, Do(DefaultIDStaticIFrames)},
                 {ProjectileID.HoneyGrenade, Do(DefaultIDStaticIFrames)},

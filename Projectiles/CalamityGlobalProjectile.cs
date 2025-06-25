@@ -2096,7 +2096,7 @@ namespace CalamityMod.Projectiles
                     float dustVelocityMultiplier = 0.75f;
                     int numDust = 5;
                     int numDust2 = 5;
-                    int fadeInTime = 50;
+                    int fadeInTime = 25;
                     int fadeOutGateValue = death ? 90 : 65;
                     float killGateValue = death ? 100f : 75f;
                     int maxFrames = 5;
@@ -2131,7 +2131,7 @@ namespace CalamityMod.Projectiles
 
                     if (fadeIn)
                     {
-                        projectile.Opacity += 0.02f;
+                        projectile.Opacity += 0.04f;
                         if (projectile.Opacity > 1f)
                             projectile.Opacity = 1f;
 
@@ -3293,6 +3293,11 @@ namespace CalamityMod.Projectiles
                     break;
             }
 
+            // Makes flares from Firestorm Cannon ignore gravity
+            // Spectralstorm Cannon uses a custom flare projectile
+            if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
+                projectile.localAI[1]--;
+
             // Jack O Lantern Launcher projectile tweak
             if (projectile.type == ProjectileID.JackOLantern)
             {
@@ -4067,14 +4072,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.numHits > 0)
                     projectile.damage = (int)(projectile.damage * 0.8f);
-                if (projectile.damage < 1)
-                    projectile.damage = 1;
-            }
-
-            // Heat Ray damage falloff
-            if (projectile.type == ProjectileID.HeatRay && projectile.numHits > 0)
-            {
-                projectile.damage = (int)(projectile.damage * 0.9f);
                 if (projectile.damage < 1)
                     projectile.damage = 1;
             }

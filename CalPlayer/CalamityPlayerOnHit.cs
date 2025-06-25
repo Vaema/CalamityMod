@@ -103,7 +103,7 @@ namespace CalamityMod.CalPlayer
                     break;
 
                 case ItemID.FieryGreatsword:
-                    target.AddBuff(BuffID.OnFire3, 180);
+                    target.AddBuff(BuffID.OnFire3, 90);
                     break;
 
                 case ItemID.IceSickle:
@@ -138,7 +138,7 @@ namespace CalamityMod.CalPlayer
 
             ItemLifesteal(target, item, damageDone);
             ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
-            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
+            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit);
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
@@ -608,7 +608,7 @@ namespace CalamityMod.CalPlayer
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
                 ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), true, proj.noEnchantments);
+                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
                 if (targetIsDummy)
@@ -838,8 +838,9 @@ namespace CalamityMod.CalPlayer
             if (dynamoStemCells && MiniSwarmerCooldown <= 0 && proj.CountsAsClass<RangedDamageClass>())
             {
                 MiniSwarmerCooldown = DynamoStemCells.MiniSwarmerCooldown;
-
-                Vector2 velocity = proj.velocity.SafeNormalize(Vector2.UnitY) * 19;
+                Vector2 directionToMouse = Main.MouseWorld - Player.Center;
+                directionToMouse.Normalize();
+                Vector2 velocity = directionToMouse * 19;
                 int MiniSwamerDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DynamoStemCells.MiniSwamerDamage);
                 Projectile.NewProjectile(source, Player.Center, velocity, ProjectileType<MiniatureFolly>(), MiniSwamerDamage, 2f, proj.owner);
             }
@@ -1148,9 +1149,9 @@ namespace CalamityMod.CalPlayer
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
-                for (int dustexplode = 0; dustexplode < 180; dustexplode++)
+                for (int dustexplode = 0; dustexplode < 120; dustexplode++)
                 {
-                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 2)) * 1.7f;
+                    Vector2 dustd = Vector2.One.RotatedBy(MathHelper.ToRadians(dustexplode * 3)) * 1.7f;
                     Dust dust = Dust.NewDustPerfect(proj.Center, Main.rand.NextBool() ? DustType<AstralBlue>() : DustType<AstralOrange>(), dustd, Alpha: 100);
                     dust.noGravity = true;
                 }
@@ -1200,7 +1201,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Debuffs
-        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool proj = false, bool noFlask = false)
+        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool crit, bool proj = false, bool noFlask = false)
         {
             if (melee && !noFlask) // Prevents Deep Sea Dumbell from snagging true melee debuff memes
             {
@@ -1307,7 +1308,7 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
-            if (ilSpark && Player.IsUnderwater())
+            if (ilSpark && Player.Calamity().countsAsAnyWet)
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
@@ -1322,7 +1323,11 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                    target.AddBuff(BuffID.Venom, 120, false);
+                target.AddBuff(BuffID.Venom, 120, false);
+            }
+            if (snowRuffianSet && ranged && crit)
+            {
+                target.AddBuff(BuffID.Frostburn, 300, false);
             }
         }
         #endregion

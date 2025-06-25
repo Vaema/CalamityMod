@@ -188,8 +188,6 @@ namespace CalamityMod.NPCs
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
-        public bool ShouldFallThroughPlatforms;
-
         /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
@@ -296,7 +294,6 @@ namespace CalamityMod.NPCs
         public int tSad = 0;
         public int eutrophication = 0;
         public int webbed = 0;
-        public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
         /// <summary>
@@ -556,8 +553,6 @@ namespace CalamityMod.NPCs
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
-            myClone.ShouldFallThroughPlatforms = ShouldFallThroughPlatforms;
-
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
@@ -593,7 +588,6 @@ namespace CalamityMod.NPCs
             myClone.tSad = tSad;
             myClone.eutrophication = eutrophication;
             myClone.webbed = webbed;
-            myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
             myClone.pearlAuraCounter = pearlAuraCounter;
@@ -1655,8 +1649,6 @@ namespace CalamityMod.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            ShouldFallThroughPlatforms = false;
-
             for (int i = 0; i < maxPlayerImmunities; i++)
                 dashImmunityTime[i] = 0;
 
@@ -1917,7 +1909,8 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.55);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                npc.scale = 1.15f;
             }
             else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)
             {
@@ -5516,8 +5509,6 @@ namespace CalamityMod.NPCs
                 eutrophication--;
             if (webbed > 0)
                 webbed--;
-            if (slowed > 0)
-                slowed--;
             if (vaporfied > 0)
                 vaporfied--;
 
@@ -5896,9 +5887,6 @@ namespace CalamityMod.NPCs
                     }
                     velocitySlownessFactor += baseSlownessFactor;
                 }
-
-                if (slowed > 0)
-                    velocitySlownessFactor += 0.05f;
 
                 if (tesla > 0)
                 {
@@ -7374,11 +7362,6 @@ namespace CalamityMod.NPCs
             // If the doll is active, Voodoo Demons cannot spawn (via modded means).
             if (voodooDemonDollActive)
                 pool.Remove(NPCID.VoodooDemon);
-            // Otherwise, if it's pre-Hardmode, provide a modded spawn entry that makes them much more common.
-            else if (!Main.hardMode && spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone)
-            {
-                pool[NPCID.VoodooDemon] = SpawnCondition.Underworld.Chance * 0.15f;
-            }
         }
         #endregion
 
@@ -7647,21 +7630,6 @@ namespace CalamityMod.NPCs
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
                 }
             }
-            if (slowed > 0)
-            {
-                if (Main.rand.Next(5) < 4)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.SpookyWood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 225, default, 3f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.1f;
-                    Main.dust[dust].velocity.Y += 0.25f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[dust].noGravity = false;
-                        Main.dust[dust].scale *= 0.5f;
-                    }
-                }
-            }
             if (webbed > 0)
             {
                 if (Main.rand.Next(5) < 4)
@@ -7894,8 +7862,6 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (slowed > 0)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Slow].Value);
                     if (webbed > 0)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)
