@@ -46,7 +46,7 @@ AddedTooltip: {
 	FairyBoots:
 		'''
 		Fairies can spawn at any time on the surface and spawn far more frequently
-		Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed
+		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
 		Fairies are immune to damage and will no longer flee
 		'''
 	MoonStone: Reduces the damage of the Nightwither debuff
