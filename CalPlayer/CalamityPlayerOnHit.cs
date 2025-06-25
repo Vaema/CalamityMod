@@ -1343,17 +1343,17 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit)
+                if (vampiricTalisman && proj.CountsAsClass<RogueDamageClass>() && crit && proj.numHits <1)
                 {
-                    int heal = (int)Math.Round(damage * (Main.zenithWorld ? 0.01 : 0.008));
-                    if (proj.Calamity().stealthStrike)
-                        heal /= 2; // Stealth strikes heal half due to generally dealing far more dmg
+                    int heal = (int)Math.Round(damage * 0.008);
+                    if (heal > 2)
+                        heal = 2;
 
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, 1.25f);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, heal, (raiderCritLifespan > 0 && !proj.Calamity().stealthStrike) ? 1.3f : 1.6f);
                 }
 
                 if (bloodyGlove && proj.CountsAsClass<RogueDamageClass>() && modProj.stealthStrike)
-                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, 2, 1.5f);
+                    Player.SpawnLifeStealProjectile(target, proj, ProjectileID.VampireHeal, electricianGlove ? 10 : 5, 2f);
 
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
                     Projectile.NewProjectile(proj.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((proj.velocity.Length() * proj.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);

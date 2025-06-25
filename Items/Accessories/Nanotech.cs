@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Accessories
 {
     public class Nanotech : ModItem, ILocalizedModType
     {
+        //The stealth damage boost is handled in CalamityPlayer for some reason, maybe someone didn't want em to stack?
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -27,6 +28,9 @@ namespace CalamityMod.Items.Accessories
             modPlayer.electricianGlove = true;
             modPlayer.filthyGlove = true;
             modPlayer.bloodyGlove = true;
+            modPlayer.vampiricTalisman = true;
+            modPlayer.raiderTalisman = true;
+            modPlayer.rottenDogTooth = true;
             player.GetDamage<ThrowingDamageClass>() += 0.15f;
             player.Calamity().rogueVelocity += 0.15f;
         }
@@ -37,6 +41,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RogueEmblem>().
                 AddIngredient<MoonstoneCrown>().
                 AddIngredient<ElectriciansGlove>().
+                AddIngredient<VampiricTalisman>().
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();

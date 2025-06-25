@@ -458,7 +458,7 @@ namespace CalamityMod.CalPlayer
         /// This is obtained from a formula derived from the player's current stealth, the weapon's use time, and the player's stealth generation boosts.
         /// </summary>
         public float stealthDamage = 0f;
-        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove and its upgrades, and Rotten Dogtooth. </summary>
+        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
         #endregion

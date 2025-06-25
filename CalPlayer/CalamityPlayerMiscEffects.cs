@@ -3732,9 +3732,15 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
             }
 
+            // While making the rogue update verify if we should allow these to stack again - Shade
             if (filthyGlove)
             {
                 bonusStealthDamage += nanotech ? 0.05f : 0.08f;
+            }
+
+            if (rottenDogTooth && !nanotech)
+            {
+                bonusStealthDamage += 0.08f;
             }
 
             if (sandsWindBuff)
