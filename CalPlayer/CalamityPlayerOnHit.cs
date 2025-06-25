@@ -1146,6 +1146,7 @@ namespace CalamityMod.CalPlayer
             if (raiderTalisman && modProj.stealthStrike)
             {
                 raiderCritLifespan = CalamityUtils.SecondsToFrames(RaidersTalisman.RaiderCooldown);
+                // TO DO: Add nanotech here
                 Player.AddCooldown(RaiderBoost.ID, raiderCritLifespan, true, vampiricTalisman ? "Bloodfeast" : "default");
                 if (raiderSoundCooldown <= 0)
                 {
