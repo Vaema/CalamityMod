@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(4);
             if (Projectile.ai[0] == 1f)
             {
-                if (Projectile.timeLeft % 8 == 0)
+                if (Projectile.timeLeft % 4 == 0)
                 {
                     if (Main.rand.NextBool(3))
                     {
