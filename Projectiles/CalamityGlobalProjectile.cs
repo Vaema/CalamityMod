@@ -294,7 +294,6 @@ namespace CalamityMod.Projectiles
         public int BloodstoneOrbValue = 0;
 
         #region On Spawn
-
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
@@ -310,6 +309,13 @@ namespace CalamityMod.Projectiles
             {
                 if (!npc.friendly)
                     ParentNPCIndex = npc.whoAmI;
+            }
+            else if (source is EntitySource_Parent { Entity: Projectile parent })
+            {
+                // Nerf Crystal bullet shard damage by 45%
+                // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
+                if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
+                    projectile.damage = (int)(projectile.damage * 0.55f);
             }
 
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
