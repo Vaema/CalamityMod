@@ -710,15 +710,15 @@ namespace CalamityMod
 
                 { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<PlagueStingerGoliath>()), new int[] { 56 } },
                 { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<PlagueStingerGoliathV2>()), new int[] { 56 } },
-                { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<HiveBombGoliath>()), new int[] { 80 } },
+                { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<HiveBombGoliath>()), new int[] { 75 } },
 
                 { new Tuple<int, int>(NPCID.DukeFishron, ProjectileID.Sharknado), new int[] { 80, 100 } },
                 { new Tuple<int, int>(NPCID.DukeFishron, ProjectileID.Cthulunado), new int[] { 160, 200 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<RavagerBody>(), ModContent.ProjectileType<RavagerBlaster>()), new int[] { 90 } },
-                { new Tuple<int, int>(ModContent.NPCType<RavagerHead>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 80 } },
+                { new Tuple<int, int>(ModContent.NPCType<RavagerHead>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 75 } },
                 { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<HomingLaserDart>()), new int[] { 60 } },
-                { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 80 } },
+                { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 75 } },
                 { new Tuple<int, int>(ModContent.NPCType<FlamePillar>(), ModContent.ProjectileType<RavagerFlame>()), new int[] { 60 } },
 
                 { new Tuple<int, int>(NPCID.CultistBoss, ProjectileID.CultistBossFireBall), new int[] { 60, 80 } },
