@@ -55,9 +55,8 @@ namespace CalamityMod.NPCs.CalClone
             if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
 
-            NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 15 : 10;
-            NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.225f : 0.15f);
-            NPC.LifeMaxNERB(9200, 11025, 80000);
+            NPC.defense = 10;
+            NPC.LifeMaxNERB(8500, 10000, 80000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

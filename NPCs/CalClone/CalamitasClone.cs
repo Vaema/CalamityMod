@@ -72,9 +72,8 @@ namespace CalamityMod.NPCs.CalClone
             if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 0.8f;
 
-            NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 12 : 25;
+            NPC.defense = 25;
             NPC.value = Item.buyPrice(0, 20, 0, 0);
-            NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.075f : 0.15f);
             NPC.LifeMaxNERB(37500, 45000, 520000);
             NPC.aiStyle = -1;
             AIType = -1;
