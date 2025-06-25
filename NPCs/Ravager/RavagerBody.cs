@@ -592,7 +592,7 @@ namespace CalamityMod.NPCs.Ravager
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 1);
+                        bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 2);
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
 
                         if (CalamityWorld.LegendaryMode)
@@ -632,17 +632,12 @@ namespace CalamityMod.NPCs.Ravager
                             }
 
                             int spawnDistance = 360;
-
-                            if (!anyRockPillars || !anyFlamePillars)
                             {
                                 SoundEngine.PlaySound(PillarSound, NPC.Center);
-                            }
-                            if (!anyRockPillars || CalamityWorld.LegendaryMode)
-                            {
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                             }
-                            else if (!anyFlamePillars || CalamityWorld.LegendaryMode)
+                            if (!anyFlamePillars)
                             {
                                 float distanceMultiplier = finalPhase ? 2.5f : 2f;
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)player.Center.X - (int)(spawnDistance * distanceMultiplier), (int)player.Center.Y - 100, ModContent.NPCType<FlamePillar>());

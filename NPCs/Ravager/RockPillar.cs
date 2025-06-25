@@ -16,6 +16,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
         }
 
         public override void SetDefaults()
@@ -27,7 +28,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 50;
             NPC.DR_NERD(0.3f);
             NPC.chaseable = false;
-            NPC.lifeMax = DownedBossSystem.downedProvidence ? 20000 : 5000;
             NPC.alpha = 255;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -36,10 +36,12 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
 
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            NPC.lifeMax = 1800;
         }
 
         //Disable dmg when stationary vertically or before jumping
@@ -51,6 +53,10 @@ namespace CalamityMod.NPCs.Ravager
         }
         public override void AI()
         {
+            if (NPC.lifeMax > 1800)
+                NPC.lifeMax = 1800;
+            if (NPC.life > NPC.lifeMax)
+                NPC.life = NPC.lifeMax;
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -110,7 +116,7 @@ namespace CalamityMod.NPCs.Ravager
                         NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
-                        NPC.ai[1] = 0f;
+                        NPC.ai[1] = 0;
                     }
                 }
             }
@@ -135,7 +141,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
-        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
+        public override bool? CanFallThroughPlatforms() => (NPC.alpha > 10) || (NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height);
         public override bool CheckActive() => false;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
@@ -224,7 +230,14 @@ namespace CalamityMod.NPCs.Ravager
             if (item.pick > 0)
             {
                 modifiers.FlatBonusDamage += -10000;
-                modifiers.FinalDamage.Flat += (NPC.lifeMax / 2000f) * item.pick;
+                modifiers.FinalDamage.Flat += item.pick - 1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1);
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
             }
             base.ModifyHitByItem(player, item, ref modifiers);
         }
@@ -235,7 +248,14 @@ namespace CalamityMod.NPCs.Ravager
             if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
             {
                 modifiers.FlatBonusDamage += -10000;
-                modifiers.FinalDamage.Flat += (NPC.lifeMax / 2000f) * item.pick;
+                modifiers.FinalDamage.Flat += item.pick - 1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1); 
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
             }
             base.ModifyHitByProjectile(projectile, ref modifiers);
         }
