@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.CalClone
 
             NPC.defense = 25;
             NPC.value = Item.buyPrice(0, 20, 0, 0);
-            NPC.LifeMaxNERB(37500, 45000, 520000);
+            NPC.LifeMaxNERB(39000, 46875, 520000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

@@ -98,8 +98,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.width = 374;
             NPC.height = 374;
             NPC.defense = 40;
-            NPC.DR_NERD(0.4f);
-            NPC.LifeMaxNERB(120000, 140000, 740000); // 30 seconds in boss rush
+            NPC.DR_NERD(0.1f);
+            NPC.LifeMaxNERB(95000, 115000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -170,8 +170,6 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             // Exhaustion
             bool exhausted = NPC.ai[2] >= (phase3 ? 2f : 1f);
-            calamityGlobalNPC.DR = exhausted ? 0.2f : 0.4f;
-            NPC.defense = exhausted ? NPC.defDefense / 2 : NPC.defDefense;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)

@@ -67,7 +67,6 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 20;
-            NPC.DR_NERD(0.2f);
             NPC.LifeMaxNERB(35000, 42000, 260000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;

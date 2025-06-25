@@ -1436,11 +1436,11 @@ namespace CalamityMod.NPCs
                 { NPCID.GiantShelly, 0.2f },
                 { NPCID.GiantShelly2, 0.2f },
                 { NPCID.GiantTortoise, 0.35f },
-                { NPCID.Golem, 0.25f },
-                { NPCID.GolemFistLeft, 0.25f },
-                { NPCID.GolemFistRight, 0.25f },
-                { NPCID.GolemHead, 0.25f },
-                { NPCID.GolemHeadFree, 0.25f },
+                { NPCID.Golem, 0.2f },
+                { NPCID.GolemFistLeft, 0.2f },
+                { NPCID.GolemFistRight, 0.2f },
+                { NPCID.GolemHead, 0.2f },
+                { NPCID.GolemHeadFree, 0.2f },
                 { NPCID.GraniteFlyer, 0.1f },
                 { NPCID.GraniteGolem, 0.15f },
                 { NPCID.GreekSkeleton, 0.1f },
@@ -1739,10 +1739,6 @@ namespace CalamityMod.NPCs
                     npc.lifeMax = 30000;
                     break;
 
-                case NPCID.GolemHead:
-                    npc.lifeMax = 20000;
-                    break;
-
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     npc.lifeMax = 7000;
@@ -1753,7 +1749,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 67500;
+                    npc.lifeMax = 72000;
                     break;
 
                 case NPCID.PlanterasTentacle:
@@ -1856,7 +1852,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.Golem || npc.type == NPCID.GolemHead)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
                 if (npc.type == NPCID.Golem)
                     npc.npcSlots = 64f;
