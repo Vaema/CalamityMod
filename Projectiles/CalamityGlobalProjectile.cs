@@ -4012,6 +4012,15 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
+            // Super Star Shooter has damage falloff
+            if (projectile.type == ProjectileID.SuperStar)
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.95f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Stardust Wings buff the Stardust Guardian's damage
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
