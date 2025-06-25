@@ -52,12 +52,6 @@ namespace CalamityMod.Balancing
             bool MushroomSpearFilter(Projectile p) =>
                 p.type == ProjectileID.Mushroom && Main.player[p.owner].ActiveItem().type == ItemID.MushroomSpear;
 
-            bool OrichalcumPetalFilter(Projectile p) =>
-                p.type == ProjectileID.FlowerPetal && Main.player[p.owner].onHitPetal;
-
-            bool SpectreMaskSetBonusFilter(Projectile p) =>
-                p.type == ProjectileID.SpectreWrath && Main.player[p.owner].ghostHurt;
-
             bool AotCThrowCombo(Projectile p) =>
                 p.type == ProjectileType<ArkoftheCosmosSwungBlade>() && (p.ai[0] == 2 || p.ai[0] == 3);
 
@@ -77,13 +71,6 @@ namespace CalamityMod.Balancing
 
                 // Nerf Mushroom Spear projectiles by 50%.
                 Do(new ProjectileSpecificRequirementBalancingRule(0.5f, MushroomSpearFilter)),
-
-                // Nerf Orichalcum armor set bonus petals by 25%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.75f, OrichalcumPetalFilter)),
-
-                // Nerf Spectre Mask set bonus projectiles by 50%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.5f, SpectreMaskSetBonusFilter)),
-
             };
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();

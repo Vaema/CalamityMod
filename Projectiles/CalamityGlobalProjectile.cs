@@ -318,6 +318,16 @@ namespace CalamityMod.Projectiles
                     projectile.damage = (int)(projectile.damage * 0.55f);
             }
 
+            if (source is EntitySource_OnHit e)
+            {
+                // Nerf Orichalcum armor's set bonus petal damage by 25% (5 is the projectile source ID for Orichalcum armor set bonus)
+                if (e.Context == "5")
+                    projectile.damage = (int)(projectile.damage * 0.75f);
+                // Nerf Spectre armor's set bonus soul damage by 50% (16 is the projectile source ID for Spectre Mask set bonus)
+                if (e.Context == "16")
+                    projectile.damage /= 2;
+            }
+
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
