@@ -21,7 +21,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         };
         public static void DemonFlamesNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
-            int baseDemonicFlamesDoTValue = (int)((npc.Calamity().demonicFlamesBonusDamage) * Math.Max(npc.Calamity().ActiveHeatDebuffMultiplier, 1));
+            int baseDemonicFlamesDoTValue = (int)Math.Max(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(npc.Calamity().demonicFlamesBonusDamage), npc.Calamity().demonicFlamesBonusDamage);
             npc.Calamity().ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()

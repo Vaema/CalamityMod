@@ -170,6 +170,22 @@ namespace CalamityMod.DataStructures
         public delegate void UpdateNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage);
 
         /// <summary>
+        /// Applies a scaling amount to a StatModifer
+        /// </summary>
+        /// <param name="Modifer"></param>
+        /// <param name="scaling"></param>
+        /// <returns></returns>
+        public static StatModifier ApplyScalingToStatModifer(StatModifier Modifer, float scaling)
+        {
+            StatModifier output = new();
+            output += (Modifer.Additive-1) * scaling;
+            output *= 1 + (Modifer.Multiplicative-1) * scaling;
+            output.Base = Modifer.Base * scaling;
+            output.Flat = Modifer.Flat * scaling;
+            return output;
+        }
+
+        /// <summary>
         /// UNIMPLEMENTED. WILL BE IN A FUTURE PR
         /// The default debuff DoT functionality on a player
         /// </summary>
@@ -184,20 +200,19 @@ namespace CalamityMod.DataStructures
         public void BaseUpdateNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
-            double totalDPS = EnemyLostRegen;
-            double totalScaling =
-                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
-                ?
-                1 + (
-                    (cnpc.ActiveHeatDebuffMultiplier - 1) * HeatDebuffScaling +
-                    (cnpc.ActiveColdDebuffMultiplier - 1) * ColdDebuffScaling +
-                    (cnpc.ActiveSicknessDebuffMultiplier - 1) * SicknessDebuffScaling +
-                    (cnpc.ActiveWaterDebuffMultiplier - 1) * WaterDebuffScaling +
-                    (cnpc.ActiveElectricDebuffMultiplier - 1) * ElectricDebuffScaling
-                )
-                :
-                1 + (cnpc.TypelessDebuffMultiplier-1);
-            totalDPS *= totalScaling;
+            float totalDPS = EnemyLostRegen;
+            StatModifier totalScaling =
+                 HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
+                 ?
+                 ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier, HeatDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveColdDebuffMultiplier, ColdDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveSicknessDebuffMultiplier, SicknessDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveWaterDebuffMultiplier, WaterDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
+                 ))))
+                 :
+                 cnpc.ActiveTypelessDebuffMultiplier;
+            totalDPS = totalScaling.ApplyTo(totalDPS);
             var totalDPSAdjusted = totalDPS-EnemyVanillaRegenToCancelOut;
             npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(totalDPS*MultiplierDamageTickSize,MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
@@ -211,20 +226,19 @@ namespace CalamityMod.DataStructures
         public void ElectricDebuffNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
-            double totalDPS = EnemyLostRegen;
-            double totalScaling =
-                HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
-                ?
-                1 + (
-                    (cnpc.ActiveHeatDebuffMultiplier - 1) * HeatDebuffScaling +
-                    (cnpc.ActiveColdDebuffMultiplier - 1) * ColdDebuffScaling +
-                    (cnpc.ActiveSicknessDebuffMultiplier - 1) * SicknessDebuffScaling +
-                    (cnpc.ActiveWaterDebuffMultiplier - 1) * WaterDebuffScaling +
-                    (cnpc.ActiveElectricDebuffMultiplier - 1) * ElectricDebuffScaling
-                )
-                :
-                1 + (cnpc.TypelessDebuffMultiplier - 1);
-            totalDPS *= totalScaling;
+            float totalDPS = EnemyLostRegen;
+            StatModifier totalScaling =
+                 HeatDebuffScaling + ColdDebuffScaling + SicknessDebuffScaling + WaterDebuffScaling + ElectricDebuffScaling != 0
+                 ?
+                 ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier, HeatDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveColdDebuffMultiplier, ColdDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveSicknessDebuffMultiplier, SicknessDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveWaterDebuffMultiplier, WaterDebuffScaling)
+                    .CombineWith(ApplyScalingToStatModifer(cnpc.ActiveElectricDebuffMultiplier, ElectricDebuffScaling)
+                 ))))
+                 :
+                 cnpc.ActiveTypelessDebuffMultiplier;
+            totalDPS = totalScaling.ApplyTo(totalDPS);
             totalDPS *= (npc.velocity.X == 0 ? 1 : 4);
             totalDPS -= EnemyVanillaRegenToCancelOut * (npc.velocity.X == 0 ? 1 : 5); //Vanilla Electrified is 5x when moving, not 4x
             npc.Calamity().ApplyDPSDebuff((int)(totalDPS), (int)Math.Max(totalDPS * MultiplierDamageTickSize, MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
@@ -255,7 +269,7 @@ namespace CalamityMod.DataStructures
             // If there are no Daybreak impaled spears, Daybroken has 1x potency (it was applied some other way)
             float daybrokenMultiplier = numImpaledSpears <= 1 ? 1f : (1f + 0.25f * (numImpaledSpears - 1));
             int adjustedSpears = Math.Max(1, numImpaledSpears);
-            int baseDaybreakDoTValue = (int)(Daybroken.EnemyLostRegen * adjustedSpears + (Daybroken.EnemyLostRegen + Daybroken.EnemyLostRegen * 0.25f * (adjustedSpears - 1)) * (cnpc.ActiveHeatDebuffMultiplier - 1));
+            int baseDaybreakDoTValue = (int)(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen * adjustedSpears) + npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen * 0.25f * (adjustedSpears - 1)));
             var totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut*numImpaledSpears;
             if (numImpaledSpears == 0)
             {
@@ -269,9 +283,7 @@ namespace CalamityMod.DataStructures
         public static void OiledNPCMethod(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
-            double totalDPS = Oiled.EnemyLostRegen;
-            double totalScaling = cnpc.ActiveHeatDebuffMultiplier * Oiled.HeatDebuffScaling;
-            totalDPS *= totalScaling;
+            double totalDPS = ApplyScalingToStatModifer(cnpc.ActiveHeatDebuffMultiplier,Oiled.HeatDebuffScaling).ApplyTo(Oiled.EnemyLostRegen);
             if (totalDPS <= 0)
                 return;
             npc.Calamity().ApplyDPSDebuff((int)(totalDPS), damage+(int)Math.Max(totalDPS * Oiled.MultiplierDamageTickSize, Oiled.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);

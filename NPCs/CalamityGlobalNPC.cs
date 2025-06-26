@@ -147,25 +147,25 @@ namespace CalamityMod.NPCs
         /// </summary>
         public bool? VulnerableToWater = null;
 
-        public const double BaseDoTDamageMult = 1D;
-        public const double VulnerableToDoTDamageMult = 2D;
-        public const double VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5;
-        public const double ResistantToDoTDamageMult = 0.5;
+        public const float BaseDoTDamageMult = 1f;
+        public const float VulnerableToDoTDamageMult = 2f;
+        public const float VulnerableToDoTDamageMult_Worms_SlimeGod = 1.5f;
+        public const float ResistantToDoTDamageMult = 0.5f;
 
-        public float TypelessDebuffMultiplier = 1;
-        public float HeatDebuffMultiplier = 1;
-        public float ColdDebuffMultiplier = 1;
-        public float SicknessDebuffMultiplier = 1;
-        public float WaterDebuffMultiplier = 1;
-        public float ElectricDebuffMultiplier = 1;
+        public StatModifier TypelessDebuffMultiplier = new StatModifier();
+        public StatModifier HeatDebuffMultiplier = new StatModifier();
+        public StatModifier ColdDebuffMultiplier = new StatModifier();
+        public StatModifier SicknessDebuffMultiplier = new StatModifier();
+        public StatModifier WaterDebuffMultiplier = new StatModifier();
+        public StatModifier ElectricDebuffMultiplier = new StatModifier();
 
         // These are all recalculated constantly, while the regular ones are recalulated only on hit
-        public double ActiveTypelessDebuffMultiplier = 1;
-        public double ActiveHeatDebuffMultiplier = 1;
-        public double ActiveColdDebuffMultiplier = 1;
-        public double ActiveSicknessDebuffMultiplier = 1;
-        public double ActiveWaterDebuffMultiplier = 1;
-        public double ActiveElectricDebuffMultiplier = 1;
+        public StatModifier ActiveTypelessDebuffMultiplier = new StatModifier();
+        public StatModifier ActiveHeatDebuffMultiplier = new StatModifier();
+        public StatModifier ActiveColdDebuffMultiplier = new StatModifier();
+        public StatModifier ActiveSicknessDebuffMultiplier = new StatModifier();
+        public StatModifier ActiveWaterDebuffMultiplier = new StatModifier();
+        public StatModifier ActiveElectricDebuffMultiplier = new StatModifier();
 
         // Cold debuff effects
         public bool IncreasedColdEffects_EskimoSet = false;
@@ -946,7 +946,7 @@ namespace CalamityMod.NPCs
             bool wormBoss = DesertScourgeIDList.Includes(npc.type) || EaterOfWorldsIDList.Includes(npc.type) || PerforatorWormIDList.Includes(npc.type) ||
                 AquaticScourgeIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type);
             bool slimeGod = SlimeGodIDList.Includes(npc.type);
-            ActiveHeatDebuffMultiplier = BaseDoTDamageMult;
+            ActiveHeatDebuffMultiplier = HeatDebuffMultiplier;
             if (VulnerableToHeat.HasValue)
             {
                 if (VulnerableToHeat.Value)
@@ -955,7 +955,7 @@ namespace CalamityMod.NPCs
                     ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            ActiveColdDebuffMultiplier = BaseDoTDamageMult;
+            ActiveColdDebuffMultiplier = ColdDebuffMultiplier;
             if (VulnerableToCold.HasValue)
             {
                 if (VulnerableToCold.Value)
@@ -964,7 +964,7 @@ namespace CalamityMod.NPCs
                     ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            ActiveSicknessDebuffMultiplier = BaseDoTDamageMult;
+            ActiveSicknessDebuffMultiplier = SicknessDebuffMultiplier;
             if (VulnerableToSickness.HasValue)
             {
                 if (VulnerableToSickness.Value)
@@ -972,7 +972,7 @@ namespace CalamityMod.NPCs
                 else
                     ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
             }
-            ActiveElectricDebuffMultiplier = BaseDoTDamageMult;
+            ActiveElectricDebuffMultiplier = ElectricDebuffMultiplier;
             if (VulnerableToElectricity.HasValue)
             {
                 if (VulnerableToElectricity.Value)
@@ -980,7 +980,7 @@ namespace CalamityMod.NPCs
                 else
                     ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
             }
-            ActiveWaterDebuffMultiplier = BaseDoTDamageMult;
+            ActiveWaterDebuffMultiplier = WaterDebuffMultiplier;
             if (VulnerableToWater.HasValue)
             {
                 if (VulnerableToWater.Value)
@@ -989,15 +989,9 @@ namespace CalamityMod.NPCs
                     ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
             }
 
-            ActiveHeatDebuffMultiplier += HeatDebuffMultiplier-1;
-            ActiveColdDebuffMultiplier += ColdDebuffMultiplier-1;
-            ActiveSicknessDebuffMultiplier += SicknessDebuffMultiplier-1;
-            ActiveWaterDebuffMultiplier += WaterDebuffMultiplier-1;
-            ActiveElectricDebuffMultiplier += ElectricDebuffMultiplier-1;
-
             if (irradiated)
             {
-                double irradiatedBoost = scionsCurioEffected ? 1.75 : 1;
+                float irradiatedBoost = scionsCurioEffected ? 1.75f : 1f;
                 ActiveSicknessDebuffMultiplier += irradiatedBoost;
             }
 

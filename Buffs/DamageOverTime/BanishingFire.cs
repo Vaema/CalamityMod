@@ -15,7 +15,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         };
         public static void BanishingFireNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
-            int baseBanishingFireDoTValue = (int)((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : debuffData.EnemyLostRegen) * npc.Calamity().ActiveHeatDebuffMultiplier);
+            int baseBanishingFireDoTValue = (int)npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo((npc.lifeMax >= 1000000 ? npc.lifeMax / 500 : debuffData.EnemyLostRegen));
             npc.Calamity().ApplyDPSDebuff(baseBanishingFireDoTValue, baseBanishingFireDoTValue / 5, ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()

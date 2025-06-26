@@ -176,12 +176,12 @@ namespace CalamityMod.CalPlayer
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
 
-        public float TypelessDebuffMultiplier = 1;
-        public float HeatDebuffMultiplier = 1;
-        public float ColdDebuffMultiplier = 1;
-        public float SicknessDebuffMultiplier = 1;
-        public float WaterDebuffMultiplier = 1;
-        public float ElectricDebuffMultiplier = 1;
+        public StatModifier TypelessDebuffMultiplier = new();
+        public StatModifier HeatDebuffMultiplier = new();
+        public StatModifier ColdDebuffMultiplier = new();
+        public StatModifier SicknessDebuffMultiplier = new();
+        public StatModifier WaterDebuffMultiplier = new();
+        public StatModifier ElectricDebuffMultiplier = new();
         #endregion
 
         #region Speedrun Timer
@@ -2517,12 +2517,12 @@ namespace CalamityMod.CalPlayer
             wither = false;
             ManaBurn = false;
 
-            TypelessDebuffMultiplier = 1;
-            HeatDebuffMultiplier = 1;
-            ColdDebuffMultiplier = 1;
-            SicknessDebuffMultiplier = 1;
-            WaterDebuffMultiplier = 1;
-            ElectricDebuffMultiplier = 1;
+            TypelessDebuffMultiplier = new();
+            HeatDebuffMultiplier = new();
+            ColdDebuffMultiplier = new();
+            SicknessDebuffMultiplier = new();
+            WaterDebuffMultiplier = new();
+            ElectricDebuffMultiplier = new();
 
             trinketOfChiBuff = false;
             sandsWindBuff = false;
@@ -2993,12 +2993,12 @@ namespace CalamityMod.CalPlayer
             wither = false;
             PurityHealSlowdownFrames = 0;
             ImmobilityDebuffImmunityTimer = 0;
-            TypelessDebuffMultiplier = 1;
-            HeatDebuffMultiplier = 1;
-            ColdDebuffMultiplier = 1;
-            SicknessDebuffMultiplier = 1;
-            WaterDebuffMultiplier = 1;
-            ElectricDebuffMultiplier = 1;
+            TypelessDebuffMultiplier = new();
+            HeatDebuffMultiplier = new();
+            ColdDebuffMultiplier = new();
+            SicknessDebuffMultiplier = new();
+            WaterDebuffMultiplier = new();
+            ElectricDebuffMultiplier = new();
             #endregion
 
             #region Rogue

@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
             // See SageNeedle.cs for details
-            int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * npc.Calamity().ActiveSicknessDebuffMultiplier);
+            int baseSagePoisonDoTValue = (int)npc.Calamity().ActiveSicknessDebuffMultiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
             npc.Calamity().ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()
