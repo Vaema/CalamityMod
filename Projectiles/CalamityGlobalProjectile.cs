@@ -3514,16 +3514,13 @@ namespace CalamityMod.Projectiles
                             {
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < 15)
                                 {
-                                    // Daedalus Rogue Crystals: 2 x 25%, soft cap starts at 120 base damage
+                                    // Daedalus Rogue Crystals: 25%, soft cap starts at 120 base damage
                                     int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
 
-                                    for (int i = 0; i < 2; i++)
-                                    {
-                                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                                        int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
-                                        if (shard.WithinBounds(Main.maxProjectiles))
-                                            Main.projectile[shard].DamageType = DamageClass.Generic;
-                                    }
+                                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                                    int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
+                                    if (shard.WithinBounds(Main.maxProjectiles))
+                                        Main.projectile[shard].DamageType = DamageClass.Generic;
                                 }
                             }
                         }

@@ -43,19 +43,18 @@ namespace CalamityMod.Projectiles.Rogue
             // spawn dust
             if (Main.rand.NextBool(5))
             {
-                int dustType = Main.rand.NextBool() ? DustID.Chlorophyte : DustID.UnusedBrown;
+                int dustType = Main.rand.NextBool() ? DustID.Chlorophyte : DustID.Ash;
                 Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustType, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f, Scale: 0.9f);
             }
 
-            // freely spins instead of facing forwards
-            Projectile.rotation += 0.26f;
+            Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.spriteDirection = Projectile.direction = (Projectile.velocity.X > 0).ToDirectionInt();
             Projectile.ai[0]++;
         }
 
         private void ApplySineVelocity(Vector2 baseVelocity)
         {
-            float radians = Projectile.ai[1] * (float)Math.Sin(-MathHelper.PiOver2 + 0.25f * Projectile.ai[0]);
+            float radians = Projectile.ai[1] * (float)Math.Sin(-MathHelper.PiOver2 + 0.25f * Projectile.ai[0]) * 0.5f;
             Projectile.velocity = baseVelocity.RotatedBy(radians);
         }
 
@@ -71,7 +70,9 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            Color draw = Color.Lerp(lightColor, Color.White, 0.5f);
+            SpriteEffects sp = Projectile.ai[1] == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None;
+            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(draw), Projectile.rotation, tex.Size() / 2f, Projectile.scale, sp, 0);
             return false;
         }
     }
