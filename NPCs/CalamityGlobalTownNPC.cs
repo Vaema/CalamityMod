@@ -1121,10 +1121,7 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
                 shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()))
-                .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons);
+                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()));
             }
 
             if (type == NPCID.DyeTrader)
@@ -1170,7 +1167,6 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
-                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .Add(ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
                 .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
                 .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
@@ -1180,8 +1176,7 @@ namespace CalamityMod.NPCs
             if (type == NPCID.GoblinTinkerer)
             {
                 shop.Add(ItemType<StatMeter>())
-                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
-                .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
+                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic));
             }
 
             if (type == NPCID.Mechanic)
@@ -1238,15 +1233,12 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<AbyssFountainItem>())
                 .Add(ItemType<AstralFountainItem>())
                 .Add(ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.FriedEgg, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
+                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem);
             }
 
             if (type == NPCID.PartyGirl)
             {
-                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons)
-                .AddWithCustomValue(ItemID.Pizza, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CreamSoda, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
+                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.Princess)
@@ -1273,16 +1265,6 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
                 .AddWithCustomValue(ItemType<GiantShell>(), Item.buyPrice(gold: 12))
                 .AddWithCustomValue(ItemType<CrawCarapace>(), Item.buyPrice(gold: 12));
-            }
-
-            if (type == NPCID.Golfer)
-            {
-                shop.AddWithCustomValue(ItemID.PotatoChips, Item.buyPrice(gold: 1), Condition.HappyEnoughToSellPylons);
-            }
-
-            if (type == NPCID.BestiaryGirl)
-            {
-                shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
             }
 
             if (type == NPCID.Truffle)

@@ -1347,55 +1347,11 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
             #endregion
 
-            #region New Recipes
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
             r.AddTile(TileID.Hellforge);
             r.Register();
             r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.ApplePie);
-            r.AddIngredient(ItemID.Apple, 3);
-            r.AddTile(TileID.Hellforge);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.BananaSplit);
-            r.AddIngredient(ItemID.Banana);
-            r.AddIngredient(ItemID.IceBlock);
-            r.AddIngredient(ItemID.MilkCarton);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.BBQRibs);
-            r.AddIngredient(ItemID.FleshBlock, 6);
-            r.AddIngredient(ItemID.Bone, 6);
-            r.AddTile(TileID.Hellforge);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.MilkCarton);
-            r.AddIngredient(ItemID.BottledWater);
-            r.AddIngredient(ItemID.Bone, 2);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft(); 
-            
-            r = Recipe.Create(ItemID.Milkshake);
-            r.AddIngredient(ItemID.IceBlock);
-            r.AddIngredient(ItemID.MilkCarton);
-            r.AddTile(TileID.IceMachine);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.Nachos);
-            r.AddIngredient(ItemID.PotatoChips);
-            r.AddIngredient(ItemID.MilkCarton);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-            #endregion
         }
         #endregion
 
