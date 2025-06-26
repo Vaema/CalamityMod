@@ -2008,7 +2008,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.SkeletronHead:
-                    SetNewShopVariable(new int[] { NPCID.Dryad }, NPC.downedBoss3);
+                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.Dryad }, NPC.downedBoss3);
                     SetNewBossJustDowned(npc);
 
                     // First kill: Notify of Abyss chests being unlocked.
