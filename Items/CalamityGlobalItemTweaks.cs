@@ -283,7 +283,7 @@ namespace CalamityMod.Items
                 { ItemID.Uzi, Do(PointBlank, UseExact(8)) },
                 { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
-                { ItemID.VenomStaff, Do(DamageExact(55)) },
+                { ItemID.VenomStaff, Do(UseExact(27)) },
                 { ItemID.VenusMagnum, Do(PointBlank, DamageExact(65)) },
                 { ItemID.WaspGun, Do(UseExact(11), DamageExact(58)) },
                 { ItemID.WaterBolt, Do(DamageExact(23)) },
