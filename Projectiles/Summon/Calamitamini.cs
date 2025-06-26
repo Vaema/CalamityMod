@@ -212,7 +212,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.ai[1] += Main.rand.Next(2, 3+1);
             }
-            if (Projectile.ai[1] > 90f)
+            if (Projectile.ai[1] > 100f)
             {
                 Projectile.ai[1] = 0f;
                 Projectile.netUpdate = true;

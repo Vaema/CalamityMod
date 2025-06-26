@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 46;
+            Item.damage = 42;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<Calamitamini>();
             Item.knockBack = 2f;
