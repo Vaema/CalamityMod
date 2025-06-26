@@ -106,8 +106,6 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override bool? CanDamage() => false;
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;

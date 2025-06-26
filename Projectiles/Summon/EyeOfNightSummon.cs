@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public const int ShootRate = 60;
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -117,7 +118,5 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.velocity = (destination - Projectile.Center).SafeNormalize(Vector2.Zero) * flySpeed;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

@@ -91,5 +91,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             timer++;
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }
