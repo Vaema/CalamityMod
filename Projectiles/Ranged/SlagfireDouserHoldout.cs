@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
             float projectileSpeed = item.shootSpeed;
 
             // Random spread 
-            Vector2 finalProjectileVelocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(8f)) * projectileSpeed;
+            Vector2 finalProjectileVelocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(11f)) * projectileSpeed;
 
             // Slagfire
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, projectileType, damage, knockback, Projectile.owner);
