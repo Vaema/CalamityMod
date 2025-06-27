@@ -349,10 +349,6 @@ namespace CalamityMod.Projectiles
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
             }
-
-            // Nerfed Seedler projectile damage by 25%
-            if (source is EntitySource_ItemUse_WithAmmo ea && ea.Item.type == ItemID.Seedler)
-                projectile.damage = (int)(projectile.damage * 0.75f);
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
@@ -3246,6 +3242,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            #region Flail Extendo Hacks
             // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
             if (projectile.type == ProjectileID.TheDaoofPow)
             {
@@ -3276,6 +3273,22 @@ namespace CalamityMod.Projectiles
                     }
                 }
             }
+            // And Flower Pow!
+            if (projectile.type == ProjectileID.FlowerPow)
+            {
+                if (projectile.ai[0] == 1f)
+                {
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 5f) // When ai[1] reaches 12, it starts returning, so this makes it take an extra 5 frames to return
+                            projectile.ai[1]--;
+                    }
+                    else
+                        projectile.velocity *= 1.33f;
+                }
+            }
+            #endregion
 
             // Starfury stars never collide with tiles
             if (projectile.type == ProjectileID.Starfury)
