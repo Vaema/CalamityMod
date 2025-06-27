@@ -1,17 +1,17 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
-namespace CalamityMod.Projectiles.Magic
+
+namespace CalamityMod.Projectiles.Ranged
 {
     public class Slagfire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-
         public override void SetDefaults()
         {
             Projectile.width = 32;
@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void AI()
         {
+
             Projectile.localAI[1]++;
             if (Projectile.localAI[1] >= 4f)
             {
@@ -43,28 +44,51 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.localAI[0] += 1f;
                 return;
             }
+
+
+            Color trailColor = Color.PaleVioletRed;
+
             for (int i = 0; i < 3; i++)
             {
-                Vector2 positionDelta = Projectile.velocity / 3f * i;
-                int spawnDelta = 14;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1f);
-                Dust dust = Main.dust[dustIdx];
-                dust.noGravity = true;
-                dust.velocity *= 0.1f;
-                dust.velocity += Projectile.velocity * 0.5f;
-                dust.position -= positionDelta;
+                Vector2 sparkPosition = Projectile.Center - (Projectile.velocity / 3f * i);
+
+                Vector2 sparkVelocity = -Projectile.velocity * 0.01f * Main.rand.NextFloat(0.5f, 1.5f);
+
+                Particle spark = new CustomSpark(
+                  sparkPosition,
+                  sparkVelocity,
+                  "CalamityMod/Particles/BloomLineFade",
+                  false,
+                  6,
+                  0.04f,
+                  trailColor * 0.85f,
+                  new Vector2(0.8f, 1), // Scaling for the end
+                  shrinkSpeed: 0.4f);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
+
             if (Main.rand.NextBool(8))
             {
-                int spawnDelta = 16;
-                int dustIdx = Dust.NewDust(new Vector2(Projectile.position.X + spawnDelta, Projectile.position.Y + spawnDelta), Projectile.width - spawnDelta * 2, Projectile.height - spawnDelta * 2, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 0.5f);
-                Main.dust[dustIdx].velocity *= 0.25f;
-                Main.dust[dustIdx].velocity += Projectile.velocity * 0.5f;
+                Vector2 sparkPosition = Projectile.Center + Main.rand.NextVector2Circular(15, 15);
+                Vector2 sparkVelocity = -Projectile.velocity * Main.rand.NextFloat(0.01f, 0.045f); // Backward velocity
+
+                Particle subtleSpark = new CustomSpark(
+                sparkPosition,
+                sparkVelocity,
+                "CalamityMod/Particles/BloomLineFade",
+                false,
+                8,
+                0.02f,
+                trailColor * 0.5f,
+                new Vector2(0.5f, 0.8f),
+                shrinkSpeed: 0.3f);
+                GeneralParticleHandler.SpawnParticle(subtleSpark);
             }
 
             if (Projectile.localAI[1] >= 10f)
-                Projectile.velocity.Y += 0.075f;
-        }
+                Projectile.velocity.Y += 0.2f;
+
+        }
 
         public override bool CanHitPlayer(Player target)
         {
@@ -83,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (target.type == NPCID.Guide)
             {
-                
+
                 if (target.life <= 0)
                 {
                     for (int i = 0; i < 20; i++)
@@ -94,12 +118,12 @@ namespace CalamityMod.Projectiles.Magic
                     }
 
                     if (!NPC.AnyNPCs(NPCID.WallofFlesh)) // Don't spawn if Wall is already active
-                    {
+                    {
                         int playerIndex = Projectile.owner;
                         if (playerIndex >= 0 && Main.player[playerIndex].active)
                         {
                             NPC.SpawnOnPlayer(playerIndex, NPCID.WallofFlesh); // The game handles spawning logic by itself from here
-                        }
+                        }
                     }
                 }
             }
