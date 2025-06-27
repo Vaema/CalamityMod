@@ -71,15 +71,27 @@ namespace CalamityMod.CalPlayer
             if (DoG != null && Main.mapStyle != 2)
             {
                 Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-                var dis = Player.Distance(DoG.NPC.Center);
-                if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                var rift = DoG.GetRiftLocationSafe();
+                if (rift != Vector2.Zero)
                 {
-                    string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
-                    string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
-                    var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
-
-                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.5f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    var dist = Player.Distance(rift);
+                    var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
+                    float scale = 1f;
+                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(rift) * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition, null, Color.White * 0.15f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1), 0, tex.Size() / 2f, scale * 0.9f, SpriteEffects.FlipHorizontally, 0);
                 }
+                else
+                {
+                    var dis = Player.Distance(DoG.NPC.Center);
+                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    {
+                        string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                        string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
+                        var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
+
+                        Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.15f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    }
+                }
+                
             }
 
             // Dust modifications while high.

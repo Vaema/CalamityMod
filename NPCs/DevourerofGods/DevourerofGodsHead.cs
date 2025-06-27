@@ -26,6 +26,7 @@ using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -1434,6 +1435,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                         }
                         NPC.velocity *= 1.02f;
                         calamityGlobalNPC.newAI[2]++;
+
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
                     }
                     #endregion
                 }
@@ -2125,15 +2128,26 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (teleportTimer > 0 || player.dead || !player.active)
                 return;
-
+            if (NPC.ai[3] < 2)
+            {
+                NPC.ai[3] = 3;
+            }
             if (!phase2Transition)
                 teleportTimer = (CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal;
+            if ((CalamityWorld.death || BossRushEvent.BossRushActive) && NPC.life / (float)NPC.lifeMax < 0.25f && NPC.ai[3] < 8 && NPC.ai[3] > 3) 
+            {
+                teleportTimer -= 45; //Much faster for the first 3 dashes in death.
+            }
             SoundEngine.PlaySound(SoundID.Item109, player.Center);
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int randomRange = Main.zenithWorld ? 960 : 48;
                 float distance = 500f;
+                if ((CalamityWorld.death || BossRushEvent.BossRushActive) && NPC.life / (float)NPC.lifeMax < 0.25f && NPC.ai[3] < 8)
+                {
+                    distance += 450; //More breathing room for rapid dash
+                }
                 Vector2 targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
 
@@ -2156,8 +2170,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if ((!AwaitingPhase2Teleport && (player.dead || !player.active)) || newPosition == default)
                 return;
+            bool phase6 = NPC.life / (float)NPC.lifeMax < 0.25f;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
                     int damage = NPC.GetProjectileDamage(type);
@@ -2188,15 +2203,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.TargetClosest();
             NPC.position = newPosition;
             float chargeVelocity = bossRush ? 30f : death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
-            chargeVelocity *= death ? 3 : 2.25f;
+            chargeVelocity *= (death) ? (!(phase6 && NPC.ai[3] < 7)) ? 2.5f : 3 : 2.25f;
             float maxChargeDistance = 1800f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
                 int phase6dashcount = death ? 5 : 3;
-                if (NPC.life / (float)NPC.lifeMax < 0.25f && NPC.ai[3] < 2 + phase6dashcount)
+                if (phase6 && NPC.ai[3] < 2 + phase6dashcount)
                 {
                     if (NPC.ai[3] < 3)
                         NPC.ai[3] = 3;
                     NPC.ai[3]++;
+                if (Main.getGoodWorld && NPC.life / (float)NPC.lifeMax < 0.10f)
+                {
+                    NPC.ai[3] = 4;
+                    NPC.SimpleStrikeNPC(5000,1);
+                }
                 }
                 else
                 {
@@ -2208,7 +2228,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
             NPC.ForceNetUpdate(false);
-
+            NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (n.type == ModContent.NPCType<DevourerofGodsBody>() || n.type == ModContent.NPCType<DevourerofGodsTail>())
@@ -2347,9 +2367,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             return realSpot;
         }
 
-        private Vector2 GetRiftLocationSafe()
+        public Vector2 GetRiftLocationSafe()
         {
-            Vector2 realSpot = default;
+            Vector2 realSpot = Vector2.Zero;
             foreach (Projectile proj in Main.ActiveProjectiles)
             {
                 if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
