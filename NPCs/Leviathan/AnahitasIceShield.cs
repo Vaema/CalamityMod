@@ -37,8 +37,8 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 10;
-            NPC.DR_NERD(0.5f);
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 1000 : 650;
+            NPC.DR_NERD(0.25f);
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 2000 : 750;
             NPC.alpha = 255;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
