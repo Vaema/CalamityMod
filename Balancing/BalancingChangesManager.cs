@@ -27,7 +27,6 @@ namespace CalamityMod.Balancing
 {
     public sealed class BalancingChangesManager : ModSystem
     {
-        internal static List<IBalancingRule[]> UniversalBalancingChanges = null;
         internal static List<NPCBalancingChange> NPCSpecificBalancingChanges = null;
 
         // Balancing changes in this method are sorted based on place in progression, NPC name (from A-Z), and strength of resistance in ascending order, in that level of priority.
@@ -46,49 +45,11 @@ namespace CalamityMod.Balancing
             bool DragonRageFilter(Projectile p) =>
                 p.type == ProjectileType<DragonRageStaff>() || p.type == ProjectileType<DragonRageFireball>() || (p.type == ProjectileType<FuckYou>() && p.CountsAsClass<MeleeDamageClass>());
 
-            // bool MonkStaffT3Filter(Projectile p) =>
-            //     p.type == ProjectileID.MonkStaffT3_AltShot || (p.type == ProjectileID.Electrosphere && Main.player[p.owner].ActiveItem().type == ItemID.MonkStaffT3);
-
-            bool MushroomSpearFilter(Projectile p) =>
-                p.type == ProjectileID.Mushroom && Main.player[p.owner].ActiveItem().type == ItemID.MushroomSpear;
-
-            bool OrichalcumPetalFilter(Projectile p) =>
-                p.type == ProjectileID.FlowerPetal && Main.player[p.owner].onHitPetal;
-
-            bool SpectreMaskSetBonusFilter(Projectile p) =>
-                p.type == ProjectileID.SpectreWrath && Main.player[p.owner].ghostHurt;
-
             bool AotCThrowCombo(Projectile p) =>
                 p.type == ProjectileType<ArkoftheCosmosSwungBlade>() && (p.ai[0] == 2 || p.ai[0] == 3);
 
             bool HiveBeeFilter(Projectile p) =>
                 p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
-
-            UniversalBalancingChanges = new List<IBalancingRule[]>()
-            {
-                // Nerf Crystal bullet shards by 45%
-                // Currently crystal bullet projectiles deal 50% of the bullet's damage which is absurd in vanilla, this nerfs them to 27.5%
-                Do(new ProjectileResistBalancingRule(0.55f, ProjectileID.CrystalShard)),
-
-                // Nerf Luminite Arrow trails by 50%.
-                Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.MoonlordArrowTrail)),
-                
-                // Nerf Seedler seeds by 25%.
-                Do(new ProjectileResistBalancingRule(0.75f, ProjectileID.SeedlerNut, ProjectileID.SeedlerThorn)),
-
-                // Nerf Cursed Dart flames by 50%.
-                Do(new ProjectileResistBalancingRule(0.5f, ProjectileID.CursedDartFlame)),
-
-                // Nerf Mushroom Spear projectiles by 50%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.5f, MushroomSpearFilter)),
-
-                // Nerf Orichalcum armor set bonus petals by 25%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.75f, OrichalcumPetalFilter)),
-
-                // Nerf Spectre Mask set bonus projectiles by 50%.
-                Do(new ProjectileSpecificRequirementBalancingRule(0.5f, SpectreMaskSetBonusFilter)),
-
-            };
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
@@ -511,23 +472,12 @@ namespace CalamityMod.Balancing
 
         public override void Unload()
         {
-            UniversalBalancingChanges = null;
             NPCSpecificBalancingChanges = null;
         }
 
         public static void ApplyFromProjectile(NPC npc, ref NPC.HitModifiers modifiers, Projectile proj)
         {
-            // Apply universal balancing rules.
-            foreach (IBalancingRule[] balancingRules in UniversalBalancingChanges)
-            {
-                foreach (IBalancingRule balancingRule in balancingRules)
-                {
-                    if (balancingRule.AppliesTo(npc, modifiers, proj))
-                        balancingRule.ApplyBalancingChange(npc, ref modifiers);
-                }
-            }
-
-            // As well as rules specific to NPCs.
+            // Apply NPC-specific balancing rules.
             foreach (NPCBalancingChange balanceChange in NPCSpecificBalancingChanges)
             {
                 if (npc.type != balanceChange.NPCType)

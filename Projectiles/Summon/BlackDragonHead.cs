@@ -216,6 +216,8 @@ namespace CalamityMod.Projectiles.Summon
 
         }
 
+        public override bool MinionContactDamage() => true;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.ShadowFlame, 300);
     }
 }

@@ -3159,7 +3159,7 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (Player.IsUnderwater() && Player.wet && !Player.lavaWet && !Player.honeyWet &&
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet &&
                     !Player.mount.Active)
                 {
                     if (aquaticBoost > 0f)

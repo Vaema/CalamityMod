@@ -294,7 +294,6 @@ namespace CalamityMod.Projectiles
         public int BloodstoneOrbValue = 0;
 
         #region On Spawn
-
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
@@ -306,18 +305,54 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
-            if (source is EntitySource_Parent { Entity: NPC npc })
-            {
-                if (!npc.friendly)
-                    ParentNPCIndex = npc.whoAmI;
-            }
-
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
                 projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
                 projectile.Calamity().supercritHits = -1;
             }
+
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
+            //
+            // SPECIFIC PROJECTILE BALANCE CHANGES
+            //
+            else if (source is EntitySource_Parent { Entity: Projectile parent })
+            {
+                // Nerf Crystal bullet shard damage by 45%
+                // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
+                if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
+                    projectile.damage = (int)(projectile.damage * 0.55f);
+
+                // Nerf Mushroom Spear mushroom damage by 50%
+                if (parent.type == ProjectileID.MushroomSpear && projectile.type == ProjectileID.Mushroom)
+                    projectile.damage /= 2;
+
+                // Nerf Luminite Arrow trail damage by 50%
+                if (parent.type == ProjectileID.MoonlordArrow && projectile.type == ProjectileID.MoonlordArrowTrail)
+                    projectile.damage /= 2;
+
+                // Nerf Cursed Dart flame damage by 50%
+                if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
+                    projectile.damage /= 2;
+            }
+
+            if (source is EntitySource_OnHit e)
+            {
+                // Nerf Orichalcum armor's set bonus petal damage by 25% (5 is the projectile source ID for Orichalcum armor set bonus)
+                if (e.Context == "5")
+                    projectile.damage = (int)(projectile.damage * 0.75f);
+                // Nerf Spectre armor's set bonus soul damage by 50% (16 is the projectile source ID for Spectre Mask set bonus)
+                if (e.Context == "16")
+                    projectile.damage /= 2;
+            }
+
+            // Nerfed Seedler projectile damage by 25%
+            if (source is EntitySource_ItemUse_WithAmmo ea && ea.Item.type == ItemID.Seedler)
+                projectile.damage = (int)(projectile.damage * 0.75f);
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
