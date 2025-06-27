@@ -1283,6 +1283,7 @@ namespace CalamityMod.NPCs
             if (type == NPCID.BestiaryGirl)
             {
                 shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
+                shop.AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 10), Condition.DownedPlantera);
             }
 
             if (type == NPCID.Truffle)
