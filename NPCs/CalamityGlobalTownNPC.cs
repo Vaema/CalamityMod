@@ -271,6 +271,7 @@ namespace CalamityMod.NPCs
             "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
+            "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
         };
         private static readonly string[] ZoologistNames =
         {
