@@ -374,6 +374,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownBunnyNames =
         {
             "Poco", // <@!1192261996146593872> (tostitomuncher33)
+            "Puffer", // <@!181103507711983616> (piky)
         };
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
