@@ -282,6 +282,18 @@ namespace CalamityMod.NPCs
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
         };
+        // Town Slimes
+        private static readonly string[] ClumsySlimeNames = null;
+        private static readonly string[] CoolSlimeNames = null;
+        private static readonly string[] DivaSlimeNames = null;
+        private static readonly string[] ElderSlimeNames = null;
+        private static readonly string[] MysticSlimeNames = null;
+        private static readonly string[] NerdySlimeNames =
+        {
+            "Big Blungus", // <@!272759434282008577> (schmoov)
+        };
+        private static readonly string[] SquireSlimeNames = null;
+        private static readonly string[] SurlySlimeNames = null;
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
         // All three pet types come in numerous breeds. Each breed has its own name pool.
@@ -598,6 +610,32 @@ namespace CalamityMod.NPCs
                     break;
                 case NPCID.BestiaryGirl: // Zoologist
                     AddNewNames(nameList, ZoologistNames);
+                    break;
+
+                // Town Slimes
+                case NPCID.TownSlimePurple: // Clumsy Slime
+                    AddNewNames(nameList, ClumsySlimeNames);
+                    break;
+                case NPCID.TownSlimeGreen: // Cool Slime
+                    AddNewNames(nameList, CoolSlimeNames);
+                    break;
+                case NPCID.TownSlimeRainbow: // Diva Slime
+                    AddNewNames(nameList, DivaSlimeNames);
+                    break;
+                case NPCID.TownSlimeOld: // Elder Slime
+                    AddNewNames(nameList, ElderSlimeNames);
+                    break;
+                case NPCID.TownSlimeYellow: // Mystic Slime
+                    AddNewNames(nameList, MysticSlimeNames);
+                    break;
+                case NPCID.TownSlimeBlue: // Nerdy Slime
+                    AddNewNames(nameList, NerdySlimeNames);
+                    break;
+                case NPCID.TownSlimeCopper: // Squire Slime
+                    AddNewNames(nameList, SquireSlimeNames);
+                    break;
+                case NPCID.TownSlimeRed: // Surly Slime
+                    AddNewNames(nameList, SurlySlimeNames);
                     break;
 
                 // This function doesn't work with Town Pets currently
