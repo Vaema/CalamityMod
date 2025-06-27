@@ -291,6 +291,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] NerdySlimeNames =
         {
             "Big Blungus", // <@!272759434282008577> (schmoov)
+            "Rimuru Tempest", // <@!806463201398358036> (c0d3_404)
         };
         private static readonly string[] SquireSlimeNames = null;
         private static readonly string[] SurlySlimeNames = null;
