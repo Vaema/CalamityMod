@@ -377,7 +377,7 @@ namespace CalamityMod.UI.ModeIndicator
             if (mode.ExpandedDescription != LocalizedText.Empty)
             {
                 // Show the description either if the player is holding shift.
-                if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+                if (Main.keyState.PressingShift())
                     text += "\n" + mode.ExpandedDescription.ToString();
 
                 else
