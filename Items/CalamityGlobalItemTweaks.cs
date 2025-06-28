@@ -130,7 +130,7 @@ namespace CalamityMod.Items
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
                 { ItemID.GreenPhaseblade, phaseblade },
                 { ItemID.GreenPhasesaber, phasesaber },
-                { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
+                { ItemID.GrenadeLauncher, Do(DamageExact(105)) },
                 { ItemID.Gungnir, Do(AutoReuse, TrueMelee, DamageExact(132), ShootSpeedExact(7f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
                 { ItemID.Handgun, Do(PointBlank, UseExact(20)) },
@@ -180,6 +180,7 @@ namespace CalamityMod.Items
                 { ItemID.MythrilHalberd, Do(AutoReuse, TrueMelee, DamageExact(65), UseExact(8), ShootSpeedExact(15f)) },
                 { ItemID.MythrilRepeater, Do(PointBlank, UseExact(16)) },
                 { ItemID.MythrilSword, Do(UseTurn, DamageExact(70), UseExact(8)) },
+                { ItemID.NailGun, Do(DamageExact(77)) },
                 { ItemID.NettleBurst, Do(ManaExact(10), DamageExact(70)) },
                 { ItemID.NightsEdge, Do(TrueMelee, DamageExact(45)) },
                 { ItemID.NorthPole, Do(AutoReuse, UseMeleeSpeed) },
@@ -198,7 +199,6 @@ namespace CalamityMod.Items
                 { ItemID.PewMaticHorn, Do(DamageExact(25), ShootSpeedExact(15)) },
                 { ItemID.Phantasm, Do(PointBlank, DamageExact(48)) },
                 { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(20)) },
-                { ItemID.PiranhaGun, Do(DamageExact(48)) },
                 { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
                 { ItemID.PlatinumCoin, Do(DamageExact(150)) }, // For Coin Gun
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
@@ -221,7 +221,7 @@ namespace CalamityMod.Items
                 { ItemID.RedPhasesaber, phasesaber },
                 { ItemID.RedRyder, Do(PointBlank, DamageExact(24)) },
                 { ItemID.RedsYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
-                { ItemID.RocketLauncher, Do(DamageExact(70)) },
+                { ItemID.RocketLauncher, Do(DamageExact(60), ShootSpeedExact(9)) },
                 { ItemID.Sandgun, Do(PointBlank, DamageExact(22), UseExact(20)) },
                 { ItemID.SapphireStaff, Do(DamageExact(25)) },
                 { ItemID.ScourgeoftheCorruptor, Do(DamageExact(63)) },
@@ -238,7 +238,7 @@ namespace CalamityMod.Items
                 { ItemID.SkyFracture, Do(DamageExact(54), ShootSpeedExact(30f)) },
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
                 { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
-                { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
+                { ItemID.SniperRifle, Do(PointBlank, DamageExact(200), UseExact(40)) },
                 { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
                 { ItemID.SpaceGun, Do(DamageExact(23)) },
@@ -253,7 +253,7 @@ namespace CalamityMod.Items
                 { ItemID.Stynger, Do(DamageExact(75)) },
                 { ItemID.SuperStarCannon, Do(DamageExact(55)) },
                 { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(24)) },
-                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
+                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(34)) },
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
                 { ItemID.TerraBlade, Do(DamageExact(95)) },
@@ -285,7 +285,6 @@ namespace CalamityMod.Items
                 { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
                 { ItemID.VenomStaff, Do(UseExact(27)) },
-                { ItemID.VenusMagnum, Do(PointBlank, DamageExact(65)) },
                 { ItemID.WaspGun, Do(UseExact(11), DamageExact(58)) },
                 { ItemID.WaterBolt, Do(DamageExact(23)) },
                 { ItemID.WhitePhaseblade, phaseblade },
@@ -479,6 +478,7 @@ namespace CalamityMod.Items
                 { ItemID.StakeLauncher, pointBlank },
                 { ItemID.TinBow, pointBlank },
                 { ItemID.TungstenBow, pointBlank },
+                { ItemID.VenusMagnum, pointBlank },
                 { ItemID.VortexBeater, pointBlank },
                 { ItemID.WoodenBow, pointBlank },
                 #endregion
