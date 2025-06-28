@@ -5706,14 +5706,21 @@ namespace CalamityMod.NPCs
             }
 
             // True melee resists
-            if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
-                AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
-                StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>())
+            if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
             {
-                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : npc.type == NPCType<Crabulon.Crabulon>() ? 0.8f : 0.5f;
-                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
-                    modifiers.SourceDamage *= damageMult;
+                float damageMult = 1f;
+                if (npc.type == NPCType<Crabulon.Crabulon>())
+                    damageMult = 0.8f;
+                else if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || npc.type == NPCType<AstrumAureus.AstrumAureus>())
+                    damageMult = 0.75f;
+                else if (PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
+                    RavagerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type) ||
+                    npc.type == NPCType<ProfanedRocks>() || npc.type == NPCType<DarkEnergy>())
+                    damageMult = 0.5f;
+                else if (ThanatosIDList.Includes(npc.type))
+                    damageMult = 0.35f;
+
+                modifiers.SourceDamage *= damageMult;
             }
         }
         #endregion

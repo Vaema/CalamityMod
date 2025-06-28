@@ -36,6 +36,7 @@ namespace CalamityMod.Balancing
         public override void SetStaticDefaults()
         {
             // Dirty shorthand for true melee resists, because they're super common and other class resists aren't.
+            // If you add/change a true melee resist here, be sure to add/change the resist in CalamityGlobalNPC ModifyHitByItem as well.
             IBalancingRule ResistTrueMelee(float f) => new ClassResistBalancingRule(f, TrueMeleeDamageClass.Instance);
 
             // Declare specific filters.
@@ -138,6 +139,9 @@ namespace CalamityMod.Balancing
             #region Astrum Aureus
             // 30% resist to The Ballista's greatarrows.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<BallistaGreatArrow>()))));
+
+            // 25% resist to true melee.
+            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<AstrumAureus>(), ResistTrueMelee(0.75f)));
             #endregion
 
             #region Duke Fishron

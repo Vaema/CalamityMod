@@ -512,7 +512,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 11.25f : 7.5f;
+                        float projectileVelocity = death ? 7.5f : 4.75f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
@@ -524,11 +524,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         destination.Normalize();
                         destination *= projectileVelocity;
                         int totalFireballsPerSide = 3;
-                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 25 : 35;
+                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 40 : 60;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
                         {
-                            // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
+                            // Spawn projectiles 0, 1, 2, 22, 23, and 24
                             if (i < totalFireballsPerSide || i >= totalIterations - totalFireballsPerSide)
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));

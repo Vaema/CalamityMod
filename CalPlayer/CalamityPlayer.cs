@@ -1319,7 +1319,6 @@ namespace CalamityMod.CalPlayer
         public bool xWrath = false;
         public bool graxDefense = false;
         public bool encased = false;
-        public bool brutalCarnage = false;
         public bool omniscience = false;
         public bool zerg = false;
         public bool zen = false;
@@ -2516,7 +2515,6 @@ namespace CalamityMod.CalPlayer
             xWrath = false;
             graxDefense = false;
             encased = false;
-            brutalCarnage = false;
             omniscience = false;
             zerg = false;
             zen = false;
@@ -3017,7 +3015,6 @@ namespace CalamityMod.CalPlayer
             xWrath = false;
             graxDefense = false;
             encased = false;
-            brutalCarnage = false;
             omniscience = false;
             zerg = false;
             zen = false;
