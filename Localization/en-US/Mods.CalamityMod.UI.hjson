@@ -666,8 +666,8 @@ SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
 AuricLandMines: Setting god killing traps
 // Hold Shift tooltip default
-HoldShiftTooltipExtensionIndicator: Hold Left Shift for more
-HoldShiftTooltipReplacementIndicator: Hold Left Shift for details
+HoldShiftTooltipExtensionIndicator: Hold Shift for more
+HoldShiftTooltipReplacementIndicator: Hold Shift for details
 // Dev and Donor Items
 DevItemTooltip: - Dev Item -
 DonorItemTooltip: - Donor Item -
