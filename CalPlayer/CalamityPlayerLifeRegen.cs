@@ -766,7 +766,7 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            if (regenator) // Gives special regen of it's own, but disables all regular life regen
+            if (regenerator) // Gives special regen of it's own, but disables all regular life regen
             {
                 if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
                     Player.HealPlayer(1, HealTextType.None);
@@ -777,7 +777,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 10;
             }
             else
-                regenatorDamage = 0;
+                regeneratorDamage = 0;
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
@@ -832,8 +832,8 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Regenator trades all positive regen for damage, and caps your health gain at 50%
-            if (regenator)
+            // Regenerator trades all positive regen for damage, and caps your health gain at 50%
+            if (regenerator)
             {
                 int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
                 finalRegen = (int)Math.Max(finalRegen, 0);
@@ -843,8 +843,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.palladiumRegen)
                     finalRegen += 4;
 
-                regenatorDamage = (finalRegen * 1.75f) * 0.01f;
-                Player.GetDamage<GenericDamageClass>() += regenatorDamage;
+                regeneratorDamage = (finalRegen * 1.75f) * 0.01f;
+                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;
