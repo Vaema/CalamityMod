@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles
         /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
         /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
         /// </summary>
-        public bool spawnArcFlash = true;
+        public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
 
@@ -3772,14 +3772,14 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-                // Support to help things like holdout swords work with Arc Flash Ring
-                if (!spawnArcFlash && projectile.numHits == 0)
-                    spawnArcFlash = true;
+                // Support to help things like holdout swords look better with Arc Flash Ring
+                if (!showArcFlash && projectile.numHits == 0)
+                    showArcFlash = true;
                 // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
                 if (arcFlashCooldown >= 0)
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
-                    spawnArcFlash = true;
+                    showArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
