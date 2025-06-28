@@ -116,6 +116,17 @@ namespace CalamityMod.Projectiles.Ranged
             SoundStyle fire2 = new("CalamityMod/Sounds/Item/MeldExplosion");
             SoundEngine.PlaySound(fire2 with { Volume = 1, Pitch = Main.rand.NextFloat(-0.5f, -0.6f) }, Projectile.Center);
         }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SetCrit();
+            Player Owner = Main.player[Projectile.owner];
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
+            modifiers.SourceDamage *= 1 + critDamage;
+
+            Vector2 launchVel = Projectile.velocity;
+            float launchPower = 60;
+            target.MoveNPC(launchVel, launchPower, true);
+        }
         public override bool? CanDamage() => Projectile.numHits < 1 ? null : false;
         public override bool PreDraw(ref Color lightColor)
         {
