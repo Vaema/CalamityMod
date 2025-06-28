@@ -514,6 +514,6 @@ SuperDummy: {
 		Creates a super dummy
 		Regenerates 1 million life per second
 		Will not die when taking damage over time from debuffs
-		Right click to kill all super dummies
+		<right> to kill all super dummies
 		'''
 }
