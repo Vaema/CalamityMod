@@ -821,9 +821,11 @@ namespace CalamityMod.NPCs.Leviathan
 
                     if (revenge)
                         chargeVelocity += 2f + (death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio));
-
                     if (CalamityWorld.LegendaryMode)
                         chargeVelocity *= 1.15f;
+                    // Stunt velocity at the end of the charge attack to prevent her flying off
+                    if (NPC.ai[0] == -1f)
+                        chargeVelocity *= 0.3f;
 
                     NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
