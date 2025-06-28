@@ -54,6 +54,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
+            "Big E",
             "Ben-TK",
             "CDMusic",
             "Cei",
