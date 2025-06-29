@@ -41,22 +41,16 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
             target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
-        }
 
-        public override void OnKill(int timeLeft)
-        {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            if (Projectile.owner == Main.myPlayer)
+            for (int i = 0; i < 2; i++) // Burst into 2 shards upwards
             {
-                for (int i = -1; i < 2; i++) // Burst into 3 shards upwards
-                {
-                    Vector2 baseVelocity = Vector2.UnitY * -12f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, baseVelocity.RotatedBy(MathHelper.ToRadians(10 * i)), ModContent.ProjectileType<FossilShard>(), Projectile.damage / 4, Projectile.knockBack * 0.25f, Projectile.owner);
-                }
+                Vector2 baseVelocity = Vector2.UnitY * -12f;
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Top, baseVelocity.RotatedByRandom(MathHelper.Pi * 0.1f), ModContent.ProjectileType<FossilShard>(), Projectile.damage / 4, Projectile.knockBack * 0.25f, Projectile.owner);
             }
         }
+
+        public override void OnKill(int timeLeft) => SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
 
         public override bool PreDraw(ref Color lightColor)
         {

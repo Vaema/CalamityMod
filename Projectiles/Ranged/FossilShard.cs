@@ -23,11 +23,10 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (Projectile.ai[1] != 1f)
             {
-                if (Projectile.velocity.Y <= 0f)
-                    Projectile.velocity.Y = 0.1f;
-                Projectile.velocity.Y *= 1.05f;
+                if (Projectile.velocity.Y <= -2f)
+                    Projectile.velocity.Y = -2f;
             }
-
+            Projectile.velocity.Y += 0.025f;
             Projectile.rotation += Projectile.velocity.Y;
         }
 
