@@ -42,7 +42,6 @@ namespace CalamityMod.Projectiles.Ranged
 
         private const int BurstProjectiles = 4; // 4 Slagfire shots per burst
         private const int DelayBetweenShotsInBurst = 4; 
-        private const int BurstCooldown = 18;
 
         public static int DustEffectsID { get; set; } = DustID.Ice_Red;
         public static Color EffectsColor { get; set; } = Color.MediumVioletRed;
@@ -55,13 +54,13 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Kill();
                 return;
             }
-            if (ShootingTimer % (HeldItem.useAnimation + BurstProjectiles * DelayBetweenShotsInBurst + BurstCooldown) == 0 && ShootingTimer > 0)
+            if (ShootingTimer % (HeldItem.useAnimation + BurstProjectiles * DelayBetweenShotsInBurst) == 0 && ShootingTimer > 0)
             {
                 ShootingTimer = 0;
             }
 
             // Calc current shot index
-            int currentShotInBurst = (int)((ShootingTimer % (HeldItem.useAnimation + BurstProjectiles * DelayBetweenShotsInBurst + BurstCooldown) - HeldItem.useAnimation) / DelayBetweenShotsInBurst);
+            int currentShotInBurst = (int)((ShootingTimer % (HeldItem.useAnimation + BurstProjectiles * DelayBetweenShotsInBurst) - HeldItem.useAnimation) / DelayBetweenShotsInBurst);
 
             if (ShootingTimer >= HeldItem.useAnimation && currentShotInBurst >= 0 && currentShotInBurst < BurstProjectiles)
             {

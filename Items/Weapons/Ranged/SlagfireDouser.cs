@@ -11,7 +11,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class SlagfireDouser : ModItem, ILocalizedModType
     {
-        public static int OriginalUseTime = 30;
         public static int TimeBetweenBursts = 4; 
         public static int ProjectilesPerBurst = 4;
 
@@ -22,8 +21,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.height = 34;
             Item.damage = 12;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 18;
-            Item.useAnimation = 18; 
+            Item.useTime = 30;
+            Item.useAnimation = 30; 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
