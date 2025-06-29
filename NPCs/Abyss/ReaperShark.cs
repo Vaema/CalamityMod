@@ -650,7 +650,7 @@ namespace CalamityMod.NPCs.Abyss
                     {
                         Vector2 direction = shorkCenter - player.Center;
                         direction.Normalize();
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, NPC.damage / 2, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, 80, 0f, Main.myPlayer);
                     }
                 }
             }

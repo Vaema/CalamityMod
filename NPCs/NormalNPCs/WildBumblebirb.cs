@@ -313,7 +313,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Vector2 ai0 = NPC.Center - fireFrom;
                         float ai = Main.rand.Next(100);
                         Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 45, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                     }
                 }
             }

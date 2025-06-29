@@ -172,7 +172,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     SoundEngine.PlaySound(Effects.StormlionEffects.Attack with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, NPC.Center);
 
-                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), NPC.damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), 15, 0f, Main.myPlayer);
                     for (int i = 0; i <= 12; i++)
                     {
                         float variance = Main.rand.NextFloat(-0.6f, 0.6f);
