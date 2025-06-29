@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Timer % 5 == 0f)
                     {
-                        if (Owner.HeldItem.ModItem is SHPC shpc && shpc.storedSoulpower > 0)
+                        if (Owner.HeldItem.ModItem is SHPC shpc)
                         {
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
@@ -97,7 +97,19 @@ namespace CalamityMod.Projectiles.Magic
                             if (ConsumeSoul)
                             {
                                 SoulColors.RemoveAt(0);
-                                shpc.storedSoulpower--;
+                                if (shpc.storedSoulpower > 0)
+                                    shpc.storedSoulpower--;
+                                else if (SHPC.FindSoulForAmmo(Owner) != -1)
+                                {
+                                    int soulType = SHPC.FindSoulForAmmo(Owner);
+                                    Owner.ConsumeItem(soulType);
+                                    shpc.storedSoulType = soulType;
+                                    shpc.storedSoulpower = SHPC.ShotsPerSoul;
+                                }
+                                else
+                                {
+                                    SoulColors.Clear();
+                                }
                             }
                             ConsumeSoul = !ConsumeSoul;
                         }
