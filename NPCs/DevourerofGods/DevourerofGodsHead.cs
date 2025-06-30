@@ -366,12 +366,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-            if (DeathAnimationTimer < 435)
-            {
-                player.shimmerMonolithShader = true;
-                if (Main.shimmerDarken > 0.75f)
-                    Main.shimmerDarken = 0.75f;
-            }
+            //if (DeathAnimationTimer < 435)
+            //{
+            //    player.shimmerMonolithShader = true;
+            //    if (Main.shimmerDarken > 0.75f)
+            //        Main.shimmerDarken = 0.75f;
+            //}
             // Variables
             bool flyUpDuringLaserWalls = laserWallPhase == (int)LaserWallPhase.FireLaserWalls || (laserWallPhase == (int)LaserWallPhase.End && teleportTimer > 0);
             bool flies = NPC.ai[3] == 0f || flyUpDuringLaserWalls;

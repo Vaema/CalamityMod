@@ -58,6 +58,12 @@ namespace CalamityMod.Graphics.Primitives
         public readonly bool Pixelate;
 
         /// <summary>
+        /// Whether to use unscaled perspective matrices when rendering the primitives. Recommended only when the system is being used outside of its typical context
+        /// i.e. rendering primitives in the background via a CustomSky.
+        /// </summary>
+        public readonly bool UseUnscaledMatrices;
+
+        /// <summary>
         /// The shader to apply when rendering.
         /// </summary>
         public readonly MiscShaderData Shader;
@@ -77,8 +83,9 @@ namespace CalamityMod.Graphics.Primitives
         /// <param name="smoothen">Whether to use smoothening when generating the vertex positions from the provided ones. Recommended to be enabled.</param>
         /// <param name="pixelate">Whether to pixelate the primitives. Recommended to be enabled if the effect was designed with this in mind.</param>
         /// <param name="shader">The shader to apply when rendering the primitives.</param>
+        /// <param name="useUnscaledMatrices">Whether to use unscaled perspective matrices when rendering primitives. Recommended when using this system outside of its typical context; i.e. rendering primitives in the background via a CustomSky.</param>
         /// <param name="initialVertexPositionsOverride">An optional override to force the trail to use the provided positions as the side positions of the initial vertex. They are the left and right positions respectively and should be in screen space.</param>
-        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, (Vector2, Vector2)? initialVertexPositionsOverride = null)
+        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null)
         {
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
@@ -86,6 +93,7 @@ namespace CalamityMod.Graphics.Primitives
             Smoothen = smoothen;
             Pixelate = pixelate;
             Shader = shader;
+            UseUnscaledMatrices = useUnscaledMatrices;
             InitialVertexPositionsOverride = initialVertexPositionsOverride;
         }
     }

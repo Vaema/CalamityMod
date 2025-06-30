@@ -225,6 +225,15 @@ namespace CalamityMod.Effects
 
         // The underwater rays seen at the top of the Sunken Sea Mod Menu.
         internal static Effect UnderwaterRaysShader;
+
+        // The blowing wind-like effect seen in the background during DoG's fight.
+        internal static Effect DoGDistortionWindsShader;
+
+        // The rolling fog clouds seen behind the Distortion Winds effect during DoG's fight.
+        internal static Effect DoGBackgroundFogShader;
+
+        // Allows a texture to control its opacity from the edges to the center in the shape of a circle.
+        internal static Effect CircularOpacityShader;
         #endregion
 
         public override void PostSetupContent()
@@ -447,6 +456,15 @@ namespace CalamityMod.Effects
 
             UnderwaterRaysShader = LoadShader("UnderwaterRaysShader");
             RegisterMiscShader(UnderwaterRaysShader, "UnderwaterRayPass", "UnderwaterRays");
+
+            DoGDistortionWindsShader = LoadShader("DoGDistortionWindsShader");
+            RegisterMiscShader(DoGDistortionWindsShader, "DistortionWindsPass", "DoGDistortionWinds");
+
+            DoGBackgroundFogShader = LoadShader("DoGBackgroundFogShader");
+            RegisterMiscShader(DoGBackgroundFogShader, "DoGFogPass", "DoGBackgroundFog");
+
+            CircularOpacityShader = LoadShader("CircularOpacityShader");
+            RegisterMiscShader(CircularOpacityShader, "CircularOpacityPass", "CircularOpacity");
             #endregion
         }
 
