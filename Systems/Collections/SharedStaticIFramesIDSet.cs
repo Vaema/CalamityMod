@@ -35,19 +35,25 @@ namespace CalamityMod.Systems.Collections
                     ProjectileID.VilethornTip
                 ],
 
-                [ // Set 3: Harp notes
+                [ // Set 3: Nettle Burst
+                    ProjectileID.NettleBurstLeft,
+                    ProjectileID.NettleBurstRight,
+                    ProjectileID.NettleBurstEnd
+                ],
+
+                [ // Set 4: Harp notes
                     ProjectileID.QuarterNote,
                     ProjectileID.EighthNote,
                     ProjectileID.TiedEighthNote
                 ],
 
-                [ // Set 4: The North Pole
+                [ // Set 5: The North Pole
                     ProjectileID.NorthPoleWeapon,
                     ProjectileID.NorthPoleSpear,
                     ProjectileID.NorthPoleSnowflake,
                 ],
 
-                [ // Set 5: All spore gas clouds
+                [ // Set 6: All spore gas clouds
                     ProjectileID.SporeTrap,
                     ProjectileID.SporeTrap2,
                     ProjectileID.SporeGas,
@@ -55,12 +61,12 @@ namespace CalamityMod.Systems.Collections
                     ProjectileID.SporeGas3
                 ],
 
-                [ // Set 6: Astral Staff
+                [ // Set 7: Astral Staff
                     ModContent.ProjectileType<AstralCrystal>(),
                     ModContent.ProjectileType<AstralCrystalInvisibleExplosion>()
                 ],
 
-                [ // Set 7: All toxic clouds
+                [ // Set 8: All toxic clouds
                     ProjectileID.ToxicCloud,
                     ProjectileID.ToxicCloud2,
                     ProjectileID.ToxicCloud3

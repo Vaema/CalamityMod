@@ -4046,9 +4046,9 @@ namespace CalamityMod.CalPlayer
             VanillaArmorChangeManager.ApplyPotentialEffectsTo(Player);
 
             // Nerf to the proc rate of Spectre Mask's set bonus souls
-            // Vanilla subtracts 6.6666665 from this counter per frame, this reduces it to 5
+            // Vanilla subtracts 6.6666665 from this counter per frame, this reduces it to 4
             if (Player.ghostDmg > 0)
-                Player.ghostDmg += 1.6666665f;
+                Player.ghostDmg += 2.6666665f;
 
             // If the config is enabled, vastly increase the player's base tile and wall placement speeds
             // This stacks with the Brick Layer and Portable Cement Mixer

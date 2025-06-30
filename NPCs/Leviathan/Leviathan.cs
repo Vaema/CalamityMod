@@ -438,16 +438,8 @@ namespace CalamityMod.NPCs.Leviathan
                     float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
                     NPC.ai[1] += 1f;
-                    int activePlayerAmt = 0;
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (Main.player[i].active && !Main.player[i].dead && (npcCenter - Main.player[i].Center).Length() < 1000f)
-                            activePlayerAmt++;
-                    }
-                    NPC.ai[1] += activePlayerAmt / 2;
-
                     bool spawnedAberration = false;
-                    float aberrationSpawnDelay = CalamityWorld.LegendaryMode ? 20f : (!sirenAlive || phase4) ? 60f : 40f;
+                    float aberrationSpawnDelay = CalamityWorld.LegendaryMode ? 20f : (!sirenAlive || phase4) ? 60f : 50f;
                     if (NPC.ai[1] > aberrationSpawnDelay)
                     {
                         NPC.ai[1] = 0f;
@@ -455,8 +447,8 @@ namespace CalamityMod.NPCs.Leviathan
                         spawnedAberration = true;
                     }
 
-                    int spawnLimit = CalamityWorld.LegendaryMode ? 10 : (sirenAlive && !phase4) ? 1 : (death ? 2 : 3);
-                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit)
+                    int spawnLimit = CalamityWorld.LegendaryMode ? 10 : (sirenAlive && !phase4) ? 0 : 2;
+                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit && NPC.ai[2] <= spawnLimit)
                     {
                         SoundEngine.PlaySound(soundChoice with { Pitch = soundChoice.Pitch + extrapitch }, npcCenter);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
