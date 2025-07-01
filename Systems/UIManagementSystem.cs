@@ -34,12 +34,6 @@ namespace CalamityMod.Systems
             int mouseIndex = layers.FindIndex(layer => layer.Name == "Vanilla: Mouse Text");
             if (mouseIndex != -1)
             {
-                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Whispering Pearl", () =>
-                {
-                    WhisperingPearlUI.Draw(Main.spriteBatch);
-                    return true;
-                }, InterfaceScaleType.Game));
-
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Draedon Hologram", () =>
                 {
                     LabHologramProjectorUI.Draw(Main.spriteBatch);

@@ -1,7 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls;
 using CalamityMod.TileEntities;
-using CalamityMod.UI;
+using CalamityMod.UI.WhisperingPearls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
@@ -52,18 +52,18 @@ namespace CalamityMod.Tiles.SunkenSea
             int frameNum = Main.tile[i, j].TileFrameX / 18;
             string key = frameNum switch
             {
-                1 => "LightBlue",
+                1 => "RoyalBlue",
                 2 => "DarkBlue",
                 3 => "LightGreen",
                 _ => "Red"
             };
-            if (!WhisperingPearlUI.IsActive)
+            if (!WhisperingPearlSystem.IsActive)
             {
-                WhisperingPearlUI.StartDialogue(new Vector2(i, j) * 16, key);
+                WhisperingPearlSystem.StartDialogue(new Vector2(i, j) * 16, key);
             }
             else
             {
-                WhisperingPearlUI.ProgressDialogue(new Vector2(i, j) * 16, key);
+                WhisperingPearlSystem.ProgressDialogue(new Vector2(i, j) * 16, key);
             }
             return true;
         }
