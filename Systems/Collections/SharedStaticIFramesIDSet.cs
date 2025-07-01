@@ -66,6 +66,11 @@ namespace CalamityMod.Systems.Collections
                     ModContent.ProjectileType<AstralCrystalInvisibleExplosion>()
                 ],
 
+                [ // Set 8: Keelhaul
+                    ModContent.ProjectileType<KeelhaulGeyserBottom>(),
+                    ModContent.ProjectileType<KeelhaulGeyserTop>()
+                ],
+
                 [ // Set 8: All toxic clouds
                     ProjectileID.ToxicCloud,
                     ProjectileID.ToxicCloud2,
