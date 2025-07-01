@@ -113,14 +113,14 @@ namespace CalamityMod.Skies
             // Initialize the reality cracks and distortion rift.
             if (!Initialized)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     RealityCrack realityCrack = new RealityCrack()
                     {
                         Position = Main.LocalPlayer.Center,
                         Depth = 30f,
-                        Scale = 2.75f,
-                        Rotation = Main.rand.NextFloat(MathHelper.TwoPi)
+                        Scale = 2.25f + i,
+                        Rotation = i == 0 ? 0f : MathHelper.Pi,
                     };
                     RealityCracks.Add(realityCrack);
                 }
@@ -169,40 +169,37 @@ namespace CalamityMod.Skies
                     OuterRiftCracks.Add(distortionRiftArm);
                 }
 
-                Initialized = true;
-            }
 
-            // Generate the points for each arm and add them all to the global arm list.
-            // Main cracks.
-            for (int i = 0; i < MainRiftCracks.Count; i++)
-            {
-                float minDistance = MainRiftCracks[i].MinDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
-                float maxDistance = MainRiftCracks[i].MaxDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
-                float minAngularVariance = MainRiftCracks[i].MinPointAngularVariance;
-                float maxAngularVariance = MainRiftCracks[i].MaxPointAngularVariance;
-                float placementAngle = i * MathHelper.TwoPi / MainRiftCracks.Count;
+                // Generate the points for each arm and add them all to the global arm list.
+                // Main cracks.
+                for (int i = 0; i < MainRiftCracks.Count; i++)
+                {
+                    float minDistance = MainRiftCracks[i].MinDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
+                    float maxDistance = MainRiftCracks[i].MaxDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
+                    float minAngularVariance = MainRiftCracks[i].MinPointAngularVariance;
+                    float maxAngularVariance = MainRiftCracks[i].MaxPointAngularVariance;
+                    float placementAngle = i * MathHelper.TwoPi / MainRiftCracks.Count;
 
-                if (MainRiftCracks[i].ArmPoints.Count <= 0)
-                    MainRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, MainRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
-
-                if (!DistortionRiftArms.Contains(MainRiftCracks[i]))
+                    if (MainRiftCracks[i].ArmPoints.Count <= 0)
+                        MainRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, MainRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
                     DistortionRiftArms.Add(MainRiftCracks[i]);
-            }
+                }
 
-            // Outer cracks.
-            for (int i = 0; i < OuterRiftCracks.Count; i++)
-            {
-                float minDistance = OuterRiftCracks[i].MinDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
-                float maxDistance = OuterRiftCracks[i].MaxDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
-                float minAngularVariance = OuterRiftCracks[i].MinPointAngularVariance;
-                float maxAngularVariance = OuterRiftCracks[i].MaxPointAngularVariance;
-                float placementAngle = i * MathHelper.TwoPi / OuterRiftCracks.Count;
+                // Outer cracks.
+                for (int i = 0; i < OuterRiftCracks.Count; i++)
+                {
+                    float minDistance = OuterRiftCracks[i].MinDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
+                    float maxDistance = OuterRiftCracks[i].MaxDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
+                    float minAngularVariance = OuterRiftCracks[i].MinPointAngularVariance;
+                    float maxAngularVariance = OuterRiftCracks[i].MaxPointAngularVariance;
+                    float placementAngle = i * MathHelper.TwoPi / OuterRiftCracks.Count;
 
-                if (OuterRiftCracks[i].ArmPoints.Count <= 0)
-                    OuterRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, OuterRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
-
-                if (!DistortionRiftArms.Contains(OuterRiftCracks[i]))
+                    if (OuterRiftCracks[i].ArmPoints.Count <= 0)
+                        OuterRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, OuterRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
                     DistortionRiftArms.Add(OuterRiftCracks[i]);
+                }
+
+                Initialized = true;
             }
 
             if (CanSkyBeActive)
@@ -308,13 +305,13 @@ namespace CalamityMod.Skies
             if (DoGIndex != -1)
             {
                 var DoG = Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>();
-                var goalSkyColor = Color.Black;
+                Color goalSkyColor = Color.Black;
                 if (DoG.isInAgressiveState)
                     goalSkyColor = Color.Fuchsia;
                 if (DoG.isInPassiveState)
-                    goalSkyColor = Color.Cyan;
+                    goalSkyColor = new(0, 221, 250);
                 if (DoG.isInLaserWallState)
-                    goalSkyColor = new Color(117, 21, 161);
+                    goalSkyColor = new(117, 21, 161);
 
                 if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
                 {
@@ -332,7 +329,7 @@ namespace CalamityMod.Skies
                 if (Main.LocalPlayer.Calamity().monolithDevourerPShader > 0)
                     goalSkyColor = Color.Fuchsia;
                 if (Main.LocalPlayer.Calamity().monolithDevourerBShader > 0)
-                    goalSkyColor = Color.Cyan;
+                    goalSkyColor = new(0, 221, 250);
 
                 DoGSkyColor = Color.Lerp(DoGSkyColor, goalSkyColor, 0.1f);
             }
@@ -349,7 +346,7 @@ namespace CalamityMod.Skies
             Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles");
 
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.55f);
+            shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.6f);
             shader.Parameters["distortionStrength"].SetValue(0.3f);
             shader.Parameters["mainNoiseTextureScale"].SetValue(0.8f);
             shader.Parameters["distortionTextureScale"].SetValue(0.6f);
@@ -360,8 +357,8 @@ namespace CalamityMod.Skies
             shader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
             shader.Parameters["worldOffset"].SetValue(Main.screenPosition / windsTexture.Size() * 0.025f);
 
-            shader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.8f).ToVector3());
-            shader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.6f).ToVector3());
+            shader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.64f).ToVector3());
+            shader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.32f).ToVector3());
             shader.Parameters["highlightsColor"].SetValue(DoGSkyColor.ToVector3());
 
             Main.instance.GraphicsDevice.Textures[1] = highlightsTexture.Value;
@@ -386,7 +383,7 @@ namespace CalamityMod.Skies
             Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
 
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 3f);
-            shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.18f);
+            shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.25f);
             shader.Parameters["distortionStrength"].SetValue(0.12f);
             shader.Parameters["mainNoiseTextureScale"].SetValue(0.6f);
             shader.Parameters["distortionTextureScale"].SetValue(0.8f);
@@ -417,7 +414,7 @@ namespace CalamityMod.Skies
             Vector2 screenCenter = Main.screenPosition + (screenSize * 0.5f);
             Asset<Texture2D> cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing");
 
-            shader.Parameters["opacityCutoffValue"].SetValue(0.75f * SkyIntensity);
+            shader.Parameters["opacityCutoffValue"].SetValue(0.8f * SkyIntensity);
             shader.Parameters["fadeoutPower"].SetValue(1.75f);
             shader.CurrentTechnique.Passes[0].Apply();
 
@@ -531,14 +528,14 @@ namespace CalamityMod.Skies
             if (FillProgress > 0)
             {
                 Color colorToUse = DoGSky.DoGSkyColor;
-                backgroundColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, Main.ColorOfTheSkies.R * 0.075f, FillProgress);
-                backgroundColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, Main.ColorOfTheSkies.G * 0.075f, FillProgress);
-                backgroundColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, Main.ColorOfTheSkies.B * 0.075f, FillProgress);
+                backgroundColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, Color.White.R * 0.035f, FillProgress);
+                backgroundColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, Color.White.G * 0.035f, FillProgress);
+                backgroundColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, Color.White.B * 0.035f, FillProgress);
                 backgroundColor = new(backgroundColor.ToVector3() + colorToUse.ToVector3() * 0.025f * FillProgress);
 
-                tileColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, 100f, FillProgress);
-                tileColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, 100f, FillProgress);
-                tileColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, 100f, FillProgress);
+                tileColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, 35f, FillProgress);
+                tileColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, 35f, FillProgress);
+                tileColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, 35f, FillProgress);
                 tileColor = new(tileColor.ToVector3() + colorToUse.ToVector3() * 0.075f * FillProgress);
             }
         }
@@ -583,18 +580,6 @@ namespace CalamityMod.Skies
             DrawDistortionBackgroundClouds();
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-
-            // Draw the small stars that twinkle and fade out quickly.
-            DrawDistortionBackgroundStars();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-
-            // Draw the purple lightning bolts
-            DrawDistortionBackgroundLighting();
-
-            Main.spriteBatch.End();
         }
 
         private static void DrawDistortionBackgroundClouds()
@@ -606,7 +591,7 @@ namespace CalamityMod.Skies
             Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
 
             rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.75f);
+            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.7f);
             rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.12f);
             rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(2f);
             rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
@@ -628,16 +613,6 @@ namespace CalamityMod.Skies
 
             rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(cloudsTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
-        }
-
-        private static void DrawDistortionBackgroundLighting()
-        {
-            // TODO
-        }
-
-        private static void DrawDistortionBackgroundStars()
-        {
-            // TODO
         }
     }
 }
