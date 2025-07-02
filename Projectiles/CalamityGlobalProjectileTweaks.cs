@@ -142,6 +142,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.DangerousSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
+                { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },

@@ -100,6 +100,7 @@ namespace CalamityMod.Items
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
                 { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
+                { ItemID.DeadlySphereStaff, Do(AutoReuse, UseExact(20), DamageExact(50)) },
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(PointBlank, DamageExact(12), AutoReuse) },
                 { ItemID.DemonScythe, Do(AutoReuse, DamageExact(28)) },
@@ -209,7 +210,7 @@ namespace CalamityMod.Items
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
                 { ItemID.PurplePhaseblade, phaseblade },
                 { ItemID.PurplePhasesaber, phasesaber },
-                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
+                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(63)) },
                 { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
                 { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13), KnockbackExact(8f)) },
@@ -502,7 +503,6 @@ namespace CalamityMod.Items
                 { ItemID.DD2LightningAuraT1Popper, autoReuse }, // Lightning Aura Tier 1
                 { ItemID.DD2LightningAuraT2Popper, Do(AutoReuse, UseExact(25)) }, // Lightning Aura Tier 2
                 { ItemID.DD2LightningAuraT3Popper, Do(AutoReuse, UseExact(20)) }, // Lightning Aura Tier 3
-                { ItemID.DeadlySphereStaff, Do(AutoReuse, UseExact(20)) },
                 { ItemID.FireWhip, autoReuse }, // Firecracker
                 { ItemID.FlinxStaff, Do(AutoReuse, UseExact(35)) },
                 { ItemID.MaceWhip, autoReuse }, // Morning Star

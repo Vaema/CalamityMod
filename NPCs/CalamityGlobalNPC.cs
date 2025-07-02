@@ -1256,15 +1256,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseBrainRotDoTValue, baseBrainRotDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Sage Poison
-            if (sagePoisonTime > 0)
-            {
-                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
-                // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
-                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
             // Astral Infection
             if (astralInfection > 0)
             {
@@ -1359,6 +1350,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
+            if (sagePoisonTime > 0)
+            {
+                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f
+                // See SageNeedle.cs for details
+                ApplyDPSDebuff(npc.Calamity().sagePoisonDamage, npc.Calamity().sagePoisonDamage / 5, ref npc.lifeRegen, ref damage);
+            }
             if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (laceration > 0)
@@ -1436,11 +1433,11 @@ namespace CalamityMod.NPCs
                 { NPCID.GiantShelly, 0.2f },
                 { NPCID.GiantShelly2, 0.2f },
                 { NPCID.GiantTortoise, 0.35f },
-                { NPCID.Golem, 0.2f },
-                { NPCID.GolemFistLeft, 0.2f },
-                { NPCID.GolemFistRight, 0.2f },
-                { NPCID.GolemHead, 0.2f },
-                { NPCID.GolemHeadFree, 0.2f },
+                { NPCID.Golem, 0.15f },
+                { NPCID.GolemFistLeft, 0.15f },
+                { NPCID.GolemFistRight, 0.15f },
+                { NPCID.GolemHead, 0.15f },
+                { NPCID.GolemHeadFree, 0.15f },
                 { NPCID.GraniteFlyer, 0.1f },
                 { NPCID.GraniteGolem, 0.15f },
                 { NPCID.GreekSkeleton, 0.1f },
@@ -1736,12 +1733,16 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    npc.lifeMax = 30000;
+                    npc.lifeMax = 31875;
+                    break;
+
+                case NPCID.GolemHead:
+                    npc.lifeMax = 26500;
                     break;
 
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
-                    npc.lifeMax = 7000;
+                    npc.lifeMax = 7500;
                     break;
 
                 case NPCID.HallowBoss:

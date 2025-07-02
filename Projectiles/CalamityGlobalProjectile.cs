@@ -3230,6 +3230,13 @@ namespace CalamityMod.Projectiles
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
 
+            // Hack to allow Desert Tiger minion to fall through platforms while attacking
+            if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
+            {
+                if (projectile.ai[0] == 5f)
+                    projectile.tileCollide = false;
+            }
+
             // Jack O Lantern Launcher projectile tweak
             if (projectile.type == ProjectileID.JackOLantern)
             {

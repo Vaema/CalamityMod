@@ -82,12 +82,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (CheckForSpawning == false)
             {
-                int dustAmount = 75;
-                for (int dustIndex = 0; dustIndex < dustAmount; dustIndex++)
+                int dustAmount = 25;
+                for (int d = 0; d < dustAmount; d++)
                 {
-                    float angle = MathHelper.TwoPi / dustAmount * dustIndex;
+                    float angle = MathHelper.TwoPi / dustAmount * d;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(5f, 6.5f);
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 85, velocity);
+                    Dust.NewDustPerfect(Projectile.Center, DustID.UnusedBrown, velocity);
                 }
                 CheckForSpawning = true;
             }
