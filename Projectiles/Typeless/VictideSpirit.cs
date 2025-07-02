@@ -1,9 +1,13 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -16,6 +20,17 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
+
+        public static Asset<Texture2D> AuraTexture;
+        public static Asset<Texture2D> GlowTexture;
+
+        public ref float DustCounter => ref Projectile.ai[1];
+
+        public override void Load()
+        {
+            AuraTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail");
+            GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+        }
 
         public override void SetDefaults()
         {
@@ -122,7 +137,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 else
                     Projectile.velocity.Y *= 0.92f;
-                Projectile.rotation = Projectile.velocity.ToRotation();
+                Projectile.rotation = Projectile.velocity.Length() == 0f ? MathHelper.PiOver2 : Projectile.velocity.ToRotation();
                 #endregion
 
                 #region Player Manipulation
@@ -139,6 +154,8 @@ namespace CalamityMod.Projectiles.Typeless
                     Owner.hurtCooldowns[k] = Owner.immuneTime;
 
                 Owner.velocity = Projectile.velocity;
+                if (Owner.velocity.Y == 0f)
+                    Owner.velocity.Y += 0.00001f; // Prevent sprint particles from appearing
                 Owner.ChangeDir((Projectile.velocity.X > 0).ToDirectionInt());
                 Projectile.direction = Owner.direction;
 
@@ -158,43 +175,88 @@ namespace CalamityMod.Projectiles.Typeless
                 SoundEngine.PlaySound(Main.rand.NextBool() ? SoundID.ShimmerWeak1 : SoundID.ShimmerWeak2, Projectile.Center);
             }
 
-            // currently copied from waywasher rn
-            // will make them real and not copied pilled later
-            if (Main.rand.NextBool())
+            if (Main.rand.NextBool(4) || Projectile.velocity.Length() > 0.25f)
             {
-                // If you're looking at this to use the water effects, this is the main one I recommend you take
-                Particle waterfx = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.45f, Color.DeepSkyBlue, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1), shrinkSpeed: 0.5f);
-                GeneralParticleHandler.SpawnParticle(waterfx);
+                Particle foam = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.25f, Color.DeepSkyBlue, Vector2.One, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi), shrinkSpeed: 1f);
+                GeneralParticleHandler.SpawnParticle(foam);
             }
 
-            Particle projBody = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 25, -Projectile.velocity * 0.3f, "CalamityMod/Particles/BloomCircle", false, 6, 0.3f, Color.RoyalBlue, new Vector2(1, 1f), true, false, shrinkSpeed: 0.5f);
-            GeneralParticleHandler.SpawnParticle(projBody);
-
-            Vector2 tip = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 35;
-            Particle seafoam = new CustomSpark(tip, Projectile.velocity * Main.rand.NextFloat(0.7f, 0.9f), "CalamityMod/Particles/BloomCircle", false, 2, Main.rand.NextFloat(0.35f, 0.45f), Color.White, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-0.4f, 0.4f));
-            GeneralParticleHandler.SpawnParticle(seafoam);
-            if (Main.rand.NextBool(10))
+            DustCounter += Utils.Remap(Projectile.velocity.Length(), 0f, VictideHeadBurrow.BaseBurrowSpeed, 1f, 3f, true);
+            if (DustCounter >= 15f)
             {
+                DustCounter = 0f;
                 for (int i = 0; i < 2; i++)
                 {
-                    Particle smallSeafoam = new CustomSpark(tip, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f), "CalamityMod/Particles/BloomCircle", true, 15, Main.rand.NextFloat(0.12f, 0.18f), Color.White * 0.7f, new Vector2(1, 1f), true, false, extraRotation: Main.rand.NextFloat(-1, 1));
-                    GeneralParticleHandler.SpawnParticle(smallSeafoam);
-
-                    Dust dust = Dust.NewDustPerfect(tip + Main.rand.NextVector2Circular(8, 8), ModContent.DustType<LightDust>(), -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.9f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<LightDust>(), Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(-4.8f, -6f));
                     dust.noGravity = false;
                     dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
                     dust.color = Color.White;
                     dust.noLightEmittence = true;
                 }
             }
-            if (Main.rand.NextBool(5))
-            {
-                Gore bubble = Gore.NewGorePerfect(Projectile.GetSource_FromAI(), Projectile.Center, Projectile.velocity * 0.2f + Main.rand.NextVector2Circular(1f, 1f), 411);
-                bubble.timeLeft = 12 + Main.rand.Next(8);
-                bubble.scale = Main.rand.NextFloat(0.5f, 0.9f);
-                bubble.type = Main.rand.NextBool(3) ? 412 : 411;
-            }
             #endregion
+        }
+
+        public float JetstreamWidthFunction(float completionRatio) => Utils.GetLerpValue(1f, 0.8f, completionRatio, true) * 3f;
+
+        public Color InnerJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(169, 100, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.5f;
+        public Color OuterJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(100, 237, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.2f;
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // Jetstream trails
+            for (int direction = -1; direction <= 1; direction += 2)
+            {
+                List<Vector2> trailPositionsInner = new List<Vector2>();
+                List<Vector2> trailPositionsOuter = new List<Vector2>();
+                for (int i = 0; i < 20; i++)
+                {
+                    float mergeFactor = Utils.Remap(i, 0f, 8f, 0f, 1f, true);
+
+                    Vector2 trailPosInner = Projectile.Center - Projectile.rotation.ToRotationVector2() * i * 8f;
+                    float spreadLengthInner = 20f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f);
+                    Vector2 sinOffsetInner = (Vector2.UnitY * direction * MathF.Sin(i * MathHelper.Pi * 0.125f) * spreadLengthInner * mergeFactor).RotatedBy(Projectile.rotation);
+                    trailPositionsInner.Add(trailPosInner + sinOffsetInner);
+
+                    Vector2 trailPosOuter = Projectile.Center - Projectile.rotation.ToRotationVector2() * i * 12f;
+                    float spreadLengthOuter = 32f * MathF.Sin(Main.GlobalTimeWrappedHourly * 2f);
+                    Vector2 sinOffsetOuter = (Vector2.UnitY * direction * (8f + MathF.Sin(i * MathHelper.Pi * 0.035f) * spreadLengthOuter * mergeFactor)).RotatedBy(Projectile.rotation);
+                    trailPositionsOuter.Add(trailPosOuter + sinOffsetOuter);
+                }
+
+                PrimitiveRenderer.RenderTrail(trailPositionsInner, new(JetstreamWidthFunction, InnerJetstreamColorFunction), 20);
+                PrimitiveRenderer.RenderTrail(trailPositionsOuter, new(JetstreamWidthFunction, OuterJetstreamColorFunction), 20);
+            }
+
+            Texture2D aura = AuraTexture.Value;
+            Vector2 drawPos = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+            float auraRotation = Projectile.rotation + MathHelper.PiOver2;
+
+            // Outer aura trail
+            Vector2 spinPoint = Vector2.UnitY * -3f;
+            float rotation = MathHelper.TwoPi * Main.GlobalTimeWrappedHourly;
+            for (int o = 0; o < 6; o += 2)
+            {
+                Vector2 spinStart = drawPos + spinPoint.RotatedBy(rotation - MathHelper.Pi * o / 3f);
+                Color outerColor = Color.Lerp(Color.Cyan, Color.RoyalBlue, o / 6f) * 0.25f;
+                outerColor.A = 0;
+                Main.EntitySpriteDraw(aura, spinStart, null, outerColor, auraRotation, aura.Size() * 0.5f, 0.8f, SpriteEffects.None, 0);
+            }
+
+            // Inner aura trail
+            Color innerColor = Color.SkyBlue * 0.5f;
+            innerColor.A = 0;
+            for (float i = 0f; i < 1f; i += 0.5f)
+            {
+                Main.EntitySpriteDraw(aura, drawPos, null, innerColor * (0.5f + 0.5f * i), auraRotation, aura.Size() * 0.5f, 0.4f + 0.2f * i, SpriteEffects.None, 0);
+            }
+
+            // Backing aura glow
+            Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
+            Texture2D glow = GlowTexture.Value;
+            Main.EntitySpriteDraw(glow, drawPos + Projectile.rotation.ToRotationVector2() * 8f, null, Color.CornflowerBlue, auraRotation, glow.Size() * 0.5f, new Vector2(0.36f, 0.54f), SpriteEffects.None, 0);
+            Main.spriteBatch.ExitShaderRegion();
+            return false;
         }
 
         public override bool? CanDamage() => false;
