@@ -89,7 +89,7 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
-			"Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
+            "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
@@ -100,8 +100,6 @@ namespace CalamityMod.NPCs
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
             "Fimmy", // <@!407348617079160832> (darkmega5)
-            // SLATED FOR REPLACEMENT -- donor has not picked a new name yet
-            // "Dorira", // <@!215269032360804352> (crimsoncb)
             "John Helldiver", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] DryadNames =
@@ -254,6 +252,7 @@ namespace CalamityMod.NPCs
         {
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
+            "Mad Lad", // <@!215269032360804352> (crimsoncb)
         };
         private static readonly string[] WitchDoctorNames =
         {
