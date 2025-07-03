@@ -216,9 +216,6 @@ namespace CalamityMod.Balancing
             // 35% resist to Aerial Bane.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2BetsyArrow))));
 
-            // 35% resist to Ballistic Poison Bomb's clouds.
-            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<BallisticPoisonCloud>()))));
-
             // 35% resist to Icicle Arrows.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<IcicleArrowProj>()))));
 
@@ -227,6 +224,9 @@ namespace CalamityMod.Balancing
 
             // 30% resist to Flak Kraken.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<FlakKrakenProjectile>()))));
+
+            // 20% resist to Ballistic Poison Bomb's clouds.
+            NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<BallisticPoisonCloud>()))));
 
             // 20% resist to Cluster Rocket fragments.
             NPCSpecificBalancingChanges.AddRange(Bundle(AstrumDeusIDList.List, Do(new ProjectileResistBalancingRule(0.8f, ProjectileID.ClusterFragmentsI, ProjectileID.ClusterFragmentsII))));
