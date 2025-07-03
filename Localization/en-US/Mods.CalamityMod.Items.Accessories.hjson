@@ -1159,12 +1159,10 @@ Nanotech: {
 	Tooltip:
 		'''
 		Rogue projectiles create nanoblades as they travel
-		   Rogue critical strikes steal enemy life
 		Stealth strikes summon nanobeams and sparks on enemy hits
-		Stealth strikes have +15 armor penetration, inflict Armor Crunch, deal 5% more damage, and heal for 10 HP
-		Stealth strikes grant 15% critical strike chance and increased lifesteal to non-stealth strikes for 10 seconds
+		Stealth strikes have +15 armor penetration, deal 5% more damage, and heal for 2 HP
 		15% increased rogue damage and 15% increased rogue velocity
-		'Bionic enhancements!'
+		Stealth strikes grant 10% critical strike chance to non-stealth strikes for 5 seconds
 		'''
 }
 

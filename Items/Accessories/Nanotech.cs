@@ -28,9 +28,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.electricianGlove = true;
             modPlayer.filthyGlove = true;
             modPlayer.bloodyGlove = true;
-            modPlayer.vampiricTalisman = true;
-            modPlayer.raiderTalisman = true;
-            modPlayer.rottenDogTooth = true;
             player.GetDamage<ThrowingDamageClass>() += 0.15f;
             player.Calamity().rogueVelocity += 0.15f;
         }
@@ -41,7 +38,6 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RogueEmblem>().
                 AddIngredient<MoonstoneCrown>().
                 AddIngredient<ElectriciansGlove>().
-                AddIngredient<VampiricTalisman>().
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
