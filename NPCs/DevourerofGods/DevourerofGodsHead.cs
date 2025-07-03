@@ -112,7 +112,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public int postTeleportTimer = 0;
         public int teleportTimer = -1;
         private const int TimeBeforeTeleport_Death = 150;
-        private const int TimeBeforeTeleport_Revengeance = 140;
+        private const int TimeBeforeTeleport_Revengeance = 150;
         private const int TimeBeforeTeleport_Expert = 160;
         private const int TimeBeforeTeleport_Normal = 180;
         private bool spawnedGuardians3 = false;
@@ -130,6 +130,8 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DevourerSpawn");
         public static readonly SoundStyle AttackSound = new("CalamityMod/Sounds/Custom/DevourerAttack");
+        public static readonly SoundStyle RiftOpenSound = new("CalamityMod/Sounds/Custom/DevourerRiftOpen");
+        public static readonly SoundStyle RiftBuildingSound = new("CalamityMod/Sounds/Custom/DevourerRiftBuilding");
         public static readonly SoundStyle DeathAnimationSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeath");
         public static readonly SoundStyle DeathExplosionSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
         public static readonly SoundStyle DeathSegmentSound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak", 4);
@@ -486,6 +488,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             float timeWhenDoGShouldTeleportDuringPhase2Countdown = 61f;
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
+            if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
+                SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 30)
             {
                 Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
@@ -641,6 +645,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (teleportTimer > 0)
                     {
                         teleportTimer--;
+                        if (teleportTimer == 115)
+                            SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
                         if (teleportTimer == 30)
                         {
 
@@ -2138,7 +2144,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 teleportTimer -= 45; //Much faster for the first 3 dashes in death.
             }
-            SoundEngine.PlaySound(SoundID.Item109, player.Center);
+            SoundEngine.PlaySound(RiftOpenSound, player.Center);
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
