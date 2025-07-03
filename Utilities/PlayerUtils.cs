@@ -629,7 +629,7 @@ namespace CalamityMod
         public static void DoLifestealDirect(this Player player, NPC target, int amount, float cooldownMultiplier = 1f)
         {
             // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
-            if ((!target.IsAnEnemy(false) || !target.canGhostHeal) && target != null)
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
                 return;
 
             // Limit the amount of heal to the player's max health
@@ -663,7 +663,7 @@ namespace CalamityMod
         public static void SpawnLifeStealProjectile(this Player player, NPC target, Projectile projSource, int projType, int amount, float cooldownMultiplier = 1f, bool shared = false, float distanceRequired = 3000f)
         {
             // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
-            if ((!target.IsAnEnemy(false) || !target.canGhostHeal) && target != null)
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
                 return;
 
             int lowestHealthCheck = player.statLifeMax2 - player.statLife;
