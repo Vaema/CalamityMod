@@ -2304,8 +2304,8 @@ namespace CalamityMod.CalPlayer
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
 
-            // Regenator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
-            if (regenator && false)
+            // Regenerator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
+            if (regenerator && false)
             {
                 // Projectile damage and count is based on source damage of the hit
                 float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
@@ -2747,7 +2747,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 16; i++)
+                            for (int i = 0; i < 10; i++)
                             {
                                 Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
                                 int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);

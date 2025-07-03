@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projFrames[Type] = 19;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-            Main.projFrames[Type] = 19;
         }
 
         public override void SetDefaults()
@@ -565,8 +566,6 @@ namespace CalamityMod.Projectiles.Summon
                 Vector2 velocity = Projectile.velocity;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
         {

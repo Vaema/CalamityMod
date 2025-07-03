@@ -13,18 +13,16 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
+            Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
             Projectile.tileCollide = false;
-            Projectile.extraUpdates = 3;
+            Projectile.MaxUpdates = 5;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
         }
 
         public override void AI()
         {
-            Projectile.HealingProjectile((int)Projectile.ai[1], (int)Projectile.ai[0], 18f, 10f);
+            Projectile.HealingProjectile((int)Projectile.ai[1], (int)Projectile.ai[0], 12f, 10f);
             int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.PurificationPowder, 0f, 0f, 100);
             Main.dust[dust].noGravity = true;
             Main.dust[dust].velocity *= 0f;

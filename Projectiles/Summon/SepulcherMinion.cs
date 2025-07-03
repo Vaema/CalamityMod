@@ -693,6 +693,8 @@ namespace CalamityMod.Projectiles.Summon
 
         #endregion
 
+        public override bool MinionContactDamage() => true;
+
         public override bool? CanHitNPC(NPC target)
         {
             if (target.type == ModContent.NPCType<ExhumedHeart>())

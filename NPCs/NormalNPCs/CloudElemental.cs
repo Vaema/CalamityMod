@@ -91,10 +91,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().VulnerableToHeat = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

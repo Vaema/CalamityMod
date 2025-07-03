@@ -100,9 +100,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

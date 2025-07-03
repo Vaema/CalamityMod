@@ -297,18 +297,17 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CannonballHostile, defenseDamage },
                 { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
                 { ProjectileID.CultistBossFireBall, defenseDamage },
-                { ProjectileID.CultistBossFireBallClone, defenseDamage },
                 { ProjectileID.CultistBossIceMist, defenseDamage },
-                { ProjectileID.CultistBossLightningOrbArc, defenseDamage },
+                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Reused by Storm Weaver
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.DeerclopsRangedProjectile, defenseDamage }, // Deerclops shadow hands
+                { ProjectileID.DeerclopsRangedProjectile, defenseDamage }, // Deerclops rubble
                 { ProjectileID.DemonSickle, defenseDamage },
                 { ProjectileID.FairyQueenLance, defenseDamage }, // Empress of Light's lance walls
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves
+                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
                 { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // Empress of Light's lingering rainbow trail hitboxes
                 { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
                 { ProjectileID.JavelinHostile, defenseDamage },
@@ -316,13 +315,13 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
                 { ProjectileID.Present, defenseDamage }, // Falling present bombs in Frost Moon
-                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets
+                { ProjectileID.QueenSlimeSmash, defenseDamage },
+                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.RockGolemRock, defenseDamage },
                 { ProjectileID.RuneBlast, defenseDamage }, // Rune Wizard shots
                 { ProjectileID.SaucerDeathray, defenseDamage },
                 { ProjectileID.SaucerMissile, defenseDamage },
                 { ProjectileID.Sharknado, defenseDamage },
-                { ProjectileID.Skull, defenseDamage }, // Skeletron Expert+ skulls
                 { ProjectileID.SniperBullet, defenseDamage }, // Skeleton Sniper bullets
                 { ProjectileID.Spike, defenseDamage }, // Santank spike balls
                 { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) }, // Plantera bouncing thorn balls

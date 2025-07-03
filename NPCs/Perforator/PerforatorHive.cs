@@ -84,9 +84,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

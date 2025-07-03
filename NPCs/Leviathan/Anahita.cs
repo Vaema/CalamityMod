@@ -61,6 +61,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.GetNPCDamage();
             NPC.npcSlots = 16f;
             NPC.width = 100;
@@ -88,9 +89,6 @@ namespace CalamityMod.NPCs.Leviathan
 
             if (Main.zenithWorld)
                 NPC.scale *= 4f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

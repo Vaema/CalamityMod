@@ -9,7 +9,8 @@ using System;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class Regenator : ModItem, ILocalizedModType
+    [LegacyName("Regenator")]
+    public class Regenerator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
@@ -24,14 +25,14 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.regenator = true;
+            modPlayer.regenerator = true;
             player.longInvince = true; // Gives better iframes because god help you if you end up getting hit twice
         }
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", (Main.LocalPlayer.Calamity().regenatorDamage).ToPercent());
+                list.FindAndReplace("[DAMAGE]", (Main.LocalPlayer.Calamity().regeneratorDamage).ToPercent());
         }
     }
 }

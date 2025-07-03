@@ -65,10 +65,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

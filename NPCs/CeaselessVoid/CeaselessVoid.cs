@@ -81,9 +81,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.DeathSound = DeathSound;
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

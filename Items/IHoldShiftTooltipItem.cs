@@ -2,7 +2,7 @@
 
 namespace CalamityMod.Items
 {
-    // This interface is used on items where you can hold Left SHIFT for an expanded tooltip.
+    // This interface is used on items where you can hold SHIFT for an expanded tooltip.
     // All actual implementation of this behavior is done in CalamityGlobalItemTooltip.
     public interface IHoldShiftTooltipItem
     {
@@ -52,7 +52,7 @@ namespace CalamityMod.Items
         #endregion
 
         /// <summary>
-        /// Whether holding Left SHIFT for the tooltip extension hides the normal tooltip. Typically this is false.
+        /// Whether holding SHIFT for the tooltip extension hides the normal tooltip. Typically this is false.
         /// </summary>
         public virtual bool HidesNormalTooltip => false;
 

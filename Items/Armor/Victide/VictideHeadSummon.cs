@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Armor.Victide
                 }
             }
             player.ignoreWater = true;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 player.GetDamage<SummonDamageClass>() += 0.1f;
                 player.lifeRegen += 3;

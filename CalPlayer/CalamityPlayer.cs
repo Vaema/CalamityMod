@@ -175,6 +175,8 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
+
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
         #endregion
 
         #region Speedrun Timer
@@ -456,7 +458,7 @@ namespace CalamityMod.CalPlayer
         /// This is obtained from a formula derived from the player's current stealth, the weapon's use time, and the player's stealth generation boosts.
         /// </summary>
         public float stealthDamage = 0f;
-        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove and its upgrades, and Rotten Dogtooth. </summary>
+        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
         #endregion
@@ -717,8 +719,8 @@ namespace CalamityMod.CalPlayer
         public bool gladiatorSword = false;
         public int gladiatorTimer = 0;
         public bool unstableGraniteCore = false;
-        public bool regenator = false;
-        public float regenatorDamage = 0;
+        public bool regenerator = false;
+        public float regeneratorDamage = 0;
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
@@ -1144,8 +1146,6 @@ namespace CalamityMod.CalPlayer
         public int titanCooldown = 0;
         public bool umbraphileSet = false;
         public bool reaverSpeed = false;
-        public bool reaverRegen = false;
-        public int reaverRegenCooldown = 0;
         public bool reaverDefense = false;
         public bool reaverExplore = false;
         public bool fathomSwarmer = false;
@@ -2001,7 +2001,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 25;
 
             int percentMaxLifeIncrease = 0;
-
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2171,7 +2170,7 @@ namespace CalamityMod.CalPlayer
             trinketOfChi = false;
             gladiatorSword = false;
             unstableGraniteCore = false;
-            regenator = false;
+            regenerator = false;
             deepDiver = false;
             theBee = false;
             arcFlashRing = false;
@@ -2346,7 +2345,6 @@ namespace CalamityMod.CalPlayer
 
             avertorBonus = false;
 
-            reaverRegen = false;
             reaverSpeed = false;
             reaverDefense = false;
             reaverExplore = false;
@@ -3137,8 +3135,6 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
             reaverSpeed = false;
-            reaverRegen = false;
-            reaverRegenCooldown = 0;
             reaverDefense = false;
             reaverExplore = false;
             shadeRegen = false;
@@ -4358,15 +4354,7 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI == Main.myPlayer)
             {
                 float baseRecoveryRate = Main.expertMode ? BalancingConstants.LifeStealRecoveryRate_Expert : BalancingConstants.LifeStealRecoveryRate_Classic;
-
-                float lifeStealRecoveryRateReduction =
-                    CalamityWorld.death ? BalancingConstants.LifeStealRecoveryRateReduction_Death :
-                    CalamityWorld.revenge ? BalancingConstants.LifeStealRecoveryRateReduction_Revengeance :
-                    Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert :
-                    BalancingConstants.LifeStealRecoveryRateReduction_Classic;
-
-                if (Main.masterMode)
-                    lifeStealRecoveryRateReduction += BalancingConstants.LifeStealRecoveryRateReduction_Master;
+                float lifeStealRecoveryRateReduction = Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert : BalancingConstants.LifeStealRecoveryRateReduction_Classic;
 
                 float lifeStealRecoveryRate = baseRecoveryRate - lifeStealRecoveryRateReduction;
                 if (Player.lifeSteal < -lifeStealRecoveryRate)

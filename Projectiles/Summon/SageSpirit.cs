@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -191,8 +192,5 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
-
-        // The spirit itself should not do direct damage.
-        public override bool? CanDamage() => false;
     }
 }

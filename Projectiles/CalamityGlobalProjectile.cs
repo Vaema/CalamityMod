@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles
         /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
         /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
         /// </summary>
-        public bool spawnArcFlash = true;
+        public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
 
@@ -294,7 +294,6 @@ namespace CalamityMod.Projectiles
         public int BloodstoneOrbValue = 0;
 
         #region On Spawn
-
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
@@ -306,18 +305,54 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
-            if (source is EntitySource_Parent { Entity: NPC npc })
-            {
-                if (!npc.friendly)
-                    ParentNPCIndex = npc.whoAmI;
-            }
-
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
                 projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
                 projectile.Calamity().supercritHits = -1;
             }
+
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
+            //
+            // SPECIFIC PROJECTILE BALANCE CHANGES
+            //
+            else if (source is EntitySource_Parent { Entity: Projectile parent })
+            {
+                // Nerf Crystal bullet shard damage by 45%
+                // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
+                if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
+                    projectile.damage = (int)(projectile.damage * 0.55f);
+
+                // Nerf Mushroom Spear mushroom damage by 50%
+                if (parent.type == ProjectileID.MushroomSpear && projectile.type == ProjectileID.Mushroom)
+                    projectile.damage /= 2;
+
+                // Nerf Luminite Arrow trail damage by 50%
+                if (parent.type == ProjectileID.MoonlordArrow && projectile.type == ProjectileID.MoonlordArrowTrail)
+                    projectile.damage /= 2;
+
+                // Nerf Cursed Dart flame damage by 50%
+                if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
+                    projectile.damage /= 2;
+            }
+
+            if (source is EntitySource_OnHit e)
+            {
+                // Nerf Orichalcum armor's set bonus petal damage by 25%
+                if (e.Context == "SetBonus_Orichalcum")
+                    projectile.damage = (int)(projectile.damage * 0.75f);
+                // Nerf Spectre armor's set bonus soul damage by 50%
+                if (e.Context == "SetBonus_GhostHurt")
+                    projectile.damage /= 2;
+            }
+
+            // Nerfed Seedler projectile damage by 25%
+            if (source is EntitySource_ItemUse_WithAmmo ea && ea.Item.type == ItemID.Seedler)
+                projectile.damage = (int)(projectile.damage * 0.75f);
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
@@ -702,11 +737,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item17, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -735,11 +765,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item171, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -3074,97 +3099,6 @@ namespace CalamityMod.Projectiles
                     if (projectile.type == ProjectileID.Nail && Main.expertMode)
                         projectile.damage /= 2;
 
-                    // Nerf all these Master Mode enemy projectiles
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                    {
-                        switch (projectile.type)
-                        {
-                            case ProjectileID.DemonSickle:
-                            case ProjectileID.HarpyFeather:
-                            case ProjectileID.JavelinHostile:
-                            case ProjectileID.SalamanderSpit:
-                            case ProjectileID.SkeletonBone:
-                            case ProjectileID.IceSpike:
-                            case ProjectileID.JungleSpike:
-                            case ProjectileID.PinkLaser:
-                            case ProjectileID.FrostBlastHostile:
-                            case ProjectileID.GoldenShowerHostile:
-                            case ProjectileID.RainNimbus:
-                            case ProjectileID.FlamingArrow:
-                            case ProjectileID.BulletDeadeye:
-                            case ProjectileID.CannonballHostile:
-                            case ProjectileID.UnholyTridentHostile:
-                            case ProjectileID.FrostBeam:
-                            case ProjectileID.CursedFlameHostile:
-                            case ProjectileID.Stinger:
-                            case ProjectileID.BloodNautilusTears:
-                            case ProjectileID.RockGolemRock:
-                            case ProjectileID.IcewaterSpit:
-                            case ProjectileID.RocketSkeleton:
-                            case ProjectileID.SniperBullet:
-                            case ProjectileID.DrManFlyFlask:
-                            case ProjectileID.DesertDjinnCurse:
-                            case ProjectileID.InfernoHostileBlast:
-                            case ProjectileID.InfernoHostileBolt:
-                            case ProjectileID.Shadowflames:
-                            case ProjectileID.ShadowBeamHostile:
-                            case ProjectileID.PaladinsHammerHostile:
-                            case ProjectileID.LostSoulHostile:
-                            case ProjectileID.RuneBlast:
-                            case ProjectileID.DandelionSeed:
-                            case ProjectileID.SandnadoHostile:
-                            case ProjectileID.SandnadoHostileMark:
-                            case ProjectileID.SnowBallHostile:
-                            case ProjectileID.EyeLaser:
-                            case ProjectileID.Nail:
-                            case ProjectileID.BrainScramblerBolt:
-                            case ProjectileID.GigaZapperSpear:
-                            case ProjectileID.MartianWalkerLaser:
-                            case ProjectileID.RayGunnerLaser:
-                            case ProjectileID.MartianTurretBolt:
-                            case ProjectileID.NebulaSphere:
-                            case ProjectileID.NebulaLaser:
-                            case ProjectileID.NebulaBolt:
-                            case ProjectileID.StardustJellyfishSmall:
-                            case ProjectileID.StardustSoldierLaser:
-                            case ProjectileID.Twinkle:
-                            case ProjectileID.VortexAcid:
-                            case ProjectileID.VortexLaser:
-                            case ProjectileID.VortexLightning:
-                            case ProjectileID.VortexVortexLightning:
-                            case ProjectileID.FlamingWood:
-                            case ProjectileID.GreekFire1:
-                            case ProjectileID.GreekFire2:
-                            case ProjectileID.GreekFire3:
-                            case ProjectileID.FlamingScythe:
-                            case ProjectileID.OrnamentHostile:
-                            case ProjectileID.OrnamentHostileShrapnel:
-                            case ProjectileID.PineNeedleHostile:
-                            case ProjectileID.FrostShard:
-                            case ProjectileID.FrostWave:
-                            case ProjectileID.Missile:
-                            case ProjectileID.Present:
-                            case ProjectileID.Spike:
-                            case ProjectileID.SaucerDeathray:
-                            case ProjectileID.SaucerLaser:
-                            case ProjectileID.SaucerMissile:
-                            case ProjectileID.SaucerScrap:
-                            case ProjectileID.DD2GoblinBomb:
-                            case ProjectileID.DD2JavelinHostile:
-                            case ProjectileID.DD2JavelinHostileT3:
-                            case ProjectileID.DD2DarkMageBolt:
-                            case ProjectileID.DD2DrakinShot:
-                            case ProjectileID.DD2OgreSmash:
-                            case ProjectileID.DD2OgreSpit:
-                            case ProjectileID.DD2OgreStomp:
-                            case ProjectileID.DD2LightningBugZap:
-                            case ProjectileID.DD2BetsyFireball:
-                            case ProjectileID.DD2BetsyFlameBreath:
-                                projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                                break;
-                        }
-                    }
-
                     // Nerf several Hardmode enemy projectiles because they deal way too much damage
                     if (!CalamityPlayer.areThereAnyDamnBosses)
                     {
@@ -3182,6 +3116,8 @@ namespace CalamityMod.Projectiles
                             case ProjectileID.FrostBeam:
                             case ProjectileID.CursedFlameHostile:
                             case ProjectileID.Stinger:
+                            case ProjectileID.BloodShot:
+                            case ProjectileID.BloodNautilusShot:
                             case ProjectileID.BloodNautilusTears:
                             case ProjectileID.RockGolemRock:
                             case ProjectileID.IcewaterSpit:
@@ -3737,14 +3673,14 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-                // Support to help things like holdout swords work with Arc Flash Ring
-                if (!spawnArcFlash && projectile.numHits == 0)
-                    spawnArcFlash = true;
+                // Support to help things like holdout swords look better with Arc Flash Ring
+                if (!showArcFlash && projectile.numHits == 0)
+                    showArcFlash = true;
                 // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
                 if (arcFlashCooldown >= 0)
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
-                    spawnArcFlash = true;
+                    showArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
                     CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
@@ -4093,7 +4029,9 @@ namespace CalamityMod.Projectiles
             else if (modPlayer.vampiricTalisman && projectile.Calamity().stealthStrike)
             {
                 target.AddBuff(BuffType<ArmorCrunch>(), VampiricTalisman.ArmorCrunchDebuffTime);
-                target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
+
+                if (!modPlayer.nanotech)
+                    target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
             }
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
@@ -4777,35 +4715,6 @@ namespace CalamityMod.Projectiles
                         Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 3f);
                 }
             }
-        }
-        #endregion
-
-        #region Life Steal
-        public static bool CanSpawnLifeStealProjectile(double healMultiplier, float healAmount) => healMultiplier > 0D && (int)healAmount > 0;
-
-        public static void SpawnLifeStealProjectile(Projectile projectile, Player player, float healAmount, int healProjectileType, float distanceRequired, float cooldownMultiplier = 1f)
-        {
-            if (Main.LocalPlayer.moonLeech)
-                return;
-
-            Main.LocalPlayer.lifeSteal -= healAmount * cooldownMultiplier;
-
-            float lowestHealthCheck = 0f;
-            int healTarget = projectile.owner;
-            foreach (Player otherPlayer in Main.ActivePlayers)
-            {
-                if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
-                {
-                    float playerDist = Vector2.Distance(projectile.Center, otherPlayer.Center);
-                    if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
-                    {
-                        lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
-                        healTarget = otherPlayer.whoAmI;
-                    }
-                }
-            }
-
-            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, healProjectileType, 0, 0f, projectile.owner, healTarget, healAmount);
         }
         #endregion
     }
