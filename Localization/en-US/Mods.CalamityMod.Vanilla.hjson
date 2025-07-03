@@ -27,7 +27,7 @@ AddedTooltip: {
 		This grants +1.5 HP/s life regen and accelerates natural life regen
 		Life drain stacks based on the number of enemies being hit
 		'''
-	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
+	WarmthPotion: Greatly reduces the duration of Chilled and Frozen
 	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
 	// Step Stool
@@ -198,7 +198,7 @@ EditedTooltip: {
 	// Soaring Insignia
 	EmpressFlightBooster1: Increases wing flight time by 33%
 	EmpressFlightBooster2: Increases movement and jump speed by 10% and acceleration by 1.25x
-	RifleScope1: Increase view range for guns (Right click to zoom out)
+	RifleScope1: Increase view range for guns (<right> to zoom out)
 	RifleScope2: The scope effect can be toggled with visibility
 	SniperScope: 12% increased ranged critical strike chance
 	MagicQuiver: Increases arrow damage by 5% and greatly increases arrow speed
@@ -284,8 +284,8 @@ EditedTooltip: {
 		Provides 32% increased jump speed and increased fall speed
 		Provides a gravitational boost jump, which recharges whenever gravity is flipped
 		Slightly improves wingless air movement speed
-		Press UP to change gravity
-		Press DOWN to fall faster
+		Press {$Key.UP} to change gravity
+		Press {$Key.DOWN} to fall faster
 		'''
 }
 
@@ -296,7 +296,7 @@ BuffDescription: {
 	ChaosState: Rod of Discord teleports are disabled
 	LeafCrystal: Emits powerful life pulses at nearby enemies
 	Rabies: Decreased life regen, Causes status effects
-	WarmthExtra: Reduced durations of Chilled, Frozen, and Glacial State
+	WarmthExtra: Reduced durations of Chilled and Frozen
 	WeaponImbueConfetti: All attacks cause confetti to appear
 	WeaponImbueCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
 	WeaponImbueFire: Melee, Whip, and Rogue attacks set enemies on fire

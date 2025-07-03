@@ -12,13 +12,13 @@ Charge: Current Charge
 DefenseDamage: Defense Damage
 SulphurousWater: Sulphuric Poisoning
 Stealth: Stealth
-StealthShiftText: Hold SHIFT for more information on Rogue stealth
+StealthShiftText: Hold Shift for more information on Rogue stealth
 StealthInfoText:
 	'''
 	Rogue stealth builds while not attacking and slower while moving
 	Once you have built max stealth, you will be able to perform a Stealth Strike
 	Rogue stealth only reduces when you attack, it does not reduce while moving
-	The higher your rogue stealth the higher your rogue damage and crit
+	The higher your rogue stealth the higher your rogue damage
 	Having more stealth regeneration slightly decreases the damage bonus from stealth
 	This is offset by you being able to use stealth strikes far more often
 	'''
@@ -27,7 +27,7 @@ DifficultyStatusText: "{0} is {1}."
 ModeAppend: "{0} Mode"
 Active: Active
 NotActive: Not active
-DifficultyShiftText: "[c/737373:Hold the 'Shift' key for more information]"
+DifficultyShiftText: "[c/737373:Hold Shift for more information]"
 CurrentlySelected: Currently Selected : {0}
 DifficultyClickText: "[c/919191:Click to select a difficulty mode]"
 ExpertDifficultyLock: "[c/919191:Higher difficulty modes can only be toggled in Expert Mode or above]"
@@ -46,8 +46,8 @@ ExpertExpandedInfo:
 	[c/a87a07:Enemies drop more loot, as well as having higher chances]
 	[c/a87a07:Players drop more of their coins on death]
 	'''
-ExpertActivate: Expert is active
-ExpertDeactivate: Expert is not active
+ExpertActivate: Expert is active.
+ExpertDeactivate: Expert is not active.
 Master: Master
 MasterEnabled: Master Mode is enabled
 MasterShortInfo: "[c/00ad79:Game over man, game over! A tougher step up in stats from Expert Mode]"
@@ -58,8 +58,8 @@ MasterExpandedInfo:
 	[c/029c6d:Players drop ALL their coins on death]
 	[c/029c6d:Players gain an additional accessory slot at the start of the game]
 	'''
-MasterActivate: Master is active
-MasterDeactivate: Master is not active
+MasterActivate: Master is active.
+MasterDeactivate: Master is not active.
 Revengeance: Revengeance
 RevengeanceEnabled: Revengeance Mode is enabled
 RevengeanceShortInfo: "[c/F54254:The intended Calamity experience! Can only be enabled in Expert Mode!]"
@@ -145,7 +145,7 @@ Cooldowns: {
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
 	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
 	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
-	RaiderBoost: Extra Critical Chance
+	RaidersBoost: Extra Critical Chance
 	RelicOfResilienceCooldown: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown
@@ -668,8 +668,8 @@ SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
 AuricLandMines: Setting god killing traps
 // Hold Shift tooltip default
-HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more
-HoldShiftTooltipReplacementIndicator: Hold "Left Shift" for details
+HoldShiftTooltipExtensionIndicator: Hold Shift for more
+HoldShiftTooltipReplacementIndicator: Hold Shift for details
 // Dev and Donor Items
 DevItemTooltip: - Dev Item -
 DonorItemTooltip: - Donor Item -

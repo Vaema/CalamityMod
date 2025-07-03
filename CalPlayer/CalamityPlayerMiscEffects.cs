@@ -479,13 +479,17 @@ namespace CalamityMod.CalPlayer
                 IsFirstDashFrame = false;
             else
                 IsFirstDashFrame = true;
-                
+
             // THIS MUST BE NEAR THE END OF PostUpdateMiscEffects SO ALL OTHER RUN SPEED IS DONE FIRST. DO NOT PUT ANY RUN SPEED AFTER THIS
-            
+
             // Multiplies movement speed by 1.5x so that you don't feel like a snail in the early game.
             // This applies to movement speed boosts as well as base speed to ensure they are actually worth their listed value compared to base speed
+            //
             // Disabled while Overhaul is enabled, because Overhaul does very similar things to make movement more snappy
-            if (ExternalMods.overhaul is null && CalamityServerConfig.Instance.FasterBaseSpeed)
+            // 22JUN2025: Ozzatron: Disabled while Remnants is enabled, because Remnants has its own move speed reworks.
+
+            bool ignoreSpeedConfig = ExternalMods.overhaul is not null || ExternalMods.remnants is not null;
+            if (!ignoreSpeedConfig && CalamityServerConfig.Instance.FasterBaseSpeed)
                 Player.moveSpeed *= BalancingConstants.DefaultMoveSpeedBoost;
 
             // This is used to increase horizontal velocity based on the player's movement speed stat.
@@ -2012,7 +2016,7 @@ namespace CalamityMod.CalPlayer
                 SyncCooldownRemoval(Main.dedServ, expiredCooldowns);
 
             // Grant the player 5 seconds of immunity to immobilizing debuffs after an immobilizing debuff wears off.
-            if (Player.stoned || Player.frozen || Player.webbed || gState)
+            if (Player.stoned || Player.frozen || Player.webbed)
             {
                 ImmobilityDebuffImmunityTimer = ImmobilityDebuffImmunityTimerMax;
             }
@@ -2022,7 +2026,6 @@ namespace CalamityMod.CalPlayer
                 Player.buffImmune[BuffID.Stoned] = true;
                 Player.buffImmune[BuffID.Frozen] = true;
                 Player.buffImmune[BuffID.Webbed] = true;
-                Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
             if (arsenalCooldown > 0)
@@ -2623,7 +2626,6 @@ namespace CalamityMod.CalPlayer
 
                 Player.buffImmune[BuffID.Frozen] = true;
                 Player.buffImmune[BuffID.Chilled] = true;
-                Player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
             }
 
             // Cosmic Discharge Cosmic Freeze buff, gives surrounding enemies the Glacial State debuff
@@ -2736,23 +2738,19 @@ namespace CalamityMod.CalPlayer
             // Plagued Fuel Pack and Blunder Booster effects
             if (jetPackDash > 0 && Player.whoAmI == Main.myPlayer)
             {
-                int velocityAmt = blunderBooster ? 35 : 25;
-                int velocityMult = jetPackDash > 1 ? velocityAmt : 5;
-                Player.velocity = new Vector2(jetPackDirection, -1) * velocityMult;
+                int velocityMult = (int)((blunderBooster ? 35 : 25) * Utils.GetLerpValue(-4, 5, jetPackDash, true));
+                Player.velocity = new Vector2(jetPackDirection, -1f) * velocityMult;
 
                 if (blunderBooster)
                 {
-                    int lightningCount = Main.rand.Next(5, 7);
+                    int lightningCount = 4;
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<BlunderBooster>()));
                     for (int i = 0; i < lightningCount; i++)
                     {
-                        Vector2 lightningVel = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                        lightningVel.Normalize();
-                        lightningVel *= Main.rand.NextFloat(1f, 2f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(30);
+                        Vector2 lightningVel = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(7f, 10f);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(35);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, lightningVel, ModContent.ProjectileType<BlunderBoosterLightning>(), damage, 0, Player.whoAmI, Main.rand.Next(2), 0f);
-                        Main.projectile[projectile].timeLeft = Main.rand.Next(180, 240);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
@@ -2767,17 +2765,14 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (plaguedFuelPack)
                 {
-                    int numClouds = Main.rand.Next(8, 10);
+                    int numClouds = 3;
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<PlaguedFuelPack>()));
                     for (int i = 0; i < numClouds; i++)
                     {
-                        Vector2 cloudVelocity = new Vector2(Main.rand.NextFloat(-1, 1), Main.rand.NextFloat(-1, 1));
-                        cloudVelocity.Normalize();
-                        cloudVelocity *= Main.rand.NextFloat(0f, 1f);
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(20);
+                        Vector2 cloudVelocity = Player.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.3f) * Main.rand.NextFloat(5f, 7f);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(30);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center, cloudVelocity, ModContent.ProjectileType<PlaguedFuelPackCloud>(), damage, 0, Player.whoAmI, 0, 0);
-                        Main.projectile[projectile].timeLeft = Main.rand.Next(180, 240);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                     }
@@ -3164,7 +3159,7 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (Player.IsUnderwater() && Player.wet && !Player.lavaWet && !Player.honeyWet &&
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet &&
                     !Player.mount.Active)
                 {
                     if (aquaticBoost > 0f)
@@ -3319,12 +3314,12 @@ namespace CalamityMod.CalPlayer
             if (AdamantiteSet)
                 Player.statDefense += AdamantiteSetDefenseBoost;
 
-            // Warmth makes Chilled, Frozen, and Glacial State tick down 3x as fast
+            // Warmth makes Chilled and Frozen tick down 3x as fast
             if (Player.HasBuff(BuffID.Warmth))
             {
                 for (int b = 0; b < Player.MaxBuffs; b++)
                 {
-                    if (Player.buffType[b] == BuffID.Chilled || Player.buffType[b] == BuffID.Frozen || Player.buffType[b] == ModContent.BuffType<GlacialState>())
+                    if (Player.buffType[b] == BuffID.Chilled || Player.buffType[b] == BuffID.Frozen)
                     {
                         if (Player.buffTime[b] > 3)
                         {
@@ -3689,11 +3684,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (tarraSet)
-            {
-                if (!tarraMelee)
-                    Player.calmed = true;
                 Player.lifeMagnet = true;
-            }
 
             if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
@@ -3715,14 +3706,6 @@ namespace CalamityMod.CalPlayer
             if (wither && !purity)
             {
                 Player.statDefense -= RemsRevenge.WitherDefenseReduction;
-            }
-
-            if (gState)
-            {
-                Player.velocity.X *= 0.5f;
-                Player.velocity.Y += 0.05f;
-                if (Player.velocity.Y > 15f)
-                    Player.velocity.Y = 15f;
             }
 
             if (eutrophication && !purity)

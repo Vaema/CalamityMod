@@ -238,15 +238,6 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.eutrophication && drawInfo.shadow == 0f)
                 Eutrophication.DrawEffects(drawInfo);
 
-            if (calamityPlayer.gState && drawInfo.shadow == 0f)
-            {
-                // These lines cannot be moved to Glacial State's own file
-                r *= 0.13f;
-                g *= 0.66f;
-
-                GlacialState.DrawEffects(drawInfo);
-            }
-
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 

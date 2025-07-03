@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public bool Firing = false;
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 0;
             ProjectileID.Sets.TrailCacheLength[Type] = 7;
         }
@@ -91,6 +92,9 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Firing)

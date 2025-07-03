@@ -27,12 +27,11 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public static readonly SoundStyle SmokeBombEndSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBombEnd");
         public static readonly SoundStyle CDResetSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerCDReset");
 
-        public static int FlatDamageBonus = 1;
         public static int SmokeCooldown = 25 * 60;
         public static int SmokeDuration = 5 * 60;
         public static int LightsOutReset = (int)(1.5f * 60);
         public static int FreeCrit = 200;
-        public static int BonusDamageCap = 100;
+        public static int BonusDamageCap = 200;
 
         public static bool ShroudedInSmoke(Player player, out CooldownInstance cd)
         {
@@ -78,8 +77,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(FlatDamageBonus); //More gets edited in elsewhere
-            player.GetDamage<RangedDamageClass>().Flat += FlatDamageBonus;
+            player.setBonus = this.GetLocalization("SetBonus").Format(); //More gets edited in elsewhere
+            player.Calamity().wearingRogueArmor = true;
+            player.Calamity().rogueStealthMax += 0.5f;
+            player.GetDamage<ThrowingDamageClass>() += 0.05f;
 
             DesertProwlerPlayer armorPlayer = player.GetModPlayer<DesertProwlerPlayer>();
             armorPlayer.desertProwlerSet = true;
@@ -183,8 +184,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void UpdateEquip(Player player)
         {
-            player.GetCritChance<RangedDamageClass>() += 4;
-            player.ammoCost80 = true;
+            player.GetCritChance<ThrowingDamageClass>() += 4;
         }
 
         public override void AddRecipes()
@@ -227,7 +227,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void UpdateEquip(Player player)
         {
-            player.GetCritChance<RangedDamageClass>() += 5;
+            player.GetCritChance<ThrowingDamageClass>() += 5;
         }
 
         public override void AddRecipes()
@@ -381,7 +381,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         {
             if (projectile.damage > 0 && !Main.gameMenu)
             {
-                if (projectile.owner >= 0 && DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var cd) && projectile.DamageType.CountsAsClass(DamageClass.Ranged))
+                if (projectile.owner >= 0 && DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var cd) && projectile.DamageType.CountsAsClass(RogueDamageClass.Instance))
                 {
                     int critPool = DesertProwlerHat.FreeCrit;
 

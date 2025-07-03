@@ -11,10 +11,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
 {
-    public class HolofiberImmolatorHoldout : BaseGunHoldoutProjectile
+    public class HolofibreImmolatorHoldout : BaseGunHoldoutProjectile
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override int AssociatedItemID => ModContent.ItemType<HolofiberImmolator>();
+        public override int AssociatedItemID => ModContent.ItemType<HolofibreImmolator>();
         public override float MaxOffsetLengthFromArm => 15f;
         public override float OffsetXUpwards => -0f;
         public override float BaseOffsetY => -0f;
@@ -167,8 +167,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             float fade = Utils.GetLerpValue(chargeMax / 3, chargeMax, CurrentChargingFrames, true);
 
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofiberImmolator").Value;
-            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofiberImmolatorGlow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofibreImmolator").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofibreImmolatorGlow").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);

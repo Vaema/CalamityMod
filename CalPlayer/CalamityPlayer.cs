@@ -175,6 +175,8 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
+
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
         #endregion
 
         #region Speedrun Timer
@@ -717,8 +719,8 @@ namespace CalamityMod.CalPlayer
         public bool gladiatorSword = false;
         public int gladiatorTimer = 0;
         public bool unstableGraniteCore = false;
-        public bool regenator = false;
-        public float regenatorDamage = 0;
+        public bool regenerator = false;
+        public float regeneratorDamage = 0;
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
@@ -1267,7 +1269,6 @@ namespace CalamityMod.CalPlayer
         public bool pFlames = false;
         public bool hFlames = false;
         public bool hInferno = false;
-        public bool gState = false;
         public bool bBlood = false;
         public bool brainRot = false;
         public bool heavybleeding = false;
@@ -2006,7 +2007,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2176,7 +2176,7 @@ namespace CalamityMod.CalPlayer
             trinketOfChi = false;
             gladiatorSword = false;
             unstableGraniteCore = false;
-            regenator = false;
+            regenerator = false;
             deepDiver = false;
             theBee = false;
             arcFlashRing = false;
@@ -2488,7 +2488,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;
@@ -2956,7 +2955,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;

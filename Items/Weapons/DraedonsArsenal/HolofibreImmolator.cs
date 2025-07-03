@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.DraedonsArsenal
 {
     [LegacyName("MatterModulator")]
-    public class HolofiberImmolator : ModItem, ILocalizedModType
+    public class HolofibreImmolator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle PlasmaSound = new("CalamityMod/Sounds/Item/PlasmaSmall");
@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
 
-            Item.shoot = ModContent.ProjectileType<HolofiberImmolatorHoldout>();
+            Item.shoot = ModContent.ProjectileType<HolofibreImmolatorHoldout>();
             Item.shootSpeed = 12f;
         }
 
@@ -48,11 +48,11 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofiberImmolatorGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/HolofibreImmolatorGlow").Value);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<HolofiberImmolatorHoldout>(), damage, knockback, player.whoAmI, 0, 1);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<HolofibreImmolatorHoldout>(), damage, knockback, player.whoAmI, 0, 1);
             holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
             return false;
         }

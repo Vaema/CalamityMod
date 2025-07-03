@@ -198,8 +198,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             OnHitEffects(target);
             target.AddBuff(BuffID.Frostburn2, 120);
-            if (Projectile.Calamity().stealthStrike)
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 45);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

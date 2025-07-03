@@ -21,7 +21,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -189,7 +188,7 @@ namespace CalamityMod.Items
             // Original code lifted from Iban's extended armor tooltips.
             if (item.ModItem is IHoldShiftTooltipItem holdShiftItem)
             {
-                bool holdingShift = Main.keyState.IsKeyDown(Keys.LeftShift);
+                bool holdingShift = Main.keyState.PressingShift();
 
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
@@ -1298,7 +1297,7 @@ namespace CalamityMod.Items
                 sb.Append('\n');
                 sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * baseJumpSpeed).ToMph()));
                 sb.Append('\n');
-                if (Main.keyState.IsKeyDown(Keys.LeftShift))
+                if (Main.keyState.PressingShift())
                 {
                     sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + fall).ToMphps()));
                     if (hover)

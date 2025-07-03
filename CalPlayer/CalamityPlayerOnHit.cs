@@ -138,7 +138,7 @@ namespace CalamityMod.CalPlayer
 
             ItemLifesteal(target, item, damageDone);
             ItemOnHit(item, damageDone, target.Center, hit.Crit, target.IsAnEnemy(false, true), targetIsDummy);
-            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>());
+            NPCDebuffs(target, item.CountsAsClass<MeleeDamageClass>(), item.CountsAsClass<RangedDamageClass>(), item.CountsAsClass<MagicDamageClass>(), item.CountsAsClass<SummonDamageClass>(), item.CountsAsClass<ThrowingDamageClass>(), item.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit);
 
             // Ursa Sergeant slash cooldown is reset on kill
             if (ursaSergeant && target.life <= 0 && target.realLife == -1)
@@ -193,13 +193,14 @@ namespace CalamityMod.CalPlayer
 
             // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
             // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
-            if (arcFlashRing && (Main.rand.Next(0, 100) < 6))
+            bool spawnChance = (Main.rand.Next(0, 100) < 6);
+            if (arcFlashRing && spawnChance)
             {
                 var source = item.GetSource_FromThis();
-                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
-                Vector2 position = target.Center + new Vector2(0, -750);
+                int damage = (int)(((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
-                Projectile.NewProjectile(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
+                Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
+                bolt.DamageType = hit.DamageType;
             }
 
             // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
@@ -396,22 +397,20 @@ namespace CalamityMod.CalPlayer
 
             CalamityGlobalProjectile globalProj = proj.Calamity();
             // Arc Flash Ring lightning strike (Remember to change the one for item hits if applicable when you change this one!)
-            // Minions ignore the chance penalty on penetration
-            bool spawnChance = (Main.rand.Next(0, 100) < MathHelper.Clamp(6 - proj.numHits, (proj.minion ? 6 : 1), 6));
-            if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>() && globalProj.spawnArcFlash)
+            bool spawnChance = (Main.rand.Next(0, 100) < 6);
+            if (arcFlashRing && spawnChance && proj.type != ProjectileType<FlashBolt>())
             {
                 proj.active = true; // Okay so if a projectile manually kills itself on hit, it totally breaks the bolts. to prevent this we set them to active
 
                 var source = proj.GetSource_FromThis();
-                int damage = (int)((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)); // 400% damage (uneffected by crits)
-                Vector2 position = target.Center + new Vector2(0, -750);
+                int damage = (int)(((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
-                Projectile bolt = Projectile.NewProjectileDirect(source, position, new Vector2(0, 10), ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
+                Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI, (globalProj.showArcFlash ? 0 : 1));
                 bolt.DamageType = hit.DamageType;
 
-                globalProj.spawnArcFlash = false;
-                // This is really only used for long lasting projectiles and contact damage minions
-                globalProj.arcFlashCooldown = 90;
+                globalProj.showArcFlash = false;
+                // This is really only used for piercing and long lasting projectiles so they dont flood the screen with bolts
+                globalProj.arcFlashCooldown = 30;
             }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
@@ -608,7 +607,7 @@ namespace CalamityMod.CalPlayer
 
                 ProjLifesteal(target, proj, damageDone, hit.Crit);
                 ProjOnHit(proj, target.Center, hit.Crit, target.IsAnEnemy(false), targetIsDummy);
-                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), true, proj.noEnchantments);
+                NPCDebuffs(target, proj.CountsAsClass<MeleeDamageClass>(), proj.CountsAsClass<RangedDamageClass>(), proj.CountsAsClass<MagicDamageClass>(), proj.CountsAsClass<SummonDamageClass>(), proj.CountsAsClass<ThrowingDamageClass>(), proj.CountsAsClass<SummonMeleeSpeedDamageClass>(), hit.Crit, true, proj.noEnchantments);
 
                 // Shattered Community tracks all damage dealt with Rage Mode (ignoring dummies).
                 if (targetIsDummy)
@@ -1201,7 +1200,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Debuffs
-        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool proj = false, bool noFlask = false)
+        public void NPCDebuffs(NPC target, bool melee, bool ranged, bool magic, bool summon, bool rogue, bool whip, bool crit, bool proj = false, bool noFlask = false)
         {
             if (melee && !noFlask) // Prevents Deep Sea Dumbell from snagging true melee debuff memes
             {
@@ -1308,7 +1307,7 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, 60);
-            if (ilSpark && Player.IsUnderwater())
+            if (ilSpark && Player.Calamity().countsAsAnyWet)
             {
                 int duration = 60;
                 target.AddBuff(BuffType<StaticDischarge>(), duration);
@@ -1323,7 +1322,11 @@ namespace CalamityMod.CalPlayer
             }
             if (vexation)
             {
-                    target.AddBuff(BuffID.Venom, 120, false);
+                target.AddBuff(BuffID.Venom, 120, false);
+            }
+            if (snowRuffianSet && ranged && crit)
+            {
+                target.AddBuff(BuffID.Frostburn, 300, false);
             }
         }
         #endregion

@@ -67,7 +67,6 @@ namespace CalamityMod.Items.Armor.Fearmonger
                 ModContent.BuffType<GodSlayerInferno>(),
                 BuffID.Chilled,
                 BuffID.Frozen,
-                ModContent.BuffType<GlacialState>(),
             };
             for (var i = 0; i < immuneDebuffs.Length; ++i)
                 player.buffImmune[immuneDebuffs[i]] = true;

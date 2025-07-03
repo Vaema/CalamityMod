@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -28,10 +29,17 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            modifiers.SetCrit();
+            Player Owner = Main.player[Projectile.owner];
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.45f;
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
+            modifiers.SourceDamage *= (damageMult + critDamage);
+
+            Vector2 launchVel = Projectile.Center.DirectionTo(target.Center);
+            float launchPower = 20;
+            target.MoveNPC(launchVel, launchPower, true);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 450, targetHitbox);
     }

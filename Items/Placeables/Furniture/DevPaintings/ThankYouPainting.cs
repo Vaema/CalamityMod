@@ -4,7 +4,6 @@ using CalamityMod.Tiles.Furniture.DevPaintings;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 {
@@ -24,7 +23,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (!Main.keyState.IsKeyDown(LeftShift))
+            if (!Main.keyState.PressingShift())
                 return;
 
             string tooltip = "";
@@ -52,11 +51,11 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
         public static IList<string> devList = new List<string>()
         {
 			"Altix",
-            "Angel",
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
             "Ben-TK",
+            "Big E",
             "CDMusic",
             "Cei",
             "CongratsIsTrash",
@@ -90,6 +89,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Shayy",
             "Spider Prov",
             "StipulateVenus",
+            "Sunny",
             "Tobias",
             "Tomat",
             "Triangle",
