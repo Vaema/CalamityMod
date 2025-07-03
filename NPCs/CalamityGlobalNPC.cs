@@ -5925,6 +5925,9 @@ namespace CalamityMod.NPCs
             if (hurtInfo.Damage <= 0)
                 return;
 
+            // Reminder to remove this block as damage debugging is over and final
+            Main.NewText($"damage: {npc.damage}, defDamage: {npc.defDamage}, info: {hurtInfo.Damage}");
+
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
 
