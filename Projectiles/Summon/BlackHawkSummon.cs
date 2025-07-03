@@ -18,9 +18,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
@@ -298,9 +299,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.netUpdate = true;
             }
         }
-
-        //Does no contact damage
-        public override bool? CanDamage() => false;
 
         public override bool PreDraw(ref Color lightColor)
         {

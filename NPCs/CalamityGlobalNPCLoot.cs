@@ -178,12 +178,6 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<PlasmaRod>(), 3, 2));
                     break;
 
-                // Skeleton Merchant
-                // Punch Card @ 100%
-                case NPCID.SkeletonMerchant:
-                    npcLoot.Add(ModContent.ItemType<PunchCard>());
-                    break;
-
                 // Skeleton Archer
                 // Magic Quiver @ 5% (2.5% in Vanilla)
                 // Marrow @ 2.5% (0.5% in Vanilla)

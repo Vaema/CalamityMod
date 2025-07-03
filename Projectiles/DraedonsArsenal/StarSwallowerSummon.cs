@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 12;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -292,7 +293,5 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             fallThrough = Projectile.Bottom.Y < FallThroughYPoint - 120f;
             return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
-
-        public override bool? CanDamage() => false;
     }
 }

@@ -79,9 +79,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
 
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
-
             if (Main.zenithWorld)
                 NPC.scale *= 2;
         }

@@ -102,9 +102,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -231,7 +228,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + (NPC.rotation - (NPC.spriteDirection == 1 ? 0 : MathHelper.Pi)).ToRotationVector2() * 40, Vector2.Zero, ModContent.ProjectileType<AnglerFlash>(), (int)(NPC.damage * 0.5f), 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + (NPC.rotation - (NPC.spriteDirection == 1 ? 0 : MathHelper.Pi)).ToRotationVector2() * 40, Vector2.Zero, ModContent.ProjectileType<AnglerFlash>(), 20, 1);
                             }
                             SoundEngine.PlaySound(SoundID.NPCDeath7 with { Pitch = 0.4f }, NPC.Center);
                         }

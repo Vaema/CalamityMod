@@ -220,20 +220,6 @@ namespace CalamityMod.NPCs
         private const double EnemyHPMultiplier = 1.25;
         /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-        /// <summary>
-        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
-        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
-        /// </summary>
-        public const double MasterModeBossHPMultiplier = 0.85;
-
-        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
-        public const double MasterModeEnemyHPMultiplier = 0.75;
-        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
-        public const double MasterModeEnemyDamageMultiplier = 0.9;
-        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
-        public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
-        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
-        public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
         /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
@@ -2886,7 +2872,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Sharkron2:
                     npc.width = npc.height = 36;
                     npc.chaseable = false;
-                    canBreakPlayerDefense = true;
                     break;
 
                 // Fix drawing issues with Golem's Free Head
@@ -3008,10 +2993,6 @@ namespace CalamityMod.NPCs
                     npc.defDamage = npc.damage;
                 }
             }
-
-            // Nerf KB resist in Expert and Master using this roundabout method
-            if (Main.expertMode)
-                AdjustExpertModeStatScaling(npc);
 
             // Adjust a ton of enemy stats
             switch (npc.type)
@@ -3510,71 +3491,6 @@ namespace CalamityMod.NPCs
 
                     // Buff enemy HP by 25%
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * EnemyHPMultiplier);
-
-                    // Nerf a shitload of Master Mode enemies
-                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
-                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
-                    if (Main.masterMode)
-                    {
-                        AdjustMasterModeStatScaling(npc);
-                        npc.defDamage = npc.damage;
-                    }
-
-                    break;
-
-                case NPCID.AncientCultistSquidhead:
-                    // This guy only gets Master Mode nerfs
-                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
-                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
-                    if (Main.masterMode)
-                    {
-                        AdjustMasterModeStatScaling(npc);
-                        npc.defDamage = npc.damage;
-                    }
-                    break;
-
-                case NPCID.KingSlime:
-                case NPCID.EyeofCthulhu:
-                case NPCID.EaterofWorldsHead:
-                case NPCID.EaterofWorldsBody:
-                case NPCID.EaterofWorldsTail:
-                case NPCID.BrainofCthulhu:
-                case NPCID.Creeper:
-                case NPCID.QueenBee:
-                case NPCID.SkeletronHead:
-                case NPCID.SkeletronHand:
-                case NPCID.Deerclops:
-                case NPCID.WallofFlesh:
-                case NPCID.WallofFleshEye:
-                case NPCID.QueenSlimeBoss:
-                case NPCID.Retinazer:
-                case NPCID.Spazmatism:
-                case NPCID.TheDestroyer:
-                case NPCID.TheDestroyerBody:
-                case NPCID.TheDestroyerTail:
-                case NPCID.SkeletronPrime:
-                case NPCID.PrimeCannon:
-                case NPCID.PrimeLaser:
-                case NPCID.PrimeSaw:
-                case NPCID.PrimeVice:
-                case NPCID.Plantera:
-                case NPCID.PlanterasTentacle:
-                case NPCID.Golem:
-                case NPCID.GolemHead:
-                case NPCID.GolemHeadFree:
-                case NPCID.GolemFistLeft:
-                case NPCID.GolemFistRight:
-                case NPCID.HallowBoss:
-                case NPCID.DukeFishron:
-                case NPCID.CultistBoss:
-                case NPCID.MoonLordCore:
-                case NPCID.MoonLordFreeEye:
-                case NPCID.MoonLordHand:
-                case NPCID.MoonLordHead:
-
-                    if (Main.masterMode)
-                        AdjustMasterModeStatScaling(npc, true);
-
                     break;
             }
         }
@@ -9635,37 +9551,6 @@ namespace CalamityMod.NPCs
                 return d;
             }
             return null;
-        }
-        #endregion
-
-        #region Adjust Difficulty Stat Scaling
-        // Adjust HP and damage in Master Mode
-        public static void AdjustMasterModeStatScaling(NPC npc, bool isABoss = false)
-        {
-            if (!Main.masterMode)
-                return;
-
-            // Bosses and enemies have separate HP reduction multipliers
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * (isABoss ? MasterModeBossHPMultiplier : MasterModeEnemyHPMultiplier));
-
-            // Bosses do not get their damage reduced
-            if (!isABoss)
-                npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
-        }
-
-        // Adjust only knockback resist in Expert Mode (this is also adjusted in Master Mode because Expert has to be enabled if Master is enabled)
-        public static void AdjustExpertModeStatScaling(NPC npc)
-        {
-            if (!Main.expertMode)
-                return;
-
-            if (npc.knockBackResist <= 0f)
-                return;
-
-            // Knockback resist is backasswards in this fucking game so we need to add to the knockBackResist variable here :^)
-            float knockBackResistMult = Main.masterMode ? MasterModeEnemyKnockbackMultiplier : ExpertModeEnemyKnockbackMultiplier;
-            float knockBackResistReduction = npc.knockBackResist * knockBackResistMult;
-            npc.knockBackResist += knockBackResistReduction;
         }
         #endregion
 

@@ -87,9 +87,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -927,7 +924,7 @@ namespace CalamityMod.NPCs.CalClone
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<Regenator>(), 10);
+                normalOnly.Add(ModContent.ItemType<Regenerator>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);

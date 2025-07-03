@@ -11,7 +11,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.Wulfrum
@@ -103,7 +102,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             if (DummyCannon.IsAir && !Main.gameMenu)
                 DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
 
-            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.IsKeyDown(LeftShift))
+            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.PressingShift())
             {
                 Main.HoverItem = DummyCannon.Clone();
                 Main.hoverItemName = DummyCannon.Name;
@@ -240,7 +239,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     setBonus2.OverrideColor = new Color(110, 192, 93);
                     tooltips.Insert(setBonusIndex + 2, setBonus2);
 
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
                         TooltipLine itemDisplay = new TooltipLine(item.Mod, "CalamityMod:ArmorItemDisplay", CalamityUtils.GetTextValueFromModItem<WulfrumHat>("ShiftToExpand"));
                         itemDisplay.OverrideColor = new Color(190, 190, 190);
