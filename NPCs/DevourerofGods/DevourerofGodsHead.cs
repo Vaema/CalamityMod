@@ -2144,7 +2144,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 teleportTimer -= 45; //Much faster for the first 3 dashes in death.
             }
-            SoundEngine.PlaySound(RiftOpenSound, player.Center);
+            SoundEngine.PlaySound(RiftOpenSound with {Volume = 1.5f}, player.Center);
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
