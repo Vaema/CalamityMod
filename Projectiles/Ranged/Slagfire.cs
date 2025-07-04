@@ -205,7 +205,10 @@ namespace CalamityMod.Projectiles.Ranged
                         int playerIndex = Projectile.owner;
                         if (playerIndex >= 0 && Main.player[playerIndex].active)
                         {
-                            NPC.SpawnOnPlayer(playerIndex, NPCID.WallofFlesh);
+                            if (Main.player[playerIndex].ZoneUnderworldHeight)
+                            {
+                                NPC.SpawnOnPlayer(playerIndex, NPCID.WallofFlesh);
+                            }
                         }
                     }
                 }
