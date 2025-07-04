@@ -18,9 +18,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Vanilla values
         public static int StingerDamage = 11; // 44; Also applies to GFB stinger replacements
 
-        // Rev+ exclusive
-        public static int BeenadeDamage = 15; // 60
-        // Bees (Death Mode) deal 85% beenade damage x 1.5 master multiplier = 77 damage
+        // Death exclusive
+        public static int BeenadeDamage = 15; // 90
+        public static int BeenadeBeeDamage = 12; // 72
 
         public static bool BuffedQueenBeeAI(NPC npc, Mod mod)
         {

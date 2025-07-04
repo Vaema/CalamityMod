@@ -32,11 +32,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int PinkSeedDamage = 19; // 76
         public static int PoisonSeedDamage = 24; // 96
         public static int ThornBallDamage = 27; // 108
-        // Rev+ Thorn Ball spikes deal 80% rounded damage = 88 damage
+        public static int ThornBallSpikeDamage = 22; // 88
 
         // Rev+ exclusive
         public static int GasBulbDamage = 27; // 108
-        // Pink Cloud (bulb) deal 80% rounded damage = 88 damage
+        public static int PinkCloudDamage = 22; // 88
         public static int GreenCloudDamage = 24; // 96
 
         public static bool BuffedPlanteraAI(NPC npc, Mod mod)

@@ -17,6 +17,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -2501,7 +2502,7 @@ namespace CalamityMod.Projectiles
                                 for (int k = 0; k < totalProjectiles; k++)
                                 {
                                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, (int)Math.Round(projectile.damage * 0.8), 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, PlanteraAI.ThornBallSpikeDamage, 0f, Main.myPlayer);
                                 }
                             }
 
