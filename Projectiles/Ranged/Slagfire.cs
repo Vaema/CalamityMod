@@ -94,19 +94,12 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Color coreSlagColor = new Color(247, 111, 77);
                 Color outerSlagColor = new Color(242, 157, 170);
-
                 Vector2 particleVelocity = new Vector2(Main.rand.Next(-1, 1), 3);
 
                 Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
 
-                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(
-                spawnHere,
-                particleVelocity,
-                true, // Affected by gravity
-                Main.rand.Next(30, 50),
-                Main.rand.NextFloat(0.4f, 0.65f),
-                particleColor
-                ));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(spawnHere, particleVelocity, true, // Affected by gravity
+                Main.rand.Next(30, 50), Main.rand.NextFloat(0.4f, 0.65f), particleColor));
             }
 
             if (Projectile.localAI[1] >= 10f)
@@ -139,19 +132,19 @@ namespace CalamityMod.Projectiles.Ranged
             if (oldVelocity.Y != 0f) // Hitting a horizontal surface
             {
                 if (oldVelocity.Y > 0f)
-                    collisionPoint.Y = Projectile.Bottom.Y - 2f; // Spawn slightly inside bottom edge of projectile
+                    collisionPoint.Y = Projectile.Bottom.Y + 8f; // Spawn inside bottom edge
                 else
-                    collisionPoint.Y = Projectile.Top.Y + 2f; // Spawn slightly inside top edge of projectile
+                    collisionPoint.Y = Projectile.Top.Y - 8f; // Spawn inside top edge. Yes, this should also be negative.
             }
             if (oldVelocity.X != 0f) // Hitting a vertical surface
             {
                 if (oldVelocity.X > 0f)
-                    collisionPoint.X = Projectile.Right.X - 2f; // Spawn slightly inside right edge of projectile
+                    collisionPoint.X = Projectile.Right.X + 2.5f; // Spawn slightly inside right edge of projectile
                 else
-                    collisionPoint.X = Projectile.Left.X + 2f; // Spawn slightly inside left edge of projectile
+                    collisionPoint.X = Projectile.Left.X - 2.5f; // Spawn slightly inside left edge of projectile
             }
 
-            for (int i = 0; i < 3; i++) // Original number of particles for tile collision
+            for (int i = 0; i < 3; i++)
             {
                 Vector2 spawnPosition = collisionPoint + Main.rand.NextVector2Circular(2f, 2f); 
 
@@ -161,14 +154,8 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
 
-                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(
-                spawnPosition,
-                particleVelocity,
-                true, // Has gravity
-                Main.rand.Next(40, 70),
-                Main.rand.NextFloat(0.8f, 1.3f),
-                particleColor
-                ));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(spawnPosition, particleVelocity, true, // Has gravity
+                Main.rand.Next(40, 70), Main.rand.NextFloat(0.8f, 1.3f), particleColor));
             }
             Projectile.Kill();
             return true;
@@ -180,7 +167,6 @@ namespace CalamityMod.Projectiles.Ranged
             Color outerSlagColor = new Color(242, 157, 170);
 
             Vector2 baseParticleDirection = new Vector2(Projectile.direction, 0).SafeNormalize(Vector2.UnitX * Projectile.direction);
-
             Vector2 initialSpawnPosition = target.Center + new Vector2(target.width / 2f * Projectile.direction + 15f * Projectile.direction, Main.rand.NextFloat(-target.height / 2f, target.height / 2f));
 
 
@@ -199,16 +185,8 @@ namespace CalamityMod.Projectiles.Ranged
                 // Ideally I would want there to be an inner glow + outer glow effect like with the projectile particles
                 Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
 
-                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(
-                finalSpawnPosition,
-                particleVelocity,
-                affectedByGravity,
-                lifetime,
-                scale,
-                particleColor
-                ));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(finalSpawnPosition, particleVelocity, affectedByGravity, lifetime, scale, particleColor));
             }
-
 
             //WoF Spawning
             if (target.type == NPCID.Guide)
