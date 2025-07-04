@@ -2701,13 +2701,6 @@ namespace CalamityMod.NPCs
         {
             EditGlobalCoinDrops(npc);
 
-            // Put this first so that any boss damage value modifications aren't reset
-            bool vanillaNPC = npc.type < NPCID.Count;
-            if (vanillaNPC && NPCStats.EnemyStats.ContactDamageValues.ContainsKey(npc.type))
-            {
-                npc.GetNPCDamage();
-                npc.defDamage = npc.damage;
-            }
             if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || BossHPScalingList.Includes(npc.type))
             {
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;

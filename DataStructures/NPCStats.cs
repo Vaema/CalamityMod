@@ -53,7 +53,6 @@ namespace CalamityMod
         #region Enemy Stats Container Struct
         internal partial struct EnemyStats
         {
-            public static SortedDictionary<int, double> ExpertDamageMultiplier;
             public static SortedDictionary<int, int[]> ContactDamageValues;
             public static SortedDictionary<Tuple<int, int>, int[]> ProjectileDamageValues;
         };
@@ -62,7 +61,7 @@ namespace CalamityMod
         #region Stat Retrieval Methods
         public static void GetNPCDamage(this NPC npc)
         {
-            double damageAdjustment = GetExpertDamageMultiplier(npc) * (Main.masterMode ? MasterContactVanillaMultiplier : ExpertContactVanillaMultiplier);
+            double damageAdjustment = Main.masterMode ? MasterContactVanillaMultiplier : ExpertContactVanillaMultiplier;
 
             // Safety check: If for some reason the contact damage array is not initialized yet, set the NPC's damage to 1.
             bool exists = EnemyStats.ContactDamageValues.TryGetValue(npc.type, out int[] output);
@@ -209,19 +208,6 @@ namespace CalamityMod
                 : Main.expertMode ? projectileDamage[1]
                 : projectileDamage[0];
         }
-
-        /// <summary>
-        /// Gets the Expert/Master Mode damage multiplier for the specified boss NPC.
-        /// Useful for determining the base damage a boss NPC should have prior to being run through the Expert/Master scaling code.
-        /// </summary>
-        /// <param name="npc">The NPC you want to get the damage multiplier for</param>
-        /// <param name="master">Whether Master Mode is enabled or not</param>
-        /// <returns></returns>
-        public static double GetExpertDamageMultiplier(this NPC npc, bool? master = null)
-        {
-            bool exists = EnemyStats.ExpertDamageMultiplier.TryGetValue(npc.type, out double damageMult);
-            return exists ? damageMult : 1D;
-        }
         #endregion
 
         #region Load/Unload
@@ -240,70 +226,8 @@ namespace CalamityMod
         // This is necessary to ensure this dictionary is populated as early as possible.
         internal static void LoadEnemyStats()
         {
-            EnemyStats.ExpertDamageMultiplier = new SortedDictionary<int, double>
-            {
-                { NPCID.KingSlime, 0.8 },
-
-                { NPCID.EaterofWorldsHead, 1.1 },
-                { NPCID.EaterofWorldsBody, 0.8 },
-                { NPCID.EaterofWorldsTail, 0.8 },
-
-                { NPCID.BrainofCthulhu, 0.9 },
-
-                { NPCID.QueenBee, 0.9 },
-                { NPCID.Bee, 0.6 },
-                { NPCID.BeeSmall, 0.6 },
-
-                { NPCID.SkeletronHead, 1.1 },
-                { NPCID.SkeletronHand, 1.1 },
-
-                { NPCID.WallofFlesh, 1.5 },
-                { NPCID.WallofFleshEye, 1.5 },
-
-                { NPCID.Spazmatism, 0.85 },
-                { NPCID.Retinazer, 0.85 },
-
-                { NPCID.TheDestroyer, 2 },
-                { NPCID.TheDestroyerBody, 0.85 },
-                { NPCID.TheDestroyerTail, 0.85 },
-
-                { NPCID.SkeletronPrime, 0.85 },
-                { NPCID.PrimeCannon, 0.85 },
-                { NPCID.PrimeLaser, 0.85 },
-                { NPCID.PrimeSaw, 0.85 },
-                { NPCID.PrimeVice, 0.85 },
-
-                { NPCID.Plantera, 1.15 },
-                { NPCID.PlanterasTentacle, 1.15 },
-
-                { NPCID.HallowBoss, 0.6875 },
-
-                { NPCID.DetonatingBubble, 0.75 },
-
-                { NPCID.Golem, 0.8 },
-                { NPCID.GolemHead, 0.8 },
-                { NPCID.GolemFistLeft, 0.8 },
-                { NPCID.GolemFistRight, 0.8 },
-
-                { NPCID.DukeFishron, 0.7 },
-                { NPCID.Sharkron, 0.75 },
-                { NPCID.Sharkron2, 0.75 },
-
-                { NPCID.CultistDragonHead, 0.75 },
-                { NPCID.CultistDragonBody1, 0.75 },
-                { NPCID.CultistDragonBody2, 0.75 },
-                { NPCID.CultistDragonBody3, 0.75 },
-                { NPCID.CultistDragonBody4, 0.75 },
-                { NPCID.CultistDragonTail, 0.75 },
-                { NPCID.AncientDoom, 0.75 },
-                { NPCID.AncientLight, 0.75 }
-            };
-
             EnemyStats.ContactDamageValues = new SortedDictionary<int, int[]>
             {
-                { NPCID.KingSlime, new int[] { 40, 64 } },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), new int[] { 30, 48 } },
-
                 { ModContent.NPCType<DesertScourgeHead>(), new int[] { 44, 70 } },
                 { ModContent.NPCType<DesertScourgeBody>(), new int[] { 20, 36 } },
                 { ModContent.NPCType<DesertScourgeTail>(), new int[] { 15 } },
@@ -314,19 +238,8 @@ namespace CalamityMod
                 { ModContent.NPCType<DesertNuisanceBodyYoung>(), new int[] { 16 } },
                 { ModContent.NPCType<DesertNuisanceTailYoung>(), new int[] { 10 } },
 
-                { NPCID.EyeofCthulhu, new int[] { 15 } }, // Phase 2: 23, 36 + Phase 3 (Expert): 40
-                { NPCID.ServantofCthulhu, new int[] { 12 } },
-
                 { ModContent.NPCType<Crabulon>(), new int[] { 40, 64 } },
                 { ModContent.NPCType<CrabShroom>(), new int[] { 25, 40 } },
-
-                { NPCID.EaterofWorldsHead, new int[] { 22, 48 } },
-                { NPCID.EaterofWorldsBody, new int[] { 13, 20 } },
-                { NPCID.EaterofWorldsTail, new int[] { 11, 17 } },
-                { NPCID.VileSpitEaterOfWorlds, new int[] { -1, 64 } },
-
-                { NPCID.BrainofCthulhu, new int[] { 30, 54 } },
-                { NPCID.Creeper, new int[] { 20, 36 } },
 
                 { ModContent.NPCType<HiveMind>(), new int[] { 40, 64 } },
                 { ModContent.NPCType<DankCreeper>(), new int[] { 30, 48 } },
@@ -342,15 +255,6 @@ namespace CalamityMod
                 { ModContent.NPCType<PerforatorBodySmall>(), new int[] { 14, 22 } },
                 { ModContent.NPCType<PerforatorTailSmall>(), new int[] { 12, 19 } },
 
-                { NPCID.QueenBee, new int[] { 30, 54 } },
-                { NPCID.Bee, new int[] { 20, 24 } },
-                { NPCID.BeeSmall, new int[] { 15, 18 } },
-
-                { NPCID.SkeletronHead, new int[] { 32, 70 } }, // Spinning: 41, 91
-                { NPCID.SkeletronHand, new int[] { 20, 44 } },
-
-                { NPCID.Deerclops, new int[] { 20 } },
-
                 { ModContent.NPCType<SlimeGodCore>(), new int[] { 40 } },
                 { ModContent.NPCType<EbonianPaladin>(), new int[] { 45 } },
                 { ModContent.NPCType<SplitEbonianPaladin>(), new int[] { 40 } },
@@ -361,89 +265,37 @@ namespace CalamityMod
                 { ModContent.NPCType<CrimsonSlimeSpawn>(), new int[] { 35 } },
                 { ModContent.NPCType<CrimsonSlimeSpawn2>(), new int[] { 25 } },
 
-                { NPCID.WallofFlesh, new int[] { 50, 150 } },
-                { NPCID.WallofFleshEye, new int[] { 50, 150 } },
-                { NPCID.TheHungry, new int[] { 30 } }, // Scales up to 60 as health lowers
-                { NPCID.TheHungryII, new int[] { 30 } },
-                { NPCID.LeechHead, new int[] { 26 } },
-                { NPCID.LeechBody, new int[] { 22 } },
-                { NPCID.LeechTail, new int[] { 18 } },
-
-                { NPCID.QueenSlimeBoss, new int[] { 60 } },
-                { NPCID.QueenSlimeMinionBlue, new int[] { 40 } },
-                { NPCID.QueenSlimeMinionPink, new int[] { 40 } },
-                { NPCID.QueenSlimeMinionPurple, new int[] { 50 } },
-
                 { ModContent.NPCType<Cryogen>(), new int[] { 69 } },
                 { ModContent.NPCType<CryogenShield>(), new int[] { 60 } },
-
-                { NPCID.Spazmatism, new int[] { 50, 85 } }, // Phase 2: 75, 127
-                { NPCID.Retinazer, new int[] { 45, 76 } }, // Phase 2: 67, 114
 
                 { ModContent.NPCType<AquaticScourgeHead>(), new int[] { 70, 176 } },
                 { ModContent.NPCType<AquaticScourgeBody>(), new int[] { 65, 112 } },
                 { ModContent.NPCType<AquaticScourgeBodyAlt>(), new int[] { 60, 104 } },
                 { ModContent.NPCType<AquaticScourgeTail>(), new int[] { 48, 81 } },
 
-                { NPCID.TheDestroyer, new int[] { 70, 280 } },
-                { NPCID.TheDestroyerBody, new int[] { 55, 93 } },
-                { NPCID.TheDestroyerTail, new int[] { 40, 68 } },
-
                 { ModContent.NPCType<BrimstoneElemental>(), new int[] { 65, 112 } },
-
-                { NPCID.SkeletronPrime, new int[] { 47, 79 } }, // Spinning: 94, 158
-                { NPCID.PrimeVice, new int[] { 52, 88 } },
-                { NPCID.PrimeSaw, new int[] { 56, 95 } },
-                { NPCID.PrimeCannon, new int[] { 30, 49 } },
-                { NPCID.PrimeLaser, new int[] { 29, 51 } },
 
                 { ModContent.NPCType<CalamitasClone>(), new int[] { 60 } },
                 { ModContent.NPCType<Cataclysm>(), new int[] { 50 } },
                 { ModContent.NPCType<Catastrophe>(), new int[] { 55 } },
 
-                { NPCID.Plantera, new int[] { 50 } }, // Phase 2: 70
-                { NPCID.PlanterasTentacle, new int[] { 60, 138 } },
-                { ModContent.NPCType<PlanterasFreeTentacle>(), new int[] { 60, 138 } },
-                { NPCID.Spore, new int[] { 70 } },
-
-                { NPCID.HallowBoss, new int[] { 80, 110 } }, // Dash: 120, 165
-
                 { ModContent.NPCType<Leviathan>(), new int[] { 100 } },
                 { ModContent.NPCType<Anahita>(), new int[] { 75, 110 } }, // Dash: 113, 165
                 { ModContent.NPCType<AnahitasIceShield>(), new int[] { 60, 90 } },
-                { NPCID.DetonatingBubble, new int[] { 100, 150 } },
                 { ModContent.NPCType<AquaticAberration>(), new int[] { 70 } },
 
                 { ModContent.NPCType<AstrumAureus>(), new int[] { 100 } },
                 { ModContent.NPCType<AureusSpawn>(), new int[] { 75, 110 } },
 
-                { NPCID.Golem, new int[] { 72, 115 } },
-                { NPCID.GolemHead, new int[] { 64, 102 } },
-                { NPCID.GolemFistLeft, new int[] { 59, 94 } },
-                { NPCID.GolemFistRight, new int[] { 59, 94 } },
-
                 { ModContent.NPCType<PlaguebringerGoliath>(), new int[] { 120, 180 } },
                 { ModContent.NPCType<PlagueHomingMissile>(), new int[] { 100, 150 } },
                 { ModContent.NPCType<PlagueMine>(), new int[] { 120, 180 } },
-
-                { NPCID.DukeFishron, new int[] { 100, 140 } }, // Phase 2: 120, 201 + Phase 3 (Expert): 184
-                { NPCID.Sharkron, new int[] { 100, 150 } },
-                { NPCID.Sharkron2, new int[] { 120, 180 } },
 
                 { ModContent.NPCType<RavagerBody>(), new int[] { 120, 180 } },
                 { ModContent.NPCType<RavagerClawLeft>(), new int[] { 100, 150 } },
                 { ModContent.NPCType<RavagerClawRight>(), new int[] { 100, 150 } },
                 { ModContent.NPCType<RockPillar>(), new int[] { 120, 180 } },
                 { ModContent.NPCType<FlamePillar>(), new int[] { 100, 150 } },
-
-                { NPCID.CultistDragonHead, new int[] { 100, 150 } },
-                { NPCID.CultistDragonBody1, new int[] { 50, 75 } },
-                { NPCID.CultistDragonBody2, new int[] { 50, 75 } },
-                { NPCID.CultistDragonBody3, new int[] { 50, 75 } },
-                { NPCID.CultistDragonBody4, new int[] { 50, 75 } },
-                { NPCID.CultistDragonTail, new int[] { 50, 75 } },
-                { NPCID.AncientCultistSquidhead, new int[] { 90 } },
-                { NPCID.AncientLight, new int[] { 120, 180 } },
 
                 { ModContent.NPCType<AstrumDeusHead>(), new int[] { 120 } },
                 { ModContent.NPCType<AstrumDeusBody>(), new int[] { 80 } },
@@ -499,23 +351,12 @@ namespace CalamityMod
 
             EnemyStats.ProjectileDamageValues = new SortedDictionary<Tuple<int, int>, int[]>
             {
-                { new Tuple<int, int>(ModContent.NPCType<KingSlimeJewelRuby>(), ModContent.ProjectileType<JewelProjectile>()), new int[] { 18 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<DesertScourgeHead>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 18 } },
                 { new Tuple<int, int>(ModContent.NPCType<DesertNuisanceHeadYoung>(), ModContent.ProjectileType<DesertScourgeSpit>()), new int[] { 18 } },
-
-                { new Tuple<int, int>(NPCID.EyeofCthulhu, ProjectileID.BloodNautilusShot), new int[] { 15 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBomb>()), new int[] { 22 } },
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombFall>()), new int[] { 22 } },
                 { new Tuple<int, int>(ModContent.NPCType<Crabulon>(), ModContent.ProjectileType<MushBombGround>()), new int[] { 22 } },
-
-                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ProjectileID.CursedFlameHostile), new int[] { 22 } },
-                { new Tuple<int, int>(NPCID.EaterofWorldsHead, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 22 } },
-
-                { new Tuple<int, int>(NPCID.BrainofCthulhu, ProjectileID.BloodNautilusShot), new int[] { 22 } },
-                { new Tuple<int, int>(NPCID.BrainofCthulhu, ProjectileID.BloodShot), new int[] { 15 } },
-                { new Tuple<int, int>(NPCID.Creeper, ProjectileID.BloodShot), new int[] { 15 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<HiveMind>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 20 } },
                 { new Tuple<int, int>(ModContent.NPCType<DankCreeper>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 20 } },
@@ -534,17 +375,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<PerforatorHeadLarge>(), ModContent.ProjectileType<IchorBlob>()), new int[] { 20 } },
                 { new Tuple<int, int>(ModContent.NPCType<PerforatorHeadLarge>(), ModContent.ProjectileType<DoGDeath>()), new int[] { 22 } },
 
-                { new Tuple<int, int>(NPCID.QueenBee, ProjectileID.QueenBeeStinger), new int[] { 22 } },
-                { new Tuple<int, int>(NPCID.QueenBee, ModContent.ProjectileType<QueenBeenade>()), new int[] { 36 } }, // Beenade Bees (Death): 92
-
-                { new Tuple<int, int>(NPCID.SkeletronHead, ProjectileID.Skull), new int[] { 34 } },
-                { new Tuple<int, int>(NPCID.SkeletronHead, ProjectileID.Shadowflames), new int[] { 40 } },
-                { new Tuple<int, int>(NPCID.SkeletronHand, ProjectileID.Skull), new int[] { 34 } },
-
-                { new Tuple<int, int>(NPCID.Deerclops, ProjectileID.DeerclopsIceSpike), new int[] { 26 } },
-                { new Tuple<int, int>(NPCID.Deerclops, ProjectileID.DeerclopsRangedProjectile), new int[] { 36 } },
-                { new Tuple<int, int>(NPCID.Deerclops, ProjectileID.InsanityShadowHostile), new int[] { 20 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<SlimeGodCore>(), ModContent.ProjectileType<UnstableEbonianGlob>()), new int[] { 30 } },
                 { new Tuple<int, int>(ModContent.NPCType<SlimeGodCore>(), ModContent.ProjectileType<UnstableCrimulanGlob>()), new int[] { 30 } },
                 { new Tuple<int, int>(ModContent.NPCType<EbonianPaladin>(), ModContent.ProjectileType<UnstableEbonianGlob>()), new int[] { 30 } },
@@ -555,41 +385,15 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<CorruptSlimeSpawn>(), ModContent.ProjectileType<ShadeNimbusHostile>()), new int[] { 34 } },
                 { new Tuple<int, int>(ModContent.NPCType<CrimsonSlimeSpawn2>(), ModContent.ProjectileType<CrimsonSpike>()), new int[] { 24 } },
 
-                { new Tuple<int, int>(NPCID.WallofFleshEye, ProjectileID.EyeLaser), new int[] { 22 } }, // Scales up to 30 as health lowers
-                { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.DemonSickle), new int[] { 45 } },
-                { new Tuple<int, int>(NPCID.WallofFlesh, ProjectileID.Fireball), new int[] { 36 } },
-
-                { new Tuple<int, int>(NPCID.QueenSlimeBoss, ProjectileID.QueenSlimeGelAttack), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.QueenSlimeBoss, ProjectileID.QueenSlimeSmash), new int[] { 80 } },
-                { new Tuple<int, int>(NPCID.QueenSlimeBoss, ProjectileID.QueenSlimeMinionBlueSpike), new int[] { 30 } },
-                { new Tuple<int, int>(NPCID.QueenSlimeMinionBlue, ProjectileID.QueenSlimeMinionBlueSpike), new int[] { 30 } },
-                { new Tuple<int, int>(NPCID.QueenSlimeMinionPink, ProjectileID.QueenSlimeMinionPinkBall), new int[] { 30 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<Cryogen>(), ModContent.ProjectileType<IceBlast>()), new int[] { 45 } },
                 { new Tuple<int, int>(ModContent.NPCType<Cryogen>(), ModContent.ProjectileType<IceBomb>()), new int[] { 60 } },
                 { new Tuple<int, int>(ModContent.NPCType<Cryogen>(), ModContent.ProjectileType<IceRain>()), new int[] { 45 } },
                 { new Tuple<int, int>(ModContent.NPCType<CryogenShield>(), ModContent.ProjectileType<IceBlast>()), new int[] { 45 } },
 
-                { new Tuple<int, int>(NPCID.Retinazer, ProjectileID.EyeLaser), new int[] { 40, 76 } },
-                { new Tuple<int, int>(NPCID.Retinazer, ProjectileID.DeathLaser), new int[] { 50, 92 } }, // Rapid fire: 36, 68
-                { new Tuple<int, int>(NPCID.Retinazer, ModContent.ProjectileType<HomingLaserDart>()), new int[] { 60, 108 } },
-                { new Tuple<int, int>(NPCID.Spazmatism, ProjectileID.CursedFlameHostile), new int[] { 50, 88 } },
-                { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<CursedFire>()), new int[] { 60, 108 } },
-                { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<Shadowflamethrower>()), new int[] { 70, 120 } },
-                { new Tuple<int, int>(NPCID.Spazmatism, ModContent.ProjectileType<ShadowflameFireball>()), new int[] { 60, 108 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SulphuricAcidMist>()), new int[] { 50, 92 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<SandPoisonCloud>()), new int[] { 70, 120 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeHead>(), ModContent.ProjectileType<ToxicCloud>()), new int[] { 80, 140 } },
                 { new Tuple<int, int>(ModContent.NPCType<AquaticScourgeBody>(), ModContent.ProjectileType<SandTooth>()), new int[] { 50, 92 } },
-
-                { new Tuple<int, int>(NPCID.TheDestroyer, ProjectileID.DeathLaser), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.TheDestroyer, ModContent.ProjectileType<DestroyerCursedLaser>()), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.TheDestroyer, ModContent.ProjectileType<DestroyerElectricLaser>()), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.TheDestroyerBody, ProjectileID.DeathLaser), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.TheDestroyerBody, ModContent.ProjectileType<DestroyerCursedLaser>()), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.TheDestroyerBody, ModContent.ProjectileType<DestroyerElectricLaser>()), new int[] { 44, 72 } },
-                { new Tuple<int, int>(NPCID.Probe, ProjectileID.PinkLaser), new int[] { 50, 88 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<BrimstoneElemental>(), ModContent.ProjectileType<BrimstoneHellfireball>()), new int[] { 60, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<BrimstoneElemental>(), ModContent.ProjectileType<BrimstoneBarrage>()), new int[] { 50, 92 } },
@@ -597,13 +401,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<BrimstoneElemental>(), ModContent.ProjectileType<BrimstoneRay>()), new int[] { 80, 200 } }, // Split shots: 48, 120
                 { new Tuple<int, int>(ModContent.NPCType<Brimling>(), ModContent.ProjectileType<BrimstoneHellfireball>()), new int[] { 60, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<Brimling>(), ModContent.ProjectileType<BrimstoneBarrage>()), new int[] { 50, 92 } },
-
-                { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.Skull), new int[] { 50 } },
-                { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.DeathLaser), new int[] { 50 } },
-                { new Tuple<int, int>(NPCID.SkeletronPrime, ProjectileID.RocketSkeleton), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.PrimeCannon, ProjectileID.RocketSkeleton), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.PrimeCannon, ProjectileID.BombSkeletronPrime), new int[] { 80 } },
-                { new Tuple<int, int>(NPCID.PrimeLaser, ProjectileID.DeathLaser), new int[] { 50 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<CalamitasClone>(), ModContent.ProjectileType<BrimstoneHellblast>()), new int[] { 60, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<CalamitasClone>(), ModContent.ProjectileType<BrimstoneHellfireball>()), new int[] { 60, 108 } },
@@ -614,17 +411,6 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<Catastrophe>(), ModContent.ProjectileType<BrimstoneBall>()), new int[] { 60, 108 } },
                 { new Tuple<int, int>(ModContent.NPCType<SoulSeeker>(), ModContent.ProjectileType<BrimstoneBarrage>()), new int[] { 50, 92 } },
 
-                { new Tuple<int, int>(NPCID.Plantera, ProjectileID.SeedPlantera), new int[] { 44, 76 } },
-                { new Tuple<int, int>(NPCID.Plantera, ProjectileID.PoisonSeedPlantera), new int[] { 54, 96 } },
-                { new Tuple<int, int>(NPCID.Plantera, ProjectileID.ThornBall), new int[] { 62, 108 } },
-                { new Tuple<int, int>(NPCID.Plantera, ModContent.ProjectileType<SporeGasPlantera>()), new int[] { 54, 96 } },
-                { new Tuple<int, int>(NPCID.Plantera, ModContent.ProjectileType<HomingGasBulb>()), new int[] { 54, 96 } },
-
-                { new Tuple<int, int>(NPCID.HallowBoss, ProjectileID.HallowBossRainbowStreak), new int[] { 90, 120 } },
-                { new Tuple<int, int>(NPCID.HallowBoss, ProjectileID.FairyQueenSunDance), new int[] { 100, 140 } },
-                { new Tuple<int, int>(NPCID.HallowBoss, ProjectileID.HallowBossLastingRainbow), new int[] { 90, 120 } },
-                { new Tuple<int, int>(NPCID.HallowBoss, ProjectileID.FairyQueenLance), new int[] { 100, 120 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<Leviathan>(), ModContent.ProjectileType<LeviathanBomb>()), new int[] { 100, 160 } },
                 { new Tuple<int, int>(ModContent.NPCType<Anahita>(), ModContent.ProjectileType<WaterSpear>()), new int[] { 48 } },
                 { new Tuple<int, int>(ModContent.NPCType<Anahita>(), ModContent.ProjectileType<FrostMist>()), new int[] { 48 } },
@@ -634,22 +420,9 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<AstrumAureus>(), ModContent.ProjectileType<AstralFlame>()), new int[] { 60 } },
                 { new Tuple<int, int>(ModContent.NPCType<AureusSpawn>(), ModContent.ProjectileType<AstralLaser>()), new int[] { 48 } },
 
-                { new Tuple<int, int>(NPCID.Golem, ProjectileID.Fireball), new int[] { 48 } },
-                { new Tuple<int, int>(NPCID.Golem, ProjectileID.EyeBeam), new int[] { 56 } },
-                { new Tuple<int, int>(NPCID.GolemHead, ProjectileID.Fireball), new int[] { 36 } }, // Scales up to 48 as health lowers
-                { new Tuple<int, int>(NPCID.GolemHead, ProjectileID.EyeBeam), new int[] { 56 } },
-                { new Tuple<int, int>(NPCID.GolemFistLeft, ProjectileID.InfernoHostileBolt), new int[] { 70 } },
-                { new Tuple<int, int>(NPCID.GolemFistRight, ProjectileID.InfernoHostileBolt), new int[] { 70 } },
-                { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.Fireball), new int[] { 40 } },
-                { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.EyeBeam), new int[] { 48 } }, // Scales up to 58 as health lowers
-                { new Tuple<int, int>(NPCID.GolemHeadFree, ProjectileID.InfernoHostileBolt), new int[] { 70 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<PlagueStingerGoliath>()), new int[] { 56 } },
                 { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<PlagueStingerGoliathV2>()), new int[] { 56 } },
                 { new Tuple<int, int>(ModContent.NPCType<PlaguebringerGoliath>(), ModContent.ProjectileType<HiveBombGoliath>()), new int[] { 75 } },
-
-                { new Tuple<int, int>(NPCID.DukeFishron, ProjectileID.Sharknado), new int[] { 80, 100 } },
-                { new Tuple<int, int>(NPCID.DukeFishron, ProjectileID.Cthulunado), new int[] { 160, 200 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<RavagerBody>(), ModContent.ProjectileType<RavagerBlaster>()), new int[] { 90 } },
                 { new Tuple<int, int>(ModContent.NPCType<RavagerHead>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 75 } },
@@ -657,25 +430,9 @@ namespace CalamityMod
                 { new Tuple<int, int>(ModContent.NPCType<RavagerHead2>(), ModContent.ProjectileType<RavagerNuke>()), new int[] { 75 } },
                 { new Tuple<int, int>(ModContent.NPCType<FlamePillar>(), ModContent.ProjectileType<RavagerFlame>()), new int[] { 60 } },
 
-                { new Tuple<int, int>(NPCID.CultistBoss, ProjectileID.CultistBossFireBall), new int[] { 60, 80 } },
-                { new Tuple<int, int>(NPCID.CultistBoss, ProjectileID.CultistBossIceMist), new int[] { 70, 100 } },
-                { new Tuple<int, int>(NPCID.CultistBoss, ProjectileID.CultistBossLightningOrb), new int[] { 90, 120 } },
-                { new Tuple<int, int>(NPCID.CultistBossClone, ProjectileID.CultistBossFireBallClone), new int[] { 36 } },
-                { new Tuple<int, int>(NPCID.AncientDoom, ProjectileID.AncientDoomProjectile), new int[] { 90 } },
-
                 { new Tuple<int, int>(ModContent.NPCType<AstrumDeusBody>(), ModContent.ProjectileType<AstralShot2>()), new int[] { 60 } },
                 { new Tuple<int, int>(ModContent.NPCType<AstrumDeusBody>(), ModContent.ProjectileType<DeusMine>()), new int[] { 80 } },
                 { new Tuple<int, int>(ModContent.NPCType<AstrumDeusBody>(), ModContent.ProjectileType<AstralGodRay>()), new int[] { 80 } },
-
-                { new Tuple<int, int>(NPCID.MoonLordHead, ProjectileID.PhantasmalDeathray), new int[] { 150 } },
-                { new Tuple<int, int>(NPCID.MoonLordHead, ProjectileID.PhantasmalBolt), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.MoonLordHand, ProjectileID.PhantasmalEye), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.MoonLordHand, ProjectileID.PhantasmalSphere), new int[] { 80 } },
-                { new Tuple<int, int>(NPCID.MoonLordHand, ProjectileID.PhantasmalBolt), new int[] { 60 } },
-                { new Tuple<int, int>(NPCID.MoonLordFreeEye, ProjectileID.PhantasmalBolt), new int[] { 70 } },
-                { new Tuple<int, int>(NPCID.MoonLordFreeEye, ProjectileID.PhantasmalEye), new int[] { 70 } },
-                { new Tuple<int, int>(NPCID.MoonLordFreeEye, ProjectileID.PhantasmalSphere), new int[] { 110 } },
-                { new Tuple<int, int>(NPCID.MoonLordFreeEye, ProjectileID.PhantasmalDeathray), new int[] { 100 } },
 
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianCommander>(), ModContent.ProjectileType<ProfanedSpear>()), new int[] { 110 } },
                 { new Tuple<int, int>(ModContent.NPCType<ProfanedGuardianCommander>(), ModContent.ProjectileType<HolySpear>()), new int[] { 110 } },
@@ -793,7 +550,6 @@ namespace CalamityMod
         // Destroys the EnemyStats struct to save memory because mod assemblies will not be fully unloaded until TML 1.4.
         internal static void UnloadEnemyStats()
         {
-            EnemyStats.ExpertDamageMultiplier = null;
             EnemyStats.ContactDamageValues = null;
             EnemyStats.ProjectileDamageValues = null;
         }

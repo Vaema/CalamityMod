@@ -16,6 +16,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         private const float SpinVelocity = 12f;
         private const int SpinRadius = 45;
 
+        // Rev+ exclusive
+        public static int BloodShotDamage = 11; // 44
+
         public static bool BuffedBrainofCthulhuAI(NPC npc, Mod mod)
         {
             // whoAmI variable
@@ -423,7 +426,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         int type = ProjectileID.BloodShot;
-                                        int damage = npc.GetProjectileDamage(type);
                                         int numProj = death ? 9 : 4;
                                         int spread = death ? 32 : 15;
                                         if (phase7)
@@ -441,7 +443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         for (int j = 0; j < numProj; j++)
                                         {
                                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), position + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), position + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, BloodShotDamage, 0f, Main.myPlayer);
                                             Main.projectile[proj].timeLeft = 600;
                                             if (!canHit)
                                                 Main.projectile[proj].tileCollide = false;
@@ -456,7 +458,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ProjectileID.BloodNautilusShot;
-                            int damage = npc.GetProjectileDamage(type);
                             int numProj = death ? 13 : 7;
                             int spread = death ? 60 : 40;
                             if (phase7)
@@ -479,7 +480,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity2.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, BloodShotDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].timeLeft = 600;
                                 if (!canHit2)
                                     Main.projectile[proj].tileCollide = false;
@@ -1028,8 +1029,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int projectileType = ProjectileID.BloodShot;
-                            int damage = npc.GetProjectileDamage(projectileType);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, projectileVelocity, projectileType, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, projectileVelocity, projectileType, BloodShotDamage, 0f, Main.myPlayer);
                             Main.projectile[proj].timeLeft = 600;
                             if (!canHit)
                                 Main.projectile[proj].tileCollide = false;

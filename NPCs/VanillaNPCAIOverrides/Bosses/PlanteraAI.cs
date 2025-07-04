@@ -27,6 +27,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float StopChargeGateValue = BeginChargeSlowDownGateValue - 30f;
         public const float MovementVelocityMultiplierForSlowAttacks = 0.5f;
 
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.4f;
+        public static int PinkSeedDamage = 19; // 76
+        public static int PoisonSeedDamage = 24; // 96
+        public static int ThornBallDamage = 27; // 108
+        // Rev+ Thorn Ball spikes deal 80% rounded damage = 88 damage
+
+        // Rev+ exclusive
+        public static int GasBulbDamage = 27; // 108
+        // Pink Cloud (bulb) deal 80% rounded damage = 88 damage
+        public static int GreenCloudDamage = 24; // 96
+
         public static bool BuffedPlanteraAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -52,7 +64,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase4 = lifeRatio < 0.2f;
 
             // Contact damage values for phase 2
-            int setDamage = (int)Math.Round(npc.defDamage * 1.4);
+            int setDamage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
             int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
 
             // Variables and target
@@ -214,7 +226,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool shootPoisonSeed = npc.ai[1] % 9f == 0f && !shootThornBall;
                         float projectileSpeed = 14f;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
-                        int damage = npc.GetProjectileDamage(projectileType);
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -302,7 +314,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int totalProjectiles = death ? 36 : 30;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
                         float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
@@ -321,7 +332,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * randomSpeed, type, GreenCloudDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
@@ -368,7 +379,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     float projectileSpeed = 9f;
                     int projectileType = ModContent.ProjectileType<HomingGasBulb>();
-                    int damage = npc.GetProjectileDamage(projectileType);
                     Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                     Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -382,7 +392,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, GasBulbDamage, 0f, Main.myPlayer);
                 }
             }
 
@@ -435,7 +445,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
                         int projectileType = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(projectileType);
                         float randomVelocityMultiplier = secondCharge ? 0.05f : death ? 0.3f : 0.2f;
                         Vector2 projectileVelocity = npc.velocity * Main.rand.NextVector2CircularEdge(randomVelocityMultiplier, randomVelocityMultiplier);
                         Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 30f;
@@ -450,7 +459,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float ai0 = Main.rand.Next(3);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, ai0);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, GasBulbDamage, 0f, Main.myPlayer, ai0);
                     }
 
                     npc.ai[3] -= 1f;
@@ -523,7 +532,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int totalProjectiles = secondCharge ? 6 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
                         float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
@@ -542,7 +550,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, GasBulbDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
@@ -679,7 +687,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool shootPoisonSeed = (CalamityWorld.LegendaryMode || Main.rand.NextBool(death ? 2 : 4)) && !shootThornBall;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         float projectileSpeed = death ? 16f : 14f;
-                        int damage = npc.GetProjectileDamage(projectileType);
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -806,7 +814,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             numProj++;
 
                         int type = ProjectileID.PoisonSeedPlantera;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = PoisonSeedDamage;
                         float rotation = MathHelper.ToRadians(spread);
                         bool vomitTentacles = vomitFreeTentacles && NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxTentaclesAfterFirstTentaclePhase;
                         if (vomitTentacles)
@@ -818,7 +826,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootPinkSeed)
                             {
                                 type = ProjectileID.SeedPlantera;
-                                damage = npc.GetProjectileDamage(type);
+                                damage = PinkSeedDamage;
                             }
                             else
                                 type = ProjectileID.PoisonSeedPlantera;
@@ -870,7 +878,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootThornBall)
                             {
                                 type = ProjectileID.ThornBall;
-                                damage = npc.GetProjectileDamage(type);
+                                damage = ThornBallDamage;
                                 Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)

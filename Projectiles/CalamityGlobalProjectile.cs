@@ -1046,8 +1046,6 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.Sharknado)
             {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
                 int num535 = 10;
                 int num536 = 15;
                 float num537 = 1f;
@@ -1148,8 +1146,6 @@ namespace CalamityMod.Projectiles
             // Larger cthulhunadoes
             else if (projectile.type == ProjectileID.Cthulunado)
             {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
                 if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                 {
                     bool death = CalamityWorld.death || BossRushEvent.BossRushActive;

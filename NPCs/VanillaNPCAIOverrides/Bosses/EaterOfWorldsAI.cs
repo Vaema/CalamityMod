@@ -17,6 +17,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         private const int TotalDeathModeWorms = 4;
         public const float DRIncreaseTime = 600f;
 
+        // Rev+ exclusive
+        public static int FireballDamage = 11; // 44; Applies to both Cursed Flames and Shadowflame fireballs
+
         public static bool BuffedEaterofWorldsAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -165,7 +168,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 cursedFlameDirection.Y -= targetYDirection;
 
                                 int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, FireballDamage, 0f, Main.myPlayer);
                             }
                         }
 

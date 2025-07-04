@@ -14,6 +14,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         private const float ProjectileOffset = 50f;
 
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.2f;
+        public static float Phase3ContactDamageMult = 1.333f;
+        public static int BloodShotDamage = 8; // 32
+
         public static bool BuffedEyeofCthulhuAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -201,8 +206,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 else
                                 {
                                     int projType = ProjectileID.BloodNautilusShot;
-                                    int projDamage = npc.GetProjectileDamage(projType);
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, projDamage, 0f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
                                     Main.projectile[proj].timeLeft = 600;
                                 }
                             }
@@ -407,7 +411,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 npc.defense = 0;
-                int setDamage = (int)Math.Round(npc.defDamage * (phase3 ? 1.4 : 1.2));
+                int setDamage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : Phase2ContactDamageMult));
                 int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
 
                 if (npc.ai[1] == 0f & phase3)
@@ -471,14 +475,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.BloodNautilusShot;
-                                int damage = npc.GetProjectileDamage(type);
                                 int numProj = 3;
                                 int spread = 10;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, BloodShotDamage, 0f, Main.myPlayer);
                                     Main.projectile[proj].timeLeft = 600;
                                 }
                             }
@@ -776,8 +779,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             else if (!CalamityWorld.LegendaryMode)
                             {
                                 int projType = ProjectileID.BloodNautilusShot;
-                                int projDamage = npc.GetProjectileDamage(projType);
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, projDamage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].timeLeft = 600;
                             }
 

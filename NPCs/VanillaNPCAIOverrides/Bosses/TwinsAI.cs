@@ -13,6 +13,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class TwinsAI
     {
+        // Vanilla values
+        public static float RapidFireDamageMult = 0.75f;
+        public static float RetinazerPhase2ContactDamageMult = 1.5f;
+        public static float SpazmatismPhase2ContactDamageMult = 1.5f;
+        public static int LaserDamage = 19; // 76
+        public static int RedLaserDamage = 23; // 92
+        public static int FlamethrowerDamage = 27; // 108; Applies to both flamethrower types
+        public static int FireballDamage = 22; // 88; Applies to both fireball types
+
+        // Rev+ exclusive
+        public static int HomingDartDamage = 27; // 108
+
+        public static int CalculateMechDamage(this int damage)
+        {
+            // Reduce mech boss projectile damage depending on the new ore progression changes
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
+            {
+                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
+                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
+                if (!NPC.downedMechBossAny)
+                    damage = (int)(damage * firstMechMultiplier);
+                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
+                    damage = (int)(damage * secondMechMultiplier);
+            }
+            return damage;
+        }
+
         public static bool BuffedRetinazerAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -203,7 +230,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 laserSpeed += 3f * enrageScale;
 
                                 int type = ProjectileID.EyeLaser;
-                                int damage = npc.GetProjectileDamage(type);
+                                int damage = LaserDamage;
 
                                 // Reduce mech boss projectile damage depending on the new ore progression changes
                                 if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -336,22 +363,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ProjectileID.DeathLaser;
-                            int damage = npc.GetProjectileDamage(type);
-
-                            // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                            {
-                                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                if (!NPC.downedMechBossAny)
-                                    damage = (int)(damage * firstMechMultiplier);
-                                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                    damage = (int)(damage * secondMechMultiplier);
-                            }
 
                             Vector2 projectileVelocity = npc.rotation.ToRotationVector2() * 7f;
                             float offset = 90f;
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projectileVelocity) * offset, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.Normalize(projectileVelocity) * offset, projectileVelocity, type, LaserDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -405,7 +420,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 npc.chaseable = !spazInPhase1;
 
-                int setDamage = (int)Math.Round(npc.defDamage * 1.5);
+                int setDamage = (int)Math.Round(npc.defDamage * RetinazerPhase2ContactDamageMult);
                 npc.defense = npc.defDefense + 10;
                 calamityGlobalNPC.DR = spazInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = spazInPhase1;
@@ -480,21 +495,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float laserSpeed = 10f;
                                 laserSpeed += enrageScale;
                                 int type = ProjectileID.DeathLaser;
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
 
                                 Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, RedLaserDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -537,18 +540,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     float laserSpeed = 9f;
                                     laserSpeed += enrageScale;
                                     int type = ProjectileID.DeathLaser;
-                                    int damage = (int)Math.Round(npc.GetProjectileDamage(type) * 0.75);
-
-                                    // Reduce mech boss projectile damage depending on the new ore progression changes
-                                    if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                    {
-                                        double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                        double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                        if (!NPC.downedMechBossAny)
-                                            damage = (int)(damage * firstMechMultiplier);
-                                        else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                            damage = (int)(damage * secondMechMultiplier);
-                                    }
+                                    int damage = (int)Math.Round(RedLaserDamage.CalculateMechDamage() * RapidFireDamageMult);
 
                                     Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
                                     Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 120f, laserVelocity, type, damage, 0f, Main.myPlayer);
@@ -633,7 +625,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     {
                                         float laserDartSpeed = (death ? 9f : 6f) * (spazAlive ? 1f : 1.5f);
                                         int type = ModContent.ProjectileType<HomingLaserDart>();
-                                        int damage = npc.GetProjectileDamage(type);
+                                        int damage = HomingDartDamage.CalculateMechDamage();
 
                                         // Reduce mech boss projectile damage depending on the new ore progression changes
                                         if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
@@ -919,21 +911,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float cursedFireballSpeed = 15f;
                                 cursedFireballSpeed += 3f * enrageScale;
                                 int type = ProjectileID.CursedFlameHostile;
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
 
                                 Vector2 fireballVelocity = ((Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * cursedFireballSpeed) + new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) * 0.05f;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + fireballVelocity.SafeNormalize(Vector2.UnitY) * 50f, fireballVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + fireballVelocity.SafeNormalize(Vector2.UnitY) * 50f, fireballVelocity, type, FireballDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -1058,21 +1038,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = npc.ai[1] % 20f == 0f ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<ShadowflameFireball>();
-                            int damage = npc.GetProjectileDamage(type);
-
-                            // Reduce mech boss projectile damage depending on the new ore progression changes
-                            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                            {
-                                double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                if (!NPC.downedMechBossAny)
-                                    damage = (int)(damage * firstMechMultiplier);
-                                else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                    damage = (int)(damage * secondMechMultiplier);
-                            }
 
                             Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * 16f + Main.rand.NextVector2CircularEdge(3f, 3f);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f, projectileVelocity, type, FireballDamage.CalculateMechDamage(), 0f, Main.myPlayer, 0f, 1f);
                             Main.projectile[proj].tileCollide = false;
                         }
                     }
@@ -1131,7 +1099,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.chaseable = !retInPhase1;
 
                 // Increase defense and damage
-                int setDamage = (int)Math.Round(npc.defDamage * 1.5);
+                int setDamage = (int)Math.Round(npc.defDamage * SpazmatismPhase2ContactDamageMult);
                 int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
                 npc.defense = npc.defDefense + 18;
                 calamityGlobalNPC.DR = retInPhase1 ? 0.9999f : 0.2f;
@@ -1208,30 +1176,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float flamethrowerSpeedScalar = MathHelper.Clamp(npc.ai[2] / timeForFlamethrowerToReachMaxVelocity, 0f, 1f);
                                 flamethrowerSpeed = MathHelper.Lerp(0.1f, flamethrowerSpeed, flamethrowerSpeedScalar);
                                 int type = npc.ai[3] % 2f == 0f ? ModContent.ProjectileType<CursedFire>() : ModContent.ProjectileType<Shadowflamethrower>();
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
 
                                 Vector2 flamethrowerVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * flamethrowerSpeed + npc.velocity * 0.5f;
 
                                 if (NPC.IsMechQueenUp)
                                     flamethrowerVelocity = (npc.rotation + MathHelper.PiOver2).ToRotationVector2() * flamethrowerSpeed + npc.velocity * 0.5f;
 
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 25f, flamethrowerVelocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 25f, flamethrowerVelocity, type, FlamethrowerDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                                 if (death && npc.ai[3] % 30f == 0f)
                                 {
                                     type = npc.ai[3] % 60f == 0f ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                                    damage = npc.GetProjectileDamage(type);
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 50f, flamethrowerVelocity * 2f, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + flamethrowerVelocity.SafeNormalize(Vector2.UnitY) * 50f, flamethrowerVelocity * 2f, type, FireballDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -1383,18 +1338,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 float projectileSpeed = spazmatismPhase3ChargeSpeed * 0.5f;
                                 int type = (!retAlive && npc.ai[3] % 2f == 0f) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
 
                                 Vector2 projectileVelocity = (Main.player[npc.target].Center + ((!retAlive && bossRush) ? Main.player[npc.target].velocity * 20f : Vector2.Zero) - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
                                 int numProj = 3;
@@ -1404,7 +1347,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 25f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 25f, perturbedSpeed, type, FireballDamage.CalculateMechDamage(), 0f, Main.myPlayer);
                                 }
                             }
 
@@ -1499,21 +1442,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 float projectileSpeed = 16f;
                                 int type = npc.ai[3] % 2f == 0f ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<ShadowflameFireball>();
-                                int damage = npc.GetProjectileDamage(type);
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
 
                                 Vector2 projectileVelocity = (Main.player[npc.target].Center + (!retAlive && bossRush ? Main.player[npc.target].velocity * 20f : Vector2.Zero) - npc.Center).SafeNormalize(Vector2.UnitY) * projectileSpeed;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 25f, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, retAlive ? 0f : 1f);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 25f, projectileVelocity, type, FireballDamage.CalculateMechDamage(), 0f, Main.myPlayer, 0f, retAlive ? 0f : 1f);
                             }
                         }
 

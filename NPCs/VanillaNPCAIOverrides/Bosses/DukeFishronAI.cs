@@ -11,6 +11,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class DukeFishronAI
     {
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.436f;
+        public static float Phase3ContactDamageMult = 1.315f;
+
         public static bool BuffedDukeFishronAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -33,12 +37,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int setDamage = npc.defDamage;
             if (phase3AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.32);
+                setDamage = (int)Math.Round(setDamage * Phase3ContactDamageMult);
                 npc.defense = 0;
             }
             else if (phase2AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.44);
+                setDamage = (int)Math.Round(setDamage * Phase2ContactDamageMult);
                 npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             }
             else
