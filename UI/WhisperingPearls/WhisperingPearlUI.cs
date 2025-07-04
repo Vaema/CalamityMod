@@ -52,19 +52,10 @@ namespace CalamityMod.UI.WhisperingPearls
         public static bool SwitchingPage = false;
         private int SwitchCounter = 0;
 
-        public static readonly char[] PausePunctuation =
-        [
-            '.',
-            '?',
-            '!',
-            ';',
-            ':'
-        ];
-
 
         internal static string Text = "";
         internal static int textIndex = 0;
-        internal static Dialogue[] DialogueData;
+        internal static DialogueHolder DialogueData;
 
         //Effects
         internal static Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueColors;
@@ -77,6 +68,7 @@ namespace CalamityMod.UI.WhisperingPearls
         private static float DistanceOpacity = 1f;
         private static bool Crawling = true;
         private static int storedDelay = 0;
+        private static bool lockDelay = false;
 
         public override void OnActivate()
         {
@@ -99,6 +91,9 @@ namespace CalamityMod.UI.WhisperingPearls
                 string fullLine = DialogueData[currentPage].Lines[i];
 
                 FindEffects(ref fullLine, fullLength);
+
+                if (i != DialogueData[currentPage].Lines.Length - 1 && fullLine[^1] != ' ')
+                    fullLine += ' ';
 
                 Text += fullLine + '\n';
                 fullLength += fullLine.Length + 1;
@@ -124,6 +119,7 @@ namespace CalamityMod.UI.WhisperingPearls
             Crawling = true;
             textTimer = -30;
             storedDelay = 0;
+            lockDelay = false;
 
             DynamicSpriteFont font = FontAssets.MouseText.Value;
             Vector2 zero = Vector2.Zero;
@@ -199,38 +195,64 @@ namespace CalamityMod.UI.WhisperingPearls
             {
                 DistanceOpacity = 1 - MathHelper.Clamp((distFromPearl - 150) / 150f, 0f, 1f);
 
-                int textDelay = DialogueData[currentPage].TextDelay;
+                int textDelay = DialogueData.TextDelay;
+                if (DialogueData[currentPage].TextDelay != -1)
+                    textDelay = DialogueData[currentPage].TextDelay;
 
                 if (textIndex < Text.Length)
                 {
                     if (textTimer == 0)
                     {
-                        switch (Text[textIndex])
+                        if (!lockDelay)
                         {
-                            case '.':
-                            case '?':
-                            case '!':
-                            case ';':
-                            case ':':
-                                storedDelay += DialogueData[currentPage].PunctuationDelay;
-                                break;
-                            case '-':
-                                if (Text[textIndex + 1] == ' ')
-                                    storedDelay += DialogueData[currentPage].PunctuationDelay;
-                                break;
-                            case ',':
-                                storedDelay += DialogueData[currentPage].PunctuationDelay / 2;
-                                break;
+                            var data = DialogueData.BasePunctuationDelay;
+                            if (DialogueData[currentPage].BasePunctuationDelay != null)
+                                data = DialogueData[currentPage].BasePunctuationDelay;
+
+                            if (DialogueData[currentPage].PunctuationDelays != null && DialogueData[currentPage].PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
+                                data = value;
+                            else if (DialogueData.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
+                                data = value;
+
+                            switch (Text[textIndex])
+                            {
+                                case '.':
+                                case '?':
+                                case '!':
+                                case ';':
+                                case ':':
+                                case ',':
+                                    if (data.ForceSet)
+                                        storedDelay = data.Delay;
+                                    else
+                                        storedDelay += data.Delay;
+                                    break;
+                                case '-':
+                                    if (Text[textIndex + 1] == ' ')
+                                    {
+                                        if (data.ForceSet)
+                                            storedDelay = data.Delay;
+                                        else
+                                            storedDelay += data.Delay;
+                                    }
+                                    break;
+                            }
+
+                            if (data.Locks)
+                                lockDelay = true;
                         }
 
                         if (Pauses.TryGetValue(textIndex, out float pause))
                             storedDelay = (int)(pause * 60);
                     }
 
-                    if (++textTimer % (Text[textIndex] == ' ' && storedDelay > 0 ? textDelay + storedDelay : textDelay) == 0 && textTimer >= 0)
+                    if (++textTimer % ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? textDelay + storedDelay : textDelay) == 0 && textTimer >= 0)
                     {
                         if (Text[textIndex] == ' ')
+                        {
                             storedDelay = 0;
+                            lockDelay = false;
+                        }
                         else
                             SoundEngine.PlaySound(DialogueSounds[DialogueData[currentPage].Speaker]);
 
@@ -495,69 +517,6 @@ namespace CalamityMod.UI.WhisperingPearls
                 }
             }
         }
-
-        /*public static void DrawSelf(SpriteBatch sb)
-        {
-            if (WhisperingPearlSystem.IsActive)
-            {
-                
-
-
-                // Separate the text into pages
-                string[] separated = text.Split("\n\n");
-                pageCount = separated.Length;
-                // If the current page is more than the total amount of pages, stop the dialogue
-                if (currentPage > separated.Length - 1)
-                {
-                    WhisperingPearlSystem.FinishDialogue();
-                    return;
-                }
-                var colorCode = separated[currentPage].Split('\n')[0].TrimStart();
-
-                // Chat sounds
-                if ((int)textTimer % Main.rand.Next(2, 8) == 0 && textTimer < maxTextTime)
-                {
-                    SoundEngine.PlaySound(SoundID.MenuTick);
-                }
-                // System.Drawing use?????? you'd be dead to see it
-                var col = System.Drawing.ColorTranslator.FromHtml("#" + colorCode);
-                var lineColor = new Color(col.R, col.G, col.B);
-
-                separated[currentPage] = separated[currentPage].Remove(0, 6);
-
-                maxTextTime = separated[currentPage].Length;
-
-                var size = FontAssets.MouseText.Value.MeasureString(separated[currentPage]);
-                // Shave off text based on the timer
-                var charstoRemove = separated[currentPage].Length - (int)textTimer;
-                if (charstoRemove > -1)
-                {
-                    separated[currentPage] = separated[currentPage].Remove((int)textTimer, charstoRemove);
-                }
-
-                // Pause briefly on elipses
-                var increment = 0.33f;
-                if (separated[currentPage].EndsWith("..."))
-                {
-                    increment /= 20f; 
-                }
-                // How much further the BOTTOM of the text should be drawn above the pearl
-                float yOffset = 40;
-                Utils.DrawBorderString(sb, separated[currentPage], position - Main.screenPosition - Vector2.UnitY * (size.Y + yOffset), lineColor, anchorx: 0.5f, anchory: 0, maxCharactersDisplayed: 100000);
-
-                // Increment the text timer
-                // 0.33 means that it takes 3ish frames for 1 letter to appear
-                if (textTimer < maxTextTime)
-                {
-                    textTimer += increment;
-                }
-            }
-            // If dialogue can't be active, finish it
-            else
-            {
-                WhisperingPearlSystem.FinishDialogue();
-            }
-        }*/
     }
 
     public class WhisperingPearlSystem : ModSystem
@@ -604,7 +563,7 @@ namespace CalamityMod.UI.WhisperingPearls
                 UI?.Update(gameTime);
         }
 
-        public static Dialogue[] Deserialize(string key)
+        public static DialogueHolder Deserialize(string key)
         {
             string activeExtension = LanguageManager.Instance.ActiveCulture.Name;
             string path = "UI/WhisperingPearls/" + activeExtension + "/" + key + ".json";
@@ -619,7 +578,7 @@ namespace CalamityMod.UI.WhisperingPearls
 
             Stream stream = CalamityMod.Instance.GetFileStream(path);
 
-            Dialogue[] data = JsonSerializer.Deserialize<Dialogue[]>(stream);
+            DialogueHolder data = JsonSerializer.Deserialize<DialogueHolder>(stream);
 
             stream.Close();
 
@@ -698,14 +657,35 @@ namespace CalamityMod.UI.WhisperingPearls
         }
     }
 
+    public class DialogueHolder
+    {
+        public Dialogue[] Dialogues { get; set; }
+        public Dialogue this[int index] { get => Dialogues[index]; set => Dialogues[index] = value; }
+        public int Length => Dialogues.Length;
+
+        public int TextDelay { get; set; } = 3;
+        public PunctuationData BasePunctuationDelay { get; set; } = new PunctuationData();
+        public int PunctuationDelayCap { get; set; } = 30;
+        public Dictionary<string, PunctuationData> PunctuationDelays { get; set; } = [];
+    }
+
     public class Dialogue
     {
         public string BaseColor { get; set; }
         public string Speaker { get; set; }
         public string[] Lines { get; set; }
 
-        public int TextDelay { get; set; } = 3;
-        public int PunctuationDelay { get; set; } = 10;
+        public int TextDelay { get; set; } = -1;
+        public PunctuationData BasePunctuationDelay { get; set; } = null;
+        public int PunctuationDelayCap { get; set; } = -1;
+        public Dictionary<string, PunctuationData> PunctuationDelays { get; set; } = null;
+    }
+
+    public class PunctuationData
+    {
+        public int Delay { get; set; } = 10;
+        public bool ForceSet { get; set; } = false;
+        public bool Locks { get; set; } = false;
     }
 
     public class DialogueCharacterData(int index, int textLength, int lineNumber)
