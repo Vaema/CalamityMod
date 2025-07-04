@@ -555,7 +555,7 @@ HeavenfallenStardisk: {
 		'''
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
 		Explodes into a star of astral bolts on hit
-		Stealth strikes throw three disks that rain astral energy bolts from the sky
+		Stealth strikes rain astral energy bolts from the sky
 		'''
 }
 
