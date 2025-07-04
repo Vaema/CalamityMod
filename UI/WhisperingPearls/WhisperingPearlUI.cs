@@ -83,6 +83,9 @@ namespace CalamityMod.UI.WhisperingPearls
             TextEffects = [];
             UniqueScales = [];
 
+            if (DialogueData.Dialogues[currentPage].Event != null)
+                return;
+
             int[] lineLengths = new int[DialogueData[currentPage].Lines.Length];
 
             int fullLength = 0;
@@ -191,13 +194,31 @@ namespace CalamityMod.UI.WhisperingPearls
 
             base.Update(gameTime);
 
-            if (!SwitchingPage)
+            if (DialogueData[currentPage].Event != null)
+            {
+                DialogueData[currentPage].Event.UpdateEvent();
+                if(DialogueData[currentPage].Event.IsOver)
+                {
+                    SwitchingPage = false;
+                    SwitchCounter = 0;
+                    currentPage++;
+
+                    Activate();
+                    return;
+                }
+            }
+            else if (!SwitchingPage)
             {
                 DistanceOpacity = 1 - MathHelper.Clamp((distFromPearl - 150) / 150f, 0f, 1f);
 
                 int textDelay = DialogueData.TextDelay;
                 if (DialogueData[currentPage].TextDelay != -1)
                     textDelay = DialogueData[currentPage].TextDelay;
+
+                if (DialogueData[currentPage].Event != null && !DialogueData[currentPage].Event.IsOver)
+                {
+                    DialogueData[currentPage].Event.UpdateEvent();
+                }
 
                 if (textIndex < Text.Length)
                 {
@@ -272,6 +293,7 @@ namespace CalamityMod.UI.WhisperingPearls
                     SwitchingPage = false;
                     SwitchCounter = 0;
                     currentPage++;
+
                     Activate();
                     return;
                 }
@@ -679,6 +701,8 @@ namespace CalamityMod.UI.WhisperingPearls
         public PunctuationData BasePunctuationDelay { get; set; } = null;
         public int PunctuationDelayCap { get; set; } = -1;
         public Dictionary<string, PunctuationData> PunctuationDelays { get; set; } = null;
+
+        public DialogueEvent Event { get; set; } = null;
     }
 
     public class PunctuationData
