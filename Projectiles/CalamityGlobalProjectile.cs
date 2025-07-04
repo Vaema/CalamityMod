@@ -521,10 +521,10 @@ namespace CalamityMod.Projectiles
                 // Accelerate if fired in a spread from Skeletron in Rev+
                 if (revSkeletronAcceleratingSkull)
                 {
-                    float maxVelocity = BossRushEvent.BossRushActive ? 20f : CalamityWorld.death ? 18f : 15f;
+                    float maxVelocity = CalamityWorld.death ? 18f : 15f;
                     if (projectile.velocity.Length() < maxVelocity)
                     {
-                        float acceleration = BossRushEvent.BossRushActive ? 1.02f : 1.015f;
+                        float acceleration = 1.015f;
                         projectile.velocity *= acceleration;
                         if (projectile.velocity.Length() > maxVelocity)
                         {
@@ -563,7 +563,7 @@ namespace CalamityMod.Projectiles
                     num133 = Player.FindClosest(projectile.Center, 1, 1);
                     projectile.ai[1] += 1f;
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
-                    float homingEndTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                    float homingEndTime = CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
                         homingEndTime += 60f;
 
@@ -3312,7 +3312,7 @@ namespace CalamityMod.Projectiles
             {
                 int spreadOutTime = 90;
                 if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - spreadOutTime)
-                    projectile.velocity *= BossRushEvent.BossRushActive ? 1.017078f : 1.015525f;
+                    projectile.velocity *= 1.015525f;
             }
 
             // Zapinator lasers cannot trigger their damage multiplier more than once
@@ -4244,7 +4244,7 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
             {
-                float homingTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                float homingTime = CalamityWorld.death ? 105f : 90f;
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
 

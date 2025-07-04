@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Boss
             // Cal Clone bullet hell projectiles accelerate after a certain time has passed
             if (Projectile.ai[0] == 2f && (Main.expertMode || BossRushEvent.BossRushActive) && Projectile.timeLeft < 1260)
             {
-                if (Projectile.velocity.Length() < (BossRushEvent.BossRushActive ? 12.5f : 10f))
+                if (Projectile.velocity.Length() < 10f)
                     Projectile.velocity *= 1.005f;
             }
 

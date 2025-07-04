@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
             CooldownSlot = ImmunityCooldownID.Bosses;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 96 : timeLeft;
+            Projectile.timeLeft = timeLeft;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             int fadeInTime = 3;
-            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - ((BossRushEvent.BossRushActive ? 96 : timeLeft) - fadeInTime)) / (float)fadeInTime), 0f, 1f);
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - (timeLeft - fadeInTime)) / (float)fadeInTime), 0f, 1f);
 
             Lighting.AddLight(Projectile.Center, 0f, 0.6f * Projectile.Opacity, 0f);
 
@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Plasma bolts
-                int totalProjectiles = BossRushEvent.BossRushActive ? 12 : 8;
+                int totalProjectiles = 8;
 
                 // Reduce the total amount of projectiles by half if Ares Plasma Arm is shooting them and in deathray phase and not the last mech
                 if (Projectile.ai[0] == -1f)

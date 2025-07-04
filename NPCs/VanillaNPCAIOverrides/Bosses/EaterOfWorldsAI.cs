@@ -21,8 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Causes it to split far more in death mode
             if ((((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && death) || CalamityWorld.LegendaryMode)
@@ -38,7 +37,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
             int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
 
@@ -47,14 +46,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 enrage = false;
 
             float enrageScale = 0f;
-            if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
+            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (!Main.player[npc.target].ZoneCorrupt || bossRush)
+            if (!Main.player[npc.target].ZoneCorrupt && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -543,7 +542,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Despawn
                     bool shouldDespawn = npc.type == NPCID.EaterofWorldsHead && Main.player[npc.target].dead;
-                    if (shouldDespawn && !bossRush)
+                    if (shouldDespawn)
                     {
                         bool everyoneDead = true;
                         for (int i = 0; i < Main.maxPlayers; i++)

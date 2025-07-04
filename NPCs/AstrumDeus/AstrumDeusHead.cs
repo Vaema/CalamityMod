@@ -89,9 +89,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             AIType = -1;
             NPC.knockBackResist = 0f;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.5f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.4f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.35f;
@@ -149,15 +147,14 @@ namespace CalamityMod.NPCs.AstrumDeus
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             // Difficulty variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
                 enrageScale += 1.5f;
             }
 

@@ -137,10 +137,9 @@ namespace CalamityMod.NPCs.CalClone
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
             // Variables for increasing difficulty
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -289,10 +288,10 @@ namespace CalamityMod.NPCs.CalClone
             // Target variable
             Player player = Main.player[NPC.target];
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -300,16 +299,6 @@ namespace CalamityMod.NPCs.CalClone
             Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.position.Y + NPC.height - 59f);
             Vector2 lookAt = new Vector2(player.position.X - (player.width / 2), player.position.Y - (player.height / 2));
             Vector2 rotationVector = npcCenter - lookAt;
-
-            // Boss Rush predictive charge rotation
-            if (NPC.ai[1] == 4f && phase4 && bossRush)
-            {
-                // Velocity
-                float chargeVelocity = 30f;
-                chargeVelocity += 5f * enrageScale;
-                lookAt += Main.player[NPC.target].velocity * 20f;
-                rotationVector = Vector2.Normalize(npcCenter - lookAt) * chargeVelocity;
-            }
 
             float rotation = (float)Math.Atan2(rotationVector.Y, rotationVector.X) + MathHelper.PiOver2;
             if (rotation < 0f)
@@ -464,7 +453,7 @@ namespace CalamityMod.NPCs.CalClone
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
                             float gigaBlastFrequency = (CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
-                            float projSpeed = bossRush ? 6.25f : 5f;
+                            float projSpeed = 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {
                                 if (calamityGlobalNPC.newAI[3] % gigaBlastFrequency == 0f) // Blasts from top
@@ -493,7 +482,7 @@ namespace CalamityMod.NPCs.CalClone
                         {
                             int type = ModContent.ProjectileType<BrimstoneHellblast2>();
                             int damage = NPC.GetProjectileDamage(type);
-                            float projSpeed = bossRush ? 4.5f : 4f;
+                            float projSpeed = 4f;
                             // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
                             if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f && calamityGlobalNPC.newAI[2] != 2f)
                             {
@@ -618,7 +607,7 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         int type = ModContent.ProjectileType<BrimstoneHellblast2>();
                         int damage = NPC.GetProjectileDamage(type);
-                        float projSpeed = bossRush ? 5f : 4f;
+                        float projSpeed = 4f;
                         if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
@@ -768,7 +757,7 @@ namespace CalamityMod.NPCs.CalClone
                 float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
                 chargeVelocity += 5f * enrageScale;
 
-                Vector2 vector = Vector2.Normalize(player.Center + (phase4 && bossRush ? player.velocity * 20f : Vector2.Zero) - NPC.Center);
+                Vector2 vector = Vector2.Normalize(player.Center - NPC.Center);
                 NPC.velocity = vector * chargeVelocity;
 
                 NPC.ai[1] = 3f;

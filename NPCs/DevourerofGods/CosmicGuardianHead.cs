@@ -185,8 +185,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             Vector2 segmentDirection = NPC.Center;
             float dogHeadX = Main.npc[CalamityGlobalNPC.DoGHead].position.X + (Main.npc[CalamityGlobalNPC.DoGHead].width / 2);
             float dogHeadY = Main.npc[CalamityGlobalNPC.DoGHead].position.Y + (Main.npc[CalamityGlobalNPC.DoGHead].height / 2);
-            float segmentVelocity = BossRushEvent.BossRushActive ? 30f : CalamityWorld.revenge ? 25f : 23f;
-            float velocityMult = BossRushEvent.BossRushActive ? 0.9f : CalamityWorld.revenge ? 0.75f : 0.23f;
+            float segmentVelocity = CalamityWorld.revenge ? 25f : 23f;
+            float velocityMult = CalamityWorld.revenge ? 0.75f : 0.23f;
             float maxDistanceFromDoGHead = 160f;
 
             if (increaseSpeedMore)
