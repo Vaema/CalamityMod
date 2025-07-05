@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.extraUpdates = 1;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = Projectile.ai[0] == 2f ? 480 : 200;
+            Projectile.timeLeft = 300;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                     dust.noLightEmittence = false;
                 }
             }
-            if (Main.rand.NextBool())
+            if (Main.rand.NextBool(2) && Projectile.ai[0] == 2f)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -63,15 +63,15 @@ namespace CalamityMod.Projectiles.Boss
                     float smokeScale = Main.rand.NextFloat(0.15f, 0.3f);
                     float smokeOpacity = Main.rand.NextFloat(0.75f, 0.9f);
 
-                    HeavySmokeParticle ghastlySmoke = new(Projectile.Center, smokeVelocity, Projectile.ai[0] == 2f ? Color.SkyBlue : Color.Purple, smokeLifetime, smokeScale, smokeOpacity, 0.02f, true);
+                    HeavySmokeParticle ghastlySmoke = new(Projectile.Center, smokeVelocity, Color.SkyBlue, smokeLifetime, smokeScale, smokeOpacity, 0.02f, true);
                     GeneralParticleHandler.SpawnParticle(ghastlySmoke);
                 }
             }
-            if (Projectile.ai[0] != 2f)
+            if (Main.rand.NextBool(2) && Projectile.ai[0] != 2f)
             {
                 float offset = 40f;
                 Vector2 spawnPos = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.Zero) * offset;
-                Particle spark = new VoidSparkParticle(spawnPos, Projectile.velocity, false, 10, 0.12f, Color.Purple, 0.45f);
+                Particle spark = new VoidSparkParticle(spawnPos, Projectile.velocity, false, 5, 0.14f, Color.Purple, 0.45f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
         }
@@ -86,19 +86,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            // Spawn a bunch of dust along the length of the trail a soul is killed.
-            BezierCurve curve = new(Projectile.oldPos);
-            for (int i = 0; i < 35; i++)
-            {
-                Vector2 dustSpawnPosition = curve.Evaluate(Main.rand.NextFloat());
-                Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 3f;
-                float dustScale = Main.rand.NextFloat(1.2f, 1.8f);
-                Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
-                dust.noGravity = true;
-                dust.noLight = false;
-                dust.noLightEmittence = false;
-            }
-
             // Spawn a burst of dust at the center.
             for (int i = 0; i < 12; i++)
             {
@@ -166,7 +153,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Render the main trail for the body for the soul.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * Projectile.ai[0] == 2f ? 29 : 58);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * Projectile.ai[0] == 2f ? 29 : 59);
 
             // Render a smaller, pure white trail in the same position to represent the glowing white core of the soul.
             Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
