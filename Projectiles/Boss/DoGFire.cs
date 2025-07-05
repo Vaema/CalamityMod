@@ -1,22 +1,29 @@
 ﻿using System;
+using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.DataStructures;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGFire : ModProjectile, ILocalizedModType
+    public class DoGFire : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Boss";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 6;
-            ProjectileID.Sets.TrailCacheLength[Type] = 3;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
-
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -33,123 +40,138 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f && Projectile.ai[1] == 0f)
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (Main.rand.NextBool(12))
             {
-                Projectile.localAI[0] = 1f;
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 dustSpawnPosition = Projectile.Center + Main.rand.NextVector2Circular(6f, 6f);
+                    Vector2 dustVelocity = Projectile.velocity * -1.2f;
+                    float dustScale = Main.rand.NextFloat(0.6f, 0.8f);
+                    Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
+                    dust.noGravity = true;
+                    dust.noLight = false;
+                    dust.noLightEmittence = false;
+                }
             }
-
-            Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
+            if (Main.rand.NextBool())
             {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 smokeVelocity = Main.rand.NextVector2Circular(1f, 1f) * 0.65f;
+                    int smokeLifetime = 12;
+                    float smokeScale = Main.rand.NextFloat(0.15f, 0.3f);
+                    float smokeOpacity = Main.rand.NextFloat(0.75f, 0.9f);
+
+                    HeavySmokeParticle ghastlySmoke = new(Projectile.Center, smokeVelocity, Projectile.ai[0] == 2f ? Color.SkyBlue : Color.Purple, smokeLifetime, smokeScale, smokeOpacity, 0.02f, true);
+                    GeneralParticleHandler.SpawnParticle(ghastlySmoke);
+                }
             }
-            if (Projectile.frame > 5)
-                Projectile.frame = 0;
-
-            int dust = Dust.NewDust(new Vector2(Projectile.position.X + Projectile.velocity.X, Projectile.position.Y + Projectile.velocity.Y), Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X, Projectile.velocity.Y, 100, default, 0.8f);
-            Main.dust[dust].noGravity = true;
-
-            Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
-
-            if (Projectile.ai[1] > 0f)
+            if (Projectile.ai[0] != 2f)
             {
-                if (Projectile.velocity.Length() < Projectile.ai[1])
-                    Projectile.velocity *= Projectile.ai[0];
+                float offset = 40f;
+                Vector2 spawnPos = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.Zero) * offset;
+                Particle spark = new VoidSparkParticle(spawnPos, Projectile.velocity, false, 10, 0.12f, Color.Purple, 0.45f);
+                GeneralParticleHandler.SpawnParticle(spark);
             }
         }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override Color? GetAlpha(Color lightColor) => new Color(255, 255, 255, 0);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), CalamityUtils.SecondsToFrames(8));
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), CalamityUtils.SecondsToFrames(6));
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item74, Projectile.Center);
-            Projectile.position = Projectile.Center;
-            Projectile.width = Projectile.height = 64;
-            Projectile.position.X = Projectile.position.X - Projectile.width / 2;
-            Projectile.position.Y = Projectile.position.Y - Projectile.height / 2;
-            for (int i = 0; i < 5; i++)
+            // Spawn a bunch of dust along the length of the trail a soul is killed.
+            BezierCurve curve = new(Projectile.oldPos);
+            for (int i = 0; i < 35; i++)
             {
-                int godSlay = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                Main.dust[godSlay].velocity *= 3f;
-                if (Main.rand.NextBool())
-                {
-                    Main.dust[godSlay].scale = 0.5f;
-                    Main.dust[godSlay].fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                }
-            }
-            for (int j = 0; j < 10; j++)
-            {
-                int godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 3f);
-                Main.dust[godSlay2].noGravity = true;
-                Main.dust[godSlay2].velocity *= 5f;
-                godSlay2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 2f);
-                Main.dust[godSlay2].velocity *= 2f;
-            }
-            for (int k = 0; k < 200; k++)
-            {
-                float dustScale = 12f;
-                if (k < 150)
-                    dustScale = 9f;
-                if (k < 100)
-                    dustScale = 6f;
-                if (k < 50)
-                    dustScale = 3f;
-
-                int scalingDust = Dust.NewDust(Projectile.Center, 6, 6, DustID.ShadowbeamStaff, 0f, 0f, 100, default, 1f);
-                float scalingDustVelX = Main.dust[scalingDust].velocity.X;
-                float scalingDustVelY = Main.dust[scalingDust].velocity.Y;
-
-                if (scalingDustVelX == 0f && scalingDustVelY == 0f)
-                    scalingDustVelX = 1f;
-
-                float scalingDustVelocity = (float)Math.Sqrt(scalingDustVelX * scalingDustVelX + scalingDustVelY * scalingDustVelY);
-                scalingDustVelocity = dustScale / scalingDustVelocity;
-                scalingDustVelX *= scalingDustVelocity;
-                scalingDustVelY *= scalingDustVelocity;
-
-                float scale = 1f;
-                switch ((int)dustScale)
-                {
-                    case 4:
-                        scale = 1.2f;
-                        break;
-                    case 8:
-                        scale = 1.1f;
-                        break;
-                    case 12:
-                        scale = 1f;
-                        break;
-                    case 16:
-                        scale = 0.9f;
-                        break;
-                    default:
-                        break;
-                }
-
-                Dust dust = Main.dust[scalingDust];
-                dust.velocity *= 0.5f;
-                dust.velocity.X += scalingDustVelX;
-                dust.velocity.Y += scalingDustVelY;
-                dust.scale = scale;
+                Vector2 dustSpawnPosition = curve.Evaluate(Main.rand.NextFloat());
+                Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 3f;
+                float dustScale = Main.rand.NextFloat(1.2f, 1.8f);
+                Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
                 dust.noGravity = true;
+                dust.noLight = false;
+                dust.noLightEmittence = false;
+            }
+
+            // Spawn a burst of dust at the center.
+            for (int i = 0; i < 12; i++)
+            {
+                Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
+                float dustScale = Main.rand.NextFloat(1.8f, 2.4f);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
+                dust.noGravity = true;
+                dust.noLight = false;
+                dust.noLightEmittence = false;
             }
             Projectile.Damage();
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            return false;
+        }
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Projectile.ai[0] == 2f)
+            {
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+            }
+        }
+
+        public float FireWidthFunction(float completion)
+        {
+            float width;
+            float maxBodyWidth = Projectile.scale * 120f;
+            float curveRatio = 0.5f;
+
+            if (completion < curveRatio)
+                width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+            return width;
+        }
+
+        public Color FireColorFunction(float completion)
+        {
+            Color tipColor = Color.Transparent;
+            return Color.Lerp(Projectile.ai[0] == 2f ? Color.Cyan : Color.Purple * 1.3f, tipColor, completion);
+        }
+
+        public float FireCoreWidthFunction(float completion)
+        {
+            float width;
+            float maxBodyWidth = Projectile.scale * Projectile.ai[0] == 2f ? 64f : 78f;
+            float curveRatio = 0.3f;
+
+            if (completion < curveRatio)
+                width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+            return width;
+        }
+
+        public Color FireCoreColorFunction(float completion)
+        {
+            Color tipColor = Color.Lerp(Projectile.ai[0] == 2f ? Color.BlueViolet : Color.Purple, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            return Color.Lerp(Color.BlueViolet, tipColor, completion);
+        }
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        {
+            // Render the main trail for the body for the soul.
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * Projectile.ai[0] == 2f ? 29 : 58);
+
+            // Render a smaller, pure white trail in the same position to represent the glowing white core of the soul.
+            Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length * 29);
         }
     }
 }

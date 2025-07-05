@@ -821,7 +821,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     int damage = NPC.GetProjectileDamage(type);
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer, 2f);
 
                                     calamityGlobalNPC.newAI[0] = 0f;
                                 }
@@ -1467,7 +1467,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     int damage = NPC.GetProjectileDamage(type);
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer, 2f);
 
                                     calamityGlobalNPC.newAI[0] = 0f;
                                 }
