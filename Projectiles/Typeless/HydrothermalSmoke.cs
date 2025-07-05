@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 float upwardVariation = Main.rand.NextFloat(-4.5f, -8f);
                 MediumMistParticle mist = new MediumMistParticle(Projectile.position, -Projectile.velocity + new Vector2(0.5f, upwardVariation), // This velocity makes it slowly float upward
-                Main.rand.NextBool(3) ? Color.DeepSkyBlue : Color.SkyBlue, Color.LightSkyBlue, Main.rand.NextFloat(0.4f, 0.65f), 130); 
+                Main.rand.NextBool(3) ? Color.LightSteelBlue : Color.SteelBlue, Color.LightSlateGray, Main.rand.NextFloat(0.4f, 0.65f), 130); 
                 GeneralParticleHandler.SpawnParticle(mist);
             }
         }
