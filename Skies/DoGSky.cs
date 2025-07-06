@@ -5,6 +5,7 @@ using CalamityMod.Events;
 using CalamityMod.Graphics;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.DevourerofGods;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -415,7 +416,8 @@ namespace CalamityMod.Skies
             Asset<Texture2D> cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing");
 
             shader.Parameters["opacityCutoffValue"].SetValue(0.8f * SkyIntensity);
-            shader.Parameters["fadeoutPower"].SetValue(1.75f);
+            shader.Parameters["fadeoutPower"].SetValue(1f);
+            shader.Parameters["overallOpacity"].SetValue(0.2f);
             shader.CurrentTechnique.Passes[0].Apply();
 
             for (int i = 0; i < RealityCracks.Count; i++)
@@ -430,8 +432,8 @@ namespace CalamityMod.Skies
         {
             // Impose the distortion rift contents onto the primitives via shader.
             var metaballShader = CalamityShaders.MetaballEdgeShader;
-            Texture2D distortionRiftContents = DoGWorldVisualChangesManager.DistortionRiftBackgroundContentsTarget;
-            Texture2D distortionRift = DoGWorldVisualChangesManager.DistortionRiftPrimitivesTarget;
+            Texture2D distortionRiftContents = DoGVisualsManager.DistortionRiftBackgroundContentsTarget;
+            Texture2D distortionRift = DoGVisualsManager.DistortionRiftPrimitivesTarget;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
@@ -476,143 +478,6 @@ namespace CalamityMod.Skies
         public override bool IsActive()
         {
             return CanSkyBeActive || SkyIntensity > 0f;
-        }
-    }
-
-    public class DoGWorldVisualChangesManager : ModSystem
-    {
-        public float FillProgress = 0;
-
-        public static ManagedRenderTarget DistortionRiftBackgroundContentsTarget { get; private set; }
-
-        public static ManagedRenderTarget DistortionRiftPrimitivesTarget { get; private set; }
-
-        public override void OnModLoad()
-        {
-            if (!Main.dedServ)
-                On_Main.DrawSunAndMoon += DiscardCelestialObjects;
-        }
-
-        public override void PostSetupContent()
-        {
-            if (Main.dedServ)
-                return;
-
-            Main.QueueMainThreadAction(() =>
-            {
-                DistortionRiftBackgroundContentsTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
-                DistortionRiftPrimitivesTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
-            });
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
-        }
-
-        public override void OnModUnload()
-        {
-            if (Main.dedServ)
-                return;
-
-            On_Main.DrawSunAndMoon -= DiscardCelestialObjects;
-            RenderTargetManager.RenderTargetUpdateLoopEvent -= PrepareTargets;
-        }
-
-        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
-        {
-            var cplayer = Main.LocalPlayer.Calamity();
-            if (cplayer.monolithDevourerBShader > 0 || cplayer.monolithDevourerPShader > 0 || NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()))
-                FillProgress += 0.05f;
-            else
-                FillProgress -= 0.05f;
-
-            // Darken the lighting color of both the background and foreground.
-            FillProgress = MathHelper.Clamp(FillProgress, 0, 1);
-            if (FillProgress > 0)
-            {
-                Color colorToUse = DoGSky.DoGSkyColor;
-                backgroundColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, Color.White.R * 0.035f, FillProgress);
-                backgroundColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, Color.White.G * 0.035f, FillProgress);
-                backgroundColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, Color.White.B * 0.035f, FillProgress);
-                backgroundColor = new(backgroundColor.ToVector3() + colorToUse.ToVector3() * 0.025f * FillProgress);
-
-                tileColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, 35f, FillProgress);
-                tileColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, 35f, FillProgress);
-                tileColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, 35f, FillProgress);
-                tileColor = new(tileColor.ToVector3() + colorToUse.ToVector3() * 0.075f * FillProgress);
-            }
-        }
-
-        private void DiscardCelestialObjects(On_Main.orig_DrawSunAndMoon orig, Main self, Main.SceneArea sceneArea, Color moonColor, Color sunColor, float tempMushroomInfluence)
-        {
-            if (DoGSky.SkyIntensity > 0f)
-                tempMushroomInfluence = DoGSky.SkyIntensity;
-
-            orig(self, sceneArea, moonColor, sunColor, tempMushroomInfluence);
-        }
-
-        private void PrepareTargets()
-        {
-            DistortionRiftBackgroundContentsTarget.SwapTo();
-
-            // Draw the background which'll be displayed inside the rift onto a render target.
-            DrawDistortionRiftBackground();
-
-            DistortionRiftPrimitivesTarget.SwapTo();
-
-            // Draw the primitives which compromise the rift to another render target.
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-            if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
-                (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
-            Main.spriteBatch.End();
-
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
-        }
-
-        private static void DrawDistortionRiftBackground()
-        {
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-
-            // Draw a black tile behind everything since the shader used to generate the clouds will appear transparent with dark colors.
-            Main.spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-
-            // Draw the layer of rolling clouds in the background.
-            DrawDistortionBackgroundClouds();
-
-            Main.spriteBatch.End();
-        }
-
-        private static void DrawDistortionBackgroundClouds()
-        {
-            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
-
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Asset<Texture2D> cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds");
-            Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
-
-            rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.7f);
-            rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.12f);
-            rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(2f);
-            rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
-            rollingCloudsShader.Parameters["erosionTextureScale"].SetValue(0.26f);
-            rollingCloudsShader.Parameters["erosionMin"].SetValue(0.06f);
-            rollingCloudsShader.Parameters["gradientPrecision"].SetValue(20f);
-
-            rollingCloudsShader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
-            rollingCloudsShader.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.001f);
-
-            rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.Black, Color.DarkGray, 0.25f).ToVector3());
-            rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.4f).ToVector3());
-
-            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture.Value;
-            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-
-            Main.instance.GraphicsDevice.Textures[2] = erosionTexture.Value;
-            Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
-
-            rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(cloudsTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
     }
 }

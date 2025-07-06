@@ -485,11 +485,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float timeWhenDoGShouldTeleportDuringPhase2Countdown = 61f;
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
-            if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 30)
-            {
-                Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
-                GeneralParticleHandler.SpawnParticle(pulse);
-            }
+            
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
                 Teleport(player, bossRush, death, revenge, expertMode, phase5);
 
@@ -640,13 +636,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (teleportTimer > 0)
                     {
                         teleportTimer--;
-                        if (teleportTimer == 30)
-                        {
-
-                            Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
-                            GeneralParticleHandler.SpawnParticle(pulse);
-                        }
-                        // Teleport
                         if (teleportTimer == 0)
                             Teleport(player, bossRush, death, revenge, expertMode, phase5);
                     }
@@ -693,7 +682,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 // Disable teleports
                                 if (teleportTimer > 0)
                                 {
-                                    GetRiftLocation(false);
+                                    GetRiftLocation();
                                     teleportTimer = 0;
                                 }
                             }
@@ -2135,16 +2124,26 @@ namespace CalamityMod.NPCs.DevourerofGods
                 int randomRange = Main.zenithWorld ? 960 : 48;
                 float distance = 500f;
                 Vector2 targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                int rift = Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                if (Main.projectile.IndexInRange(rift))
+                {
+                    int timeForPhaseTransition = ((CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal);
+                    Main.projectile[rift].ModProjectile<DoGTeleportRift>().RiftLifetime = phase2Transition ? timeForPhaseTransition : teleportTimer;
+                }
 
+                // GFB, spawn a ton of fake rifts alongside the real one.
                 if (Main.zenithWorld)
                 {
-                    // Fake portals galore
                     randomRange = 2000;
                     for (int k = 0; k < 35; k++)
                     {
                         targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI, ai2: 1f);
+                        int faker = Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                        if (Main.projectile.IndexInRange(faker))
+                        {
+                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().FakeRift = true;
+                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().RiftLifetime = teleportTimer;
+                        }
                     }
                 }
             }
@@ -2152,7 +2151,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         private void Teleport(Player player, bool bossRush, bool death, bool revenge, bool expertMode, bool phase5)
         {
-            Vector2 newPosition = GetRiftLocation(true);
+            Vector2 newPosition = GetRiftLocation();
 
             if ((!AwaitingPhase2Teleport && (player.dead || !player.active)) || newPosition == default)
                 return;
@@ -2326,28 +2325,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             DeathAnimationTimer++;
         }
 
-        private Vector2 GetRiftLocation(bool spawnDust)
-        {
-            Vector2 realSpot = default;
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
-                {
-                    if (!spawnDust)
-                        proj.ai[0] = -1f;
-
-                    proj.Kill();
-
-                    if (proj.ai[2] == 1f)
-                        continue;
-
-                    realSpot = proj.Center;
-                }
-            }
-            return realSpot;
-        }
-
-        private Vector2 GetRiftLocationSafe()
+        private Vector2 GetRiftLocation()
         {
             Vector2 realSpot = default;
             foreach (Projectile proj in Main.ActiveProjectiles)
@@ -2355,6 +2333,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
                 {
                     realSpot = proj.Center;
+                    // Safeguard for if the rift doesn't activate at its designated time.
+                    proj.ModProjectile<DoGTeleportRift>().SwitchAIStates();
                 }
             }
             return realSpot;

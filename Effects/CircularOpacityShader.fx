@@ -2,6 +2,7 @@
 
 float opacityCutoffValue;
 float fadeoutPower;
+float overallOpacity;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
@@ -14,9 +15,10 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float4 color = tex2D(baseTexture, coords);
     
     // Fade out from the edges of the texture to the middle depending on the cutoff value.
-    color.rgba *= pow(-polarCoords.y + opacityCutoffValue, fadeoutPower);
-    
-    return color * sampleColor;
+    if (-polarCoords.y < opacityCutoffValue)
+        color.rgba *= pow(-polarCoords.y / (polarCoords.y - opacityCutoffValue), -fadeoutPower);
+   
+    return color * sampleColor * overallOpacity;
 }
 
 technique Technique1
