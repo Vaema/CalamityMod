@@ -100,9 +100,6 @@ namespace CalamityMod.NPCs.Crabulon
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
             }
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -1003,6 +1000,7 @@ namespace CalamityMod.NPCs.Crabulon
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         // Can only hit the target if within certain distance
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

@@ -8,7 +8,6 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         internal const int ArmorCrunchDebuffTime = 150;
-        internal const float StealthStrikeDamageMultiplier = 0.08f;
         public override void SetDefaults()
         {
             Item.width = 14;
@@ -21,7 +20,6 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().rottenDogTooth = true;
-            player.Calamity().bonusStealthDamage += StealthStrikeDamageMultiplier;
         }
     }
 }

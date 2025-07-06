@@ -27,7 +27,7 @@ namespace CalamityMod.Buffs.StatBuffs
                 {
                     player.breath = player.breathMax + 3;
                 }
-                if (Main.myPlayer == player.whoAmI && player.wet && NPC.downedBoss3)
+                if (Main.myPlayer == player.whoAmI && player.Calamity().countsAsAnyWet && NPC.downedBoss3)
                 {
                     player.AddBuff(ModContent.BuffType<AquaticHeartWaterSpeed>(), 360);
                 }

@@ -146,8 +146,6 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
-        public override bool? CanDamage() => false;
-
         #endregion
 
         #region AI

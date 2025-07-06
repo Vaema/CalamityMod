@@ -60,7 +60,6 @@ namespace CalamityMod.NPCs.SlimeGod
         public static readonly SoundStyle ShotSound = new("CalamityMod/Sounds/Custom/SlimeGodShot", 2);
         public static readonly SoundStyle BigShotSound = new("CalamityMod/Sounds/Custom/SlimeGodBigShot", 2);
 
-        public static Asset<Texture2D> ZenithSeedEyeTexture;
         public static Asset<Texture2D> EyeTexture;
         public static Asset<Texture2D> OverlayTexture;
 
@@ -73,22 +72,10 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
-                Scale = 0.5f,
-                PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SlimeGod_Bestiary",
-                PortraitPositionXOverride = 40,
-                PortraitPositionYOverride = 40
-            };
-            value.Position.X += 65;
-            value.Position.Y += 35;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
 
             if (!Main.dedServ)
             {
-                ZenithSeedEyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes", AssetRequestMode.AsyncLoad);
                 EyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreEye", AssetRequestMode.AsyncLoad);
                 OverlayTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreOverlay", AssetRequestMode.AsyncLoad);
             }
@@ -122,9 +109,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -636,10 +620,9 @@ namespace CalamityMod.NPCs.SlimeGod
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
-            Texture2D pog = ZenithSeedEyeTexture.Value;
 
             // Used for animating the eye
-            if (NPC.localAI[0] % 6f == 0f)
+            if (NPC.localAI[0] % 6f == 0f && !NPC.IsABestiaryIconDummy)
             {
                 eyeFrameDrawn++;
                 if (eyeFrameX == 0)
@@ -702,9 +685,6 @@ namespace CalamityMod.NPCs.SlimeGod
 
             // Draw the overlay
             spriteBatch.Draw(overlayTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
-
-            if (Main.zenithWorld)
-                spriteBatch.Draw(pog, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

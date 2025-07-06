@@ -263,9 +263,6 @@ namespace CalamityMod.NPCs.Providence
 
             if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.25f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -1388,7 +1385,7 @@ namespace CalamityMod.NPCs.Providence
                         if (!Main.dedServ)
                         {
                             Player player2 = Main.LocalPlayer;
-                            bool inLiquid = (player2.wet || player2.honeyWet) && !player2.lavaWet;
+                            bool inLiquid = player2.Calamity().countsAsAnyWet && !player2.lavaWet;
 
                             if (!player2.dead && player2.active && Vector2.Distance(player2.Center, NPC.Center) < 2800f && !inLiquid)
                             {

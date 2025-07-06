@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.height = 78;
             NPC.defense = 12;
 
-            NPC.LifeMaxNERB(2700, 3240, 80000);
+            NPC.LifeMaxNERB(2160, 2600, 80000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -67,10 +67,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Armor.Victide
             var modPlayer = player.Calamity();
             modPlayer.victideSet = true;
             player.ignoreWater = true;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 player.GetDamage<MeleeDamageClass>() += 0.1f;
                 player.lifeRegen += 3;

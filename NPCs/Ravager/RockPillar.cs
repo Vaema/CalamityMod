@@ -36,10 +36,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -128,7 +124,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
-
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
         public override bool CheckActive() => false;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

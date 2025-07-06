@@ -164,7 +164,7 @@ namespace CalamityMod.Events
                     ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>(), ModContent.NPCType<DesertNuisanceHeadYoung>(),
                     ModContent.NPCType<DesertNuisanceBodyYoung>(), ModContent.NPCType<DesertNuisanceTailYoung>() }),
 
-                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu, ModContent.NPCType<BloodlettingServant>() }),
+                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu }),
 
                 new Boss(ModContent.NPCType<Crabulon>(), TimeChangeContext.Day, type =>
                 {

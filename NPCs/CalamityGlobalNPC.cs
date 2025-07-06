@@ -188,8 +188,6 @@ namespace CalamityMod.NPCs
         public float velocityPriorToPhaseSwap = 0f;
         public const float velocityPriorToPhaseSwapIncrement = 0.1f;
 
-        public bool ShouldFallThroughPlatforms;
-
         /// <summary> Allows hostile NPCs to deal defense damage to the player, used mostly for hard-hitting bosses. </summary>
         public bool canBreakPlayerDefense = false;
 
@@ -222,20 +220,6 @@ namespace CalamityMod.NPCs
         private const double EnemyHPMultiplier = 1.25;
         /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
-        /// <summary>
-        /// Constant multiplier used to decrease vanilla boss health in Master Mode.<br/>
-        /// When combined with the universal health multiplier, results in 27.5% more health than Expert Mode.
-        /// </summary>
-        public const double MasterModeBossHPMultiplier = 0.85;
-
-        /// <summary> Constant multiplier used to decrease enemy health in Master Mode. </summary>
-        public const double MasterModeEnemyHPMultiplier = 0.75;
-        /// <summary> Constant multiplier used to decrease enemy damage in Master Mode. </summary>
-        public const double MasterModeEnemyDamageMultiplier = 0.9;
-        /// <summary> Constant multiplier used to decrease enemy knockback resistance. </summary>
-        public const float ExpertModeEnemyKnockbackMultiplier = 0.05f;
-        /// <summary> <inheritdoc cref="ExpertModeEnemyKnockbackMultiplier"/> </summary>
-        public const float MasterModeEnemyKnockbackMultiplier = 0.1f;
 
         /// <summary> Constant multiplier used for decreasing the health and damage of mechanical bosses if the Early Hardmode Progression Rework config is enabled. </summary>
         public const double EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Classic = 0.8;
@@ -296,7 +280,6 @@ namespace CalamityMod.NPCs
         public int tSad = 0;
         public int eutrophication = 0;
         public int webbed = 0;
-        public int slowed = 0;
         public int electrified = 0;
         public int pearlAura = 0;
         /// <summary>
@@ -556,8 +539,6 @@ namespace CalamityMod.NPCs
 
             myClone.velocityPriorToPhaseSwap = velocityPriorToPhaseSwap;
 
-            myClone.ShouldFallThroughPlatforms = ShouldFallThroughPlatforms;
-
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
@@ -593,7 +574,6 @@ namespace CalamityMod.NPCs
             myClone.tSad = tSad;
             myClone.eutrophication = eutrophication;
             myClone.webbed = webbed;
-            myClone.slowed = slowed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
             myClone.pearlAuraCounter = pearlAuraCounter;
@@ -1655,8 +1635,6 @@ namespace CalamityMod.NPCs
 
         public override void SetDefaults(NPC npc)
         {
-            ShouldFallThroughPlatforms = false;
-
             for (int i = 0; i < maxPlayerImmunities; i++)
                 dashImmunityTime[i] = 0;
 
@@ -1917,7 +1895,8 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.55);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                npc.scale = 1.15f;
             }
             else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)
             {
@@ -2893,7 +2872,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Sharkron2:
                     npc.width = npc.height = 36;
                     npc.chaseable = false;
-                    canBreakPlayerDefense = true;
                     break;
 
                 // Fix drawing issues with Golem's Free Head
@@ -3014,575 +2992,6 @@ namespace CalamityMod.NPCs
                     npc.life = npc.lifeMax;
                     npc.defDamage = npc.damage;
                 }
-            }
-
-            // Nerf KB resist in Expert and Master using this roundabout method
-            if (Main.expertMode)
-                AdjustExpertModeStatScaling(npc);
-
-            // Adjust a ton of enemy stats
-            switch (npc.type)
-            {
-                case NPCID.AngryBones:
-                case NPCID.AngryBonesBig:
-                case NPCID.AngryBonesBigHelmet:
-                case NPCID.AngryBonesBigMuscle:
-                case NPCID.BigBoned:
-                case NPCID.ShortBones:
-                case NPCID.AnomuraFungus:
-                case NPCID.Antlion:
-                case NPCID.WalkingAntlion:
-                case NPCID.GiantWalkingAntlion:
-                case NPCID.LarvaeAntlion:
-                case NPCID.FlyingAntlion:
-                case NPCID.GiantFlyingAntlion:
-                case NPCID.BabySlime:
-                case NPCID.BlackSlime:
-                case NPCID.BlazingWheel:
-                case NPCID.BloodCrawler:
-                case NPCID.BloodCrawlerWall:
-                case NPCID.BlueJellyfish:
-                case NPCID.GreenJellyfish:
-                case NPCID.PinkJellyfish:
-                case NPCID.BloodJelly:
-                case NPCID.FungoFish:
-                case NPCID.BlueSlime:
-                case NPCID.BoneSerpentBody:
-                case NPCID.BoneSerpentHead:
-                case NPCID.BoneSerpentTail:
-                case NPCID.CaveBat:
-                case NPCID.CochinealBeetle:
-                case NPCID.Crab:
-                case NPCID.Crawdad:
-                case NPCID.Crawdad2:
-                case NPCID.Crimera:
-                case NPCID.BigCrimera:
-                case NPCID.LittleCrimera:
-                case NPCID.CursedSkull:
-                case NPCID.CyanBeetle:
-                case NPCID.Demon:
-                case NPCID.DemonEye:
-                case NPCID.CataractEye:
-                case NPCID.CataractEye2:
-                case NPCID.DemonEye2:
-                case NPCID.DemonEyeOwl:
-                case NPCID.DemonEyeSpaceship:
-                case NPCID.DialatedEye:
-                case NPCID.DialatedEye2:
-                case NPCID.GreenEye:
-                case NPCID.GreenEye2:
-                case NPCID.PurpleEye:
-                case NPCID.PurpleEye2:
-                case NPCID.SleepyEye:
-                case NPCID.SleepyEye2:
-                case NPCID.DevourerBody:
-                case NPCID.DevourerHead:
-                case NPCID.DevourerTail:
-                case NPCID.DoctorBones:
-                case NPCID.DungeonSlime:
-                case NPCID.EaterofSouls:
-                case NPCID.BigEater:
-                case NPCID.LittleEater:
-                case NPCID.FaceMonster:
-                case NPCID.ArmedZombieEskimo:
-                case NPCID.ZombieEskimo:
-                case NPCID.FungiBulb:
-                case NPCID.Ghost:
-                case NPCID.GiantShelly:
-                case NPCID.GiantShelly2:
-                case NPCID.GiantWormBody:
-                case NPCID.GiantWormHead:
-                case NPCID.GiantWormTail:
-                case NPCID.Gnome:
-                case NPCID.GoblinScout:
-                case NPCID.GraniteFlyer:
-                case NPCID.GraniteGolem:
-                case NPCID.GreenSlime:
-                case NPCID.Harpy:
-                case NPCID.Hellbat:
-                case NPCID.GreekSkeleton:
-                case NPCID.Hornet:
-                case NPCID.HornetFatty:
-                case NPCID.HornetHoney:
-                case NPCID.HornetLeafy:
-                case NPCID.HornetSpikey:
-                case NPCID.HornetStingy:
-                case NPCID.BigHornetFatty:
-                case NPCID.BigHornetHoney:
-                case NPCID.BigHornetLeafy:
-                case NPCID.BigHornetSpikey:
-                case NPCID.BigHornetStingy:
-                case NPCID.BigMossHornet:
-                case NPCID.GiantMossHornet:
-                case NPCID.LittleHornetFatty:
-                case NPCID.LittleHornetHoney:
-                case NPCID.LittleHornetLeafy:
-                case NPCID.LittleHornetSpikey:
-                case NPCID.LittleHornetStingy:
-                case NPCID.LittleMossHornet:
-                case NPCID.MossHornet:
-                case NPCID.TinyMossHornet:
-                case NPCID.IceBat:
-                case NPCID.IceSlime:
-                case NPCID.JungleBat:
-                case NPCID.JungleSlime:
-                case NPCID.LacBeetle:
-                case NPCID.LavaSlime:
-                case NPCID.MaggotZombie:
-                case NPCID.ManEater:
-                case NPCID.MeteorHead:
-                case NPCID.MotherSlime:
-                case NPCID.MushiLadybug:
-                case NPCID.Nymph:
-                case NPCID.Pinky:
-                case NPCID.Piranha:
-                case NPCID.PurpleSlime:
-                case NPCID.Raven:
-                case NPCID.RedSlime:
-                case NPCID.Salamander:
-                case NPCID.Salamander2:
-                case NPCID.Salamander3:
-                case NPCID.Salamander4:
-                case NPCID.Salamander5:
-                case NPCID.Salamander6:
-                case NPCID.Salamander7:
-                case NPCID.Salamander8:
-                case NPCID.Salamander9:
-                case NPCID.SandSlime:
-                case NPCID.SeaSnail:
-                case NPCID.Shark:
-                case NPCID.ShimmerSlime:
-                case NPCID.Skeleton:
-                case NPCID.SkeletonAlien:
-                case NPCID.SkeletonAstonaut:
-                case NPCID.SkeletonTopHat:
-                case NPCID.ArmoredSkeleton:
-                case NPCID.BigHeadacheSkeleton:
-                case NPCID.BigMisassembledSkeleton:
-                case NPCID.BigPantlessSkeleton:
-                case NPCID.BigSkeleton:
-                case NPCID.BoneThrowingSkeleton:
-                case NPCID.BoneThrowingSkeleton2:
-                case NPCID.BoneThrowingSkeleton3:
-                case NPCID.BoneThrowingSkeleton4:
-                case NPCID.HeadacheSkeleton:
-                case NPCID.HeavySkeleton:
-                case NPCID.MisassembledSkeleton:
-                case NPCID.PantlessSkeleton:
-                case NPCID.SmallMisassembledSkeleton:
-                case NPCID.SmallHeadacheSkeleton:
-                case NPCID.SmallSkeleton:
-                case NPCID.SmallPantlessSkeleton:
-                case NPCID.SporeSkeleton:
-                case NPCID.TacticalSkeleton:
-                case NPCID.SkeletonSniper:
-                case NPCID.SkeletonCommando:
-                case NPCID.DarkCaster:
-                case NPCID.FireImp:
-                case NPCID.Snatcher:
-                case NPCID.SnowFlinx:
-                case NPCID.SpikeBall:
-                case NPCID.SpikedIceSlime:
-                case NPCID.SpikedJungleSlime:
-                case NPCID.SporeBat:
-                case NPCID.ZombieMushroom:
-                case NPCID.ZombieMushroomHat:
-                case NPCID.Squid:
-                case NPCID.Tim:
-                case NPCID.TombCrawlerBody:
-                case NPCID.TombCrawlerHead:
-                case NPCID.TombCrawlerTail:
-                case NPCID.UndeadMiner:
-                case NPCID.UndeadViking:
-                case NPCID.VoodooDemon:
-                case NPCID.Vulture:
-                case NPCID.WallCreeper:
-                case NPCID.WallCreeperWall:
-                case NPCID.YellowSlime:
-                case NPCID.Zombie:
-                case NPCID.ZombieDoctor:
-                case NPCID.ZombieElf:
-                case NPCID.ZombieElfBeard:
-                case NPCID.ZombieElfGirl:
-                case NPCID.ZombieMerman:
-                case NPCID.ZombiePixie:
-                case NPCID.ZombieRaincoat:
-                case NPCID.ZombieSuperman:
-                case NPCID.ZombieSweater:
-                case NPCID.ZombieXmas:
-                case NPCID.ArmedTorchZombie:
-                case NPCID.ArmedZombie:
-                case NPCID.ArmedZombieCenx:
-                case NPCID.ArmedZombiePincussion:
-                case NPCID.ArmedZombieSlimed:
-                case NPCID.ArmedZombieSwamp:
-                case NPCID.ArmedZombieTwiggy:
-                case NPCID.BaldZombie:
-                case NPCID.BigBaldZombie:
-                case NPCID.BigFemaleZombie:
-                case NPCID.BigPincushionZombie:
-                case NPCID.BigRainZombie:
-                case NPCID.BigSlimedZombie:
-                case NPCID.BigSwampZombie:
-                case NPCID.BigTwiggyZombie:
-                case NPCID.BigZombie:
-                case NPCID.BloodZombie:
-                case NPCID.FemaleZombie:
-                case NPCID.PincushionZombie:
-                case NPCID.SlimedZombie:
-                case NPCID.SmallBaldZombie:
-                case NPCID.SmallFemaleZombie:
-                case NPCID.SmallPincushionZombie:
-                case NPCID.SmallRainZombie:
-                case NPCID.SmallSlimedZombie:
-                case NPCID.SmallSwampZombie:
-                case NPCID.SmallTwiggyZombie:
-                case NPCID.SmallZombie:
-                case NPCID.SwampZombie:
-                case NPCID.TorchZombie:
-                case NPCID.TwiggyZombie:
-                case NPCID.AnglerFish:
-                case NPCID.AngryTrapper:
-                case NPCID.Arapaima:
-                case NPCID.ArmoredViking:
-                case NPCID.DesertBeast:
-                case NPCID.BlackRecluse:
-                case NPCID.BlackRecluseWall:
-                case NPCID.BloodFeeder:
-                case NPCID.Mummy:
-                case NPCID.BloodMummy:
-                case NPCID.DarkMummy:
-                case NPCID.LightMummy:
-                case NPCID.BlueArmoredBones:
-                case NPCID.BlueArmoredBonesMace:
-                case NPCID.BlueArmoredBonesNoPants:
-                case NPCID.BlueArmoredBonesSword:
-                case NPCID.BoneLee:
-                case NPCID.ChaosElemental:
-                case NPCID.Clinger:
-                case NPCID.BigMimicCorruption:
-                case NPCID.BigMimicCrimson:
-                case NPCID.BigMimicHallow:
-                case NPCID.BigMimicJungle:
-                case NPCID.CorruptSlime:
-                case NPCID.Corruptor:
-                case NPCID.Crimslime:
-                case NPCID.BigCrimslime:
-                case NPCID.LittleCrimslime:
-                case NPCID.CrimsonAxe:
-                case NPCID.CultistArcherBlue:
-                case NPCID.CultistArcherWhite:
-                case NPCID.CultistDevote:
-                case NPCID.CursedHammer:
-                case NPCID.Derpling:
-                case NPCID.Herpling:
-                case NPCID.DesertDjinn:
-                case NPCID.DiabolistRed:
-                case NPCID.DiabolistWhite:
-                case NPCID.DiggerBody:
-                case NPCID.DiggerHead:
-                case NPCID.DiggerTail:
-                case NPCID.DesertGhoul:
-                case NPCID.DesertGhoulCorruption:
-                case NPCID.DesertGhoulCrimson:
-                case NPCID.DesertGhoulHallow:
-                case NPCID.DuneSplicerBody:
-                case NPCID.DuneSplicerHead:
-                case NPCID.DuneSplicerTail:
-                case NPCID.DungeonSpirit:
-                case NPCID.EnchantedSword:
-                case NPCID.FloatyGross:
-                case NPCID.FlyingSnake:
-                case NPCID.Gastropod:
-                case NPCID.GiantBat:
-                case NPCID.GiantCursedSkull:
-                case NPCID.GiantFlyingFox:
-                case NPCID.GiantFungiBulb:
-                case NPCID.GiantTortoise:
-                case NPCID.IceTortoise:
-                case NPCID.HellArmoredBones:
-                case NPCID.HellArmoredBonesMace:
-                case NPCID.HellArmoredBonesSpikeShield:
-                case NPCID.HellArmoredBonesSword:
-                case NPCID.HoppinJack:
-                case NPCID.IceElemental:
-                case NPCID.Mimic:
-                case NPCID.IceMimic:
-                case NPCID.PresentMimic:
-                case NPCID.IchorSticker:
-                case NPCID.IcyMerman:
-                case NPCID.IlluminantBat:
-                case NPCID.IlluminantSlime:
-                case NPCID.JungleCreeper:
-                case NPCID.JungleCreeperWall:
-                case NPCID.DesertLamiaDark:
-                case NPCID.DesertLamiaLight:
-                case NPCID.Lavabat:
-                case NPCID.Lihzahrd:
-                case NPCID.LihzahrdCrawler:
-                case NPCID.Medusa:
-                case NPCID.Moth:
-                case NPCID.Necromancer:
-                case NPCID.NecromancerArmored:
-                case NPCID.Paladin:
-                case NPCID.PigronCorruption:
-                case NPCID.PigronCrimson:
-                case NPCID.PigronHallow:
-                case NPCID.Pixie:
-                case NPCID.PossessedArmor:
-                case NPCID.RaggedCaster:
-                case NPCID.RaggedCasterOpenCoat:
-                case NPCID.RedDevil:
-                case NPCID.RockGolem:
-                case NPCID.RuneWizard:
-                case NPCID.RustyArmoredBonesAxe:
-                case NPCID.RustyArmoredBonesFlail:
-                case NPCID.RustyArmoredBonesSword:
-                case NPCID.RustyArmoredBonesSwordNoArmor:
-                case NPCID.DesertScorpionWalk:
-                case NPCID.DesertScorpionWall:
-                case NPCID.SkeletonArcher:
-                case NPCID.Slimeling:
-                case NPCID.Slimer:
-                case NPCID.Slimer2:
-                case NPCID.ToxicSludge:
-                case NPCID.Unicorn:
-                case NPCID.WanderingEye:
-                case NPCID.Werewolf:
-                case NPCID.Wolf:
-                case NPCID.SeekerBody:
-                case NPCID.SeekerHead:
-                case NPCID.SeekerTail:
-                case NPCID.Wraith:
-                case NPCID.WyvernBody:
-                case NPCID.WyvernBody2:
-                case NPCID.WyvernBody3:
-                case NPCID.WyvernHead:
-                case NPCID.WyvernLegs:
-                case NPCID.WyvernTail:
-                case NPCID.BloodEelBody:
-                case NPCID.BloodEelHead:
-                case NPCID.BloodEelTail:
-                case NPCID.BloodSquid:
-                case NPCID.ChatteringTeethBomb:
-                case NPCID.Clown:
-                case NPCID.CorruptBunny:
-                case NPCID.CorruptGoldfish:
-                case NPCID.CorruptPenguin:
-                case NPCID.Drippler:
-                case NPCID.GoblinShark:
-                case NPCID.TheGroom:
-                case NPCID.TheBride:
-                case NPCID.CrimsonBunny:
-                case NPCID.CrimsonGoldfish:
-                case NPCID.CrimsonPenguin:
-                case NPCID.EyeballFlyingFish:
-                case NPCID.Dandelion:
-                case NPCID.AngryNimbus:
-                case NPCID.FlyingFish:
-                case NPCID.IceGolem:
-                case NPCID.RainbowSlime:
-                case NPCID.UmbrellaSlime:
-                case NPCID.Tumbleweed:
-                case NPCID.SandShark:
-                case NPCID.SandsharkCorrupt:
-                case NPCID.SandsharkCrimson:
-                case NPCID.SandsharkHallow:
-                case NPCID.SandElemental:
-                case NPCID.BloodNautilus:
-                case NPCID.GoblinArcher:
-                case NPCID.GoblinPeon:
-                case NPCID.GoblinSorcerer:
-                case NPCID.GoblinSummoner:
-                case NPCID.GoblinThief:
-                case NPCID.GoblinWarrior:
-                case NPCID.MisterStabby:
-                case NPCID.SnowBalla:
-                case NPCID.SnowmanGangsta:
-                case NPCID.Parrot:
-                case NPCID.PirateCaptain:
-                case NPCID.PirateCorsair:
-                case NPCID.PirateCrossbower:
-                case NPCID.PirateDeadeye:
-                case NPCID.PirateDeckhand:
-                case NPCID.PirateGhost:
-                case NPCID.PirateShipCannon:
-                case NPCID.MothronSpawn:
-                case NPCID.Mothron:
-                case NPCID.Butcher:
-                case NPCID.CreatureFromTheDeep:
-                case NPCID.DeadlySphere:
-                case NPCID.DrManFly:
-                case NPCID.Eyezor:
-                case NPCID.Frankenstein:
-                case NPCID.Fritz:
-                case NPCID.Nailhead:
-                case NPCID.Psycho:
-                case NPCID.Reaper:
-                case NPCID.ThePossessed:
-                case NPCID.SwampThing:
-                case NPCID.Vampire:
-                case NPCID.VampireBat:
-                case NPCID.BrainScrambler:
-                case NPCID.GigaZapper:
-                case NPCID.MartianWalker:
-                case NPCID.GrayGrunt:
-                case NPCID.MartianDrone:
-                case NPCID.MartianEngineer:
-                case NPCID.MartianOfficer:
-                case NPCID.RayGunner:
-                case NPCID.Scutlix:
-                case NPCID.ScutlixRider:
-                case NPCID.MartianTurret:
-                case NPCID.HeadlessHorseman:
-                case NPCID.Hellhound:
-                case NPCID.Splinterling:
-                case NPCID.Poltergeist:
-                case NPCID.Scarecrow1:
-                case NPCID.Scarecrow2:
-                case NPCID.Scarecrow3:
-                case NPCID.Scarecrow4:
-                case NPCID.Scarecrow5:
-                case NPCID.Scarecrow6:
-                case NPCID.Scarecrow7:
-                case NPCID.Scarecrow8:
-                case NPCID.Scarecrow9:
-                case NPCID.Scarecrow10:
-                case NPCID.ElfArcher:
-                case NPCID.ElfCopter:
-                case NPCID.Flocko:
-                case NPCID.GingerbreadMan:
-                case NPCID.Krampus:
-                case NPCID.Nutcracker:
-                case NPCID.NutcrackerSpinning:
-                case NPCID.Yeti:
-                case NPCID.NebulaBeast:
-                case NPCID.NebulaBrain:
-                case NPCID.NebulaHeadcrab:
-                case NPCID.NebulaSoldier:
-                case NPCID.SolarCorite:
-                case NPCID.SolarCrawltipedeBody:
-                case NPCID.SolarCrawltipedeHead:
-                case NPCID.SolarCrawltipedeTail:
-                case NPCID.SolarDrakomire:
-                case NPCID.SolarDrakomireRider:
-                case NPCID.SolarSolenian:
-                case NPCID.SolarSpearman:
-                case NPCID.SolarSroller:
-                case NPCID.StardustCellBig:
-                case NPCID.StardustCellSmall:
-                case NPCID.StardustJellyfishBig:
-                case NPCID.StardustWormBody:
-                case NPCID.StardustWormHead:
-                case NPCID.StardustWormTail:
-                case NPCID.StardustSoldier:
-                case NPCID.StardustSpiderBig:
-                case NPCID.StardustSpiderSmall:
-                case NPCID.VortexHornet:
-                case NPCID.VortexHornetQueen:
-                case NPCID.VortexLarva:
-                case NPCID.VortexRifleman:
-                case NPCID.VortexSoldier:
-                case NPCID.DD2DarkMageT1:
-                case NPCID.DD2DarkMageT3:
-                case NPCID.DD2OgreT2:
-                case NPCID.DD2OgreT3:
-                case NPCID.MartianSaucerCore:
-                case NPCID.MartianSaucerCannon:
-                case NPCID.MartianSaucerTurret:
-                case NPCID.DD2SkeletonT1:
-                case NPCID.DD2SkeletonT3:
-                case NPCID.DD2DrakinT2:
-                case NPCID.DD2DrakinT3:
-                case NPCID.DD2GoblinBomberT1:
-                case NPCID.DD2GoblinBomberT2:
-                case NPCID.DD2GoblinBomberT3:
-                case NPCID.DD2GoblinT1:
-                case NPCID.DD2GoblinT2:
-                case NPCID.DD2GoblinT3:
-                case NPCID.DD2JavelinstT1:
-                case NPCID.DD2JavelinstT2:
-                case NPCID.DD2JavelinstT3:
-                case NPCID.DD2KoboldFlyerT2:
-                case NPCID.DD2KoboldFlyerT3:
-                case NPCID.DD2KoboldWalkerT2:
-                case NPCID.DD2KoboldWalkerT3:
-                case NPCID.DD2LightningBugT3:
-                case NPCID.DD2WitherBeastT2:
-                case NPCID.DD2WitherBeastT3:
-                case NPCID.DD2WyvernT1:
-                case NPCID.DD2WyvernT2:
-                case NPCID.DD2WyvernT3:
-                case NPCID.SlimeSpiked:
-
-                    // Buff enemy HP by 25%
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * EnemyHPMultiplier);
-
-                    // Nerf a shitload of Master Mode enemies
-                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
-                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
-                    if (Main.masterMode)
-                    {
-                        AdjustMasterModeStatScaling(npc);
-                        npc.defDamage = npc.damage;
-                    }
-
-                    break;
-
-                case NPCID.AncientCultistSquidhead:
-                    // This guy only gets Master Mode nerfs
-                    // HP is nerfed by 25% (this nerf is higher due to the player not dealing any more damage in Master)
-                    // Damage is nerfed by 15% (this nerf is lower due to the player having 100% effective defense in Master)
-                    if (Main.masterMode)
-                    {
-                        AdjustMasterModeStatScaling(npc);
-                        npc.defDamage = npc.damage;
-                    }
-                    break;
-
-                case NPCID.KingSlime:
-                case NPCID.EyeofCthulhu:
-                case NPCID.EaterofWorldsHead:
-                case NPCID.EaterofWorldsBody:
-                case NPCID.EaterofWorldsTail:
-                case NPCID.BrainofCthulhu:
-                case NPCID.Creeper:
-                case NPCID.QueenBee:
-                case NPCID.SkeletronHead:
-                case NPCID.SkeletronHand:
-                case NPCID.Deerclops:
-                case NPCID.WallofFlesh:
-                case NPCID.WallofFleshEye:
-                case NPCID.QueenSlimeBoss:
-                case NPCID.Retinazer:
-                case NPCID.Spazmatism:
-                case NPCID.TheDestroyer:
-                case NPCID.TheDestroyerBody:
-                case NPCID.TheDestroyerTail:
-                case NPCID.SkeletronPrime:
-                case NPCID.PrimeCannon:
-                case NPCID.PrimeLaser:
-                case NPCID.PrimeSaw:
-                case NPCID.PrimeVice:
-                case NPCID.Plantera:
-                case NPCID.PlanterasTentacle:
-                case NPCID.Golem:
-                case NPCID.GolemHead:
-                case NPCID.GolemHeadFree:
-                case NPCID.GolemFistLeft:
-                case NPCID.GolemFistRight:
-                case NPCID.HallowBoss:
-                case NPCID.DukeFishron:
-                case NPCID.CultistBoss:
-                case NPCID.MoonLordCore:
-                case NPCID.MoonLordFreeEye:
-                case NPCID.MoonLordHand:
-                case NPCID.MoonLordHead:
-
-                    if (Main.masterMode)
-                        AdjustMasterModeStatScaling(npc, true);
-
-                    break;
             }
         }
         #endregion
@@ -5516,8 +4925,6 @@ namespace CalamityMod.NPCs
                 eutrophication--;
             if (webbed > 0)
                 webbed--;
-            if (slowed > 0)
-                slowed--;
             if (vaporfied > 0)
                 vaporfied--;
 
@@ -5896,9 +5303,6 @@ namespace CalamityMod.NPCs
                     }
                     velocitySlownessFactor += baseSlownessFactor;
                 }
-
-                if (slowed > 0)
-                    velocitySlownessFactor += 0.05f;
 
                 if (tesla > 0)
                 {
@@ -7374,11 +6778,6 @@ namespace CalamityMod.NPCs
             // If the doll is active, Voodoo Demons cannot spawn (via modded means).
             if (voodooDemonDollActive)
                 pool.Remove(NPCID.VoodooDemon);
-            // Otherwise, if it's pre-Hardmode, provide a modded spawn entry that makes them much more common.
-            else if (!Main.hardMode && spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone)
-            {
-                pool[NPCID.VoodooDemon] = SpawnCondition.Underworld.Chance * 0.15f;
-            }
         }
         #endregion
 
@@ -7647,21 +7046,6 @@ namespace CalamityMod.NPCs
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
                 }
             }
-            if (slowed > 0)
-            {
-                if (Main.rand.Next(5) < 4)
-                {
-                    int dust = Dust.NewDust(npc.position - new Vector2(2f, 2f), npc.width + 4, npc.height + 4, DustID.SpookyWood, npc.velocity.X * 0.4f, npc.velocity.Y * 0.4f, 225, default, 3f);
-                    Main.dust[dust].noGravity = true;
-                    Main.dust[dust].velocity *= 1.1f;
-                    Main.dust[dust].velocity.Y += 0.25f;
-                    if (Main.rand.NextBool())
-                    {
-                        Main.dust[dust].noGravity = false;
-                        Main.dust[dust].scale *= 0.5f;
-                    }
-                }
-            }
             if (webbed > 0)
             {
                 if (Main.rand.Next(5) < 4)
@@ -7894,8 +7278,6 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Confused].Value);
                     if (npc.ichor)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Ichor].Value);
-                    if (slowed > 0)
-                        currentDebuffs.Add(TextureAssets.Buff[BuffID.Slow].Value);
                     if (webbed > 0)
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.Webbed].Value);
                     if (npc.midas)
@@ -9669,37 +9051,6 @@ namespace CalamityMod.NPCs
                 return d;
             }
             return null;
-        }
-        #endregion
-
-        #region Adjust Difficulty Stat Scaling
-        // Adjust HP and damage in Master Mode
-        public static void AdjustMasterModeStatScaling(NPC npc, bool isABoss = false)
-        {
-            if (!Main.masterMode)
-                return;
-
-            // Bosses and enemies have separate HP reduction multipliers
-            npc.lifeMax = (int)Math.Round(npc.lifeMax * (isABoss ? MasterModeBossHPMultiplier : MasterModeEnemyHPMultiplier));
-
-            // Bosses do not get their damage reduced
-            if (!isABoss)
-                npc.damage = (int)Math.Round(npc.damage * MasterModeEnemyDamageMultiplier);
-        }
-
-        // Adjust only knockback resist in Expert Mode (this is also adjusted in Master Mode because Expert has to be enabled if Master is enabled)
-        public static void AdjustExpertModeStatScaling(NPC npc)
-        {
-            if (!Main.expertMode)
-                return;
-
-            if (npc.knockBackResist <= 0f)
-                return;
-
-            // Knockback resist is backasswards in this fucking game so we need to add to the knockBackResist variable here :^)
-            float knockBackResistMult = Main.masterMode ? MasterModeEnemyKnockbackMultiplier : ExpertModeEnemyKnockbackMultiplier;
-            float knockBackResistReduction = npc.knockBackResist * knockBackResistMult;
-            npc.knockBackResist += knockBackResistReduction;
         }
         #endregion
 

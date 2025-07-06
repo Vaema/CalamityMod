@@ -625,6 +625,9 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += Main.eclipse ? 2 : 4;
             }
 
+            if (silvaSet)
+                Player.lifeRegen += 6;
+
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
@@ -693,14 +696,6 @@ namespace CalamityMod.CalPlayer
             else
                 pinkCandleHealFraction = 0D;
 
-            if (reaverRegen && reaverRegenCooldown >= 60)
-            {
-                reaverRegenCooldown = 0;
-
-                if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.HealPlayer(1, HealTextType.None);
-            }
-
             if (BloomStoneRegen)
             {
                 float dayTimeCompletion = !Main.dayTime ? 1f : (float)(Main.time / Main.dayLength);
@@ -766,48 +761,7 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            // Life regen soft cap.
-            if (Player.statLife < actualMaxLife)
-            {
-                // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Regenator, or The Camper.
-                int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper || regenator) &&
-                    Player.StandingStill() && Player.itemAnimation == 0;
-
-                if (!noLifeRegenCap)
-                {
-                    // Calculate the % of HP the player has left.
-                    float maxLifeRatio = Player.statLife / (float)actualMaxLife;
-
-                    // Calculate the ratio of the player's current max life relative to the starting HP of 100.
-                    // This makes the soft cap far less harsh at lower amounts of max life.
-                    // Ranges from 20 (at 100 max life) to 4 (at 500 max life) to 2 (at 1000 max life) to 1 (at greater than 2000 max life).
-                    int lifeRegenSoftCapMax = 20;
-                    int lifeRegenSoftCapMin = (int)Math.Round(100f / actualMaxLife * lifeRegenSoftCapMax);
-
-                    // The soft cap for life regen which ranges from 20 (at less than 5% HP) to 1 (at greater than or equal to 95% HP).
-                    // This value is capped at a min and max amount.
-                    int lifeRegenSoftCap = (int)MathHelper.Clamp((int)Math.Round((1f - maxLifeRatio) * lifeRegenSoftCapMax), lifeRegenSoftCapMin, lifeRegenSoftCapMax);
-
-                    // If life regen is greater than the calculated soft cap, reduce it.
-                    if (Player.lifeRegen - baseLifeRegenBoost > lifeRegenSoftCap)
-                    {
-                        // The scalar used to calculate how much the life regen stat should be reduced by.
-                        // Ranges from 1 (at 0% HP) to 2 (at 100% HP).
-                        float lifeRegenScalar = 1f + maxLifeRatio;
-
-                        // Calculate the amount of life regen the player should get according to the soft cap and their current % HP remaining.
-                        // The higher the player's % HP remaining the less life regen they get and vice versa.
-                        int defLifeRegen = (int)((Player.lifeRegen - baseLifeRegenBoost) / lifeRegenScalar);
-
-                        // Set the player's life regen to the scaled amount.
-                        Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
-                    }
-                }
-            }
-
-            if (regenator) // Gives special regen of it's own, but disables all regular life regen
+            if (regenerator) // Gives special regen of it's own, but disables all regular life regen
             {
                 if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
                     Player.HealPlayer(1, HealTextType.None);
@@ -818,7 +772,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 10;
             }
             else
-                regenatorDamage = 0;
+                regeneratorDamage = 0;
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
@@ -873,8 +827,8 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Regenator trades all positive regen for damage, and caps your health gain at 50%
-            if (regenator)
+            // Regenerator trades all positive regen for damage, and caps your health gain at 50%
+            if (regenerator)
             {
                 int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
                 finalRegen = (int)Math.Max(finalRegen, 0);
@@ -884,8 +838,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.palladiumRegen)
                     finalRegen += 4;
 
-                regenatorDamage = (finalRegen * 1.75f) * 0.01f;
-                Player.GetDamage<GenericDamageClass>() += regenatorDamage;
+                regeneratorDamage = (finalRegen * 1.75f) * 0.01f;
+                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

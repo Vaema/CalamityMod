@@ -175,6 +175,8 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
+
+        public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
         #endregion
 
         #region Speedrun Timer
@@ -198,7 +200,6 @@ namespace CalamityMod.CalPlayer
 
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
         public int externalAbyssLight = 0;
-        public float externalBreathLossMultBoost = 0f;
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
 
@@ -277,6 +278,8 @@ namespace CalamityMod.CalPlayer
         public int evilSmasherBoost = 0;
         /// <summary> Cooldown variable for spawning Plague Tainted SMG's drones from left-click bullets. </summary>
         public int plagueTaintedSMGDroneCooldown = 0;
+        /// <summary> Cooldown variable which prevents using Firestorm Cannon or Spectralstorm Cannon during their overheat periods. </summary>
+        public int flareGunOverheat = 0;
         /// <summary>
         /// If true, this player's Brittle Star Staff minions are in their orbiting mode.<br/>
         /// While in this mode, they orbit around the player, do not break on hits, and increase defense.
@@ -456,7 +459,7 @@ namespace CalamityMod.CalPlayer
         /// This is obtained from a formula derived from the player's current stealth, the weapon's use time, and the player's stealth generation boosts.
         /// </summary>
         public float stealthDamage = 0f;
-        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove and its upgrades, and Rotten Dogtooth. </summary>
+        /// <summary> An additional damage multiplier applied to rogue stealth strikes. Used by Filthy Glove, Rotten Dogtooth and their upgrades. </summary>
         public double bonusStealthDamage = 0;
         public float rogueVelocity = 1f;
         #endregion
@@ -661,8 +664,6 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Abyss
-        /// <summary> The amount of breath lost on each tick while in the Abyss. </summary>
-        public float abyssBreathLossStat = 0;
         /// <summary> The rate at which breath is lost while in the Abyss. </summary>
         public float abyssBreathLossRateStat = 0;
         /// <summary> The rate at which health is decreased after running out of breath while in the Abyss. </summary>
@@ -719,8 +720,8 @@ namespace CalamityMod.CalPlayer
         public bool gladiatorSword = false;
         public int gladiatorTimer = 0;
         public bool unstableGraniteCore = false;
-        public bool regenator = false;
-        public float regenatorDamage = 0;
+        public bool regenerator = false;
+        public float regeneratorDamage = 0;
         public bool theBee = false;
         public bool arcFlashRing = false;
         public bool arcFlashRingVisual = false;
@@ -1146,8 +1147,6 @@ namespace CalamityMod.CalPlayer
         public int titanCooldown = 0;
         public bool umbraphileSet = false;
         public bool reaverSpeed = false;
-        public bool reaverRegen = false;
-        public int reaverRegenCooldown = 0;
         public bool reaverDefense = false;
         public bool reaverExplore = false;
         public bool fathomSwarmer = false;
@@ -1265,7 +1264,6 @@ namespace CalamityMod.CalPlayer
         public bool pFlames = false;
         public bool hFlames = false;
         public bool hInferno = false;
-        public bool gState = false;
         public bool bBlood = false;
         public bool brainRot = false;
         public bool heavybleeding = false;
@@ -2004,7 +2002,6 @@ namespace CalamityMod.CalPlayer
                 Player.statLifeMax2 += 45;
 
             int percentMaxLifeIncrease = 0;
-
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2044,7 +2041,6 @@ namespace CalamityMod.CalPlayer
             DashID = string.Empty;
 
             externalAbyssLight = 0;
-            externalBreathLossMultBoost = 0f;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalRageEnabled = externalAdrenalineEnabled = null;
@@ -2175,7 +2171,7 @@ namespace CalamityMod.CalPlayer
             trinketOfChi = false;
             gladiatorSword = false;
             unstableGraniteCore = false;
-            regenator = false;
+            regenerator = false;
             deepDiver = false;
             theBee = false;
             arcFlashRing = false;
@@ -2350,7 +2346,6 @@ namespace CalamityMod.CalPlayer
 
             avertorBonus = false;
 
-            reaverRegen = false;
             reaverSpeed = false;
             reaverDefense = false;
             reaverExplore = false;
@@ -2483,7 +2478,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;
@@ -2905,7 +2899,6 @@ namespace CalamityMod.CalPlayer
             demonSwordKillMode = false;
 
             externalAbyssLight = 0;
-            externalBreathLossMultBoost = 0f;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
@@ -2952,7 +2945,6 @@ namespace CalamityMod.CalPlayer
             pFlames = false;
             hFlames = false;
             hInferno = false;
-            gState = false;
             bBlood = false;
             brainRot = false;
             heavybleeding = false;
@@ -3144,8 +3136,6 @@ namespace CalamityMod.CalPlayer
             lunicCorpsSet = false;
             lunicCorpsLegs = false;
             reaverSpeed = false;
-            reaverRegen = false;
-            reaverRegenCooldown = 0;
             reaverDefense = false;
             reaverExplore = false;
             shadeRegen = false;
@@ -3243,6 +3233,7 @@ namespace CalamityMod.CalPlayer
             ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
+            flareGunOverheat = 0;
             hellbornShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
@@ -4364,15 +4355,7 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI == Main.myPlayer)
             {
                 float baseRecoveryRate = Main.expertMode ? BalancingConstants.LifeStealRecoveryRate_Expert : BalancingConstants.LifeStealRecoveryRate_Classic;
-
-                float lifeStealRecoveryRateReduction =
-                    CalamityWorld.death ? BalancingConstants.LifeStealRecoveryRateReduction_Death :
-                    CalamityWorld.revenge ? BalancingConstants.LifeStealRecoveryRateReduction_Revengeance :
-                    Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert :
-                    BalancingConstants.LifeStealRecoveryRateReduction_Classic;
-
-                if (Main.masterMode)
-                    lifeStealRecoveryRateReduction += BalancingConstants.LifeStealRecoveryRateReduction_Master;
+                float lifeStealRecoveryRateReduction = Main.expertMode ? BalancingConstants.LifeStealRecoveryRateReduction_Expert : BalancingConstants.LifeStealRecoveryRateReduction_Classic;
 
                 float lifeStealRecoveryRate = baseRecoveryRate - lifeStealRecoveryRateReduction;
                 if (Player.lifeSteal < -lifeStealRecoveryRate)

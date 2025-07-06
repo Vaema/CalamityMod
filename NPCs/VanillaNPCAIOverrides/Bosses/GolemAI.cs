@@ -32,13 +32,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.localAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 npc.localAI[0] = 1f;
-                int numFists = death ? 2 : 1;
-                for (int i = 0; i < numFists; i++)
-                {
-                    float fistPunchTimeOffset = i * 30f;
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0, 0f, fistPunchTimeOffset);
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0, 0f, fistPunchTimeOffset);
-                }
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0);
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0);
                 NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 3, (int)npc.Center.Y - 57, NPCID.GolemHead);
             }
 
@@ -891,54 +886,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 float maxPunchDistance = 700f;
-                int explosionLimit = 2;
                 if (death)
                 {
                     if (npc.life < npc.lifeMax / 2)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                     if (npc.life < npc.lifeMax / 4)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                 }
 
                 if (distanceFromRestPosition > maxPunchDistance || npc.collideX || npc.collideY)
                 {
                     // Avoid cheap bullshit
                     npc.damage = 0;
-
                     npc.noTileCollide = true;
                     npc.ai[0] = 0f;
-
-                    if (death)
-                    {
-                        int type = ProjectileID.InfernoHostileBlast;
-                        bool shootExplosion = true;
-                        int numExplosions = 0;
-                        for (int i = 0; i < Main.maxProjectiles; i++)
-                        {
-                            if (Main.projectile[i].active && Main.projectile[i].type == type)
-                            {
-                                numExplosions++;
-                                if (numExplosions >= explosionLimit)
-                                {
-                                    shootExplosion = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (shootExplosion)
-                        {
-                            int damage = npc.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 0f, 0f, 1f);
-                        }
-                    }
                 }
             }
             else

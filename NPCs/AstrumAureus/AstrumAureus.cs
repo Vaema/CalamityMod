@@ -114,9 +114,6 @@ namespace CalamityMod.NPCs.AstrumAureus
                 NPC.scale *= 0.8f;
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -1083,6 +1080,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     NPC.velocity.Y = maxFallSpeed;
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         public override void FindFrame(int frameHeight)
         {

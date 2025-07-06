@@ -84,9 +84,6 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -148,7 +145,6 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // If target is outside the jungle for more than 5 seconds, enrage
@@ -850,7 +846,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     Vector2 ai0 = NPC.Center - fireFrom;
                                     float ai = Main.rand.Next(100);
                                     Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                                 }
                             }
                         }
@@ -924,7 +920,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                 Vector2 ai0 = NPC.Center - fireFrom;
                                 float ai = Main.rand.Next(100);
                                 Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                             }
                         }
                     }
@@ -1307,7 +1303,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         Vector2 ai0 = NPC.Center - fireFrom;
                         float ai = Main.rand.Next(100);
                         Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                     }
                 }
             }

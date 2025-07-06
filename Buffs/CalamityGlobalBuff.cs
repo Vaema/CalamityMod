@@ -115,6 +115,19 @@ namespace CalamityMod.Buffs
             else if (type == BuffID.Rabies)
             {
                 player.GetDamage<GenericDamageClass>() -= 0.2f;
+
+                // Reimplementation of random debuff infliction; now occurs on a consistent timer and with a different debuff list
+                if (player.buffTime[buffIndex] % 600 == 300)
+                {
+                    int debuffType = Main.rand.Next(4) switch
+                    {
+                        0 => BuffID.Weak,
+                        1 => BuffID.Bleeding,
+                        2 => BuffID.Darkness,
+                        _ => BuffID.BrokenArmor,
+                    };
+                    player.AddBuff(debuffType, Main.rand.Next(90, 211));
+                }
             }
             else if (type == BuffID.Werewolf)
             {
@@ -148,15 +161,6 @@ namespace CalamityMod.Buffs
                     npc.Calamity().webbed = npc.buffTime[buffIndex];
                 if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().webbed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else if (type == BuffID.Slow)
-            {
-                if (npc.Calamity().slowed < npc.buffTime[buffIndex])
-                    npc.Calamity().slowed = npc.buffTime[buffIndex];
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().slowed;
                 npc.DelBuff(buffIndex);
                 buffIndex--;
             }
@@ -249,6 +253,10 @@ namespace CalamityMod.Buffs
 
                 case BuffID.NebulaUpDmg3:
                     tip = tip.Replace("45", "22.5");
+                    break;
+
+                case BuffID.Rabies:
+                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.Rabies");
                     break;
 
                 case BuffID.SugarRush:

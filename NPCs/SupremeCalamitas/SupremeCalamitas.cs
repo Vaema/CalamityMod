@@ -274,9 +274,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -2063,6 +2060,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.dontTakeDamage = true;
                         NPC.chaseable = false;
                         NPC.damage = 0;
+                        attackPause = 5;
 
                         if (!canDespawn)
                             NPC.velocity *= 0.95f;

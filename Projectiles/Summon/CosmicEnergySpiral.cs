@@ -221,7 +221,5 @@ namespace CalamityMod.Projectiles.Summon
         {
             return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, 255);
         }
-
-        public override bool? CanDamage() => false;
     }
 }

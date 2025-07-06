@@ -107,10 +107,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[3] { ModContent.GetInstance<RadiantReefsBiome>().Type, ModContent.GetInstance<GleamingBurrowsBiome>().Type, ModContent.GetInstance<ClamDenBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -306,7 +302,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage / 2, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), Main.hardMode ? 30 : 15, 1);
                             }
                             for (int i = 0; i < 9; i++)
                             {

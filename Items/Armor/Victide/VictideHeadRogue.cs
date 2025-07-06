@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Armor.Victide
             modPlayer.rogueStealthMax += 0.6f;
             modPlayer.wearingRogueArmor = true;
             player.ignoreWater = true;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 player.GetDamage<ThrowingDamageClass>() += 0.1f;
                 player.lifeRegen += 3;

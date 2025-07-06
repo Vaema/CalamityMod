@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 42;
             NPC.height = 62;
 
-            NPC.LifeMaxNERB(1200, 1440, 50000);
+            NPC.LifeMaxNERB(960, 1152, 50000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
@@ -85,10 +85,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
