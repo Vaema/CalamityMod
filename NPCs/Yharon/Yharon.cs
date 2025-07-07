@@ -203,8 +203,6 @@ namespace CalamityMod.NPCs.Yharon
             bool revenge = CalamityWorld.revenge || bossRush;
             bool death = CalamityWorld.death || bossRush;
 
-            float pie = (float)Math.PI;
-
             CalamityGlobalNPC.yharon = NPC.whoAmI;
             CalamityGlobalNPC.yharonP2 = -1;
 
@@ -213,7 +211,7 @@ namespace CalamityMod.NPCs.Yharon
             // Start phase 2 or not
             if (startSecondAI)
             {
-                Yharon_AI2(expertMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
+                Yharon_AI2(expertMode, revenge, death, bossRush, lifeRatio, calamityGlobalNPC, setDamage);
                 return;
             }
 
@@ -440,7 +438,7 @@ namespace CalamityMod.NPCs.Yharon
             // Rotation
             float npcRotation = (float)Math.Atan2(player.Center.Y - NPC.Center.Y, player.Center.X - NPC.Center.X);
             if (NPC.spriteDirection == 1)
-                npcRotation += pie;
+                npcRotation += MathHelper.Pi;
             if (npcRotation < 0f)
                 npcRotation += MathHelper.TwoPi;
             if (npcRotation > MathHelper.TwoPi)
@@ -557,12 +555,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (phaseSwitchFaceDirection != 0)
                 {
                     if (NPC.ai[2] == 0f && phaseSwitchFaceDirection != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = phaseSwitchFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -609,7 +607,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = phaseSwitchFaceDirection;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -656,7 +654,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = phaseSwitchFaceDirection;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -673,7 +671,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -724,7 +722,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.direction = playerFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -800,7 +798,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -838,12 +836,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (playerFaceDirectionFurtherPhases != 0)
                 {
                     if (NPC.ai[2] == 0f && playerFaceDirectionFurtherPhases != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = playerFaceDirectionFurtherPhases;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -893,7 +891,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -986,7 +984,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = playerFaceDirectionFurtherPhases;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -1004,7 +1002,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1023,7 +1021,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1128,7 +1126,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1205,12 +1203,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (playerFaceDirectionFurtherPhases != 0)
                 {
                     if (NPC.ai[2] == 0f && playerFaceDirectionFurtherPhases != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = playerFaceDirectionFurtherPhases;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -1263,7 +1261,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1356,7 +1354,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = playerFaceDirectionFurtherPhases;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -1374,7 +1372,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1400,7 +1398,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1507,7 +1505,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1597,7 +1595,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.direction = playerFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -1616,7 +1614,7 @@ namespace CalamityMod.NPCs.Yharon
         }
 
         #region AI2
-        public void Yharon_AI2(bool expertMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
+        public void Yharon_AI2(bool expertMode, bool revenge, bool death, bool bossRush, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
         {
             CalamityGlobalNPC.yharonP2 = NPC.whoAmI;
 
@@ -1999,7 +1997,7 @@ namespace CalamityMod.NPCs.Yharon
                         float amount = 0.04f;
 
                         if (NPC.spriteDirection == -1)
-                            newRotation += pie;
+                            newRotation += MathHelper.Pi;
 
                         if (amount != 0f)
                             NPC.rotation = NPC.rotation.AngleTowards(newRotation, amount);
@@ -2056,7 +2054,7 @@ namespace CalamityMod.NPCs.Yharon
                         float amount = 0.04f;
 
                         if (NPC.spriteDirection == -1)
-                            newRotation += pie;
+                            newRotation += MathHelper.Pi;
 
                         if (amount != 0f)
                             NPC.rotation = NPC.rotation.AngleTowards(newRotation, amount);
@@ -2133,7 +2131,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.rotation = vector.ToRotation();
 
                                 if (NPC.spriteDirection == -1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.velocity = vector * chargeSpeed;
 
@@ -2165,7 +2163,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.rotation = vector.ToRotation();
 
                                 if (NPC.spriteDirection == -1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.velocity = vector * chargeSpeed * fastChargeVelocityMultiplier;
 
@@ -2184,7 +2182,7 @@ namespace CalamityMod.NPCs.Yharon
                 if (NPC.ai[1] == 1f)
                     SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] >= chargeTime)
@@ -2232,7 +2230,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.rotation = vector.ToRotation();
 
                     if (NPC.spriteDirection == -1)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.velocity = vector * fireballBreathPhaseVelocity;
 
@@ -2296,7 +2294,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.rotation = yharonFireballMoveDirection.ToRotation();
 
                     if (NPC.spriteDirection == -1)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.velocity = yharonFireballMoveDirection * splittingFireballBreathPhaseVelocity;
                     SoundEngine.PlaySound(FireSound, NPC.Center);
@@ -2468,7 +2466,7 @@ namespace CalamityMod.NPCs.Yharon
                 if (NPC.ai[1] == 1f)
                     SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] >= chargeTime)
@@ -2533,7 +2531,7 @@ namespace CalamityMod.NPCs.Yharon
                 NPC.rotation = vector.ToRotation();
 
                 if (NPC.spriteDirection == -1)
-                    NPC.rotation += pie;
+                    NPC.rotation += MathHelper.Pi;
 
                 if (NPC.ai[2] == 120f)
                 {
@@ -2592,10 +2590,10 @@ namespace CalamityMod.NPCs.Yharon
 
                 case 4:
                     rotationSpeed = 0.01f;
-                    facingAngle = pie;
+                    facingAngle = MathHelper.Pi;
 
                     if (NPC.spriteDirection == 1)
-                        facingAngle += pie;
+                        facingAngle += MathHelper.Pi;
 
                     break;
                 case 6:
@@ -2603,13 +2601,13 @@ namespace CalamityMod.NPCs.Yharon
                     facingAngle = 0f;
 
                     if (NPC.spriteDirection == -1)
-                        facingAngle -= pie;
+                        facingAngle -= MathHelper.Pi;
 
                     break;
             }
 
             if (NPC.spriteDirection == -1)
-                facingAngle += pie;
+                facingAngle += MathHelper.Pi;
 
             if (rotationSpeed != 0f)
                 NPC.rotation = NPC.rotation.AngleTowards(facingAngle, rotationSpeed);
@@ -2617,13 +2615,13 @@ namespace CalamityMod.NPCs.Yharon
         #endregion
 
         #region Charge Dust
-        private void ChargeDust(int dustAmt, float pie)
+        private void ChargeDust(int dustAmt)
         {
             for (int i = 0; i < dustAmt; i++)
             {
                 Vector2 dustRotate = Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f;
-                dustRotate = dustRotate.RotatedBy((i - (dustAmt / 2 - 1)) * (double)pie / (float)dustAmt) + NPC.Center;
-                Vector2 dustVel = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
+                dustRotate = dustRotate.RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.Pi / (float)dustAmt) + NPC.Center;
+                Vector2 dustVel = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                 int chargeDust = Dust.NewDust(dustRotate + dustVel, 0, 0, DustID.CopperCoin, dustVel.X * 2f, dustVel.Y * 2f, 100, default, 1.4f);
                 Main.dust[chargeDust].noGravity = true;
                 Main.dust[chargeDust].noLight = true;
