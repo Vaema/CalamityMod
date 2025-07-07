@@ -19,80 +19,23 @@ namespace CalamityMod.Systems.Graphic
 {
     public class DoGVisualsManager : ModSystem
     {
-        public class DistortionDebris
-        {
-            public Vector2 Position;
-
-            public Vector2 Velocity;
-
-            public float Scale;
-
-            public float Opacity;
-
-            public float Rotation;
-
-            public float Depth;
-
-            public int FrameX;
-
-            public int FrameY;
-
-            public int Time;
-
-            public int Lifetime;
-
-            public void Update()
-            {
-                if (Time <= 30)
-                    Opacity += 0.05f;
-                if (Time >= Lifetime - 30)
-                    Opacity -= 0.05f;
-
-                Position += Velocity;
-                Opacity = MathHelper.Clamp(Opacity, 0f, 1f);
-                Rotation += Velocity.X * 0.03f;
-                Time++;
-            }
-        }
-
-        public class DistortionStar
-        {
-            public Vector2 Position;
-
-            public float Scale;
-
-            public float StoredScale;
-
-            public float Depth;
-
-            public Color Color;
-
-            public int Time;
-
-            public int Lifetime;
-
-            public void Update()
-            {
-                Scale = MathHelper.Lerp(0f, StoredScale, MathF.Sin(Time / (float)Lifetime) * 0.5f + 0.5f);
-                Time++;
-            }
-        }
-
         public float FillProgress = 0;
 
-        public List<DistortionDebris> ForegroundDebris;
+        public float BackgroundLightningFill;
 
-        public List<DistortionStar> ForegroundStars;
+        public float BackgroundLightningMax;
+
+        public float BackgroundLightningTimer;
 
         /// <summary>
         /// Whether or not the background render targets should have their contents drawn to them.
         /// </summary>
-        public bool ShouldDrawToBackgroundTargets => DoGSky.SkyIntensity > 0f;
+        public static bool ShouldDrawToBackgroundTargets => DoGSky.SkyIntensity > 0f;
 
         /// <summary>
         /// Whether or not the foreground render target should have its contents drawn to it.
         /// </summary>
-        public bool ShouldDrawToForegroundTarget => MetaballManager.metaballs.Any(m => m.AnythingToDraw && m is DoGDistortionMetaball);
+        public static bool ShouldDrawToForegroundTarget => MetaballManager.metaballs.Any(m => m.AnythingToDraw && m is DoGDistortionMetaball);
 
         /// <summary>
         /// The actual effects and contents seen inside the rift in the background of DoG's fight.
@@ -114,8 +57,6 @@ namespace CalamityMod.Systems.Graphic
             if (Main.dedServ)
                 return;
 
-            ForegroundDebris = [];
-            ForegroundStars = [];
             On_Main.DrawSunAndMoon += DiscardCelestialObjects;
         }
 
@@ -144,42 +85,25 @@ namespace CalamityMod.Systems.Graphic
 
         public override void PostUpdateEverything()
         {
-            if (ForegroundDebris.Count < 100 && Main.rand.NextBool(12))
+            // Randomly flicker between different values to create a natural lightning effect in the background of the 
+            // Distortion rift's clouds.
+            if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
             {
-                DistortionDebris debris = new DistortionDebris()
-                {
-                    Position = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(4500f, 4500f),
-                    Velocity = Vector2.UnitX * Main.rand.NextFloat(4f, 12f),
-                    Scale = Main.rand.NextFloat(0.4f, 1.2f),
-                    Depth = Main.rand.NextFloat(3f, 10f),
-                    FrameX = Main.rand.Next(3),
-                    FrameY = Main.rand.Next(4)
-                };
-                ForegroundDebris.Add(debris);
+                BackgroundLightningTimer = Main.rand.Next(30, 45);
+                BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
             }
 
-            if (ForegroundStars.Count < 100 && Main.rand.NextBool(12))
+            if (BackgroundLightningTimer > 0f)
             {
-                DistortionStar star = new DistortionStar()
-                {
-                    Position = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(4500f, 4500f),
-                    StoredScale = Main.rand.NextFloat(0.75f, 1.25f),
-                    Depth = Main.rand.NextFloat(8f, 12f),
-                    Color = Utils.SelectRandom(Main.rand, Color.Fuchsia, new Color(0, 221, 250), new(117, 21, 161))
-                };
-                ForegroundStars.Add(star);
+                float minFill = BackgroundLightningMax * 0.6f;
+                BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
+                BackgroundLightningTimer--;
             }
-
-            if (ForegroundDebris.Count > 0)
+            else
             {
-                for (int i = 0; i < ForegroundDebris.Count; i++)
-                    ForegroundDebris[i].Update();
-            }
-
-            if (ForegroundStars.Count > 0)
-            {
-                for (int i = 0; i < ForegroundStars.Count; i++)
-                    ForegroundStars[i].Update();
+                if (BackgroundLightningTimer < 0f)
+                    BackgroundLightningTimer = 0f;
+                BackgroundLightningFill = MathHelper.Lerp(BackgroundLightningFill, 0f, 0.05f);
             }
         }
 
@@ -254,10 +178,10 @@ namespace CalamityMod.Systems.Graphic
 
             // Draw a black tile behind everything since the shader used to generate the clouds will appear transparent with dark colors, thus revealing
             // the sky and any of its effects under the rift.
-            Main.spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
+            DrawDistortionLightningBackdrop_Background();
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
             // Draw the layer of rolling clouds in the background.
             DrawDistortionClouds_Background();
@@ -265,16 +189,25 @@ namespace CalamityMod.Systems.Graphic
             Main.spriteBatch.End();
         }
 
+        private void DrawDistortionLightningBackdrop_Background()
+        {
+            // Flicker between white and black for the lightning effect.
+            Color backdropColor = Color.Lerp(Color.Lerp(Color.Black, Color.White, BackgroundLightningFill), DoGSky.DoGSkyColor, 0.25f);
+            Main.spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), backdropColor);
+        }
+
         private void DrawDistortionClouds_Background()
         {
             Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
+            Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
+            Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
 
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Asset<Texture2D> cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds");
-            Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);           
+            Color darkPixelColor = Color.Lerp(Color.Lerp(Color.Black, Color.DarkGray, 0.25f), Color.Black, BackgroundLightningFill * 0.8f);
+            Color brightPixelColor = Color.Lerp(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.3f), Color.Black, BackgroundLightningFill * 0.8f);
 
             rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.5f);
+            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.8f);
             rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.12f);
             rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(2f);
             rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
@@ -285,17 +218,17 @@ namespace CalamityMod.Systems.Graphic
             rollingCloudsShader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
             rollingCloudsShader.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.001f);
 
-            rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.Black, Color.DarkGray, 0.6f).ToVector3());
-            rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.3f).ToVector3());
+            rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(darkPixelColor.ToVector3());
+            rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(brightPixelColor.ToVector3());
 
-            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture.Value;
+            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
-            Main.instance.GraphicsDevice.Textures[2] = erosionTexture.Value;
+            Main.instance.GraphicsDevice.Textures[2] = erosionTexture;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
 
             rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
-            Main.spriteBatch.Draw(cloudsTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+            Main.spriteBatch.Draw(cloudsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
         #endregion  
 
@@ -308,25 +241,10 @@ namespace CalamityMod.Systems.Graphic
             Main.spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
 
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
             
             // Draw a layer of rolling clouds in the background.
             DrawDistortionClouds_Foreground();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-            
-            // Draw the stars in front of the clouds.
-            DrawDistortionStars_Foreground();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
-
-            // Draw the flying debris.
-            DrawDistortionDebris_Foreground();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
             // Draw the winds effect in front of everything.
             DrawDistortionWinds_Foreground();
@@ -347,7 +265,7 @@ namespace CalamityMod.Systems.Graphic
             windsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 1.075f);
             windsShader.Parameters["overallOpacity"].SetValue(0.8f);
             windsShader.Parameters["distortionStrength"].SetValue(0.3f);
-            windsShader.Parameters["mainNoiseTextureScale"].SetValue(2.64f);
+            windsShader.Parameters["mainNoiseTextureScale"].SetValue(1.6f);
             windsShader.Parameters["distortionTextureScale"].SetValue(1.76f);
             windsShader.Parameters["erosionTextureScale"].SetValue(2f);
             windsShader.Parameters["erosionMin"].SetValue(0.5f);
@@ -376,7 +294,7 @@ namespace CalamityMod.Systems.Graphic
             windsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.8f);
             windsShader.Parameters["overallOpacity"].SetValue(0.7f);
             windsShader.Parameters["distortionStrength"].SetValue(0.6f);
-            windsShader.Parameters["mainNoiseTextureScale"].SetValue(3.72f);
+            windsShader.Parameters["mainNoiseTextureScale"].SetValue(1.24f);
             windsShader.Parameters["distortionTextureScale"].SetValue(0.46f);
             windsShader.Parameters["erosionTextureScale"].SetValue(3f);
             windsShader.Parameters["erosionMin"].SetValue(0.75f);
@@ -417,49 +335,6 @@ namespace CalamityMod.Systems.Graphic
 
             rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(cloudsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
-        }
-
-        private void DrawDistortionDebris_Foreground()
-        {
-            if (ForegroundDebris.Count <= 0)
-                return;
-
-            Texture2D rubbleTexture = TextureAssets.Projectile[ProjectileID.DeerclopsRangedProjectile].Value;
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Vector2 screenCenter = Main.screenPosition + (screenSize * 0.5f);
-
-            for (int i = 0; i < ForegroundDebris.Count; i++)
-            {
-                Vector2 depthFactor = new(1f / ForegroundDebris[i].Depth, 1.1f / ForegroundDebris[i].Depth);
-                Vector2 drawPosition = (ForegroundDebris[i].Position - screenCenter) * depthFactor + screenCenter - Main.screenPosition;
-                Rectangle frame = rubbleTexture.Frame(3, 4, ForegroundDebris[i].FrameX, ForegroundDebris[i].FrameY);
-                Color debrisColor = Color.Lerp(Color.White, Color.Black, 0.8f) * ForegroundDebris[i].Opacity;
-                Main.spriteBatch.Draw(rubbleTexture, drawPosition, frame, debrisColor, ForegroundDebris[i].Rotation, frame.Size() * 0.5f, ForegroundDebris[i].Scale / ForegroundDebris[i].Depth, 0, 0f);
-            }
-        }
-
-        private void DrawDistortionStars_Foreground()
-        {
-            if (ForegroundStars.Count <= 0)
-                return;
-
-            Texture2D starTexture = TextureAssets.Extra[ExtrasID.ThePerfectGlow].Value;
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Vector2 screenCenter = Main.screenPosition + (screenSize * 0.5f);
-
-            for (int i = 0; i < ForegroundStars.Count; i++)
-            {
-                Vector2 depthFactor = new(1f / ForegroundStars[i].Depth, 1.1f / ForegroundStars[i].Depth);
-                Vector2 drawPosition = (ForegroundStars[i].Position - screenCenter) * depthFactor + screenCenter - Main.screenPosition;
-
-                // Colored outer glow.
-                Main.spriteBatch.Draw(starTexture, drawPosition, null, ForegroundStars[i].Color, 0f, starTexture.Size() * 0.5f, ForegroundStars[i].Scale, 0, 0f);
-                Main.spriteBatch.Draw(starTexture, drawPosition, null, ForegroundStars[i].Color, MathHelper.PiOver2, starTexture.Size() * 0.5f, ForegroundStars[i].Scale / ForegroundStars[i].Depth, 0, 0f);
-
-                // White inner core.
-                Main.spriteBatch.Draw(starTexture, drawPosition, null, Color.White, 0f, starTexture.Size() * 0.5f, ForegroundStars[i].Scale * 0.6f, 0, 0f);
-                Main.spriteBatch.Draw(starTexture, drawPosition, null, Color.White, MathHelper.PiOver2, starTexture.Size() * 0.5f, (ForegroundStars[i].Scale * 0.6f) / ForegroundStars[i].Depth, 0, 0f);
-            }
         }
         #endregion
     }

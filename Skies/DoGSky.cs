@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
 using CalamityMod.Events;
 using CalamityMod.Graphics;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Placeables.FurnitureVoid;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
@@ -11,9 +13,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies
@@ -44,7 +48,7 @@ namespace CalamityMod.Skies
             public List<Vector2> ArmPoints;
 
             /// <summary>
-            /// The depth of the rift arm.
+            /// A parallax effect applied to the arm which affects how far back it appears in the background.
             /// </summary>
             public float Depth;
 
@@ -92,9 +96,9 @@ namespace CalamityMod.Skies
 
         public int DoGIndex;
 
-        private List<DistortionRiftArm> MainRiftCracks;
+        public List<DistortionRiftArm> MainRiftCracks;
 
-        private List<DistortionRiftArm> OuterRiftCracks;
+        public List<DistortionRiftArm> OuterRiftCracks;
 
         public static bool CanSkyBeActive { get; private set; }
 
@@ -111,95 +115,10 @@ namespace CalamityMod.Skies
             DoGIndex = NPC.FindFirstNPC(ModContent.NPCType<DevourerofGodsHead>());
             GetCorrectDoGColor();
 
-            // Initialize the reality cracks and distortion rift.
+            // Initialize the rift arms and background cracks.
             if (!Initialized)
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    RealityCrack realityCrack = new RealityCrack()
-                    {
-                        Position = Main.LocalPlayer.Center,
-                        Depth = 30f,
-                        Scale = 2.25f + i,
-                        Rotation = i == 0 ? 0f : MathHelper.Pi,
-                    };
-                    RealityCracks.Add(realityCrack);
-                }
-
-                // Generate up to 30 arms for the rift.
-                // The first 14 are larger cracks to form the main hole at the impact point.
-                // The rest are longer, skinner cracks protruding outwards from it.
-                MainRiftCracks = [];
-                OuterRiftCracks = [];
-                for (int i = 0; i < 14; i++)
-                {
-                    DistortionRiftArm distortionRiftArm = new DistortionRiftArm()
-                    {
-                        ArmStartingPosition = Main.LocalPlayer.Center,
-                        Depth = 30f,
-                        TotalPoints = 8,
-
-                        MaxWidth = Main.rand.NextFloat(120f, 140f),
-                        MinDistanceBetweenPoints = 40f,
-                        MaxDistanceBetweenPoints = 80f,
-                        MinPointAngularVariance = -6,
-                        MaxPointAngularVariance = 6,
-
-                        ArmPoints = [],
-                    };
-                    MainRiftCracks.Add(distortionRiftArm);
-                }
-
-                int outerCracksAmount = Main.rand.Next(12, 17);
-                for (int i = 0; i < outerCracksAmount; i++)
-                {
-                    DistortionRiftArm distortionRiftArm = new DistortionRiftArm()
-                    {
-                        ArmStartingPosition = Main.LocalPlayer.Center,
-                        Depth = 30f,
-                        TotalPoints = Main.rand.Next(6, 10),
-
-                        MaxWidth = Main.rand.NextFloat(4f, 7f),
-                        MinDistanceBetweenPoints = 450f,
-                        MaxDistanceBetweenPoints = 550f,
-                        MinPointAngularVariance = Main.rand.Next(-10, -5),
-                        MaxPointAngularVariance = Main.rand.Next(5, 10),
-
-                        ArmPoints = [],
-                    };
-                    OuterRiftCracks.Add(distortionRiftArm);
-                }
-
-
-                // Generate the points for each arm and add them all to the global arm list.
-                // Main cracks.
-                for (int i = 0; i < MainRiftCracks.Count; i++)
-                {
-                    float minDistance = MainRiftCracks[i].MinDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
-                    float maxDistance = MainRiftCracks[i].MaxDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
-                    float minAngularVariance = MainRiftCracks[i].MinPointAngularVariance;
-                    float maxAngularVariance = MainRiftCracks[i].MaxPointAngularVariance;
-                    float placementAngle = i * MathHelper.TwoPi / MainRiftCracks.Count;
-
-                    if (MainRiftCracks[i].ArmPoints.Count <= 0)
-                        MainRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, MainRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
-                    DistortionRiftArms.Add(MainRiftCracks[i]);
-                }
-
-                // Outer cracks.
-                for (int i = 0; i < OuterRiftCracks.Count; i++)
-                {
-                    float minDistance = OuterRiftCracks[i].MinDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
-                    float maxDistance = OuterRiftCracks[i].MaxDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
-                    float minAngularVariance = OuterRiftCracks[i].MinPointAngularVariance;
-                    float maxAngularVariance = OuterRiftCracks[i].MaxPointAngularVariance;
-                    float placementAngle = i * MathHelper.TwoPi / OuterRiftCracks.Count;
-
-                    if (OuterRiftCracks[i].ArmPoints.Count <= 0)
-                        OuterRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(Main.LocalPlayer.Center, OuterRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
-                    DistortionRiftArms.Add(OuterRiftCracks[i]);
-                }
-
+                GenerateRift();
                 Initialized = true;
             }
 
@@ -209,7 +128,96 @@ namespace CalamityMod.Skies
                 SkyIntensity = MathHelper.Clamp(SkyIntensity - 0.05f, 0f, 1f);
         }
 
-        private List<Vector2> GenerateDistortionRiftArmPoints(Vector2 startingPosition, int totalPoints, float minDistanceBetweenPoints, float maxDistanceBetweenPoints, float minAngularVariance, float maxAngularVariance, float? optionalPointPlacementAngle = null)
+        private void GenerateRift()
+        {
+            Vector2 riftSpawnLocation = Main.LocalPlayer.Center - Vector2.UnitY * 2000f + Main.rand.NextVector2Circular(450f, 450f);
+            for (int i = 0; i < 2; i++)
+            {
+                RealityCrack realityCrack = new RealityCrack()
+                {
+                    Position = riftSpawnLocation,
+                    Depth = 30f,
+                    Scale = 2.25f + i,
+                    Rotation = i == 0 ? 0f : MathHelper.Pi,
+                };
+                RealityCracks.Add(realityCrack);
+            }
+
+            // Generate up to 30 arms for the rift.
+            // The first 14 are larger cracks to form the main hole at the impact point.
+            // The rest are longer, skinner cracks protruding outwards from it.
+            MainRiftCracks = [];
+            OuterRiftCracks = [];
+            for (int i = 0; i < 14; i++)
+            {
+                DistortionRiftArm distortionRiftArm = new DistortionRiftArm()
+                {
+                    ArmStartingPosition = riftSpawnLocation,
+                    Depth = 30f,
+                    TotalPoints = 8,
+
+                    MaxWidth = Main.rand.NextFloat(120f, 140f),
+                    MinDistanceBetweenPoints = 80f,
+                    MaxDistanceBetweenPoints = 120f,
+                    MinPointAngularVariance = -6,
+                    MaxPointAngularVariance = 6,
+
+                    ArmPoints = [],
+                };
+                MainRiftCracks.Add(distortionRiftArm);
+            }
+
+            int outerCracksAmount = Main.rand.Next(12, 17);
+            for (int i = 0; i < outerCracksAmount; i++)
+            {
+                DistortionRiftArm distortionRiftArm = new DistortionRiftArm()
+                {
+                    ArmStartingPosition = riftSpawnLocation,
+                    Depth = 30f,
+                    TotalPoints = Main.rand.Next(6, 10),
+
+                    MaxWidth = Main.rand.NextFloat(6f, 9f),
+                    MinDistanceBetweenPoints = 500f,
+                    MaxDistanceBetweenPoints = 600f,
+                    MinPointAngularVariance = Main.rand.Next(-10, -5),
+                    MaxPointAngularVariance = Main.rand.Next(5, 10),
+
+                    ArmPoints = [],
+                };
+                OuterRiftCracks.Add(distortionRiftArm);
+            }
+
+            // Generate the points for each arm and add them all to the global arm list.
+            // Main cracks.
+            for (int i = 0; i < MainRiftCracks.Count; i++)
+            {
+                float minDistance = MainRiftCracks[i].MinDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
+                float maxDistance = MainRiftCracks[i].MaxDistanceBetweenPoints * MainRiftCracks[i].Depth * 0.1f;
+                float minAngularVariance = MainRiftCracks[i].MinPointAngularVariance;
+                float maxAngularVariance = MainRiftCracks[i].MaxPointAngularVariance;
+                float placementAngle = i * MathHelper.TwoPi / MainRiftCracks.Count;
+
+                if (MainRiftCracks[i].ArmPoints.Count <= 0)
+                    MainRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(MainRiftCracks[i].ArmStartingPosition, MainRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
+                DistortionRiftArms.Add(MainRiftCracks[i]);
+            }
+
+            // Outer cracks.
+            for (int i = 0; i < OuterRiftCracks.Count; i++)
+            {
+                float minDistance = OuterRiftCracks[i].MinDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
+                float maxDistance = OuterRiftCracks[i].MaxDistanceBetweenPoints * OuterRiftCracks[i].Depth * 0.1f;
+                float minAngularVariance = OuterRiftCracks[i].MinPointAngularVariance;
+                float maxAngularVariance = OuterRiftCracks[i].MaxPointAngularVariance;
+                float placementAngle = i * MathHelper.TwoPi / OuterRiftCracks.Count;
+
+                if (OuterRiftCracks[i].ArmPoints.Count <= 0)
+                    OuterRiftCracks[i].ArmPoints = GenerateDistortionRiftArmPoints(OuterRiftCracks[i].ArmStartingPosition, OuterRiftCracks[i].TotalPoints, minDistance, maxDistance, minAngularVariance, maxAngularVariance, placementAngle);
+                DistortionRiftArms.Add(OuterRiftCracks[i]);
+            }
+        }
+
+        private static List<Vector2> GenerateDistortionRiftArmPoints(Vector2 startingPosition, int totalPoints, float minDistanceBetweenPoints, float maxDistanceBetweenPoints, float minAngularVariance, float maxAngularVariance, float? optionalPointPlacementAngle = null)
         {
             // (Original code by Xyk; See TriactisHammerExplosion)
             // -fryzahh
@@ -248,14 +256,11 @@ namespace CalamityMod.Skies
             return points;
         }
 
-
-        public override Color OnTileColor(Color inColor) 
-        {
-            return Color.Lerp(inColor, DoGSkyColor, SkyIntensity);
-        }
-
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            if (Main.gameMenu)
+                return;
+
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
@@ -303,6 +308,9 @@ namespace CalamityMod.Skies
 
         private void GetCorrectDoGColor()
         {
+            Color twlight = new(109, 21, 150);
+            Color lightBlue = new(0, 221, 250);
+
             if (DoGIndex != -1)
             {
                 var DoG = Main.npc[DoGIndex].ModNPC<DevourerofGodsHead>();
@@ -310,27 +318,29 @@ namespace CalamityMod.Skies
                 if (DoG.isInAgressiveState)
                     goalSkyColor = Color.Fuchsia;
                 if (DoG.isInPassiveState)
-                    goalSkyColor = new(0, 221, 250);
-                if (DoG.isInLaserWallState)
-                    goalSkyColor = new(117, 21, 161);
+                    goalSkyColor = lightBlue;
+                if (DoG.isInLaserWallState || DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
+                    goalSkyColor = twlight;
 
-                if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
-                {
-                    if (DoG.Phase2Started)
-                        goalSkyColor = Color.Black;
-                    else
-                        goalSkyColor = new Color(117, 21, 161);
-                }
+                //if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
+                //{
+                //    if (DoG.Phase2Started)
+                //        goalSkyColor = Color.Black;
+                //    else
+                //        goalSkyColor = new Color(117, 21, 161);
+                //}
 
                 DoGSkyColor = Color.Lerp(DoGSkyColor, goalSkyColor, 0.1f);
             }
             else
             {
+                // Adopt the twlight color during laser walls if both monoliths are active simultaneously.
+                // Otherwise, use each phase's individual color depending on the monolith's color.
                 var goalSkyColor = Color.Black;
                 if (Main.LocalPlayer.Calamity().monolithDevourerPShader > 0)
                     goalSkyColor = Color.Fuchsia;
                 if (Main.LocalPlayer.Calamity().monolithDevourerBShader > 0)
-                    goalSkyColor = new(0, 221, 250);
+                    goalSkyColor = lightBlue;
 
                 DoGSkyColor = Color.Lerp(DoGSkyColor, goalSkyColor, 0.1f);
             }
@@ -448,16 +458,14 @@ namespace CalamityMod.Skies
             metaballShader.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(distortionRift, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
-       
-        public override float GetCloudAlpha()
-        {
-            return 1f;
-        }
 
-        public override void Activate(Vector2 position, params object[] args)
-        {
-            CanSkyBeActive = true;
-        }
+        public override Color OnTileColor(Color inColor) => Color.Lerp(inColor, DoGSkyColor, SkyIntensity);
+
+        public override float GetCloudAlpha() => 1f;
+
+        public override void Activate(Vector2 position, params object[] args) => CanSkyBeActive = true;
+
+        public override bool IsActive() => CanSkyBeActive || SkyIntensity > 0f;
 
         public override void Deactivate(params object[] args)
         {
@@ -473,11 +481,6 @@ namespace CalamityMod.Skies
             RealityCracks.Clear();
             DistortionRiftArms.Clear();
             Initialized = false;
-        }
-
-        public override bool IsActive()
-        {
-            return CanSkyBeActive || SkyIntensity > 0f;
         }
     }
 }
