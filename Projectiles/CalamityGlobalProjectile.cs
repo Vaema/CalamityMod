@@ -4093,12 +4093,6 @@ namespace CalamityMod.Projectiles
         #endregion
 
         #region Modify Hit Player
-        // Reminder to remove this block as damage debugging is over and final
-        public override void OnHitPlayer(Projectile projectile, Player target, Player.HurtInfo info)
-        {
-            Main.NewText($"damage: {projectile.damage}, info: {info.Damage}");
-        }
-
         public override void ModifyHitPlayer(Projectile projectile, Player target, ref Player.HurtModifiers modifiers)
         {
             modifiers.FinalDamage.Flat -= flatDR;
