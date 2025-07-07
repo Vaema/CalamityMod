@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class DoGRiftCrack : ModProjectile
+    public class DoGRiftCrack : ModProjectile, ILocalizedModType
     {
         public Vector2[] CrackPoints;
 

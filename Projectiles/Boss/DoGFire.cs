@@ -16,6 +16,12 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class DoGFire : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
+        public bool IsAPassiveFireball
+        {
+            get => Projectile.ai[0] == 2f;
+            set => Projectile.ai[0] = value.ToInt();
+        }
+
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
@@ -38,6 +44,12 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (IsAPassiveFireball)
+                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+        }
+
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
@@ -48,31 +60,28 @@ namespace CalamityMod.Projectiles.Boss
                     Vector2 dustSpawnPosition = Projectile.Center + Main.rand.NextVector2Circular(6f, 6f);
                     Vector2 dustVelocity = Projectile.velocity * -1.2f;
                     float dustScale = Main.rand.NextFloat(0.6f, 0.8f);
-                    Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
+                    Color dustColor = Color.Lerp(Color.White, IsAPassiveFireball ? Color.SkyBlue : Color.Purple, Main.rand.NextFloat(0.5f, 1f));
+
+                    Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
                     dust.noGravity = true;
                     dust.noLight = false;
                     dust.noLightEmittence = false;
                 }
             }
-            if (Main.rand.NextBool(2) && Projectile.ai[0] == 2f)
+
+            if (Main.rand.NextBool(2))
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    Vector2 smokeVelocity = Main.rand.NextVector2Circular(1f, 1f) * 0.65f;
-                    int smokeLifetime = 12;
-                    float smokeScale = Main.rand.NextFloat(0.15f, 0.3f);
-                    float smokeOpacity = Main.rand.NextFloat(0.75f, 0.9f);
+                    Vector2 smokeVelocity = -Projectile.velocity * 0.7f + Main.rand.NextVector2Circular(1f, 1f) * 0.65f;
+                    int smokeLifetime = Main.rand.Next(20, 30);
+                    float smokeScale = Main.rand.NextFloat(0.25f, 0.45f);
+                    float smokeOpacity = Main.rand.NextFloat(0.7f, 0.9f);
+                    Color flameColor = Color.Lerp(Color.White, IsAPassiveFireball ? Color.SkyBlue : Color.Purple, Main.rand.NextFloat(0.5f, 1f));
 
-                    HeavySmokeParticle ghastlySmoke = new(Projectile.Center, smokeVelocity, Color.SkyBlue, smokeLifetime, smokeScale, smokeOpacity, 0.02f, true);
+                    HeavySmokeParticle ghastlySmoke = new(Projectile.Center + Main.rand.NextVector2Circular(8f, 8f), smokeVelocity, flameColor, smokeLifetime, smokeScale, smokeOpacity, 0.02f, true);
                     GeneralParticleHandler.SpawnParticle(ghastlySmoke);
                 }
-            }
-            if (Main.rand.NextBool(2) && Projectile.ai[0] != 2f)
-            {
-                float offset = 40f;
-                Vector2 spawnPos = Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.Zero) * offset;
-                Particle spark = new VoidSparkParticle(spawnPos, Projectile.velocity, false, 5, 0.14f, Color.Purple, 0.45f);
-                GeneralParticleHandler.SpawnParticle(spark);
             }
         }
 
@@ -90,8 +99,10 @@ namespace CalamityMod.Projectiles.Boss
             for (int i = 0; i < 12; i++)
             {
                 Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
-                float dustScale = Main.rand.NextFloat(1.8f, 2.4f);
-                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, Color.Purple, dustScale);
+                float dustScale = Main.rand.NextFloat(3f, 5f);
+                Color dustColor = Color.Lerp(Color.White, IsAPassiveFireball ? Color.SkyBlue : Color.Purple, Main.rand.NextFloat(0.5f, 1f));
+
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
                 dust.noGravity = true;
                 dust.noLight = false;
                 dust.noLightEmittence = false;
@@ -99,42 +110,38 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.Damage();
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            return false;
-        }
-        public override void OnSpawn(IEntitySource source)
-        {
-            if (Projectile.ai[0] == 2f)
-            {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            }
-        }
+        public override bool PreDraw(ref Color lightColor) => false;
 
         public float FireWidthFunction(float completion)
         {
             float width;
-            float maxBodyWidth = Projectile.scale * 120f;
-            float curveRatio = 0.5f;
+            float maxBodyWidth = 72f * Projectile.scale;
+            float curveRatio = 0.2f;
 
+            // Crop the tip of the trail into a conic shape.
             if (completion < curveRatio)
                 width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
             else
                 width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
-            return width;
+
+            // Pulse inwards and outwards over time.
+            float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
+            float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
+            return width + additionalPulseWidth;
         }
 
         public Color FireColorFunction(float completion)
         {
-            Color tipColor = Color.Transparent;
-            return Color.Lerp(Projectile.ai[0] == 2f ? Color.Cyan : Color.Purple * 1.3f, tipColor, completion);
+            Color mainColor = IsAPassiveFireball ? Color.Cyan : Color.Purple * 1.3f;
+            Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            return Color.Lerp(mainColor, endColor, completion);
         }
 
         public float FireCoreWidthFunction(float completion)
         {
             float width;
-            float maxBodyWidth = Projectile.scale * Projectile.ai[0] == 2f ? 64f : 78f;
-            float curveRatio = 0.3f;
+            float maxBodyWidth = Projectile.scale * (IsAPassiveFireball ? 24f : 32f);
+            float curveRatio = 0.25f;
 
             if (completion < curveRatio)
                 width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
@@ -145,20 +152,22 @@ namespace CalamityMod.Projectiles.Boss
 
         public Color FireCoreColorFunction(float completion)
         {
-            Color tipColor = Color.Lerp(Projectile.ai[0] == 2f ? Color.BlueViolet : Color.Purple, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
-            return Color.Lerp(Color.BlueViolet, tipColor, completion);
+            Color mainColor = IsAPassiveFireball ? Color.SkyBlue : Color.Fuchsia;
+            Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            Color fullBodyColor = Color.Lerp(mainColor, tipColor, completion);
+            return Color.Lerp(fullBodyColor, Color.White, 0.175f);
         }
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
         {
-            // Render the main trail for the body for the soul.
+            // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * Projectile.ai[0] == 2f ? 29 : 59);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
 
-            // Render a smaller, pure white trail in the same position to represent the glowing white core of the soul.
+            // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
             Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length * 29);
+            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);
         }
     }
 }
