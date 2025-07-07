@@ -993,7 +993,7 @@ namespace CalamityMod.NPCs.Ravager
                 target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480);
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.GreaterHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.GreaterHealingPotion;
 
         public override void OnKill()
         {

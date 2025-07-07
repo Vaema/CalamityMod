@@ -12,6 +12,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
@@ -629,11 +630,8 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
-        {
-            name = CalamityUtils.GetTextValue("NPCs.PerforatorLarge");
-            potionType = ItemID.HealingPotion;
-        }
+        public override LocalizedText DeathMessage => CalamityUtils.GetText("NPCs.PerforatorLarge");
+        public override void BossLoot(ref int potionType) => potionType = ItemID.HealingPotion;
 
         public override bool SpecialOnKill()
         {

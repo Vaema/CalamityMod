@@ -806,7 +806,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemType<SupremeHealingPotion>();
         }

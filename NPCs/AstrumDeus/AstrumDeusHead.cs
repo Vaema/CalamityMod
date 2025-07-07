@@ -911,7 +911,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ModContent.ItemType<StarblightSoot>();
+        public override void BossLoot(ref int potionType) => potionType = ModContent.ItemType<StarblightSoot>();
 
         public static bool ShouldNotDropThings(NPC NPC) => NPC.Calamity().newAI[0] == 0f || ((CalamityWorld.death || BossRushEvent.BossRushActive) && NPC.Calamity().newAI[0] != 3f);
 

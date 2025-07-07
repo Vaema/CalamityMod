@@ -555,7 +555,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }

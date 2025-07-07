@@ -1228,7 +1228,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             return newColor;
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.SuperHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.SuperHealingPotion;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {

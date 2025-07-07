@@ -1491,7 +1491,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }
