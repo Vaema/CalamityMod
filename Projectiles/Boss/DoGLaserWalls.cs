@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Boss
             if (laserType == 6)
             {
                 Texture2D ring = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRingThinLarge").Value;
-                for (float scale = 0.25f; scale < 1.25f; scale += 0.125f * laserDist / 120f)
+                for (float scale = 0.25f * laserDist / 120f; scale < 1.25f; scale += 0.125f * laserDist / 120f)
                     Main.EntitySpriteDraw(ring, Projectile.Center - Main.screenPosition, null, beamColor * opacity, 0f, ring.Size() * 0.5f, scale, SpriteEffects.None);
                 return false;
             }
