@@ -2611,7 +2611,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // viable???, done here since it's conditional
             if (Main.zenithWorld && projectile.type == ModContent.ProjectileType<LaceratorYoyo>())
             {
-                modifiers.SourceDamage *= 40f;
+                modifiers.SourceDamage *= 10f;
             }
         }
 
