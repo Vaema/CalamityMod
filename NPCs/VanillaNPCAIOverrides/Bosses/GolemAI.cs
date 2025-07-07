@@ -46,9 +46,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Enrage if the target isn't inside the temple
             // Turbo enrage if target isn't inside the temple and it's For the Worthy
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -697,7 +697,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Enrage if the target isn't inside the temple
             // Turbo enrage if target isn't inside the temple and it's For the Worthy
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (player.Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
@@ -989,7 +989,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.Center = Main.npc[NPC.golemBoss].Center - new Vector2(3f, 57f) * npc.scale;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
@@ -1232,7 +1232,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase4 = lifeRatio < 0.4f || golemLifeRatio < 0.55f || death;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
