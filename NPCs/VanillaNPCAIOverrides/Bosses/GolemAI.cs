@@ -239,8 +239,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[1] += 6f;
                             if (!rightFistAlive)
                                 npc.ai[1] += 6f;
-                            if (!headAlive)
-                                npc.ai[1] += 6f;
                         }
                     }
                     if (npc.ai[1] >= 300f)
@@ -346,7 +344,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         else
                         {
                             if (npc.ai[3] == 0f)
-                                npc.ai[3] = !headAlive ? Main.rand.Next(2) + 1f : 1f;
+                                npc.ai[3] = !headAlive ? 2f : 1f;
 
                             switch ((int)npc.ai[3])
                             {
@@ -413,8 +411,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         void NormalJump()
                         {
-                            float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                            float velocityX = (death ? 9f : 6f) + velocityBoost;
+                            float velocityBoost = death ? 5.5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
+                            float velocityX = (death ? 9f : 6.25f) + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
 
@@ -513,7 +511,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 11.25f : 7.5f;
+                        float projectileVelocity = death ? 10.5f : 7.25f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
@@ -524,7 +522,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
-                        int totalFireballsPerSide = 3;
+                        int totalFireballsPerSide = death ? 3 : 2;
                         int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 25 : 35;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
@@ -534,7 +532,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.height / 2 * 0.8f) * npc.scale + Vector2.Normalize(perturbedSpeed) * (npc.width / 3) * npc.scale, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = enrage ? 480 : 240;
+                                Main.projectile[proj].timeLeft = enrage ? 480 : 150; // The difference is meant to be this stark.
                                 if (turboEnrage && CalamityWorld.LegendaryMode)
                                     Main.projectile[proj].extraUpdates += 1;
                             }
@@ -554,7 +552,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Do not collide with tiles while doing this crazy shit
                         npc.noTileCollide = true;
 
-                        float laserShootGateValue = death ? 6f : 9f;
+                        float laserShootGateValue = death ? 8f : 10.5f;
                         if (npc.ai[3] % laserShootGateValue == 0f)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -596,7 +594,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
                             {
-                                float fallSpeedBoost = death ? 1.2f * (1f - lifeRatio) : 0.8f * (1f - lifeRatio);
+                                float fallSpeedBoost = death ? 1f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
                                 float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
                                 if (enrage)
                                     fallSpeed *= 2f;
@@ -606,14 +604,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                         else
                         {
-                            float velocityChangeBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
+                            float velocityChangeBoost = death ? 0.18f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
                             float velocityXChange = (death ? 0.3f : 0.2f) + velocityChangeBoost;
                             if (npc.direction < 0)
                                 npc.velocity.X -= velocityXChange;
                             else if (npc.direction > 0)
                                 npc.velocity.X += velocityXChange;
 
-                            float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
+                            float velocityBoost = death ? 6f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
                             float velocityXCap = (death ? 9f : 6f) + velocityBoost;
                             if (enrage)
                                 velocityXCap *= 3f;
@@ -1078,8 +1076,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Fireballs
                 npc.ai[1] += 1f;
-                float openMouthGateValue = 20f - (death ? 15f * (1f - lifeRatio) : 10f * (1f - lifeRatio));
-                float shootFireballGateValue = 120f - (death ? 90f * (1f - lifeRatio) : 60f * (1f - lifeRatio));
+                float openMouthGateValue = 20f - (death ? 15f * (1f - (lifeRatio / 2)) : 10f * (1f - (lifeRatio / 2)));
+                float shootFireballGateValue = 120f - (death ? 75f * (1f - (lifeRatio / 2)) : 50f * (1f - (lifeRatio / 2)));
                 if (npc.ai[1] < openMouthGateValue || npc.ai[1] > shootFireballGateValue - openMouthGateValue)
                     npc.localAI[0] = 1f;
                 else
@@ -1101,19 +1099,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int type = ProjectileID.Fireball;
                     int damage = npc.GetProjectileDamage(type);
 
-                    int fireballAmount = death ? 3 : 1;
+                    int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(fireballFistsDedTargetX, fireballFistsDedTargetY);
                     for (int i = 0; i < fireballAmount; i++)
                     {
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos, fireballVelocity * (1f / (i + 1)), type, damage, 0f, Main.myPlayer);
-                        Main.projectile[proj].timeLeft = 450;
+                        Main.projectile[proj].timeLeft = 255;
                     }
 
                     npc.netUpdate = true;
                 }
 
                 // Lasers
-                float shootBoost2 = death ? 5f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
+                float shootBoost2 = death ? 4.5f * (1f - (lifeRatio / 2)) : 2.75f * (1f - (lifeRatio / 2));
                 npc.ai[2] += 1f + shootBoost2;
                 if (enrage)
                     npc.ai[2] += 4f;
@@ -1388,8 +1386,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] += 1f;
 
             float combinedLifeRatio = (lifeRatio + golemLifeRatio) * 0.5f;
-            float openMouthGateValue = 20f - (death ? 15f * (1f - combinedLifeRatio) : 10f * (1f - combinedLifeRatio));
-            float shootFireballGateValue = 240f - (death ? 180f * (1f - combinedLifeRatio) : 120f * (1f - combinedLifeRatio));
+            float openMouthGateValue = 20f - (death ? 13f * (1f - combinedLifeRatio) : 8.65f * (1f - combinedLifeRatio));
+            float shootFireballGateValue = 240f - (death ? 150f * (1f - combinedLifeRatio) : 100f * (1f - combinedLifeRatio));
             if (npc.ai[1] < openMouthGateValue || npc.ai[1] > shootFireballGateValue - openMouthGateValue)
                 npc.localAI[0] = 1f;
             else
@@ -1427,7 +1425,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.projectile[proj].netUpdate = true;
                 }
                 else
-                    Main.projectile[proj].timeLeft = 450;
+                    Main.projectile[proj].timeLeft = 360;
 
                 npc.netUpdate = true;
             }
@@ -1436,7 +1434,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (canFireProjectiles)
                 npc.ai[2] += 1f;
 
-            float laserGateValue = 300f - (death ? 240f * (1f - combinedLifeRatio) : 180f * (1f - combinedLifeRatio));
+            float laserGateValue = 300f - (death ? 195f * (1f - combinedLifeRatio) : 160f * (1f - combinedLifeRatio));
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= laserGateValue)
             {
                 npc.ai[2] = 0f;
