@@ -1,0 +1,26 @@
+{
+  "Dialogues": [
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+
+      "PunctuationDelays": {
+        "!": {
+          "Delay": 40,
+          "ForceSet": true,
+          "Locks": true
+        },
+        "?": {
+          "Delay": 40,
+          "ForceSet": true,
+          "Locks": true
+        }
+      },
+
+      "Lines": [
+        "[Wavy:'Glub, glub, im a fish. Glub glub, im a fish]",
+        "[Wavy:Glub, glub, im a fish. Glub glub, im a fish']"
+      ]
+    }
+  ]
+}

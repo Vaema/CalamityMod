@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls;
 using CalamityMod.TileEntities;
 using CalamityMod.UI.WhisperingPearls;
@@ -53,17 +54,20 @@ namespace CalamityMod.Tiles.SunkenSea
             string key = frameNum switch
             {
                 1 => "RoyalBlue",
-                2 => "DarkBlue",
+                2 => "OceanBlue",
                 3 => "LightGreen",
                 _ => "Red"
             };
-            if (!WhisperingPearlSystem.IsActive)
+            if (!DialogueDisplayUI.Dialogues.ContainsKey(key))
             {
-                WhisperingPearlSystem.StartDialogue(new Vector2(i, j) * 16, key);
+                if(key == "RoyalBlue")
+                    DialogueDisplaySystem.StartDialogue<WackyEffects>(key, new Vector2(i, j) * 16, 60);
+                else
+                    DialogueDisplaySystem.StartDialogue<AlwayOnScreen>(key, Main.npc.Last(n => n != null && n.active), 30);
             }
             else
             {
-                WhisperingPearlSystem.ProgressDialogue(new Vector2(i, j) * 16, key);
+                DialogueDisplaySystem.ProgressDialogue(key);
             }
             return true;
         }
