@@ -296,7 +296,5 @@ namespace CalamityMod.NPCs.Leviathan
                 }
             }
         }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.AdhesiveBandage, 100, 50));
     }
 }

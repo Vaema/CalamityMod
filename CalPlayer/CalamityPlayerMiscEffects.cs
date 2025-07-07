@@ -3662,14 +3662,6 @@ namespace CalamityMod.CalPlayer
             if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
 
-            if (astralInfection && !(infectedJewel || hideOfDeus || purity))
-                Player.GetDamage<GenericDamageClass>() -= 0.1f;
-
-            if (pFlames && !purity)
-            {
-                Player.GetDamage<GenericDamageClass>() -= 0.1f;
-            }
-
             if (aCrunch && !laudanum && !purity)
             {
                 Player.statDefense -= ArmorCrunch.DefenseReduction;
