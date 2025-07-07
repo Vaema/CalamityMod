@@ -54,13 +54,18 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
+        public static int FireDamage = 42; // 168; HolyFlare
+        public static int BlobDamage = 42; // 168
+        public static int FireSentryDamage = 55; // 220; HolyBomb
+        public static int MoltenBlastDamage = 55; // 220
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 110; // 220
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 164;
             NPC.defense = 50;
@@ -440,9 +445,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -502,13 +505,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         Vector2 velocity = Vector2.Normalize(player.Center - shootFrom) * moltenBlastVelocity;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<MoltenBlast>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
-                                Main.projectile[proj].timeLeft = projTimeLeft;
-                            }
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
+                            Main.projectile[proj].timeLeft = projTimeLeft;
                         }
 
                         // Dust for blasting out the molten blasts
@@ -668,9 +666,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }

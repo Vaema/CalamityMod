@@ -18,7 +18,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class SkeletronPrimeAI
     {
         // Vanilla values
-        public static int SpinDamageMult = 2;
+        public static int SpinDamageMult = 2; // 158
         public static int LaserDamage = 25; // 100
 
         // Rev+ exclusive

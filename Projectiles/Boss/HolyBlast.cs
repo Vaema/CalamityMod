@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
@@ -22,6 +23,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyBlast : ModProjectile, ILocalizedModType
     {
         public bool started = false;
+        public int FireDamage = 0;
 
         private const int TimeLeft = 120;
         private const int AccelerationTime = 60;
@@ -36,10 +38,6 @@ namespace CalamityMod.Projectiles.Boss
             Main.projFrames[Type] = 4;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-        }
-
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -50,6 +48,17 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = TimeLeft;
             CooldownSlot = ImmunityCooldownID.Bosses;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            FireDamage = Providence.FireDamage.CalculateProvidenceDamage();
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<ProfanedGuardianCommander>())
+                    FireDamage = ProfanedGuardianCommander.FireDamage;
+            }
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -169,7 +178,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, FireDamage, 0f, Projectile.owner);
                 }
             }
 

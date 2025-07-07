@@ -27,9 +27,11 @@ namespace CalamityMod.NPCs.AquaticScourge
             this.HideFromBestiary();
         }
 
+        public static int ToothDamage = 23; // 92
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 56; // 112
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 20;
@@ -186,9 +188,8 @@ namespace CalamityMod.NPCs.AquaticScourge
                             float toothVelocity = death ? 9f : 8f;
                             Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY);
                             int type = ModContent.ProjectileType<SandTooth>();
-                            int damage = NPC.GetProjectileDamage(type);
                             float accelerate = phase4 ? 1f : 0f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity * 5f, projectileVelocity * toothVelocity, type, damage, 0f, Main.myPlayer, accelerate, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity * 5f, projectileVelocity * toothVelocity, type, ToothDamage, 0f, Main.myPlayer, accelerate, 0f);
                         }
 
                         NPC.netUpdate = true;

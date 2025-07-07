@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float HandSwipeDistance_Master = 1280f; // 80 tiles
 
         // Vanilla values
-        public static float SpinDamageMult = 1.3f;
+        public static float SpinDamageMult = 1.3f; // 91
         public static int SkullDamage = 17; // 68; Also applies to crossbones
 
         // Rev+ exclusive

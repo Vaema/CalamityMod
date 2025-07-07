@@ -112,7 +112,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
                     int totalProjectiles = 4;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     float velocity = 1f;
@@ -122,7 +121,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, SupremeCalamitas.DartDamage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                     }
                     NPC.netUpdate = true;
                 }

@@ -24,11 +24,11 @@ namespace CalamityMod.NPCs.Cryogen
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60; // 120
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
-            NPC.GetNPCDamage();
             NPC.width = 216;
             NPC.height = 216;
             NPC.scale *= (CalamityWorld.death || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode) ? 0.8f : 1f;

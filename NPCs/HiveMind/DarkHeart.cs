@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void SetDefaults()
         {
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 2;
@@ -137,10 +137,9 @@ namespace CalamityMod.NPCs.HiveMind
                     int shaderainXPos = (int)(NPC.position.X + 10f + Main.rand.Next(NPC.width - 20));
                     int shaderainYos = (int)(NPC.position.Y + NPC.height + 4f);
                     int type = ModContent.ProjectileType<ShaderainHostile>();
-                    int damage = NPC.GetProjectileDamage(type);
                     float randomXVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextFloat() * 5f : 0f;
                     float velocityY = 8f;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, HiveMind.ShaderainDamage, 0f, Main.myPlayer);
                 }
             }
         }

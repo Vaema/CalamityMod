@@ -191,10 +191,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             });
         }
 
+        public static int LaserWallDamage = 75; // 300
+        public static int FireballDamage = 60; // 240; Also applies to Legendary Mode Ichor Blob
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 104;
             NPC.height = 104;
@@ -761,7 +764,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
                             int type = ModContent.ProjectileType<DoGFire>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = FireballDamage;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
@@ -783,7 +786,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                                 int numBlobs = 4;
                                 type = ModContent.ProjectileType<IchorBlob>();
-                                damage = 60;
 
                                 for (int i = 0; i < numBlobs; i++)
                                 {
@@ -818,7 +820,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             // Side walls
                             float targetPosY = player.position.Y;
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             int halfTotalDiagonalShots = totalDiagonalShots / 2;
                             Vector2 start = default;
                             Vector2 velocity = default;
@@ -1632,7 +1634,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             Vector2 start = default;
                             Vector2 velocity = default;
                             Vector2 aim = expertMode ? player.Center + player.velocity * 20f : Vector2.Zero;
@@ -2322,7 +2324,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = FireballDamage;
                     float finalVelocity = 10f;
                     int totalSpreads = revenge ? 6 : 3;
                     float mult = revenge ? 1.5f : 3f;

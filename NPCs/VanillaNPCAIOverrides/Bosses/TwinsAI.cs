@@ -14,9 +14,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class TwinsAI
     {
         // Vanilla values
-        public static float RapidFireDamageMult = 0.75f;
-        public static float RetinazerPhase2ContactDamageMult = 1.5f;
-        public static float SpazmatismPhase2ContactDamageMult = 1.5f;
+        public static float RapidFireDamageMult = 0.75f; // 68
+        public static float RetinazerPhase2ContactDamageMult = 1.5f; // 114
+        public static float SpazmatismPhase2ContactDamageMult = 1.5f; // 127
         public static int LaserDamage = 19; // 76
         public static int RedLaserDamage = 23; // 92
         public static int FlamethrowerDamage = 27; // 108; Applies to both flamethrower types

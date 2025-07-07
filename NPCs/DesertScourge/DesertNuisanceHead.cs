@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 25; // 40 (1.6x expert scaling)
 
             NPC.defense = 3;
             if (CalamityWorld.LegendaryMode)
@@ -597,6 +597,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

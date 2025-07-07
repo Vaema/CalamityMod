@@ -103,11 +103,18 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
+        public static float Phase2ContactDamageMult = 1.2f; // 288
+        public static float Phase3ContactDamageMult = 1.4f; // 336
+        public static int BlueShotDamage = 60; // 240
+        public static int BlueBlastDamage = 66; // 264
+        public static int RedShotDamage = 66; // 264
+        public static int RedBlastDamage = 72; // 288
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.npcSlots = 50f;
-            NPC.GetNPCDamage();
             NPC.width = 90;
             NPC.height = 120;
             NPC.defense = 90;
@@ -428,9 +435,9 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
             int phase1ReducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
-            int phase2Damage = (int)Math.Round(NPC.defDamage * 1.2);
+            int phase2Damage = (int)Math.Round(NPC.defDamage * Phase2ContactDamageMult);
             int phase2ReducedSetDamage = (int)Math.Round(phase2Damage * 0.5);
-            int phase3Damage = (int)Math.Round(NPC.defDamage * 1.4);
+            int phase3Damage = (int)Math.Round(NPC.defDamage * Phase3ContactDamageMult);
             int phase3ReducedSetDamage = (int)Math.Round(phase3Damage * 0.5);
 
             if (!chargePhase)
@@ -690,13 +697,14 @@ namespace CalamityMod.NPCs.Polterghast
                         if (notLiningUpCharge)
                         {
                             int type = ModContent.ProjectileType<PhantomShot>();
+                            int damage = BlueShotDamage;
                             if (Main.rand.NextBool(3))
                             {
                                 NPC.localAI[1] = -30f;
                                 type = ModContent.ProjectileType<PhantomBlast>();
+                                damage = BlueBlastDamage;
                             }
 
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * baseProjectileVelocity;
                             Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 6; i++)
@@ -709,14 +717,13 @@ namespace CalamityMod.NPCs.Polterghast
                         else
                         {
                             int type = ModContent.ProjectileType<PhantomBlast>();
-                            int damage = NPC.GetProjectileDamage(type);
 
                             Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 5f);
                             Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 6; i++)
                             {
                                 float offset = MathHelper.ToRadians(MathHelper.Lerp(-40f, 40f, i / 5f));
-                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, BlueBlastDamage, 0f, Main.myPlayer);
                                 shot.timeLeft = 450;
                             }
                         }
@@ -795,13 +802,14 @@ namespace CalamityMod.NPCs.Polterghast
                         if (notLiningUpCharge)
                         {
                             int type = ModContent.ProjectileType<PhantomShot2>();
+                            int damage = RedShotDamage;
                             if (Main.rand.NextBool(3))
                             {
                                 NPC.localAI[1] = -30f;
                                 type = ModContent.ProjectileType<PhantomBlast2>();
+                                damage = RedBlastDamage;
                             }
 
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 1f);
                             Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 7; i++)
@@ -814,13 +822,12 @@ namespace CalamityMod.NPCs.Polterghast
                         else
                         {
                             int type = ModContent.ProjectileType<PhantomBlast2>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (baseProjectileVelocity + 5f);
                             Vector2 firingPos = NPC.Center + spreadVel * 3f;
                             for (int i = 0; i < 7; i++)
                             {
                                 float offset = MathHelper.ToRadians(MathHelper.Lerp(-50f, 50f, i / 6f));
-                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, damage, 0f, Main.myPlayer);
+                                Projectile shot = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), firingPos, spreadVel.RotatedBy(offset), type, RedBlastDamage, 0f, Main.myPlayer);
                                 shot.timeLeft = 450;
                             }
                         }
@@ -904,8 +911,9 @@ namespace CalamityMod.NPCs.Polterghast
                     {
                         int numProj = (getPissed ? 10 : 8);
                         float maxSpread = getPissed ? 125 : 110;
-                        int type = Main.rand.NextBool() ? ModContent.ProjectileType<PhantomShot2>() : ModContent.ProjectileType<PhantomShot>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        bool red = Main.rand.NextBool();
+                        int type = red ? ModContent.ProjectileType<PhantomShot2>() : ModContent.ProjectileType<PhantomShot>();
+                        int damage = red ? RedShotDamage : BlueShotDamage;
                         Vector2 spreadVel = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * baseProjectileVelocity;
                         Vector2 firingPos = NPC.Center + spreadVel * 3f;
                         for (int i = 0; i < numProj; i++)

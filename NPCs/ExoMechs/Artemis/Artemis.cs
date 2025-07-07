@@ -174,11 +174,14 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             }
         }
 
+        public static int LaserDamage = 85; // 340
+        public static int BeamDamage = 110; // 440
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 200; // 400
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
             NPC.width = 204;
             NPC.height = 226;
             NPC.defense = 100;
@@ -774,10 +777,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         int type = ModContent.ProjectileType<ArtemisLaser>();
-                                        int damage = NPC.GetProjectileDamage(type);
                                         Vector2 offset = laserVelocity * 70f;
                                         float setVelocityInAI = 7.5f;
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, projectileDestination, type, damage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, projectileDestination, type, LaserDamage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
                                     }
                                 }
                             }
@@ -829,7 +831,6 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         int type = ModContent.ProjectileType<ArtemisLaser>();
-                                        int damage = NPC.GetProjectileDamage(type);
                                         Vector2 laserVelocity = chargeVelocityNormalized * 10f;
                                         int numLasersPerSpread = bossRush ? 10 : death ? 8 : expertMode ? 6 : 4;
                                         int spread = bossRush ? 30 : death ? 26 : expertMode ? 21 : 15;
@@ -845,7 +846,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                             Vector2 offset = normalizedPerturbedSpeed * 70f;
                                             Vector2 newCenter = NPC.Center + offset;
 
-                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), newCenter, newCenter + normalizedPerturbedSpeed * distanceFromTarget, type, damage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
+                                            Projectile.NewProjectile(NPC.GetSource_FromAI(), newCenter, newCenter + normalizedPerturbedSpeed * distanceFromTarget, type, LaserDamage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
                                         }
                                     }
                                 }
@@ -926,7 +927,6 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                         Vector2 laserVelocity = Vector2.Normalize(aimedVector) * 10f;
 
                         int type = ModContent.ProjectileType<ArtemisLaser>();
-                        int damage = NPC.GetProjectileDamage(type);
 
                         /* Spread:
                          * lastMechAlive = 20, 25, 30
@@ -951,7 +951,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                             Vector2 newCenter = NPC.Center + offset;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), newCenter, newCenter + normalizedPerturbedSpeed * distanceFromTarget, type, damage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), newCenter, newCenter + normalizedPerturbedSpeed * distanceFromTarget, type, LaserDamage, 0f, Main.myPlayer, setVelocityInAI, NPC.whoAmI);
                         }
                     }
 
@@ -1084,8 +1084,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ArtemisSpinLaserbeam>();
-                                    int damage = NPC.GetProjectileDamage(type);
-                                    int laser = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.whoAmI);
+                                    int laser = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, BeamDamage, 0f, Main.myPlayer, NPC.whoAmI);
                                     if (Main.projectile.IndexInRange(laser))
                                     {
                                         Main.projectile[laser].ai[0] = NPC.whoAmI;

@@ -63,11 +63,15 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
+        public static int BloodGeyserDamage = 12; // 48
+        public static int IchorShotDamage = 12; // 48
+        public static int IchorBlobDamage = 12; // 48
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 18f;
-            NPC.GetNPCDamage();
+            NPC.damage = 30; // 48 (1.6x expert scaling)
             NPC.width = 110;
             NPC.height = 100;
             NPC.defense = 4;
@@ -204,7 +208,7 @@ namespace CalamityMod.NPCs.Perforator
             {
                 // Leak projectiles everywhere and start healing
                 int type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = type == ModContent.ProjectileType<IchorShot>() ? IchorShotDamage : BloodGeyserDamage;
                 int spread = Main.rand.Next(-45, 46);
                 Vector2 baseVelocity = Vector2.UnitY * Main.rand.NextFloat(-12.5f, -5f);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread)), type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
@@ -355,7 +359,6 @@ namespace CalamityMod.NPCs.Perforator
                                 numBlobs *= 2;
 
                             int type = ModContent.ProjectileType<IchorBlob>();
-                            int damage = NPC.GetProjectileDamage(type);
 
                             int blobSpread = expertMode ? (ichorBlobBigWormPhase ? 66 : 100) : (ichorBlobBigWormPhase ? 33 : 66);
                             for (int i = 0; i < numBlobs; i++)
@@ -371,7 +374,7 @@ namespace CalamityMod.NPCs.Perforator
                                 if (blobVelocity.Y < 2f)
                                     blobVelocity.Y = 2f + blobVelocityYAdd;
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, IchorBlobDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
 
@@ -420,7 +423,7 @@ namespace CalamityMod.NPCs.Perforator
                     {
                         bool ichor = Main.rand.NextBool();
                         int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = ichor ? IchorShotDamage : BloodGeyserDamage;
 
                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                         Vector2 randomVelocity = new Vector2(Main.rand.NextFloat() - 0.5f, Main.rand.NextFloat() - 0.5f);
@@ -553,6 +556,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void BossLoot(ref string name, ref int potionType)

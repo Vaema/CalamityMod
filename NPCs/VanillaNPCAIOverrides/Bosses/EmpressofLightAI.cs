@@ -13,7 +13,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class EmpressofLightAI
     {
         // Vanilla values
-        public static float DashDamageMult = 1.5f;
+        public static float DashDamageMult = 1.5f; // 165
         public static int PrismaticBoltDamage = 30; // 120
         public static int EverlastingRainbowDamage = 30; // 120
         public static int EtherealLanceDamage = 30; // 120

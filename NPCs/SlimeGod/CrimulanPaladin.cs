@@ -28,10 +28,12 @@ namespace CalamityMod.NPCs.SlimeGod
             this.HideFromBestiary();
         }
 
+        public static int CrimsonSpikeDamage = 12; // 48
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 50; // 100
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 12;
@@ -94,7 +96,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.localAI[1] == 1f)
             {
                 NPC.defense = NPC.defDefense + 24;
-                setDamage += 25;
+                setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
             // Used for landing squash and stretch
@@ -185,7 +187,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Spread of spikes
                 float projectileVelocity = 2f;
                 int type2 = ModContent.ProjectileType<CrimulanSpike>();
-                int damage = NPC.GetProjectileDamage(type2);
                 Vector2 spawnLocation = new Vector2(NPC.Center.X, NPC.Center.Y + 50f * NPC.scale);
                 Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                 destination *= projectileVelocity;
@@ -220,7 +221,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         Main.dust[slimeDust].noGravity = true;
                     }
 
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, damage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, CrimsonSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                 }
 
                 // Die
@@ -566,7 +567,6 @@ namespace CalamityMod.NPCs.SlimeGod
                             // Spread of spikes
                             float projectileVelocity = 2f;
                             int type2 = ModContent.ProjectileType<CrimulanSpike>();
-                            int damage = NPC.GetProjectileDamage(type2);
                             Vector2 spawnLocation = new Vector2(NPC.Center.X, NPC.Center.Y + 50f * NPC.scale);
                             Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                             destination *= projectileVelocity;
@@ -601,7 +601,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                     Main.dust[slimeDust].noGravity = true;
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, damage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, CrimsonSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                             }
                         }
 

@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.Perforator
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 20; // 40
             NPC.npcSlots = 5f;
             NPC.width = 42;
             NPC.height = 62;

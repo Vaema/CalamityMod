@@ -65,10 +65,16 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
+        // These values are all applied alongside their respective GFB attacks (too many to list)
+        public static int DartDamage = 21; // 84
+        public static int HellblastDamage = 25; // 100
+        public static int HellfireballDamage = 25; // 100
+        public static int RayDamage = 35; // 140
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 64f;
-            NPC.GetNPCDamage();
+            NPC.damage = 52; // 104
             NPC.width = 100;
             NPC.height = 150;
             NPC.defense = 15;
@@ -425,7 +431,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         SoundEngine.PlaySound(SoundID.Item68, NPC.Center);
                         int type = ModContent.ProjectileType<BrimstoneRay>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = RayDamage;
                         Vector2 pos = NPC.Center;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -498,7 +504,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     float velocity = (death ? 7f : revenge ? 6f : 5f) + (2f * enrageScale) + (expertMode ? 3f * (1f - lifeRatio) : 0f);
                     int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellfireballDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<FrostMist>();
@@ -522,7 +528,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         velocity = (death ? 5f : 4f) + 2f * enrageScale;
                         type = ModContent.ProjectileType<BrimstoneBarrage>();
-                        damage = NPC.GetProjectileDamage(type);
+                        damage = DartDamage;
                         if (currentMode == 4)
                         {
                             type = ModContent.ProjectileType<WaterSpear>();
@@ -604,7 +610,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     int totalProjectiles = 6;
                     float offsetAngle = MathHelper.Pi * radialOffset;
                     int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellblastDamage;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -623,7 +629,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     totalProjectiles = 12;
                     float radians2 = MathHelper.TwoPi / totalProjectiles;
                     type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    damage = NPC.GetProjectileDamage(type);
+                    damage = DartDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<SirenSong>();
@@ -745,7 +751,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             Vector2 laserVelocity2 = new Vector2(NPC.localAI[0], NPC.localAI[1]);
                             laserVelocity2 = laserVelocity2.SafeNormalize(Vector2.UnitY);
                             int type = ModContent.ProjectileType<BrimstoneRay>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = RayDamage;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                             if (CalamityWorld.LegendaryMode)

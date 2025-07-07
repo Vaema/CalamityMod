@@ -43,9 +43,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = 50;
             NPC.height = 50;

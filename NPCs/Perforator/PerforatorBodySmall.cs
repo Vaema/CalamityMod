@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 12; // 24
             NPC.width = 42;
             NPC.height = 42;
             NPC.defense = 4;

@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Crabulon
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
+            NPC.damage = 22; // 44
             NPC.width = 14;
             NPC.height = 14;
             if (CalamityWorld.LegendaryMode)

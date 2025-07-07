@@ -15,7 +15,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
 
-        public static float SapphireJewelContactDamageMult = 1.5f;
+        // Death exclusive
+        public static float SapphireJewelContactDamageMult = 1.5f; // 144
 
         public static bool BuffedKingSlimeAI(NPC npc, Mod mod)
         {

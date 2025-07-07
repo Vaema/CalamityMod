@@ -166,11 +166,14 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
         }
 
+        public static int LaserDamage = 85; // 340
+        public static int BeamDamage = 135; // 540
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 270; // 540
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
             NPC.width = 164;
             NPC.height = 164;
             NPC.defense = 100;
@@ -938,8 +941,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ThanatosBeamStart>();
-                                    int damage = NPC.GetProjectileDamage(type);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, BeamDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }

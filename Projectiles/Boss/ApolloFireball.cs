@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -175,7 +176,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.8), 0f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, Apollo.BoltDamage, 0f, Main.myPlayer);
                 }
             }
 

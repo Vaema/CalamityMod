@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.width = 30;
             NPC.height = 50;
             NPC.defense = 70;

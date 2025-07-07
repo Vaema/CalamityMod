@@ -40,9 +40,9 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 40; // 80
             NPC.LifeMaxNERB(1875, 2250, 80000);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.GetNPCDamage();
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 10;
@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.localAI[1] == 1f)
             {
                 NPC.defense = NPC.defDefense + 20;
-                setDamage += 22;
+                setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
             // Used for landing squash and stretch
@@ -478,7 +478,6 @@ namespace CalamityMod.NPCs.SlimeGod
                             // Eruption of slime balls that fall down
                             float projectileVelocity = 8f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                             destination *= projectileVelocity;
                             int numProj = 3;
@@ -507,7 +506,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                     Main.dust[slimeDust].noGravity = true;
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed * 1.5f, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed * 1.5f, type, SlimeGodCore.GlobDamage, 0f, Main.myPlayer, 1f, 0f);
                             }
 
                             // Fire slime balls directly at players with a max of 2
@@ -541,7 +540,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                         Main.dust[slimeDust].noGravity = true;
                                     }
 
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, projFireDirection, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, projFireDirection, type, SlimeGodCore.GlobDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }

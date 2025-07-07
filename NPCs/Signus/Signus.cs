@@ -69,11 +69,17 @@ namespace CalamityMod.NPCs.Signus
             }
         }
 
+        public static int ScytheDamage = 60; // 240
+        public static int DustDamage = 60; // 240; Also applies to Legendary Mode Peanuts
+
+        // GFB exclusive
+        public static int StealthStrikeMult = 2; // 480
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 160; // 320
             NPC.npcSlots = 32f;
-            NPC.GetNPCDamage();
             NPC.width = 130;
             NPC.height = 130;
             NPC.defense = 60;
@@ -493,16 +499,14 @@ namespace CalamityMod.NPCs.Signus
                             scytheXDist *= scytheDistance;
                             scytheYDist *= scytheDistance;
                             int type = ModContent.ProjectileType<SignusScythe>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, ScytheDamage, 0f, Main.myPlayer, 0f, NPC.target + 1);
                             if (stealthTimer >= maxStealth)
                             {
-                                damage *= 2;
                                 SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
                                 for (int i = 0; i < 4; i++)
                                 {
                                     Vector2 offset = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, ScytheDamage * StealthStrikeMult, 0f, Main.myPlayer, 0f, NPC.target + 1);
                                 }
                                 stealthTimer = 0;
                             }
@@ -710,14 +714,13 @@ namespace CalamityMod.NPCs.Signus
                         {
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
                             int type = (CalamityWorld.LegendaryMode) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
-                            int damage = (CalamityWorld.LegendaryMode) ? 60 : NPC.GetProjectileDamage(type);
                             Vector2 velocity = Main.zenithWorld ? new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) : Vector2.Zero;
                             if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                             {
                                 velocity = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
                             }
                             int ai = buffed ? 69 : 0;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, damage, 0f, Main.myPlayer, ai);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, DustDamage, 0f, Main.myPlayer, ai);
                         }
                     }
 

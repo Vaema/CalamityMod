@@ -99,11 +99,19 @@ namespace CalamityMod.NPCs.Yharon
             }
         }
 
+        public static int FlareDamage = 72; // 288; FlareBomb, FlareDust, FlareDust2
+        public static int FireballDamage = 72; // 288
+        public static int TornadoDamage = 90; // 360; Flarenado, Infernado, Infernado2
+        public static int BordernadoDamage = 125; // 500; SkyFlareRevenge
+
+        // GFB exclusive
+        public static int VortexDamage = 90; // 360
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 200; // 400
             NPC.npcSlots = 50f;
-            NPC.GetNPCDamage();
             NPC.width = 200;
             NPC.height = 200;
             NPC.defense = 90;
@@ -713,8 +721,7 @@ namespace CalamityMod.NPCs.Yharon
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<FlareBomb>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.target, 1f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, FlareDamage, 0f, Main.myPlayer, NPC.target, 1f);
                     }
                 }
 
@@ -920,7 +927,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = flareDustPhaseTimer + teleportPhaseTimer - 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -1057,7 +1064,7 @@ namespace CalamityMod.NPCs.Yharon
                     {
                         int ringReduction = (int)MathHelper.Lerp(0f, 14f, NPC.ai[2] / flareDustPhaseTimer);
                         int totalProjectiles = 38 - ringReduction; // 36 for first ring, 22 for last ring
-                        DoFlareDustBulletHell(0, flareDustSpawnDivisor, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, 0f, 0f, false);
+                        DoFlareDustBulletHell(0, flareDustSpawnDivisor, FlareDamage, totalProjectiles, 0f, 0f, false);
                     }
                 }
 
@@ -1160,10 +1167,9 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float finalVelocity = 12f;
                         float projectileAcceleration = 1.1f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, damage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
                     }
                 }
 
@@ -1290,7 +1296,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = flareDustPhaseTimer + teleportPhaseTimer - 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -1433,7 +1439,7 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        DoFlareDustBulletHell(1, flareDustPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), 8, 13f, 3.6f, false);
+                        DoFlareDustBulletHell(1, flareDustPhaseTimer, FlareDamage, 8, 13f, 3.6f, false);
                     }
                 }
 
@@ -1539,10 +1545,9 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float finalVelocity = 15f;
                         float projectileAcceleration = 1.11f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, damage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
                     }
                 }
 
@@ -1586,8 +1591,7 @@ namespace CalamityMod.NPCs.Yharon
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<FlareBomb>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.target, 1f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, FlareDamage, 0f, Main.myPlayer, NPC.target, 1f);
                     }
                 }
 
@@ -2025,7 +2029,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = spinPhaseTimer + 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -2248,8 +2252,7 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer);
                     }
 
                     if (Math.Abs(targetData.Center.X - NPC.Center.X) > 700f && Math.Abs(NPC.velocity.X) < chargeSpeed)
@@ -2311,9 +2314,8 @@ namespace CalamityMod.NPCs.Yharon
                     int yharonFireballTimer = (int)(NPC.ai[1] - splittingFireballBreathTimer + 1f);
 
                     int type = ModContent.ProjectileType<YharonFireball>();
-                    int damage = NPC.GetProjectileDamage(type);
                     if (yharonFireballTimer <= splittingFireballBreathTimer2 && yharonFireballTimer % splittingFireballBreathDivisor == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, NPC.velocity, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, NPC.velocity, type, FireballDamage, 0f, Main.myPlayer, 0f, 0f);
                 }
 
                 if (NPC.ai[1] > splittingFireballBreathPhaseTimer - splittingFireballBreathYVelocityTimer)
@@ -2357,13 +2359,13 @@ namespace CalamityMod.NPCs.Yharon
                             float radialOffset = secondPhasePhase == 4 ? 2.8f : 3.2f;
                             if (NPC.localAI[3] == 0f)
                             {
-                                DoFlareDustBulletHell(1, spinPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, projectileVelocity, radialOffset, true);
+                                DoFlareDustBulletHell(1, spinPhaseTimer, FlareDamage, totalProjectiles, projectileVelocity, radialOffset, true);
                             }
                             else
                             {
                                 int ringReduction = (int)MathHelper.Lerp(0f, 12f, NPC.ai[1] / spinPhaseTimer);
                                 int totalProjectiles2 = 38 - ringReduction; // 36 for first ring, 24 for last ring
-                                DoFlareDustBulletHell(0, flareDustSpawnDivisor2, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles2, 0f, 0f, true);
+                                DoFlareDustBulletHell(0, flareDustSpawnDivisor2, FlareDamage, totalProjectiles2, 0f, 0f, true);
                             }
                         }
                     }
@@ -2373,7 +2375,7 @@ namespace CalamityMod.NPCs.Yharon
                         {
                             int ringReduction = (int)MathHelper.Lerp(0f, 12f, NPC.ai[1] / spinPhaseTimer);
                             int totalProjectiles = 38 - ringReduction; // 36 for first ring, 24 for last ring
-                            DoFlareDustBulletHell(0, flareDustSpawnDivisor, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, 0f, 0f, true);
+                            DoFlareDustBulletHell(0, flareDustSpawnDivisor, FlareDamage, totalProjectiles, 0f, 0f, true);
                         }
                     }
 
@@ -2438,7 +2440,7 @@ namespace CalamityMod.NPCs.Yharon
                         {
                             SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                            DoFireRing(expertMode ? 300 : 180, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareBomb>()), NPC.target, 1f);
+                            DoFireRing(expertMode ? 300 : 180, FlareDamage, NPC.target, 1f);
                         }
                     }
 
@@ -3047,8 +3049,7 @@ namespace CalamityMod.NPCs.Yharon
                 for (int i = 0; i < 4; i++)
                 {
                     int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                    int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 360, NPC.whoAmI);
+                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, VortexDamage, 0f, Main.myPlayer, 360, NPC.whoAmI);
                 }
             }
         }

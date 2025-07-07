@@ -32,9 +32,11 @@ namespace CalamityMod.NPCs.StormWeaver
             }
         }
 
+        public static int LaserDamage = 60; // 240
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 96; // 192
             NPC.npcSlots = 5f;
             NPC.width = 40;
             NPC.height = 40;
@@ -153,8 +155,7 @@ namespace CalamityMod.NPCs.StormWeaver
                             float projectileVelocity = death ? 6.25f : revenge ? 5.75f : expertMode ? 5.5f : 5f;
                             Vector2 velocityVector = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                             int type = ModContent.ProjectileType<DestroyerElectricLaser>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocityVector, type, LaserDamage, 0f, Main.myPlayer);
                             Main.projectile[proj].timeLeft = 900;
                         }
                     }

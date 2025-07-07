@@ -43,11 +43,13 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
+        public static int BallDamage = 27; // 108
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 55; // 110
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -318,7 +320,6 @@ namespace CalamityMod.NPCs.CalClone
                             float calCloneBroProjSpeed = death ? 14f : 12f;
                             calCloneBroProjSpeed += 3f * enrageScale;
                             int type = ModContent.ProjectileType<BrimstoneBall>();
-                            int damage = NPC.GetProjectileDamage(type);
                             calCloneBroProjLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
                             calCloneBroProjTargetX = player.position.X + (player.width / 2) - calCloneBroProjLocation.X;
                             calCloneBroProjTargetY = player.position.Y + (player.height / 2) - calCloneBroProjLocation.Y;
@@ -330,7 +331,7 @@ namespace CalamityMod.NPCs.CalClone
                             calCloneBroProjTargetX += NPC.velocity.X * 0.5f;
                             calCloneBroProjLocation.X -= calCloneBroProjTargetX;
                             calCloneBroProjLocation.Y -= calCloneBroProjTargetY;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), calCloneBroProjLocation.X, calCloneBroProjLocation.Y, calCloneBroProjTargetX, calCloneBroProjTargetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), calCloneBroProjLocation.X, calCloneBroProjLocation.Y, calCloneBroProjTargetX, calCloneBroProjTargetY, type, BallDamage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -368,9 +369,6 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SupremeCalamitas.SupremeCalamitas.BrimstoneShotSound, NPC.Center);
 
                         int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                        int damage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneBall>());
-                        if (bossRush)
-                            damage /= 2;
 
                         int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
                         float radians = MathHelper.TwoPi / totalProjectiles;
@@ -380,7 +378,7 @@ namespace CalamityMod.NPCs.CalClone
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, CalamitasClone.DartDamage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                         }
 
                         for (int i = 0; i < 6; i++)

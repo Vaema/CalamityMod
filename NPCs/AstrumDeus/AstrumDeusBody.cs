@@ -54,9 +54,13 @@ namespace CalamityMod.NPCs.AstrumDeus
             }
         }
 
+        public static int LaserDamage = 30; // 120
+        public static int HelixLaserDamage = 40; // 160
+        public static int MineDamage = 40; // 160
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 80; // 160
             NPC.npcSlots = 5f;
             NPC.width = 38;
             NPC.height = 44;
@@ -300,9 +304,8 @@ namespace CalamityMod.NPCs.AstrumDeus
                                 }
 
                                 int type = ModContent.ProjectileType<DeusMine>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 float split = (splittingMines && NPC.ai[0] % 3f == 0f) ? 1f : 0f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer, split, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, MineDamage, 0f, Main.myPlayer, split, 0f);
                             }
                         }
 
@@ -326,7 +329,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                                 Vector2 laserVelocity = shootDirection * deusLaserSpeed;
 
                                 int type = shootGodRays ? ModContent.ProjectileType<AstralGodRay>() : ModContent.ProjectileType<AstralShot2>();
-                                int damage = NPC.GetProjectileDamage(type);
+                                int damage = shootGodRays ? HelixLaserDamage : LaserDamage;
                                 if (shootGodRays)
                                 {
                                     SoundEngine.PlaySound(AstrumDeusHead.GodRaySound, NPC.Center);
@@ -366,9 +369,8 @@ namespace CalamityMod.NPCs.AstrumDeus
                         }
 
                         int type = ModContent.ProjectileType<DeusMine>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float split = (splittingMines && NPC.ai[0] % 3f == 0f) ? 1f : 0f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer, split, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, MineDamage, 0f, Main.myPlayer, split, 0f);
                     }
                 }
             }

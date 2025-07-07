@@ -12,8 +12,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class DukeFishronAI
     {
         // Vanilla values
-        public static float Phase2ContactDamageMult = 1.436f;
-        public static float Phase3ContactDamageMult = 1.315f;
+        public static float Phase2ContactDamageMult = 1.436f; // 201
+        public static float Phase3ContactDamageMult = 1.315f; // 184
 
         public static bool BuffedDukeFishronAI(NPC npc, Mod mod)
         {

@@ -15,8 +15,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         private const float ProjectileOffset = 50f;
 
         // Vanilla values
-        public static float Phase2ContactDamageMult = 1.2f;
-        public static float Phase3ContactDamageMult = 1.333f;
+        public static float Phase2ContactDamageMult = 1.2f; // 36
+        public static float Phase3ContactDamageMult = 1.333f; // 40
         public static int BloodShotDamage = 8; // 32
 
         public static bool BuffedEyeofCthulhuAI(NPC npc, Mod mod)

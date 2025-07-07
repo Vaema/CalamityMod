@@ -88,10 +88,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
+        public static int LaserDamage = 85; // 340
+        public static int BeamDamage = 110; // 440
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 154;
             NPC.height = 90;
             NPC.defense = 100;
@@ -454,10 +457,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ThanatosLaser>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     Vector2 laserVelocity = Vector2.Normalize(Main.player[targetIndex].Center - NPC.Center);
                                     Vector2 laserOffset = laserVelocity * 70f + Vector2.UnitY * 16f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + laserOffset, Main.player[targetIndex].Center, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + laserOffset, Main.player[targetIndex].Center, type, LaserDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }
@@ -485,7 +487,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<AresLaserBeamStart>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     float beamOffset = 84f;
                                     float beamOffset2 = 16f;
                                     Vector2 source = horizontalLaserSweep ? new Vector2(NPC.Center.X - beamOffset2 * NPC.direction, NPC.Center.Y + beamOffset) : new Vector2(NPC.Center.X + beamOffset * NPC.direction, NPC.Center.Y + beamOffset2);
@@ -493,7 +494,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                                     if (laserVelocity.HasNaNs())
                                         laserVelocity = -Vector2.UnitY;
 
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity, type, BeamDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }
@@ -545,8 +546,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     telSound.Stop();
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -761,7 +760,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

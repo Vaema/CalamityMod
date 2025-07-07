@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float MovementVelocityMultiplierForSlowAttacks = 0.5f;
 
         // Vanilla values
-        public static float Phase2ContactDamageMult = 1.4f;
+        public static float Phase2ContactDamageMult = 1.4f; // 140
         public static int PinkSeedDamage = 19; // 76
         public static int PoisonSeedDamage = 24; // 96
         public static int ThornBallDamage = 27; // 108

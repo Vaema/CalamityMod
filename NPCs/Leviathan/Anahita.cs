@@ -59,10 +59,15 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
+        public static float DashDamageMult = 1.5f; // 165
+        public static int SpearDamage = 24; // 96
+        public static int MistDamage = 24; // 96
+        public static int SongDamage = 30; // 120
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 55; // 110
             NPC.npcSlots = 16f;
             NPC.width = 100;
             NPC.height = 100;
@@ -705,10 +710,10 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalProjectiles = 8;
                         int projectileDistance = 600;
                         int type = ModContent.ProjectileType<WaterSpear>();
+                        int damage = SpearDamage;
                         if (CalamityWorld.LegendaryMode)
                         {
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
                                 switch (LegendaryModeAttackChosen)
@@ -719,11 +724,13 @@ namespace CalamityMod.NPCs.Leviathan
 
                                     case 1:
                                         type = ModContent.ProjectileType<FrostMist>();
+                                        damage = MistDamage;
                                         SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                         break;
 
                                     case 2:
                                         type = ModContent.ProjectileType<SirenSong>();
+                                        damage = SongDamage;
                                         float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                         Main.musicPitch = soundPitch;
                                         SoundEngine.PlaySound(SoundID.Item26, player.Center);
@@ -747,12 +754,14 @@ namespace CalamityMod.NPCs.Leviathan
                                 case 1:
                                     totalProjectiles = 3;
                                     type = ModContent.ProjectileType<FrostMist>();
+                                    damage = MistDamage;
                                     SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                     break;
 
                                 case 2:
                                     totalProjectiles = 6;
                                     type = ModContent.ProjectileType<SirenSong>();
+                                    damage = SongDamage;
                                     float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                     Main.musicPitch = soundPitch;
                                     SoundEngine.PlaySound(SoundID.Item26, player.Center);
@@ -766,7 +775,6 @@ namespace CalamityMod.NPCs.Leviathan
                                 totalProjectiles += totalProjectiles / 2;
 
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
                                 Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
@@ -847,7 +855,7 @@ namespace CalamityMod.NPCs.Leviathan
             // Charge
             else if (NPC.ai[0] == 4f)
             {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                 if (CalamityWorld.LegendaryMode && NPC.ai[1] % 5f == 0f)
                 {

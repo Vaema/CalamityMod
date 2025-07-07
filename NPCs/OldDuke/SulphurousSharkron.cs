@@ -28,11 +28,11 @@ namespace CalamityMod.NPCs.OldDuke
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 44;
             NPC.height = 44;
-            NPC.GetNPCDamage();
             NPC.defense = 100;
             NPC.lifeMax = 6000;
             if (BossRushEvent.BossRushActive)
@@ -212,11 +212,10 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 int spawnX = NPC.width / 2;
                 int type = ModContent.ProjectileType<OldDukeGore>();
-                int damage = NPC.GetProjectileDamage(type);
                 for (int i = 0; i < 10; i++)
                 {
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X + Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, damage, 0f, Main.myPlayer);
+                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, OldDuke.GoreDamage, 0f, Main.myPlayer);
                 }
             }
         }

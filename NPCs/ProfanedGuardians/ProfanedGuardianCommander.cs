@@ -65,12 +65,17 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
+        public static int FireDamage = 42; // 168; HolyFire, HolyFire2
+        public static int SpearDamage = 55; // 220; HolySpear, ProfanedSpear
+        public static int HolyBlastDamage = 64; // 256
+        public static int RayDamage = 80; // 320
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 110; // 220
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 186;
             NPC.defense = 40;
@@ -521,7 +526,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             float projectileVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                             Vector2 finalProjectileVelocity = Vector2.Normalize(player.Center - shootFrom) * projectileVelocity;
                             int type = shootSpear ? ModContent.ProjectileType<ProfanedSpear>() : ModContent.ProjectileType<HolyFire2>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = shootSpear ? SpearDamage : FireDamage;
 
                             if (type == ModContent.ProjectileType<HolyFire2>())
                                 finalProjectileVelocity *= 0.5f;
@@ -556,13 +561,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             Vector2 finalHolyBlastVelocity = Vector2.Normalize(player.Center - shootFrom) * holyBlastVelocity;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int type = ModContent.ProjectileType<HolyBlast>();
-                                int damage = NPC.GetProjectileDamage(type);
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
-                                    Main.projectile[proj].timeLeft = projTimeLeft;
-                                }
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, finalHolyBlastVelocity, ModContent.ProjectileType<HolyBlast>(), HolyBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
+                                Main.projectile[proj].timeLeft = projTimeLeft;
                             }
 
                             // Dust for blasting out the holy blasts
@@ -729,10 +729,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         for (int k = 0; k < totalDustPerProjectile; k++)
                             Dust.NewDust(shootFrom, 30, 30, (int)CalamityDusts.ProfanedFire, projectileVelocity.X, projectileVelocity.Y, 0, default, 1f);
 
-                        int type = ModContent.ProjectileType<HolyFire>();
-                        int damage = NPC.GetProjectileDamage(type);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyFire>(), FireDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -853,8 +851,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                         Vector2 velocity2 = Vector2.Normalize(player.Center - shootFrom) * spearVelocity;
                         Vector2 knockbackVelocity = velocity2 * 0.1f;
-                        int type = ModContent.ProjectileType<HolySpear>();
-                        int damage = NPC.GetProjectileDamage(type);
 
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, shootFrom);
                         for (int k = 0; k < totalDustPerProjectile; k++)
@@ -874,12 +870,12 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                     Dust.NewDust(shootFrom, 30, 30, (int)CalamityDusts.ProfanedFire, perturbedSpeed.X, perturbedSpeed.Y, 0, default, 1f);
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, perturbedSpeed, type, damage, 0f, Main.myPlayer, targetRanAwayAndWillNowBeFucked ? -2f : -1f, -30f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, perturbedSpeed, ModContent.ProjectileType<HolySpear>(), SpearDamage, 0f, Main.myPlayer, targetRanAwayAndWillNowBeFucked ? -2f : -1f, -30f);
                             }
                         }
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2 * 0.85f, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2 * 0.85f, ModContent.ProjectileType<HolySpear>(), SpearDamage, 0f, Main.myPlayer, 1f, 0f);
 
                         if (!targetRanAwayAndWillNowBeFucked)
                             NPC.velocity = -knockbackVelocity;
@@ -970,23 +966,20 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             if (laserVelocity.X < 0f)
                                 beamDirection = 1f;
 
-                            int type = ModContent.ProjectileType<ProvidenceHolyRay>();
-                            int damage = NPC.GetProjectileDamage(type);
-
                             // 60 degrees offset
                             laserVelocity = laserVelocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 6f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, type, damage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
 
                             // -60 degrees offset
                             if (revenge)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, type, damage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
 
                             if (CalamityWorld.LegendaryMode)
                             {
                                 rotation *= 0.33f;
                                 laserVelocity = laserVelocity.RotatedBy(-(double)beamDirection * MathHelper.TwoPi / 2f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), damage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), damage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, -laserVelocity, ModContent.ProjectileType<ProvidenceHolyRay>(), RayDamage, 0f, Main.myPlayer, -beamDirection * MathHelper.TwoPi / rotation, NPC.whoAmI);
                             }
 
                             NPC.netUpdate = true;

@@ -56,10 +56,6 @@ namespace CalamityMod.Projectiles.Boss
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
 
-            // Natural damage is removed from GFB
-            if (Projectile.ai[1] == 0f && !Main.zenithWorld)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Providence>());
-
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 180f && Projectile.ai[1] > 60f)
             {

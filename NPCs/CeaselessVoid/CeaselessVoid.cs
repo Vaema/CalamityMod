@@ -61,9 +61,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
             }
         }
 
+        public static int BeamPortalDamage = 60; // 240
+        public static int DarkEnergyProjectileDamage = 60; // 240
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.npcSlots = 36f;
             NPC.width = 100;
             NPC.height = 100;
@@ -348,11 +351,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             float degrees = 360 / numBeamPortals;
                             float beamPortalDistance = bossRush ? 360f : death ? 400f : revenge ? 420f : expertMode ? 440f : 480f;
                             int type = ProjectileType<DoGBeamPortal>();
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < numBeamPortals; i++)
                             {
                                 float ai1 = i * degrees;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (float)(Math.Sin(i * degrees) * beamPortalDistance), player.Center.Y + (float)(Math.Cos(i * degrees) * beamPortalDistance), 0f, 0f, type, damage, 0f, Main.myPlayer, ai1, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (float)(Math.Sin(i * degrees) * beamPortalDistance), player.Center.Y + (float)(Math.Cos(i * degrees) * beamPortalDistance), 0f, 0f, type, BeamPortalDamage, 0f, Main.myPlayer, ai1, 0f);
                             }
                         }
                     }
@@ -378,7 +380,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ProjectileType<DarkEnergyBall>();
-                            int damage = NPC.GetProjectileDamage(type);
                             bool normalSpread = NPC.localAI[0] % 2f == 0f;
                             float speed = 0.5f;
                             int totalProjectiles = 4;
@@ -388,7 +389,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             {
                                 Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(MathHelper.TwoPi / totalProjectiles * i + radialOffset)) * suckDistance;
                                 Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                             }
                         }
 
@@ -406,7 +407,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileType<DarkEnergyBall2>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 bool normalSpread = NPC.localAI[0] % 2f != 0f;
                                 float speed = 2f;
                                 int totalProjectiles = 2;
@@ -420,7 +420,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                                 {
                                     Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
                                     Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -437,7 +437,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileType<DarkEnergyBall2>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 bool normalSpread = NPC.localAI[0] % 2f == 0f;
                                 float speed = 4f;
                                 int totalProjectiles = 2;
@@ -451,7 +450,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                                 {
                                     Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
                                     Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }

@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 25; // 40 (1.6x expert scaling)
 
             NPC.defense = 2;
             if (CalamityWorld.LegendaryMode)
@@ -172,7 +172,6 @@ namespace CalamityMod.NPCs.DesertScourge
 
                         float rotation = MathHelper.ToRadians(spread);
                         int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                        int damage = NPC.GetProjectileDamage(type);
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -185,7 +184,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, DesertScourgeHead.SpitDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].aiStyle = -1;
                                 Main.projectile[proj].netUpdate = true;
                             }
@@ -635,6 +634,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

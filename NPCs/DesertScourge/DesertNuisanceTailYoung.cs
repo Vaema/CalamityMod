@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 10; // 20
             NPC.width = 78;
             NPC.height = 78;
 

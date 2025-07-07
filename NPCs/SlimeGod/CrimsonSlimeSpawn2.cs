@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 35; // 70
             NPC.width = 40;
             NPC.height = 30;
             if (CalamityWorld.LegendaryMode)
@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 spikeTimer -= 1f;
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
-            int damage = NPC.GetProjectileDamage(type);
+            int damage = CrimulanPaladin.CrimsonSpikeDamage;
             if (Main.zenithWorld)
                 type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
 

@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 24; // 48
             NPC.width = 70;
             NPC.height = 70;
             NPC.defense = 6;
@@ -153,8 +153,7 @@ namespace CalamityMod.NPCs.HiveMind
             if ((Main.expertMode || BossRushEvent.BossRushActive) && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, HiveMind.ShaderainDamage, 0f, Main.myPlayer);
             }
         }
     }

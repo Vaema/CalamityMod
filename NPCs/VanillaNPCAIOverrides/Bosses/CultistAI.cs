@@ -20,9 +20,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int LightningDamage = 30; // 120
         public static int DoomDamage = 45; // 180 (Also fixes Master Mode scaling)
 
-        // Reused for Primordial Wyrm
-        public static float PrimordialWyrmDoomDamageMult = 2.445f;
-
         public static bool BuffedCultistAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -1075,7 +1072,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (CalamityGlobalNPC.adultEidolonWyrmHead != -1)
                     {
                         if (Main.npc[CalamityGlobalNPC.adultEidolonWyrmHead].active)
-                            npc.damage *= 3;
+                            npc.damage = (int)Math.Round(npc.defDamage * PrimordialWyrmHead.LightDamageMult);
                     }
                 }
 
@@ -1208,7 +1205,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Increase damage if the Primordial Wyrm is alive
                 if (Main.npc[(int)npc.ai[0]].type == ModContent.NPCType<PrimordialWyrmHead>())
-                    damage *= (int)Math.Round(damage * PrimordialWyrmDoomDamageMult);
+                    damage = (int)Math.Round(damage * PrimordialWyrmHead.DoomDamageMult);
 
                 kill = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)

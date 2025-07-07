@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 100; // 200
             NPC.npcSlots = 5f;
             NPC.width = 66;
             NPC.height = 66;
