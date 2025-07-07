@@ -857,6 +857,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, spacing, 2-i);
                                     if (i == 2) 
                                         Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, time, 0, i);
+
+                                    if (Main.zenithWorld && i != 2)
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, 240, 6);
                                 }
                             calamityGlobalNPC.newAI[1] += 1f;
                         }
@@ -877,13 +880,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     spacing += death ? 64 : 32;
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
+                                    int bType = Main.rand.Next(0, 5 + 1);
+                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, spacing, bType);
+                                    if (phase6 || death)
+                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 0, bType);
 
-                                    {
-                                        int bType = Main.rand.Next(0, 5 + 1);
-                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, spacing, bType);
-                                        if (phase6 || death)
-                                            Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 0, bType);
-                                    }
+                                    if (Main.zenithWorld)
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 120, 6);
                                 }
                             }
                             calamityGlobalNPC.newAI[1] += 1f;
@@ -1578,7 +1581,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         if (calamityGlobalNPC.newAI[1] % (int)(laserBarrageShootGateValue * (death ? 0.33f : 0.5f)) == 0f && calamityGlobalNPC.newAI[1] > 0f)
                         {
-                            
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
                             int damage = NPC.GetProjectileDamage(type);
@@ -1587,6 +1589,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
                                 Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.4f : 0.45f, 170, bType);
+
+                                if (Main.zenithWorld)
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.4f : 0.45f, 120, 6);
                             }
                         }
                     }
