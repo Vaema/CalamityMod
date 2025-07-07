@@ -1227,7 +1227,7 @@ namespace CalamityMod.World
                 {
                     Main.tile[X, Y].ClearEverything();
                     WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Basalt>());
-                    WorldGen.PlaceWall(X, Y, WallID.LavaUnsafe1);
+                    WorldGen.PlaceWall(X, Y, ModContent.WallType<LargeBasaltWall>());
                 }
             });
 
@@ -1303,6 +1303,7 @@ namespace CalamityMod.World
                         WorldGen.PlaceTile(X, Y + 1, (ushort)ModContent.TileType<Basalt>());
                         Main.tile[X, Y].TileType = (ushort)ModContent.TileType<Basalt>();
                     }
+                    Tile.SmoothSlope(X, Y);
                 }
             });
         }
