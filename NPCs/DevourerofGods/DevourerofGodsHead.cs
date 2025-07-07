@@ -857,8 +857,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, spacing, 2-i);
                                     if (i == 2) 
                                         Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, time, 0, i);
-
-                                    if (Main.zenithWorld && i != 2)
+                                    else if (Main.zenithWorld)
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, 240, 6);
                                 }
                             calamityGlobalNPC.newAI[1] += 1f;
