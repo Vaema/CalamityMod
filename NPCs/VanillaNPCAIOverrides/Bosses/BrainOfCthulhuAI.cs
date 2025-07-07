@@ -21,8 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // whoAmI variable
             NPC.crimsonBoss = npc.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -34,7 +33,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, options);
             }
 
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
             int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
 
@@ -42,20 +41,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (tile.WallType == WallID.CrimstoneUnsafe)
                 enrage = false;
 
-            float enrageScale = bossRush ? 1.5f : death ? 0.5f : 0f;
-            if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
+            float enrageScale = death ? 0.5f : 0f;
+            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
             {
-                npc.Calamity().CurrentlyEnraged = !bossRush;
+                npc.Calamity().CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (!Main.player[npc.target].ZoneCrimson || bossRush)
+            if (!Main.player[npc.target].ZoneCrimson && enrage)
             {
-                npc.Calamity().CurrentlyEnraged = !bossRush;
+                npc.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
             // Despawn check
-            bool despawn = Main.player[npc.target].dead && !bossRush;
+            bool despawn = Main.player[npc.target].dead;
 
             // Despawn
             if (despawn)
@@ -859,15 +858,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, default);
 
             float enrageScaleMax = 2f;
-            float enrageScale = bossRush ? enrageScaleMax : death ? 0.5f : 0f;
+            float enrageScale = death ? 0.5f : 0f;
             if ((npc.position.Y / 16f) < Main.worldSurface)
                 enrageScale += 0.5f;
             if (!Main.player[npc.target].ZoneCrimson)

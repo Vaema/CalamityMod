@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.spriteDirection = (Target.Center.X < NPC.Center.X).ToDirectionInt();
 
             timer++;
-            int shootRate = BossRushEvent.BossRushActive ? 120 : 180;
+            int shootRate = 180;
             if (timer > shootRate)
             {
                 foreach (NPC seeker in Main.ActiveNPCs)
@@ -163,8 +163,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     float targetDist = Vector2.Distance(Target.Center, NPC.Center);
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
                     int damage = NPC.GetProjectileDamage(type);
-					if (BossRushEvent.BossRushActive)
-						damage /= 2;
 
                     float velocity = 5f;
                     float projectileVelocityToPass = velocity * 3f;

@@ -145,10 +145,9 @@ namespace CalamityMod.NPCs.CalClone
             // Emit light
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -156,10 +155,10 @@ namespace CalamityMod.NPCs.CalClone
 
             Player player = Main.player[NPC.target];
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -378,10 +377,8 @@ namespace CalamityMod.NPCs.CalClone
 
                         int type = ModContent.ProjectileType<BrimstoneBarrage>();
                         int damage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneFire>());
-                        if (bossRush)
-                            damage /= 2;
 
-                        int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
+                        int totalProjectiles = death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float velocity = 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity);

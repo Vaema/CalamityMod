@@ -155,10 +155,9 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.height = (int)(NPC.frame.Height * (charging ? 1.5f : 1.8f));
 
             // Mode variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -226,7 +225,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             Vector2 distFromPlayer = player.Center - NPC.Center;
 
             // Enrage
-            if (!player.ZoneJungle && !bossRush)
+            if (!player.ZoneJungle && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -234,12 +233,12 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
             float enrageScale = death ? 0.5f : 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1.5f;
             }
 
@@ -249,10 +248,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (CalamityWorld.LegendaryMode)
                 enrageScale += 0.5f;
 
-            if (bossRush)
-                enrageScale = 2f;
-
-            bool diagonalDash = (revenge && phase2) || bossRush;
+            bool diagonalDash = (revenge && phase2);
 
             if (NPC.ai[0] != 0f && NPC.ai[0] != 4f)
                 NPC.rotation = NPC.velocity.X * 0.02f;
@@ -628,7 +624,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 calamityGlobalNPC.newAI[0] += 1f;
                 if ((Vector2.Distance(NPC.Center, player.Center) < 640f && canHitTarget) || calamityGlobalNPC.newAI[0] >= 180f)
                 {
-                    NPC.ai[0] = (phase3 || bossRush) ? 5f : 1f;
+                    NPC.ai[0] = phase3 ? 5f : 1f;
                     NPC.ai[1] = 0f;
                     calamityGlobalNPC.newAI[0] = 0f;
 
@@ -975,15 +971,14 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                                     baseVelocity *= 0.4f;
                                 }
 
-                                int missiles = bossRush ? 16 : MissileProjectiles;
-                                int spread = bossRush ? 18 : 24;
+                                int spread = 24;
                                 if (!gaussMode)
                                 {
-                                    for (int i = 0; i < missiles; i++)
+                                    for (int i = 0; i < MissileProjectiles; i++)
                                     {
-                                        Vector2 spawn = NPC.Center; // Normal = 96, Boss Rush = 144
-                                        spawn.X += i * (int)(spread * 1.125) - (missiles * (spread / 2)); // Normal = -96 to 93, Boss Rush = -144 to 156
-                                        Vector2 velocity = baseVelocity.RotatedBy(MathHelper.ToRadians(-MissileAngleSpread / 2 + (MissileAngleSpread * i / missiles)));
+                                        Vector2 spawn = NPC.Center;
+                                        spawn.X += i * (int)(spread * 1.125) - (MissileProjectiles * (spread / 2));
+                                        Vector2 velocity = baseVelocity.RotatedBy(MathHelper.ToRadians(-MissileAngleSpread / 2 + (MissileAngleSpread * i / MissileProjectiles)));
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), spawn, velocity, type, damage, 0f, Main.myPlayer, nukeBarrageChallengeAmt, player.position.Y);
                                     }
                                 }

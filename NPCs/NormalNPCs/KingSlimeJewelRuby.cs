@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         private const int BoltShootGateValue = 60;
         private const int BoltShootGateValue_Death = 75;
-        private const int BoltShootGateValue_BossRush = 45;
         private const float LightTelegraphDuration = 45f;
 
         public override void SetStaticDefaults()
@@ -55,8 +54,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
@@ -126,7 +124,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Fire projectiles
             NPC.ai[0] += 1f;
-            if (NPC.ai[0] >= (bossRush ? BoltShootGateValue_BossRush : death ? BoltShootGateValue_Death : BoltShootGateValue))
+            if (NPC.ai[0] >= (death ? BoltShootGateValue_Death : BoltShootGateValue))
             {
                 NPC.ai[0] = 0f;
 
@@ -194,7 +192,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             float alph = 0f;
 
-            float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : (CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue)) - LightTelegraphDuration;
+            float colorTelegraphGateValue = (CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue) - LightTelegraphDuration;
 
             if (NPC.ai[0] > colorTelegraphGateValue)
                 alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);

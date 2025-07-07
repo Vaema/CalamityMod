@@ -212,7 +212,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Target variable
             Player player = Main.player[NPC.target];
 
-            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4 || BossRushEvent.BossRushActive;
+            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4;
             bool targetOnMount = player.mount.Active;
 
             // Check whether enraged for the sake of the HP bar UI

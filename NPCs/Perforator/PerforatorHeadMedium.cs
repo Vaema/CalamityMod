@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfMediumDeath");
 
         public static Asset<Texture2D> GlowTexture;
-
+        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -69,9 +69,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.DeathSound = DeathSound;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -100,15 +98,23 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if ((NPC.position.Y / 16f) < Main.worldSurface || bossRush)
+            if ((!Main.player[NPC.target].ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
+            {
+                if (biomeEnrageTimer > 0)
+                    biomeEnrageTimer--;
+            }
+            else
+                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
+
+            bool biomeEnraged = biomeEnrageTimer <= 0 && !BossRushEvent.BossRushActive;
+            float enrageScale = 0f;
+            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
                 enrageScale += 1f;
-            if (!Main.player[NPC.target].ZoneCrimson || bossRush)
+            if (biomeEnraged && !Main.player[NPC.target].ZoneCrimson)
                 enrageScale += 1f;
 
             // Total body segments

@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.4f;
+            NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath21;
@@ -85,11 +85,6 @@ namespace CalamityMod.NPCs.HiveMind
             float velocity = CalamityWorld.LegendaryMode ? 10f : death ? 7f : revenge ? 6f : 4f;
             float acceleration = CalamityWorld.LegendaryMode ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
             float deceleration = CalamityWorld.LegendaryMode ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
-            if (BossRushEvent.BossRushActive)
-            {
-                velocity *= 2f;
-                acceleration *= 2f;
-            }
 
             if (NPC.position.Y > Main.player[NPC.target].position.Y - 400f)
             {

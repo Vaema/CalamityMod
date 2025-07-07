@@ -146,10 +146,9 @@ namespace CalamityMod.NPCs.Ravager
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -224,14 +223,6 @@ namespace CalamityMod.NPCs.Ravager
             if (immunePhase)
             {
                 NPC.dontTakeDamage = true;
-                if (bossRush)
-                {
-                    foreach (Player p in Main.ActivePlayers)
-                    {
-                        if (!p.dead && revenge)
-                            p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
-                    }
-                }
             }
             else
             {
@@ -523,11 +514,11 @@ namespace CalamityMod.NPCs.Ravager
 
                         if (revenge)
                         {
-                            float multiplier = bossRush ? 0.003f : 0.0015f;
+                            float multiplier = 0.0015f;
                             if (distanceBelowTarget > 0f)
                                 calamityGlobalNPC.newAI[1] += 1f + distanceBelowTarget * multiplier;
 
-                            float speedMultLimit = bossRush ? 3f : 2f;
+                            float speedMultLimit = 2f;
                             if (calamityGlobalNPC.newAI[1] > speedMultLimit)
                                 calamityGlobalNPC.newAI[1] = speedMultLimit;
 
@@ -718,7 +709,7 @@ namespace CalamityMod.NPCs.Ravager
                     {
                         if (phase2)
                         {
-                            float stopBeforeFallTime = bossRush ? 25f : 30f;
+                            float stopBeforeFallTime = 30f;
                             if (!anyHeadActive)
                                 stopBeforeFallTime -= 15f;
                             else if (expertMode)
@@ -735,7 +726,7 @@ namespace CalamityMod.NPCs.Ravager
                                 NPC.damage = NPC.defDamage;
 
                                 float fallSpeedBoost = !anyHeadActive ? 1.8f : death ? 1.8f * (1f - lifeRatio) : 1.2f * (1f - lifeRatio);
-                                float fallSpeed = (bossRush ? 1.8f : 1.2f) + fallSpeedBoost;
+                                float fallSpeed = 1.2f + fallSpeedBoost;
 
                                 if (calamityGlobalNPC.newAI[1] > 1f)
                                     fallSpeed *= calamityGlobalNPC.newAI[1];
@@ -752,7 +743,7 @@ namespace CalamityMod.NPCs.Ravager
                             if (NPC.Bottom.Y < player.position.Y)
                             {
                                 float fallSpeedBoost = !anyHeadActive ? 0.9f : death ? 0.9f * (1f - lifeRatio) : 0.6f * (1f - lifeRatio);
-                                float fallSpeed = (bossRush ? 0.9f : 0.6f) + fallSpeedBoost;
+                                float fallSpeed = 0.6f + fallSpeedBoost;
 
                                 if (calamityGlobalNPC.newAI[1] > 1f)
                                     fallSpeed *= calamityGlobalNPC.newAI[1];
@@ -763,7 +754,7 @@ namespace CalamityMod.NPCs.Ravager
                     }
                     else
                     {
-                        float velocityMult = bossRush ? 2f : 1.8f;
+                        float velocityMult = 1.8f;
                         float velocityXChange = 0.2f + Math.Abs(NPC.Center.X - player.Center.X) * 0.001f;
 
                         float velocityXBoost = !anyHeadActive ? 6f : death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
@@ -812,11 +803,6 @@ namespace CalamityMod.NPCs.Ravager
             {
                 float gravity = phase2 ? 0f : 0.45f;
                 float maxFallSpeed = reduceFallSpeed ? 12f : phase2 ? 24f : 15f;
-                if (bossRush && !reduceFallSpeed)
-                {
-                    gravity *= 1.25f;
-                    maxFallSpeed *= 1.25f;
-                }
 
                 if (calamityGlobalNPC.newAI[1] > 1f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1];
@@ -833,7 +819,7 @@ namespace CalamityMod.NPCs.Ravager
                 player = Main.player[NPC.target];
             }
 
-            int distanceFromTarget = player.dead ? 1600 : bossRush ? 8400 : 5600;
+            int distanceFromTarget = player.dead ? 1600 : 5600;
             if (Vector2.Distance(NPC.Center, player.Center) > distanceFromTarget)
             {
                 NPC.TargetClosest();

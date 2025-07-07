@@ -34,8 +34,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = (float)npc.life / (float)npc.lifeMax;
 
             // Difficulty bools
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Projectile types and damage
             int rubble = ProjectileID.DeerclopsRangedProjectile;

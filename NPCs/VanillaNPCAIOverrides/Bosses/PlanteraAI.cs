@@ -31,8 +31,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -56,11 +55,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
 
             // Variables and target
-            bool enrage = bossRush;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool despawn = false;
 
             // Check for Jungle
-            bool surface = !bossRush && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
+            bool surface = !BossRushEvent.BossRushActive && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
 
             // Tentacle limits
             int maxTentaclesAfterFirstTentaclePhase = death ? 4 : 2;
@@ -121,22 +120,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             hookPositionY /= numHooksSpawned;
 
             // Velocity and acceleration
-            float velocity = bossRush ? 12f : phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
-            float acceleration = bossRush ? 0.12f : phase3 ? 0.06f : 0.04f;
-            float chargeLineUpVelocity = bossRush ? 20f : phase4 ? 12f : phase3 ? 10f : 8f;
-            float chargeLineUpAcceleration = bossRush ? 0.8f : phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
-            float chargeVelocity = bossRush ? 30f : phase4 ? 22f : phase3 ? 20f : 18f;
-            float chargeDeceleration = bossRush ? 0.85f : phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
+            float velocity = phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
+            float acceleration = phase3 ? 0.06f : 0.04f;
+            float chargeLineUpVelocity = phase4 ? 12f : phase3 ? 10f : 8f;
+            float chargeLineUpAcceleration = phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
+            float chargeVelocity = phase4 ? 22f : phase3 ? 20f : 18f;
+            float chargeDeceleration = phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
 
             // Enrage if target is on the surface
-            if (!bossRush && (surface || Main.player[npc.target].position.Y > Main.UnderworldLayer * 16))
+            if (!BossRushEvent.BossRushActive && (surface || Main.player[npc.target].position.Y > Main.UnderworldLayer * 16))
             {
                 enrage = true;
                 velocity += 8f;
                 acceleration = 0.15f;
             }
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && enrage;
+            npc.Calamity().CurrentlyEnraged = enrage;
 
             // Movement relative to the target and hook positions
             Vector2 npcCenterAccountingForHooks = new Vector2(hookPositionX, hookPositionY);
@@ -395,7 +394,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = reducedSetDamage;
 
                     npc.velocity *= chargeDeceleration;
-                    float timeToDecelerateDecrement = bossRush ? 2f : phase4 ? 1.5f : 1f;
+                    float timeToDecelerateDecrement = phase4 ? 1.5f : 1f;
                     npc.ai[3] -= timeToDecelerateDecrement;
                     if (npc.ai[3] <= StopChargeGateValue)
                     {
@@ -793,8 +792,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[3] >= shootProjectileGateValue)
                     {
                         float projectileSpeed = 14f;
-                        if (bossRush)
-                            projectileSpeed += 4f;
 
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
 
@@ -968,7 +965,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool BuffedPlanterasHookAI(NPC npc, Mod mod)
         {
             // Variables
-            bool enrage = BossRushEvent.BossRushActive;
+            bool enrage = false;
             bool despawn = false;
             bool death = CalamityWorld.death || enrage;
 
@@ -989,7 +986,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 despawn = true;
 
             // Enrage if Plantera's target is on the surface
-            if (!enrage && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
+            if (!enrage && !BossRushEvent.BossRushActive && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
             {
                 npc.localAI[0] -= 4f;
                 enrage = true;
