@@ -976,8 +976,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                                 {
                                     for (int i = 0; i < MissileProjectiles; i++)
                                     {
-                                        Vector2 spawn = NPC.Center; // Normal = 96, Boss Rush = 144
-                                        spawn.X += i * (int)(spread * 1.125) - (MissileProjectiles * (spread / 2)); // Normal = -96 to 93, Boss Rush = -144 to 156
+                                        Vector2 spawn = NPC.Center;
+                                        spawn.X += i * (int)(spread * 1.125) - (MissileProjectiles * (spread / 2));
                                         Vector2 velocity = baseVelocity.RotatedBy(MathHelper.ToRadians(-MissileAngleSpread / 2 + (MissileAngleSpread * i / MissileProjectiles)));
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), spawn, velocity, type, damage, 0f, Main.myPlayer, nukeBarrageChallengeAmt, player.position.Y);
                                     }
