@@ -54,7 +54,7 @@ namespace CalamityMod.UI.WhisperingPearls
         }
     }
 
-    public class DialogueDisplay(string key, DialogueDisplayData displayData, int startPage = 0) : UIElement
+    public class DialogueDisplay(string key, DialogueDisplayData displayData, int startPage = 0, bool screenLocked = false) : UIElement
     {
         public static readonly Dictionary<string, SoundStyle> DialogueSounds = new()
         {
@@ -86,14 +86,21 @@ namespace CalamityMod.UI.WhisperingPearls
         public bool SwitchingPage = false;
         public int NextPage = -1;
         public bool ClosingDialogue = false;
+        public bool ScreenLocked = screenLocked;
+
+        public Vector2 TextSize { get; private set; }
+        public Vector2 SizeOffsetFromStart { get; private set; }
+
         public bool Switching => SwitchingPage || ClosingDialogue;
         private int SwitchCounter = 0;
 
-        internal DialogueInstance DialogueData = DialogueDisplaySystem.Deserialize(key);
+        internal DialogueTextData DialogueData = DialogueDisplaySystem.Deserialize(key);
         internal DialogueDisplayData DisplayData = displayData;
         internal string Text = "";
         internal int textIndex = 0;
         internal int Uptime = 0;
+        internal DynamicSpriteFont Font = FontAssets.MouseText.Value;
+
 
         //Effects
         internal Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueColors = [];
@@ -139,6 +146,7 @@ namespace CalamityMod.UI.WhisperingPearls
 
             BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData[currentPage].BaseColor);
             CharacterData = new DialogueCharacterData[Text.Length];
+
             for (int i = 0; i < Text.Length; i++)
             {
                 int j = 0;
@@ -158,9 +166,21 @@ namespace CalamityMod.UI.WhisperingPearls
             storedDelay = 0;
             lockDelay = false;
 
-            DynamicSpriteFont font = FontAssets.MouseText.Value;
             Vector2 zero = Vector2.Zero;
             bool newLine = true;
+
+            float textWidth = 0f;
+
+            float highestFirstLineYScale = 1f;
+            for (int j = 0; j < Text.Length; j++)
+            {
+                if (Text[j] == '\n')
+                    break;
+                if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestFirstLineYScale)
+                    highestFirstLineYScale = uniqueScale.Y;
+            }
+
+            SizeOffsetFromStart = new(8, 16 * highestFirstLineYScale);
 
             for (int i = 0; i < Text.Length; i++)
             {
@@ -175,8 +195,21 @@ namespace CalamityMod.UI.WhisperingPearls
                 switch (c)
                 {
                     case '\n':
+
+                        if (zero.X > textWidth)
+                            textWidth = zero.X;
+
                         zero.X = 0;
-                        zero.Y += font.LineSpacing * scale.Y;
+
+                        float highestYscale = 1f;
+                        for (int j = i + 1; j < Text.Length; j++)
+                        {
+                            if (Text[j] == '\n')
+                                break;
+                            if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
+                                highestYscale = uniqueScale.Y;
+                        }
+                        zero.Y += Font.LineSpacing * highestYscale;
                         newLine = true;
                         continue;
                     case '\r':
@@ -184,29 +217,35 @@ namespace CalamityMod.UI.WhisperingPearls
                 }
 
                 //Sets the character's position within the full text
-                SpriteCharacterData spriteData = font.SpriteCharacters[c];
+                SpriteCharacterData spriteData = Font.SpriteCharacters[c];
                 Vector3 kerning = spriteData.Kerning;
                 Rectangle padding = spriteData.Padding;
 
                 if (newLine)
                     kerning.X = Math.Max(kerning.X, 0f);
                 else
-                    zero.X += font.CharacterSpacing * scale.X;
+                    zero.X += Font.CharacterSpacing * scale.X;
 
                 zero.X += kerning.X * scale.X;
                 Vector2 position = zero + spriteData.Glyph.Size() * 0.5f;
                 position.X += padding.X * scale.X;
                 position.Y += padding.Y * scale.Y;
 
-                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * font.LineSpacing * 0.5f);
+                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * Font.LineSpacing * 0.5f);
 
                 zero.X += (kerning.Y + kerning.Z) * scale.X;
                 newLine = false;
                 #endregion
             }
+
+            if (zero.X > textWidth)
+                textWidth = zero.X;
+            float textHeight = zero.Y;
+
+            TextSize = new Vector2(textWidth + 8, textHeight + 12) + SizeOffsetFromStart;
         }
 
-        public void FindEffects(ref string fullLine, int fullLength)
+        private void FindEffects(ref string fullLine, int fullLength)
         {
             Stack<int> returnPoints = [];
             Stack<string> returnString = [];
@@ -507,8 +546,10 @@ namespace CalamityMod.UI.WhisperingPearls
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            Vector2 size = FontAssets.MouseText.Value.MeasureString(Text);
-            Vector2 pageTop = DialogueDisplayUI.Dialogues[Key].DisplayData.TextOffsetFromStart(Position, size);
+            Vector2 textTop = DialogueDisplayUI.Dialogues[Key].DisplayData.TextOffsetFromStart(Position, TextSize);
+            Vector2 pageTop = textTop - SizeOffsetFromStart;
+
+            DisplayData.PreDraw(spriteBatch, pageTop, TextSize);
 
             for (int i = 0; i < textIndex; i++)
             {
@@ -524,9 +565,12 @@ namespace CalamityMod.UI.WhisperingPearls
                     Activate();
 
                 Vector2 drawPos;
-                Vector2 scale = Vector2.One;
-                float opacity = 1f;
                 float rotation = 0f;
+                float opacity = 1f;
+                Vector2 scale = Vector2.One;
+                if (UniqueScales.TryGetValue(i, out Vector2 result))
+                    scale = result;
+
                 Color color;
                 if (UniqueColors.TryGetValue(i, out var value))
                 {
@@ -538,19 +582,17 @@ namespace CalamityMod.UI.WhisperingPearls
                 }
                 else
                     color = BaseColor;
-                if (UniqueScales.TryGetValue(i, out Vector2 result))
-                    scale = result;
 
                 if (CharacterData[i].Timer < DialogueDisplayUI.Dialogues[Key].DisplayData.TimeToAppear)
                 {                   
-                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearPositioning(Position, pageTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
+                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearPositioning(Position, textTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
                     opacity = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearOpacity(opacity, CharacterData[i].Timer, CharacterData[i]);
                     color = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearColoring(color, CharacterData[i].Timer, CharacterData[i]);
                     rotation = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearRotation(rotation, CharacterData[i].Timer, CharacterData[i]);
                     scale = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearScale(scale, CharacterData[i].Timer, CharacterData[i]);
                 }
                 else
-                    drawPos = pageTop + CharacterData[i].TextPosition;
+                    drawPos = textTop + CharacterData[i].TextPosition;
 
                 if (SwitchCounter > 0)
                 {
@@ -561,10 +603,10 @@ namespace CalamityMod.UI.WhisperingPearls
                     scale = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearScale(scale, SwitchCounter, CharacterData[i]);
                 }
                 
-                drawPos -= Main.screenPosition;
+                if(!ScreenLocked)
+                    drawPos -= Main.screenPosition;
 
                 foreach (var l in TextEffects.Where(v => v.Key == i))
-                {
                     foreach ((TextEffect Effect, float[] args) in l.Value)
                     {
                         drawPos = Effect.ModifyPos(drawPos, CharacterData[i], args);
@@ -575,7 +617,6 @@ namespace CalamityMod.UI.WhisperingPearls
 
                         scale = Effect.ModifyScale(scale, CharacterData[i], args);
                     }
-                }
 
                 Color borderColor = color;
                 borderColor.R /= 3;
@@ -593,6 +634,8 @@ namespace CalamityMod.UI.WhisperingPearls
 
                 CharacterData[i].Timer++;
             }
+
+            DisplayData.PostDraw(spriteBatch, pageTop, TextSize);
         }
     }
 
@@ -634,7 +677,7 @@ namespace CalamityMod.UI.WhisperingPearls
                 UI?.Update(gameTime);
         }
 
-        public static DialogueInstance Deserialize(string key)
+        public static DialogueTextData Deserialize(string key)
         {
             string activeExtension = LanguageManager.Instance.ActiveCulture.Name;
             string path = "UI/WhisperingPearls/" + activeExtension + "/" + key + ".json";
@@ -649,7 +692,7 @@ namespace CalamityMod.UI.WhisperingPearls
 
             Stream stream = CalamityMod.Instance.GetFileStream(path);
 
-            DialogueInstance data = JsonSerializer.Deserialize<DialogueInstance>(stream);
+            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(stream);
 
             stream.Close();
 
@@ -707,8 +750,10 @@ namespace CalamityMod.UI.WhisperingPearls
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key, new T());
-            display.Position = startPosition;
+            DialogueDisplay display = new(key, new T())
+            {
+                Position = startPosition
+            };
             DialogueDisplayUI.Dialogues.Add(key, display);
             if (Uptime != -1)
                 DialogueDisplayUI.DialogueUptimes.Add(key, Uptime);
@@ -724,8 +769,10 @@ namespace CalamityMod.UI.WhisperingPearls
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key, new T());
-            display.Position = entity.Center;
+            DialogueDisplay display = new(key, new T())
+            {
+                Position = entity.Center
+            };
             DialogueDisplayUI.Dialogues.Add(key, display);
             DialogueDisplayUI.DialogueEntities.Add(key, entity);
             if (Uptime != -1)
@@ -750,11 +797,14 @@ namespace CalamityMod.UI.WhisperingPearls
         }
     }
 
-    public class DialogueInstance
+    public class DialogueTextData
     {
         public DialogueLine[] Dialogues { get; set; }
         public DialogueLine this[int index] { get => Dialogues[index]; set => Dialogues[index] = value; }
         public int Length => Dialogues.Length;
+
+        public string DefaultColor { get; set; }
+        public string DefaultSpeaker { get; set; }
 
         public int TextDelay { get; set; } = 3;
         public PunctuationData BasePunctuationDelay { get; set; } = new PunctuationData();
@@ -807,6 +857,10 @@ namespace CalamityMod.UI.WhisperingPearls
         public virtual float FadeBuffer => 150f;
 
         public virtual float FadeDistance => 150f;
+
+        public virtual void PreDraw(SpriteBatch spriteBatch, Vector2 textStart, Vector2 textSize) { }
+
+        public virtual void PostDraw(SpriteBatch spriteBatch, Vector2 textStart, Vector2 textSize) { }
 
         public virtual float TimeToAppear => 30;
 
