@@ -33,8 +33,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.GetNPCDamage();
             NPC.width = 40;
             NPC.height = 150;
-            NPC.defense = 35;
-            NPC.DR_NERD(0.2f);
             NPC.chaseable = false;
             NPC.lifeMax = 1250;
             NPC.alpha = 255;
@@ -129,6 +127,7 @@ namespace CalamityMod.NPCs.Ravager
                             int type = ModContent.ProjectileType<RavagerFlame>();
                             int damage = NPC.GetProjectileDamage(type);
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, 0f);
+                            NPC.SimpleStrikeNPC(NPC.lifeMax/4,0,false,noPlayerInteraction:true);
                         }
 
                         NPC.ai[2] += 1f;

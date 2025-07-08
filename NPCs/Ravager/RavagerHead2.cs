@@ -51,6 +51,7 @@ namespace CalamityMod.NPCs.Ravager
             // Scale stats in Expert and Master
             CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
             CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            NPC.dontTakeDamage = true;
         }
 
         public override void AI()
@@ -133,8 +134,8 @@ namespace CalamityMod.NPCs.Ravager
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, -1f);
+                            //SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
+                            //Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, -1f);
                         }
                     }
                 }
