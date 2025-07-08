@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.BulletHighVelocity, Do(PointBlank, LocalIFrames(-1)) },
-                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, LocalIFrames(7), ScaleExact(1.5f)) },
+                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
