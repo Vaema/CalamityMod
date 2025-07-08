@@ -522,7 +522,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
-                        int totalFireballsPerSide = death ? 3 : 2;
+                        int totalFireballsPerSide = 2;
                         int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 25 : 35;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
