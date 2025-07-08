@@ -263,6 +263,23 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
+        public override bool CustomSetEquipType(Player player, EquipType type, Mod mod, string name)
+        {
+            switch (type)
+            {
+                case EquipType.Legs:
+                    player.legs = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightLegs", type);
+                    return true;
+                case EquipType.Head:
+                    player.head = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightHead", type);
+                    return true;
+                case EquipType.Wings:
+                    player.wings = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightWings", type);
+                    return true;
+            }
+            return false;
+        }
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
