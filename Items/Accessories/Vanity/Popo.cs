@@ -37,7 +37,5 @@ namespace CalamityMod.Items.Accessories.Vanity
             }
             return false;
         }
-
-        public override void UpdateAccessory(Player player, bool hideVisual) => player.Calamity().snowman = true;
     }
 }

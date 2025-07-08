@@ -1,7 +1,5 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.BaseItems;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

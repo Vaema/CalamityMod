@@ -18,6 +18,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
@@ -5404,7 +5405,7 @@ namespace CalamityMod.NPCs
                 shocked = 120;
             }
 
-            if (target.Calamity().snowman)
+            if (target.Transformation().Type == ModContent.ItemType<Popo>())
             {
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon || npc.type == NPCID.RedDevil)
                     target.AddBuff(BuffType<PopoNoselessBuff>(), 36000);

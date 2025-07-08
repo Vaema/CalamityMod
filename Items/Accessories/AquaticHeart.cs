@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.BaseItems;
 using Terraria;
 using Terraria.Audio;

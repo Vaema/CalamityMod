@@ -1588,7 +1588,6 @@ namespace CalamityMod.CalPlayer
         public Color pscLerpColor = Color.White;
         public bool aquaticHeartPrevious;
         public bool aquaticHeart;
-        public bool snowman;
         public bool snowmanNoseless;
         public bool meldTransformationPrevious;
         public bool meldTransformation;
@@ -2714,8 +2713,6 @@ namespace CalamityMod.CalPlayer
             profanedCrystal = profanedCrystalBuffs = false;
             pscState = 0;
             pscLerpColor = Color.White;
-
-            snowman = false;
 
             meldTransformationPrevious = meldTransformation;
             meldTransformation = meldTransformationForce = meldTransformationPower = false;
@@ -4060,7 +4057,7 @@ namespace CalamityMod.CalPlayer
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && absorber)
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, Player.whoAmI);
 
-            if (snowman)
+            if (Player.Transformation().Type == ModContent.ItemType<Popo>())
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
                     Player.AddBuff(BuffType<PopoBuff>(), 60, true);

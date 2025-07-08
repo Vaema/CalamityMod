@@ -18,7 +18,7 @@ namespace CalamityMod.Buffs
         public override void Update(Player player, ref int buffIndex)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (player.Transformation().Type != ModContent.ItemType<Popo>())
+            if (player.Transformation().Type == ModContent.ItemType<Popo>())
                 modPlayer.snowmanNoseless = true;
             else
             {
