@@ -71,7 +71,7 @@ namespace CalamityMod.Systems.Collections
                     ModContent.ProjectileType<KeelhaulGeyserTop>()
                 ],
 
-                [ // Set 8: All toxic clouds
+                [ // Set 9: All toxic clouds
                     ProjectileID.ToxicCloud,
                     ProjectileID.ToxicCloud2,
                     ProjectileID.ToxicCloud3
