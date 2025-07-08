@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
@@ -21,7 +20,7 @@ namespace CalamityMod.UI.WhisperingPearls
 {
     public class DialogueDisplayUI : UIState
     {
-        public static readonly Dictionary<string, (DialogueDisplay Element, DialogueDisplayData Data)> Dialogues = [];
+        public static readonly Dictionary<string, DialogueDisplay> Dialogues = [];
         public static readonly Dictionary<string, Entity> DialogueEntities = [];
         public static readonly Dictionary<string, int> DialogueUptimes = [];
         public static readonly List<string> DialoguesToRemove = [];
@@ -30,7 +29,7 @@ namespace CalamityMod.UI.WhisperingPearls
         {
             foreach (string key in DialoguesToRemove)
             {
-                RemoveChild(Dialogues[key].Element);
+                RemoveChild(Dialogues[key]);
                 Dialogues.Remove(key);
                 DialogueEntities.Remove(key);
                 DialogueUptimes.Remove(key);
@@ -40,22 +39,22 @@ namespace CalamityMod.UI.WhisperingPearls
             foreach (var pair in DialogueEntities)
             {
                 if(pair.Value != null && pair.Value.active)
-                    Dialogues[pair.Key].Element.Position = pair.Value.Center;
+                    Dialogues[pair.Key].Position = pair.Value.Center;
                 else
-                    Dialogues[pair.Key].Element.ClosingDialogue = true;
+                    Dialogues[pair.Key].ClosingDialogue = true;
             }
 
             foreach (var pair in DialogueUptimes)
             {
-                if (Dialogues[pair.Key].Element.Uptime >= pair.Value)
-                    Dialogues[pair.Key].Element.SwitchingPage = true;
+                if (Dialogues[pair.Key].Uptime >= pair.Value)
+                    Dialogues[pair.Key].SwitchingPage = true;
             }
 
             base.Update(gameTime);
         }
     }
 
-    public class DialogueDisplay(string key) : UIElement
+    public class DialogueDisplay(string key, DialogueDisplayData displayData, int startPage = 0) : UIElement
     {
         public static readonly Dictionary<string, SoundStyle> DialogueSounds = new()
         {
@@ -70,7 +69,7 @@ namespace CalamityMod.UI.WhisperingPearls
         /// <summary>
         /// Which page are we reading?
         /// </summary>
-        public int currentPage = 0;
+        public int currentPage = startPage;
         /// <summary>
         /// The localization key for the dialogue
         /// </summary>
@@ -85,11 +84,13 @@ namespace CalamityMod.UI.WhisperingPearls
         public int pageCount => DialogueData.Length;
 
         public bool SwitchingPage = false;
+        public int NextPage = -1;
         public bool ClosingDialogue = false;
         public bool Switching => SwitchingPage || ClosingDialogue;
         private int SwitchCounter = 0;
 
         internal DialogueInstance DialogueData = DialogueDisplaySystem.Deserialize(key);
+        internal DialogueDisplayData DisplayData = displayData;
         internal string Text = "";
         internal int textIndex = 0;
         internal int Uptime = 0;
@@ -364,11 +365,11 @@ namespace CalamityMod.UI.WhisperingPearls
         public override void Update(GameTime gameTime)
         {
             float distFromSource = 0;
-            if (DialogueDisplayUI.Dialogues[Key].Data.FadeWhenTooFar)
+            if (DialogueDisplayUI.Dialogues[Key].DisplayData.FadeWhenTooFar)
             {
                 distFromSource = Vector2.Distance(Main.LocalPlayer.Center, Position);
                 // If the player is too far from the pearl, cancel the dialogue
-                if (distFromSource > DialogueDisplayUI.Dialogues[Key].Data.FadeBuffer + DialogueDisplayUI.Dialogues[Key].Data.FadeDistance)
+                if (distFromSource > DialogueDisplayUI.Dialogues[Key].DisplayData.FadeBuffer + DialogueDisplayUI.Dialogues[Key].DisplayData.FadeDistance)
                 {
                     DialogueDisplaySystem.RemoveDialogue(Key);
                     return;
@@ -391,8 +392,8 @@ namespace CalamityMod.UI.WhisperingPearls
             }
             else if (!Switching)
             {
-                if (DialogueDisplayUI.Dialogues[Key].Data.FadeWhenTooFar)
-                    SwitchCounter = (int)(MathHelper.Clamp((distFromSource - DialogueDisplayUI.Dialogues[Key].Data.FadeBuffer) / DialogueDisplayUI.Dialogues[Key].Data.FadeDistance, 0f, 1f) * DialogueDisplayUI.Dialogues[Key].Data.TimeToDisappear);
+                if (DialogueDisplayUI.Dialogues[Key].DisplayData.FadeWhenTooFar)
+                    SwitchCounter = (int)(MathHelper.Clamp((distFromSource - DialogueDisplayUI.Dialogues[Key].DisplayData.FadeBuffer) / DialogueDisplayUI.Dialogues[Key].DisplayData.FadeDistance, 0f, 1f) * DialogueDisplayUI.Dialogues[Key].DisplayData.TimeToDisappear);
                 
                 int textDelay = DialogueData.TextDelay;
                 if (DialogueData[currentPage].TextDelay != -1)
@@ -469,11 +470,21 @@ namespace CalamityMod.UI.WhisperingPearls
             }
             else
             {
-                if (SwitchCounter >= DialogueDisplayUI.Dialogues[Key].Data.TimeToDisappear)
+                if (SwitchCounter >= DialogueDisplayUI.Dialogues[Key].DisplayData.TimeToDisappear)
                 {
-                    if (SwitchingPage)
+                    if (ClosingDialogue)
+                        DialogueDisplaySystem.RemoveDialogue(Key);
+                    else
                     {
-                        if (++currentPage >= pageCount)
+                        if (NextPage == -1)
+                            currentPage++;
+                        else
+                        {
+                            currentPage = NextPage;
+                            NextPage = -1;
+                        }
+
+                        if (currentPage >= pageCount)
                             DialogueDisplaySystem.RemoveDialogue(Key);
                         else
                         {
@@ -483,9 +494,7 @@ namespace CalamityMod.UI.WhisperingPearls
                             Uptime = 0;
                             Activate();
                         }
-                    }
-                    else
-                        DialogueDisplaySystem.RemoveDialogue(Key);
+                    }                        
                     return;
                 }
 
@@ -499,7 +508,7 @@ namespace CalamityMod.UI.WhisperingPearls
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Vector2 size = FontAssets.MouseText.Value.MeasureString(Text);
-            Vector2 pageTop = DialogueDisplayUI.Dialogues[Key].Data.TextOffsetFromStart(Position, size);
+            Vector2 pageTop = DialogueDisplayUI.Dialogues[Key].DisplayData.TextOffsetFromStart(Position, size);
 
             for (int i = 0; i < textIndex; i++)
             {
@@ -532,24 +541,24 @@ namespace CalamityMod.UI.WhisperingPearls
                 if (UniqueScales.TryGetValue(i, out Vector2 result))
                     scale = result;
 
-                if (CharacterData[i].Timer < DialogueDisplayUI.Dialogues[Key].Data.TimeToAppear)
+                if (CharacterData[i].Timer < DialogueDisplayUI.Dialogues[Key].DisplayData.TimeToAppear)
                 {                   
-                    drawPos = DialogueDisplayUI.Dialogues[Key].Data.AppearPositioning(Position, pageTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
-                    opacity = DialogueDisplayUI.Dialogues[Key].Data.AppearOpacity(opacity, CharacterData[i].Timer, CharacterData[i]);
-                    color = DialogueDisplayUI.Dialogues[Key].Data.AppearColoring(color, CharacterData[i].Timer, CharacterData[i]);
-                    rotation = DialogueDisplayUI.Dialogues[Key].Data.AppearRotation(rotation, CharacterData[i].Timer, CharacterData[i]);
-                    scale = DialogueDisplayUI.Dialogues[Key].Data.AppearScale(scale, CharacterData[i].Timer, CharacterData[i]);
+                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearPositioning(Position, pageTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
+                    opacity = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearOpacity(opacity, CharacterData[i].Timer, CharacterData[i]);
+                    color = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearColoring(color, CharacterData[i].Timer, CharacterData[i]);
+                    rotation = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearRotation(rotation, CharacterData[i].Timer, CharacterData[i]);
+                    scale = DialogueDisplayUI.Dialogues[Key].DisplayData.AppearScale(scale, CharacterData[i].Timer, CharacterData[i]);
                 }
                 else
                     drawPos = pageTop + CharacterData[i].TextPosition;
 
                 if (SwitchCounter > 0)
                 {
-                    drawPos = DialogueDisplayUI.Dialogues[Key].Data.DisappearPositioning(drawPos, SwitchCounter, CharacterData[i]);
-                    opacity = DialogueDisplayUI.Dialogues[Key].Data.DisappearOpacity(opacity, SwitchCounter, CharacterData[i]);
-                    color = DialogueDisplayUI.Dialogues[Key].Data.DisappearColoring(color, SwitchCounter, CharacterData[i]);
-                    rotation = DialogueDisplayUI.Dialogues[Key].Data.DisappearRotation(rotation, SwitchCounter, CharacterData[i]);
-                    scale = DialogueDisplayUI.Dialogues[Key].Data.DisappearScale(scale, SwitchCounter, CharacterData[i]);
+                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearPositioning(drawPos, SwitchCounter, CharacterData[i]);
+                    opacity = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearOpacity(opacity, SwitchCounter, CharacterData[i]);
+                    color = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearColoring(color, SwitchCounter, CharacterData[i]);
+                    rotation = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearRotation(rotation, SwitchCounter, CharacterData[i]);
+                    scale = DialogueDisplayUI.Dialogues[Key].DisplayData.DisappearScale(scale, SwitchCounter, CharacterData[i]);
                 }
                 
                 drawPos -= Main.screenPosition;
@@ -659,21 +668,28 @@ namespace CalamityMod.UI.WhisperingPearls
         /// <summary>
         /// Manually progresses dialogue
         /// </summary>
-        public static void ProgressDialogue(string pearlKey)
+        public static void ProgressDialogue(string pearlKey, int toPage = -1)
         {
-            bool IsActive = DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val);
-            if (IsActive)
+            if (DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val))
             {
-                if (val.Element.SwitchingPage)
+                val.NextPage = toPage;
+
+                if (val.SwitchingPage)
                     return;
 
                 // If the text crawl hasnt finished, finish it instantly
-                if (val.Element.textIndex < val.Element.Text.Length - 1)
-                    val.Element.textIndex = val.Element.Text.Length - 1;
+                if (val.textIndex < val.Text.Length - 1)
+                    val.textIndex = val.Text.Length - 1;
                 // If the text crawl has finished, progress to the next page or finish if we're out of pages
                 else
-                    val.Element.SwitchingPage = true;
+                    val.SwitchingPage = true;
             }
+        }
+
+        public static void EndDialogue(string pearlKey)
+        {
+            if (DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val))
+                val.ClosingDialogue = true;
         }
 
         public static void RemoveDialogue(string key)
@@ -691,9 +707,9 @@ namespace CalamityMod.UI.WhisperingPearls
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key);
+            DialogueDisplay display = new(key, new T());
             display.Position = startPosition;
-            DialogueDisplayUI.Dialogues.Add(key, (display, new T()));
+            DialogueDisplayUI.Dialogues.Add(key, display);
             if (Uptime != -1)
                 DialogueDisplayUI.DialogueUptimes.Add(key, Uptime);
             State.Append(display);
@@ -708,9 +724,9 @@ namespace CalamityMod.UI.WhisperingPearls
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key);
+            DialogueDisplay display = new(key, new T());
             display.Position = entity.Center;
-            DialogueDisplayUI.Dialogues.Add(key, (display, new T()));
+            DialogueDisplayUI.Dialogues.Add(key, display);
             DialogueDisplayUI.DialogueEntities.Add(key, entity);
             if (Uptime != -1)
                 DialogueDisplayUI.DialogueUptimes.Add(key, Uptime);
@@ -720,6 +736,8 @@ namespace CalamityMod.UI.WhisperingPearls
             if (UI.CurrentState != State)
                 UI?.SetState(State);
         }
+
+
 
         /// <summary>
         /// Resets all of the dialogue's variables
