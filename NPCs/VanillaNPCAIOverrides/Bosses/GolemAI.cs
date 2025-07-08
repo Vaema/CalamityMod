@@ -225,7 +225,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[1] > 0f)
                     {
-                        npc.ai[1] += (death ? 2f : 1f);
+                        npc.ai[1] += (death ? 1.5f : 1f);
                         if (CalamityWorld.LegendaryMode)
                             npc.ai[1] += 100f;
 
@@ -411,8 +411,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         void NormalJump()
                         {
-                            float velocityBoost = death ? 5.5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
-                            float velocityX = (death ? 9f : 6.25f) + velocityBoost;
+                            float velocityBoost = death ? 5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
+                            float velocityX = (death ? 8.75f : 6.25f) + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
 
@@ -594,7 +594,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
                             {
-                                float fallSpeedBoost = death ? 1f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
+                                float fallSpeedBoost = death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
                                 float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
                                 if (enrage)
                                     fallSpeed *= 2f;
@@ -604,15 +604,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                         else
                         {
-                            float velocityChangeBoost = death ? 0.18f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
-                            float velocityXChange = (death ? 0.3f : 0.2f) + velocityChangeBoost;
+                            float velocityChangeBoost = death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
+                            float velocityXChange = (death ? 0.285f : 0.2f) + velocityChangeBoost;
                             if (npc.direction < 0)
                                 npc.velocity.X -= velocityXChange;
                             else if (npc.direction > 0)
                                 npc.velocity.X += velocityXChange;
 
-                            float velocityBoost = death ? 6f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
-                            float velocityXCap = (death ? 9f : 6f) + velocityBoost;
+                            float velocityBoost = death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
+                            float velocityXCap = (death ? 8.75f : 6f) + velocityBoost;
                             if (enrage)
                                 velocityXCap *= 3f;
 
