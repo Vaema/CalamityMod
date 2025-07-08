@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -23,7 +24,7 @@ namespace CalamityMod.Items.Potions
         {
             Item.DefaultToHealingPotion(26, 38, 250);
             Item.value = Item.sellPrice(silver: 60);
-            Item.rare = ItemRarityID.Purple;
+            Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override void AddRecipes()

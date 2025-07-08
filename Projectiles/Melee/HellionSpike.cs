@@ -21,11 +21,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.aiStyle = ProjAIStyleID.Beam;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 2;
+            Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 600;
             AIType = ProjectileID.SporeCloud;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates;
         }
 
         public override void AI()
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Melee
                 var source = Projectile.GetSource_FromThis();
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 10f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, true);
+                    Projectile petal = CalamityUtils.ProjectileBarrage(source, Projectile.Center, targetPos, Main.rand.NextBool(), 800f, 800f, 0f, 800f, 24f, ProjectileID.FlowerPetal, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.5f, Projectile.owner, false, 0f);
                     if (petal.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
                         petal.DamageType = DamageClass.Melee;

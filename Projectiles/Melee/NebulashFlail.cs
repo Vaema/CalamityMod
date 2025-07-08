@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 2;
+            Projectile.localNPCHitCooldown = 6;
         }
         public override Color SpecialDrawColor => new(255, 200, 0);
         public override int ExudeDustType => ModContent.DustType<AstralOrange>();

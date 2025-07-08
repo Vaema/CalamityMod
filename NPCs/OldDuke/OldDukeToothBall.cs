@@ -54,10 +54,9 @@ namespace CalamityMod.NPCs.OldDuke
         {
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.65f, 0.55f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             NPC.rotation += NPC.velocity.X * 0.05f;
 
@@ -116,7 +115,7 @@ namespace CalamityMod.NPCs.OldDuke
             float velocity = death ? 14f : revenge ? 13f : 12f;
             if (expertMode)
             {
-                float speedUpMult = bossRush ? 0.01f : 0.005f;
+                float speedUpMult = 0.005f;
                 velocity += Vector2.Distance(player.Center, NPC.Center) * speedUpMult;
             }
 
@@ -146,7 +145,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.velocity.X = (NPC.velocity.X * inertia + targetXDist) / (inertia + 1f);
             NPC.velocity.Y = (NPC.velocity.Y * inertia + targetYDist) / (inertia + 1f);
 
-            float toothBallAccel = bossRush ? 0.65f : 0.5f;
+            float toothBallAccel = 0.5f;
             foreach (var n in Main.ActiveNPCs)
             {
                 if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)

@@ -157,16 +157,15 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.timeLeft = 1800;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Gets how enraged Ceaseless Void is
             float tileEnrageMult = Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
 
             // Distance from Ceaseless Void
-            double maxDistance = bossRush ? 1200D : death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
+            double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
             double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
             double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + (tileEnrageMult - 1f) + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)

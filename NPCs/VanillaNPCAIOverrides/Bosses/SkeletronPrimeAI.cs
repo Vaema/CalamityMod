@@ -29,8 +29,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -130,7 +129,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Activate daytime enrage
-            if (Main.IsItDay() && !bossRush && npc.ai[1] != 3f && npc.ai[1] != 2f)
+            if (Main.IsItDay() && !BossRushEvent.BossRushActive && npc.ai[1] != 3f && npc.ai[1] != 2f)
             {
                 // Heal
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -198,7 +197,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else
                     npc.rotation = npc.velocity.X / 15f;
 
-                float acceleration = bossRush ? 0.2f : (death ? (0.12f + 0.05f * (1f - lifeRatio)) : 0.1f);
+                float acceleration = death ? (0.12f + 0.05f * (1f - lifeRatio)) : 0.1f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -291,7 +290,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             npc.localAI[0] = 0f;
 
-                            int totalProjectiles = bossRush ? 24 : death ? 15 : 12;
+                            int totalProjectiles = death ? 15 : 12;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ProjectileID.DeathLaser;
 
@@ -337,7 +336,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float headTargetY = Main.player[npc.target].Center.Y - headPosition.Y;
                     float headTargetDistance = (float)Math.Sqrt(headTargetX * headTargetX + headTargetY * headTargetY);
 
-                    float speed = bossRush ? 12f : death ? 8f : 6f;
+                    float speed = death ? 8f : 6f;
                     if (phase2)
                         speed += 0.5f;
                     if (phase3)
@@ -489,9 +488,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = npc.velocity.X / 50f;
 
-                    float skullSpawnDivisor = bossRush ? 9f : death ? 15f - (float)Math.Round(3f * (1f - lifeRatio)) : 15f;
+                    float skullSpawnDivisor = death ? 15f - (float)Math.Round(3f * (1f - lifeRatio)) : 15f;
                     float totalSkulls = 12f;
-                    int skullSpread = bossRush ? 250 : death ? 125 : 100;
+                    int skullSpread = death ? 125 : 100;
 
                     // Spin for about 3 seconds
                     // Decreasing this number will INCREASE how fast he moves while spinning
@@ -581,8 +580,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = npc.velocity.X / 15f;
 
-                    float flightVelocity = bossRush ? 29f : death ? 25f : 18f;
-                    float flightAcceleration = bossRush ? 1.12f : death ? 0.96f : 0.6f;
+                    float flightVelocity = death ? 25f : 18f;
+                    float flightAcceleration = death ? 0.96f : 0.6f;
 
                     Vector2 destination = new Vector2(Main.player[npc.target].Center.X, Main.player[npc.target].Center.Y - 420f);
                     npc.SimpleFlyMovement((destination - npc.Center).SafeNormalize(Vector2.UnitY) * flightVelocity, flightAcceleration);
@@ -631,8 +630,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedPrimeLaserAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -691,7 +689,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool normalLaserRotation = npc.localAI[1] % 2f == 0f;
 
             // Movement
-            float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+            float acceleration = death ? 0.375f : 0.25f;
             float accelerationMult = 1f;
             if (!cannonAlive)
             {
@@ -795,7 +793,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] >= 48f)
                     {
                         npc.localAI[0] = 0f;
-                        float laserSpeed = bossRush ? 5f : 4f;
+                        float laserSpeed = 4f;
                         int type = ProjectileID.DeathLaser;
 
                         laserArmTargetDist = laserSpeed / laserArmTargetDist;
@@ -850,7 +848,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] >= 120f)
                     {
                         npc.localAI[0] = 0f;
-                        int totalProjectiles = bossRush ? 32 : death ? 24 : 16;
+                        int totalProjectiles = death ? 24 : 16;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ProjectileID.DeathLaser;
 
@@ -875,8 +873,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedPrimeCannonAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -989,7 +986,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Movement
-            float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+            float acceleration = death ? 0.375f : 0.25f;
             float accelerationMult = 1f;
             if (!laserAlive)
             {
@@ -1113,8 +1110,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float rocketSpeed = 10f;
                         Vector2 cannonSpreadTargetDist = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * rocketSpeed;
-                        int numProj = bossRush ? 5 : 3;
-                        float rotation = MathHelper.ToRadians(bossRush ? 15 : 9);
+                        int numProj = 3;
+                        float rotation = MathHelper.ToRadians(9);
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = cannonSpreadTargetDist.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -1130,8 +1127,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedPrimeViceAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -1195,7 +1191,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Return to the head
             if (npc.ai[2] == 99f)
             {
-                float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+                float acceleration = death ? 0.375f : 0.25f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -1285,7 +1281,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+                    float acceleration = death ? 0.375f : 0.25f;
                     float accelerationMult = 1f;
                     if (!cannonAlive)
                     {
@@ -1378,7 +1374,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        float chargeVelocity = bossRush ? 20f : 16f;
+                        float chargeVelocity = 16f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;
                         if (!laserAlive)
@@ -1446,7 +1442,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        float chargeVelocity = bossRush ? 17.5f : 14f;
+                        float chargeVelocity = 14f;
                         if (!cannonAlive)
                             chargeVelocity += 1f;
                         if (!laserAlive)
@@ -1498,8 +1494,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedPrimeSawAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -1561,7 +1556,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (npc.ai[2] == 99f)
             {
-                float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+                float acceleration = death ? 0.375f : 0.25f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -1647,7 +1642,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    float acceleration = bossRush ? 0.6f : death ? 0.375f : 0.25f;
+                    float acceleration = death ? 0.375f : 0.25f;
                     float accelerationMult = 1f;
                     if (!cannonAlive)
                     {
@@ -1734,7 +1729,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        float chargeVelocity = bossRush ? 27.5f : 22f;
+                        float chargeVelocity = 22f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;
                         if (!laserAlive)
@@ -1770,7 +1765,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        float chargeVelocity = bossRush ? 13.5f : 11f;
+                        float chargeVelocity = 11f;
                         if (!cannonAlive)
                             chargeVelocity += 1.5f;
                         if (!laserAlive)
@@ -1788,7 +1783,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         sawArmOtherChargeTargetX *= sawArmOtherChargeTargetDist;
                         sawArmOtherChargeTargetY *= sawArmOtherChargeTargetDist;
 
-                        float acceleration = bossRush ? 0.3f : death ? 0.125f : 0.08f;
+                        float acceleration = death ? 0.125f : 0.08f;
                         float deceleration = death ? 0.6f : 0.8f;
 
                         if (npc.velocity.X > sawArmOtherChargeTargetX)

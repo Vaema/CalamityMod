@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            float maxVelocity = Projectile.ai[0] == 0f ? 7f : BossRushEvent.BossRushActive ? 13f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
+            float maxVelocity = Projectile.ai[0] == 0f ? 7f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
             if (Math.Abs(Projectile.velocity.X) < maxVelocity)
                 Projectile.velocity.X *= 1.05f;
 

@@ -270,10 +270,9 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -450,7 +449,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             // Phase 7 - 0, 1, 2
 
             // Gate values
-            float reducedTimeForGateValue = bossRush ? 48f : death ? 32f : revenge ? 24f : expertMode ? 16f : 0f;
+            float reducedTimeForGateValue = death ? 32f : revenge ? 24f : expertMode ? 16f : 0f;
             float reducedTimeForGateValue_Berserk = reducedTimeForGateValue * 0.5f;
             float normalAttackTime = 360f - reducedTimeForGateValue;
             float berserkAttackTime = lastMechAlive ? 225f - reducedTimeForGateValue_Berserk : 270f - reducedTimeForGateValue_Berserk;
@@ -494,7 +493,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             float movementDistanceGateValue = 100f;
 
             // Charge variables
-            float chargeVelocity = nerfedAttacks ? 60f : bossRush ? 81f : death ? 74f : revenge ? 70.5f : expertMode ? 67f : 60f;
+            float chargeVelocity = nerfedAttacks ? 60f : death ? 74f : revenge ? 70.5f : expertMode ? 67f : 60f;
 
             if (CalamityWorld.LegendaryMode)
                 chargeVelocity *= 1.15f;
@@ -517,7 +516,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                 predictionAmt *= 0.5f;
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = ((AIState == (int)Phase.Deathray || lineUpAttack || AIState == (int)Phase.LaserShotgun) ? 40f : 20f) * baseVelocityMult;
             float decelerationVelocityMult = 0.85f;
 
@@ -832,8 +831,8 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                                     {
                                         int type = ModContent.ProjectileType<ArtemisLaser>();
                                         Vector2 laserVelocity = chargeVelocityNormalized * 10f;
-                                        int numLasersPerSpread = bossRush ? 10 : death ? 8 : expertMode ? 6 : 4;
-                                        int spread = bossRush ? 30 : death ? 26 : expertMode ? 21 : 15;
+                                        int numLasersPerSpread = death ? 8 : expertMode ? 6 : 4;
+                                        int spread = death ? 26 : expertMode ? 21 : 15;
                                         float rotation = MathHelper.ToRadians(spread);
                                         float distanceFromTarget = Vector2.Distance(NPC.Center, NPC.Center + chargeVelocityNormalized * chargeDistance);
                                         float setVelocityInAI = death ? 7f : revenge ? 6.75f : expertMode ? 6.5f : 6f;
@@ -933,7 +932,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                          * normal = 16, 20, 24
                          * nerfedAttacks = 12, 15, 18
                          */
-                        int numLasersAddedByDifficulty = bossRush ? 3 : death ? 2 : expertMode ? 1 : 0;
+                        int numLasersAddedByDifficulty = death ? 2 : expertMode ? 1 : 0;
                         int numLasersPerSpread = ((nerfedAttacks || nerfedLaserShotgun) ? 3 : lastMechAlive ? 7 : 5) + numLasersAddedByDifficulty;
                         int baseSpread = ((nerfedAttacks || nerfedLaserShotgun) ? 9 : lastMechAlive ? 20 : 15) + numLasersAddedByDifficulty * 2;
                         int spread = baseSpread + (int)(calamityGlobalNPC.newAI[2] / divisor2) * (baseSpread / 4);
@@ -1095,7 +1094,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
                             else
                             {
                                 // This first variable is used to adjust how long it takes for the rotation rate to reach max
-                                float rotationSpeedMult = bossRush ? 6.66f : death ? 4f : revenge ? 3f : expertMode ? 2.5f : 2f;
+                                float rotationSpeedMult = death ? 4f : revenge ? 3f : expertMode ? 2.5f : 2f;
 
                                 // This is used to adjust both the radians and the velocity of the spin moved per frame
                                 // At 15% progress it will be at max rotation in Boss Rush
@@ -1588,7 +1587,7 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }

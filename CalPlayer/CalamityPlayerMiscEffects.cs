@@ -3332,11 +3332,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() += Grax.DamageBoost;
             }
 
-            if (brutalCarnage)
-            {
-                Player.GetDamage<MeleeDamageClass>() += BrutalCarnage.MeleeDamageBoost;
-            }
-
             // Trinket of Chi bonus
             if (trinketOfChi)
             {

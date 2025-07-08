@@ -61,9 +61,7 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -113,9 +111,8 @@ namespace CalamityMod.NPCs.StormWeaver
             if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
 
             // Shed armor
             bool phase2 = NPC.life / (float)NPC.lifeMax < 0.8f;
@@ -149,7 +146,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     // Fire a lightning orb every 5 seconds
-                    float spawnOrbGateValue = bossRush ? 200f : 300f;
+                    float spawnOrbGateValue = 300f;
                     if (Main.npc[(int)NPC.ai[2]].localAI[0] % spawnOrbGateValue == 0f)
                     {
                         int type = ProjectileID.CultistBossLightningOrb;
@@ -232,7 +229,7 @@ namespace CalamityMod.NPCs.StormWeaver
             }
 
             // Calculate contact damage based on velocity
-            float velocity = (phase2 ? 12f : 10f) + (bossRush ? 3f : revenge ? 1.5f : expertMode ? 1f : 0f);
+            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
             float minimalContactDamageVelocity = velocity * 0.25f;
             float minimalDamageVelocity = velocity * 0.5f;
             float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
@@ -256,10 +253,9 @@ namespace CalamityMod.NPCs.StormWeaver
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -267,7 +263,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
@@ -301,17 +297,16 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 

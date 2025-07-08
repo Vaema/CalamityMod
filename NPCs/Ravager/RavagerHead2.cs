@@ -64,9 +64,8 @@ namespace CalamityMod.NPCs.Ravager
 
             Player player = Main.player[Main.npc[CalamityGlobalNPC.scavenger].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool provy = DownedBossSystem.downedProvidence && !bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool provy = DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive;
 
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
@@ -106,7 +105,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.rotation = headRotation;
 
             NPC.ai[1] += 1f;
-            bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
+            bool fireProjectiles = NPC.ai[1] >= 480f;
             if (fireProjectiles && Vector2.Distance(NPC.Center, player.Center) > 80f)
             {
                 int type = ModContent.ProjectileType<HomingLaserDart>();

@@ -31,8 +31,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             // Difficulty bools.
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Rotation
             npc.rotation = npc.velocity.X * 0.005f;
@@ -58,7 +57,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.life == npc.lifeMax && dayTimeEnrage && !npc.AI_120_HallowBoss_IsGenuinelyEnraged())
                 npc.ai[3] += 2f;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && dayTimeEnrage;
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && dayTimeEnrage;
 
             Vector2 rainbowStreakDistance = new Vector2(-250f, -350f);
             Vector2 everlastingRainbowDistance = new Vector2(0f, -450f);
@@ -366,7 +365,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     NPCAimedTarget targetData5 = npc.GetTargetData();
                     bool despawnFlag = false;
-                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                     {
                         if (!Main.dayTime)
                             despawnFlag = true;
@@ -688,7 +687,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     // Increase durability.
-                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (bossRush ? 0.99f : 0.575f);
+                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : 0.575f;
 
                     int totalSunDances = phase2 ? 2 : 3;
                     float sunDanceGateValue = dayTimeEnrage ? 35f : death ? 40f : 50f;
@@ -1224,7 +1223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool shouldDespawn = false;
                     if (!trueDespawnFlag)
                     {
-                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                         {
                             if (!Main.dayTime)
                                 shouldDespawn = true;

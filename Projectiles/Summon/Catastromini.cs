@@ -35,6 +35,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.idStaticNPCHitCooldown = 8;
             Projectile.DamageType = DamageClass.Summon;
         }
+        public override bool MinionContactDamage() => Projectile.ai[0] == 2f;
 
         public override void AI()
         {
@@ -81,8 +82,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.ChargingMinionAI(Calamitamini.Range, Calamitamini.SeparationAnxietyMin, Calamitamini.SeparationAnxietyMax, Calamitamini.SafeDist, 0, 40f, 8f, 4f, new Vector2(0f, -60f), 40f, 8f, false, true);
         }
-
-        public override bool MinionContactDamage() => true;
 
         public override bool PreDraw(ref Color lightColor)
         {

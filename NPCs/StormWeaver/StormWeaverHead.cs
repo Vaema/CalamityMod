@@ -116,9 +116,7 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.noTileCollide = true;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -172,14 +170,13 @@ namespace CalamityMod.NPCs.StormWeaver
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityWorld.StopRain();
-            else if (!Main.raining && !bossRush)
+            else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityWorld.StartRain();
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -334,8 +331,8 @@ namespace CalamityMod.NPCs.StormWeaver
             Vector2 npcCenter = NPC.Center;
             float targetCenterX = Main.player[NPC.target].Center.X;
             float targetCenterY = Main.player[NPC.target].Center.Y;
-            float velocity = (phase2 ? 12f : 10f) + (bossRush ? 3f : revenge ? 1.5f : expertMode ? 1f : 0f);
-            float acceleration = (phase2 ? 0.24f : 0.2f) + (bossRush ? 0.12f : revenge ? 0.08f : expertMode ? 0.04f : 0f);
+            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
+            float acceleration = (phase2 ? 0.24f : 0.2f) + (revenge ? 0.08f : expertMode ? 0.04f : 0f);
 
             // Start charging at the player when in phase 2
             if (phase2)
@@ -359,7 +356,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 bool useTornadoes = calamityGlobalNPC.newAI[3] % 2f != 0f;
 
                 // Gate value that decides when Storm Weaver will charge
-                float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+                float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
                 if (!phase3)
                     chargePhaseGateValue *= 0.5f;
                 if (phase4 && expertMode)
@@ -816,7 +813,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     SoundEngine.PlaySound(SoundID.Thunder, NPC.Center);
 
                 // Start a storm when in third phase. Don't do this during Boss Rush
-                if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || bossRush)
+                if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || BossRushEvent.BossRushActive)
                     return;
 
                 CalamityWorld.StartRain(true, true);
@@ -838,10 +835,9 @@ namespace CalamityMod.NPCs.StormWeaver
 
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -849,7 +845,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
@@ -875,17 +871,16 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
@@ -952,7 +947,7 @@ namespace CalamityMod.NPCs.StormWeaver
             return true;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }

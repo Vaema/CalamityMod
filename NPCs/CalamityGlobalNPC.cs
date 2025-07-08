@@ -1256,15 +1256,6 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(baseBrainRotDoTValue, baseBrainRotDoTValue / 5, ref npc.lifeRegen, ref damage);
             }
 
-            // Sage Poison
-            if (sagePoisonTime > 0)
-            {
-                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
-                // See SageNeedle.cs for details
-                int baseSagePoisonDoTValue = (int)(npc.Calamity().sagePoisonDamage * sicknessDamageMult);
-                ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
-            }
-
             // Astral Infection
             if (astralInfection > 0)
             {
@@ -1359,6 +1350,12 @@ namespace CalamityMod.NPCs
                 ApplyDPSDebuff(30, 6, ref npc.lifeRegen, ref damage);
             if (somaShredStacks > 0)
                 Shred.TickDebuff(npc, this);
+            if (sagePoisonTime > 0)
+            {
+                // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f
+                // See SageNeedle.cs for details
+                ApplyDPSDebuff(npc.Calamity().sagePoisonDamage, npc.Calamity().sagePoisonDamage / 5, ref npc.lifeRegen, ref damage);
+            }
             if (heavybleeding > 0)
                 ApplyDPSDebuff(80, 10, ref npc.lifeRegen, ref damage);
             if (laceration > 0)
@@ -1436,11 +1433,11 @@ namespace CalamityMod.NPCs
                 { NPCID.GiantShelly, 0.2f },
                 { NPCID.GiantShelly2, 0.2f },
                 { NPCID.GiantTortoise, 0.35f },
-                { NPCID.Golem, 0.25f },
-                { NPCID.GolemFistLeft, 0.25f },
-                { NPCID.GolemFistRight, 0.25f },
-                { NPCID.GolemHead, 0.25f },
-                { NPCID.GolemHeadFree, 0.25f },
+                { NPCID.Golem, 0.15f },
+                { NPCID.GolemFistLeft, 0.15f },
+                { NPCID.GolemFistRight, 0.15f },
+                { NPCID.GolemHead, 0.15f },
+                { NPCID.GolemHeadFree, 0.15f },
                 { NPCID.GraniteFlyer, 0.1f },
                 { NPCID.GraniteGolem, 0.15f },
                 { NPCID.GreekSkeleton, 0.1f },
@@ -1736,16 +1733,16 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    npc.lifeMax = 30000;
+                    npc.lifeMax = 31875;
                     break;
 
                 case NPCID.GolemHead:
-                    npc.lifeMax = 20000;
+                    npc.lifeMax = 26500;
                     break;
 
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
-                    npc.lifeMax = 7000;
+                    npc.lifeMax = 7500;
                     break;
 
                 case NPCID.HallowBoss:
@@ -1753,7 +1750,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Plantera:
-                    npc.lifeMax = 80000;
+                    npc.lifeMax = 72000;
                     break;
 
                 case NPCID.PlanterasTentacle:
@@ -1856,7 +1853,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.Golem || npc.type == NPCID.GolemHead)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
                 if (npc.type == NPCID.Golem)
                     npc.npcSlots = 64f;
@@ -3198,7 +3195,7 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge)
             {
                 if (EaterOfWorldsIDList.Includes(npc.type) && newAI[1] < EaterOfWorldsAI.DRIncreaseTime)
-                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(BossRushEvent.BossRushActive ? 0.6f : 0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
+                    modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / EaterOfWorldsAI.DRIncreaseTime, 0f, 1f)));
                 if (DestroyerIDList.Includes(npc.type) && newAI[1] < DestroyerAI.DRIncreaseTime)
                     modifiers.FinalDamage *= 1f - (float)Math.Sqrt(MathHelper.Lerp(0f, 0.99f, MathHelper.Clamp(1f - newAI[1] / DestroyerAI.DRIncreaseTime, 0f, 1f)));
             }
@@ -3340,15 +3337,12 @@ namespace CalamityMod.NPCs
         #region Boss Head Slot
         public override void BossHeadSlot(NPC npc, ref int index)
         {
-            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
             {
-                if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
-                {
-                    float lifeRatio = npc.life / (float)npc.lifeMax;
-                    float mapIconVanishValue = CalamityWorld.death ? 0.3f : 0.4f;
-                    if (lifeRatio < mapIconVanishValue || (lifeRatio > 0.9f && (CalamityWorld.death || BossRushEvent.BossRushActive)))
-                        index = -1;
-                }
+                float lifeRatio = npc.life / (float)npc.lifeMax;
+                float mapIconVanishValue = 0.3f;
+                if (lifeRatio < mapIconVanishValue || lifeRatio > 0.9f)
+                    index = -1;
             }
         }
         #endregion
@@ -5706,14 +5700,21 @@ namespace CalamityMod.NPCs
             }
 
             // True melee resists
-            if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || PerforatorWormIDList.Includes(npc.type) || 
-                AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || 
-                StormWeaverIDList.Includes(npc.type) || ThanatosIDList.Includes(npc.type) || npc.type == NPCType<ProfanedRocks>() ||
-                npc.type == NPCType<DarkEnergy>() || npc.type == NPCType<RavagerBody>() || npc.type == NPCType<Crabulon.Crabulon>())
+            if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
             {
-                float damageMult = ThanatosIDList.Includes(npc.type) ? 0.35f : npc.type == NPCType<Crabulon.Crabulon>() ? 0.8f : 0.5f;
-                if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
-                    modifiers.SourceDamage *= damageMult;
+                float damageMult = 1f;
+                if (npc.type == NPCType<Crabulon.Crabulon>())
+                    damageMult = 0.8f;
+                else if (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper || npc.type == NPCType<AstrumAureus.AstrumAureus>())
+                    damageMult = 0.75f;
+                else if (PerforatorWormIDList.Includes(npc.type) || AquaticScourgeIDList.Includes(npc.type) || DestroyerIDList.Includes(npc.type) ||
+                    RavagerIDList.Includes(npc.type) || AstrumDeusIDList.Includes(npc.type) || StormWeaverIDList.Includes(npc.type) ||
+                    npc.type == NPCType<ProfanedRocks>() || npc.type == NPCType<DarkEnergy>())
+                    damageMult = 0.5f;
+                else if (ThanatosIDList.Includes(npc.type))
+                    damageMult = 0.35f;
+
+                modifiers.SourceDamage *= damageMult;
             }
         }
         #endregion
@@ -7804,7 +7805,7 @@ namespace CalamityMod.NPCs
             // Laser telegraph
             else if (npc.type == NPCID.Probe)
             {
-                float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : BossRushEvent.BossRushActive ? DestroyerAI.ProbeLaserGateValue_BossRush : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
+                float eyeTelegraphGateValue = (NPC.IsMechQueenUp ? DestroyerAI.ProbeLaserGateValue_Mechdusa : revenge ? DestroyerAI.ProbeLaserGateValue_Rev : DestroyerAI.ProbeLaserGateValue) - DestroyerAI.ProbeLaserTelegraphTime;
                 Texture2D glowTexture = Request<Texture2D>("CalamityMod/Particles/Sparkle").Value;
                 Vector2 halfSize = npc.frame.Size() / 2;
 

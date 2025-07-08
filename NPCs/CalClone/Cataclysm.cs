@@ -62,9 +62,8 @@ namespace CalamityMod.NPCs.CalClone
             if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
 
-            NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 15 : 10;
-            NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.225f : 0.15f);
-            NPC.LifeMaxNERB(11000, 13200, 80000);
+            NPC.defense = 10;
+            NPC.LifeMaxNERB(8500, 10000, 80000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -147,10 +146,9 @@ namespace CalamityMod.NPCs.CalClone
             // Emit light
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -158,10 +156,10 @@ namespace CalamityMod.NPCs.CalClone
 
             Player player = Main.player[NPC.target];
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -379,7 +377,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         int type = ModContent.ProjectileType<BrimstoneBarrage>();
 
-                        int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
+                        int totalProjectiles = death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float velocity = 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity);

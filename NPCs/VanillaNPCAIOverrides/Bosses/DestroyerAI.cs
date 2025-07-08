@@ -31,7 +31,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public const float ProbeLaserGateValue_Mechdusa = 360f;
         public const float ProbeLaserGateValue_Rev = 240f;
-        public const float ProbeLaserGateValue_BossRush = 150f;
         public const float ProbeLaserGateValue = 120f;
         public const float ProbeLaserTelegraphTime = 60f;
 
@@ -71,8 +70,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < DRIncreaseTime;
 
@@ -126,10 +124,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool increaseSpeed = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles;
             bool increaseSpeedMore = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = !BossRushEvent.BossRushActive;
                 enrageScale += 2f;
             }
 
@@ -252,7 +250,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.type == NPCID.TheDestroyerBody)
             {
                 // Enrage, fire more cyan lasers
-                if (enrageScale > 0f && !bossRush)
+                if (enrageScale > 0f)
                 {
                     if (calamityGlobalNPC.newAI[2] < 480f)
                         calamityGlobalNPC.newAI[2] += 1f;
@@ -353,7 +351,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         if (calamityGlobalNPC.newAI[0] % 30f == 0f)
                         {
-                            float velocity = bossRush ? 6f : death ? 5.333f : 5f;
+                            float velocity = death ? 5.333f : 5f;
                             int type = ProjectileID.DeathLaser;
                             switch (calamityGlobalNPC.destroyerLaserColor)
                             {
@@ -420,7 +418,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
                     }
 
-                    if (calamityGlobalNPC.newAI[2] > 0f || bossRush)
+                    if (calamityGlobalNPC.newAI[2] > 0f)
                         calamityGlobalNPC.destroyerLaserColor = 2;
 
                     npc.SyncDestroyerLaserColor();
@@ -1038,8 +1036,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedProbeAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -1050,8 +1047,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (targetData.Type == NPCTargetType.Player)
                 targetDead = Main.player[npc.target].dead;
 
-            float velocity = bossRush ? 12f : death ? 8.4f : 7.2f;
-            float acceleration = bossRush ? 0.1f : death ? 0.07f : 0.06f;
+            float velocity = death ? 8.4f : 7.2f;
+            float acceleration = death ? 0.07f : 0.06f;
             float deceleration = 1f - acceleration;
 
             if (targetDead)
@@ -1153,7 +1150,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if ((npc.justHit && !death) || targetDead)
                 npc.localAI[0] = 0f;
 
-            float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : bossRush ? ProbeLaserGateValue_BossRush : ProbeLaserGateValue_Rev;
+            float laserGateValue = NPC.IsMechQueenUp ? ProbeLaserGateValue_Mechdusa : ProbeLaserGateValue_Rev;
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] >= laserGateValue)
             {
                 npc.localAI[0] = 0f;

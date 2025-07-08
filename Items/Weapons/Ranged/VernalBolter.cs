@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 68;
             Item.height = 94;
-            Item.damage = 48;
+            Item.damage = 35;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 20;
             Item.useAnimation = 20;

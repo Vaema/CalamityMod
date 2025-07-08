@@ -138,7 +138,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public const float deathrayTelegraphDuration_Expert = 120f;
         public const float deathrayTelegraphDuration_Rev = 105f;
         public const float deathrayTelegraphDuration_Death = 90f;
-        public const float deathrayTelegraphDuration_BossRush = 60f;
 
         // Total duration of the deathrays
         public const float deathrayDuration = 600f;
@@ -302,10 +301,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -609,7 +607,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Vector2 destination = SecondaryAIState == (float)SecondaryPhase.PassiveAndImmune ? new Vector2(player.Center.X, player.Center.Y - 800f) : AIState != (float)Phase.Deathrays ? new Vector2(player.Center.X, player.Center.Y - 425f) : player.Center;
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = (EnragedState == (float)Enraged.Yes ? 22f : 14f) * baseVelocityMult;
             float baseAcceleration = shouldGetBuffedByBerserkPhase ? 1.25f : 1f;
             float decelerationVelocityMult = 0.85f;
@@ -910,7 +908,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         calamityGlobalNPC.newAI[3] = 1f;
                         NPC.velocity *= decelerationVelocityMult;
 
-                        int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
+                        int totalProjectiles = death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
                         if (CalamityWorld.LegendaryMode)
                             totalProjectiles += 4;
 
@@ -923,8 +921,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         Vector2 spinningPoint = normalLaserRotation ? new Vector2(0f, -velocity) : new Vector2(-velocityX2, -velocity);
                         spinningPoint.Normalize();
 
-                        float deathrayTelegraphDuration = bossRush ? deathrayTelegraphDuration_BossRush : death ? deathrayTelegraphDuration_Death :
-                            revenge ? deathrayTelegraphDuration_Rev : expertMode ? deathrayTelegraphDuration_Expert : deathrayTelegraphDuration_Normal;
+                        float deathrayTelegraphDuration = death ? deathrayTelegraphDuration_Death : revenge ? deathrayTelegraphDuration_Rev :
+                            expertMode ? deathrayTelegraphDuration_Expert : deathrayTelegraphDuration_Normal;
 
                         calamityGlobalNPC.newAI[2] += (EnragedState == (float)Enraged.Yes && calamityGlobalNPC.newAI[2] % 2f == 0f) ? 2f : 1f;
                         if (calamityGlobalNPC.newAI[2] < deathrayTelegraphDuration)
@@ -1495,7 +1493,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }

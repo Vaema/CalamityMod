@@ -36,8 +36,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleportScale *= teleportScaleSpeed;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Phases based on life percentage
 
@@ -244,7 +243,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Faster fall
             if (npc.velocity.Y > 0f)
             {
-                float fallSpeedBonus = (bossRush ? 0.2f : death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
+                float fallSpeedBonus = (death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
@@ -444,7 +443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (!teleporting)
                 {
-                    npc.ai[0] += (bossRush ? 15f : MathHelper.Lerp(1f, 8f, 1f - lifeRatio));
+                    npc.ai[0] += MathHelper.Lerp(1f, 8f, 1f - lifeRatio);
                     if (npc.ai[0] >= 0f)
                     {
                         // Set damage
@@ -465,8 +464,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool deathModeRapidHops = death && lifeRatio < 0.3f;
                         if (deathModeRapidHops)
                             npc.ai[1] = 2f;
-
-                        float bossRushJumpSpeedMult = 1.5f;
 
                         // Jump type
                         if (npc.ai[1] == 3f)
@@ -503,9 +500,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (death)
                             npc.velocity.X *= 1.4f;
 
-                        if (bossRush)
-                            npc.velocity.X *= bossRushJumpSpeedMult;
-
                         npc.noTileCollide = true;
                     }
                     else if (npc.ai[0] >= -30f)
@@ -526,13 +520,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
                     {
-                        npc.velocity.X += (bossRush ? 0.4f : death ? 0.25f : 0.2f) * npc.direction;
+                        npc.velocity.X += (death ? 0.25f : 0.2f) * npc.direction;
                         if (death)
                             npc.velocity.X += 0.3f * npc.direction;
                     }
                     else
                     {
-                        npc.velocity.X *= bossRush ? 0.9f : death ? 0.92f : 0.93f;
+                        npc.velocity.X *= death ? 0.92f : 0.93f;
                         if (death)
                             npc.velocity.X *= 0.9f;
                     }
@@ -623,7 +617,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 break;
                         }
 
-                        if (((Main.raining && Main.hardMode) || bossRush) && Main.rand.NextBool(50))
+                        if ((Main.raining && Main.hardMode) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
                         if (death)

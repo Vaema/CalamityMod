@@ -184,13 +184,12 @@ namespace CalamityMod.NPCs.Cryogen
 
             Player player = Main.player[NPC.target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Enrage
-            if (!player.ZoneSnow && !bossRush)
+            if (!player.ZoneSnow && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -198,20 +197,17 @@ namespace CalamityMod.NPCs.Cryogen
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
             float enrageScale = death ? 0.5f : 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
             if (enrageScale > 2f)
                 enrageScale = 2f;
-
-            if (bossRush)
-                enrageScale = 3f;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -321,7 +317,7 @@ namespace CalamityMod.NPCs.Cryogen
                 }
             }
 
-            float chargePhaseGateValue = bossRush ? 240f : 360f;
+            float chargePhaseGateValue = 360f;
             float chargeDuration = 60f;
             float chargeTelegraphTime = NPC.ai[0] == 2f ? (CalamityWorld.LegendaryMode ? 60f : 80f) : (CalamityWorld.LegendaryMode ? 90f : 120f);
             float chargeTelegraphMaxRotationIncrement = 1f;
@@ -341,7 +337,7 @@ namespace CalamityMod.NPCs.Cryogen
             if (expertMode && (NPC.ai[0] < 5f || !phase6) && !chargePhase)
             {
                 calamityGlobalNPC.newAI[3] += 1f;
-                if (calamityGlobalNPC.newAI[3] >= (bossRush ? 660f : 900f))
+                if (calamityGlobalNPC.newAI[3] >= 900f)
                 {
                     calamityGlobalNPC.newAI[3] = 0f;
                     SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -382,7 +378,7 @@ namespace CalamityMod.NPCs.Cryogen
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = bossRush ? 24 : 16;
+                            int totalProjectiles = 16;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = iceBlast;
                             float velocity = 9f + enrageScale;
@@ -457,7 +453,7 @@ namespace CalamityMod.NPCs.Cryogen
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int totalProjectiles = bossRush ? 18 : 12;
+                                int totalProjectiles = 12;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
                                 int type = iceBlast;
                                 float velocity2 = 9f + enrageScale;
@@ -653,7 +649,7 @@ namespace CalamityMod.NPCs.Cryogen
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int totalProjectiles = bossRush ? 18 : 12;
+                                int totalProjectiles = 12;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
                                 int type = iceBlast;
                                 float velocity = 9f + enrageScale;
@@ -814,7 +810,7 @@ namespace CalamityMod.NPCs.Cryogen
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = bossRush ? 18 : 12;
+                            int totalProjectiles = 12;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = iceBlast;
                             float velocity = 10f + enrageScale;
@@ -924,7 +920,7 @@ namespace CalamityMod.NPCs.Cryogen
                                 float velocity = 9f + enrageScale;
                                 for (int i = 0; i < 3; i++)
                                 {
-                                    int totalProjectiles = bossRush ? 9 : 6;
+                                    int totalProjectiles = 6;
                                     float radians = MathHelper.TwoPi / totalProjectiles;
                                     float newVelocity = velocity - (velocity * 0.33f * i);
                                     float projectileVelocityToPass = 0f;
@@ -1025,7 +1021,7 @@ namespace CalamityMod.NPCs.Cryogen
                                 int totalSpreads = phase7 ? 3 : 2;
                                 for (int i = 0; i < totalSpreads; i++)
                                 {
-                                    int totalProjectiles = bossRush ? 3 : 2;
+                                    int totalProjectiles = 2;
                                     float radians = MathHelper.TwoPi / totalProjectiles;
                                     float newVelocity = velocity - (velocity * (phase7 ? 0.25f : 0.5f) * i);
                                     float projectileVelocityToPass = 0f;
@@ -1148,7 +1144,7 @@ namespace CalamityMod.NPCs.Cryogen
                 NPC.rotation = NPC.velocity.X * 0.1f;
 
                 calamityGlobalNPC.newAI[3] += 1f;
-                if (calamityGlobalNPC.newAI[3] >= (bossRush ? 50f : 75f))
+                if (calamityGlobalNPC.newAI[3] >= 75f)
                 {
                     calamityGlobalNPC.newAI[3] = 0f;
                     SoundEngine.PlaySound(Main.zenithWorld ? SoundID.NPCHit41 : HitSound, NPC.Center);
@@ -1168,7 +1164,7 @@ namespace CalamityMod.NPCs.Cryogen
                 }
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= (bossRush ? 120f : 180f))
+                if (NPC.ai[1] >= 180f)
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 4f;
@@ -1381,7 +1377,7 @@ namespace CalamityMod.NPCs.Cryogen
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

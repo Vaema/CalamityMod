@@ -174,10 +174,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Increase DR if the target leaves SCal's arena.
             NPC.Calamity().DR = SupremeCataclysm.NormalBrothersDR;
@@ -368,7 +367,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else if (BigAttackTimer > PreBigAttackPause)
             {
                 // Shoot sword slashes.
-                float fireRate = BossRushEvent.BossRushActive ? 2f : MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (broIsAlive == false ? death ? 1.25f : 1.05f : 1);
+                float fireRate = MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (!broIsAlive ? death ? 1.25f : 1.05f : 1);
                 SlashCounter += fireRate;
                 if (SlashCounter >= SlashCounterLimit)
                 {
@@ -432,7 +431,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
             {
                 // Shoot sword slashes.
-                float fireRate = BossRushEvent.BossRushActive ? 2.8f : MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio) * (broIsAlive == false ? 1.35f : 1);
+                float fireRate = MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio) * (!broIsAlive ? 1.35f : 1);
                 if (Phase2 && BigAttackLimit == 0)
                     fireRate = 1;
                 SlashCounter += fireRate;

@@ -92,7 +92,8 @@ namespace CalamityMod.Projectiles.Melee
             else
                 SoundEngine.PlaySound(UseSound with { Pitch = EmpoweredHammer * 0.1f - 0.2f }, Projectile.Center);
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<PwnagehammerExplosionSmall>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
+            if (Main.myPlayer == Projectile.owner)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<PwnagehammerExplosionSmall>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 
             return false;
         }

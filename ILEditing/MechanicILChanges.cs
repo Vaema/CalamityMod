@@ -333,16 +333,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(On_NPC.orig_ShouldEmpressBeEnraged orig)
-        {
-            if (BossRushEvent.BossRushActive)
-                return true;
-
-            return orig();
-        }
-        #endregion
-
         #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
         private static void PreventVanillaBossDeathsInBossRush(ILContext il)
         {

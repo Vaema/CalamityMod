@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void OnKill(int timeLeft) // When the projectile hits an enemy, it'll make a dust impact effect.
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int dustIndex = 0; dustIndex < 36; dustIndex++)
+            for (int dustIndex = 0; dustIndex < 18; dustIndex++)
             {
                 Dust.NewDust(Projectile.Center,
                     Projectile.width,

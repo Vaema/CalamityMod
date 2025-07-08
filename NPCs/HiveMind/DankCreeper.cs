@@ -64,8 +64,6 @@ namespace CalamityMod.NPCs.HiveMind
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
             float speed = death ? 15f : revenge ? 13f : 11f;
-            if (BossRushEvent.BossRushActive)
-                speed = 18f;
 
             if (NPC.ai[1] < 90f)
                 NPC.ai[1] += 1f;

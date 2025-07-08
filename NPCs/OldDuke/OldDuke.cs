@@ -198,10 +198,9 @@ namespace CalamityMod.NPCs.OldDuke
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             float exhaustionGateValue = 360f;
             if (CalamityWorld.LegendaryMode)
@@ -276,15 +275,7 @@ namespace CalamityMod.NPCs.OldDuke
                 chargeVelocity = expertMode ? 24f : 23f;
             }
 
-            if (bossRush)
-            {
-                idlePhaseTimer = 35;
-                idlePhaseAcceleration *= 1.25f;
-                idlePhaseVelocity *= 1.2f;
-                chargeTime -= 3;
-                chargeVelocity *= 1.25f;
-            }
-            else if (death)
+            if (death)
             {
                 idlePhaseTimer = 51;
                 idlePhaseAcceleration *= 1.05f;
@@ -309,22 +300,22 @@ namespace CalamityMod.NPCs.OldDuke
                 idlePhaseVelocity *= 0.25f;
 
             // Variables
-            int maxToothBallBelches = bossRush ? 5 : death ? 4 : 3;
-            int toothBallBelchPhaseDivisor = bossRush ? 24 : death ? 30 : 40;
+            int maxToothBallBelches = death ? 4 : 3;
+            int toothBallBelchPhaseDivisor = death ? 30 : 40;
             int toothBallBelchPhaseTimer = toothBallBelchPhaseDivisor * maxToothBallBelches;
-            float toothBallBelchPhaseAcceleration = bossRush ? 0.95f : death ? 0.6f : 0.55f;
-            float toothBallBelchPhaseVelocity = bossRush ? 14f : death ? 10f : 9f;
+            float toothBallBelchPhaseAcceleration = death ? 0.6f : 0.55f;
+            float toothBallBelchPhaseVelocity = death ? 10f : 9f;
             float toothBallFinalVelocity = death ? 14f : revenge ? 13f : 12f;
             float goreVelocityX = death ? 8f : revenge ? 7.5f : expertMode ? 7f : 6f;
             float goreVelocityY = death ? 10.5f : revenge ? 10f : expertMode ? 9.5f : 8f;
-            float sharkronVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+            float sharkronVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
             int attackTimer = 120;
             int phaseTransitionTimer = 180;
             int teleportPauseTimer = 30;
-            int toothBallSpinPhaseDivisor = bossRush ? 27 : death ? 32 : 45;
+            int toothBallSpinPhaseDivisor = death ? 32 : 45;
             int toothBallSpinTimer = maxToothBallBelches * toothBallSpinPhaseDivisor;
             float spinTime = toothBallSpinTimer / 2f;
-            float toothBallSpinToothBallVelocity = bossRush ? 14f : death ? 9.5f : 9f;
+            float toothBallSpinToothBallVelocity = death ? 9.5f : 9f;
             float spinAttackSpeed = Main.zenithWorld ? 44f : 22f;
             float spinSpeed = MathHelper.TwoPi / spinTime;
 
@@ -397,7 +388,7 @@ namespace CalamityMod.NPCs.OldDuke
                     }
                 }
 
-                calamityGlobalNPC.newAI[0] -= bossRush ? 1.5f : 1f;
+                calamityGlobalNPC.newAI[0] -= 1f;
                 if (calamityGlobalNPC.newAI[0] <= 0f)
                 {
                     calamityGlobalNPC.newAI[0] = 0f;
@@ -406,14 +397,14 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // Enrage variable
-            bool enrage = !bossRush &&
+            bool enrage = !BossRushEvent.BossRushActive &&
                 (player.position.Y < 300f || player.position.Y > Main.worldSurface * 16.0 ||
                 (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
 
             // Check for the flipped Abyss
             if (Main.remixWorld)
             {
-                enrage = !bossRush &&
+                enrage = !BossRushEvent.BossRushActive &&
                     (player.position.Y < Main.UnderworldLayer * 16 * 0.8f || player.position.Y > Main.UnderworldLayer * 16 ||
                     (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
             }
@@ -429,11 +420,11 @@ namespace CalamityMod.NPCs.OldDuke
 
             bool biomeEnraged = NPC.localAI[1] <= 0f;
 
-            NPC.Calamity().CurrentlyEnraged = biomeEnraged || bossRush;
+            NPC.Calamity().CurrentlyEnraged = biomeEnraged;
 
             // Increased DR while transitioning phases and not exhausted
             if (!exhausted)
-                calamityGlobalNPC.DR = (NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f) ? (bossRush ? 0.99f : 0.75f) : 0.5f;
+                calamityGlobalNPC.DR = (NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f) ? 0.75f : 0.5f;
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f;
 
@@ -2091,7 +2082,7 @@ namespace CalamityMod.NPCs.OldDuke
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }

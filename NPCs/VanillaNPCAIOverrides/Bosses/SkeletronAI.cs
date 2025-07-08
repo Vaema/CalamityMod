@@ -29,8 +29,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
@@ -146,7 +145,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Daytime enrage
-            if (Main.IsItDay() && !bossRush && npc.ai[1] != 3f && npc.ai[1] != 2f)
+            if (Main.IsItDay() && !BossRushEvent.BossRushActive && npc.ai[1] != 3f && npc.ai[1] != 2f)
             {
                 npc.ai[1] = 2f;
                 SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
@@ -164,38 +163,38 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool handsDead = numHandsAlive == 0;
             int numProj = CalamityWorld.LegendaryMode ? 22 : death ? 5 : 3;
             float spread = CalamityWorld.LegendaryMode ? 180 : 60;
-            float headSpinVelocityMult = bossRush ? (phase3 ? 18f : 9f) : (phase3 ? 12f : 4.5f);
+            float headSpinVelocityMult = phase3 ? 12f : 4.5f;
 
             switch (numHandsAlive)
             {
                 case 0:
                     numProj = CalamityWorld.LegendaryMode ? 36 : death ? 9 : 7;
                     spread = CalamityWorld.LegendaryMode ? 180 : death ? 90 : 82;
-                    headSpinVelocityMult = bossRush ? (phase3 ? 18f : 12f) : (phase3 ? 12f : 6f);
+                    headSpinVelocityMult = phase3 ? 12f : 6f;
                     break;
 
                 case 1:
                     numProj = CalamityWorld.LegendaryMode ? 27 : death ? 7 : 5;
                     spread = CalamityWorld.LegendaryMode ? 150 : death ? 76 : 68;
-                    headSpinVelocityMult = bossRush ? (phase3 ? 15f : 10f) : (phase3 ? 11.5f : 5f);
+                    headSpinVelocityMult = phase3 ? 11.5f : 5f;
                     break;
 
                 case 2:
                     numProj = CalamityWorld.LegendaryMode ? 18 : death ? 6 : 4;
                     spread = CalamityWorld.LegendaryMode ? 140 : death ? 70 : 62;
-                    headSpinVelocityMult = bossRush ? (phase3 ? 13.5f : 9f) : (phase3 ? 11f : 4.5f);
+                    headSpinVelocityMult = phase3 ? 11f : 4.5f;
                     break;
 
                 case 3:
                     numProj = CalamityWorld.LegendaryMode ? 15 : death ? 5 : 3;
                     spread = CalamityWorld.LegendaryMode ? 130 : death ? 64 : 56;
-                    headSpinVelocityMult = bossRush ? (phase3 ? 12f : 8f) : (phase3 ? 10.5f : 4f);
+                    headSpinVelocityMult = phase3 ? 10.5f : 4f;
                     break;
 
                 case 4:
                     numProj = CalamityWorld.LegendaryMode ? 12 : death ? 4 : 3;
                     spread = CalamityWorld.LegendaryMode ? 120 : 56;
-                    headSpinVelocityMult = bossRush ? (phase3 ? 10f : 7f) : (phase3 ? 10f : 3.5f);
+                    headSpinVelocityMult = phase3 ? 10f : 3.5f;
                     break;
             }
 
@@ -214,7 +213,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Velocity used to move Skeletron away from the target before charging
             float moveAwayVelocity = headSpinVelocityMult;
             if (!phase3)
-                moveAwayVelocity *= (bossRush ? 1.5f : 2f);
+                moveAwayVelocity *= 2f;
 
             // Hand DR, scale DR up if the hands are still alive as Skeletron's HP lowers
             npc.chaseable = handsDead;
@@ -278,7 +277,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // If hands are dead: 7 seconds
                 // If hands are not dead: 14 seconds
                 // If hands are dead in phase 2: 4.7 seconds
-                npc.ai[3] += 1f + (((phase2 && handsDead) || bossRush || phase4) ? 0.5f : 0f) - ((handsDead || bossRush) ? 0f : 0.5f);
+                npc.ai[3] += 1f + (((phase2 && handsDead) || phase4) ? 0.5f : 0f) - (handsDead ? 0f : 0.5f);
 
                 // Dust to show teleport
                 int ai3 = (int)npc.ai[3]; // 0 to 30, and -60
@@ -353,7 +352,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Skull shooting
             if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
             {
-                float skullProjFrequency = bossRush ? 15f : phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
+                float skullProjFrequency = phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
                 if (CalamityWorld.LegendaryMode)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
@@ -366,7 +365,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Collision.CanHit(skullFiringPos, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     {
                         float skullProjSpeed = phase2 ? (5f + (death ? 3f * (1f - lifeRatio) : 0f)) : 4f;
-                        int spread2 = bossRush ? 100 : 50;
+                        int spread2 = 50;
                         Vector2 skullProjDirection = new Vector2(skullProjTargetX + Main.rand.Next(-spread2, spread2 + 1) * 0.01f, skullProjTargetY + Main.rand.Next(-spread2, spread2 + 1) * 0.01f).SafeNormalize(Vector2.UnitY);
                         skullProjDirection *= skullProjSpeed;
                         skullProjDirection += npc.velocity;
@@ -436,12 +435,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float headXAcceleration = (CalamityWorld.LegendaryMode ? 0.21f : death ? (0.16f + 0.08f * (1f - lifeRatio)) : 0.08f);
                 float headXTopSpeed = headXAcceleration * 100f;
                 float deceleration = CalamityWorld.LegendaryMode ? 0.83f : death ? 0.86f : 0.89f;
-
-                if (bossRush)
-                {
-                    headYAcceleration *= 1.25f;
-                    headXAcceleration *= 1.25f;
-                }
 
                 float moveAwayGateValue = chargePhaseGateValue - (5f + chargePhaseChangeRate);
                 bool moveAwayBeforeCharge = npc.ai[2] >= moveAwayGateValue;
@@ -707,7 +700,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (!phase3)
                 {
                     float velocityBoost = MathHelper.Lerp(0f, 3f, (1f - lifeRatio) / (1f - phase3LifeRatio));
-                    if (handsDead || bossRush)
+                    if (handsDead)
                         headSpinVelocityMult += velocityBoost;
                 }
 
@@ -735,7 +728,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[2] < altDashPhaseTime)
                         {
                             if (npc.Center.Distance(Main.player[npc.target].Center) > altDashStopDistance || npc.ai[2] == 1f + phaseChangeRateBoost)
-                                npc.velocity = headSpinVelocity.SafeNormalize(Vector2.UnitY) * headSpinVelocityMult + npc.Center.DirectionTo(Main.player[npc.target].Center + (bossRush ? Main.player[npc.target].velocity * 20f : Vector2.Zero)) * 2f;
+                                npc.velocity = headSpinVelocity.SafeNormalize(Vector2.UnitY) * headSpinVelocityMult + npc.Center.DirectionTo(Main.player[npc.target].Center) * 2f;
                             else
                                 npc.ai[2] = altDashPhaseTime;
                         }
@@ -813,8 +806,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)

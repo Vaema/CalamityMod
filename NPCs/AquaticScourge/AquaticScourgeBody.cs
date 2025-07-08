@@ -52,9 +52,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.dontCountMe = true;
             NPC.chaseable = false;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -92,16 +90,15 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void AI()
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool getFuckedAI = Main.zenithWorld;
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -150,11 +147,11 @@ namespace CalamityMod.NPCs.AquaticScourge
                     (player.position.X > 7680f && player.position.X < (Main.maxTilesX * 16 - 7680));
             }
 
-            bool biomeEnraged = NPC.localAI[2] <= 0f || bossRush;
-            float enrageScale = bossRush ? 1f : 0f;
+            bool biomeEnraged = NPC.localAI[2] <= 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 

@@ -135,10 +135,9 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Variables
             float rotationMult = 3f;
             float rotationAmt = 0.03f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Adjust slowing debuff immunity
             bool immuneToSlowingDebuffs = NPC.ai[0] == 3f || NPC.ai[0] == 3.1f || NPC.ai[0] == 3.2f;
@@ -151,7 +150,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // If target is outside the jungle for more than 5 seconds, enrage
-            if (!player.ZoneJungle)
+            if (!player.ZoneJungle && !BossRushEvent.BossRushActive)
             {
                 if (NPC.localAI[1] < CalamityGlobalNPC.biomeEnrageTimerMax)
                     NPC.localAI[1] += 1f;
@@ -165,13 +164,13 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             // Enrage scale
             float enrageScale = death ? 1.5f : 1f;
-            if (NPC.localAI[1] >= CalamityGlobalNPC.biomeEnrageTimerMax || bossRush)
+            if (NPC.localAI[1] >= CalamityGlobalNPC.biomeEnrageTimerMax)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
-            if (NPC.localAI[2] > 0f || bossRush)
+            if (NPC.localAI[2] > 0f)
                 enrageScale += 1f;
 
             if (CalamityWorld.LegendaryMode)
@@ -226,8 +225,8 @@ namespace CalamityMod.NPCs.Bumblebirb
             bool phaseSwitchPhase = (phase2 && calamityGlobalNPC.newAI[0] < newPhaseTimer && calamityGlobalNPC.newAI[2] != 1f) ||
                 (phase3 && calamityGlobalNPC.newAI[1] < newPhaseTimer && calamityGlobalNPC.newAI[3] != 1f);
 
-            calamityGlobalNPC.DR = (phaseSwitchPhase || NPC.ai[0] == 5f || (enrageScale == 3f && !bossRush)) ? (bossRush ? 0.99f : 0.55f) : 0.1f;
-            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || (enrageScale == 3f && !bossRush);
+            calamityGlobalNPC.DR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f ? 0.55f : 0.1f;
+            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f;
 
             int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
 
@@ -1231,7 +1230,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             return newColor;
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.SuperHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.SuperHealingPotion;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {

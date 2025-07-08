@@ -27,8 +27,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Despawn
             if (npc.position.X < 160f || npc.position.X > ((Main.maxTilesX - 10) * 16))
@@ -95,8 +94,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] += 1f;
                 if (phase3)
                     npc.ai[1] += 1f;
-                if (bossRush)
-                    npc.ai[1] += 3f;
                 if (CalamityWorld.LegendaryMode)
                     npc.ai[1] += 9f;
 
@@ -257,9 +254,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float timeBeforeEnrage = death ? (150f - 130f * (1f - lifeRatio)) : 600f;
             float speedMult = 1f;
 
-            if (bossRush)
-                timeBeforeEnrage *= 0.25f;
-
             if (calamityGlobalNPC.newAI[0] < timeBeforeEnrage)
             {
                 if (distanceFromTarget > halfAverageScreenWidth)
@@ -309,9 +303,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             calamityGlobalNPC.CurrentlyEnraged = distanceFromTarget > halfAverageScreenWidth || npc.ai[3] == 1f;
 
-            if (bossRush)
-                speedMult += 0.2f;
-
             float deathModeVelocityBoost = 0f;
             if (death)
             {
@@ -326,7 +317,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // NOTE: Max velocity is 9 in For The Worthy
 
             float velocityBoost = 4f * (1f - lifeRatio);
-            float velocityX = (bossRush ? 7f : death ? 3.5f : 2f) + deathModeVelocityBoost + velocityBoost;
+            float velocityX = (death ? 3.5f : 2f) + deathModeVelocityBoost + velocityBoost;
             velocityX *= speedMult;
 
             if (death)
@@ -444,9 +435,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Range of 64 to 268
                 chance *= 2;
 
-                if (bossRush)
-                    chance /= 4;
-                else if (death)
+                if (death)
                     chance /= 2;
 
                 if (chance < 2)
@@ -553,8 +542,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             CalamityUtils.CalamityTargeting(npc, default);
             float acceleration = death ? 0.15f : 0.12f;
@@ -707,8 +695,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Avoid cheap bullshit
             npc.damage = 0;
@@ -819,8 +806,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             Vector2 eyeLocation = npc.Center;
-            float predictionAmount = MathHelper.Lerp(0f, 20f, (float)Math.Sqrt(1f - lifeRatio));
-            Vector2 lookAt = Main.player[npc.target].Center + (bossRush ? (Main.player[npc.target].velocity * predictionAmount) : Vector2.Zero);
+            Vector2 lookAt = Main.player[npc.target].Center;
             float eyeTargetX = lookAt.X - eyeLocation.X;
             float eyeTargetY = lookAt.Y - eyeLocation.Y;
             float wallVelocity = (float)Math.Sqrt(eyeTargetX * eyeTargetX + eyeTargetY * eyeTargetY);

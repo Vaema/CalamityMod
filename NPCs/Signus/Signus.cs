@@ -132,10 +132,9 @@ namespace CalamityMod.NPCs.Signus
 
             CalamityGlobalNPC.signus = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Vector2 vectorCenter = NPC.Center;
 
@@ -144,8 +143,8 @@ namespace CalamityMod.NPCs.Signus
             lifeToAlpha = (int)((CalamityWorld.LegendaryMode ? 200D : 100D) * (1D - lifeRatio));
             int maxCharges = death ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             int maxTeleports = (death && lifeRatio < 0.9) ? 1 : revenge ? 2 : expertMode ? 3 : 4;
-            float inertia = bossRush ? 9f : death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
-            float chargeVelocity = bossRush ? 16f : death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
+            float inertia = death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
+            float chargeVelocity = death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
             if (CalamityWorld.LegendaryMode)
             {
                 inertia *= 0.5f;
@@ -254,7 +253,7 @@ namespace CalamityMod.NPCs.Signus
                 if (phase3 || revenge)
                     NPC.knockBackResist = 0f;
 
-                float speed = bossRush ? 20f : revenge ? 15f : expertMode ? 14f : 12f;
+                float speed = revenge ? 15f : expertMode ? 14f : 12f;
                 if (expertMode)
                     speed += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -296,7 +295,7 @@ namespace CalamityMod.NPCs.Signus
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.localAI[1] += bossRush ? 1.5f : 1f;
+                    NPC.localAI[1] += 1f;
 
                     if (expertMode)
                         NPC.localAI[1] += death ? 3f * (float)(1D - lifeRatio) : 2f * (float)(1D - lifeRatio);
@@ -359,7 +358,7 @@ namespace CalamityMod.NPCs.Signus
                     Main.dust[dust].fadeIn = 1f;
                 }
 
-                NPC.alpha += bossRush ? 3 : 2;
+                NPC.alpha += 2;
                 if (expertMode)
                     NPC.alpha += death ? (int)Math.Round(4.5D * (1D - lifeRatio)) : (int)Math.Round(3D * (1D - lifeRatio));
 
@@ -476,7 +475,7 @@ namespace CalamityMod.NPCs.Signus
                 NPC.direction = playerLocation < 0f ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                float divisor = expertMode ? (bossRush ? 10f : death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
+                float divisor = expertMode ? (death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
                 float scytheBarrageTime = divisor * 3f;
                 float scytheBarrageCooldown = divisor * 3f;
 
@@ -514,8 +513,8 @@ namespace CalamityMod.NPCs.Signus
                     }
                 }
 
-                float maxVelocityY = bossRush ? 1.5f : death ? 2.5f : 3f;
-                float maxVelocityX = bossRush ? 5f : death ? 7f : 8f;
+                float maxVelocityY = death ? 2.5f : 3f;
+                float maxVelocityX = death ? 7f : 8f;
 
                 if (NPC.position.Y > player.position.Y - 250f)
                 {
@@ -636,7 +635,7 @@ namespace CalamityMod.NPCs.Signus
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    float velocity = bossRush ? 18f : revenge ? 16f : expertMode ? 15f : 14f;
+                    float velocity = revenge ? 16f : expertMode ? 15f : 14f;
                     if (expertMode)
                         velocity += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -916,7 +915,7 @@ namespace CalamityMod.NPCs.Signus
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }

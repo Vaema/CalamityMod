@@ -201,8 +201,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 segmentLocation = NPC.Center;
             float targetX = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.X + (Main.player[NPC.target].width / 2);
             float targetY = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.Y + (Main.player[NPC.target].height / 2);
-            float sepMaxSpeed = BossRushEvent.BossRushActive ? 22.5f : 20f;
-            float sepAcceleration = (BossRushEvent.BossRushActive ? 0.2f : 0.175f) + (0.37f - AttackCooldown * 0.0015f);
+            float sepMaxSpeed = 20f;
+            float sepAcceleration = 0.175f + (0.37f - AttackCooldown * 0.0015f);
 
             float fasterMaxSpeed = sepMaxSpeed * 1.3f;
             float slowerMaxSpeed = sepMaxSpeed * 0.7f;

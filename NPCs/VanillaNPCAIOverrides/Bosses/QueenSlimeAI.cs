@@ -21,8 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool BuffedQueenSlimeAI(NPC npc, Mod mod)
         {
             // Difficulty bools
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
@@ -214,9 +213,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
 
                     npc.ai[1] += 1f;
-                    int idleTime = bossRush ? 20 : death ? 30 : 40;
+                    int idleTime = death ? 30 : 40;
                     if (phase2)
-                        idleTime = bossRush ? 40 : death ? 60 : 80;
+                        idleTime = death ? 60 : 80;
                     if (phase4)
                         idleTime /= 2;
 
@@ -278,7 +277,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = 0f;
                     npc.ai[1] += 1f;
-                    float teleportEndTime = bossRush ? 10f : death ? 15f : 20f;
+                    float teleportEndTime = death ? 15f : 20f;
                     slimeScale = MathHelper.Clamp(npc.ai[1] / teleportEndTime, 0f, 1f);
                     slimeScale = 0.5f + slimeScale * 0.5f;
                     if (npc.ai[1] >= teleportEndTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -318,7 +317,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.rotation = 0f;
                     npc.ai[1] += 1f;
-                    float teleportTime = bossRush ? 20f : death ? 30f : 40f;
+                    float teleportTime = death ? 30f : 40f;
                     slimeScale = MathHelper.Clamp((teleportTime - npc.ai[1]) / teleportTime, 0f, 1f);
                     slimeScale = 0.5f + slimeScale * 0.5f;
 
@@ -393,7 +392,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     // Faster fall
                     if (npc.velocity.Y > 0f)
-                        npc.velocity.Y += bossRush ? 0.1f : death ? 0.05f : 0f;
+                        npc.velocity.Y += death ? 0.05f : 0f;
 
                     npc.rotation = 0f;
                     if (npc.velocity.Y == 0f)
@@ -405,7 +404,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                             npc.velocity.X = 0f;
 
-                        float timerIncrement = bossRush ? 7f : death ? 6f : 5f;
+                        float timerIncrement = death ? 6f : 5f;
                         npc.ai[1] += timerIncrement;
                         if (lifeRatio < 0.85f)
                             npc.ai[1] += timerIncrement;
@@ -433,7 +432,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[2] == 3f)
                         {
                             npc.velocity.Y = -13f * speedMult;
-                            npc.velocity.X += (bossRush ? 7f : death ? 6f : 5.5f) * npc.direction;
+                            npc.velocity.X += (death ? 6f : 5.5f) * npc.direction;
                             npc.ai[1] = 0f;
                             npc.ai[2] = 0f;
                             if (npc.timeLeft > 10)
@@ -447,15 +446,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                         else if (npc.ai[2] == 2f)
                         {
-                            npc.velocity.Y = -(bossRush ? 10f : death ? 8f : 6f) * speedMult;
-                            npc.velocity.X += (bossRush ? 8.5f : death ? 7.5f : 7f) * npc.direction;
+                            npc.velocity.Y = -(death ? 8f : 6f) * speedMult;
+                            npc.velocity.X += (death ? 7.5f : 7f) * npc.direction;
                             npc.ai[1] = -40f;
                             npc.ai[2] += 1f;
                         }
                         else
                         {
-                            npc.velocity.Y = -(bossRush ? 12f : death ? 10f : 8f) * speedMult;
-                            npc.velocity.X += (bossRush ? 7.5f : death ? 6.5f : 6f) * npc.direction;
+                            npc.velocity.Y = -(death ? 10f : 8f) * speedMult;
+                            npc.velocity.X += (death ? 6.5f : 6f) * npc.direction;
                             npc.ai[1] = -40f;
                             npc.ai[2] += 1f;
                         }
@@ -470,16 +469,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.target >= Main.maxPlayers)
                             break;
 
-                        float jumpVelocity = bossRush ? 9f : death ? 7f : 4.5f;
+                        float jumpVelocity = death ? 7f : 4.5f;
                         if (CalamityWorld.LegendaryMode)
                             jumpVelocity = 12f;
 
                         if ((npc.direction == 1 && npc.velocity.X < jumpVelocity) || (npc.direction == -1 && npc.velocity.X > 0f - jumpVelocity))
                         {
                             if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
-                                npc.velocity.X += (bossRush ? 1f : death ? 0.45f : 0.3f) * npc.direction;
+                                npc.velocity.X += (death ? 0.45f : 0.3f) * npc.direction;
                             else
-                                npc.velocity.X *= bossRush ? 0.8f : death ? 0.85f : 0.91f;
+                                npc.velocity.X *= death ? 0.85f : 0.91f;
                         }
 
                         if (!Main.player[npc.target].dead)
@@ -627,8 +626,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             // Set damage
                             npc.damage = npc.defDamage;
 
-                            npc.velocity.Y += bossRush ? 2f : death ? 1.75f : 1.5f;
-                            float slamVelocity = bossRush ? 15.99f : death ? 15.5f : 15f;
+                            npc.velocity.Y += death ? 1.75f : 1.5f;
+                            float slamVelocity = death ? 15.5f : 15f;
                             if (CalamityWorld.LegendaryMode)
                             {
                                 npc.velocity.Y += 1f;
@@ -703,7 +702,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.velocity = center - npc.Center;
                         npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
-                        npc.velocity *= bossRush ? 30f : death ? 27.3f : 24f;
+                        npc.velocity *= death ? 27.3f : 24f;
                     }
                     else
                         npc.velocity.Y *= 0.95f;
@@ -922,14 +921,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static void QueenSlime_FlyMovement(NPC npc)
         {
             // Difficulty bools
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             npc.noTileCollide = true;
             npc.noGravity = true;
 
-            float flyVelocity = bossRush ? 24f : death ? 21f : 16f;
-            float flyAcceleration = bossRush ? 0.3f : death ? 0.18f : 0.12f;
+            float flyVelocity = death ? 21f : 16f;
+            float flyAcceleration = death ? 0.18f : 0.12f;
             float flyDistanceY = death ? 350f : 450f;
 
             Vector2 desiredVelocity = npc.Center;

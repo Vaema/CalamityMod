@@ -93,25 +93,18 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             }
 
             // Variables for buffing the AI
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining for Brim
             float lifeRatio = Main.npc[CalamityGlobalNPC.brimstoneElemental].life / (float)Main.npc[CalamityGlobalNPC.brimstoneElemental].lifeMax;
 
             // Enraged Brim checks
-            bool biomeEnraged = Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().newAI[3] <= 0f || bossRush;
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].ZoneUnderworldHeight || bossRush))
-            {
-                Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().CurrentlyEnraged = !bossRush;
+            bool biomeEnraged = Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().newAI[3] <= 0f;
+            float enrageScale = 0f;
+            if (biomeEnraged && !Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].ZoneUnderworldHeight)
                 enrageScale += 1f;
-            }
-            if (biomeEnraged && (!Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Calamity().ZoneCalamity || bossRush))
-            {
-                Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().CurrentlyEnraged = !bossRush;
+            if (biomeEnraged && !Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Calamity().ZoneCalamity)
                 enrageScale += 1f;
-            }
 
             // Brim phase checks
             bool brimIsAboutToTeleport = Main.npc[CalamityGlobalNPC.brimstoneElemental].ai[0] == 1f && Main.npc[CalamityGlobalNPC.brimstoneElemental].alpha == 0;

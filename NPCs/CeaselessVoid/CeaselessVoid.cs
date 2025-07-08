@@ -136,10 +136,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
             double lifeRatio = NPC.life / (double)NPC.lifeMax;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Phases
             bool phase2 = lifeRatio <= 0.7;
@@ -191,7 +190,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             Player player = Main.player[NPC.target];
 
             // Speed enrage
-            bool moveVeryFast = Vector2.Distance(NPC.Center, player.Center) > 960f || (!player.ZoneDungeon && !bossRush && player.position.Y < Main.worldSurface * 16.0);
+            bool moveVeryFast = Vector2.Distance(NPC.Center, player.Center) > 960f || (!player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0);
 
             // Despawn
             if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
@@ -215,8 +214,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            float tileEnrageMult = (CalamityWorld.LegendaryMode && revenge) ? 1.5f : bossRush ? 1.375f : 1f;
-            NPC.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !bossRush;
+            float tileEnrageMult = (CalamityWorld.LegendaryMode && revenge) ? 1.5f : 1f;
+            NPC.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !BossRushEvent.BossRushActive;
 
             // Set AI variable to be used by Dark Energies
             NPC.ai[1] = tileEnrageMult;
@@ -232,7 +231,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (!anyDarkEnergies)
             {
                 // This is here because it's used in multiple places
-                float suckDistance = (CalamityWorld.LegendaryMode && revenge) ? 2400f : bossRush ? 1920f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+                float suckDistance = (CalamityWorld.LegendaryMode && revenge) ? 2400f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
 
                 // Move closer to the target before trying to succ
                 if (movingDuringSuccPhase)
@@ -347,9 +346,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     {
                         if (calamityGlobalNPC.newAI[1] == 0f)
                         {
-                            int numBeamPortals = bossRush ? 4 : revenge ? 3 : 2;
+                            int numBeamPortals = revenge ? 3 : 2;
                             float degrees = 360 / numBeamPortals;
-                            float beamPortalDistance = bossRush ? 360f : death ? 400f : revenge ? 420f : expertMode ? 440f : 480f;
+                            float beamPortalDistance = death ? 400f : revenge ? 420f : expertMode ? 440f : 480f;
                             int type = ProjectileType<DoGBeamPortal>();
                             for (int i = 0; i < numBeamPortals; i++)
                             {
@@ -488,7 +487,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 }
 
                 // Destroy all Dark Energies if their total HP is below 20%
-                int darkEnergyMaxHP = bossRush ? DarkEnergy.MaxBossRushHP : DarkEnergy.MaxHP;
+                int darkEnergyMaxHP = BossRushEvent.BossRushActive ? DarkEnergy.MaxBossRushHP : DarkEnergy.MaxHP;
                 //These are still needed so that CV Dark energy despawn works properly
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
                 darkEnergyMaxHP += (int)(darkEnergyMaxHP * HPBoost);
@@ -532,8 +531,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // Basic movement towards a location
             void Movement(bool succ)
             {
-                float velocity = moveVeryFast ? 25f : bossRush ? 15f : ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * tileEnrageMult;
-                float acceleration = (moveVeryFast ? 0.75f : bossRush ? 0.3f : death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * tileEnrageMult;
+                float velocity = moveVeryFast ? 25f : ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * tileEnrageMult;
+                float acceleration = (moveVeryFast ? 0.75f : death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * tileEnrageMult;
 
                 // Increase speed dramatically in succ phase
                 if (succ)
@@ -564,7 +563,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
-                    float newPositionGateValue = bossRush ? 120f : death ? 180f : revenge ? 210f : expertMode ? 240f : 300f;
+                    float newPositionGateValue = death ? 180f : revenge ? 210f : expertMode ? 240f : 300f;
                     if (calamityGlobalNPC.newAI[2] > newPositionGateValue)
                     {
                         calamityGlobalNPC.newAI[2] = 0f;
@@ -806,7 +805,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemType<SupremeHealingPotion>();
         }

@@ -180,13 +180,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Increase DR if the target leaves SCal's arena.
-            NPC.Calamity().DR = SupremeCataclysm.NormalBrothersDR;
+            NPC.Calamity().DR = NormalBrothersDR;
             if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().IsTargetOutsideOfArena)
                 NPC.Calamity().DR = SupremeCalamitas.enragedDR;
 
@@ -325,7 +324,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else if (BigAttackTimer > PreBigAttackPause)
             {
                 // Shoot fists.
-                float fireRate = BossRushEvent.BossRushActive ? 2f : MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (broIsAlive == false ? death ? 1.32f : 1.1f : 1);
+                float fireRate = MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (!broIsAlive ? death ? 1.32f : 1.1f : 1);
                 
                 PunchCounter += fireRate;
                 if (PunchCounter >= PunchCounterLimit)
@@ -388,9 +387,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
             {
                 // Shoot fists.
-                float fireRate = BossRushEvent.BossRushActive ? 2.8f : MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio);
+                float fireRate = MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio);
                 if (broIsAlive == false)
-                    fireRate = BossRushEvent.BossRushActive ? 3.5f + (29 - BigAttackLimit) * 0.45f : MathHelper.Lerp(3f, (4f + (29 - BigAttackLimit) * 0.45f), 1f - totalLifeRatio) * 1.2f;
+                    fireRate = MathHelper.Lerp(3f, (4f + (29 - BigAttackLimit) * 0.45f), 1f - totalLifeRatio) * 1.2f;
                 if (Phase2 && BigAttackLimit == 0)
                     fireRate = 1;
 

@@ -28,8 +28,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Phases
             float phase2LifeRatio = death ? 0.75f : 0.6f;
@@ -48,10 +47,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
             float servantAndProjectileVelocity = death ? 10f : 6f;
 
-            float enrageScale = bossRush ? 2.25f : death ? 0.5f : 0f;
+            float enrageScale = death ? 0.5f : 0f;
             if (Main.IsItDay())
             {
-                npc.Calamity().CurrentlyEnraged = !bossRush;
+                npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
                 enrageScale += 2f;
             }
 

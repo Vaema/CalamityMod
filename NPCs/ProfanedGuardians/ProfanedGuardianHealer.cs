@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             });
         }
 
-        public float GetStarShootSlowDownGateValue() => BossRushEvent.BossRushActive ? 180f : CalamityWorld.death ? 210f : CalamityWorld.revenge ? 225f : Main.expertMode ? 240f : 270f;
+        public float GetStarShootSlowDownGateValue() => CalamityWorld.death ? 210f : CalamityWorld.revenge ? 225f : Main.expertMode ? 240f : 270f;
 
         public float GetStarShootGateValue() => GetStarShootSlowDownGateValue() + 60f;
 
@@ -165,10 +165,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Get the Guardian Commander's target
             Player player = Main.player[Main.npc[CalamityGlobalNPC.doughnutBoss].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -216,7 +215,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             bool useCrystalShards = AIState == (float)Phase.CrystalShards;
-            float velocity = useCrystalShards ? (bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
+            float velocity = useCrystalShards ? (death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
             if (CalamityWorld.LegendaryMode)
                 velocity *= 1.25f;
 
@@ -267,7 +266,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             {
                 // Increment timer
                 AITimer += 1f;
-                float crystalShootGateValue = bossRush ? 140f : death ? 180f : revenge ? 200f : expertMode ? 220f : 260f;
+                float crystalShootGateValue = death ? 180f : revenge ? 200f : expertMode ? 220f : 260f;
                 float crystalShootPhaseDuration = crystalShootGateValue + crystalShootGateValue * 0.25f;
 
                 // Generate dust that scales with how close the crystals are to firing
@@ -303,7 +302,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<ProvidenceCrystalShard>();
-                        int totalProjectiles = bossRush ? 18 : death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
+                        int totalProjectiles = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
                         float speedX = -12f;
                         float speedAdjustment = Math.Abs(speedX * 2f / (totalProjectiles - 1));
                         float speedY = -4f;
@@ -342,7 +341,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 {
                     SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, shootFrom);
 
-                    int totalFlameProjectiles = bossRush ? 20 : 16;
+                    int totalFlameProjectiles = 16;
                     int totalRings = revenge ? 3 : 2;
                     int healingStarChance = revenge ? 8 : expertMode ? 6 : 4;
                     double radians = MathHelper.TwoPi / totalFlameProjectiles;
@@ -401,7 +400,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Move towards a location above the player
             if (distanceFromDestination.Length() > idealDistanceFromDestination)
             {
-                float inertia = bossRush ? 28f : death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
+                float inertia = death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
                 if (lifeRatio < 0.5f)
                     inertia *= 0.8f;
                 if (CalamityWorld.LegendaryMode)

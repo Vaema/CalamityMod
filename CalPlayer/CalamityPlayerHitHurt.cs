@@ -635,11 +635,6 @@ namespace CalamityMod.CalPlayer
                     modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
 
-            // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
-            // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
-            if (proj.type == ProjectileID.InfernoFriendlyBlast)
-                modifiers.SourceDamage *= 1.2f;
-
             if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
                 target.Calamity().scionsCurioEffected = true;
 

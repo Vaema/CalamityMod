@@ -1100,6 +1100,10 @@ namespace CalamityMod.Items
             if (item.type == ItemID.TitaniumMask)
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("9%", "14%"));
 
+            // Shroomite
+            if (item.type == ItemID.ShroomiteBreastplate)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("13%", "8%"));
+
             // Solar Flare
             if (item.type == ItemID.SolarFlareHelmet)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("26%", "20%"));

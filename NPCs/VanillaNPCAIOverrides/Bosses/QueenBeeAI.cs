@@ -30,10 +30,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
             int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
 
@@ -43,22 +42,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             float maxEnrageScale = 2f;
             float enrageScale = death ? 0.5f : 0f;
-            if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
+            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (!Main.player[npc.target].ZoneJungle || bossRush)
+            if (!Main.player[npc.target].ZoneJungle && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
+                calamityGlobalNPC.CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
 
             if (CalamityWorld.LegendaryMode)
                 enrageScale += 1f;
-
-            if (bossRush)
-                enrageScale = 2f;
 
             if (enrageScale > maxEnrageScale)
                 enrageScale = maxEnrageScale;

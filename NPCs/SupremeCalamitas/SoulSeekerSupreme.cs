@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.spriteDirection = (Target.Center.X < NPC.Center.X).ToDirectionInt();
 
             timer++;
-            int shootRate = BossRushEvent.BossRushActive ? 120 : 180;
+            int shootRate = 180;
             if (timer > shootRate)
             {
                 foreach (NPC seeker in Main.ActiveNPCs)

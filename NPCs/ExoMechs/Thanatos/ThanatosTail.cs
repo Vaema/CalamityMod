@@ -137,10 +137,9 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 NPC.life = Main.npc[(int)NPC.ai[1]].life;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Check if other segments are still alive, if not, die
             bool shouldDespawn = !NPC.AnyNPCs(ModContent.NPCType<ThanatosHead>());
@@ -250,7 +249,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                 if (NPC.Calamity().newAI[0] == 0f)
                     NPC.ai[3] += 1f;
 
-                double numSegmentsAbleToFire = bossRush ? 42D : death ? 36D : revenge ? 34D : expertMode ? 30D : 24D;
+                double numSegmentsAbleToFire = death ? 36D : revenge ? 34D : expertMode ? 30D : 24D;
                 if (shouldGetBuffedByBerserkPhase)
                     numSegmentsAbleToFire *= 1.25;
 
@@ -359,7 +358,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                     }
                                 }
 
-                                float predictionAmt = bossRush ? 24f : death ? 20f : revenge ? 18f : expertMode ? 16f : 12f;
+                                float predictionAmt = death ? 20f : revenge ? 18f : expertMode ? 16f : 12f;
                                 if (NPC.ai[0] % 3f == 0f)
                                     predictionAmt *= 0.5f;
 
@@ -518,7 +517,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
 
             // Velocity and turn speed values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.15f : 0f) + (bossRush ? 1.25f : death ? 1.2f : revenge ? 1.175f : expertMode ? 1.15f : 1.1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.15f : 0f) + (death ? 1.2f : revenge ? 1.175f : expertMode ? 1.15f : 1.1f);
             float baseVelocity = 10f * baseVelocityMult;
 
             // Increase top velocity if target is dead or if Thanatos is uncoiling

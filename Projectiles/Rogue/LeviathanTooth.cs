@@ -151,14 +151,16 @@ namespace CalamityMod.Projectiles.Rogue
                     {
                         if (time % 3 == 0)
                         {
-                            Projectile tooth = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, jawVel, ModContent.ProjectileType<LeviathanTooth>(), Projectile.damage, Projectile.knockBack / 12, Projectile.owner, 0, 0, Projectile.velocity.X > 0 ? 1 : -1);
-                            tooth.Calamity().stealthStrike = true;
-                            tooth.timeLeft = 120;
-                            tooth.extraUpdates = 0;
-                            tooth.usesIDStaticNPCImmunity = true;
-                            tooth.usesLocalNPCImmunity = false;
-                            tooth.idStaticNPCHitCooldown = 5;
-                            tooth.ai[1] = Main.rand.Next(1, 3 + 1);
+                            if (Main.myPlayer == Projectile.owner)
+                            {
+                                Projectile tooth = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, jawVel, ModContent.ProjectileType<LeviathanTooth>(), Projectile.damage, Projectile.knockBack / 12, Projectile.owner, 0, Main.rand.Next(1, 3 + 1), Projectile.velocity.X > 0 ? 1 : -1);
+                                tooth.Calamity().stealthStrike = true;
+                                tooth.timeLeft = 120;
+                                tooth.extraUpdates = 0;
+                                tooth.usesLocalNPCImmunity = false;
+                                tooth.usesIDStaticNPCImmunity = true;
+                                tooth.idStaticNPCHitCooldown = 8;
+                            }
                             jawline = !jawline;
                         }
                         if (time % 2 == 0)
@@ -229,9 +231,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.Calamity().stealthStrike)
-                modifiers.SourceDamage *= Projectile.ai[1] == 4 ? 0.6f : 0.5f;
-            else
+            if (!Projectile.Calamity().stealthStrike)
                 modifiers.SourceDamage *= target == chosenTarget ? 1 : (canStick ? 0.2f : 0.5f);
         }
         public override bool? CanDamage() => canDamage ? null : false;
