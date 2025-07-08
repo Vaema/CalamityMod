@@ -798,31 +798,6 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            // Bonebreaker debuff stacking
-            if (npc.javelined)
-            {
-                if (npc.lifeRegen > 0)
-                    npc.lifeRegen = 0;
-
-                int projectileCount = 0;
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == ProjectileType<BonebreakerProjectile>() &&
-                        p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
-                    {
-                        projectileCount++;
-                    }
-                }
-
-                if (projectileCount > 0)
-                {
-                    npc.lifeRegen -= projectileCount * 20;
-
-                    if (damage < projectileCount * 4)
-                        damage = projectileCount * 4;
-                }
-            }
-
             // Shellfish Staff (and Mollusk armor) debuff stacking
             if (shellfishVore > 0)
             {
