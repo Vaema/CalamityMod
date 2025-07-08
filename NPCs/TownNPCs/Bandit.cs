@@ -105,7 +105,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => new List<string>()
         {
-            // Patron names
+            // Dedicated names
             "Xplizzy", // <@!98826096237109248> (whitegiraffe)
             "Freakish", // <@!750363283520749598> (freak5650)
             "Calder", // <@!601897959176798228> (hardlightcaster)
@@ -114,6 +114,9 @@ namespace CalamityMod.NPCs.TownNPCs
             "Jackson", // <@!525827730646892549> (chowchow360)
             "Altarca", // <@!1140673052108128337> (altarca_27226_49175)
             "Jackie", // <@!353241811717718016> (jackalchan)
+            "Ishmael", // <@!840416568000381046> (vanillaoyster)
+            "Ariallis", // <@!518231218806980609> (ariallis)
+            "Shade", // <@!613133259563466755> (shade__storm)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),
@@ -160,11 +163,6 @@ namespace CalamityMod.NPCs.TownNPCs
             int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalization("Chat.BrimstoneWitch").Format(Main.npc[witch].GivenName));
-
-            //please help me I'm stuck in a children's video game - Fabsol
-            int cirrusIndex = NPC.FindFirstNPC(ModContent.NPCType<Cirrus>());
-            if (cirrusIndex != -1)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrusIndex].GivenName));
 
             int merchantIndex = NPC.FindFirstNPC(NPCID.Merchant);
             if (merchantIndex != -1)

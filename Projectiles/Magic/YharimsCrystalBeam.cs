@@ -312,7 +312,6 @@ namespace CalamityMod.Projectiles.Magic
             {
                 switch (name)
                 {
-                    case "Fabsol":
                     case "Ziggums":
                         return 2f;
                     case "Poly":

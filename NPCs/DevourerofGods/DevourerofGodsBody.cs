@@ -89,11 +89,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.dontCountMe = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -159,10 +156,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase2 = lifeRatio < 0.6f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (phase2)
             {
@@ -272,10 +268,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 segmentVelocity *= 1.1f;
 
             // Calculate contact damage based on velocity

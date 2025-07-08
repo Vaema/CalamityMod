@@ -75,6 +75,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.spriteBatch.EnterShaderRegion();
 
             GameShaders.Misc["CalamityMod:Bordernado"].UseSaturation(-0.2f);
+            GameShaders.Misc["CalamityMod:Bordernado"].UseOpacity(1f);
             GameShaders.Misc["CalamityMod:Bordernado"].SetShaderTexture(ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin"));
             Vector2[] drawPoints = new Vector2[5];
             Vector2 upwardAscent = Vector2.UnitY * TornadoHeight;

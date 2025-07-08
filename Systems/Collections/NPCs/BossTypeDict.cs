@@ -78,7 +78,7 @@ namespace CalamityMod.Systems.Collections
                 { NPCType<AstrumDeusHead>(), 28 },
                 { NPCID.MoonLordCore, 29 },
                 { NPCType<ProfanedGuardianCommander>(), 30 },
-                { NPCType<Bumblefuck>(), 31 },
+                { NPCType<Dragonfolly>(), 31 },
                 { NPCType<Providence>(), 32 },
                 { NPCType<CeaselessVoid>(), 33 },
                 { NPCType<StormWeaverHead>(), 34 },

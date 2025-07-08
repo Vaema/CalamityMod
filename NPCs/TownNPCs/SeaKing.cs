@@ -103,20 +103,15 @@ namespace CalamityMod.NPCs.TownNPCs
                 dialogue.Add(this.GetLocalizedValue("Chat.Night3"));
             }
 
-            int lilBitch = NPC.FindFirstNPC(NPCID.Angler);
-            if (lilBitch != -1)
+            int angler = NPC.FindFirstNPC(NPCID.Angler);
+            if (angler != -1)
             {
-                dialogue.Add(this.GetLocalization("Chat.Angler1").Format(Main.npc[lilBitch].GivenName));
-                dialogue.Add(this.GetLocalization("Chat.Angler2").Format(Main.npc[lilBitch].GivenName));
+                dialogue.Add(this.GetLocalization("Chat.Angler").Format(Main.npc[angler].GivenName));
             }
 
             int witch = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
             if (witch != -1)
                 dialogue.Add(this.GetLocalizedValue("Chat.BrimstoneWitch"));
-
-            int cirrus = NPC.FindFirstNPC(ModContent.NPCType<Cirrus>());
-            if (cirrus != -1)
-                dialogue.Add(this.GetLocalization("Chat.DrunkPrincess").Format(Main.npc[cirrus].GivenName));
 
             int partyGirl = NPC.FindFirstNPC(NPCID.PartyGirl);
             if (partyGirl != -1)
@@ -211,8 +206,6 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add(ModContent.ItemType<PolypLauncher>())
                 .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
                 .AddWithCustomValue(ModContent.ItemType<BloodwormItem>(), Item.buyPrice(gold: 40), downedOldDuke)
-                .AddWithCustomValue(ItemID.ShrimpPoBoy, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.InBeach)
-                .AddWithCustomValue(ItemID.Fries, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons, Condition.InBeach, Condition.DownedEyeOfCthulhu)
                 .Register();
         }
 

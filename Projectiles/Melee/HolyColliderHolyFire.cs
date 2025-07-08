@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool setStats = true;
         public static int statMax = 8;
         public int setStatTimer = statMax;
-        public int time = 0;
+        public ref float time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
@@ -44,10 +44,13 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
-            if (Projectile.ai[2] == 5 && time > 10 && Projectile.ai[0] != 10)
+            int hitTime = 13; // Time to pass before it can be launched
+
+            if (Projectile.ai[2] == 5 && time >= hitTime && Projectile.ai[0] != 10)
                 isLaunched = true;
             else
                 Projectile.ai[2] = 0;
+            
 
             Projectile.scale = Utils.GetLerpValue(0, 40, Projectile.timeLeft, true);
 

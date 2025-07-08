@@ -4167,7 +4167,7 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient && !targetDead)
             {
-                if (Main.getGoodWorld && npc.type == NPCID.EaterofSouls)
+                if (CalamityWorld.LegendaryMode && npc.type == NPCID.EaterofSouls)
                 {
                     if (NPC.AnyNPCs(NPCID.EaterofWorldsHead))
                     {
@@ -5433,7 +5433,7 @@ PrepareToShoot:
             }
             else
             {
-                if (Main.getGoodWorld && npc.type == NPCID.FireImp)
+                if (CalamityWorld.LegendaryMode && npc.type == NPCID.FireImp)
                 {
                     if (NPC.AnyNPCs(NPCID.WallofFlesh))
                     {
@@ -6790,9 +6790,9 @@ PrepareToShoot:
 
                 int projType = ProjectileID.SandBallFalling;
 
-                // 2 to 3 in Rev, 3 to 5 in Death, if FTW is also enabled, 8 to 13 (random chance for 10x the amount)
-                int projAmt = CalamityWorld.revenge ? Main.rand.Next(CalamityWorld.death ? 3 : 2, CalamityWorld.death ? 6 : 4) : 1;
-                if (Main.getGoodWorld)
+                // If Legendary is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
+                int projAmt = 1;
+                if (CalamityWorld.LegendaryMode)
                 {
                     projAmt = Main.rand.Next(8, 14);
                     if (Main.rand.NextBool(1000) || Main.zenithWorld)
@@ -9685,13 +9685,8 @@ PrepareToShoot:
             if (npc.ai[0] != -1f)
             {
                 npc.TargetClosest(true);
-                float acceleration = Main.masterMode ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
-                float velocity = Main.masterMode ? 6f : Main.expertMode ? 5f : 3f;
-                if (CalamityWorld.death)
-                {
-                    acceleration *= 1.25f;
-                    velocity *= 1.25f;
-                }
+                float acceleration = CalamityWorld.death ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
+                float velocity = CalamityWorld.death ? 6.25f : Main.expertMode ? 5f : 3f;
 
                 // Simple movement AI. You shouldn't need any help from comments to parse this.
                 if (npc.Center.X < Main.player[npc.target].position.X)

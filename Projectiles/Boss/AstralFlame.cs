@@ -33,17 +33,16 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 Projectile.extraUpdates = 1;
         }
 
         public override void AI()
         {
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 4)
@@ -104,8 +103,8 @@ namespace CalamityMod.Projectiles.Boss
                 // Move away from other flames
                 if (Projectile.ai[0] >= 60f)
                 {
-                    float pushForce = bossRush ? 0.07f : death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
-                    float pushDistance = bossRush ? 180f : death ? 150f : revenge ? 135f : expertMode ? 120f : 90f;
+                    float pushForce = death ? 0.06f : revenge ? 0.055f : expertMode ? 0.05f : 0.04f;
+                    float pushDistance = death ? 150f : revenge ? 135f : expertMode ? 120f : 90f;
                     for (int k = 0; k < Main.maxProjectiles; k++)
                     {
                         Projectile otherProj = Main.projectile[k];

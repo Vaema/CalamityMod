@@ -34,14 +34,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 46;
+            Item.damage = 39;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 70;
-            Item.height = 18;
             Item.scale = 0.85f;
-            Item.useTime = 30;
+            Item.useTime = Item.useAnimation = 33;
             Item.reuseDelay = 10;
-            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -58,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UpdateInventory(Player player)
         {
-            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun full of hate, returns Animosity otherwise
+            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun Full of Hate, returns Animosity otherwise
             if (Main.zenithWorld)
                 Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
         }
@@ -70,15 +67,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             //Distortion wind do whisper one truth...
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+        public override bool AltFunctionUse(Player player) => true;
 
         public override float UseSpeedMultiplier(Player player)
         {

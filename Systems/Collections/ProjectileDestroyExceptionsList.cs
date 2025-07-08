@@ -45,6 +45,7 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<TrueGrovetendersTouch>(),
                 ProjectileType<HeavensMight>(),
                 ProjectileType<HellbornHoldout>(),
+                ProjectileType<CountermeasureMittHoldout>(),
                 ProjectileType<TrueBiomeBladeHoldout>(),
                 ProjectileType<LamentationsOfTheChained>(),
                 ProjectileType<ChainedMeatHook>(),

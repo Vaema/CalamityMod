@@ -35,10 +35,10 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Recipe Group Definitions
-        public static int HardmodeAnvil, HardmodeForge, AnyLargeGem, AnyFood;
+        public static int HardmodeAnvil, HardmodeForge, AnyFood;
         public static int AnyCopperOre, AnySilverOre, AnyGoldOre, AnyEvilOre, AnyCobaltOre, AnyMythrilOre, AnyAdamantiteOre;
         public static int AnyCopperBar, AnySilverBar, AnyGoldBar, AnyEvilBar, AnyCobaltBar, AnyMythrilBar, AnyAdamantiteBar;
-        public static int AnyEvilPowder, Boss2Material, CursedFlameIchor, AnyEvilWater, AnyEvilFlask;
+        public static int Boss2Material, CursedFlameIchor, AnyEvilWater;
         public static int AnyStoneBlock, AnySnowBlock, AnyIceBlock, AnySiltBlock, AnyEvilBlock, AnyGoodBlock;
         public static int AnyWoodenSword, AnyHallowedHelmet, AnyHallowedPlatemail, AnyHallowedGreaves, AnyGoldCrown, LunarPickaxe, LunarHamaxe;
         public static int AnyManaFlower, AnyQuiver, AnyTombstone, AnyWings;
@@ -86,19 +86,6 @@ namespace CalamityMod.Systems
                 ItemID.TitaniumForge
             });
             HardmodeForge = RecipeGroup.RegisterGroup("HardmodeForge", group);
-
-            // Large Gems (PvP tokens)
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyLargeGem"), new int[]
-            {
-                ItemID.LargeAmber,
-                ItemID.LargeAmethyst,
-                ItemID.LargeDiamond,
-                ItemID.LargeEmerald,
-                ItemID.LargeRuby,
-                ItemID.LargeSapphire,
-                ItemID.LargeTopaz
-            });
-            AnyLargeGem = RecipeGroup.RegisterGroup("AnyLargeGem", group);
 
             // Food
             AnyFood = RecipeGroup.RegisterGroup("AnyFood", GetFoodItems());
@@ -214,16 +201,8 @@ namespace CalamityMod.Systems
 
         private static void AddEvilBiomeItemRecipeGroups()
         {
-            // Vile and Vicious Powder
-            RecipeGroup group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyEvilPowder"), new int[]
-            {
-                ItemID.VilePowder,
-                ItemID.ViciousPowder
-            });
-            AnyEvilPowder = RecipeGroup.RegisterGroup("AnyEvilPowder", group);
-
             // Shadow Scale and Tissue Sample
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.Boss2Material"), new int[]
+            RecipeGroup group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.Boss2Material"), new int[]
             {
                 ItemID.ShadowScale,
                 ItemID.TissueSample
@@ -245,14 +224,6 @@ namespace CalamityMod.Systems
                 ItemID.BloodWater
             });
             AnyEvilWater = RecipeGroup.RegisterGroup("AnyEvilWater", group);
-
-            // Flask of Cursed Flames and Flask of Ichor
-            group = new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyEvilFlask"), new int[]
-            {
-                ItemID.FlaskofCursedFlames,
-                ItemID.FlaskofIchor
-            });
-            AnyEvilFlask = RecipeGroup.RegisterGroup("AnyEvilFlask", group);
         }
 
         private static void AddBiomeBlockRecipeGroups()
@@ -455,7 +426,7 @@ namespace CalamityMod.Systems
                 ItemType<TracersCelestial>(),
                 ItemType<SoulofCryogen>(),
                 ItemType<ElysianWings>(),
-                ItemType<DrewsWings>(),
+                ItemType<WingsofRebirth>(),
                 ItemType<MOAB>(),
                 ItemID.Jetpack
             };
@@ -1339,13 +1310,6 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<PearlpodGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
             r.AddIngredient<SeaMinnowGoldItem>();
             r.AddTile(TileID.CookingPots);
             r.Register();
@@ -1383,48 +1347,11 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
             #endregion
 
-            #region New Recipes
             r = Recipe.Create(ItemID.Bacon);
             r.AddIngredient<PiggyItem>();
             r.AddTile(TileID.Hellforge);
             r.Register();
             r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.ApplePie);
-            r.AddIngredient(ItemID.Apple, 3);
-            r.AddTile(TileID.Hellforge);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.BananaSplit);
-            r.AddIngredient(ItemID.Banana);
-            r.AddIngredient(ItemID.IceBlock);
-            r.AddIngredient(ItemID.MilkCarton);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.BBQRibs);
-            r.AddIngredient(ItemID.FleshBlock, 6);
-            r.AddIngredient(ItemID.Bone, 6);
-            r.AddTile(TileID.Hellforge);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.MilkCarton);
-            r.AddIngredient(ItemID.BottledWater);
-            r.AddIngredient(ItemID.Bone, 2);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.Nachos);
-            r.AddIngredient(ItemID.PotatoChips);
-            r.AddIngredient(ItemID.MilkCarton);
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.DisableDecraft();
-            #endregion
         }
         #endregion
 

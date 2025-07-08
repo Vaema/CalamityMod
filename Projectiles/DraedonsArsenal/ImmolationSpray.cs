@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+            SoundEngine.PlaySound(HolofibreImmolator.PlasmaSound with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
             if (Projectile.numHits > 0)
                 Projectile.damage = (int)(Projectile.damage * 0.8f);

@@ -212,7 +212,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Target variable
             Player player = Main.player[NPC.target];
 
-            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4 || BossRushEvent.BossRushActive;
+            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4;
             bool targetOnMount = player.mount.Active;
 
             // Check whether enraged for the sake of the HP bar UI
@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             float ancientDoomGateValue = death ? 95f : revenge ? 100f : expertMode ? 105f : 120f;
             float lightningChargePhaseGateValue = death ? 120f : revenge ? 135f : expertMode ? 150f : 180f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 lightningRainDuration *= 0.5f;
                 eidolonWyrmPhaseDuration *= 0.25f;
@@ -340,12 +340,10 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             bool immuneToSlowingDebuffs = AIState == (float)Phase.FinalPhase || AIState == (float)Phase.ShadowFireballSpin;
             NPC.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[ModContent.BuffType<KamiFlu>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             NPC.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            NPC.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // Adjust opacity
@@ -449,7 +447,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Velocity and turn speed values
             float velocityScale = death ? 1.8f : revenge ? 1.5f : expertMode ? 1.2f : 0f;
             float baseVelocity = (targetDownDeep ? 10f : 15f) + (targetDownDeep ? velocityScale : velocityScale * 1.5f);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.15f;
 
             float turnSpeed = baseVelocity * 0.015f;
@@ -1477,7 +1475,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }

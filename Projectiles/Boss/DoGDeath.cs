@@ -83,7 +83,7 @@ namespace CalamityMod.Projectiles.Boss
                 // If an old velocity is in reserve, set the true velocity to it and make it as "taken" by setting it to <0,0>
                 if (OldVelocity != Vector2.Zero)
                 {
-                    Projectile.velocity = OldVelocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.velocity = OldVelocity;
                     OldVelocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }

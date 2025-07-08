@@ -24,10 +24,10 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 120;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
 
-            if ((CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (CalamityWorld.LegendaryMode)
                 NPC.reflectsProjectiles = true;
 
             NPC.aiStyle = -1;
@@ -40,10 +40,6 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -65,11 +61,9 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool masterMode = Main.masterMode;
+            bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
-            float speed = masterMode ? 15f : revenge ? 13f : 11f;
-            if (BossRushEvent.BossRushActive)
-                speed = 18f;
+            float speed = death ? 15f : revenge ? 13f : 11f;
 
             if (NPC.ai[1] < 90f)
                 NPC.ai[1] += 1f;

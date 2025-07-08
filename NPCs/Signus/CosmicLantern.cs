@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,10 +46,6 @@ namespace CalamityMod.NPCs.Signus
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -117,8 +113,6 @@ namespace CalamityMod.NPCs.Signus
 
             bool revenge = CalamityWorld.revenge;
             float playerDistNormMult = revenge ? 24f : 22f;
-            if (BossRushEvent.BossRushActive)
-                playerDistNormMult = 30f;
             CalamityRegularEnemyAI.DungeonSpiritAI(NPC, Mod, playerDistNormMult, 0f, true);
         }
 

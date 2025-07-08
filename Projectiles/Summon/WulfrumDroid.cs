@@ -99,6 +99,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 12;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -164,15 +165,37 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Owner.Calamity().mouseRight && Owner.HeldItem.type == ModContent.ItemType<WulfrumController>())
             {
-                if (BuffModeBuffer > 0)
+                if (Owner.itemTime == Owner.itemTimeMax)
+                {
+                    if (BuffModeBuffer == 15)
+                        BuffModeBuffer--;
+                    if (BuffModeBuffer == -15)
+                        BuffModeBuffer++;
+                }
+                if (BuffModeBuffer < 15 && BuffModeBuffer >= 0)
                 {
                     BuffModeBuffer--;
-                    Projectile.netUpdate = true;
+                        if (BuffModeBuffer == 0)
+                            BuffModeBuffer = -15;
                 }
+                if (BuffModeBuffer > -15 && BuffModeBuffer <= 0)
+                {
+                    BuffModeBuffer++;
+                    if (BuffModeBuffer == 0)
+                        BuffModeBuffer = 15;
+                }
+                Projectile.netUpdate = true;
             }
 
-            else if (BuffModeBuffer < 15)
-                BuffModeBuffer = 15;
+            else if (BuffModeBuffer > 0 && BuffModeBuffer < 15)
+            {
+                BuffModeBuffer++;
+            }
+            else if (BuffModeBuffer < 0 && BuffModeBuffer > -15)
+            {
+                BuffModeBuffer--;
+            }
+
 
             bool buffMode = BuffModeBuffer <= 0;
 
@@ -507,8 +530,6 @@ namespace CalamityMod.Projectiles.Summon
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
         }
-
-        public override bool? CanDamage() => false;
 
         public override void SendExtraAI(BinaryWriter writer)
         {

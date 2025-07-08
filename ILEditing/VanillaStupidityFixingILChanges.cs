@@ -9,6 +9,7 @@ using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Walls;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -17,7 +18,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
-using Terraria.GameContent.Personalities;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Graphics.Effects;
@@ -153,7 +154,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Prevention of Slime Rain Spawns When Near Bosses
-        private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
+        private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
             if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
@@ -174,9 +175,44 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
             cursor.Emit(OpCodes.Pop);
             cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+        }
+        #endregion
+
+        #region Disable Detonating Bubble StrikeNPC Hardcoded Override
+        private static void LetDetonatingBubblesTakeDamage(ILContext il)
+        {
+            // In vanilla's StrikeNPC function, Detonating Bubbles have a hardcoded type check which sets the damage of the strike to 0.
+            // This IL edit disables that type check in Death Mode.
+            var cursor = new ILCursor(il);
+
+            // Go to the point after the check for the Detonating Bubble NPC ID.
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR8(0.0)))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move after the NPC type check.");
+                return;
+            }
+
+            // Define the label.
+            var label = il.DefineLabel();
+
+            // Add a branch if it is Death Mode.
+            cursor.Emit(OpCodes.Ldsfld, typeof(CalamityWorld).GetField("death"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to the point after Detonating Bubble changes are implemented to place the branch label.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStfld<NPC>("dontTakeDamage")))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
         #endregion
 
@@ -271,13 +307,15 @@ namespace CalamityMod.ILEditing
                 LogFailure("Prevent Fossil Shattering", "Could not locate the Desert Fossil Tile ID variable.");
                 return;
             }
+
+            // Remove this value and replace it with a large number that will never be a valid tile ID.
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, TileID.PixelBox); // Change to Pixel Box because it cannot be obtained in-game without cheating.
+            cursor.Emit(OpCodes.Ldc_I4, 40000);
         }
         #endregion
 
         #region Remove Hellforge Pickaxe Requirement
-        private static int RemoveHellforgePickaxeRequirement(Terraria.On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
+        private static int RemoveHellforgePickaxeRequirement(On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
         {
             if (tileTarget.TileType == TileID.Hellforge)
                 pickPower = 65;
@@ -294,10 +332,6 @@ namespace CalamityMod.ILEditing
                 self.velocity -= Main.player[self.owner].velocity;
         }
         #endregion
-
-        #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
-        // TODO -- Finish this
-        #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
 
         #region Prevent UFO Mount from Dismounting in Water
         private static void PreventUFODismountInWater(ILContext il)
@@ -331,7 +365,7 @@ namespace CalamityMod.ILEditing
         #endregion Prevent UFO Mount from Dismounting in Water
 
         #region Color Blighted Gel
-        private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
+        private static void ColorBlightedGel(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
             orig(npc, itemIndex);
 
@@ -357,7 +391,7 @@ namespace CalamityMod.ILEditing
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
-        private static void ImproveAnglerRewards(Terraria.On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
+        private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
             orig(self, angler, questItemType);
 
@@ -1046,7 +1080,7 @@ namespace CalamityMod.ILEditing
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("magmaStone"))) // Flag for if Magma Stone is equipped. Fire Gauntlet also uses this.
             {
-                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the magma stone variable.");
+                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the Magma Stone variable.");
                 return;
             }
             // Load the player itself onto the stack so that it becomes an argument for the following delegate.
@@ -1091,7 +1125,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
-            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            // The only requirements for summoning Golem with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
@@ -1144,7 +1178,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            // Branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
             cursor.Prev.OpCode = OpCodes.Nop;
 
             // After that we pop NPC.damage and 0 from stack
@@ -1153,14 +1187,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Multiple NPC Happiness support for Cirrus
-        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        #region Multiple NPC Happiness support 
+        // Currently unused as the one NPC who used it was removed. However it is very likely it'll be used again in the future, so this code is being kept.
+        /*private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
         {
             FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
             NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
 
-            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
-            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            int npcTypee = 0;
+
+            // Allow the given NPC to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == npcTypee)
             {
                 MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -1182,10 +1219,10 @@ namespace CalamityMod.ILEditing
             {
                 orig(self, npcType, affectionLevel);
             }
-        }
+        }*/
         #endregion
 
-        #region Allow disabling gravity swap visual && allow gravity keybind
+        #region Allow Disabling Gravity Swap Visual and Allow Gravity Keybind
         private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
         {
             var cplay = Player.Calamity();

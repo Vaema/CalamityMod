@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
             Projectile.timeLeft = timeLeft;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 Projectile.extraUpdates = 1;
         }
 
@@ -72,10 +72,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - MathHelper.PiOver2;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Spawn effects
             if (Projectile.localAI[0] == 0f)
@@ -101,7 +100,7 @@ namespace CalamityMod.Projectiles.Boss
                 // Gauss sparks
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    int totalProjectiles = bossRush ? 18 : 12;
+                    int totalProjectiles = 12;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<AresGaussNukeProjectileSpark>();
                     float velocity = Projectile.velocity.Length();
@@ -125,7 +124,7 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 distanceFromTarget = Main.player[target].Center - Projectile.Center;
 
             // Set AI to stop homing, start accelerating
-            float stopHomingDistance = bossRush ? 260f : death ? 280f : revenge ? 290f : expertMode ? 300f : 320f;
+            float stopHomingDistance = death ? 280f : revenge ? 290f : expertMode ? 300f : 320f;
             if ((distanceFromTarget.Length() < stopHomingDistance && Projectile.ai[0] != -1f) || Projectile.ai[0] == 1f)
             {
                 Projectile.ai[0] = 1f;
@@ -138,7 +137,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Home in on target
             float scaleFactor = Projectile.velocity.Length();
-            float inertia = bossRush ? 6f : death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
+            float inertia = death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
             distanceFromTarget.Normalize();
             distanceFromTarget *= scaleFactor;
             Projectile.velocity = (Projectile.velocity * inertia + distanceFromTarget) / (inertia + 1f);

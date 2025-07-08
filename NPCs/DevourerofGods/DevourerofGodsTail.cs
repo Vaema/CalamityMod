@@ -85,11 +85,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.takenDamageMultiplier = 1.25f;
             NPC.dontCountMe = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -160,9 +157,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase2 = lifeRatio < 0.6f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (phase2)
             {
@@ -277,7 +273,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             segmentDirection.Y = (int)(segmentDirection.Y / 16f) * 16;
             playerXDist -= segmentDirection.X;
             playerYDist -= segmentDirection.Y;
-            float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
             if (NPC.ai[1] > 0f && NPC.ai[1] < Main.npc.Length)
             {
                 try
@@ -290,7 +285,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                 }
                 NPC.rotation = (float)System.Math.Atan2(playerYDist, playerXDist) + MathHelper.PiOver2;
-                playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
                 int segmentWidth = NPC.width;
                 playerDistance = (playerDistance - segmentWidth) / playerDistance;
                 playerXDist *= playerDistance;
@@ -306,10 +301,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 segmentVelocity *= 1.1f;
 
             // Calculate contact damage based on velocity

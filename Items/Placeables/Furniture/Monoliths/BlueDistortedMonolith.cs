@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<BlueDistortedMonolithTile>());
             Item.value = Item.sellPrice(gold: 45);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.accessory = true;
             Item.vanity = true;
         }

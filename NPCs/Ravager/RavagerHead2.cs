@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.height = 80;
             NPC.defense = 40;
             NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 10000;
+            NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.netAlways = true;
@@ -39,7 +39,7 @@ namespace CalamityMod.NPCs.Ravager
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.defense *= 2;
-                NPC.lifeMax *= 4;
+                NPC.lifeMax *= 3;
             }
             if (BossRushEvent.BossRushActive)
             {
@@ -47,10 +47,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -65,9 +61,8 @@ namespace CalamityMod.NPCs.Ravager
 
             Player player = Main.player[Main.npc[CalamityGlobalNPC.scavenger].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool provy = DownedBossSystem.downedProvidence && !bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool provy = DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive;
 
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
@@ -107,7 +102,7 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.rotation = headRotation;
 
             NPC.ai[1] += 1f;
-            bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
+            bool fireProjectiles = NPC.ai[1] >= 480f;
             if (fireProjectiles && Vector2.Distance(NPC.Center, player.Center) > 80f)
             {
                 int type = ModContent.ProjectileType<HomingLaserDart>();

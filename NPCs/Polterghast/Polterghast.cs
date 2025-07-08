@@ -65,27 +65,27 @@ namespace CalamityMod.NPCs.Polterghast
 
         public static List<SoundStyle> creepySounds = new List<SoundStyle>
         {
-            NPCs.DevourerofGods.DevourerofGodsHead.AttackSound,
-            NPCs.Providence.Providence.HolyRaySound,
-            NPCs.ExoMechs.Ares.AresBody.EnragedSound,
-            NPCs.ExoMechs.Ares.AresBody.LaserStartSound,
-            NPCs.ExoMechs.Thanatos.ThanatosHead.VentSound,
-            NPCs.SupremeCalamitas.SupremeCalamitas.SepulcherSummonSound,
-            NPCs.SupremeCalamitas.SupremeCalamitas.SpawnSound,
-            NPCs.Ravager.RavagerBody.LimbLossSound,
-            NPCs.HiveMind.HiveMind.RoarSound,
-            NPCs.Yharon.Yharon.RoarSound,
-            NPCs.DesertScourge.DesertScourgeHead.RoarSound,
-            NPCs.OldDuke.OldDuke.RoarSound,
-            NPCs.Abyss.ReaperShark.SearchRoarSound,
-            NPCs.Abyss.ReaperShark.EnragedRoarSound,
-            NPCs.Abyss.LuminousCorvina.ScreamSound,
-            NPCs.Abyss.DevilFish.MaskBreakSound,
-            NPCs.PrimordialWyrm.PrimordialWyrmHead.ChargeSound,
-            NPCs.GreatSandShark.GreatSandShark.RoarSound,
-            NPCs.AcidRain.Mauler.RoarSound,
-            NPCs.AstrumDeus.AstrumDeusHead.DeathSound,
-            NPCs.AstrumAureus.AstrumAureus.HitSound,
+            DevourerofGods.DevourerofGodsHead.AttackSound,
+            Providence.Providence.HolyRaySound,
+            ExoMechs.Ares.AresBody.EnragedSound,
+            ExoMechs.Ares.AresBody.LaserStartSound,
+            ExoMechs.Thanatos.ThanatosHead.VentSound,
+            SupremeCalamitas.SupremeCalamitas.SepulcherSummonSound,
+            SupremeCalamitas.SupremeCalamitas.SpawnSound,
+            Ravager.RavagerBody.LimbLossSound,
+            HiveMind.HiveMind.RoarSound,
+            Yharon.Yharon.RoarSound,
+            DesertScourge.DesertScourgeHead.RoarSound,
+            OldDuke.OldDuke.RoarSound,
+            ReaperShark.SearchRoarSound,
+            ReaperShark.EnragedRoarSound,
+            LuminousCorvina.ScreamSound,
+            DevilFish.MaskBreakSound,
+            PrimordialWyrm.PrimordialWyrmHead.ChargeSound,
+            GreatSandShark.GreatSandShark.RoarSound,
+            AcidRain.Mauler.RoarSound,
+            AstrumDeus.AstrumDeusHead.DeathSound,
+            AstrumAureus.AstrumAureus.HitSound,
             SoundID.ScaryScream,
             SoundID.DD2_KoboldFlyerHurt
         };
@@ -124,9 +124,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -203,12 +200,11 @@ namespace CalamityMod.NPCs.Polterghast
 
             // Variables
             Vector2 vector = NPC.Center;
-            bool bossRush = BossRushEvent.BossRushActive;
             bool speedBoost = false;
             bool despawnBoost = false;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Phases
             bool phase2 = lifeRatio < (death ? 0.9f : revenge ? 0.8f : expertMode ? 0.65f : 0.5f);
@@ -222,7 +218,7 @@ namespace CalamityMod.NPCs.Polterghast
             // Velocity and acceleration
             calamityGlobalNPC.newAI[0] += 1f;
             float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = calamityGlobalNPC.newAI[0] >= chargePhaseGateValue;
@@ -331,7 +327,7 @@ namespace CalamityMod.NPCs.Polterghast
                 }
             }
 
-            bool despawn = !player.ZoneDungeon && !bossRush && player.position.Y < Main.worldSurface * 16.0;
+            bool despawn = !player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0;
             if (despawn)
             {
                 despawnTimer--;
@@ -416,15 +412,14 @@ namespace CalamityMod.NPCs.Polterghast
             float baseProjectileVelocity = speedBoost ? 9.375f : 7.5f;
 
             // Predictiveness
-            Vector2 predictionVector = chargePhase && bossRush ? player.velocity * 20f : Vector2.Zero;
-            Vector2 lookAt = player.Center + predictionVector;
+            Vector2 lookAt = player.Center;
             Vector2 rotationVector = lookAt - vector;
 
             // Rotation
             if (calamityGlobalNPC.newAI[3] == 0f)
             {
-                float playerXDestination = player.Center.X + predictionVector.X - vector.X;
-                float playerYDestination = player.Center.Y + predictionVector.Y - vector.Y;
+                float playerXDestination = player.Center.X - vector.X;
+                float playerYDestination = player.Center.Y - vector.Y;
                 NPC.rotation = (float)Math.Atan2(playerYDestination, playerXDestination) + MathHelper.PiOver2;
             }
             else
@@ -472,7 +467,7 @@ namespace CalamityMod.NPCs.Polterghast
 
                 float movementLimitedDistance = (float)Math.Sqrt(movementLimitedXDist * movementLimitedXDist + movementLimitedYDist * movementLimitedYDist);
                 float maxDistanceFromHooks = expertMode ? 650f : 500f;
-                if (speedBoost || bossRush)
+                if (speedBoost)
                     maxDistanceFromHooks += 250f;
                 if (death)
                     maxDistanceFromHooks += maxDistanceFromHooks * 0.1f * (1f - lifeRatio);
@@ -949,7 +944,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }
@@ -1120,7 +1115,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

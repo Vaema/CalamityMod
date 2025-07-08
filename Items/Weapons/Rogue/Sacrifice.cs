@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 

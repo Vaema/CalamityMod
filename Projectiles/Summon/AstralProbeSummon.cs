@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -149,8 +150,6 @@ namespace CalamityMod.Projectiles.Summon
                     TimerForShooting++;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

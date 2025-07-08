@@ -11,19 +11,14 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SandSharknadoStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        #region Other stats for easy modification
-
         public const float ProjSpeed = 30f;
-
         public const float FireSpeed = 50f; // In frames. 60 frames = 1 second.
-
-        #endregion
 
         public override void SetDefaults()
         {
             Item.width = 48;
             Item.height = 56;
-            Item.damage = 94;
+            Item.damage = 71;
             Item.knockBack = 2f;
             Item.mana = 10;
 

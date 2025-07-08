@@ -485,7 +485,7 @@ namespace CalamityMod.CalPlayer
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Withered").ToNetworkText(Player.name));
                 }
             }
-            if (profanedCrystalBuffs && !profanedCrystalHide)
+            if (profanedCrystalBuffs && Player.Transformation().Type == ModContent.ItemType<ProfanedSoulCrystal>())
             {
                 damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProfanedSoulCrystal").ToNetworkText(Player.name));
             }
@@ -534,7 +534,10 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
+
+            if (Player.Calamity().scionsCurio && item.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -618,7 +621,7 @@ namespace CalamityMod.CalPlayer
             // FinalDamage cannot be used for the intended effect because there is no way to access the actual damage of the hit
             CalamityGlobalNPC cgn = target.Calamity();
             if (yellowCandle && cgn.DR < 0.99f && target.takenDamageMultiplier > 0.05f)
-                modifiers.ModifyHitInfo += CirrusYellowCandleBuff.ModifyHitInfo_Spite;
+                modifiers.ModifyHitInfo += YellowCandleBuff.ModifyHitInfo_Spite;
 
             // Stealth strike damage multipliers are applied here.
             // TODO -- stealth should be its own damage class and this should be applied as player StealthDamage *= XYZ
@@ -632,10 +635,8 @@ namespace CalamityMod.CalPlayer
                     modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
 
-            // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
-            // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
-            if (proj.type == ProjectileID.InfernoFriendlyBlast)
-                modifiers.SourceDamage *= 1.2f;
+            if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
+                target.Calamity().scionsCurioEffected = true;
 
             // Frost Armor's rework gives +X% melee damage and +Y% ranged damage based on distance, where X+Y = 15.
             if (frostSet)
@@ -717,7 +718,7 @@ namespace CalamityMod.CalPlayer
             // Enemies deal less contact damage while sick, due to being weakened.
             if (npc.poisoned)
             {
-                float damageReductionFromPoison = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPoison = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -732,7 +733,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.venom)
             {
-                float damageReductionFromVenom = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromVenom = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -747,7 +748,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().astralInfection > 0)
             {
-                float damageReductionFromAstralInfection = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromAstralInfection = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -762,7 +763,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().pFlames > 0)
             {
-                float damageReductionFromPlague = npc.Calamity().irradiated > 0 ? 0.075f : 0.05f;
+                float damageReductionFromPlague = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.05f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -777,7 +778,7 @@ namespace CalamityMod.CalPlayer
 
             if (npc.Calamity().wDeath > 0)
             {
-                float damageReductionFromWhisperingDeath = npc.Calamity().irradiated > 0 ? 0.15f : 0.1f;
+                float damageReductionFromWhisperingDeath = (float)((npc.Calamity().irradiated > 0 ? npc.Calamity().irradiatedContactBoost : 1) * 0.1f);
                 if (npc.Calamity().VulnerableToSickness.HasValue)
                 {
                     if (npc.Calamity().VulnerableToSickness.Value)
@@ -879,7 +880,7 @@ namespace CalamityMod.CalPlayer
                     contactDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
 
                 // Contact damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                // In GFB, as defense damage is uncapped, DR damage is also uncapped.
+                // In FTW, as defense damage is uncapped, DR damage is also uncapped.
                 int currentDefense = Player.GetCurrentDefense(false);
                 if (totalDefenseDamage > 0 && currentDefense > 0)
                 {
@@ -1744,11 +1745,17 @@ namespace CalamityMod.CalPlayer
             // Handles energy shields and Boss Rush, in that order
             modifiers.ModifyHurtInfo += ModifyHurtInfo_Calamity;
 
-            // TODO -- At some point it'd be nice to have a "TransformationPlayer" that has all the transformation sfx and visuals so their priorities can be more easily managed.
             #region Custom Hurt Sounds
             if (hurtSoundTimer == 0)
             {
-                if (roverDrive && RoverDriveShieldDurability > 0)
+                if(Player.Transformation().Type != -1 && Player.Transformation().currentTransformation.HurtSound(Player) != null)
+                {
+                    var hurtSound = Player.Transformation().currentTransformation.HurtSound(Player).Value;
+                    modifiers.DisableSound();
+                    SoundEngine.PlaySound(hurtSound.sound, Player.Center);
+                    hurtSoundTimer = hurtSound.delay;
+                }
+                else if (roverDrive && RoverDriveShieldDurability > 0)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(RoverDrive.ShieldHurtSound, Player.Center);
@@ -1766,40 +1773,10 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(TheSponge.ShieldHurtSound, Player.Center);
                     hurtSoundTimer = 20;
                 }
-                else if (((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) && pSoulShieldDurability > 0)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(ProfanedGuardianDefender.ShieldDeathSound);
-                    hurtSoundTimer = 20;
-                }
-                else if ((profanedCrystal || profanedCrystalForce) && !profanedCrystalHide)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(Providence.HurtSound, Player.Center);
-                    hurtSoundTimer = 20;
-                }
-                else if ((abyssalDivingSuitPower || abyssalDivingSuitForce) && !abyssalDivingSuitHide)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center); //metal hit noise
-                    hurtSoundTimer = 10;
-                }
-                else if (((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide) || Player.GetModPlayer<CrystalHeartVodkaPlayer>().vanityEquipped)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.FemaleHit, Player.Center); //female hit noise
-                    hurtSoundTimer = 10;
-                }
                 else if (titanHeartSet)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(NPCs.Astral.Atlas.HurtSound, Player.Center);
-                    hurtSoundTimer = 10;
-                }
-                else if (Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center);
                     hurtSoundTimer = 10;
                 }
                 else if (Player.GetModPlayer<WulfrumArmorPlayer>().wulfrumSet && (Player.name.ToLower() == "wagstaff" || Player.name.ToLower() == "john wulfrum"))
@@ -1917,6 +1894,9 @@ namespace CalamityMod.CalPlayer
                 Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
                 ShieldoftheOcean.ActivateParry(Player);
             }
+
+            if (Player.Calamity().scionsCurio)
+                scionsCurioGotHit = true;
         }
 
         private void ModifyHurtInfo_Calamity(ref Player.HurtInfo info)
@@ -2295,8 +2275,8 @@ namespace CalamityMod.CalPlayer
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
 
-            // Regenator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
-            if (regenator && false)
+            // Regenerator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
+            if (regenerator && false)
             {
                 // Projectile damage and count is based on source damage of the hit
                 float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
@@ -2373,7 +2353,7 @@ namespace CalamityMod.CalPlayer
                 if (trinketOfChi)
                     chiBuffTimer = 0;
 
-                if (amidiasBlessing && hurtInfo.Damage > 50)
+                if (amidiasBlessing && (chaliceOfTheBloodGod ? chaliceBleedoutToApplyOnHurt : hurtInfo.Damage) > 50)
                 {
                     Player.ClearBuff(ModContent.BuffType<AmidiasBlessing>());
                     SoundEngine.PlaySound(SoundID.Item96, Player.Center);
@@ -2693,15 +2673,20 @@ namespace CalamityMod.CalPlayer
                 }
                 if (inkBomb && !abyssalMirror && !eclipseMirror)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
-                    if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(Cooldowns.InkBomb.ID))
+                    if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
-                        rogueStealth += 0.5f;
+                        if (!Player.HasCooldown(Cooldowns.InkBomb.ID))
+                        {
+                            Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
+                            rogueStealth += 0.5f;
+                            SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
+                        }
+
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                        SoundEngine.PlaySound(SoundID.Item1, Player.Center);
                         for (int i = 0; i < 3; i++)
                         {
-                            SoundEngine.PlaySound(SoundID.Item61, Player.Center);
-                            int ink = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-0f, -4f), ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                            int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
                             if (ink.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[ink].DamageType = DamageClass.Generic;
                         }
@@ -2733,7 +2718,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 16; i++)
+                            for (int i = 0; i < 10; i++)
                             {
                                 Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
                                 int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);

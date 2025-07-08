@@ -23,11 +23,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             base.SetStaticDefaults();
         }
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = SunkenSeaBurrowsWater.Type;
-        }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
@@ -36,9 +31,9 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 0.882f;
-            g = 1f;
-            b = 1f;
+            r = 0.1f;
+            g = 0.3f;
+            b = 0.4f;
         }
     }
 }

@@ -282,7 +282,7 @@ ClockworkBow: {
 	DisplayName: Clockwork Bow
 	Tooltip:
 		'''
-		Hold left click to load up to six precision bolts
+		Hold <left> to load up to six precision bolts
 		The more precision bolts are loaded, the harder they hit
 		'''
 }
@@ -398,15 +398,6 @@ DeepcoreGK2: {
 		'''
 }
 
-DodusHandcannon: {
-	DisplayName: Dodu's Handcannon
-	Tooltip:
-		'''
-		Fires high explosive peanut shells, literally
-		'The power of the nut rests in your hands'
-		'''
-}
-
 DragonsBreath: {
 	DisplayName: Dragon's Breath
 	Tooltip:
@@ -462,9 +453,11 @@ FirestormCannon: {
 	DisplayName: Firestorm Cannon
 	Tooltip:
 		'''
-		Releases a constant stream of weaponized flares
-		Press <right> to fire a condensed spread of flares
+		Fires a rapid barrage of flares that builds up a searing heat in the weapon
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'What could go wrong?'
 		'''
 }
 
@@ -566,7 +559,7 @@ HalleysInferno: {
 		Press <right> to zoom out
 		Uses gel for ammo
 		50% chance to save ammo
-		'Halley came sooner than expected'
+		'Halley arrived sooner than expected'
 		'''
 }
 
@@ -945,7 +938,7 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
-		Right click to give the little girl some attention
+		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
 }
@@ -1163,8 +1156,13 @@ SpectralstormCannon: {
 	DisplayName: Spectralstorm Cannon
 	Tooltip:
 		'''
-		Fires a storm of lost souls and flares
+		Fires a barrage of spectral flares that builds up a searing heat in the weapon
+		While cooling down, heat-seeking phantoms are continuously released
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		However, triggering overheat releases a powerful burst of souls and resets heat
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'Ectoplasmic blast rated visor mandatory'
 		'''
 }
 
@@ -1249,17 +1247,14 @@ SuperradiantSlaughterer: {
 	MainInfo:
 		'''
 		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
-		Release <left> to fire the buzzsaw to pierce through and lacerate foes
-		Fired buzzsaws bounce off tiles and return to the player after winding down
-		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
-		Revving up the saws increases their damage and allows them to pierce more enemies
+		Release <left> to fire the buzzsaw which bounces off tiles, releasing homing bolts when returning depending on hits
+		Revving up the saw increases its damage and allows it to pierce more enemies
 		'''
 	AltInfo:
 		'''
-		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
-		Using this ability rapidly propels you in the direction you are moving
-		This ability has a {0} second cooldown
-		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		Press <right> to eject a lingering buzzsaw towards the cursor on a {0} second cooldown
+		Double <right> to rapidly propel yourself in the direction you are moving
+		During the cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
 		'''
 }
 

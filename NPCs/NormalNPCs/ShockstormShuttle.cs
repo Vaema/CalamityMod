@@ -4,6 +4,7 @@ using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.Ores;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -42,10 +43,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ShockstormShuttleBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -89,8 +86,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                         npcPos.X += velocity.X;
                         npcPos.Y += velocity.Y;
-                        int spread = Main.getGoodWorld ? 100 : 20;
-                        for (int i = 0; i < (Main.getGoodWorld ? 10 : 2); i++)
+                        int spread = CalamityWorld.LegendaryMode ? 100 : 20;
+                        for (int i = 0; i < (CalamityWorld.LegendaryMode ? 10 : 2); i++)
                         {
                             velocity = Main.player[NPC.target].Center - npcPos;
                             targetDist = velocity.Length();
@@ -408,7 +405,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return SpawnCondition.Sky.Chance * (Main.getGoodWorld ? 0.5f : 0.1f);
+            return SpawnCondition.Sky.Chance * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

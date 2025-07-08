@@ -2,6 +2,7 @@ SmallWorldWarning: "[c/FF0000:SMALL WORLDS NOT SUPPORTED BY CALAMITY]"
 // Main Menu Name
 MainMenu: Calamity Style
 MainMenuClassic: Calamity Style - Classic
+MainMenuSunken: Calamity Style - Sunken
 // Main UI Elements
 Adrenaline: Adrenaline
 Nanomachines: Nanomachines
@@ -11,13 +12,13 @@ Charge: Current Charge
 DefenseDamage: Defense Damage
 SulphurousWater: Sulphuric Poisoning
 Stealth: Stealth
-StealthShiftText: Hold SHIFT for more information on Rogue stealth
+StealthShiftText: Hold Shift for more information on Rogue stealth
 StealthInfoText:
 	'''
 	Rogue stealth builds while not attacking and slower while moving
 	Once you have built max stealth, you will be able to perform a Stealth Strike
 	Rogue stealth only reduces when you attack, it does not reduce while moving
-	The higher your rogue stealth the higher your rogue damage and crit
+	The higher your rogue stealth the higher your rogue damage
 	Having more stealth regeneration slightly decreases the damage bonus from stealth
 	This is offset by you being able to use stealth strikes far more often
 	'''
@@ -26,13 +27,39 @@ DifficultyStatusText: "{0} is {1}."
 ModeAppend: "{0} Mode"
 Active: Active
 NotActive: Not active
-DifficultyShiftText: "[c/737373:Hold the 'Shift' key for more information]"
+DifficultyShiftText: "[c/737373:Hold Shift for more information]"
 CurrentlySelected: Currently Selected : {0}
 DifficultyClickText: "[c/919191:Click to select a difficulty mode]"
 ExpertDifficultyLock: "[c/919191:Higher difficulty modes can only be toggled in Expert Mode or above]"
 ChangingTheRules: "[c/919191:You cannot change the rules now!]"
-NoDifficulty: None
-NoDifficultyInfo: The classic Terraria experience, with no Calamity difficulty changes
+Classic: Classic
+ClassicEnabled: Classic Mode is enabled
+ClassicInfo: Your Adventure Begins... A far more relaxed Terraria experience
+Expert: Expert
+ExpertEnabled: Expert Mode is enabled
+ExpertShortInfo: "[c/b8860b:Fortune & Glory, Kid. For those looking for a more difficult vanilla experience]"
+ExpertExpandedInfo:
+	'''
+	[c/a87a07:Most bosses gain new attacks and more difficult attack patterns]
+	[c/a87a07:Most enemies have twice as much health, deal twice as much damage and receive 10% less knockback]
+	[c/a87a07:Certain enemies have new attacks, can inflict new debuffs or have a higher chance of inflicting debuffs they already had]
+	[c/a87a07:Enemies drop more loot, as well as having higher chances]
+	[c/a87a07:Players drop more of their coins on death]
+	'''
+ExpertActivate: Expert is active.
+ExpertDeactivate: Expert is not active.
+Master: Master
+MasterEnabled: Master Mode is enabled
+MasterShortInfo: "[c/00ad79:Game over man, game over! A tougher step up in stats from Expert Mode]"
+MasterExpandedInfo:
+	'''
+	[c/029c6d:Most enemies have even more health and knockback resistance added on from Expert Mode]
+	[c/029c6d:Bosses have new exclusive vanity rewards]
+	[c/029c6d:Players drop ALL their coins on death]
+	[c/029c6d:Players gain an additional accessory slot at the start of the game]
+	'''
+MasterActivate: Master is active.
+MasterDeactivate: Master is not active.
 Revengeance: Revengeance
 RevengeanceEnabled: Revengeance Mode is enabled
 RevengeanceShortInfo: "[c/F54254:The intended Calamity experience! Can only be enabled in Expert Mode!]"
@@ -54,13 +81,13 @@ DeathEnabled: Death Mode is enabled
 DeathShortInfo: "[c/C82DF7:A far more difficult challenge than Revengeance Mode! Can only be enabled in Master Mode!]"
 DeathExpandedInfo:
 	'''
-	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs and increased damage]
+	[c/B834E0:All foes will pose a much larger threat with highly aggressive AIs]
 	[c/B834E0:Bosses have substantially harder AI changes. Enemies are even more numerous and can easily overwhelm you]
 	[c/B834E0:Debuffs are especially lethal and the Abyss is significantly more dangerous]
 	[c/E945FF:Vigilance and tenacity are crucial to survival]
 	'''
-DeathActivate: Death is active; enjoy the fun.
-DeathDeactivate: Death is not active; not fun enough for you?
+DeathActivate: Death is active.
+DeathDeactivate: Death is not active.
 // Calamity Health Bar
 ExoTwinsNameNormal: XS-01 Artemis and XS-03 Apollo
 ExoTwinsNameHekate: Eyes of XB-∞ Hekate
@@ -116,7 +143,7 @@ Cooldowns: {
 	PrismaticLaser: Prismatic Laser Barrage Cooldown
 	ProfanedSoulShieldDurability: Profaned Soul Shield Durability
 	ProfanedSoulShieldRecharge: Profaned Soul Shield Recharge
-	RaiderBoost: Extra Critical Chance
+	RaidersBoost: Extra Critical Chance
 	RelicOfResilienceCooldown: Relic of Resilience Cooldown
 	RogueBooster: Rogue Booster Cooldown
 	SandCloak: Sand Cloak Cooldown
@@ -591,10 +618,12 @@ Lecherous: {
 Disenchant: Disenchant
 // Worldgen Tasks
 BetterUnderworld: Creating a smoother Underworld
+BetterShimmer: Placing shimmer in a sane location
 UnderworldStructures: Remnants of an Azafurian and Demonic war
 UnderworldPillars: Constructing Underworld pillars
 UnderworldTreesAndGrass: Growing Underworld flora
 UnderworldGeyserTraps: Adding an Underworld minefield
+ShimmerShrine: Excavating an ancient shimmer well
 EvilIslandCorrupt: Adding a putrid floating island
 EvilIslandCrimson: Adding a grotesque floating island
 AstralChest: Placing an astral chest
@@ -637,8 +666,8 @@ SulphurSea2: Irradiating one of the oceans
 Roxcalibur: I wanna rock
 AuricLandMines: Setting god killing traps
 // Hold Shift tooltip default
-HoldShiftTooltipExtensionIndicator: Hold "Left Shift" for more
-HoldShiftTooltipReplacementIndicator: Hold "Left Shift" for details
+HoldShiftTooltipExtensionIndicator: Hold Shift for more
+HoldShiftTooltipReplacementIndicator: Hold Shift for details
 // Dev and Donor Items
 DevItemTooltip: - Dev Item -
 DonorItemTooltip: - Donor Item -

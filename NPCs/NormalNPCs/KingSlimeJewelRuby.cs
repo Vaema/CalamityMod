@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         private const int BoltShootGateValue = 60;
         private const int BoltShootGateValue_Death = 75;
-        private const int BoltShootGateValue_BossRush = 45;
         private const float LightTelegraphDuration = 45f;
 
         public override void SetStaticDefaults()
@@ -55,6 +54,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void AI()
         {
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Despawn
             if (!CalamityPlayer.areThereAnyDamnBosses)
@@ -124,7 +124,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Fire projectiles
             NPC.ai[0] += 1f;
-            if (NPC.ai[0] >= (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue))
+            if (NPC.ai[0] >= (death ? BoltShootGateValue_Death : BoltShootGateValue))
             {
                 NPC.ai[0] = 0f;
 
@@ -134,7 +134,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 Vector2 projVector = new Vector2(xDist, yDist);
                 float projLength = projVector.Length();
 
-                float speed = Main.masterMode ? 12f : 10f;
+                float speed = death ? 12f : 10f;
                 int type = ModContent.ProjectileType<JewelProjectile>();
 
                 projLength = speed / projLength;
@@ -152,9 +152,9 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int damage = NPC.GetProjectileDamage(type);
-                    if (CalamityWorld.death || BossRushEvent.BossRushActive)
+                    if (death)
                     {
-                        int numProj = Main.masterMode ? 5 : 4;
+                        int numProj = 4;
                         float rotation = MathHelper.ToRadians(18);
                         for (int i = 0; i < numProj; i++)
                         {
@@ -192,7 +192,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             float alph = 0f;
 
-            float colorTelegraphGateValue = (BossRushEvent.BossRushActive ? BoltShootGateValue_BossRush : (CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue)) - LightTelegraphDuration;
+            float colorTelegraphGateValue = (CalamityWorld.death ? BoltShootGateValue_Death : BoltShootGateValue) - LightTelegraphDuration;
 
             if (NPC.ai[0] > colorTelegraphGateValue)
                 alph = MathHelper.Lerp(0f, 1f, (NPC.ai[0] - colorTelegraphGateValue) / LightTelegraphDuration);

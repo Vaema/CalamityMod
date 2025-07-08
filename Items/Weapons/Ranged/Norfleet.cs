@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<NorfleetCannon>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;

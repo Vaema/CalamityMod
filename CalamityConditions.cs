@@ -24,13 +24,6 @@ namespace CalamityMod
         public static readonly Condition PlayerAlcoholPoisoned          = Create("AlcoholPoison",        () => Main.LocalPlayer.Calamity().alcoholPoisoning);
 
         //
-        // NPC conditions
-        //
-
-        /// <summary>Don't use this. It's always `true`.</summary>
-        public static readonly Condition TrasherTextCondition           = Create("Drops.TrasherKill",    () => true);
-
-        //
         // Calamity Event Flag conditions
         //
 

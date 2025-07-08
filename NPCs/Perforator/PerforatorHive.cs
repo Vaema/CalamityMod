@@ -71,7 +71,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = 110;
             NPC.height = 100;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(6000, 7200, 270000);
+            NPC.LifeMaxNERB(4800, 5750, 270000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -84,9 +84,6 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -139,13 +136,12 @@ namespace CalamityMod.NPCs.Perforator
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Variables for ichor blob phase
-            float blobPhaseGateValue = bossRush ? 450f : 600f;
+            float blobPhaseGateValue = 600f;
             bool floatAboveToFireBlobs = NPC.ai[2] >= blobPhaseGateValue - 120f;
 
             Player player = Main.player[NPC.target];
@@ -155,10 +151,9 @@ namespace CalamityMod.NPCs.Perforator
 
             // Phases based on life percentage
             bool phase2 = lifeRatio < 0.7f;
-            bool phase3 = medium && revenge;
 
             // Enrage
-            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
+            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -166,17 +161,17 @@ namespace CalamityMod.NPCs.Perforator
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!player.ZoneCrimson || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneCrimson)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
+            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -242,22 +237,17 @@ namespace CalamityMod.NPCs.Perforator
             else
                 wormsAlive = 0;
 
-            // Do not spit from side mouth while the large worm is alive
-            // Death Mode ignores this
-            if (largeWormAlive && !death)
-                phase3 = false;
-
             NPC.Calamity().DR = wormsAlive * 0.3f;
 
             if (NPC.ai[3] == 0f && NPC.life > 0)
                 NPC.ai[3] = NPC.lifeMax;
 
-            bool canSpawnWorms = !small || !medium || !large || Main.getGoodWorld;
+            bool canSpawnWorms = !small || !medium || !large || CalamityWorld.LegendaryMode;
             if (NPC.life > 0 && canSpawnWorms)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int wormSpawnGateValue = (int)(NPC.lifeMax * (Main.getGoodWorld ? 0.15 : 0.25));
+                    int wormSpawnGateValue = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.15 : 0.25));
                     if ((NPC.life + wormSpawnGateValue) < NPC.ai[3])
                     {
                         NPC.ai[3] = NPC.life;
@@ -277,7 +267,7 @@ namespace CalamityMod.NPCs.Perforator
                             wormType = ModContent.NPCType<PerforatorHeadLarge>();
                         }
 
-                        if (Main.getGoodWorld && lifeRatio < 0.5f)
+                        if (CalamityWorld.LegendaryMode && lifeRatio < 0.5f)
                         {
                             if (lifeRatio > 0.35f)
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
@@ -329,7 +319,7 @@ namespace CalamityMod.NPCs.Perforator
             // Emit ichor blobs
             if (phase2)
             {
-                if (wormsAlive == 0 || large || bossRush || floatAboveToFireBlobs || (CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+                if (wormsAlive == 0 || large || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
                 {
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= blobPhaseGateValue)
@@ -337,7 +327,7 @@ namespace CalamityMod.NPCs.Perforator
                         if (NPC.ai[2] < blobPhaseGateValue + 300f)
                         {
                             if (NPC.velocity.Length() > 0.5f)
-                                NPC.velocity *= bossRush ? 0.94f : 0.96f;
+                                NPC.velocity *= 0.96f;
                             else
                                 NPC.ai[2] = blobPhaseGateValue + 300f;
                         }
@@ -360,7 +350,7 @@ namespace CalamityMod.NPCs.Perforator
 
                             bool ichorBlobBigWormPhase = wormsAlive > 0 && large;
                             int numBlobs = expertMode ? (ichorBlobBigWormPhase ? 4 : 6) : (ichorBlobBigWormPhase ? 2 : 4);
-                            if (Main.getGoodWorld)
+                            if (CalamityWorld.LegendaryMode)
                                 numBlobs *= 2;
 
                             int type = ModContent.ProjectileType<IchorBlob>();
@@ -371,18 +361,16 @@ namespace CalamityMod.NPCs.Perforator
                             {
                                 Vector2 blobVelocity = new Vector2(Main.rand.Next(-blobSpread, blobSpread + 1), Main.rand.Next(-blobSpread, blobSpread + 1));
                                 blobVelocity.Normalize();
-                                blobVelocity *= Main.rand.Next(400, 801) * (bossRush ? 0.02f : 0.01f);
+                                blobVelocity *= Main.rand.Next(400, 801) * 0.01f;
 
-                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                                if (CalamityWorld.LegendaryMode)
                                     blobVelocity *= Main.rand.NextFloat() + 1f;
 
                                 float blobVelocityYAdd = Math.Abs(blobVelocity.Y) * 0.25f;
                                 if (blobVelocity.Y < 2f)
                                     blobVelocity.Y = 2f + blobVelocityYAdd;
 
-                                // Fall a bit further or shorter depending on which blob it is
-                                float fallFurtherDistance = 48f * (i - numBlobs / 2);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y + fallFurtherDistance);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 50f, blobVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
 
@@ -408,64 +396,6 @@ namespace CalamityMod.NPCs.Perforator
                 return;
             }
 
-            // Side mouth starts spitting when it opens
-            if (phase3)
-            {
-                NPC.localAI[2] += 1f;
-                if (NPC.frame.Y / (TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type]) == 5 && NPC.localAI[2] >= 0f)
-                {
-                    // Ensure it only spits once
-                    // Spits half as much while the medium worm is alive
-                    NPC.localAI[2] = mediumWormAlive ? -70f : -10f;
-
-                    Vector2 centerOffset = new Vector2(NPC.direction == 1 ? 52f : -52f, -4f);
-                    Vector2 mouthLocation = NPC.Center + centerOffset;
-                    Vector2 spitVelocity = (mouthLocation + (Vector2.UnitX * 100f * NPC.direction) - mouthLocation).SafeNormalize(Vector2.UnitY) * 6f;
-
-                    SoundEngine.PlaySound(SoundID.Item17, mouthLocation);
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        int maxProjectiles = 3;
-                        Vector2 dustSpawnBox = new Vector2(12f, 12f);
-                        Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
-                        for (int i = 0; i < maxProjectiles; i++)
-                        {
-                            bool ichor = Main.rand.NextBool();
-                            int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Vector2 randomizedProjectileSpawnLocation = mouthLocation + Main.rand.NextVector2CircularEdge(4f, 4f);
-                            Vector2 randomizedProjectileVelocity = spitVelocity + Main.rand.NextVector2CircularEdge(1.5f, 1.5f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), randomizedProjectileSpawnLocation, randomizedProjectileVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
-
-                            float dustSpeed = Main.rand.NextFloat(3.0f, 9.0f);
-                            float angleRandom = 0.05f;
-                            Vector2 dustVelocity = new Vector2(dustSpeed, 0.0f).RotatedBy(randomizedProjectileVelocity.ToRotation());
-                            dustVelocity = dustVelocity.RotatedBy(-angleRandom);
-                            dustVelocity = dustVelocity.RotatedByRandom(2.0f * angleRandom);
-
-                            if (ichor)
-                            {
-                                for (int j = 0; j < 4; j++)
-                                {
-                                    int ichorDust = Dust.NewDust(randomizedProjectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Ichor);
-                                    Main.dust[ichorDust].velocity = dustVelocity;
-                                }
-                            }
-                            else
-                            {
-                                for (int j = 0; j < 4; j++)
-                                {
-                                    int bloodDust = Dust.NewDust(randomizedProjectileSpawnLocation - dustSpawnOffset, (int)dustSpawnBox.X, (int)dustSpawnBox.Y, DustID.Blood);
-                                    Main.dust[bloodDust].velocity = dustVelocity;
-                                    Main.dust[bloodDust].scale = 2f;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 NPC.localAI[0] += 1f;
@@ -474,24 +404,23 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.localAI[0] = 0f;
                     SoundEngine.PlaySound(GeyserShoot, NPC.Center);
 
-                    bool ichor = Main.rand.NextBool();
-                    int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                    int damage = NPC.GetProjectileDamage(type);
                     int numProj = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
-                    if (phase3)
-                        numProj = death ? 12 : revenge ? 10 : expertMode ? 8 : 6;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         numProj *= 2;
 
                     int spread = 75;
                     float velocity = 8f;
                     Vector2 destination = wormsAlive > 0 ? player.Center : NPC.Center - Vector2.UnitY * 100f;
-                    Vector2 projectileVelocity = new Vector2(Vector2.Normalize(destination - NPC.Center).X * velocity, -velocity);
+                    Vector2 projectileVelocity = new Vector2(Utils.DirectionTo(NPC.Center, destination).X * velocity, -velocity);
                     float rotation = MathHelper.ToRadians(spread);
                     Vector2 dustSpawnBox = new Vector2(12f, 12f);
                     Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
                     for (int i = 0; i < numProj; i++)
                     {
+                        bool ichor = Main.rand.NextBool();
+                        int type = ichor ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
+                        int damage = NPC.GetProjectileDamage(type);
+
                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                         Vector2 randomVelocity = new Vector2(Main.rand.NextFloat() - 0.5f, Main.rand.NextFloat() - 0.5f);
                         Vector2 projectileSpawnLocation = NPC.Center + Vector2.Normalize(perturbedSpeed) * 50f;
@@ -626,7 +555,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }

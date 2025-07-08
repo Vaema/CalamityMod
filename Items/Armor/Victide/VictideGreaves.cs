@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += Collision.DrownCollision(player.position, player.width, player.height, player.gravDir) ? 0.3f : 0.08f;
+            player.moveSpeed += player.Calamity().countsAsAnyWet ? 0.3f : 0.08f;
         }
 
         public override void AddRecipes()

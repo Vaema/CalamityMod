@@ -11,7 +11,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.Wulfrum
@@ -103,7 +102,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             if (DummyCannon.IsAir && !Main.gameMenu)
                 DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
 
-            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.IsKeyDown(LeftShift))
+            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.PressingShift())
             {
                 Main.HoverItem = DummyCannon.Clone();
                 Main.hoverItemName = DummyCannon.Name;
@@ -147,8 +146,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 player.endurance += 0.05f; //10% Dr in total with the chestplate
 
                 //Can't account for previous fullbody transformations but at this point, whatever.
+                bool transformed = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
                 Item headItem = player.armor[10].type != ItemID.None ? player.armor[10] : player.armor[0];
-                bool hatVisible = !transformationPlayer.transformationActive && headItem.type == ItemType<WulfrumHat>();
+                bool hatVisible = !transformed && headItem.type == ItemType<WulfrumHat>();
 
                 //Spawn the hat
                 if (cd.timeLeft == BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f) && hatVisible)
@@ -159,9 +159,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 //Visuals
                 if (cd.timeLeft < BastionCooldown + BastionTime - BastionBuildTime)
-                    player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
-                else if (cd.timeLeft <= BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f))
-                    player.GetModPlayer<WulfrumTransformationPlayer>().forceHelmetOn = true;
+                    player.Transformation().Type = ItemType<AbandonedWulfrumHelmet>();
 
                 //Swapping the arm.
                 if (DummyCannon.IsAir)
@@ -188,6 +186,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     Main.mouseItem = new Item();
 
                 DummyCannon.TurnToAir();
+
+                if (player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>() && player.Transformation().currentTransformation.IsForced)
+                    player.Transformation().currentTransformation.IsForced = false;
             }
         }
 
@@ -196,7 +197,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             SoundEngine.PlaySound(SetActivationSound);
 
             //Do'nt do the effect ifthe player is already using the wulfrum vanity lol.
-            bool transformedAlready = player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive;
+            bool transformedAlready = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>(); ;
 
             if (!transformedAlready)
             {
@@ -240,7 +241,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     setBonus2.OverrideColor = new Color(110, 192, 93);
                     tooltips.Insert(setBonusIndex + 2, setBonus2);
 
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
                         TooltipLine itemDisplay = new TooltipLine(item.Mod, "CalamityMod:ArmorItemDisplay", CalamityUtils.GetTextValueFromModItem<WulfrumHat>("ShiftToExpand"));
                         itemDisplay.OverrideColor = new Color(190, 190, 190);
@@ -365,7 +366,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             {
                 SetBonusEndEffect(true);
                 if (!Player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped)
-                    Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = false;
+                    Player.Transformation().currentTransformation = null;
             }
         }
 

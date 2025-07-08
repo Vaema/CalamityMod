@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
+using CalamityMod.MainMenu;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using Microsoft.Xna.Framework;
@@ -19,10 +20,6 @@ namespace CalamityMod
     public class CalamityMod : Mod
     {
         #region External Flags
-        // External flag to disable non-Revengeance boss AI edits
-        // This can be edited by other mods using reflection to prevent compatibility issues
-        public static bool ExternalFlag_DisableNonRevBossAI = false;
-
         // External flag to disable Defense Damage
         // This can be edited by other mods using reflection if desired
         // Note that this flag trumps Bloodflare Core and will stop that accessory from working properly.
@@ -49,6 +46,12 @@ namespace CalamityMod
                 // However, render targets and certain other graphical objects can only be created on the main thread.
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
+        }
+
+        public override void PostSetupContent()
+        {
+            // Force open certain ModMenus for various reasons and the added flair of "Hey! Something big has happened! Check it out!"
+            CalamityMainMenu_Sunken.ForceMenuStyle();
         }
         #endregion
 

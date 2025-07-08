@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.noMelee = true;
             Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.UseSound = SoundID.DD2_BetsySummon;
             Item.shoot = ModContent.ProjectileType<SepulcherMinion>();
             Item.shootSpeed = 10f;

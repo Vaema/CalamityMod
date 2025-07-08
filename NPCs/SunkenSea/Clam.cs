@@ -106,11 +106,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            SpawnModBiomes = new int[3] { ModContent.GetInstance<RadiantReefsBiome>().Type, ModContent.GetInstance<GleamingBurrowsBiome>().Type, ModContent.GetInstance<ClamDenBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -164,6 +160,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 case (int)PhaseType.Idle:
                     {
+                        NPC.chaseable = false;
                         NPC.velocity.X *= 0.9f;
                         if (ShellRotation > 0)
                         {
@@ -206,16 +203,13 @@ namespace CalamityMod.NPCs.SunkenSea
                                 }
                                 break;
                         }
-                        // If it aggro'd, decrease kb resist and defense since it's no longer stuck in the ground
-                        if (CurrentPhase == (int)PhaseType.Attacking)
-                        {
-                            NPC.knockBackResist = 0.05f;
-                            NPC.defense = Main.hardMode ? 15 : 6;
-                        }
                     }
                     break;
                 case (int)PhaseType.Attacking:
                     {
+                        NPC.knockBackResist = 0.05f;
+                        NPC.defense = Main.hardMode ? 15 : 6;
+                        NPC.chaseable = true;
                         Timer++;
                         if (NPC.velocity.Y == 0)
                         {
@@ -247,7 +241,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                 ShellRotation = 0;
                         }
 
-
                         // Squirt
                         if (Timer > Main.rand.Next(220, 260) && NPC.HasSight(Target.Center) && ShellRotation == 0)
                         {
@@ -259,6 +252,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)PhaseType.Squirt:
                     {
+                        NPC.chaseable = true;
                         // Slow down. Once the clam is rested, start incrementing Timer
                         if (NPC.velocity.Y == 0)
                         {
@@ -308,7 +302,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage / 2, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), Main.hardMode ? 30 : 15, 1);
                             }
                             for (int i = 0; i < 9; i++)
                             {
@@ -330,6 +324,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 break;
                 case (int)PhaseType.Pod:
                     {
+                        NPC.chaseable = true;
                         NPC pod = Main.npc[(int)NPC.localAI[2] - 1];
                         // If the Pearlpod is invalid, go back to idling
                         if (pod == null || !pod.active || pod.life < 0 || pod.ModNPC == null || pod.ModNPC is not Pearlpod)

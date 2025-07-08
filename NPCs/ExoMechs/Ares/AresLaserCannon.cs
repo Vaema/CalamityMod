@@ -109,9 +109,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.hide = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -151,10 +148,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].life / (float)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].lifeMax;
@@ -184,6 +180,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             bool nerfedAttacks = false;
             if (exoTwinsAlive)
                 nerfedAttacks = Main.npc[CalamityGlobalNPC.draedonExoMechTwinGreen].Calamity().newAI[1] != (float)Apollo.Apollo.SecondaryPhase.PassiveAndImmune;
+            // Used to make the beam only sweep horizontally during mecha mayhem phase
+            bool mechaMayhem = nerfedAttacks && exoWormAlive && Main.npc[CalamityGlobalNPC.draedonExoMechWorm].Calamity().newAI[1] != (float)ThanatosHead.SecondaryPhase.PassiveAndImmune;
 
             // Phases
             bool berserk = lifeRatio < 0.4f || (otherExoMechsAlive == 0 && lifeRatio < 0.7f);
@@ -325,7 +323,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = (enraged ? 38f : 30f) * baseVelocityMult;
             baseVelocity *= 1f + Main.npc[(int)NPC.ai[2]].localAI[2];
             float baseAcceleration = shouldGetBuffedByBerserkPhase ? 1.25f : 1f;
@@ -346,7 +344,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             else if (shouldGetBuffedByBerserkPhase)
                 deathrayPhaseGateValue *= 0.5f;
 
-            float deathrayPhaseVelocity = (nerfedAttacks ? 6f : passivePhase ? 9f : 12f) * baseVelocityMult;
+            float deathrayPhaseVelocity = (nerfedAttacks ? 8f : passivePhase ? 9f : 12f) * baseVelocityMult;
             if (lastMechAlive)
                 deathrayPhaseVelocity *= 1.2f;
             else if (shouldGetBuffedByBerserkPhase)
@@ -356,8 +354,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             bool canFire = Vector2.Distance(NPC.Center, Main.player[targetIndex].Center) > 320f || !fireNormalLasers;
 
             // Telegraph duration for deathray spiral
-            float deathraySpiralTelegraphDuration = bossRush ? AresBody.deathrayTelegraphDuration_BossRush : death ? AresBody.deathrayTelegraphDuration_Death :
-                revenge ? AresBody.deathrayTelegraphDuration_Rev : expertMode ? AresBody.deathrayTelegraphDuration_Expert : AresBody.deathrayTelegraphDuration_Normal;
+            float deathraySpiralTelegraphDuration = death ? AresBody.deathrayTelegraphDuration_Death : revenge ? AresBody.deathrayTelegraphDuration_Rev :
+                expertMode ? AresBody.deathrayTelegraphDuration_Expert : AresBody.deathrayTelegraphDuration_Normal;
 
             // Variable to disable deathray firing
             bool doNotFire = calamityGlobalNPC_Body.newAI[1] == (float)AresBody.SecondaryPhase.PassiveAndImmune ||
@@ -512,10 +510,21 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         AIState = (float)Phase.Nothing;
                         calamityGlobalNPC.newAI[2] = 0f;
 
-                        // Change deathray sweep type for next deathray phase
+                        // Change deathray sweep type for next deathray phase; this does not affect anything during mecha mayhem
                         calamityGlobalNPC.newAI[3] += 1f;
                         if (calamityGlobalNPC.newAI[3] > 1f)
                             calamityGlobalNPC.newAI[3] = 0f;
+
+                        // If mecha mayhem, make Ares swap the position of the laser and gauss arms, and ensure the beam always sweeps horizontal
+                        if (mechaMayhem)
+                        {
+                            calamityGlobalNPC.newAI[3] = 0f;
+                            if (Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] == 0f)
+                                Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] = 1f;
+                            else
+                                Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ai[3] = 0f;
+                            Main.npc[CalamityGlobalNPC.draedonExoMechPrime].ForceNetUpdate();
+                        }
                     }
 
                     break;

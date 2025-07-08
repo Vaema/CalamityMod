@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 14;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)

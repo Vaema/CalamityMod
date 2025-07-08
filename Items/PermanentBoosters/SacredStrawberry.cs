@@ -37,7 +37,7 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.UseSound = UseSound;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.value = Item.sellPrice(gold: 48);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;

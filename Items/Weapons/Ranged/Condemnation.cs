@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CondemnationArrow>();
             Item.shootSpeed = 16f;

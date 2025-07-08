@@ -85,10 +85,6 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -102,9 +98,6 @@ namespace CalamityMod.NPCs.AcidRain
         public override void AI()
         {
             NPC.TargetClosest(false);
-
-            // Fall through platforms.
-            NPC.Calamity().ShouldFallThroughPlatforms = true;
 
             // Play a slither sound from time to time.
             if (Main.rand.NextBool(480))
@@ -168,6 +161,8 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.velocity.X = (NPC.velocity.X * 24f + NPC.direction * swimSpeed) / 25f;
         }
+
+        public override bool? CanFallThroughPlatforms() => true;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {

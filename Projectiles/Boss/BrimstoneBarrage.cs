@@ -48,8 +48,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-
             int target = Player.FindClosest(Projectile.Center, 1, 1);
 
             float targetDist;
@@ -60,7 +58,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.velocity.Length() < Projectile.ai[2])
             {
-                Projectile.velocity *= bossRush ? 1.0125f : 1.01f;
+                Projectile.velocity *= 1.01f;
                 if (Projectile.velocity.Length() > Projectile.ai[2])
                 {
                     Projectile.velocity.Normalize();
@@ -153,8 +151,12 @@ namespace CalamityMod.Projectiles.Boss
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
+                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().permafrost)
+                    {
+                        lightColor.G = (byte)(255 * Projectile.Opacity);
                         lightColor.B = (byte)(255 * Projectile.Opacity);
+                        lightColor.R = 0;
+                    }
                 }
             }
 

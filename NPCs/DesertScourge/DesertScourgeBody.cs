@@ -49,8 +49,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
             NPC.DR_NERD(0.05f);
 
-            NPC.LifeMaxNERB(4200, 5000, 1400000);
-            if (Main.getGoodWorld)
+            NPC.LifeMaxNERB(4200, 5000, 1150000);
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 4;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -65,15 +65,12 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 0.4f;
 
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
@@ -92,9 +89,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.ai[3] > 0f)
             {
@@ -217,8 +213,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
             // Calculate contact damage based on velocity
             float maxChaseSpeed = Main.zenithWorld ? DesertScourgeHead.SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? DesertScourgeHead.SegmentVelocity_GoodWorld :
-                masterMode ? DesertScourgeHead.SegmentVelocity_Master :
+                CalamityWorld.LegendaryMode ? DesertScourgeHead.SegmentVelocity_GoodWorld :
+                death ? DesertScourgeHead.SegmentVelocity_Death :
                 expertMode ? DesertScourgeHead.SegmentVelocity_Expert :
                 DesertScourgeHead.SegmentVelocity_Normal;
             if (burrow || lungeUpward)

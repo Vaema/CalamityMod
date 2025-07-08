@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
 
         public const float SegmentVelocity_Expert = 11f;
-        public const float SegmentVelocity_Master = 13.5f;
+        public const float SegmentVelocity_Death = 13.5f;
         public const float SegmentVelocity_GoodWorld = 19f;
         public const float SegmentVelocity_ZenithSeed = 22f;
 
@@ -56,14 +56,14 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.GetNPCDamage();
 
             NPC.defense = 3;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.defense += 19;
 
             NPC.width = 88;
             NPC.height = 88;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax = 4800;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -78,9 +78,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
 
             if (Main.zenithWorld)
                 NPC.scale *= 2;
@@ -110,17 +107,15 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Become angry when the other Nuisance dies.
             bool getMad = (!NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>()) && revenge) || death;
 
             // Enrage
-            if (!Main.player[NPC.target].ZoneDesert && !bossRush)
+            if (!Main.player[NPC.target].ZoneDesert && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -128,12 +123,12 @@ namespace CalamityMod.NPCs.DesertScourge
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : getMad ? 0.5f : 0f;
+            float enrageScale = getMad ? 0.5f : 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -147,7 +142,7 @@ namespace CalamityMod.NPCs.DesertScourge
             speed += 0.085f * enrageScale;
             turnSpeed += 0.17f * enrageScale;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 speed *= 1.1f;
                 turnSpeed *= 1.2f;
@@ -169,7 +164,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 {
                     int previous = NPC.whoAmI;
                     int minLength = 8;
-                    if (Main.getGoodWorld)
+                    if (CalamityWorld.LegendaryMode)
                         minLength *= 2;
 
                     int bodyTypeAIVariable = 0;
@@ -273,11 +268,11 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.spriteDirection = -1;
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                CalamityWorld.LegendaryMode ? SegmentVelocity_GoodWorld :
+                death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             if (Main.player[NPC.target].dead)
@@ -300,7 +295,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
             }
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
             {
                 speed *= 1.5f;
                 turnSpeed *= 1.5f;

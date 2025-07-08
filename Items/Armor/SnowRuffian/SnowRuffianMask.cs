@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 2; //9
+            Item.defense = 3; //12
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)
@@ -38,10 +38,9 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         {
             var modPlayer = player.Calamity();
             modPlayer.snowRuffianSet = true;
-            modPlayer.rogueStealthMax += 0.5f;
+            player.GetCritChance<RangedDamageClass>() += 4;
+            player.GetDamage<RangedDamageClass>() += 0.04f;
             player.setBonus = this.GetLocalizedValue("SetBonus");
-            player.GetDamage<ThrowingDamageClass>() += 0.05f;
-            player.Calamity().wearingRogueArmor = true;
 
             if (player.controlJump)
             {
@@ -62,13 +61,14 @@ namespace CalamityMod.Items.Armor.SnowRuffian
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.02f;
+            player.GetDamage<RangedDamageClass>() += 0.02f;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddRecipeGroup("AnySnowBlock", 20).
+                AddIngredient(ItemID.BorealWood, 10).
+                AddIngredient(ItemID.Silk, 4).
                 AddIngredient(ItemID.FlinxFur).
                 AddTile(TileID.Anvils).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<SnowRuffianChestplate>()).

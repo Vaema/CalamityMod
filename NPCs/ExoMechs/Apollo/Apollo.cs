@@ -167,9 +167,6 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -237,10 +234,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -416,15 +412,15 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             // Phase 7 - 0, 1, 2
 
             // Gate values
-            float reducedTimeForGateValue = bossRush ? 48f : death ? 32f : revenge ? 24f : expertMode ? 16f : 0f;
+            float reducedTimeForGateValue = death ? 32f : revenge ? 24f : expertMode ? 16f : 0f;
             float reducedTimeForGateValue_Berserk = reducedTimeForGateValue * 0.5f;
             float normalAttackTime = 360f - reducedTimeForGateValue;
             float berserkAttackTime = lastMechAlive ? 225f - reducedTimeForGateValue_Berserk : 270f - reducedTimeForGateValue_Berserk;
             float attackPhaseGateValue = shouldGetBuffedByBerserkPhase ? berserkAttackTime : normalAttackTime;
             float timeToLineUpAttack = 30f;
-            float timeToLineUpCharge = bossRush ? 45f : death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
+            float timeToLineUpCharge = death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 timeToLineUpAttack *= 0.5f;
                 timeToLineUpCharge *= 0.5f;
@@ -435,7 +431,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float chargeLocationDistanceGateValue = 40f;
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = (AIState == (int)Phase.LineUpChargeCombo ? 40f : 20f) * baseVelocityMult;
 
             // Attack gate values
@@ -443,9 +439,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             bool doBigAttack = calamityGlobalNPC.newAI[3] >= attackPhaseGateValue + 2f + timeToLineUpAttack;
 
             // Charge velocity
-            float chargeVelocity = bossRush ? 115f : death ? 105f : revenge ? 101.25f : expertMode ? 97.5f : 90f;
+            float chargeVelocity = death ? 105f : revenge ? 101.25f : expertMode ? 97.5f : 90f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 baseVelocity *= 1.5f;
                 chargeVelocity *= 1.15f;
@@ -466,7 +462,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float rocketPhaseDuration = lastMechAlive ? 60f : 90f;
             int numRockets = nerfedAttacks ? 2 : 3;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 numRockets += 3;
 
             // Default vector to fly to
@@ -488,7 +484,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                 int randomLocationVarianceX = shouldGetBuffedByBerserkPhase ? 50 : 20;
                 int randomLocationVarianceY = shouldGetBuffedByBerserkPhase ? 250 : 100;
 
-                if (Main.getGoodWorld)
+                if (CalamityWorld.LegendaryMode)
                 {
                     randomLocationVarianceX *= 2;
                     randomLocationVarianceY *= 2;
@@ -1180,9 +1176,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
-                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode && revenge))) // I'm not that evil (you aren't, but I am - Fab)
+                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode)))
                         {
-                            int totalProjectiles = bossRush ? 16 : death ? 12 : 8;
+                            int totalProjectiles = death ? 12 : 8;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ModContent.ProjectileType<AresPlasmaBolt>();
                             int damage = (int)(NPC.GetProjectileDamage(ModContent.ProjectileType<ApolloFireball>()) * 0.8);
@@ -1673,7 +1669,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }

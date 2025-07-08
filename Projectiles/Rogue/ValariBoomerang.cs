@@ -145,7 +145,6 @@ namespace CalamityMod.Projectiles.Rogue
                             Projectile.velocity.Y -= acceleration;
                     }
 
-
                     // Delete the projectile if it touches its owner.
                     if (Main.myPlayer == Projectile.owner)
                         if (Projectile.Hitbox.Intersects(owner.Hitbox))
@@ -198,8 +197,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             OnHitEffects(target);
             target.AddBuff(BuffID.Frostburn2, 120);
-            if (Projectile.Calamity().stealthStrike)
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 45);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

@@ -48,10 +48,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -98,14 +94,13 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void AI()
         {
             Player player = Main.player[NPC.target];
-            bool expertMode = Main.expertMode;
-            bool masterMode = Main.masterMode;
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             float movementSpeed = 1f;
             NPC.TargetClosest(true);
             bool stopMoving = false;
             int offsetX = 80;
-            int projectileDamage = masterMode ? 8 : expertMode ? 9 : 12;
+            int projectileDamage = Main.masterMode ? 8 : Main.expertMode ? 9 : 12;
             if (NPC.life < NPC.lifeMax * 0.33 && CalamityWorld.death)
             {
                 movementSpeed = 2f;

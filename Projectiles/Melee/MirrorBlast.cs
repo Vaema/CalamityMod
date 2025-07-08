@@ -1,11 +1,14 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Steamworks;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -38,6 +41,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = 1;
             Projectile.timeLeft = 1800;
             Projectile.extraUpdates = 0;
+            Projectile.noEnchantmentVisuals = true;
             Projectile.tileCollide = false;
         }
 
@@ -145,6 +149,17 @@ namespace CalamityMod.Projectiles.Melee
                     direction.Normalize();
                     direction *= 40f; // Adjust speed as needed
                     Projectile.velocity = Vector2.Lerp(Projectile.velocity, direction, homingStrength);
+
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center, Projectile.velocity * Main.rand.NextFloat(-0.2f, -0.6f), Color.Black, 7, Main.rand.NextFloat(0.35f, 0.4f), 1f, Main.rand.NextFloat(-0.2f, 0.2f), false);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                    if (Main.rand.NextBool(5))
+                    {
+                        Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                        trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
+                        trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
+                        trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;
+                        trailDust.noGravity = true;
+                    }
                 }
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
@@ -159,6 +174,23 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.frame >= 3)
                 Projectile.frame = 0;
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (!isShard)
+            {
+                SoundEngine.PlaySound(SoundID.Item27 with {Volume = 0.5f }, Projectile.position);
+                Particle Star = new CritSpark(Projectile.Center, Vector2.Zero, Color.WhiteSmoke, Color.BlueViolet, Main.rand.NextFloat(1.5f, 1.6f), 10, 0.1f, 3f);
+                GeneralParticleHandler.SpawnParticle(Star);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    int dust = Dust.NewDust(Projectile.Center - Projectile.velocity / 2f, 0, 0, DustID.GemDiamond, 0f, 0f, 100, default, 1f);
+                    Main.dust[dust].velocity *= 2f;
+                    Main.dust[dust].noGravity = true;
+                }
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

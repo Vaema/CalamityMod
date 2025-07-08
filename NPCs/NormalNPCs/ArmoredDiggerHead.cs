@@ -56,10 +56,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -439,14 +435,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses && NPC.downedPlantBoss && !NPC.AnyNPCs(ModContent.NPCType<ArmoredDiggerHead>()))
                 {
-                    float spawnRateDivisor = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 125f : CalamityWorld.revenge ? 425f : 500f;
+                    float spawnRateDivisor = CalamityWorld.LegendaryMode ? 125f : CalamityWorld.revenge ? 425f : 500f;
                     return 1 / spawnRateDivisor;
                 }
             }
             return 0f;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

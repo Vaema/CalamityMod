@@ -14,6 +14,24 @@ namespace CalamityMod.Buffs
 
         public override void Update(int type, Player player, ref int buffIndex)
         {
+            // Globally remove summon tag buff stacking
+            // Other mods need to add to this list because we genuinely don't have any way to tell this
+            if (SummonTagBuffList.Includes(type) && buffIndex > 0)
+            {
+                for (int i = buffIndex; i >= 0; i--)
+                {
+                    if (player.buffTime[i] > 0)
+                    {
+                        int buffID = player.buffType[i];
+                        if (SummonTagBuffList.Includes(buffID) && buffID != type)
+                        {
+                            player.DelBuff(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type == BuffID.Archery)
             {
                 player.arrowDamage *= 0.955f;
@@ -97,6 +115,19 @@ namespace CalamityMod.Buffs
             else if (type == BuffID.Rabies)
             {
                 player.GetDamage<GenericDamageClass>() -= 0.2f;
+
+                // Reimplementation of random debuff infliction; now occurs on a consistent timer and with a different debuff list
+                if (player.buffTime[buffIndex] % 600 == 300)
+                {
+                    int debuffType = Main.rand.Next(4) switch
+                    {
+                        0 => BuffID.Weak,
+                        1 => BuffID.Bleeding,
+                        2 => BuffID.Darkness,
+                        _ => BuffID.BrokenArmor,
+                    };
+                    player.AddBuff(debuffType, Main.rand.Next(90, 211));
+                }
             }
             else if (type == BuffID.Werewolf)
             {
@@ -106,21 +137,30 @@ namespace CalamityMod.Buffs
 
         public override void Update(int type, NPC npc, ref int buffIndex)
         {
+            // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
+            // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
+            if (SummonTagDebuffDict.TryGet(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            {
+                for (int i = buffIndex; i >= 0; i--)
+                {
+                    if (npc.buffTime[i] > 0)
+                    {
+                        int buffID = npc.buffType[i];
+                        if (SummonTagDebuffDict.TryGet(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        {
+                            npc.DelBuff(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type == BuffID.Webbed)
             {
                 if (npc.Calamity().webbed < npc.buffTime[buffIndex])
                     npc.Calamity().webbed = npc.buffTime[buffIndex];
                 if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().webbed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else if (type == BuffID.Slow)
-            {
-                if (npc.Calamity().slowed < npc.buffTime[buffIndex])
-                    npc.Calamity().slowed = npc.buffTime[buffIndex];
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().slowed;
                 npc.DelBuff(buffIndex);
                 buffIndex--;
             }
@@ -213,6 +253,10 @@ namespace CalamityMod.Buffs
 
                 case BuffID.NebulaUpDmg3:
                     tip = tip.Replace("45", "22.5");
+                    break;
+
+                case BuffID.Rabies:
+                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.Rabies");
                     break;
 
                 case BuffID.SugarRush:

@@ -44,11 +44,11 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.height = 78;
 
             NPC.defense = 4;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.defense += 26;
 
             NPC.LifeMaxNERB(1300, 1560, 35000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax = 4000;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -64,18 +64,14 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.ai[3] > 0f)
             {
@@ -181,11 +177,11 @@ namespace CalamityMod.NPCs.DesertScourge
 
             // Calculate contact damage based on velocity
             float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHeadYoung.SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? DesertNuisanceHeadYoung.SegmentVelocity_GoodWorld :
-                masterMode ? DesertNuisanceHeadYoung.SegmentVelocity_Master :
+                CalamityWorld.LegendaryMode ? DesertNuisanceHeadYoung.SegmentVelocity_GoodWorld :
+                death ? DesertNuisanceHeadYoung.SegmentVelocity_Death :
                 DesertNuisanceHeadYoung.SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;

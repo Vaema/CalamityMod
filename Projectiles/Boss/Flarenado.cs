@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.velocity.X = Main.rand.NextBool() ? -tornadoSpeed : tornadoSpeed;
 
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     Projectile.velocity.X *= 1.5f;
             }
 
