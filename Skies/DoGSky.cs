@@ -131,14 +131,16 @@ namespace CalamityMod.Skies
         private void GenerateRift()
         {
             Vector2 riftSpawnLocation = Main.LocalPlayer.Center - Vector2.UnitY * 2000f + Main.rand.NextVector2Circular(2000f, 2000f);
+            float crackRotation = MathHelper.ToRadians(Main.rand.NextFloat(-20f, 20f));
+
             for (int i = 0; i < 2; i++)
             {
                 RealityCrack realityCrack = new RealityCrack()
                 {
                     Position = riftSpawnLocation,
                     Depth = 30f,
-                    Scale = 2.25f + i,
-                    Rotation = i == 0 ? 0f : MathHelper.Pi,
+                    Scale = 2.75f,
+                    Rotation = (i == 0 ? 0f : MathHelper.Pi) + crackRotation,
                 };
                 RealityCracks.Add(realityCrack);
             }
