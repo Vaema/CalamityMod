@@ -89,13 +89,13 @@ namespace CalamityMod.Systems.Graphic
             // Distortion rift's clouds.
             if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
             {
-                BackgroundLightningTimer = Main.rand.Next(30, 45);
+                BackgroundLightningTimer = Main.rand.NextBool(10) ? Main.rand.Next(30, 45) : Main.rand.Next(5, 20);
                 BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
             }
 
             if (BackgroundLightningTimer > 0f)
             {
-                float minFill = BackgroundLightningMax * 0.6f;
+                float minFill = BackgroundLightningMax * 0.5f;
                 BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
                 BackgroundLightningTimer--;
             }

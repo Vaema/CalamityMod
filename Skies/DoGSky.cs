@@ -130,7 +130,7 @@ namespace CalamityMod.Skies
 
         private void GenerateRift()
         {
-            Vector2 riftSpawnLocation = Main.LocalPlayer.Center - Vector2.UnitY * 2000f + Main.rand.NextVector2Circular(450f, 450f);
+            Vector2 riftSpawnLocation = Main.LocalPlayer.Center - Vector2.UnitY * 2000f + Main.rand.NextVector2Circular(2000f, 2000f);
             for (int i = 0; i < 2; i++)
             {
                 RealityCrack realityCrack = new RealityCrack()
@@ -351,10 +351,10 @@ namespace CalamityMod.Skies
             Effect shader = CalamityShaders.DoGDistortionWindsShader;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Asset<Texture2D> windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
-            Asset<Texture2D> highlightsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise");
-            Asset<Texture2D> distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise");
-            Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles");
+            Texture2D windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
+            Texture2D highlightsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise").Value;
+            Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise").Value;
+            Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles").Value;
 
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.6f);
@@ -372,17 +372,17 @@ namespace CalamityMod.Skies
             shader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.32f).ToVector3());
             shader.Parameters["highlightsColor"].SetValue(DoGSkyColor.ToVector3());
 
-            Main.instance.GraphicsDevice.Textures[1] = highlightsTexture.Value;
+            Main.instance.GraphicsDevice.Textures[1] = highlightsTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
 
-            Main.instance.GraphicsDevice.Textures[2] = distortionTexture.Value;
+            Main.instance.GraphicsDevice.Textures[2] = distortionTexture;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
 
-            Main.instance.GraphicsDevice.Textures[3] = erosionTexture.Value;
+            Main.instance.GraphicsDevice.Textures[3] = erosionTexture;
             Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearWrap;
 
             shader.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(windsTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+            spriteBatch.Draw(windsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
 
         private void DrawRollingBackgroundFog(SpriteBatch spriteBatch)
@@ -390,8 +390,8 @@ namespace CalamityMod.Skies
             Effect shader = CalamityShaders.DoGBackgroundFogShader;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Asset<Texture2D> cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds");
-            Asset<Texture2D> erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+            Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
+            Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
 
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 3f);
             shader.Parameters["overallOpacity"].SetValue(SkyIntensity * 0.25f);
@@ -408,14 +408,14 @@ namespace CalamityMod.Skies
             shader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.Black, Color.DarkGray, 0.75f).ToVector3());
             shader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, DoGSkyColor, 0.8f).ToVector3());
 
-            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture.Value;
+            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
-            Main.instance.GraphicsDevice.Textures[2] = erosionTexture.Value;
+            Main.instance.GraphicsDevice.Textures[2] = erosionTexture;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
 
             shader.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(cloudsTexture.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+            spriteBatch.Draw(cloudsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
 
         private void DrawRealityCracks(SpriteBatch spriteBatch)
@@ -423,7 +423,7 @@ namespace CalamityMod.Skies
             Effect shader = CalamityShaders.CircularOpacityShader;
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
             Vector2 screenCenter = Main.screenPosition + (screenSize * 0.5f);
-            Asset<Texture2D> cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing");
+            Texture2D cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing").Value;
 
             shader.Parameters["opacityCutoffValue"].SetValue(0.8f * SkyIntensity);
             shader.Parameters["fadeoutPower"].SetValue(1f);
@@ -434,7 +434,7 @@ namespace CalamityMod.Skies
             {
                 Vector2 depthFactor = new(1f / RealityCracks[i].Depth, 1.1f / RealityCracks[i].Depth);
                 Vector2 drawPosition = (RealityCracks[i].Position - screenCenter) * depthFactor + screenCenter - Main.screenPosition;
-                spriteBatch.Draw(cracksTexture.Value, drawPosition, new Rectangle(0, 0, cracksTexture.Width(), cracksTexture.Height()), Color.White, RealityCracks[i].Rotation, cracksTexture.Size() * 0.5f, RealityCracks[i].Scale * 0.5f, 0, 0f);
+                spriteBatch.Draw(cracksTexture, drawPosition, new Rectangle(0, 0, cracksTexture.Width, cracksTexture.Height), Color.White, RealityCracks[i].Rotation, cracksTexture.Size() * 0.5f, RealityCracks[i].Scale * 0.5f, 0, 0f);
             }
         }
 
