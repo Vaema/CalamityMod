@@ -225,7 +225,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[1] > 0f)
                     {
-                        npc.ai[1] += (death ? 1.5f : 1f);
+                        npc.ai[1] += ((death && !headAlive && !freeHeadAlive) ? 1.75f : death ? 1.5f : 1f);
                         if (CalamityWorld.LegendaryMode)
                             npc.ai[1] += 100f;
 
@@ -325,7 +325,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 // Jump straight up and create a wall of lasers on both sides
                                 case 3:
 
-                                    npc.velocity.Y = (((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.1f : -12.1f) + (enrage ? -4f : 0f);
+                                    npc.velocity.Y = (((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.5f : -11.75f) + (enrage ? -4f : 0f);
 
                                     npc.noTileCollide = true;
 
@@ -411,7 +411,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         void NormalJump()
                         {
-                            float velocityBoost = death ? 5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
+                            float velocityBoost = (death && !freeHeadAlive && !headAlive) ? 5.75f * (1f - (lifeRatio / 2)) : death ? 5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
                             float velocityX = (death ? 8.75f : 6.25f) + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
@@ -434,7 +434,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 speedMult = speedMultLimit;
 
                             if (Main.player[npc.target].position.Y < npc.Bottom.Y)
-                                npc.velocity.Y = ((((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.1f : -12.1f) + (enrage ? -4f : 0f)) * speedMult;
+                                npc.velocity.Y = ((((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.5f : -11.75f) + (enrage ? -4f : 0f)) * speedMult;
                             else
                                 npc.velocity.Y = 1f;
 
@@ -511,7 +511,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 10.5f : 7.25f;
+                        float projectileVelocity = death ? 11f : 7.25f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
@@ -594,7 +594,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
                             {
-                                float fallSpeedBoost = death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
+                                float fallSpeedBoost = (death && !headAlive && !freeHeadAlive) ? 1f * (1f - (lifeRatio / 2)) : death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
                                 float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
                                 if (enrage)
                                     fallSpeed *= 2f;
@@ -604,14 +604,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                         else
                         {
-                            float velocityChangeBoost = death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
+                            float velocityChangeBoost = (death && !headAlive && !freeHeadAlive) ? 0.18f * (1f - (lifeRatio / 2)) : death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
                             float velocityXChange = (death ? 0.285f : 0.2f) + velocityChangeBoost;
                             if (npc.direction < 0)
                                 npc.velocity.X -= velocityXChange;
                             else if (npc.direction > 0)
                                 npc.velocity.X += velocityXChange;
 
-                            float velocityBoost = death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
+                            float velocityBoost = (death && !headAlive && !freeHeadAlive) ? 6f * (1f - (lifeRatio / 2)) : death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
                             float velocityXCap = (death ? 8.75f : 6f) + velocityBoost;
                             if (enrage)
                                 velocityXCap *= 3f;
@@ -1104,7 +1104,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     for (int i = 0; i < fireballAmount; i++)
                     {
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos, fireballVelocity * (1f / (i + 1)), type, damage, 0f, Main.myPlayer);
-                        Main.projectile[proj].timeLeft = 255;
+                        Main.projectile[proj].timeLeft = 225;
                     }
 
                     npc.netUpdate = true;
@@ -1423,6 +1423,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     Main.projectile[proj].timeLeft = 300;
                     Main.projectile[proj].netUpdate = true;
+                    Main.projectile[proj].velocity *= 1.5f;
+
                 }
                 else
                     Main.projectile[proj].timeLeft = 360;
