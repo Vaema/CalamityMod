@@ -240,7 +240,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Faster fall
             if (npc.velocity.Y > 0f)
             {
-                float fallSpeedBonus = (death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
+                float fallSpeedBonus = (death ? 0.1f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
@@ -466,14 +466,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[1] == 3f)
                         {
                             npc.velocity.Y = -10f * speedMult;
-                            npc.velocity.X += (phase2 ? (death ? 5.5f : 4.5f) : 3.5f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (death ? 5.15f : 4.5f) : 3.5f) * npc.direction;
                             npc.ai[0] = -100f;
                             npc.ai[1] = 0f;
                         }
                         else if (npc.ai[1] == 2f)
                         {
                             npc.velocity.Y = -6f * speedMult;
-                            npc.velocity.X += (phase2 ? (deathModeRapidHops ? 8f : death ? 6.5f : 5.5f) : 4.5f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (deathModeRapidHops ? 8f : death ? 6.15f : 5.5f) : 4.5f) * npc.direction;
                             npc.ai[0] = -60f;
 
                             // Use the quick forward jump over and over while at low HP in death mode
@@ -483,7 +483,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         else
                         {
                             npc.velocity.Y = -8f * speedMult;
-                            npc.velocity.X += (phase2 ? (death ? 6f : 5f) : 4f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (death ? 5.75f : 5f) : 4f) * npc.direction;
                             npc.ai[0] = -60f;
                             npc.ai[1] += 1f;
                         }
@@ -495,7 +495,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         if (death)
-                            npc.velocity.X *= 1.4f;
+                            npc.velocity.X *= 1.2f;
 
                         npc.noTileCollide = true;
                     }
@@ -509,7 +509,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
                 if (death)
-                    jumpVelocityLimit += 3f;
+                    jumpVelocityLimit += 1.5f;
                 if (CalamityWorld.LegendaryMode)
                     jumpVelocityLimit = 8f;
 
@@ -519,7 +519,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         npc.velocity.X += (death ? 0.25f : 0.2f) * npc.direction;
                         if (death)
-                            npc.velocity.X += 0.3f * npc.direction;
+                            npc.velocity.X += 0.25f * npc.direction;
                     }
                     else
                     {
@@ -619,17 +619,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (death)
                         {
-                            switch (Main.rand.Next(3))
+                            if (Main.rand.NextBool())
                             {
-                                case 0:
-                                    npcType = NPCID.SlimeSpiked;
-                                    break;
-                                case 1:
-                                    npcType = NPCID.SpikedIceSlime;
-                                    break;
-                                case 2:
-                                    npcType = NPCID.SpikedJungleSlime;
-                                    break;
+                                switch (Main.rand.Next(3))
+                                {
+                                    case 0:
+                                        npcType = NPCID.SlimeSpiked;
+                                        break;
+                                    case 1:
+                                        npcType = NPCID.SpikedIceSlime;
+                                        break;
+                                    case 2:
+                                        npcType = NPCID.SpikedJungleSlime;
+                                        break;
+                                }
                             }
                         }
 

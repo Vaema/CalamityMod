@@ -152,18 +152,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int damage = NPC.GetProjectileDamage(type);
-                    if (death)
-                    {
-                        int numProj = 4;
-                        float rotation = MathHelper.ToRadians(18);
-                        for (int i = 0; i < numProj; i++)
-                        {
-                            Vector2 perturbedSpeed = projVector.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                        }
-                    }
-                    else
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, damage, 0f, Main.myPlayer);
                 }
 
                 NPC.netUpdate = true;
