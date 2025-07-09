@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/HarpNoteHit");
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GastricBelcherStaff>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Atlantis>();
         }
         public override void SetDefaults()
         {
