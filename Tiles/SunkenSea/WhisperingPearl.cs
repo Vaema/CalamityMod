@@ -1,15 +1,10 @@
 ﻿using System.Linq;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea.WhisperingPearls;
-using CalamityMod.TileEntities;
-using CalamityMod.UI.WhisperingPearls;
+using CalamityMod.UI.DialogueDisplay;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Enums;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -61,9 +56,9 @@ namespace CalamityMod.Tiles.SunkenSea
             if (!DialogueDisplayUI.Dialogues.ContainsKey(key))
             {
                 if(key == "RoyalBlue")
-                    DialogueDisplaySystem.StartDialogue<WackyEffects>(key, new Vector2(i, j) * 16, 60);
+                    DialogueDisplaySystem.StartDialogue<WhisperingPearlEffects>(key, new Vector2(i, j) * 16, 60);
                 else
-                    DialogueDisplaySystem.StartDialogue<AlwayOnScreen>(key, Main.npc.Last(n => n != null && n.active), 30);
+                    DialogueDisplaySystem.StartDialogue<WhisperingPearlEffects>(key, Main.npc.Last(n => n != null && n.active), 30);
             }
             else
             {

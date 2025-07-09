@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 
-namespace CalamityMod.UI.WhisperingPearls
+namespace CalamityMod.UI.DialogueDisplay
 {
     public class Wavy : TextEffect
     {
@@ -10,25 +10,25 @@ namespace CalamityMod.UI.WhisperingPearls
 
         private const float StandardFreq = 1.5f;
 
-        private const float StandardOffsetFactor = MathHelper.TwoPi / 256f; //since we use position, this means a full cycle will occur every 320 coordiantes
+        private const float StandardOffsetFactor = MathHelper.TwoPi / 320f; //since we use position, this means a full cycle will occur every 320 coordiantes
 
         public override Vector2 ModifyPos(Vector2 pos, DialogueCharacterData data, float[] args)
         {
-            float amp = StandardAmp;
+            var amp = StandardAmp;
             if(args.Length > 0)
                 amp = args[0];
 
-            float freq = StandardFreq;
+            var freq = StandardFreq;
             if (args.Length > 1)
                 freq = args[1];
 
-            float indexFactor = MathHelper.TwoPi / 320f;
+            var indexFactor = StandardOffsetFactor;
             if (args.Length > 2)
                 indexFactor = args[2];
 
-            float sineWave = (float)Math.Sin((Main.GlobalTimeWrappedHourly * freq) + (data.TextPosition.X * indexFactor)) * amp;
+            var sineWave = (float)Math.Sin(Main.GlobalTimeWrappedHourly * freq + data.TextPosition.X * indexFactor) * amp;
 
-            return pos + (Vector2.UnitY * sineWave);
+            return pos + Vector2.UnitY * sineWave;
         }
     }
 }

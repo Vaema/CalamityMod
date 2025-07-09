@@ -1,7 +1,7 @@
 ﻿using ReLogic.Utilities;
 using Terraria.Audio;
 
-namespace CalamityMod.UI.WhisperingPearls
+namespace CalamityMod.UI.DialogueDisplay
 {
     public class SoundEvent : DialogueEvent
     {

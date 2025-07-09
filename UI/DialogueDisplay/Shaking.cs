@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 
-namespace CalamityMod.UI.WhisperingPearls
+namespace CalamityMod.UI.DialogueDisplay
 {
     internal class Shaking : TextEffect
     {
@@ -10,7 +9,7 @@ namespace CalamityMod.UI.WhisperingPearls
 
         public override Vector2 ModifyPos(Vector2 pos, DialogueCharacterData data, float[] args)
         {
-            float amp = StandardAmp;
+            var amp = StandardAmp;
             if (args.Length > 0)
                 amp = args[0];
 

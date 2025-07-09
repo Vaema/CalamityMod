@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CalamityMod.UI.WhisperingPearls
+namespace CalamityMod.UI.DialogueDisplay
 {
     public abstract class TextEffect
     {
