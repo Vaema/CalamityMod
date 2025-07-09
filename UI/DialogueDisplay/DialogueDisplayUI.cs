@@ -142,9 +142,11 @@ namespace CalamityMod.UI.DialogueDisplay
                 lineLengths[i] = fullLine.Length + 1;
             }
 
-            BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData.DefaultColor);
+            if(DialogueData.DefaultColor != null)
+                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData.DefaultColor);
             if (DialogueData[currentPage].BaseColor != null)
                 DialogueDisplaySystem.GetColorFromHex(DialogueData[currentPage].BaseColor);
+
             CharacterData = new DialogueCharacterData[Text.Length];
 
             for (int i = 0; i < Text.Length; i++)
@@ -192,6 +194,10 @@ namespace CalamityMod.UI.DialogueDisplay
                 Vector2 scale = Vector2.One;
                 if (UniqueScales.TryGetValue(i, out Vector2 result))
                     scale = result;
+                else if (DialogueData[currentPage].TextScale != -1)
+                    scale *= DialogueData[currentPage].TextScale;
+                else
+                    scale *= DialogueData.DefaultScale;
 
                 //Checks for Special Characters, and handles Line Breaks
                 switch (c)
@@ -504,7 +510,9 @@ namespace CalamityMod.UI.DialogueDisplay
                             string speaker = DialogueData.DefaultSpeaker;
                             if (DialogueData[currentPage].Speaker != null)
                                 speaker = DialogueData[currentPage].Speaker;
-                            SoundEngine.PlaySound(DialogueSounds[speaker]);
+
+                            if (speaker != null)
+                                SoundEngine.PlaySound(DialogueSounds[speaker]);
                         }
 
                         CharacterTimer = 0;
@@ -809,8 +817,10 @@ namespace CalamityMod.UI.DialogueDisplay
         public DialogueLine this[int index] { get => Dialogues[index]; set => Dialogues[index] = value; }
         public int Length => Dialogues.Length;
 
-        public string DefaultColor { get; set; }
-        public string DefaultSpeaker { get; set; }
+        public string DefaultColor { get; set; } = null;
+        public string DefaultSpeaker { get; set; } = null;
+
+        public int DefaultScale { get; set; } = 1;
 
         public int TextDelay { get; set; } = 3;
         public PunctuationData BasePunctuationDelay { get; set; } = new PunctuationData();
@@ -820,9 +830,11 @@ namespace CalamityMod.UI.DialogueDisplay
 
     public class DialogueLine
     {
-        public string BaseColor { get; set; }
-        public string Speaker { get; set; }
         public string[] Lines { get; set; }
+
+        public string BaseColor { get; set; } = null;
+        public string Speaker { get; set; } = null;
+        public int TextScale { get; set; } = -1;
 
         public int TextDelay { get; set; } = -1;
         public PunctuationData BasePunctuationDelay { get; set; } = null;
