@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -240,12 +241,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[1] += 6f;
                         }
                     }
-                    if (npc.ai[1] >= 300f)
+                    if (npc.ai[1] >= 300f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] != 2f))
                     {
                         npc.ai[1] = -20f;
                         npc.frameCounter = 0D;
                     }
-                    else if (npc.ai[1] == -1f)
+                    else if (npc.ai[1] == -1f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] != 2f))
                     {
                         // Set jump velocity
                         if (!headAlive)
@@ -1071,6 +1072,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else
                     npc.localAI[1] = 0f;
 
+                // Timer for special laser attack
+                npc.ai[3]++;
+                if (npc.ai[3] >= 600f && Main.npc[NPC.golemBoss].velocity.Y == 0f && MathF.Abs(Main.npc[NPC.golemBoss].velocity.X) < 0.5f)
+                {
+                    npc.ai[0] = 2f;
+                    npc.ai[1] = 0f;
+                    npc.ai[2] = 0f;
+                    npc.ai[3] = 0f;
+                    npc.localAI[1] = (Main.player[npc.target].Center.X > npc.Center.X).ToDirectionInt();
+                    npc.netUpdate = true;
+                }
+
                 // Fireballs
                 npc.ai[1] += 1f;
                 float openMouthGateValue = 20f - (death ? 15f * (1f - (lifeRatio / 2)) : 10f * (1f - (lifeRatio / 2)));
@@ -1182,13 +1195,49 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            else if (npc.ai[0] == 2f)
+            {
+                int telegraphTime = 60;
+                int endTime = 120;
+                Vector2 spawnLocation = new Vector2(npc.Center.X + (30f * npc.scale * npc.localAI[1]), npc.Center.Y - 22f * npc.scale);
+                if (npc.ai[1] == 1f)
+                {
+                    SparkleParticle eyeTele = new(spawnLocation, Vector2.Zero, Color.Yellow, Color.White, 1.25f * npc.scale, telegraphTime, MathHelper.Pi * 0.02f);
+                    GeneralParticleHandler.SpawnParticle(eyeTele);
+                }
+
+                npc.ai[1]++;
+                if (npc.ai[1] >= telegraphTime && npc.ai[1] < endTime && npc.ai[1] % 2f == 0f)
+                {
+                    float laserFireAngle = MathHelper.ToRadians((npc.ai[1] - telegraphTime + 20) * 2f);
+                    Vector2 laserVelocity = Vector2.UnitY.RotatedBy(laserFireAngle * -npc.localAI[1]) * (death ? 15f : 12f);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int dmg = npc.GetProjectileDamage(ProjectileID.EyeBeam);
+                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, dmg, 0f, Main.myPlayer);
+                        Main.projectile[extraLasers].timeLeft = enrage ? 600 : 300;
+                        if (turboEnrage && CalamityWorld.LegendaryMode)
+                            Main.projectile[extraLasers].extraUpdates += 1;
+
+                        npc.netUpdate = true;
+                    }
+                }
+                if (npc.ai[1] >= endTime + 30)
+                {
+                    npc.ai[0] = 1f;
+                    npc.ai[1] = 0f;
+                    npc.netUpdate = true;
+                }
+            }
+
             // Laser fire if arms are dead
             if ((!leftFistAlive && !rightFistAlive) || death || CalamityWorld.LegendaryMode)
             {
-                npc.ai[0] = 1f;
-                return false;
+                if (npc.ai[0] != 2f)
+                    npc.ai[0] = 1f;
             }
-            npc.ai[0] = 0f;
+            else
+                npc.ai[0] = 0f;
 
             return false;
         }

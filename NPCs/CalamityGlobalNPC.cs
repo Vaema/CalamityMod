@@ -1836,6 +1836,10 @@ namespace CalamityMod.NPCs
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
             }
+            else if (npc.type == NPCID.GolemFistLeft || npc.type == NPCID.GolemFistRight)
+            {
+                npc.scale *= 1.15f;
+            }
             else if (npc.type == NPCID.GolemHeadFree)
             {
                 npc.dontTakeDamage = false;
@@ -6816,11 +6820,16 @@ namespace CalamityMod.NPCs
         #region Drawing
         public override void FindFrame(NPC npc, int frameHeight)
         {
-            /*if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.SkeletronPrime)
-                    npc.frameCounter = 0D;
-            }*/
+                if (npc.type == NPCID.GolemHead && npc.ai[0] == 2f)
+                {
+                    if (npc.localAI[1] == 1f)
+                        npc.frame.Y = frameHeight * 2;
+                    else
+                        npc.frame.Y = frameHeight * 4;
+                }
+            }
             // Increment the bestiary worm timer when hovering over the NPC or having their entry open. Pauses otherwise
             if (npc.IsABestiaryIconDummy)
             {
@@ -6831,6 +6840,8 @@ namespace CalamityMod.NPCs
                     bestiaryWormTimer = 0;
                 }
             }
+
+
         }
 
         // Debuff visuals. Alphabetical order as per usual, please
