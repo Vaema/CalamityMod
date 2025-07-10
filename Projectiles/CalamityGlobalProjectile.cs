@@ -349,10 +349,6 @@ namespace CalamityMod.Projectiles
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
             }
-
-            // Nerfed Seedler projectile damage by 25%
-            if (source is EntitySource_ItemUse_WithAmmo ea && ea.Item.type == ItemID.Seedler)
-                projectile.damage = (int)(projectile.damage * 0.75f);
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
         public override void ReceiveExtraAI(Projectile projectile, BitReader bitReader, BinaryReader binaryReader) => ParentNPCIndex = binaryReader.ReadInt32();
@@ -521,10 +517,10 @@ namespace CalamityMod.Projectiles
                 // Accelerate if fired in a spread from Skeletron in Rev+
                 if (revSkeletronAcceleratingSkull)
                 {
-                    float maxVelocity = BossRushEvent.BossRushActive ? 20f : CalamityWorld.death ? 18f : 15f;
+                    float maxVelocity = CalamityWorld.death ? 18f : 15f;
                     if (projectile.velocity.Length() < maxVelocity)
                     {
-                        float acceleration = BossRushEvent.BossRushActive ? 1.02f : 1.015f;
+                        float acceleration = 1.015f;
                         projectile.velocity *= acceleration;
                         if (projectile.velocity.Length() > maxVelocity)
                         {
@@ -563,7 +559,7 @@ namespace CalamityMod.Projectiles
                     num133 = Player.FindClosest(projectile.Center, 1, 1);
                     projectile.ai[1] += 1f;
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
-                    float homingEndTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                    float homingEndTime = CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
                         homingEndTime += 60f;
 
@@ -3234,6 +3230,13 @@ namespace CalamityMod.Projectiles
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
 
+            // Hack to allow Desert Tiger minion to fall through platforms while attacking
+            if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
+            {
+                if (projectile.ai[0] == 5f)
+                    projectile.tileCollide = false;
+            }
+
             // Jack O Lantern Launcher projectile tweak
             if (projectile.type == ProjectileID.JackOLantern)
             {
@@ -3246,6 +3249,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            #region Flail Extendo Hacks
             // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
             if (projectile.type == ProjectileID.TheDaoofPow)
             {
@@ -3276,6 +3280,22 @@ namespace CalamityMod.Projectiles
                     }
                 }
             }
+            // And Flower Pow!
+            if (projectile.type == ProjectileID.FlowerPow)
+            {
+                if (projectile.ai[0] == 1f)
+                {
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 5f) // When ai[1] reaches 12, it starts returning, so this makes it take an extra 5 frames to return
+                            projectile.ai[1]--;
+                    }
+                    else
+                        projectile.velocity *= 1.33f;
+                }
+            }
+            #endregion
 
             // Starfury stars never collide with tiles
             if (projectile.type == ProjectileID.Starfury)
@@ -3312,7 +3332,7 @@ namespace CalamityMod.Projectiles
             {
                 int spreadOutTime = 90;
                 if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - spreadOutTime)
-                    projectile.velocity *= BossRushEvent.BossRushActive ? 1.017078f : 1.015525f;
+                    projectile.velocity *= 1.015525f;
             }
 
             // Zapinator lasers cannot trigger their damage multiplier more than once
@@ -3514,16 +3534,13 @@ namespace CalamityMod.Projectiles
                             {
                                 if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < 15)
                                 {
-                                    // Daedalus Rogue Crystals: 2 x 25%, soft cap starts at 120 base damage
+                                    // Daedalus Rogue Crystals: 25%, soft cap starts at 120 base damage
                                     int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
 
-                                    for (int i = 0; i < 2; i++)
-                                    {
-                                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                                        int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
-                                        if (shard.WithinBounds(Main.maxProjectiles))
-                                            Main.projectile[shard].DamageType = DamageClass.Generic;
-                                    }
+                                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                                    int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
+                                    if (shard.WithinBounds(Main.maxProjectiles))
+                                        Main.projectile[shard].DamageType = DamageClass.Generic;
                                 }
                             }
                         }
@@ -4012,6 +4029,15 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
+            // Super Star Shooter has damage falloff
+            if (projectile.type == ProjectileID.SuperStar)
+            {
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.95f);
+                if (projectile.damage < 1)
+                    projectile.damage = 1;
+            }
+
             // Stardust Wings buff the Stardust Guardian's damage
             if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
                 modifiers.SourceDamage *= 2f;
@@ -4244,7 +4270,7 @@ namespace CalamityMod.Projectiles
 
             if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
             {
-                float homingTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                float homingTime = CalamityWorld.death ? 105f : 90f;
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
 

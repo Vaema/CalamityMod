@@ -35,8 +35,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.85f || death;
             bool phase3 = lifeRatio < 0.7f || death;
             bool phase4 = lifeRatio < (death ? 0.8f : 0.55f);
@@ -69,19 +68,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int ancientDoomLimit = 10;
             int idleTime = phase8 ? 20 : phase7 ? 30 : phase3 ? 35 : 40;
             float timeToFinishRitual = phase8 ? 180f : phase7 ? 240f : phase5 ? 300f : 360f;
-
-            if (bossRush)
-            {
-                iceMistFireRate = 40;
-                iceMistSpeed = 14f;
-                iceMistAmt = 3;
-                fireballFireRate = 8;
-                fireballSpeed *= 1.2f;
-                lightningOrbPhaseTime = 90;
-                ancientLightSpawnRate = 20;
-                ancientLightAmt = 4;
-                idleTime = 20;
-            }
 
             if (CalamityWorld.LegendaryMode)
             {
@@ -1094,8 +1080,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static bool BuffedAncientDoomAI(NPC npc, Mod mod)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             npc.damage = npc.defDamage = 0;
             float duration = 420f;
             float spawnAnimTime = 120f;

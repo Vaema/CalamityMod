@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.Ravager
                         }
 
                         NPC.noTileCollide = true;
-                        NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
+                        NPC.velocity.X = 12 * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0f;

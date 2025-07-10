@@ -181,16 +181,15 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(ImpactSound, Projectile.Center);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (Projectile.ai[2] == 0f)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    int totalProjectiles = bossRush ? 44 : death ? 36 : revenge ? 32 : expertMode ? 28 : 20;
+                    int totalProjectiles = death ? 36 : revenge ? 32 : expertMode ? 28 : 20;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
                     float velocity = 6.5f;

@@ -61,8 +61,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
             // Constantly update the player's velocity direction.
             Vector2 dashVel = Main.MouseWorld - player.Center;
-            dashVel = dashVel.SafeNormalize(Vector2.UnitX) * CalculateDashSpeed(player);
-            player.velocity = dashVel;
+            player.velocity = player.velocity.ToRotation().AngleTowards(dashVel.ToRotation(), 0.175f).ToRotationVector2() * CalculateDashSpeed(player);
 
             // Fall way, way, faster than usual.
             player.maxFallSpeed = 50f;

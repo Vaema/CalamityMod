@@ -137,7 +137,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
 
             // Calculate contact damage based on velocity
-            float segmentVelocity = BossRushEvent.BossRushActive ? 30f : CalamityWorld.revenge ? 25f : 23f;
+            float segmentVelocity = CalamityWorld.revenge ? 25f : 23f;
             float minimalContactDamageVelocity = segmentVelocity * 0.25f;
             float minimalDamageVelocity = segmentVelocity * 0.5f;
             float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();

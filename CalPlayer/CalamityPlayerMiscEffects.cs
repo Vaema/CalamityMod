@@ -3332,11 +3332,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() += Grax.DamageBoost;
             }
 
-            if (brutalCarnage)
-            {
-                Player.GetDamage<MeleeDamageClass>() += BrutalCarnage.MeleeDamageBoost;
-            }
-
             // Trinket of Chi bonus
             if (trinketOfChi)
             {
@@ -3661,14 +3656,6 @@ namespace CalamityMod.CalPlayer
 
             if (wDeath && !laudanum && !purity)
                 Player.GetDamage<GenericDamageClass>() -= 0.2f;
-
-            if (astralInfection && !(infectedJewel || hideOfDeus || purity))
-                Player.GetDamage<GenericDamageClass>() -= 0.1f;
-
-            if (pFlames && !purity)
-            {
-                Player.GetDamage<GenericDamageClass>() -= 0.1f;
-            }
 
             if (aCrunch && !laudanum && !purity)
             {

@@ -65,8 +65,8 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 900;
             NPC.height = 450;
             NPC.defense = 40;
-            NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(60000, 72000, 600000);
+            NPC.DR_NERD(0.1f);
+            NPC.LifeMaxNERB(57000, 68400, 600000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -128,10 +128,9 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityGlobalNPC.LeviAndAna == -1)
                 CalamityGlobalNPC.LeviAndAna = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             Vector2 npcCenter = NPC.Center;
 
             // Is in spawning animation
@@ -198,7 +197,7 @@ namespace CalamityMod.NPCs.Leviathan
             bool notOcean = player.position.Y < 800f || player.position.Y > Main.worldSurface * 16D || (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400));
 
             // Enrage
-            if (notOcean && !bossRush)
+            if (notOcean && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -206,12 +205,12 @@ namespace CalamityMod.NPCs.Leviathan
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -439,16 +438,8 @@ namespace CalamityMod.NPCs.Leviathan
                     float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
                     NPC.ai[1] += 1f;
-                    int activePlayerAmt = 0;
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (Main.player[i].active && !Main.player[i].dead && (npcCenter - Main.player[i].Center).Length() < 1000f)
-                            activePlayerAmt++;
-                    }
-                    NPC.ai[1] += activePlayerAmt / 2;
-
                     bool spawnedAberration = false;
-                    float aberrationSpawnDelay = CalamityWorld.LegendaryMode ? 20f : (!sirenAlive || phase4) ? 60f : 40f;
+                    float aberrationSpawnDelay = CalamityWorld.LegendaryMode ? 20f : (!sirenAlive || phase4) ? 60f : 50f;
                     if (NPC.ai[1] > aberrationSpawnDelay)
                     {
                         NPC.ai[1] = 0f;
@@ -456,8 +447,8 @@ namespace CalamityMod.NPCs.Leviathan
                         spawnedAberration = true;
                     }
 
-                    int spawnLimit = CalamityWorld.LegendaryMode ? 10 : (sirenAlive && !phase4) ? 1 : (death ? 2 : 3);
-                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit)
+                    int spawnLimit = CalamityWorld.LegendaryMode ? 10 : (sirenAlive && !phase4) ? 0 : 2;
+                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit && NPC.ai[2] <= spawnLimit)
                     {
                         SoundEngine.PlaySound(soundChoice with { Pitch = soundChoice.Pitch + extrapitch }, npcCenter);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -806,7 +797,7 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

@@ -1319,7 +1319,6 @@ namespace CalamityMod.CalPlayer
         public bool xWrath = false;
         public bool graxDefense = false;
         public bool encased = false;
-        public bool brutalCarnage = false;
         public bool omniscience = false;
         public bool zerg = false;
         public bool zen = false;
@@ -1577,33 +1576,19 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Transformation
-        public bool abyssalDivingSuitPrevious;
         public bool abyssalDivingSuit;
-        public bool abyssalDivingSuitHide;
-        public bool abyssalDivingSuitForce;
-        public bool abyssalDivingSuitPower;
+        public bool abyssalDivingSuitPrevious;
         public bool profanedCrystal;
         public int profanedCrystalStatePrevious;
         public bool profanedCrystalPrevious;
         public int profanedCrystalAnim;
-        public bool profanedCrystalForce;
         public bool profanedCrystalBuffs;
-        public bool profanedCrystalHide;
-        public KeyValuePair<int, int> profanedCrystalWingCounter = new KeyValuePair<int, int>(0, 10);
-        public KeyValuePair<int, int> profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
+
         public int pscState;
         public Color pscLerpColor = Color.White;
         public bool aquaticHeartPrevious;
         public bool aquaticHeart;
-        public bool aquaticHeartHide;
-        public bool aquaticHeartForce;
-        public bool aquaticHeartPower;
-        public bool snowmanPrevious;
-        public bool snowman;
-        public bool snowmanHide;
-        public bool snowmanForce;
         public bool snowmanNoseless;
-        public bool snowmanPower;
         public bool meldTransformationPrevious;
         public bool meldTransformation;
         public bool meldTransformationForce;
@@ -1612,8 +1597,6 @@ namespace CalamityMod.CalPlayer
         public bool omegaBlueTransformation;
         public bool omegaBlueTransformationForce;
         public bool omegaBlueTransformationPower;
-        public bool ghostBracelet;
-        public bool punchCard;
         #endregion
 
         #region Calamitas Enchant Effects
@@ -2516,7 +2499,6 @@ namespace CalamityMod.CalPlayer
             xWrath = false;
             graxDefense = false;
             encased = false;
-            brutalCarnage = false;
             omniscience = false;
             zerg = false;
             zen = false;
@@ -2722,28 +2704,21 @@ namespace CalamityMod.CalPlayer
             */
 
             abyssalDivingSuitPrevious = abyssalDivingSuit;
-            abyssalDivingSuit = abyssalDivingSuitHide = abyssalDivingSuitForce = abyssalDivingSuitPower = false;
+            abyssalDivingSuit = false;
 
-            aquaticHeartPrevious = aquaticHeart;
-            aquaticHeart = aquaticHeartHide = aquaticHeartForce = aquaticHeartPower = false;
+            aquaticHeart = false;
 
             profanedCrystalStatePrevious = pscState;
             profanedCrystalPrevious = profanedCrystal;
-            profanedCrystal = profanedCrystalBuffs = profanedCrystalForce = profanedCrystalHide = false;
+            profanedCrystal = profanedCrystalBuffs = false;
             pscState = 0;
             pscLerpColor = Color.White;
-
-            snowmanPrevious = snowman;
-            snowman = snowmanHide = snowmanForce = snowmanPower = false;
 
             meldTransformationPrevious = meldTransformation;
             meldTransformation = meldTransformationForce = meldTransformationPower = false;
 
             omegaBlueTransformationPrevious = omegaBlueTransformation;
             omegaBlueTransformation = omegaBlueTransformationForce = omegaBlueTransformationPower = false;
-
-            ghostBracelet = false;
-            punchCard = false;
 
             rageModeActive = false;
             adrenalineModeActive = false;
@@ -3017,7 +2992,6 @@ namespace CalamityMod.CalPlayer
             xWrath = false;
             graxDefense = false;
             encased = false;
-            brutalCarnage = false;
             omniscience = false;
             zerg = false;
             zen = false;
@@ -4048,6 +4022,11 @@ namespace CalamityMod.CalPlayer
             // Putting this in GlobalItem will run multiple times for each slot, which this system already does, creating a slew of problems.
             VanillaArmorChangeManager.ApplyPotentialEffectsTo(Player);
 
+            // Nerf to the proc rate of Spectre Mask's set bonus souls
+            // Vanilla subtracts 6.6666665 from this counter per frame, this reduces it to 4
+            if (Player.ghostDmg > 0)
+                Player.ghostDmg += 2.6666665f;
+
             // If the config is enabled, vastly increase the player's base tile and wall placement speeds
             // This stacks with the Brick Layer and Portable Cement Mixer
             if (CalamityServerConfig.Instance.FasterTilePlacement)
@@ -4078,7 +4057,7 @@ namespace CalamityMod.CalPlayer
             if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && absorber)
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, Player.whoAmI);
 
-            if (snowman)
+            if (Player.Transformation().Type == ModContent.ItemType<Popo>())
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
                     Player.AddBuff(BuffType<PopoBuff>(), 60, true);
@@ -4879,37 +4858,6 @@ namespace CalamityMod.CalPlayer
                 && Player.armor[1].type == ModContent.ItemType<SnowRuffianChestplate>()
                 && Player.armor[2].type == ModContent.ItemType<SnowRuffianGreaves>())
                     snowRuffianSet = true;
-
-                // Accessories
-                for (int i = 3; i < 8; i++)
-                {
-                    Item vanity = Player.armor[i];
-
-                    if (vanity.type == ModContent.ItemType<AbandonedWulfrumHelmet>())
-                        Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
-                    if (vanity.type == ModContent.ItemType<AbyssalDivingSuit>())
-                        abyssalDivingSuitForce = true;
-                    if (vanity.type == ModContent.ItemType<AquaticHeart>())
-                        aquaticHeartForce = true;
-                    if (vanity.type == ModContent.ItemType<GhostBracelet>())
-                        ghostBracelet = true;
-                    if (vanity.type == ModContent.ItemType<HapuFruit>())
-                        Player.GetModPlayer<HapuFruitPlayer>().vanityEquipped = true;
-                    if (vanity.type == ModContent.ItemType<OracleHeadphones>())
-                        Player.GetModPlayer<OracleHeadphonesPlayer>().vanityEquipped = true;
-                    if (vanity.type == ModContent.ItemType<Popo>())
-                        snowmanForce = true;
-                    if (vanity.type == ModContent.ItemType<ProfanedSoulCrystal>())
-                        profanedCrystalForce = true;
-                    if (vanity.type == ModContent.ItemType<PunchCard>())
-                        punchCard = true;
-                    if (vanity.type == ModContent.ItemType<SharkyPlush>())
-                        Player.GetModPlayer<SharkyPlushPlayer>().vanityEquipped = true;
-                    if (vanity.type == ModContent.ItemType<XyksBlessingBlue>())
-                        Player.GetModPlayer<XyksBlessingBluePlayer>().vanityEquipped = true;
-                    if (vanity.type == ModContent.ItemType<XyksBlessingOrange>())
-                        Player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
-                }
             }
 
             if (Player.Calamity().andromedaState == AndromedaPlayerState.LargeRobot ||
@@ -4917,58 +4865,8 @@ namespace CalamityMod.CalPlayer
             {
                 Player.head = EquipLoader.GetEquipSlot(Mod, "HeadlessEquipTexture", EquipType.Head); // To make the head invisible on the map. The map was having a hissy fit because of hitbox changes.
             }
-            else if ((profanedCrystal || profanedCrystalForce) && !profanedCrystalHide)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightLegs", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightHead", EquipType.Head);
-                Player.wings = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightWings", EquipType.Wings);
-                Player.face = -1;
-
-                bool enrage = pscState >= (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Enraged;
-
-                if (profanedCrystalWingCounter.Value == 0)
-                {
-                    int key = profanedCrystalWingCounter.Key;
-                    profanedCrystalWingCounter = new KeyValuePair<int, int>(key == 3 ? 0 : key + 1, enrage ? 5 : 8);
-                }
-
-                Player.wingFrame = profanedCrystalWingCounter.Key;
-                profanedCrystalWingCounter = new KeyValuePair<int, int>(profanedCrystalWingCounter.Key, profanedCrystalWingCounter.Value - 1);
-                Player.armorEffectDrawOutlines = true;
-                if (profanedCrystalBuffs)
-                {
-                    Player.armorEffectDrawShadow = true;
-                    if (enrage)
-                    {
-                        Player.armorEffectDrawOutlinesForbidden = true;
-                    }
-                }
-            }
-            else if ((snowmanPower || snowmanForce) && !snowmanHide)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
-                Player.face = -1;
-            }
             else if (AresExoskeleton.ArmExists(Player))
                 Player.body = EquipLoader.GetEquipSlot(Mod, "AresExoskeleton", EquipType.Body);
-
-            else if ((abyssalDivingSuitPower || abyssalDivingSuitForce) && !abyssalDivingSuitHide)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
-                Player.face = -1;
-            }
-            else if ((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
-                Player.face = -1;
-            }
             else if (meldTransformationPower || meldTransformationForce)
             {
                 Player.legs = EquipLoader.GetEquipSlot(Mod, "MeldTransformation", EquipType.Legs);
@@ -4983,26 +4881,7 @@ namespace CalamityMod.CalPlayer
                 if (hasOmegaBlueCooldown && cd.timeLeft > 1500)
                     Player.head = EquipLoader.GetEquipSlot(Mod, "OmegaBlueTransformation", EquipType.Head);
             }
-            else
-            {
-                if (profanedCrystalWingCounter.Key != 1)
-                    profanedCrystalWingCounter = new KeyValuePair<int, int>(1, 7);
-                if (profanedCrystalAnimCounter.Key != 0)
-                    profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
-            }
 
-            if (ghostBracelet)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
-            }
-            if (punchCard)
-            {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
-            }
 
             if (snowRuffianSet)
             {
@@ -5597,60 +5476,6 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-            }
-        }
-
-        private bool IsValidTransitionFrame(AnimationType currentAnim, AnimationType newAnim, int frame, int counter) //this exists so it doesn't loop through the entire walk/idle anim just to find one frame for switching.
-        {
-            bool result = newAnim != AnimationType.Jump && currentAnim != AnimationType.Jump;
-            if (currentAnim == AnimationType.Walk && newAnim == AnimationType.Idle)
-            {
-                result = counter <= 0 && (frame == 11 || frame == 15 || frame == 19);
-            }
-            else if (currentAnim == AnimationType.Idle && newAnim == AnimationType.Walk)
-            {
-                result = counter <= 0 && (frame == 2 || frame == 6);
-            }
-            return currentAnim != newAnim && result; //swapping to jumps should be instant, no need to check the counter here
-        }
-
-        private int HandlePSCAnimationFrames(AnimationType newType)
-        {
-            int key = profanedCrystalAnimCounter.Key; //0-based indexing
-            int value = profanedCrystalAnimCounter.Value - 1;
-            AnimationType currentType = key < 8 ? AnimationType.Idle : key == 8 ? AnimationType.Jump : AnimationType.Walk;
-
-            bool isInvalidTransFrame = !IsValidTransitionFrame(currentType, newType, key, value); //to make the transition between walk and idle frames less jarring and smoother
-            AnimationType type = isInvalidTransFrame ? newType : currentType;
-            int frameCount = type == AnimationType.Walk || (!profanedCrystalForce && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 7 : 10;
-            int lowerRange = type == AnimationType.Idle ? 0 : type == AnimationType.Jump ? 8 : 9;
-            int upperRange = type == AnimationType.Idle ? 7 : type == AnimationType.Jump ? 8 : 22;
-            if (value <= 0 || !isInvalidTransFrame)
-            {
-                value = frameCount;
-                if (key >= lowerRange && key < upperRange)
-                    key++;
-                else
-                    key = lowerRange;
-            }
-            profanedCrystalAnimCounter = new KeyValuePair<int, int>(key, value);
-            return profanedCrystalAnimCounter.Key;
-        }
-
-        public override void PostUpdate() //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
-        {   
-            bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
-                                  Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
-            if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)
-            {
-                bool usingCarpet = Player.carpetTime > 0 && Player.controlJump; //doesn't make sense for carpet to use jump frame since you have solid ground
-                AnimationType animType = AnimationType.Walk;
-                if ((Player.sliding || Player.velocity.Y != 0 || Player.mount.Active || (Player.grappling[0] != -1 || !Player.CheckSolidGround()) || Player.GoingDownWithGrapple) && !usingCarpet)
-                    animType = AnimationType.Jump;
-                else if (Player.velocity.X == 0 || usingCarpet)
-                    animType = AnimationType.Idle;
-                int frame = HandlePSCAnimationFrames(animType);
-                Player.legFrame.Y = Player.legFrame.Height * frame;
             }
         }
 

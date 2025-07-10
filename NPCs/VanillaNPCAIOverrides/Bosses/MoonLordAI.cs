@@ -21,8 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             int aggressionLevel = 4;
             if (npc.type == NPCID.MoonLordCore || npc.type == NPCID.MoonLordHand || npc.type == NPCID.MoonLordHead)
@@ -44,9 +43,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         break;
                 }
             }
-
-            if (bossRush)
-                aggressionLevel = 5;
 
             if (CalamityWorld.LegendaryMode)
                 aggressionLevel = 6;
@@ -1169,7 +1165,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int damage = npc.GetProjectileDamage(type);
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, damage, 0f, Main.myPlayer, 0f, ai);
                             Main.projectile[proj].timeLeft = 1200;
-                            Main.projectile[proj].Calamity().lineColor = bossRush ? 1 : aggressionLevel;
+                            Main.projectile[proj].Calamity().lineColor = aggressionLevel;
                         }
                     }
                     else

@@ -39,7 +39,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
             Projectile.timeLeft = TimerCap;
-            Projectile.knockBack = 2;
             Projectile.tileCollide = false;
             Projectile.width = 20;
             Projectile.height = 20;
@@ -47,7 +46,6 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.penetrate = -1;
             Projectile.extraUpdates = 5;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.ai[1] = 40;
         }
 
         public override void OnSpawn(IEntitySource source)
@@ -64,16 +62,10 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.ai[0]++;
         }
 
-        public override bool? CanDamage()
-        {
-            return true;
-        }
-
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             Player owner = Main.player[Projectile.owner];
-            if (Main.rand.Next(100) < owner.GetWeaponCrit(owner.ActiveItem()) + 20)
-                modifiers.SetCrit();
+            modifiers.SetCrit();
         }
 
         public override bool PreDraw(ref Color lightColor)

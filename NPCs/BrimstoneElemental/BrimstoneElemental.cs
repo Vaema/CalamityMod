@@ -179,16 +179,15 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables for buffing the AI
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool phase2 = lifeRatio < 0.5f && revenge;
             bool phase3 = lifeRatio < 0.33f;
 
             // Enrage
-            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !bossRush)
+            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !BossRushEvent.BossRushActive)
             {
                 if (calamityGlobalNPC.newAI[3] > 0f)
                     calamityGlobalNPC.newAI[3] -= 1f;
@@ -196,17 +195,17 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             else
                 calamityGlobalNPC.newAI[3] = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f || bossRush;
+            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
-            if (biomeEnraged && (!player.ZoneUnderworldHeight || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneUnderworldHeight)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (biomeEnraged && (!player.Calamity().ZoneCalamity || bossRush))
+            if (biomeEnraged && !player.Calamity().ZoneCalamity)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -336,7 +335,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     NPC.localAI[1] += 1f;
 
-                    if (NPC.localAI[1] >= (bossRush ? 90f : death ? 120f : 180f))
+                    if (NPC.localAI[1] >= (death ? 120f : 180f))
                     {
                         NPC.TargetClosest();
                         NPC.localAI[1] = 0f;
@@ -390,7 +389,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                NPC.alpha += bossRush ? 8 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
+                NPC.alpha += death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (NPC.alpha >= 255)
                 {
                     int spawnType = currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();
@@ -696,7 +695,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
                 Vector2 source = new Vector2(NPC.Center.X + (NPC.spriteDirection > 0 ? 34f : -34f), NPC.Center.Y - 74f);
                 Vector2 aimAt = player.Center + player.velocity * 20f;
-                float aimResponsiveness = bossRush ? 0.05f : (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
+                float aimResponsiveness = (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
 
                 Vector2 aimVector = (aimAt - source).SafeNormalize(Vector2.UnitY);
                 if (aimVector.HasNaNs())
@@ -886,7 +885,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

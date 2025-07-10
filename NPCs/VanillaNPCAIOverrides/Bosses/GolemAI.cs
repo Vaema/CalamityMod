@@ -22,8 +22,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.75f;
             bool phase3 = lifeRatio < 0.5f;
             bool phase4 = lifeRatio < 0.25f;
@@ -46,8 +45,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
             {
@@ -58,15 +57,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && (enrage || turboEnrage);
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && (enrage || turboEnrage);
 
             bool reduceFallSpeed = npc.velocity.Y > 0f && Collision.SolidCollision(npc.position + Vector2.UnitY * 1.1f * npc.velocity.Y, npc.width, npc.height);
 
@@ -511,7 +510,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 11f : 7.25f;
+                        float projectileVelocity = death ? 7.5f : 4.75f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
@@ -522,12 +521,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
-                        int totalFireballsPerSide = 2;
-                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 25 : 35;
+                        int totalFireballsPerSide = 3;
+                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 40 : 60;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
                         {
-                            // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
+                            // Spawn projectiles 0, 1, 2, 22, 23, and 24
                             if (i < totalFireballsPerSide || i >= totalIterations - totalFireballsPerSide)
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));
@@ -692,14 +691,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             NPC golem = Main.npc[NPC.golemBoss];
             Player player = Main.player[npc.target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (player.Center.Y > Main.worldSurface * 16.0)
+            if (player.Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)player.Center.X / 16;
                 int targetTilePosY = (int)player.Center.Y / 16;
@@ -708,12 +706,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             float aggression = turboEnrage ? (CalamityWorld.LegendaryMode ? 4f : 3f) : enrage ? 2f : death ? 1.7f : 1f;
@@ -978,8 +976,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Count body parts
             bool leftFistAlive = NPC.AnyNPCs(NPCID.GolemFistLeft);
@@ -990,9 +987,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.Center = Main.npc[NPC.golemBoss].Center - new Vector2(3f, 57f) * npc.scale;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1001,12 +998,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             // Alpha
@@ -1227,16 +1224,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float golemLifeRatio = Main.npc[NPC.golemBoss].life / (float)Main.npc[NPC.golemBoss].lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.7f || golemLifeRatio < 0.85f || death;
             bool phase3 = lifeRatio < 0.55f || golemLifeRatio < 0.7f || death;
             bool phase4 = lifeRatio < 0.4f || golemLifeRatio < 0.55f || death;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1245,12 +1241,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             if (turboEnrage)

@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 127;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 22;
@@ -58,8 +58,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
             if (nonReleasedMusicNotes >= musicNoteCap)
             {
-                Main.musicPitch = -0.5f;
-                SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
+                if (!Main.zenithWorld)
+                    SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
                 return false;
             }
             else

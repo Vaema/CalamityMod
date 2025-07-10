@@ -57,8 +57,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
 
-            Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
-            Terraria.On_Main.DrawPendingMouseText += SpoofMouseItem;
+            On_Player.KeyDoubleTap += ActivateSetBonus;
+            On_Main.DrawPendingMouseText += SpoofMouseItem;
         }
 
         public override void Unload()
@@ -67,7 +67,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             DummyCannon = null;
         }
 
-        private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
+        private void ActivateSetBonus(On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
         {
             if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
             {
@@ -84,9 +84,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 else if (player.HasItem(ItemType<WulfrumMetalScrap>()))
                 {
                     player.ConsumeItem(ItemType<WulfrumMetalScrap>());
-                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right.
+                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right
                     player.AddCooldown(WulfrumBastion.ID, BastionCooldown + BastionTime);
-                    //Though do i need to sync that or is the player inventory auto synced?
+                    //Though do I need to sync that or is the player inventory auto synced?
                     DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
                 }
             }
@@ -95,7 +95,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         }
 
         //Replaces the tooltip of the armor set with the fusion cannon if the player holds shift
-        private void SpoofMouseItem(Terraria.On_Main.orig_DrawPendingMouseText orig)
+        private void SpoofMouseItem(On_Main.orig_DrawPendingMouseText orig)
         {
             var player = Main.LocalPlayer;
 
@@ -132,7 +132,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             armorPlayer.wulfrumSet = true;
 
-            player.setBonus = this.GetLocalization("SetBonus").Format(MinionSlotBoost); //The cooler part of the set bonus happens in modifytooltips because i can't recolor it otherwise. Madge
+            player.setBonus = this.GetLocalization("SetBonus").Format(MinionSlotBoost); //The cooler part of the set bonus happens in modifytooltips because I can't recolor it otherwise. Madge
             player.maxMinions += MinionSlotBoost;
             if (PowerModeEngaged(player, out var cd))
             {
@@ -143,11 +143,12 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 //Stats
                 player.statDefense += 13;
-                player.endurance += 0.05f; //10% Dr in total with the chestplate
+                player.endurance += 0.05f; //10% DR in total with the chestplate
 
-                //Can't account for previous fullbody transformations but at this point, whatever.
+                //Can't account for previous fullbody transformations but at this point, whatever
+                bool transformed = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
                 Item headItem = player.armor[10].type != ItemID.None ? player.armor[10] : player.armor[0];
-                bool hatVisible = !transformationPlayer.transformationActive && headItem.type == ItemType<WulfrumHat>();
+                bool hatVisible = !transformed && headItem.type == ItemType<WulfrumHat>();
 
                 //Spawn the hat
                 if (cd.timeLeft == BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f) && hatVisible)
@@ -158,11 +159,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 //Visuals
                 if (cd.timeLeft < BastionCooldown + BastionTime - BastionBuildTime)
-                    player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
-                else if (cd.timeLeft <= BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f))
-                    player.GetModPlayer<WulfrumTransformationPlayer>().forceHelmetOn = true;
+                    player.Transformation().Type = ItemType<AbandonedWulfrumHelmet>();
 
-                //Swapping the arm.
+                //Swapping the arm
                 if (DummyCannon.IsAir)
                     DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
 
@@ -175,7 +174,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     Main.mouseItem = DummyCannon;
                 }
 
-                //Slot 58 is the "fake" slot thats used for the item the player is holding in their mouse.
+                //Slot 58 is the "fake" slot thats used for the item the player is holding in their mouse
                 player.inventory[58] = DummyCannon;
                 player.selectedItem = 58;
             }
@@ -187,6 +186,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     Main.mouseItem = new Item();
 
                 DummyCannon.TurnToAir();
+
+                if (player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>() && player.Transformation().currentTransformation.IsForced)
+                    player.Transformation().currentTransformation.IsForced = false;
             }
         }
 
@@ -194,8 +196,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             SoundEngine.PlaySound(SetActivationSound);
 
-            //Do'nt do the effect ifthe player is already using the wulfrum vanity lol.
-            bool transformedAlready = player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive;
+            //Don't do the effect if the player is already using the wulfrum vanity lol
+            bool transformedAlready = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
 
             if (!transformedAlready)
             {
@@ -364,7 +366,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             {
                 SetBonusEndEffect(true);
                 if (!Player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped)
-                    Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = false;
+                    Player.Transformation().currentTransformation = null;
             }
         }
 

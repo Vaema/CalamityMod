@@ -442,10 +442,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityWorld.StopRain();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Used for Scal's teleport at the start of brothers phase
             bool teleport = false;
@@ -464,16 +463,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             int monsterDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneMonster>());
             int waveDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneWave>());
             int hellblastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneHellblast>());
-            if (bossRush)
-            {
-                bulletHellblastDamage /= 2;
-                barrageDamage /= 2;
-                fireblastDamage /= 2;
-                gigablastDamage /= 2;
-                monsterDamage /= 2;
-                waveDamage /= 2;
-                hellblastDamage /= 2;
-            }
 
             int bulletHellblast = zenithAI ? ModContent.ProjectileType<BrimstoneWave>() : ModContent.ProjectileType<BrimstoneHellblast2>();
             int barrage = ModContent.ProjectileType<BrimstoneBarrage>();
@@ -503,7 +492,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             if (!startText)
             {
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalSummonText";
                     if (permafrost)
@@ -681,13 +670,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region Enrage and DR
-            if ((spawnArena && !player.Hitbox.Intersects(safeBox)) || bossRush)
+            if (spawnArena && !player.Hitbox.Intersects(safeBox))
             {
-                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.35f;
+                float projectileVelocityMultCap = 2f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
-                protectionBoost = !bossRush;
-                if (!player.Hitbox.Intersects(safeBox))
-                    protectionBoost = true;
+                protectionBoost = true;
             }
             else
             {
@@ -774,7 +761,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     forcefieldOpacity = Utils.GetLerpValue(0.1f, 0.6f, NPC.Opacity, true);
                     if (NPC.alpha >= 230)
                     {
-                        if (DownedBossSystem.downedCalamitas && !bossRush)
+                        if (DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive)
                         {
                             // Create a teleport line effect
                             Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, permafrost ? Color.Cyan : Color.Red);
@@ -1023,7 +1010,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH2Text";
                     if (permafrost)
@@ -1148,7 +1135,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH3Text";
                     if (permafrost)
@@ -1353,7 +1340,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH4Text";
                     if (permafrost)
@@ -1504,7 +1491,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (permafrost)
                     key = "Mods.CalamityMod.Status.Boss.PermafrostBH5Text";
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     if (DownedBossSystem.downedCalamitas && !permafrost)
                         key += "Rematch";
@@ -1615,7 +1602,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
 
 
-                        if (!hasDoneDeathAnim && !bossRush) // Scrapped death animation for Scal
+                        if (!hasDoneDeathAnim && !BossRushEvent.BossRushActive) // Scrapped death animation for Scal
                         {
                             attackPause = 5;
                             Dust.QuickDustLine(NPC.Center, safeBox.Center() + new Vector2(0, -30), 500f, permafrost ? Color.Cyan : Color.Red);
@@ -1705,7 +1692,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
                         else
                         {
-                            if (bossRush)
+                            if (BossRushEvent.BossRushActive)
                                 NPC.Center = initialRitualPosition + new Vector2(0, -30);
 
                             if (NPC.velocity.Y < 8f)
@@ -1713,11 +1700,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (!canDespawn)
                                 NPC.velocity.X *= 0.965f;
 
-                            if (DownedBossSystem.downedCalamitas || bossRush)
+                            if (DownedBossSystem.downedCalamitas || BossRushEvent.BossRushActive)
                             {
                                 if (giveUpCounter == 720)
                                 {
-                                    if (bossRush)
+                                    if (BossRushEvent.BossRushActive)
                                     {
                                         NPC.chaseable = true;
                                         NPC.dontTakeDamage = false;
@@ -1739,15 +1726,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     NPC.NPCLoot();
                                 }
                             }
-                            else if (giveUpCounter == 900 && !bossRush)
+                            else if (giveUpCounter == 900 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText1", textColor);
                             }
-                            else if (giveUpCounter == 600 && !bossRush)
+                            else if (giveUpCounter == 600 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText2", textColor);
                             }
-                            else if (giveUpCounter == 300 && !bossRush)
+                            else if (giveUpCounter == 300 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText3", textColor);
                             }
@@ -1807,7 +1794,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
                     }
 
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText4";
                         if (permafrost)
@@ -1823,7 +1810,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired4 && lifeRatio <= 0.02f)
                 {
-                    if (!bossRush && !permafrost)
+                    if (!BossRushEvent.BossRushActive && !permafrost)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText3";
                         if (DownedBossSystem.downedCalamitas)
@@ -1837,7 +1824,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired3 && lifeRatio <= 0.04f)
                 {
-                    if (!bossRush && !permafrost)
+                    if (!BossRushEvent.BossRushActive && !permafrost)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText2";
                         if (DownedBossSystem.downedCalamitas)
@@ -1851,7 +1838,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired2 && lifeRatio <= 0.06f)
                 {
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText1";
                         if (permafrost)
@@ -1922,7 +1909,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #region TransformSeekerandBrotherTriggers
             if (!halfLife && lifeRatio <= 0.45f && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
             {
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalPhase2Text";
                     if (permafrost)
@@ -1940,7 +1927,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 if (!secondStage)
                 {
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalSeekerRingText";
                         if (permafrost)
@@ -3395,7 +3382,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         }
 
         #region Loot
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }

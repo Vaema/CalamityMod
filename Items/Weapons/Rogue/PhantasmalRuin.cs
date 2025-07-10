@@ -16,13 +16,12 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 108;
             Item.height = 114;
-            Item.damage = 152;
+            Item.damage = 140;
             Item.knockBack = 8f;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 30;
             Item.autoReuse = true;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<PhantasmalRuinProj>();

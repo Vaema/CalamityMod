@@ -136,13 +136,12 @@ namespace CalamityMod.NPCs.Perforator
             if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles)
                 NPC.TargetClosest();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Variables for ichor blob phase
-            float blobPhaseGateValue = bossRush ? 450f : 600f;
+            float blobPhaseGateValue = 600f;
             bool floatAboveToFireBlobs = NPC.ai[2] >= blobPhaseGateValue - 120f;
 
             Player player = Main.player[NPC.target];
@@ -154,7 +153,7 @@ namespace CalamityMod.NPCs.Perforator
             bool phase2 = lifeRatio < 0.7f;
 
             // Enrage
-            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
+            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -162,17 +161,17 @@ namespace CalamityMod.NPCs.Perforator
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!player.ZoneCrimson || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneCrimson)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
+            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -320,7 +319,7 @@ namespace CalamityMod.NPCs.Perforator
             // Emit ichor blobs
             if (phase2)
             {
-                if (wormsAlive == 0 || large || bossRush || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
+                if (wormsAlive == 0 || large || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
                 {
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= blobPhaseGateValue)
@@ -328,7 +327,7 @@ namespace CalamityMod.NPCs.Perforator
                         if (NPC.ai[2] < blobPhaseGateValue + 300f)
                         {
                             if (NPC.velocity.Length() > 0.5f)
-                                NPC.velocity *= bossRush ? 0.94f : 0.96f;
+                                NPC.velocity *= 0.96f;
                             else
                                 NPC.ai[2] = blobPhaseGateValue + 300f;
                         }
@@ -362,7 +361,7 @@ namespace CalamityMod.NPCs.Perforator
                             {
                                 Vector2 blobVelocity = new Vector2(Main.rand.Next(-blobSpread, blobSpread + 1), Main.rand.Next(-blobSpread, blobSpread + 1));
                                 blobVelocity.Normalize();
-                                blobVelocity *= Main.rand.Next(400, 801) * (bossRush ? 0.02f : 0.01f);
+                                blobVelocity *= Main.rand.Next(400, 801) * 0.01f;
 
                                 if (CalamityWorld.LegendaryMode)
                                     blobVelocity *= Main.rand.NextFloat() + 1f;
@@ -556,7 +555,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }
