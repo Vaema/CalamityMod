@@ -986,6 +986,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Stay in position on top of body
             npc.Center = Main.npc[NPC.golemBoss].Center - new Vector2(3f, 57f) * npc.scale;
+            npc.velocity = Main.npc[NPC.golemBoss].velocity;
 
             // Enrage if the target isn't inside the temple
             bool enrage = !BossRushEvent.BossRushActive;
