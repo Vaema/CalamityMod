@@ -313,14 +313,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[1] == 3f)
                         {
                             npc.velocity.Y = -10f * speedMult;
-                            npc.velocity.X += (phase2 ? (death ? 5.15f : 4.5f) : 3.5f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (death ? 5.5f : 4.5f) : 3.5f) * npc.direction;
                             npc.ai[0] = -100f;
                             npc.ai[1] = 0f;
                         }
                         else if (npc.ai[1] == 2f)
                         {
                             npc.velocity.Y = -6f * speedMult;
-                            npc.velocity.X += (phase2 ? (deathModeRapidHops ? 8f : death ? 6.15f : 5.5f) : 4.5f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (deathModeRapidHops ? 8f : death ? 6.5f : 5.5f) : 4.5f) * npc.direction;
                             npc.ai[0] = -60f;
 
                             if (!deathModeRapidHops)
@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         else
                         {
                             npc.velocity.Y = -8f * speedMult;
-                            npc.velocity.X += (phase2 ? (death ? 5.75f : 5f) : 4f) * npc.direction;
+                            npc.velocity.X += (phase2 ? (death ? 6f : 5f) : 4f) * npc.direction;
                             npc.ai[0] = -60f;
                             npc.ai[1] += 1f;
                         }
@@ -341,7 +341,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
 
                         if (death)
-                            npc.velocity.X *= 1.2f;
+                            npc.velocity.X *= 1.25f;
 
                         npc.noTileCollide = true;
                     }
@@ -354,7 +354,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
                 if (death)
-                    jumpVelocityLimit += 1.5f;
+                    jumpVelocityLimit += 2.25f;
                 if (CalamityWorld.LegendaryMode)
                     jumpVelocityLimit = 8f;
 
