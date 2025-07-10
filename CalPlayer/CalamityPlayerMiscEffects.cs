@@ -2998,7 +2998,7 @@ namespace CalamityMod.CalPlayer
                     // If breath is greater than 0 and player has gills or is merfolk, balance out the effects by reducing breath
                     if (Player.breath > 0)
                     {
-                        if (Player.gills || Player.merman)
+                        if (Player.gills || Player.merman || Player.accMerman)
                             Player.breath -= 3;
                     }
 
