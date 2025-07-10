@@ -241,12 +241,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[1] += 6f;
                         }
                     }
-                    if (npc.ai[1] >= 300f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] != 2f))
+                    if (npc.ai[1] >= 300f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] <= 1f))
                     {
                         npc.ai[1] = -20f;
                         npc.frameCounter = 0D;
                     }
-                    else if (npc.ai[1] == -1f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] != 2f))
+                    else if (npc.ai[1] == -1f && (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] <= 1f))
                     {
                         // Set jump velocity
                         if (!headAlive)
@@ -411,8 +411,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         void NormalJump()
                         {
-                            float velocityBoost = (death && !freeHeadAlive && !headAlive) ? 5.75f * (1f - (lifeRatio / 2)) : death ? 5f * (1f - (lifeRatio / 2)) : 3.8f * (1f - (lifeRatio / 2));
-                            float velocityX = (death ? 8.75f : 6.25f) + velocityBoost;
+                            float velocityBoost = ((death && !freeHeadAlive && !headAlive) ? 5.75f : death ? 5f : 3.8f) * (1f - (lifeRatio / 2));
+                            float velocityX = (death ? 6f : 4f) + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
 
@@ -425,7 +425,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
                             float speedMult = 1f;
 
-                            float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
+                            float multiplier = turboEnrage ? 0.00275f : enrage ? 0.0025f : 0.00175f;
                             if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
                                 speedMult += distanceBelowTarget * multiplier;
 
@@ -612,7 +612,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.velocity.X += velocityXChange;
 
                             float velocityBoost = (death && !headAlive && !freeHeadAlive) ? 6f * (1f - (lifeRatio / 2)) : death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
-                            float velocityXCap = (death ? 8.75f : 6f) + velocityBoost;
+                            float velocityXCap = (death ? 6f : 4f) + velocityBoost;
                             if (enrage)
                                 velocityXCap *= 3f;
 
@@ -1195,7 +1195,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            else if (npc.ai[0] == 2f)
+            // Special laser spread attack
+            else if (npc.ai[0] == 2f || npc.ai[0] == 3f)
             {
                 int telegraphTime = 60;
                 int endTime = 120;
@@ -1209,12 +1210,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1]++;
                 if (npc.ai[1] >= telegraphTime && npc.ai[1] < endTime && npc.ai[1] % 2f == 0f)
                 {
-                    float laserFireAngle = MathHelper.ToRadians((npc.ai[1] - telegraphTime + 20) * 2f);
+                    // Manually plays the sound at a slower rate (the sound from the lasers is disabled by setting ai[1])
+                    if (npc.ai[1] % 10f == 0f)
+                        SoundEngine.PlaySound(SoundID.Item33, spawnLocation);
+
+                    float laserFireAngle = MathHelper.ToRadians((npc.ai[1] - telegraphTime + 20) * (death ? 2.45f : 2f));
                     Vector2 laserVelocity = Vector2.UnitY.RotatedBy(laserFireAngle * -npc.localAI[1]) * (death ? 15f : 12f);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int dmg = npc.GetProjectileDamage(ProjectileID.EyeBeam);
-                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, dmg, 0f, Main.myPlayer);
+                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, dmg, 0f, Main.myPlayer, 0f, 1f);
                         Main.projectile[extraLasers].timeLeft = enrage ? 600 : 300;
                         if (turboEnrage && CalamityWorld.LegendaryMode)
                             Main.projectile[extraLasers].extraUpdates += 1;
@@ -1222,6 +1227,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
                 }
+
+                // Do another attack in the opposite direction in Death Mode
+                if (death && npc.ai[0] == 2f && npc.ai[1] >= endTime)
+                {
+                    npc.ai[0] = 3f;
+                    npc.ai[1] = 0f;
+                    npc.localAI[1] = -npc.localAI[1];
+                    npc.netUpdate = true;
+                }
+
                 if (npc.ai[1] >= endTime + 30)
                 {
                     npc.ai[0] = 1f;
@@ -1233,7 +1248,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Laser fire if arms are dead
             if ((!leftFistAlive && !rightFistAlive) || death || CalamityWorld.LegendaryMode)
             {
-                if (npc.ai[0] != 2f)
+                if (npc.ai[0] <= 1f)
                     npc.ai[0] = 1f;
             }
             else

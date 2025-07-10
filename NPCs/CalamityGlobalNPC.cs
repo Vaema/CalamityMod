@@ -6822,7 +6822,7 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                if (npc.type == NPCID.GolemHead && npc.ai[0] == 2f)
+                if (npc.type == NPCID.GolemHead && (npc.ai[0] == 2f || npc.ai[0] == 3f))
                 {
                     if (npc.localAI[1] == 1f)
                         npc.frame.Y = frameHeight * 2;
