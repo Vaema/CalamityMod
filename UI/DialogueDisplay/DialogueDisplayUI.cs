@@ -75,7 +75,8 @@ namespace CalamityMod.UI.DialogueDisplay
             { "CombatText2", FontAssets.CombatText[1].Value },
             { "WingDings", DoGWingdings.Wingdings },
             { "CodebreakerDialog", CodebreakerUI.DialogFont },
-            { "Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value }
+            { "Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value },
+            { "Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value }
         };
 
         public int TextTimer = 0;
@@ -581,6 +582,7 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DisplayEffects.PreDraw(spriteBatch, pageTop, TextSize, TextTimer, SwitchCounter);
 
+            #region Shadow Drawing
             for (int i = 0; i < textIndex; i++)
             {
                 char c = Text[i];
@@ -588,7 +590,6 @@ namespace CalamityMod.UI.DialogueDisplay
                 if (c == '\r' || c == '\n')
                     continue;
 
-                #region Drawing
                 if (CharacterData == null)
                     Activate();
 
@@ -646,7 +647,6 @@ namespace CalamityMod.UI.DialogueDisplay
                         scale = Effect.ModifyScale(scale, CharacterData[i], args);
                     }
 
-
                 Color borderColor = color;
                 borderColor.R /= 3;
                 borderColor.G /= 3;
@@ -655,23 +655,40 @@ namespace CalamityMod.UI.DialogueDisplay
                 SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
+                CharacterData[i].SetDrawInfo(drawPos, spriteData.Glyph, color * opacity, rotation, scale);
+
                 foreach (var l in TextEffects.Where(v => v.Key == i))
                     foreach ((TextEffect Effect, float[] args) in l.Value)
-                        Effect.PreDraw(spriteBatch, spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, CharacterData[i]);
+                        Effect.PreDraw(spriteBatch, spriteData.Texture, CharacterData[i]);
 
                 for (int j = 0; j < ChatManager.ShadowDirections.Length; j++)
                     spriteBatch.Draw(spriteData.Texture, drawPos + (ChatManager.ShadowDirections[j] * 2), spriteData.Glyph, borderColor * opacity, rotation, origin, scale, SpriteEffects.None, 0);
+            }
+            #endregion
 
-                spriteBatch.Draw(spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, SpriteEffects.None, 0);
+            #region Character Drawing
+            for (int i = 0; i < textIndex; i++)
+            {
+                char c = Text[i];
+
+                if (c == '\r' || c == '\n')
+                    continue;
+
+                if (CharacterData == null)
+                    Activate();
+
+                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
+                Vector2 origin = spriteData.Glyph.Size() * 0.5f;
+
+                spriteBatch.Draw(spriteData.Texture, CharacterData[i].DrawPosition, spriteData.Glyph, CharacterData[i].DrawColor, CharacterData[i].Rotation, origin, CharacterData[i].Scale, SpriteEffects.None, 0);
 
                 foreach (var l in TextEffects.Where(v => v.Key == i))
                     foreach ((TextEffect Effect, float[] args) in l.Value)
-                        Effect.PostDraw(spriteBatch, spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, CharacterData[i]);
-
-                #endregion
+                        Effect.PostDraw(spriteBatch, spriteData.Texture, CharacterData[i]);
 
                 CharacterData[i].Timer++;
             }
+            #endregion
 
             DisplayEffects.PostDraw(spriteBatch, pageTop, TextSize, TextTimer, SwitchCounter);
         }
@@ -788,7 +805,7 @@ namespace CalamityMod.UI.DialogueDisplay
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key, new T(), font: "Impact")
+            DialogueDisplay display = new(key, new T())
             {
                 Position = startPosition
             };
@@ -877,6 +894,9 @@ namespace CalamityMod.UI.DialogueDisplay
 
     public class DialogueCharacterData(int index, int textLength, int lineNumber)
     {
+        public int Timer = 0;
+
+        #region Text Info
         public int Index = index;
 
         public int TextLength = textLength;
@@ -886,8 +906,24 @@ namespace CalamityMod.UI.DialogueDisplay
         public float CompletionRatio => Index / (float)TextLength;
 
         public Vector2 TextPosition = Vector2.Zero;
+        #endregion
 
-        public int Timer = 0;
+        #region Draw Info
+        public Vector2 DrawPosition;
+        public Rectangle Frame;
+        public Color DrawColor;
+        public float Rotation ;
+        public Vector2 Scale;
+
+        internal void SetDrawInfo(Vector2 drawPos, Rectangle frame, Color color, float rotation, Vector2 scale)
+        {
+            DrawPosition = drawPos;
+            Frame = frame;
+            DrawColor = color;
+            Rotation = rotation;
+            Scale = scale;
+        }
+        #endregion
     }
 
     public class DialogueDisplayEffects
