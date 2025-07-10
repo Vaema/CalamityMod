@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -54,12 +57,25 @@ namespace CalamityMod.UI.DialogueDisplay
         }
     }
 
-    public class DialogueDisplay(string key, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false) : UIElement
+    public class DialogueDisplay(string key, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, string font = "MouseText") : UIElement
     {
         public static readonly Dictionary<string, SoundStyle> DialogueSounds = new()
         {
             { "Amidias", SoundID.NPCHit1 },
             { "Otonilou", SoundID.NPCHit25 }
+        };
+
+        //A more centralized spot for Fonts might be desired in the future
+        public static readonly Dictionary<string, DynamicSpriteFont> Fonts = new()
+        {
+            { "MouseText", FontAssets.MouseText.Value },
+            { "ItemStack", FontAssets.ItemStack.Value },
+            { "DeathText", FontAssets.DeathText.Value },
+            { "CombatText1", FontAssets.CombatText[0].Value },
+            { "CombatText2", FontAssets.CombatText[1].Value },
+            { "WingDings", DoGWingdings.Wingdings },
+            { "CodebreakerDialog", CodebreakerUI.DialogFont },
+            { "Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value }
         };
 
         public int TextTimer = 0;
@@ -97,7 +113,7 @@ namespace CalamityMod.UI.DialogueDisplay
         private int CharacterTimer = 0;
         internal int textIndex = 0;
         internal int Uptime = 0;
-        internal DynamicSpriteFont Font = FontAssets.MouseText.Value;
+        internal string Font = font;
 
 
         //Effects
@@ -142,10 +158,10 @@ namespace CalamityMod.UI.DialogueDisplay
                 lineLengths[i] = fullLine.Length + 1;
             }
 
-            if(DialogueData.DefaultColor != null)
-                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData.DefaultColor);
             if (DialogueData[currentPage].BaseColor != null)
-                DialogueDisplaySystem.GetColorFromHex(DialogueData[currentPage].BaseColor);
+                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData[currentPage].BaseColor);
+            else if (DialogueData.DefaultColor != null)
+                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData.DefaultColor);
 
             CharacterData = new DialogueCharacterData[Text.Length];
 
@@ -217,7 +233,7 @@ namespace CalamityMod.UI.DialogueDisplay
                             if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
                                 highestYscale = uniqueScale.Y;
                         }
-                        zero.Y += Font.LineSpacing * highestYscale;
+                        zero.Y += Fonts[Font].LineSpacing * highestYscale;
                         newLine = true;
                         continue;
                     case '\r':
@@ -225,21 +241,21 @@ namespace CalamityMod.UI.DialogueDisplay
                 }
 
                 //Sets the character's position within the full text
-                SpriteCharacterData spriteData = Font.SpriteCharacters[c];
+                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
                 Vector3 kerning = spriteData.Kerning;
                 Rectangle padding = spriteData.Padding;
 
                 if (newLine)
                     kerning.X = Math.Max(kerning.X, 0f);
                 else
-                    zero.X += Font.CharacterSpacing * scale.X;
+                    zero.X += Fonts[Font].CharacterSpacing * scale.X;
 
                 zero.X += kerning.X * scale.X;
                 Vector2 position = zero + spriteData.Glyph.Size() * 0.5f;
                 position.X += padding.X * scale.X;
                 position.Y += padding.Y * scale.Y;
 
-                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * Font.LineSpacing * 0.5f);
+                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * Fonts[Font].LineSpacing * 0.5f);
 
                 zero.X += (kerning.Y + kerning.Z) * scale.X;
                 newLine = false;
@@ -389,7 +405,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                 foreach (string s in returnString)
                                     storedLen += s.Length;
 
-                                string path = "CalamityMod.UI.WhisperingPearls.";
+                                string path = "CalamityMod.UI.DialogueDisplay.";
                                 Type t = Type.GetType(path + ID) ?? throw new Exception("Invalid text effect ID found");
                                 TextEffect te = (TextEffect)Activator.CreateInstance(t);
                                 if (TextEffects.TryGetValue(index - storedLen, out var value))
@@ -569,8 +585,6 @@ namespace CalamityMod.UI.DialogueDisplay
             {
                 char c = Text[i];
 
-                DynamicSpriteFont font = FontAssets.MouseText.Value;
-
                 if (c == '\r' || c == '\n')
                     continue;
 
@@ -632,18 +646,28 @@ namespace CalamityMod.UI.DialogueDisplay
                         scale = Effect.ModifyScale(scale, CharacterData[i], args);
                     }
 
+
                 Color borderColor = color;
                 borderColor.R /= 3;
                 borderColor.G /= 3;
                 borderColor.B /= 3;
 
-                SpriteCharacterData spriteData = font.SpriteCharacters[c];
+                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
-                for (int j = 0; j < ChatManager.ShadowDirections.Length; j++)
-                    spriteBatch.Draw(spriteData.Texture, drawPos + (ChatManager.ShadowDirections[j] * 2), spriteData.Glyph, borderColor * opacity, rotation, origin, scale, SpriteEffects.None, 1);
+                foreach (var l in TextEffects.Where(v => v.Key == i))
+                    foreach ((TextEffect Effect, float[] args) in l.Value)
+                        Effect.PreDraw(spriteBatch, spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, CharacterData[i]);
 
-                spriteBatch.Draw(spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, SpriteEffects.None, 1);
+                for (int j = 0; j < ChatManager.ShadowDirections.Length; j++)
+                    spriteBatch.Draw(spriteData.Texture, drawPos + (ChatManager.ShadowDirections[j] * 2), spriteData.Glyph, borderColor * opacity, rotation, origin, scale, SpriteEffects.None, 0);
+
+                spriteBatch.Draw(spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, SpriteEffects.None, 0);
+
+                foreach (var l in TextEffects.Where(v => v.Key == i))
+                    foreach ((TextEffect Effect, float[] args) in l.Value)
+                        Effect.PostDraw(spriteBatch, spriteData.Texture, drawPos, spriteData.Glyph, color * opacity, rotation, origin, scale, CharacterData[i]);
+
                 #endregion
 
                 CharacterData[i].Timer++;
@@ -677,7 +701,7 @@ namespace CalamityMod.UI.DialogueDisplay
             int preInventory = layers.FindIndex(layer => layer.Name == "Vanilla: Interface Logic 2");
             if (preInventory != -1)
             {
-                layers.Insert(preInventory, new LegacyGameInterfaceLayer("Whispering Pearl", () =>
+                layers.Insert(preInventory, new LegacyGameInterfaceLayer("Dialogue Display", () =>
                 {
                     UI.Draw(Main.spriteBatch, new());
                     return true;
@@ -694,11 +718,11 @@ namespace CalamityMod.UI.DialogueDisplay
         public static DialogueTextData Deserialize(string key)
         {
             string activeExtension = LanguageManager.Instance.ActiveCulture.Name;
-            string path = "UI/WhisperingPearls/" + activeExtension + "/" + key + ".json";
+            string path = "UI/DialogueDisplay/" + activeExtension + "/" + key + ".json";
 
             // Fall back to english if not found
             if (!CalamityMod.Instance.FileExists(path))
-                path = "UI/WhisperingPearls/en-US/" + key + ".json";
+                path = "UI/DialogueDisplay/en-US/" + key + ".json";
 
             // Throw if we cant find english either
             if (!CalamityMod.Instance.FileExists(path))
@@ -764,7 +788,7 @@ namespace CalamityMod.UI.DialogueDisplay
             UI ??= new();
             State ??= new();
 
-            DialogueDisplay display = new(key, new T())
+            DialogueDisplay display = new(key, new T(), font: "Impact")
             {
                 Position = startPosition
             };
