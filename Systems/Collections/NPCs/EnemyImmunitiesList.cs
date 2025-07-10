@@ -39,8 +39,6 @@ namespace CalamityMod.Systems.Collections
             [
                 NPCID.KingSlime,
                 NPCType<KingSlimeJewelRuby>(),
-                NPCType<KingSlimeJewelSapphire>(),
-                NPCType<KingSlimeJewelEmerald>(),
                 NPCID.EyeofCthulhu,
                 NPCID.EaterofWorldsHead,
                 NPCID.EaterofWorldsBody,

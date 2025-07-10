@@ -27,8 +27,6 @@ namespace CalamityMod.Systems.Collections
                 { NPCID.RainbowSlime, 30000 },
                 { NPCID.Pinky, 15000 },
                 { NPCType<KingSlimeJewelRuby>(), 21000 },
-                { NPCType<KingSlimeJewelSapphire>(), 18000 },
-                { NPCType<KingSlimeJewelEmerald>(), 24000 },
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },

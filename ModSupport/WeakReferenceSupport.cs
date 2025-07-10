@@ -337,8 +337,6 @@ namespace CalamityMod
 
             // Enemies
             EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
-            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
-            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");

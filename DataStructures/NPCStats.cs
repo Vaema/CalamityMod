@@ -290,7 +290,8 @@ namespace CalamityMod
             EnemyStats.ContactDamageValues = new SortedDictionary<int, int[]>
             {
                 { NPCID.KingSlime, new int[] { 40, 64, 80, 144 } },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), new int[] { 30, 44, 60, 114 } },
+                { ModContent.NPCType<KingSlimeJewelRuby>(), new int[] { 30, 44, 60, 114 } },
+
 
                 { ModContent.NPCType<DesertScourgeHead>(), new int[] { 45, 66, 88, 165 } },
                 { ModContent.NPCType<DesertScourgeBody>(), new int[] { 24, 32, 40, 72 } },

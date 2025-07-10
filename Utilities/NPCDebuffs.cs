@@ -171,8 +171,6 @@ namespace CalamityMod
             EnemyStats.DebuffImmunities = new SortedDictionary<int, Tuple<GeneralImmunityStatus, int[]>>
             {
                 { ModContent.NPCType<KingSlimeJewelRuby>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelSapphire>(), immuneToEverything },
-                { ModContent.NPCType<KingSlimeJewelEmerald>(), immuneToEverything },
 
                 { ModContent.NPCType<HiveMind>(), new(GeneralImmunityStatus.None, new int[] { ModContent.BuffType<BrainRot>() }) },
 
