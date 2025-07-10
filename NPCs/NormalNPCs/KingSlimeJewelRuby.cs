@@ -173,7 +173,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                     if (NPC.ai[0] == 0f)
                     {
-                        NPC.damage = 0; // Avoid cheap bullshit
+                        NPC.damage = 0;
 
                         NPC.velocity *= death ? 0.94f : 0.96f;
 

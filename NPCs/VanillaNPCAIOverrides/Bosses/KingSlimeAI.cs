@@ -34,6 +34,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
+            // Higher velocity jumps phase
             bool phase2 = lifeRatio < 0.75f;
 
             // In death: 75-55 = ruby, 50-35 = emerald, 35-0 = switches back and forth
@@ -42,8 +43,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool redCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
             bool greenCrystalAlive = true; // Based on provided code, this is always true
 
+
             // npc.Calamity().newAI[0] as a flag for Ruby spawn state: 0f = can spawn, 1f = spawned
             bool rubySpawnedForCurrentPhase = npc.Calamity().newAI[0] == 1f;
+
+            int setDamage = npc.defDamage;
+            npc.defense = npc.defDefense;
 
             if (rubySpawnPhaseActive && !redCrystalAlive && !rubySpawnedForCurrentPhase)
             {
@@ -79,9 +84,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.SyncExtraAI();
             }
 
+            // Set up health value for spawning slimes
             if (npc.ai[3] == 0f && npc.life > 0)
                 npc.ai[3] = npc.lifeMax;
 
+            // Spawn with attack delay
             if (npc.localAI[3] == 0f)
             {
                 npc.localAI[3] = 1f;
@@ -95,6 +102,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Despawn
             int despawnDistance = 60;
             int forceDespawnDistance = 300;
             if ((Main.player[npc.target].dead && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > despawnDistance) || Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) / 16f > forceDespawnDistance)
@@ -113,12 +121,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Faster fall
             if (npc.velocity.Y > 0f)
             {
                 float fallSpeedBonus = (death ? 0.1f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
+            // Activate teleport
             float teleportGateValue = 480f;
             if (!Main.player[npc.target].dead && npc.ai[2] >= teleportGateValue && npc.ai[1] < 5f && npc.velocity.Y == 0f)
             {
@@ -153,6 +163,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 teleporting = false;
             }
 
+            // Closer to activating teleport
             if (npc.ai[2] < teleportGateValue)
             {
                 if (!Collision.CanHitLine(npc.Center, 0, 0, Main.player[npc.target].Center, 0, 0) || Math.Abs(npc.Top.Y - Main.player[npc.target].Bottom.Y) > (death ? 160f : 320f))
@@ -161,6 +172,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] += 1f;
             }
 
+            // Slow down while teleporting
             if (npc.ai[1] == 5f || npc.ai[1] == 6f)
             {
                 if (Math.Abs(npc.velocity.X) > 0.1f)
@@ -171,6 +183,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Teleport
             if (npc.ai[1] == 5f)
             {
                 npc.damage = 0;
@@ -219,6 +232,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Post-teleport
             else if (npc.ai[1] == 6f)
             {
                 npc.damage = 0;
@@ -264,6 +278,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             npc.noTileCollide = false;
 
+            // Jump
             if (npc.velocity.Y == 0f)
             {
                 npc.damage = 0;
@@ -277,7 +292,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[0] += MathHelper.Lerp(1f, 8f, 1f - lifeRatio);
                     if (npc.ai[0] >= 0f)
                     {
-                        npc.damage = npc.defDefense;
+                        npc.damage = setDamage;
 
                         npc.netUpdate = true;
 
@@ -377,10 +392,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.life <= 0)
                 return false;
 
+            // Adjust size based on max health
             float maxScale = CalamityWorld.LegendaryMode ? 3f : death ? 2.5f : 1.5f;
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
+            // Inverse scaling in FTW
             if (CalamityWorld.LegendaryMode)
                 lifeRatio = (maxScaledValue - lifeRatio * maxScaledValue) + minScale;
             else
