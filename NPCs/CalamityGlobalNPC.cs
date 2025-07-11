@@ -18,6 +18,7 @@ using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
@@ -795,31 +796,6 @@ namespace CalamityMod.NPCs
 
                     if (damage < projectileCount * 6)
                         damage = projectileCount * 6;
-                }
-            }
-
-            // Bonebreaker debuff stacking
-            if (npc.javelined)
-            {
-                if (npc.lifeRegen > 0)
-                    npc.lifeRegen = 0;
-
-                int projectileCount = 0;
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == ProjectileType<BonebreakerProjectile>() &&
-                        p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
-                    {
-                        projectileCount++;
-                    }
-                }
-
-                if (projectileCount > 0)
-                {
-                    npc.lifeRegen -= projectileCount * 20;
-
-                    if (damage < projectileCount * 4)
-                        damage = projectileCount * 4;
                 }
             }
 
@@ -1733,7 +1709,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    npc.lifeMax = 31875;
+                    npc.lifeMax = 30000;
                     break;
 
                 case NPCID.GolemHead:
@@ -1851,12 +1827,14 @@ namespace CalamityMod.NPCs
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 5D);
             }
-            else if (npc.type == NPCID.Golem || npc.type == NPCID.GolemHead)
+            else if (npc.type == NPCID.Golem)
+            {
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.275);
+                npc.npcSlots = 64f;
+            }
+            else if (npc.type == NPCID.GolemHead)
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-
-                if (npc.type == NPCID.Golem)
-                    npc.npcSlots = 64f;
             }
             else if (npc.type == NPCID.GolemHeadFree)
             {
@@ -5420,7 +5398,7 @@ namespace CalamityMod.NPCs
                 shocked = 120;
             }
 
-            if (target.Calamity().snowman)
+            if (target.Transformation().Type == ModContent.ItemType<Popo>())
             {
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon || npc.type == NPCID.RedDevil)
                     target.AddBuff(BuffType<PopoNoselessBuff>(), 36000);

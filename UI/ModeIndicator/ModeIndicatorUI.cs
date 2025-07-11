@@ -394,6 +394,9 @@ namespace CalamityMod.UI.ModeIndicator
             if (mode == GetCurrentDifficulty)
                 return;
 
+            // This has to be put before difficulties change as to not disrupt GetCurrentDifficulty
+            DisplayFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, GetCurrentDifficulty.ChatTextColor.Hex3(), GetCurrentDifficulty.Name, mode.ChatTextColor.Hex3(), mode.Name);
+
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
             // But would be super useful so other mods can let their own difficulties go there.
 
@@ -404,12 +407,7 @@ namespace CalamityMod.UI.ModeIndicator
                 if (Difficulties[i]._difficultyTier >= mode._difficultyTier && Difficulties[i] != mode)
                 {
                     if (Difficulties[i].Enabled)
-                    {
-                        if (Difficulties[i].DeactivationTextKey != string.Empty)
-                            DisplayLocalizedText(Difficulties[i].DeactivationTextKey, Difficulties[i].ChatTextColor);
-
                         Difficulties[i].Enabled = false;
-                    }
                 }
             }
 
@@ -435,9 +433,6 @@ namespace CalamityMod.UI.ModeIndicator
                     }
                 }
             }
-
-            if (mode.ActivationTextKey != string.Empty)
-                DisplayLocalizedText(mode.ActivationTextKey, mode.ChatTextColor);
 
             mode.Enabled = true;
 
