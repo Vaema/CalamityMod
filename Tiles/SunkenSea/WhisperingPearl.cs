@@ -56,14 +56,13 @@ namespace CalamityMod.Tiles.SunkenSea
             if (!DialogueDisplayUI.Dialogues.ContainsKey(key))
             {
                 if(key == "RoyalBlue")
-                    DialogueDisplaySystem.StartDialogue<WhisperingPearlEffects>(key, new Vector2(i, j) * 16, 60);
+                    DialogueDisplaySystem.StartDialogue(key, new Vector2(i, j) * 16, 60, effects: new WhisperingPearlEffects());
                 else
-                    DialogueDisplaySystem.StartDialogue<WhisperingPearlEffects>(key, Main.npc.Last(n => n != null && n.active), 30);
+                    DialogueDisplaySystem.StartDialogue(key, Main.npc.Last(n => n != null && n.active), effects: new AlwayOnScreen());
             }
             else
-            {
                 DialogueDisplaySystem.ProgressDialogue(key);
-            }
+
             return true;
         }
         public override bool HasSmartInteract(int i, int j, Terraria.GameContent.ObjectInteractions.SmartInteractScanSettings settings) => true;

@@ -50,7 +50,12 @@ namespace CalamityMod.UI.DialogueDisplay
             foreach (var pair in DialogueUptimes)
             {
                 if (Dialogues[pair.Key].Uptime >= pair.Value)
-                    Dialogues[pair.Key].SwitchingPage = true;
+                {
+                    if (Dialogues[pair.Key].ProgressDialogue)
+                        Dialogues[pair.Key].SwitchingPage = true;
+                    else
+                        Dialogues[pair.Key].ClosingDialogue = true;
+                }
             }
 
             base.Update(gameTime);
@@ -98,7 +103,7 @@ namespace CalamityMod.UI.DialogueDisplay
         public int pageCount => DialogueData.Length;
 
         public bool SwitchingPage = false;
-        public int NextPage = -1;
+        public bool ProgressDialogue = true;
         public bool ClosingDialogue = false;
         public bool ScreenLocked = screenLocked;
 
@@ -268,6 +273,7 @@ namespace CalamityMod.UI.DialogueDisplay
             float textHeight = zero.Y;
 
             TextSize = new Vector2(textWidth + 8, textHeight + 12) + SizeOffsetFromStart;
+            Main.NewText(Text);
         }
 
         private void FindEffects(ref string fullLine, int fullLength)
@@ -543,19 +549,11 @@ namespace CalamityMod.UI.DialogueDisplay
             {
                 if (SwitchCounter >= DialogueDisplayUI.Dialogues[Key].DisplayEffects.TimeToDisappear)
                 {
-                    if (ClosingDialogue)
+                    if (ClosingDialogue || !ProgressDialogue)
                         DialogueDisplaySystem.RemoveDialogue(Key);
                     else
                     {
-                        if (NextPage == -1)
-                            currentPage++;
-                        else
-                        {
-                            currentPage = NextPage;
-                            NextPage = -1;
-                        }
-
-                        if (currentPage >= pageCount)
+                        if (++currentPage >= pageCount)
                             DialogueDisplaySystem.RemoveDialogue(Key);
                         else
                         {
@@ -766,12 +764,10 @@ namespace CalamityMod.UI.DialogueDisplay
         /// <summary>
         /// Manually progresses dialogue
         /// </summary>
-        public static void ProgressDialogue(string pearlKey, int toPage = -1)
+        public static void ProgressDialogue(string pearlKey)
         {
             if (DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val))
             {
-                val.NextPage = toPage;
-
                 if (val.SwitchingPage)
                     return;
 
@@ -796,18 +792,20 @@ namespace CalamityMod.UI.DialogueDisplay
         }
 
         /// <summary>
-        /// Starts up pearl dialogue
+        /// Creates a dialogue instance in the world
         /// </summary>
-        /// <param name="startPosition">The position of the bottom of the text</param>
-        /// <param name="key">The name of the pearl's localization key</param>
-        public static void StartDialogue<T>(string key, Vector2 startPosition, int Uptime = -1) where T : DialogueDisplayEffects, new()
+        /// <param name="key">The name of the dialogue's localization key</param>
+        /// <param name="startPosition">The position of the text in the world</param>
+        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DialogueDisplayEffects effects = null)
         {
             UI ??= new();
             State ??= new();
+            effects ??= new DialogueDisplayEffects();
 
-            DialogueDisplay display = new(key, new T())
+            DialogueDisplay display = new(key, effects)
             {
-                Position = startPosition
+                Position = startPosition,
+                ProgressDialogue = progressDialogue,
             };
             DialogueDisplayUI.Dialogues.Add(key, display);
             if (Uptime != -1)
@@ -819,12 +817,19 @@ namespace CalamityMod.UI.DialogueDisplay
                 UI?.SetState(State);
         }
 
-        public static void StartDialogue<T>(string key, Entity entity, int Uptime = -1) where T : DialogueDisplayEffects, new()
+        /// <summary>
+        /// Creates a dialogue instance in the world
+        /// </summary>
+        /// <param name="key">The name of the dialogue's localization key</param>
+        /// <param name="entity">The entity this dialogue will appear with</param>
+        /// <param name="Uptime">The entity this dialogue will appear with</param>
+        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DialogueDisplayEffects effects = null)
         {
             UI ??= new();
             State ??= new();
+            effects ??= new DialogueDisplayEffects();
 
-            DialogueDisplay display = new(key, new T())
+            DialogueDisplay display = new(key, effects)
             {
                 Position = entity.Center
             };
@@ -838,8 +843,6 @@ namespace CalamityMod.UI.DialogueDisplay
             if (UI.CurrentState != State)
                 UI?.SetState(State);
         }
-
-
 
         /// <summary>
         /// Resets all of the dialogue's variables
@@ -972,26 +975,40 @@ namespace CalamityMod.UI.DialogueDisplay
     #region Display Types
     public class AlwayOnScreen : DialogueDisplayEffects
     {
+        Vector2 StartPosition;
+
         public override bool FadeWhenTooFar => false;
 
         public override Vector2 TextOffsetFromStart(Vector2 startPos, Vector2 textSize)
         {
+            StartPosition = startPos;
+
             Vector2 playerPos = Main.LocalPlayer.Center;
-            Vector2 toPlayer = (playerPos - startPos) / 2f;
             Vector2 halfSize = textSize * 0.5f;
-            Vector2 newPos = startPos - halfSize + toPlayer;
+            Vector2 newPos = startPos - halfSize + (Vector2.UnitY * -(textSize.Y + 36));
             Vector2 screenPos = newPos.ToScreenPosition();
 
-            if (screenPos.X < 0)
-                newPos.X = playerPos.X - (Main.screenWidth / 2f);
-            if (screenPos.Y < 24)
-                newPos.Y = playerPos.Y - (Main.screenHeight / 2f) + 24;
+            Vector2 boundTopLeftScreen = new((Main.screenWidth / 2f) - (Main.screenWidth / 2.5f), (Main.screenHeight / 2f) - (Main.screenHeight / 2.5f));
 
-            if (newPos.X > playerPos.X + (Main.screenWidth / 2f) - textSize.X)
-                newPos.X = playerPos.X + (Main.screenWidth / 2f) - textSize.X;
-            if (newPos.Y > playerPos.Y + (Main.screenHeight / 2f) - textSize.Y)
-                newPos.Y = playerPos.Y + (Main.screenHeight / 2f) - textSize.Y;
+            if (screenPos.X < boundTopLeftScreen.X)
+                newPos.X = playerPos.X - (Main.screenWidth / 2.5f);
+            if (screenPos.Y < boundTopLeftScreen.Y)
+                newPos.Y = playerPos.Y - (Main.screenHeight / 2.5f);
+
+            if (newPos.X > playerPos.X + (Main.screenWidth / 2.5f) - textSize.X)
+                newPos.X = playerPos.X + (Main.screenWidth / 2.5f) - textSize.X;
+            if (newPos.Y > playerPos.Y + (Main.screenHeight / 2.5f) - textSize.Y)
+                newPos.Y = playerPos.Y + (Main.screenHeight / 2.5f) - textSize.Y;
+
             return newPos;
+        }
+
+        public override void PreDraw(SpriteBatch spriteBatch, Vector2 textTopLeft, Vector2 textSize, int textTimer, int switchTimer)
+        {
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/UI/DialogueDisplay/Assets/DialogueArrow").Value;
+            Vector2 textCenter = textTopLeft + textSize * 0.5f;
+            Vector2 toStart = (StartPosition - textCenter).SafeNormalize(-Vector2.UnitY) * 64;
+            spriteBatch.Draw(tex, textCenter + toStart - Main.screenPosition, null, Color.White, toStart.ToRotation(), tex.Size() * 0.5f, 1f, 0, 0);
         }
     }
 
