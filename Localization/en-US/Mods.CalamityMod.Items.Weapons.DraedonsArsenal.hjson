@@ -10,6 +10,17 @@ AerialTracker: {
 		'''
 }
 
+Auger: {
+	DisplayName: P-GSS: Auger
+	Tooltip:
+		'''
+		A high-frequency magnetic energy blade made to be worn on the wrist
+		<right> to create a breif magnetic pull at your cursor and amplify your next slash
+		[c/1FFBFF:'Originally manufactured to be used for large scale metal serration and transportaion.]
+		[c/1FFBFF:Its design as a lightweight tool that did not occupy the hands made it exceptionally efficent.']
+		'''
+}
+
 CountermeasureMitt: {
 	DisplayName: B-LSR: Countermeasure Mitt
 	Tooltip:

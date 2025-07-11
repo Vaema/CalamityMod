@@ -79,3 +79,6 @@ PlagueShotBuffer.DisplayName: Plague Shot
 WaterShot.DisplayName: Water Shot
 WaterShotBuffer.DisplayName: Water Shot
 FrequencyManipulatorEnergy.DisplayName: Frequency Manipulator Energy
+AugerHoldout.DisplayName: Auger Holdout
+AugerSlash.DisplayName: Auger Slash
+AugerPull.DisplayName: Auger Pull
