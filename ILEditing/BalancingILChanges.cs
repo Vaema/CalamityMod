@@ -332,16 +332,6 @@ namespace CalamityMod.ILEditing
         private static void PrefixChanges(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
         {
             orig(self, item);
-            // Defense accessory prefixes have slightly scaling defense boosts through progression
-            if (item.prefix >= PrefixID.Hard && item.prefix <= PrefixID.Warding)
-            {
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-            }
             // Hard / Guarding / Armored / Warding give 0.25% / 0.5% / 0.75% / 1% DR
             if (item.prefix == PrefixID.Hard)
                 self.endurance += 0.0025f;
