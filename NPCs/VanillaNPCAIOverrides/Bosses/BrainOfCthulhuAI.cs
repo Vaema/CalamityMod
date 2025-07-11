@@ -150,42 +150,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Super fast spin and charges phase
                 bool phase7 = lifeRatio < 0.1f;
 
-                // Spawn Creepers in Death Mode
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 1f && death && phase3)
-                {
-                    npc.localAI[0] = 2f;
-                    SpawnDeathModeCreepers();
-                }
-
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 2f && death && phase5)
-                {
-                    npc.localAI[0] = 3f;
-                    SpawnDeathModeCreepers();
-                }
-
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 3f && death && phase7)
-                {
-                    npc.localAI[0] = 4f;
-                    SpawnDeathModeCreepers();
-                }
-
-                void SpawnDeathModeCreepers()
-                {
-                    int brainOfCthuluCreepersCount = GetBrainOfCthuluCreepersCountRevDeath() / 4;
-                    float attackTimerIncrement = 15f * 4;
-                    for (int i = 0; i < brainOfCthuluCreepersCount; i++)
-                    {
-                        float brainX = npc.Center.X;
-                        float brainY = npc.Center.Y;
-                        brainX += Main.rand.Next(-npc.width, npc.width);
-                        brainY += Main.rand.Next(-npc.height, npc.height);
-
-                        int creeperSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)brainX, (int)brainY, NPCID.Creeper, 0, 0f, i * attackTimerIncrement);
-                        Main.npc[creeperSpawn].velocity = new Vector2(Main.rand.Next(-30, 31) * 0.1f, Main.rand.Next(-30, 31) * 0.1f);
-                        Main.npc[creeperSpawn].netUpdate = true;
-                    }
-                }
-
                 // Whether the fucking thing is spinning or not, dipshit
                 bool spinning = npc.ai[0] == -4f;
 
@@ -516,7 +480,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? (death ? 10 : 30) : (death ? 20 : 60);
+                            int maxRandomTime = phase7 ? (death ? 15 : 30) : (death ? 30 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                             npc.localAI[1] = 0f;
                             npc.alpha = 0;
@@ -669,7 +633,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? (death ? 10 : 30) : (death ? 20 : 60);
+                            int maxRandomTime = phase7 ? (death ? 15 : 30) : (death ? 30 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                         }
                         else
@@ -726,7 +690,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float targetXDistPhase1 = Main.player[npc.target].Center.X - brainCenterPhase1.X;
                     float targetYDistPhase1 = Main.player[npc.target].Center.Y - brainCenterPhase1.Y;
                     float targetDistancePhase1 = (float)Math.Sqrt(targetXDistPhase1 * targetXDistPhase1 + targetYDistPhase1 * targetYDistPhase1);
-                    float maxMoveVelocity = (death ? 4f : 1.5f) + velocityScale;
+                    float maxMoveVelocity = (death ? 2.25f : 1.5f) + velocityScale; // This used to be 4f in death. Yeah
                     if (CalamityWorld.LegendaryMode)
                         maxMoveVelocity *= 2f;
 
@@ -928,7 +892,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float brainXDist = Main.npc[NPC.crimsonBoss].Center.X - creeperCenter.X;
                 float brainYDist = Main.npc[NPC.crimsonBoss].Center.Y - creeperCenter.Y;
                 float brainDistance = (float)Math.Sqrt(brainXDist * brainXDist + brainYDist * brainYDist);
-                float velocity = (death ? 16f : 8f) + chargeAggressionScale;
+                float velocity = (death ? 12f : 8f) + chargeAggressionScale;
                 velocity += 2f * enrageScale;
                 if (brainIsInPhase2)
                 {
@@ -984,7 +948,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Always fully visible while charging
                 npc.alpha = 0;
 
-                float chargeVelocity = (death ? 12f : 6f) + chargeAggressionScale;
+                float chargeVelocity = (death ? 8f : 6f) + chargeAggressionScale;
                 chargeVelocity += 2f * enrageScale;
                 float returnToBrainGateValue = 1f;
                 if (!brainIsInPhase2)
@@ -1008,7 +972,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     // Return to Brain after a set time
-                    float chargeDistance = death ? 900f : 600f;
+                    float chargeDistance = death ? 800f : 600f;
                     returnToBrainGateValue = chargeDistance / chargeVelocity;
                 }
 
