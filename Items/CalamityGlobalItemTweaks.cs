@@ -306,10 +306,10 @@ namespace CalamityMod.Items
                 { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
                 { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
                 { ItemID.Shackle, Do(DefenseExact(3)) },
-                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set (converted into Rogue)
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set
                 { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
                 { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
-                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) }, // (converted into Rogue)
+                { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
                 { ItemID.SquireGreaves, Do(DefenseDelta(-2)) },
                 { ItemID.SquirePlating, Do(DefenseDelta(-4)) },
                 #endregion
