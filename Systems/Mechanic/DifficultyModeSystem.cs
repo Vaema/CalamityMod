@@ -142,9 +142,6 @@ namespace CalamityMod.Systems
         public LocalizedText Name;
         public LocalizedText ShortDescription;
 
-        public string ActivationTextKey;
-        public string DeactivationTextKey;
-
         public SoundStyle ActivationSound;
 
         public Color ChatTextColor;
@@ -195,9 +192,6 @@ namespace CalamityMod.Systems
             DifficultyScale = 0;
             Name = CalamityUtils.GetText("UI.Classic");
             ShortDescription = CalamityUtils.GetText("UI.ClassicInfo");
-
-            ActivationTextKey = string.Empty;
-            DeactivationTextKey = string.Empty;
 
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
@@ -253,9 +247,6 @@ namespace CalamityMod.Systems
             Name = GetText("UI.Expert");
             ShortDescription = GetText("UI.ExpertShortInfo");
 
-            ActivationTextKey = "Mods.CalamityMod.UI.ExpertActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.ExpertDeactivate";
-
             ActivationSound = SoundID.ForceRoarPitched;
 
             ChatTextColor = Color.DarkGoldenrod;
@@ -309,9 +300,6 @@ namespace CalamityMod.Systems
             DifficultyScale = 0.25f;
             Name = GetText("UI.Master");
             ShortDescription = GetText("UI.MasterShortInfo");
-
-            ActivationTextKey = "Mods.CalamityMod.UI.MasterActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.MasterDeactivate";
 
             ActivationSound = SoundID.NPCDeath10;
 
@@ -369,9 +357,6 @@ namespace CalamityMod.Systems
             Name = CalamityUtils.GetText("UI.Revengeance");
             ShortDescription = CalamityUtils.GetText("UI.RevengeanceShortInfo");
 
-            ActivationTextKey = "Mods.CalamityMod.UI.RevengeanceActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.RevengeanceDeactivate";
-
             ActivationSound = SoundID.Item119;
 
             ChatTextColor = Color.Crimson;
@@ -419,9 +404,6 @@ namespace CalamityMod.Systems
             DifficultyScale = 0.5f;
             Name = CalamityUtils.GetText("UI.Death");
             ShortDescription = CalamityUtils.GetText("UI.DeathShortInfo");
-
-            ActivationTextKey = "Mods.CalamityMod.UI.DeathActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.DeathDeactivate";
 
             ActivationSound = DemonshadeHelm.ActivationSound;
 
