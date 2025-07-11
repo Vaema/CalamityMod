@@ -190,8 +190,8 @@ namespace CalamityMod.Systems
         public NoDifficulty()
         {
             DifficultyScale = 0;
-            Name = CalamityUtils.GetText("UI.Classic");
-            ShortDescription = CalamityUtils.GetText("UI.ClassicInfo");
+            Name = GetText("UI.Classic");
+            ShortDescription = GetText("UI.ClassicInfo");
 
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
@@ -233,13 +233,7 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription
-        {
-            get
-            {
-                return GetText("UI.ExpertExpandedInfo");
-            }
-        }
+        public override LocalizedText ExpandedDescription => GetText("UI.ExpertExpandedInfo");
 
         public ExpertDifficulty()
         {
@@ -249,7 +243,7 @@ namespace CalamityMod.Systems
 
             ActivationSound = SoundID.ForceRoarPitched;
 
-            ChatTextColor = Color.DarkGoldenrod;
+            ChatTextColor = new Color(255, 186, 117);
             Instance = this;
         }
 
@@ -287,13 +281,7 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription
-        {
-            get
-            {
-                return GetText("UI.MasterExpandedInfo");
-            }
-        }
+        public override LocalizedText ExpandedDescription => GetText("UI.MasterExpandedInfo");
 
         public MasterDifficulty()
         {
@@ -303,7 +291,7 @@ namespace CalamityMod.Systems
 
             ActivationSound = SoundID.NPCDeath10;
 
-            ChatTextColor = Color.DarkOliveGreen;
+            ChatTextColor = new Color(28, 255, 170);
             Instance = this;
         }
 
@@ -347,19 +335,19 @@ namespace CalamityMod.Systems
             {
                 string rageKey = "[c/FFCE85:" + CalamityKeybinds.RageHotKey.TooltipHotkeyString() + "]";
                 string adrenKey = "[c/79DFBF:" + CalamityKeybinds.AdrenalineHotKey.TooltipHotkeyString() + "]";
-                return CalamityUtils.GetText("UI.RevengeanceExpandedInfo").WithFormatArgs(rageKey, adrenKey);
+                return GetText("UI.RevengeanceExpandedInfo").WithFormatArgs(rageKey, adrenKey);
             }
         }
 
         public RevengeanceDifficulty()
         {
             DifficultyScale = 0.25f;
-            Name = CalamityUtils.GetText("UI.Revengeance");
-            ShortDescription = CalamityUtils.GetText("UI.RevengeanceShortInfo");
+            Name = GetText("UI.Revengeance");
+            ShortDescription = GetText("UI.RevengeanceShortInfo");
 
             ActivationSound = SoundID.Item119;
 
-            ChatTextColor = Color.Crimson;
+            ChatTextColor = new Color(211, 42, 42);
             Instance = this;
         }
 
@@ -397,17 +385,17 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription => CalamityUtils.GetText("UI.DeathExpandedInfo");
+        public override LocalizedText ExpandedDescription => GetText("UI.DeathExpandedInfo");
 
         public DeathDifficulty()
         {
             DifficultyScale = 0.5f;
-            Name = CalamityUtils.GetText("UI.Death");
-            ShortDescription = CalamityUtils.GetText("UI.DeathShortInfo");
+            Name = GetText("UI.Death");
+            ShortDescription = GetText("UI.DeathShortInfo");
 
             ActivationSound = DemonshadeHelm.ActivationSound;
 
-            ChatTextColor = Color.MediumOrchid;
+            ChatTextColor = new Color(192, 64, 219);
             Instance = this;
         }
 
@@ -419,7 +407,7 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i].Name == CalamityUtils.GetText("UI.Master") || tierList[i].Name == CalamityUtils.GetText("UI.Revengeance"))
+                if (tierList[i].Name == GetText("UI.Master") || tierList[i].Name == GetText("UI.Revengeance"))
                     difficulties.Add(i);
             }
 
