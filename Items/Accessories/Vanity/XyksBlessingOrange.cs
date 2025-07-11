@@ -14,9 +14,9 @@ namespace CalamityMod.Items.Accessories.Vanity
 
         public override (EquipType, string, string)[] EquipSlots =>
         [
-            (EquipType.Head, "Xyk", null),
-            (EquipType.Body, "Xyk", null),
-            (EquipType.Legs, "Xyk", null),
+            (EquipType.Head, "Xyk2", null),
+            (EquipType.Body, "Xyk2", null),
+            (EquipType.Legs, "Xyk2", null),
             (EquipType.Wings, null, null), //results in setting this equip slot to -1
         ];
 
