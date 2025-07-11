@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         private const int BoltShootGateValue_Death = 75;
         private const float LightTelegraphDuration = 45f;
 
-        public static int JewelBoltDamage = 8; // 32
+        public static int JewelBoltDamage = 10; // 40
 
         public override void SetStaticDefaults()
         {
