@@ -70,7 +70,7 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit, 1).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
