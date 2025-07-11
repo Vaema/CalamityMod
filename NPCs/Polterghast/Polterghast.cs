@@ -432,12 +432,6 @@ namespace CalamityMod.NPCs.Polterghast
             else
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
-            int phase1ReducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
-            int phase2Damage = (int)Math.Round(NPC.defDamage * Phase2ContactDamageMult);
-            int phase2ReducedSetDamage = (int)Math.Round(phase2Damage * 0.5);
-            int phase3Damage = (int)Math.Round(NPC.defDamage * Phase3ContactDamageMult);
-            int phase3ReducedSetDamage = (int)Math.Round(phase3Damage * 0.5);
-
             if (!chargePhase)
             {
                 NPC.ai[2] += 1f;
@@ -544,15 +538,11 @@ namespace CalamityMod.NPCs.Polterghast
 
                     if (calamityGlobalNPC.newAI[1] == 0f)
                     {
-                        NPC.damage = phase3 ? phase3Damage : phase2 ? phase2Damage : NPC.defDamage;
-
                         NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
                         calamityGlobalNPC.newAI[1] = 1f;
                     }
                     else
                     {
-                        NPC.damage = phase3 ? phase3Damage : phase2 ? phase2Damage : NPC.defDamage;
-
                         calamityGlobalNPC.newAI[2] += 1f;
 
                         // Slow down for a few frames
@@ -560,8 +550,6 @@ namespace CalamityMod.NPCs.Polterghast
                         float slowDownTime = chargeVelocity;
                         if (calamityGlobalNPC.newAI[2] >= totalChargeTime - slowDownTime)
                         {
-                            NPC.damage = phase3 ? phase3ReducedSetDamage : phase2 ? phase2ReducedSetDamage : phase1ReducedSetDamage;
-
                             NPC.velocity *= 0.9f;
                         }
 
@@ -589,8 +577,6 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 else
                 {
-                    NPC.damage = phase3 ? phase3ReducedSetDamage : phase2 ? phase2ReducedSetDamage : phase1ReducedSetDamage;
-
                     // Pick a charging location
                     // Set charge locations X
                     if (vector.X >= player.Center.X)
@@ -670,9 +656,7 @@ namespace CalamityMod.NPCs.Polterghast
             // Phase 1: "Polterghast"
             if (!phase2 && !phase3)
             {
-                if (!isInChargePhase)
-                    NPC.damage = phase1ReducedSetDamage;
-
+                NPC.damage = NPC.defDamage;
                 NPC.defense = NPC.defDefense;
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
@@ -775,9 +759,7 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                 }
 
-                if (!isInChargePhase)
-                    NPC.damage = phase2ReducedSetDamage;
-
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase2ContactDamageMult);
                 NPC.defense = (int)Math.Round(NPC.defDefense * 0.8);
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && !isInChargePhase)
@@ -896,9 +878,7 @@ namespace CalamityMod.NPCs.Polterghast
                     }
                 }
 
-                if (!isInChargePhase)
-                    NPC.damage = phase3ReducedSetDamage;
-
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase3ContactDamageMult);
                 NPC.defense = (int)Math.Round(NPC.defDefense * 0.5);
 
                 NPC.localAI[1] += 1f;
