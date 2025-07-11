@@ -44,17 +44,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust2.fadeIn = 0.3f;
                     dust2.color = Effects.ArsenalEffects.ArsenalGaussColor;
                 }
-                if (Projectile.timeLeft > 2)
+                for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
+                    NPC target = Main.npc[i];
+                    if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < 650)
                     {
-                        NPC target = Main.npc[i];
-                        if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1) && Vector2.Distance(target.Center, Projectile.Center) < 800)
-                        {
-                            Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
-                            target.velocity = moveDir * 20;
-                            target.Center += moveDir * 3f;
-                        }
+                        Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
+                        target.velocity = moveDir * 20;
+                        target.Center += moveDir * 3f;
                     }
                 }
             }
@@ -64,20 +61,24 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             dust.noGravity = true;
             dust.fadeIn = 0.05f;
             dust.color = Effects.ArsenalEffects.ArsenalGaussColor;
-            
-            for (int i = 0; i < Main.maxNPCs; i++)
+
+            if (Projectile.timeLeft > 2)
             {
-                NPC target = Main.npc[i];
-                if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1))
+                for (int i = 0; i < Main.maxNPCs; i++)
                 {
-                    if (Vector2.Distance(target.Center, Projectile.Center) > 15 && Vector2.Distance(target.Center, Projectile.Center) < 400)
+                    NPC target = Main.npc[i];
+                    if (target != null && target.CanBeMoved(true) && Collision.CanHit(Projectile.Center, 1, 1, target.Center, 1, 1))
                     {
-                        Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
-                        target.velocity = Vector2.Lerp(target.velocity, moveDir * 18, 0.12f);
-                        target.Center += moveDir * 2f;
+                        if (Vector2.Distance(target.Center, Projectile.Center) > 15 && Vector2.Distance(target.Center, Projectile.Center) < 300)
+                        {
+                            Vector2 moveDir = target.Center.DirectionTo(Projectile.Center).SafeNormalize(Vector2.UnitX);
+                            target.velocity = Vector2.Lerp(target.velocity, moveDir * 18, 0.12f);
+                            target.Center += moveDir * 2f;
+                        }
                     }
                 }
             }
+            
             Projectile.rotation += 0.05f;
             if (shrink > 0)
                 shrink -= 0.05f;

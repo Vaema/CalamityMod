@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public float bladefx = 0;
         public bool makeSound = true;
         public bool makeHitbox = true;
-        public int cooldownGiven => (int)(450 / ((Owner.GetAttackSpeed<MeleeDamageClass>() - 1) * 0.5f + 1)); // Cooldown is effected by melee speed at 50% efficency
+        public int cooldownGiven => (int)(400 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 10 swings and end in time for a big swing
         public float pullFx = 1;
         public bool pressedRight = false;
         public override bool? CanDamage() => false;
@@ -44,8 +44,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void AI()
         {
-            Projectile.timeLeft = 5;
-            
+            if (!Owner.CantUseHoldout(false))
+                Projectile.timeLeft = 5;
+
             // Hand and holdout positioning
             Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
             Owner.heldProj = Projectile.whoAmI;
@@ -60,6 +61,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.velocity = toMouse.RotatedBy(bladeRot * Owner.direction);
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Center = handPos;
+            if (Owner.Calamity().mouseRight)
+                pressedRight = true;
 
             if (Projectile.ai[2] > 0) // Right click "gravity well" and buff
             {
@@ -192,8 +195,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);
                         makeHitbox = false;
                     }
-                    if (Owner.Calamity().mouseRight)
-                        pressedRight = true;
                 }
             }
             time++;
