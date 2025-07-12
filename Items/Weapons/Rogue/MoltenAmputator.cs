@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public float speed = 16;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HolyCollider>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BurningRevelation>();
         }
         public override void SetDefaults()
         {

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle Nanomachines = new("CalamityMod/Sounds/Item/NanoSwarm") { PitchVariance = 0.45f, Volume = 0.4f };
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Malevolence>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheHive>();
         }
         public override void SetDefaults()
         {

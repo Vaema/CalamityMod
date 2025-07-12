@@ -12,11 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class PestilentDefiler : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheHive>();
-        }
         public override void SetDefaults()
         {
             Item.width = 46;

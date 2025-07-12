@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public bool splitDirection = false;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<LeviathanTeeth>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Greentide>();
         }
         public override void SetDefaults()
         {

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<InfestedClawmerang>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PuffShroom>();
         }
 
         public override void SetDefaults()

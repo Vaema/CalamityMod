@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PuffShroom>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MycelialClaws>();
         }
         public override void SetDefaults()
         {

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HoarfrostBow>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Avalanche>();
         }
         public override void SetDefaults()
         {

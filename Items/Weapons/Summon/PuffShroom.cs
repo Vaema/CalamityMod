@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MycelialClaws>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<InfestedClawmerang>();
         }
         public override void SetDefaults()
         {
