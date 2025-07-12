@@ -189,7 +189,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else
                     npc.rotation = npc.velocity.X / 15f;
 
-                float acceleration = death ? (0.12f + 0.05f * (1f - lifeRatio)) : 0.1f;
+                float acceleration = death ? (0.125f + 0.05f * (1f - lifeRatio)) : 0.1f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -717,7 +717,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool normalLaserRotation = npc.localAI[1] % 2f == 0f;
 
             // Movement
-            float acceleration = death ? 0.375f : 0.25f;
+            float acceleration = death ? 0.385f : 0.25f;
             float accelerationMult = 1f;
             if (!cannonAlive)
             {
@@ -1038,7 +1038,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Movement
-            float acceleration = death ? 0.375f : 0.25f;
+            float acceleration = death ? 0.385f : 0.25f;
             float accelerationMult = 1f;
             if (!laserAlive)
             {
@@ -1267,7 +1267,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Return to the head
             if (npc.ai[2] == 99f)
             {
-                float acceleration = death ? 0.375f : 0.25f;
+                float acceleration = death ? 0.385f : 0.25f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -1357,7 +1357,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    float acceleration = death ? 0.375f : 0.25f;
+                    float acceleration = death ? 0.385f : 0.25f;
                     float accelerationMult = 1f;
                     if (!cannonAlive)
                     {
@@ -1632,7 +1632,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (npc.ai[2] == 99f)
             {
-                float acceleration = death ? 0.375f : 0.25f;
+                float acceleration = death ? 0.385f : 0.25f;
                 float accelerationMult = 1f;
                 if (!cannonAlive)
                 {
@@ -1718,7 +1718,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.netUpdate = true;
                     }
 
-                    float acceleration = death ? 0.375f : 0.25f;
+                    float acceleration = death ? 0.385f : 0.25f;
                     float accelerationMult = 1f;
                     if (!cannonAlive)
                     {
