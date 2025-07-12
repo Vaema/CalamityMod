@@ -201,7 +201,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (death)
-                headSpinVelocityMult *= 1.2f;
+                headSpinVelocityMult *= 1.08f; // Very volatile value
 
             // Velocity used to move Skeletron away from the target before charging
             float moveAwayVelocity = headSpinVelocityMult;
@@ -346,7 +346,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Skull shooting
             if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
             {
-                float skullProjFrequency = phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
+                float skullProjFrequency = phase2 ? (48f - (death ? 10f * (1f - lifeRatio) : 0f)) : 60f;
                 if (CalamityWorld.LegendaryMode)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
@@ -358,7 +358,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float skullProjTargetY = Main.player[npc.target].Center.Y - skullFiringPos.Y;
                     if (Collision.CanHit(skullFiringPos, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     {
-                        float skullProjSpeed = phase2 ? (5f + (death ? 3f * (1f - lifeRatio) : 0f)) : 4f;
+                        float skullProjSpeed = phase2 ? (5f + (death ? 1f * (1f - lifeRatio) : 0f)) : 4f;
                         int spread2 = 50;
                         Vector2 skullProjDirection = new Vector2(skullProjTargetX + Main.rand.Next(-spread2, spread2 + 1) * 0.01f, skullProjTargetY + Main.rand.Next(-spread2, spread2 + 1) * 0.01f).SafeNormalize(Vector2.UnitY);
                         skullProjDirection *= skullProjSpeed;
@@ -401,7 +401,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.localAI[1] > chargePhaseGateValue)
                     npc.localAI[1] = chargePhaseGateValue;
 
-                float forcedMoveAwayTime = death ? 15f : 45f;
+                float forcedMoveAwayTime = death ? 30f : 45f;
                 float canChargeDistance = 320f; // 20 tile distance
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
@@ -580,29 +580,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 calamityGlobalNPC.newAI[1] += 1f;
                 if (calamityGlobalNPC.newAI[1] == 2f)
                     SoundEngine.PlaySound(phase3 ? SoundID.ForceRoarPitched : SoundID.ForceRoar, npc.Center);
-
-                // Shoot shadowflames (giant cursed skull projectiles) while charging in phase 4
-                if (phase4 && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    float shadowFlameGateValue = 20f;
-                    int shadowFlameLimit = death ? 3 : 2;
-                    if (calamityGlobalNPC.newAI[1] % shadowFlameGateValue == 0f && calamityGlobalNPC.newAI[1] < shadowFlameGateValue * shadowFlameLimit)
-                    {
-                        // Spawn projectiles
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 240f)
-                            {
-                                float shadowFlameProjectileSpeed = death ? 6f : 4f;
-                                Vector2 initialProjectileVelocity = npc.Center.DirectionTo(Main.player[npc.target].Center) * shadowFlameProjectileSpeed;
-                                int type = ProjectileID.Shadowflames;
-                                int damage = npc.GetProjectileDamage(type);
-                                int shadowFlameProjectile = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, initialProjectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
-                                Main.projectile[shadowFlameProjectile].timeLeft = 600;
-                            }
-                        }
-                    }
-                }
 
                 // Reset telegraph timer to create color fade
                 if (npc.localAI[1] > 0f)
