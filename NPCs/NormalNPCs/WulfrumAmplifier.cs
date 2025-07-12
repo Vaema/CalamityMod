@@ -51,7 +51,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 44;
             NPC.height = 44;
             NPC.defense = 4;
-            NPC.lifeMax = Main.zenithWorld ? 90 : 58;
+            NPC.lifeMax = Main.zenithWorld ? 200 : 100;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(0, 0, 1, 0);
             NPC.noGravity = false;

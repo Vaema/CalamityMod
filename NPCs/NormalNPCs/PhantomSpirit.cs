@@ -22,8 +22,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 70;
             NPC.width = 16;
             NPC.height = 16;
-            NPC.defense = 10;
-            NPC.lifeMax = 1250;
+            NPC.defense = 40;
+            NPC.lifeMax = 1500;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.DungeonSpirit;
             AIType = -1;

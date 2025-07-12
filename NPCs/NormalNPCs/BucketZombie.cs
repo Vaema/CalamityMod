@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             AnimationType = NPCID.Zombie;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             NPC.CloneDefaults(NPCID.Zombie);
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 60;
             NPC.defense = 15;
             NPC.damage = 16;
             NPC.knockBackResist = 0.45f;
