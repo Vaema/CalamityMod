@@ -59,7 +59,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             NPC.lifeMax = 500;
             NPC.defense = 12;
-            NPC.DR_NERD(0.15f);
             NPC.value = Item.buyPrice(0, 0, 8, 0);
             NPC.knockBackResist = 0.8f;
             NPC.behindTiles = true;

@@ -41,7 +41,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.aiStyle = -1;
             NPC.damage = 55;
             NPC.defense = 20;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 630;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0f;

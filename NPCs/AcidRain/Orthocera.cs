@@ -47,14 +47,12 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.damage = 45;
             NPC.lifeMax = 280;
             NPC.defense = 15;
-            NPC.DR_NERD(0.075f);
 
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.damage = 120;
                 NPC.lifeMax = 3850;
                 NPC.defense = 35;
-                NPC.DR_NERD(0.15f);
             }
 
             NPC.knockBackResist = 0.6f;

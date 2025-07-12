@@ -34,7 +34,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 64;
             NPC.aiStyle = NPCAIStyleID.Herpling;
             NPC.defense = 14;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 380;
             NPC.knockBackResist = 0.6f;
             NPC.value = Item.buyPrice(0, 0, 3, 0);

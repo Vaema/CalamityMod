@@ -43,7 +43,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.npcSlots = 0.5f; //needed?
             NPC.damage = 55;
             NPC.defense = 18;
-            NPC.DR_NERD(0.15f);
             NPC.knockBackResist = 0.65f;
             NPC.lifeMax = 270;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
