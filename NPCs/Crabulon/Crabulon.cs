@@ -274,7 +274,7 @@ namespace CalamityMod.NPCs.Crabulon
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                float walkingVelocity = (death ? (5f + 2f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f) + 2.5f * enrageScale;
+                float walkingVelocity = (death ? (5f + 1f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f) + 2.5f * enrageScale;
                 if (phase2)
                     walkingVelocity += 0.5f;
                 if (phase3)
@@ -352,7 +352,7 @@ namespace CalamityMod.NPCs.Crabulon
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
-                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f);
+                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 60f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
                     NPC.noGravity = false;
