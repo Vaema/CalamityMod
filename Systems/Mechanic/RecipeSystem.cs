@@ -956,14 +956,6 @@ namespace CalamityMod.Systems
             convert[ItemID.LifeformAnalyzer] = ItemID.Stopwatch;
             convert[ItemID.Stopwatch] = ItemID.DPSMeter;
 
-            // Pyramid loot edits. There's no good way to have this not be hardcoded.
-            convert[ItemID.PharaohsMask] = ItemID.PharaohsRobe;
-            convert[ItemID.PharaohsRobe] = ItemID.PharaohsMask;
-
-            convert[ItemID.AmberHook] = ItemID.SandstorminaBottle;
-            convert[ItemID.SandstorminaBottle] = ItemID.FlyingCarpet;
-            convert[ItemID.FlyingCarpet] = ItemID.AmberHook;
-
             // Enchanted Sword and Terragrim shimmer into each other
             convert[ItemID.EnchantedSword] = ItemID.Terragrim;
             convert[ItemID.Terragrim] = ItemID.EnchantedSword;
@@ -1605,19 +1597,6 @@ namespace CalamityMod.Systems
             r = Recipe.Create(ItemID.EskimoPants);
             r.AddIngredient(ItemID.Silk, 6);
             r.AddIngredient(ItemID.FlinxFur, 1);
-            r.AddTile(TileID.Loom);
-            r.Register();
-            r.DisableDecraft();
-
-            // Pharaoh set (replaced Chest items)
-            r = Recipe.Create(ItemID.PharaohsMask);
-            r.AddIngredient(ItemID.AncientCloth, 3);
-            r.AddTile(TileID.Loom);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.PharaohsRobe);
-            r.AddIngredient(ItemID.AncientCloth, 4);
             r.AddTile(TileID.Loom);
             r.Register();
             r.DisableDecraft();
