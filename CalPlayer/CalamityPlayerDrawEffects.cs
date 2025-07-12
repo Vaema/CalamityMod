@@ -450,52 +450,6 @@ namespace CalamityMod.CalPlayer
             Player drawPlayer = drawInfo.drawPlayer;
             Item item = drawPlayer.ActiveItem();
 
-            // Vanity accessory effects, allows them to draw while the game is paused
-            if (drawPlayer.Calamity().ghostBracelet)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if (drawPlayer.Calamity().punchCard)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            // Need to set all of these so that certain vanity pieces like Capricorn Tail don't screw it up
-            if (drawPlayer.Calamity().ghostBracelet || ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide) ||
-                drawPlayer.Calamity().punchCard || ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide) ||
-                ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide))
-            {
-                drawInfo.legsGlowMask = -1;
-                drawInfo.legsOffset = Vector2.Zero;
-                drawInfo.bodyGlowMask = -1;
-                drawInfo.headGlowMask = -1;
-                drawInfo.helmetOffset = Vector2.Zero;
-            }
-
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&
                 !drawPlayer.dead &&

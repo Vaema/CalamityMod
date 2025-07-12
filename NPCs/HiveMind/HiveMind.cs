@@ -156,10 +156,9 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (expertMode)
             {
@@ -187,16 +186,6 @@ namespace CalamityMod.NPCs.HiveMind
                 lungeTime = 23;
                 driftSpeed = 3.5f;
                 driftBoost = 1.5f;
-            }
-
-            if (bossRush)
-            {
-                lungeRots = 0.4;
-                minimumDriftTime = 40;
-                reelbackFade = 10;
-                lungeTime = 16;
-                driftSpeed = 6f;
-                driftBoost = 1f;
             }
 
             if (CalamityWorld.LegendaryMode)
@@ -349,10 +338,9 @@ namespace CalamityMod.NPCs.HiveMind
 
         private void SpawnStuff()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             int maxSpawns = death ? Main.rand.Next(3, 5) : revenge ? 3 : expertMode ? Main.rand.Next(2, 4) : 2;
             for (int i = 0; i < maxSpawns; i++)
@@ -398,8 +386,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         private void ReelBack()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool revenge = CalamityWorld.revenge || bossRush;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
 
             NPC.alpha = 0;
             phase2timer = 0;
@@ -437,16 +424,15 @@ namespace CalamityMod.NPCs.HiveMind
 
             Player player = Main.player[NPC.target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Enrage
-            if ((!player.ZoneCorrupt || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
+            if ((!player.ZoneCorrupt || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -454,17 +440,17 @@ namespace CalamityMod.NPCs.HiveMind
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!player.ZoneCorrupt || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneCorrupt)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
+            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -610,8 +596,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int maxSpawns = bossRush ? 10 : death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
-                            int maxDankSpawns = bossRush ? 4 : death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
+                            int maxSpawns = death ? 5 : revenge ? 4 : expertMode ? Main.rand.Next(3, 5) : Main.rand.Next(2, 4);
+                            int maxDankSpawns = death ? Main.rand.Next(2, 4) : revenge ? 2 : expertMode ? Main.rand.Next(1, 3) : 1;
 
                             for (int i = 0; i < maxSpawns; i++)
                             {
@@ -969,7 +955,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 NPC.damage = NPC.defDamage;
 
                                 phase2timer = lungeTime - 4 * (int)enrageScale;
-                                NPC.velocity = player.Center + (bossRush ? player.velocity * 20f : Vector2.Zero) - NPC.Center;
+                                NPC.velocity = player.Center - NPC.Center;
                                 NPC.velocity.Normalize();
                                 NPC.velocity *= teleportRadius / (lungeTime - (int)enrageScale);
                                 dashStarted = true;
@@ -1336,7 +1322,7 @@ namespace CalamityMod.NPCs.HiveMind
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }

@@ -83,10 +83,9 @@ namespace CalamityMod.NPCs.SlimeGod
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             CalamityGlobalNPC.slimeGodPurple = NPC.whoAmI;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -155,12 +154,6 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 if (Main.npc[CalamityGlobalNPC.slimeGodRed].active)
                     enraged = false;
-            }
-
-            if (bossRush)
-            {
-                enraged = true;
-                hyperMode = true;
             }
 
             // For animating the wings
@@ -269,7 +262,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (NPC.timeLeft > 10)
                 {
                     NPC.ai[1] += 1f;
-                    int idleTime = bossRush ? 30 : death ? 75 : revenge ? 90 : 120;
+                    int idleTime = death ? 75 : revenge ? 90 : 120;
                     if (NPC.ai[1] >= idleTime)
                     {
                         NPC.ai[1] = 0f;
@@ -433,7 +426,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (NPC.ai[1] == 1f)
                 {
                     NPC.ai[3] += 1f;
-                    float slimeDropGateValue = bossRush ? 10f : death ? 20f : revenge ? 25f : expertMode ? 30f : 40f;
+                    float slimeDropGateValue = death ? 20f : revenge ? 25f : expertMode ? 30f : 40f;
                     if (NPC.ai[3] % slimeDropGateValue == 0f)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -495,13 +488,13 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 // Charge variables
                 float chargeVelocityMult = 0.1f;
-                float maxChargeVelocity = (bossRush || enraged) ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
+                float maxChargeVelocity = enraged ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
                 if (CalamityWorld.LegendaryMode)
                     maxChargeVelocity *= 1.15f;
                 if (CalamityWorld.LegendaryMode)
                     maxChargeVelocity *= 2f;
 
-                float inertia = (bossRush || enraged) ? 100f : death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;
+                float inertia = death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;
                 if (lifeRatio < 0.75f)
                     inertia *= 0.8f;
                 if (CalamityWorld.LegendaryMode)
@@ -541,7 +534,7 @@ namespace CalamityMod.NPCs.SlimeGod
                     NPC.damage = setDamage;
 
                     NPC.ai[2] += 1f;
-                    float phaseGateValue = (bossRush || enraged) ? 120f : death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
+                    float phaseGateValue = enraged ? 120f : death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
                     if (NPC.ai[2] >= phaseGateValue)
                     {
                         NPC.ai[1] = 2f;
@@ -559,7 +552,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             // Accelerate
                             if (NPC.velocity.Length() < maxChargeVelocity)
                             {
-                                float velocityMult = (bossRush || enraged) ? 1.15f : death ? 1.13f : revenge ? 1.12f : expertMode ? 1.11f : 1.1f;
+                                float velocityMult = enraged ? 1.15f : death ? 1.13f : revenge ? 1.12f : expertMode ? 1.11f : 1.1f;
                                 NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                                 if (NPC.velocity.Length() > maxChargeVelocity)
                                 {
@@ -648,7 +641,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 NPC.aiAction = 1;
                 NPC.ai[1] += 1f;
-                float teleportTime = bossRush ? 20f : death ? 30f : 40f;
+                float teleportTime = death ? 30f : 40f;
                 scale = MathHelper.Clamp((teleportTime - NPC.ai[1]) / teleportTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -681,7 +674,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.damage = 0;
 
                 NPC.ai[1] += 1f;
-                float teleportEndTime = bossRush ? 10f : death ? 15f : 20f;
+                float teleportEndTime = death ? 15f : 20f;
                 scale = MathHelper.Clamp(NPC.ai[1] / teleportEndTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportEndTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -760,13 +753,12 @@ namespace CalamityMod.NPCs.SlimeGod
         public static void FlyMovement(NPC npc, bool slimeBombardment = false)
         {
             // Difficulty bools
-            bool bossRush = BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
             bool ableToDropSlime = npc.ai[1] == 1f;
 
-            float flyVelocity = bossRush ? 20f : death ? 15f : revenge ? 12.5f : 10f;
-            float flyAcceleration = bossRush ? 0.24f : death ? 0.18f : revenge ? 0.15f : 0.12f;
+            float flyVelocity = death ? 15f : revenge ? 12.5f : 10f;
+            float flyAcceleration = death ? 0.18f : revenge ? 0.15f : 0.12f;
 
             if (slimeBombardment)
             {

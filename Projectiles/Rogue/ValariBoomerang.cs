@@ -145,7 +145,6 @@ namespace CalamityMod.Projectiles.Rogue
                             Projectile.velocity.Y -= acceleration;
                     }
 
-
                     // Delete the projectile if it touches its owner.
                     if (Main.myPlayer == Projectile.owner)
                         if (Projectile.Hitbox.Intersects(owner.Hitbox))

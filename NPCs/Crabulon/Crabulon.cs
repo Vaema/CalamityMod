@@ -129,10 +129,9 @@ namespace CalamityMod.NPCs.Crabulon
         {
             Lighting.AddLight(NPC.Center, 0f, 0.3f, 0.7f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -183,7 +182,7 @@ namespace CalamityMod.NPCs.Crabulon
                 NPC.timeLeft = 1800;
 
             // Enrage
-            if ((!player.ZoneGlowshroom || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
+            if ((!player.ZoneGlowshroom || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -191,17 +190,17 @@ namespace CalamityMod.NPCs.Crabulon
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
-            if (biomeEnraged && (!player.ZoneGlowshroom || bossRush))
+            if (biomeEnraged && !player.ZoneGlowshroom)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -406,7 +405,7 @@ namespace CalamityMod.NPCs.Crabulon
                             NPC.ai[1] += 1f;
                     }
 
-                    float jumpGateValue = (bossRush ? 15f : expertMode ? 60f : 120f) / (enrageScale + 1f);
+                    float jumpGateValue = (expertMode ? 60f : 120f) / (enrageScale + 1f);
                     if (NPC.ai[1] >= jumpGateValue)
                     {
                         NPC.ai[1] = -20f;
@@ -521,13 +520,13 @@ namespace CalamityMod.NPCs.Crabulon
                         SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float projectileVelocity = BossRushEvent.BossRushActive ? 24f : CalamityWorld.death ? 15f : 10f;
+                            float projectileVelocity = CalamityWorld.death ? 15f : 10f;
                             Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                             destination.Normalize();
                             destination *= projectileVelocity;
 
                             // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                            int numProj = bossRush ? 24 : phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
+                            int numProj = phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
                             {
@@ -546,13 +545,13 @@ namespace CalamityMod.NPCs.Crabulon
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float projectileVelocity = BossRushEvent.BossRushActive ? 24f : CalamityWorld.death ? 15f : 10f;
+                                float projectileVelocity = CalamityWorld.death ? 15f : 10f;
                                 Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                                 destination.Normalize();
                                 destination *= projectileVelocity;
 
                                 // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                                int numProj = bossRush ? 16 : phase4 ? 8 : (phase3 && death) ? 6 : 8;
+                                int numProj = phase4 ? 8 : (phase3 && death) ? 6 : 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
                                 {
@@ -716,7 +715,7 @@ namespace CalamityMod.NPCs.Crabulon
                         NPC.ai[3] = NPC.Bottom.Y;
                         NPC.noTileCollide = true;
 
-                        float leapVelocity = bossRush ? 24f : death ? 18f : 16f;
+                        float leapVelocity = death ? 18f : 16f;
                         NPC.velocity = center - NPC.Center;
                         NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
                         NPC.velocity *= leapVelocity;

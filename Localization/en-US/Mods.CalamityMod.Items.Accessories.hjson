@@ -342,7 +342,7 @@ BloodPact: {
 
 BloodstainedGlove: {
 	DisplayName: Bloodstained Glove
-	Tooltip: Stealth strikes have +8 armor penetration and heal for 2 HP
+	Tooltip: Stealth strikes have +8 armor penetration and heal for 5 HP
 }
 
 BloodyWormScarf: {
@@ -686,7 +686,7 @@ ElectriciansGlove: {
 	DisplayName: Electrician's Glove
 	Tooltip:
 		'''
-		Stealth strikes summon sparks on enemy hits and heal you for 2 HP
+		Stealth strikes summon sparks on enemy hits and heal you for 10 HP
 		Stealth strikes also have +8 armor penetration and deal 8% more damage
 		'''
 }
@@ -882,7 +882,11 @@ GladiatorsLocket: {
 
 GloveOfPrecision: {
 	DisplayName: Glove of Precision
-	Tooltip: Decreases rogue attack speed by 15%, but increases damage by 10%, crit by 15% and velocity by 15%
+	Tooltip:
+		'''
+		Decreases rogue attack speed by 15%
+		Increases rogue damage and critical strike chance by 10%, and velocity by 15%
+		'''
 }
 
 GloveOfRecklessness: {
@@ -2000,7 +2004,7 @@ TrinketofChi: {
 		'''
 		Increases damage reduction by 8% if you avoid taking damage for 10 seconds
 		This buff expires on hit
-		+1 HP/s life regen for teammates
+		+1 HP/s life regen for you and your teammates
 		'''
 }
 

@@ -29,8 +29,8 @@ namespace CalamityMod.NPCs.Abyss
             NPC.damage = 44;
             NPC.width = 30;
             NPC.height = 33;
-            NPC.defense = 5;
-            NPC.lifeMax = 115;
+            NPC.defense = 8;
+            NPC.lifeMax = 100;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;

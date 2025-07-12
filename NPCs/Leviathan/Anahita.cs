@@ -67,7 +67,6 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 20;
-            NPC.DR_NERD(0.2f);
             NPC.LifeMaxNERB(35000, 42000, 260000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -139,9 +138,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (HasBegunSummoningLeviathan && CalamityGlobalNPC.LeviAndAna == -1)
                 CalamityGlobalNPC.LeviAndAna = NPC.whoAmI;
 
-            // Set to false so she doesn't do it constantly
-            NPC.Calamity().canBreakPlayerDefense = false;
-
             // Light
             Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 0f, 0.5f, 0.3f);
 
@@ -160,14 +156,13 @@ namespace CalamityMod.NPCs.Leviathan
 
             // Variables
             Player player = Main.player[NPC.target];
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool notOcean = player.position.Y < 800f || player.position.Y > Main.worldSurface * 16.0 || (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400));
 
             // Enrage
-            if (notOcean && !bossRush)
+            if (notOcean && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -175,12 +170,12 @@ namespace CalamityMod.NPCs.Leviathan
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
             float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1.5f;
             }
 
@@ -237,7 +232,7 @@ namespace CalamityMod.NPCs.Leviathan
 
                     NPC.rotation = NPC.rotation.AngleTowards(idealRotation, 0.08f);
 
-                    if (bossRush || Collision.WetCollision(NPC.position, NPC.width, NPC.height) || NPC.position.Y > (Main.worldSurface - 125f) * 16f)
+                    if (BossRushEvent.BossRushActive || Collision.WetCollision(NPC.position, NPC.width, NPC.height) || NPC.position.Y > (Main.worldSurface - 125f) * 16f)
                     {
                         int oldAlpha = NPC.alpha;
                         NPC.alpha = Utils.Clamp(NPC.alpha + 9, 0, 255);
@@ -313,6 +308,7 @@ namespace CalamityMod.NPCs.Leviathan
                     NPC.dontTakeDamage = true;
             }
 
+            NPC.canDisplayBuffs = true;
             // Hover near the target, invisible if the Leviathan is present and not sufficiently injured.
             if ((phase3 || death) && WaitingForLeviathan && !Main.zenithWorld)
             {
@@ -340,6 +336,7 @@ namespace CalamityMod.NPCs.Leviathan
                 }
 
                 NPC.dontTakeDamage = true;
+                NPC.canDisplayBuffs = false;
 
                 if (NPC.ai[0] != -1f)
                 {
@@ -824,9 +821,11 @@ namespace CalamityMod.NPCs.Leviathan
 
                     if (revenge)
                         chargeVelocity += 2f + (death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio));
-
                     if (CalamityWorld.LegendaryMode)
                         chargeVelocity *= 1.15f;
+                    // Stunt velocity at the end of the charge attack to prevent her flying off
+                    if (NPC.ai[0] == -1f)
+                        chargeVelocity *= 0.3f;
 
                     NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
@@ -848,7 +847,6 @@ namespace CalamityMod.NPCs.Leviathan
             // Charge
             else if (NPC.ai[0] == 4f)
             {
-                NPC.Calamity().canBreakPlayerDefense = true;
                 NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
 
                 if (CalamityWorld.LegendaryMode && NPC.ai[1] % 5f == 0f)
@@ -1019,7 +1017,7 @@ namespace CalamityMod.NPCs.Leviathan
             //200x636
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

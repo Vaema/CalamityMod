@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         public override float RetractAcceleration => 4f;
 
         public static float MaxAuraTime = 60f;
+        private bool hasDetached = false;
+        private int detachDelay = 0;
 
         public ref float AuraScale => ref Projectile.ai[2];
 
@@ -52,6 +54,13 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 Dust sand = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Sand, Alpha: 100, Scale: Main.rand.NextFloat(0.6f, 1.2f));
                 sand.noGravity = CurrentFlailState == FlailState.Dropping;
                 sand.velocity = CurrentFlailState == FlailState.Spinning ? Main.rand.NextVector2Unit() * 1.5f : Projectile.velocity * 0.25f;
+            }
+
+            // Force the flail to stay in launch state for a few frames after detaching to prevent spam-click abuse at point-blank
+            if (detachDelay > 0)
+            {
+                detachDelay--;
+                CurrentFlailState = detachDelay == 0 ? FlailState.ForcedRetracting : FlailState.LaunchingForward;
             }
 
             if (CurrentFlailState == FlailState.Spinning)
@@ -94,7 +103,21 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                     Main.EntitySpriteDraw(Aura, position, null, drawColor, Main.GlobalTimeWrappedHourly * 0.5f + (i * i * 0.03f), Aura.Size() * 0.5f, AuraScale - (i * 0.03f), SpriteEffects.None, 0);
                 }
             }
-            return base.PreDraw(ref lightColor);
+
+            if (hasDetached)
+            {
+                DrawChain();
+                return false;
+            }
+            else
+                return base.PreDraw(ref lightColor);
+        }
+
+        public override bool? CanDamage()
+        {
+            if (hasDetached)
+                return false;
+            return base.CanDamage();
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -123,7 +146,11 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             if (Projectile.owner == Main.myPlayer)
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<TumbleweedRolling>(), (int)(Projectile.damage * LaunchDamage), Projectile.knockBack, Projectile.owner, CurrentFlailState == FlailState.LaunchingForward ? 0f : 1f);
 
-            Projectile.Kill();
+            hasDetached = true;
+            if ((CurrentFlailState == FlailState.LaunchingForward || CurrentFlailState == FlailState.Ricochet) && StateTimer < 6)
+                detachDelay = 6;
+            else
+                CurrentFlailState = FlailState.ForcedRetracting;
         }
     }
 }

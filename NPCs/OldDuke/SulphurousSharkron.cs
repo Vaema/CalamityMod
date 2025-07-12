@@ -70,10 +70,9 @@ namespace CalamityMod.NPCs.OldDuke
         {
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.7f * NPC.Opacity, 0.9f * NPC.Opacity, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
             {
@@ -102,12 +101,12 @@ namespace CalamityMod.NPCs.OldDuke
             // Fly up
             bool upwardAI = NPC.ai[3] < 0f;
 
-            float flyTowardTargetGateValue = bossRush ? 60f : death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
-            float extraTime = bossRush ? 60f : death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
+            float flyTowardTargetGateValue = death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
+            float extraTime = death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
             float aiGateValue = flyTowardTargetGateValue + extraTime;
             float dieGateValue = aiGateValue + extraTime * 4f;
             float fallDownGateValue = aiGateValue + extraTime;
-            float maxVelocity = bossRush ? 22f : death ? 20f : revenge ? 19f : expertMode ? 18f : 16f;
+            float maxVelocity = death ? 20f : revenge ? 19f : expertMode ? 18f : 16f;
 
             if (NPC.ai[0] == 0f)
             {
@@ -142,7 +141,7 @@ namespace CalamityMod.NPCs.OldDuke
                     Vector2 targetDistance = Main.player[NPC.target].Center - NPC.Center;
                     targetDistance.Normalize();
                     targetDistance *= scaleFactor2;
-                    float inertia = bossRush ? 20f : death ? 23f : revenge ? 25f : expertMode ? 27f : 30f;
+                    float inertia = death ? 23f : revenge ? 25f : expertMode ? 27f : 30f;
                     NPC.velocity = (NPC.velocity * (inertia - 1f) + targetDistance) / inertia;
                     NPC.velocity.Normalize();
                     NPC.velocity *= scaleFactor2;

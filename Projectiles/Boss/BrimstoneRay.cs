@@ -114,13 +114,12 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 dustSpawnPos = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
 
             // Fire brimstone darts along the laser
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             if (Main.npc[(int)Projectile.ai[1]].ai[1] == 210f && Projectile.owner == Main.myPlayer && Main.npc[(int)Projectile.ai[1]].ai[0] == 5)
             {
                 Vector2 velocity = Projectile.velocity;
                 velocity.Normalize();
-                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : bossRush ? 72f : 144f;
+                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : 144f;
                 Vector2 fireFrom = new Vector2(Main.npc[(int)Projectile.ai[1]].Center.X + (Main.npc[(int)Projectile.ai[1]].spriteDirection > 0 ? 34f : -34f), Main.npc[(int)Projectile.ai[1]].Center.Y - 74f) + velocity * distanceBetweenProjectiles;
                 int projectileAmt = (int)(Projectile.localAI[1] / distanceBetweenProjectiles);
                 int type = ModContent.ProjectileType<BrimstoneBarrage>();

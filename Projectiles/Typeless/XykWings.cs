@@ -52,6 +52,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
+            if (!BreakApart)
+                lastDir = Owner.direction;
+
             float intendedScale = 0.85f;
             float spawnAnimTime = 12 + wingNum;
             if (time == 0)
@@ -266,9 +269,6 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            if (!BreakApart)
-                lastDir = Owner.direction;
-
             float topWingNum = (checkActiveWings() - 1);
             float width = 1;
             float height = 1;

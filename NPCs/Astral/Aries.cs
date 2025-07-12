@@ -33,9 +33,8 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 66;
             NPC.height = 64;
             NPC.aiStyle = NPCAIStyleID.Herpling;
-            NPC.defense = 14;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 380;
+            NPC.defense = 22;
+            NPC.lifeMax = 300;
             NPC.knockBackResist = 0.6f;
             NPC.value = Item.buyPrice(0, 0, 3, 0);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
@@ -44,9 +43,9 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 85;
-                NPC.defense = 24;
+                NPC.defense = 32;
                 NPC.knockBackResist = 0.5f;
-                NPC.lifeMax = 570;
+                NPC.lifeMax = 450;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

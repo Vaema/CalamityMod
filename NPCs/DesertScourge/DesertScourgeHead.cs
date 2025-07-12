@@ -56,7 +56,6 @@ namespace CalamityMod.NPCs.DesertScourge
         public const float LungeUpwardCutoffDistance = 420f;
         public const float BurrowDistance_Hide = 1080f;
         public const float BurrowDistance = 800f;
-        public const float BurrowDistance_BossRush = 400f;
         public const float OpenMouthForBiteDistance = 220f;
 
         private const int OpenMouthStopFrame = 4;
@@ -162,10 +161,9 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Check for Nuisances
             bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !death;
@@ -188,7 +186,7 @@ namespace CalamityMod.NPCs.DesertScourge
             Player player = Main.player[NPC.target];
 
             // Enrage
-            if (!player.ZoneDesert && !bossRush)
+            if (!player.ZoneDesert && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -196,12 +194,12 @@ namespace CalamityMod.NPCs.DesertScourge
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -234,7 +232,7 @@ namespace CalamityMod.NPCs.DesertScourge
             bool lungeUpward = burrow && NPC.Calamity().newAI[1] == 1f;
             bool quickFall = NPC.Calamity().newAI[1] == 2f;
 
-            float burrowDistance = hide ? BurrowDistance_Hide : bossRush ? BurrowDistance_BossRush : BurrowDistance;
+            float burrowDistance = hide ? BurrowDistance_Hide : BurrowDistance;
 
             float speed = death ? 0.105f : 0.085f;
             float turnSpeed = death ? 0.21f : 0.17f;
@@ -598,11 +596,11 @@ namespace CalamityMod.NPCs.DesertScourge
             {
                 // Spit a huge spread of sand upwards that falls down
                 SoundEngine.PlaySound(SandBlastSound, NPC.Center);
-                float velocity = CalamityWorld.LegendaryMode ? 16f : bossRush ? 10f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
+                float velocity = CalamityWorld.LegendaryMode ? 16f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
                 int type = ModContent.ProjectileType<DesertScourgeSpit>();
                 int damage = NPC.GetProjectileDamage(type);
                 Vector2 projectileVelocity = (NPC.Center + NPC.velocity * 10f - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                int numProj = bossRush ? 30 : death ? 24 : revenge ? 21 : expertMode ? 18 : 12;
+                int numProj = death ? 24 : revenge ? 21 : expertMode ? 18 : 12;
                 if (CalamityWorld.LegendaryMode)
                     numProj *= 2;
 
@@ -943,7 +941,7 @@ namespace CalamityMod.NPCs.DesertScourge
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.SandBlock;
         }

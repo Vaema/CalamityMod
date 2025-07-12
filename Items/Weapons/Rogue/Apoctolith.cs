@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 66;
             Item.height = 64;
-            Item.damage = 238;
+            Item.damage = 185;
             Item.shootSpeed = 18f;
             Item.shoot = ModContent.ProjectileType<ApoctolithProj>();
             Item.useAnimation = Item.useTime = 26;

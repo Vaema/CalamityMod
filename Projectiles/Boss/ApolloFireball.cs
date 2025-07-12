@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
             CooldownSlot = ImmunityCooldownID.Bosses;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 48 : timeLeft;
+            Projectile.timeLeft = timeLeft;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.tileCollide = true;
 
             int fadeInTime = 3;
-            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - ((BossRushEvent.BossRushActive ? 48 : timeLeft) - fadeInTime)) / (float)fadeInTime), 0f, 1f);
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - (timeLeft - fadeInTime)) / (float)fadeInTime), 0f, 1f);
 
             Lighting.AddLight(Projectile.Center, 0f, 0.6f * Projectile.Opacity, 0f);
 
@@ -164,7 +164,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Plasma bolts
-                int totalProjectiles = BossRushEvent.BossRushActive ? 6 : 4;
+                int totalProjectiles = 4;
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<AresPlasmaBolt>();
                 float velocity = 0.5f;

@@ -77,9 +77,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -131,17 +129,16 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void AI()
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool getFuckedAI = Main.zenithWorld;
             CalamityGlobalNPC.aquaticScourge = NPC.whoAmI;
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || bossRush || CalamityWorld.LegendaryMode)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode)
             {
                 if (nonHostile)
                 {
@@ -190,7 +187,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             }
 
             // Enrage
-            if (notOcean && !player.Calamity().ZoneSulphur && !bossRush)
+            if (notOcean && !player.Calamity().ZoneSulphur && !BossRushEvent.BossRushActive)
             {
                 if (NPC.localAI[2] > 0f)
                     NPC.localAI[2] -= 1f;
@@ -198,12 +195,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             else
                 NPC.localAI[2] = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = NPC.localAI[2] <= 0f || bossRush;
+            bool biomeEnraged = NPC.localAI[2] <= 0f;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -222,7 +219,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     NPC.localAI[3] = colorFadeTimeAfterSpiral;
 
                     // Vomit acid mist
-                    float acidMistBarfDivisor = getFuckedAI ? 2f : ((float)Math.Floor(bossRush ? 4f : death ? 5f : 6f) * (phase3 ? 1.5f : 1f));
+                    float acidMistBarfDivisor = getFuckedAI ? 2f : ((float)Math.Floor(death ? 5f : 6f) * (phase3 ? 1.5f : 1f));
                     if (calamityGlobalNPC.newAI[3] % acidMistBarfDivisor == 0f)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -238,7 +235,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     }
 
                     // Vomit circular spreads of acid clouds while in phase 3
-                    float toxicCloudBarfDivisor = bossRush ? 20f : death ? 30f : 40f;
+                    float toxicCloudBarfDivisor = death ? 30f : 40f;
                     if (calamityGlobalNPC.newAI[3] % toxicCloudBarfDivisor == 0f && phase3)
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -351,7 +348,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int totalProjectiles = bossRush ? 10 : expertMode ? 8 : 6;
+                            int totalProjectiles = expertMode ? 8 : 6;
                             if (phase3)
                                 totalProjectiles *= 2;
 
@@ -667,7 +664,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             return 0f;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SulphurousSand>();
         }

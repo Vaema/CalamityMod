@@ -71,14 +71,8 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
             }
 
-            if (target.life <= 0 && target.lifeMax > 5)
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 10, ModContent.ProjectileType<ShinobiHealOrb>(), BalancingConstants.LifeStealRange, 0f);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (target.statLife <= 0)
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 10, ModContent.ProjectileType<ShinobiHealOrb>(), BalancingConstants.LifeStealRange, 0f);
+            if (target.life <= 0)
+                Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<ShinobiHealOrb>(), 10, 0f);
         }
 
         public override void OnKill(int timeLeft)

@@ -210,25 +210,23 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Projectile.ai[1] > 0f)
             {
-                Projectile.ai[1] += (float)Main.rand.Next(1, 4);
+                Projectile.ai[1] += Main.rand.Next(2, 3+1);
             }
-            if (Projectile.ai[1] > 110f)
+            if (Projectile.ai[1] > 100f)
             {
                 Projectile.ai[1] = 0f;
                 Projectile.netUpdate = true;
             }
             if (Projectile.ai[0] == 0f)
             {
-                float projSpeed = 8f;
+                float projSpeed = 10f;
                 int projType = ModContent.ProjectileType<BrimstoneLaserSummon>();
                 if (foundTarget && Projectile.ai[1] == 0f)
                 {
                     Projectile.ai[1] += 1f;
                     if (Main.myPlayer == Projectile.owner && Collision.CanHitLine(Projectile.Center, Projectile.width, Projectile.height, targetVec, 0, 0))
                     {
-                        Vector2 velocity = targetVec - Projectile.Center;
-                        velocity.Normalize();
-                        velocity *= projSpeed;
+                        Vector2 velocity = Utils.DirectionTo(Projectile.Center, targetVec) * projSpeed;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projType, Projectile.damage, Projectile.knockBack, Projectile.owner);
                         Projectile.netUpdate = true;
                     }

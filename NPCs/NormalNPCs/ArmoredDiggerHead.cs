@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 54;
             NPC.height = 54;
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -442,7 +441,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             return 0f;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

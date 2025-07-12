@@ -1,50 +1,36 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using CalamityMod.Items.BaseItems;
-using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using CalamityMod.Balancing;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
-using System;
-using CalamityMod.Particles;
+using Terraria;
 using Terraria.DataStructures;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Primitives;
-using Terraria.Graphics.Shaders;
-using CalamityMod.Buffs.DamageOverTime;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
     public class MantisClawSlash : ModProjectile, ILocalizedModType
     {
-        public int TimerCap => 20;
-
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Particles/SlashSmear";
 
+        private const int TimerCap = 20;
         Color startColor;
         Color endColor;
+        int dir = 1;
 
         public override void SetDefaults()
         {
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
             Projectile.timeLeft = TimerCap;
-            Projectile.knockBack = 2;
             Projectile.tileCollide = false;
             Projectile.width = 256;
             Projectile.height = 256;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.DamageType = DamageClass.Melee;
+            Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
-
-        int dir = 1;
 
         public override void OnSpawn(IEntitySource source)
         {
@@ -53,7 +39,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool(2)) dir = -1;
 
-            // i cherry picked five specific colors to make a similar but different palette to the claws themselves
+            // I cherry picked five specific colors to make a similar but different palette to the claws themselves
             // of those five, the projectile lerps between two, randomly chosen when the projectile is spawned
             List<Color> ColorList =
             [
@@ -89,23 +75,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.velocity = Projectile.velocity.RotatedBy(MathHelper.ToRadians(3f) * dir);
 
             Projectile.ai[1]++;
-
             Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], MathHelper.TwoPi * dir, 0.15f);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
-        }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
-        }
-
-        public override bool? CanDamage()
-        {
-            return true;
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -116,7 +90,6 @@ namespace CalamityMod.Projectiles.Melee
                 Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), Color.Lerp(startColor, endColor, Projectile.ai[1] / TimerCap).MultiplyRGBA(new Color(255, 255, 255, 0f)),
                     Projectile.rotation - (dir == -1 ? MathHelper.ToRadians(-135f) : MathHelper.ToRadians(180f)) + Projectile.ai[0], tex.Size() / 2, MathHelper.Lerp(0.6f, 1f, i) * Projectile.scale, dir == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             }
-
             return false;
         }
     }

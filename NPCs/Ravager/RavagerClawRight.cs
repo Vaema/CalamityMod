@@ -56,7 +56,6 @@ namespace CalamityMod.NPCs.Ravager
 
         public override void AI()
         {
-            //Main.NewText(NPC.ai[0]);
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)

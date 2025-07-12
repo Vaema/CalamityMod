@@ -94,10 +94,9 @@ namespace CalamityMod.NPCs.SlimeGod
             if (CalamityGlobalNPC.slimeGodRed < 0 || !Main.npc[CalamityGlobalNPC.slimeGodRed].active)
                 CalamityGlobalNPC.slimeGodRed = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -127,7 +126,7 @@ namespace CalamityMod.NPCs.SlimeGod
             float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
 
             // How fast the slime slams down
-            float slamVelocity = bossRush ? 22.25f : death ? 18.25f : revenge ? 16.5f : expertMode ? 15.5f : 13.5f;
+            float slamVelocity = death ? 18.25f : revenge ? 16.5f : expertMode ? 15.5f : 13.5f;
 
             // Used for how fast the slime animates
             NPC.aiAction = 0;
@@ -168,9 +167,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
                     enraged = false;
             }
-
-            if (bossRush)
-                enraged = true;
 
             if (NPC.localAI[1] != 1f)
             {
@@ -271,7 +267,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
-            float distanceSpeedBoost = NPC.Distance(player.Center) * (bossRush ? 0.008f : 0.005f);
+            float distanceSpeedBoost = NPC.Distance(player.Center) * 0.005f;
 
             if (NPC.ai[0] == 0f)
             {
@@ -655,7 +651,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 NPC.aiAction = 1;
                 NPC.ai[1] += 1f;
-                float teleportTime = bossRush ? 20f : death ? 30f : 40f;
+                float teleportTime = death ? 30f : 40f;
                 scale = MathHelper.Clamp((teleportTime - NPC.ai[1]) / teleportTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -688,7 +684,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.damage = 0;
 
                 NPC.ai[1] += 1f;
-                float teleportEndTime = bossRush ? 10f : death ? 15f : 20f;
+                float teleportEndTime = death ? 15f : 20f;
                 scale = MathHelper.Clamp(NPC.ai[1] / teleportEndTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportEndTime && Main.netMode != NetmodeID.MultiplayerClient)

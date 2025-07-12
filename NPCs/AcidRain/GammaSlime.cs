@@ -43,7 +43,6 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.damage = 110;
             NPC.lifeMax = 5000;
-            NPC.DR_NERD(0.15f);
             NPC.defense = 25;
 
             NPC.aiStyle = AIType = -1;

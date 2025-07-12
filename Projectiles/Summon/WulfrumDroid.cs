@@ -119,6 +119,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
             Initialized = 0f;
+            BuffModeBuffer = 15;
         }
 
         //Returns the npc if targetable, returns null if not
@@ -165,15 +166,37 @@ namespace CalamityMod.Projectiles.Summon
 
             if (Owner.Calamity().mouseRight && Owner.HeldItem.type == ModContent.ItemType<WulfrumController>())
             {
-                if (BuffModeBuffer > 0)
+                if (Owner.itemTime == Owner.itemTimeMax)
+                {
+                    if (BuffModeBuffer == 15)
+                        BuffModeBuffer--;
+                    if (BuffModeBuffer == -15)
+                        BuffModeBuffer++;
+                }
+                if (BuffModeBuffer < 15 && BuffModeBuffer >= 0)
                 {
                     BuffModeBuffer--;
-                    Projectile.netUpdate = true;
+                        if (BuffModeBuffer == 0)
+                            BuffModeBuffer = -15;
                 }
+                if (BuffModeBuffer > -15 && BuffModeBuffer <= 0)
+                {
+                    BuffModeBuffer++;
+                    if (BuffModeBuffer == 0)
+                        BuffModeBuffer = 15;
+                }
+                Projectile.netUpdate = true;
             }
 
-            else if (BuffModeBuffer < 15)
-                BuffModeBuffer = 15;
+            else if (BuffModeBuffer > 0 && BuffModeBuffer < 15)
+            {
+                BuffModeBuffer++;
+            }
+            else if (BuffModeBuffer < 0 && BuffModeBuffer > -15)
+            {
+                BuffModeBuffer--;
+            }
+
 
             bool buffMode = BuffModeBuffer <= 0;
 
@@ -369,8 +392,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             ShootTimer = ShootDelay;
 
-                            // 1/3 chance to directly recharge the Rover Drive shield by 1 point
-                            if (Main.rand.NextBool(3) && modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
+                            if (modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
                             {
                                 CalamityPlayer buffedCalPlayer = playerToBuff.Calamity();
                                 buffedCalPlayer.RoverDriveShieldDurability++;

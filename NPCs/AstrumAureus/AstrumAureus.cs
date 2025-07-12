@@ -98,8 +98,8 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.width = 374;
             NPC.height = 374;
             NPC.defense = 40;
-            NPC.DR_NERD(0.4f);
-            NPC.LifeMaxNERB(120000, 140000, 740000); // 30 seconds in boss rush
+            NPC.DR_NERD(0.1f);
+            NPC.LifeMaxNERB(100000, 120000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -155,10 +155,9 @@ namespace CalamityMod.NPCs.AstrumAureus
             CalamityGlobalNPC.astrumAureus = NPC.whoAmI;
 
             // Variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -171,8 +170,6 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             // Exhaustion
             bool exhausted = NPC.ai[2] >= (phase3 ? 2f : 1f);
-            calamityGlobalNPC.DR = exhausted ? 0.2f : 0.4f;
-            NPC.defense = exhausted ? NPC.defDefense / 2 : NPC.defDefense;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -195,10 +192,10 @@ namespace CalamityMod.NPCs.AstrumAureus
                     NPC.localAI[3] -= death ? 4f : expertMode ? 2f : 1f;
             }
 
-            float enrageScale = bossRush ? 1f : 0f;
-            if ((Main.IsItDay() && !player.Calamity().ZoneAstral) || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay() && !player.Calamity().ZoneAstral)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
                 enrageScale += 1f;
             }
 
@@ -277,7 +274,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         {
                             int type = ModContent.ProjectileType<AstralFlame>();
                             int damage = NPC.GetProjectileDamage(type);
-                            int totalProjectiles = bossRush ? 14 : death ? 12 : revenge ? 10 : expertMode ? 8 : 6;
+                            int totalProjectiles = death ? 12 : revenge ? 10 : expertMode ? 8 : 6;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             float velocity = 10f;
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
@@ -371,8 +368,8 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int maxProjectiles = !phase2 ? (bossRush ? 5 : 3) : (bossRush ? 7 : 5);
-                                int spread = !phase2 ? (bossRush ? 11 : 8) : (bossRush ? 12 : 10);
+                                int maxProjectiles = !phase2 ? 3 : 5;
+                                int spread = !phase2 ? 8 : 10;
 
                                 int type = ModContent.ProjectileType<AstralLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
@@ -408,8 +405,8 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int maxProjectiles = !phase3 ? (bossRush ? 13 : death ? 11 : 9) : (bossRush ? 19 : death ? 17 : 15);
-                                int spread = !phase3 ? (bossRush ? 20 : death ? 18 : 16) : (bossRush ? 24 : death ? 22 : 20);
+                                int maxProjectiles = !phase3 ? (death ? 11 : 9) : (death ? 17 : 15);
+                                int spread = !phase3 ? (death ? 18 : 16) : (death ? 22 : 20);
 
                                 int type = ModContent.ProjectileType<AstralLaser>();
                                 int damage = NPC.GetProjectileDamage(type);
@@ -458,7 +455,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 if (NPC.Distance(player.Center) < 240f)
                     NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
-                if (NPC.ai[1] >= 180f || bossRush)
+                if (NPC.ai[1] >= 180f)
                 {
                     // Set AI to random state and reset other AI arrays
                     NPC.TargetClosest();
@@ -570,7 +567,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
                 }
 
-                if (NPC.ai[1] >= ((bossRush ? 270f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f)))
+                if (NPC.ai[1] >= (360f - (death ? 90f * (1f - lifeRatio) : 0f)))
                 {
                     // Collide with tiles again
                     NPC.noTileCollide = false;
@@ -736,7 +733,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         {
                             int type = Main.rand.NextBool() ? ModContent.ProjectileType<AstralLaser>() : ModContent.ProjectileType<AstralFlame>();
                             int damage = NPC.GetProjectileDamage(type);
-                            int totalProjectiles = bossRush ? 14 : death ? 12 : revenge ? 10 : expertMode ? 8 : 6;
+                            int totalProjectiles = death ? 12 : revenge ? 10 : expertMode ? 8 : 6;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             float velocity = 10f;
                             Vector2 spinningPoint = new Vector2(0f, -velocity);
@@ -754,8 +751,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             float flameVelocity = 6f;
-                            int maxProjectiles = bossRush ? 4 : death ? 3 : 2;
-                            int spread = bossRush ? 36 : death ? 28 : 20;
+                            int maxProjectiles = death ? 3 : 2;
+                            int spread = death ? 28 : 20;
 
                             int type = ModContent.ProjectileType<AstralFlame>();
                             int damage = NPC.GetProjectileDamage(type);
@@ -777,8 +774,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             float laserVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 7f : death ? 6f : 5f;
-                            int maxProjectiles = !phase3 ? (bossRush ? 13 : death ? 11 : 9) : (bossRush ? 17 : death ? 15 : 13);
-                            int spread = !phase3 ? (bossRush ? 20 : death ? 18 : 16) : (bossRush ? 24 : death ? 22 : 20);
+                            int maxProjectiles = !phase3 ? (death ? 11 : 9) : (death ? 15 : 13);
+                            int spread = !phase3 ? (death ? 18 : 16) : (death ? 22 : 20);
 
                             int type = ModContent.ProjectileType<AstralLaser>();
                             int damage = NPC.GetProjectileDamage(type);
@@ -905,7 +902,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                             NPC.localAI[2] += 1.25f;
                     }
 
-                    if (NPC.localAI[1] >= (bossRush ? 60f : death ? 180f : 240f))
+                    if (NPC.localAI[1] >= (death ? 180f : 240f))
                     {
                         // Reset localAI and find a teleport destination
                         NPC.TargetClosest();
@@ -1298,7 +1295,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

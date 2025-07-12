@@ -35,7 +35,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 6;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 280;
             NPC.knockBackResist = 0.05f;
             AIType = -1;

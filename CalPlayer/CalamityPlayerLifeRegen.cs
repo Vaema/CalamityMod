@@ -625,6 +625,9 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += Main.eclipse ? 2 : 4;
             }
 
+            if (silvaSet)
+                Player.lifeRegen += 6;
+
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
@@ -692,14 +695,6 @@ namespace CalamityMod.CalPlayer
             }
             else
                 pinkCandleHealFraction = 0D;
-
-            if (reaverRegen && reaverRegenCooldown >= 60)
-            {
-                reaverRegenCooldown = 0;
-
-                if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.HealPlayer(1, HealTextType.None);
-            }
 
             if (BloomStoneRegen)
             {

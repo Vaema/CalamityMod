@@ -234,7 +234,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 12, 1, 20));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.5f);
             }
 
             if (target.CanBeMoved(true) || Main.zenithWorld || target.type == ModContent.NPCType<PrimordialWyrmHead>() || (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))

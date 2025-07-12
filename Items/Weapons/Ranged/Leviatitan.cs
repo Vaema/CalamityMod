@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 82;
             Item.height = 28;
-            Item.damage = 121;
+            Item.damage = 89;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = Item.useAnimation = 18; //Try not to change this if you can help it.
             Item.noMelee = true;
@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Reposition to the gun's tip. Calculated seperately due to the two different shot styles.
+            // Reposition to the gun's tip. Calculated separately due to the two different shot styles.
             Vector2 boulderPos = position + new Vector2(74f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -2f : -8f)).RotatedBy(velocity.ToRotation());
             Vector2 shotPos = position + new Vector2(74f, player.direction * (Math.Abs(velocity.SafeNormalize(Vector2.Zero).X) < 0.02f ? -6f : 3f)).RotatedBy(velocity.ToRotation());
 
