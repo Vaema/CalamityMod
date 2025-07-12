@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[2] == 0f)
             {
                 if (death)
-                    npc.ai[1] += 2f;
+                    npc.ai[1] += 1f;
 
                 if (phase2)
                     npc.ai[1] += 1f;
@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[leechSpawn].velocity.X = npc.direction * leechVelocity;
                     }
 
-                    if (phase2 || death)
+                    if (death)
                     {
                         // Get target vector
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * npc.velocity.Length();
@@ -124,7 +124,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.projectile[proj].timeLeft = 600;
                         Main.projectile[proj].tileCollide = false;
 
-                        if (death)
+                        if (lifeRatio < 0.5f && death)
                         {
                             float fireballVelocity = npc.velocity.Length() + 3f;
                             projectileVelocity = projectileVelocity.SafeNormalize(Vector2.UnitY) * fireballVelocity;
@@ -135,12 +135,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 int numProj = 3;
                                 int spread = 15;
                                 float rotation = MathHelper.ToRadians(spread);
-                                fireballVelocity *= 0.1f;
+                                fireballVelocity *= 0.12f;  
                                 for (int j = 0; j < numProj; j++)
                                 {
                                     Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(fireballVelocity, fireballVelocity);
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1))) + randomVelocity;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    int newProj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Main.projectile[newProj].timeLeft = 100;
+
                                 }
                             }
                         }
@@ -305,18 +307,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float velocityBoostMaxDistance = velocityBoostStartDistance * 1.5f;
                 float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
                 float lerpAmount = MathHelper.Clamp((distanceFromTargetX - velocityBoostStartDistance) / velocityBoostMaxDistance, 0f, 1f);
-                deathModeVelocityBoost = MathHelper.Lerp(0f, 8f, lerpAmount);
+                deathModeVelocityBoost = MathHelper.Lerp(0f, 4f, lerpAmount);
             }
 
             // NOTE: Max velocity is 8 in Expert Mode
             // NOTE: Max velocity is 9 in For The Worthy
 
             float velocityBoost = 4f * (1f - lifeRatio);
-            float velocityX = (death ? 3.5f : 2f) + deathModeVelocityBoost + velocityBoost;
+            float velocityX = 2f + deathModeVelocityBoost + velocityBoost;
             velocityX *= speedMult;
 
             if (death)
-                velocityX *= 1.2f;
+                velocityX *= 1.1f;
 
             if (CalamityWorld.LegendaryMode)
             {
@@ -438,7 +440,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (Main.rand.NextBool(chance))
                 {
-                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(death ? 2f : 1f, death ? 8f : 4f, npc.life / (float)npc.lifeMax));
+                    int maxHungriesBasedOnHP = (int)Math.Round(MathHelper.Lerp(death ? 2f : 1f, death ? 6f : 4f, npc.life / (float)npc.lifeMax));
                     if (NPC.CountNPCS(NPCID.TheHungry) < maxHungriesBasedOnHP)
                     {
                         int hungryAmt = 0;
@@ -514,7 +516,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 mouthYPosition = (Main.wofDrawAreaBottom + Main.wofDrawAreaTop) / 2;
                 mouthYPosition = (mouthYPosition + Main.wofDrawAreaBottom) / 2f;
 
-                int maxHungries = death ? 16 : 11;
+                int maxHungries = death ? 14 : 11;
                 float maxOffset = death ? (0.2f / 3f) : 0.1f;
                 for (int j = 0; j < maxHungries; j++)
                 {
@@ -642,7 +644,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (wallLifeRatio < 0.1f)
                         velocityBoost += 0.9f;
 
-                    velocityBoost *= death ? 1.5f : 1.25f;
+                    velocityBoost *= death ? 1.4f : 1.25f;
                     velocityBoost += 0.3f;
                     maxVelocity += velocityBoost * 0.35f;
                     if (npc.Center.X < Main.npc[Main.wofNPCIndex].Center.X && Main.npc[Main.wofNPCIndex].velocity.X > 0f)
