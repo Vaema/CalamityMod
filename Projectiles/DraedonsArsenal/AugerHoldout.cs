@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         if (Owner.Calamity().buffedAuger)
                         {
                             Owner.Calamity().GeneralScreenShakePower = 4f;
-                            damage = (int)(damage * 1.5f);
+                            damage = (int)(damage * 2.5f);
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);
                         makeHitbox = false;

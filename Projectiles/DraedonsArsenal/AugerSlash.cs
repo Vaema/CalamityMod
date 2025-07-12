@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
-            float launchPower = (Projectile.ai[2] == 5 ? 35 : 14);
+            float launchPower = (Projectile.ai[2] == 5 ? 35 : 10);
             target.MoveNPC(launchVel, launchPower, true);
 
             if (Projectile.ai[2] == 5)
