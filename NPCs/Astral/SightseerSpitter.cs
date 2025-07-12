@@ -42,8 +42,8 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 64;
             NPC.height = 56;
             NPC.damage = 50;
-            NPC.defense = 20;
-            NPC.lifeMax = 540;
+            NPC.defense = 35;
+            NPC.lifeMax = 500;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.8f;
@@ -54,9 +54,9 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 85;
-                NPC.defense = 30;
+                NPC.defense = 45;
                 NPC.knockBackResist = 0.7f;
-                NPC.lifeMax = 810;
+                NPC.lifeMax = 750;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
