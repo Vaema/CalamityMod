@@ -465,18 +465,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             if (Main.rand.NextBool())
                             {
-                                switch (Main.rand.Next(3))
-                                {
-                                    case 0:
-                                        npcType = NPCID.SlimeSpiked;
-                                        break;
-                                    case 1:
-                                        npcType = NPCID.SpikedIceSlime;
-                                        break;
-                                    case 2:
-                                        npcType = NPCID.SpikedJungleSlime;
-                                        break;
-                                }
+                                npcType = Main.player[npc.target].ZoneJungle ? NPCID.SpikedJungleSlime : Main.player[npc.target].ZoneSnow ? NPCID.SpikedIceSlime : NPCID.SlimeSpiked;
                             }
                         }
 

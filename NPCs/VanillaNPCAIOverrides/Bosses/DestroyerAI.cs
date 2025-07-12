@@ -199,19 +199,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int noFlyZoneBoxHeight = death ? 1500 : 1800;
 
             // Speed and movement variables
-            float speed = death ? 0.2f : 0.1f;
-            float turnSpeed = death ? 0.3f : 0.15f;
+            float speed = death ? 0.14f : 0.1f;
+            float turnSpeed = death ? 0.21f : 0.15f;
 
             // Max velocity
-            float segmentVelocity = flyAtTarget ? (death ? 22.5f : 15f) : (death ? 30f : 20f);
+            float segmentVelocity = flyAtTarget ? (death ? 21f : 15f) : (death ? 28f : 20f);
 
             // Increase velocity based on distance
             float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
             noFlyZoneBoxHeight -= death ? 400 : (int)(400f * (1f - lifeRatio));
 
-            float segmentVelocityBoost = death ? (flyAtTarget ? 4.5f : 6f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
-            float speedBoost = death ? (flyAtTarget ? 0.1125f : 0.15f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
-            float turnSpeedBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
+            float segmentVelocityBoost = death ? (flyAtTarget ? 4f : 5.25f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
+            float speedBoost = death ? (flyAtTarget ? 0.10f : 0.135f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
+            float turnSpeedBoost = death ? 0.15f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
 
             segmentVelocity += segmentVelocityBoost;
             speed += speedBoost;
@@ -528,7 +528,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
                     {
                         // Laser speed
-                        float projectileSpeed = (death ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
+                        float projectileSpeed = (death ? 4.25f : 3.5f) + Main.rand.NextFloat() * 1.5f;
                         projectileSpeed += enrageScale;
 
                         // Set projectile damage and type
@@ -1069,7 +1069,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (targetData.Type == NPCTargetType.Player)
                 targetDead = Main.player[npc.target].dead;
 
-            float velocity = death ? 8.4f : 7.2f;
+            float velocity = death ? 8.15f : 7.2f;
             float acceleration = death ? 0.07f : 0.06f;
             float deceleration = 1f - acceleration;
 

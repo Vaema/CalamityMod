@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float phase3LifeRatio = death ? 0.9f : 0.7f;
             float respawnHandsLifeRatio = 0.5f;
             float phase4LifeRatio = death ? 0.4f : 0.3f;
-            float useSkullSpreadsAfterChargeLifeRatio = death ? 0.3f : 0.2f;
             float phase5LifeRatio = death ? 0.2f : 0.1f;
 
             // Begin firing spreads of skulls phase
@@ -46,9 +45,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Fire giant cursed skull projectiles (yes, these curse you if you get hit) during charge attack and hands fire skulls phase
             bool phase4 = lifeRatio < phase4LifeRatio;
-
-            // Self-explanatory
-            bool useSkullSpreadsAfterCharge = lifeRatio < useSkullSpreadsAfterChargeLifeRatio;
 
             // Rapid teleport and charge, stop using idle phase
             bool phase5 = lifeRatio < phase5LifeRatio;
@@ -616,32 +612,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (useSkullSpreadsAfterCharge && !disableSkullsAfterCharge && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                    {
-                        // Spawn projectiles
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int chargeSkullAmt = death ? 5 : 3;
-                            int chargeSkullSpread = death ? 80 : 60;
-                            float rotation = MathHelper.ToRadians(chargeSkullSpread);
-                            float skullProjSpeed = phase5 ? (6f + (death ? 2f * ((phase5LifeRatio - lifeRatio) / phase5LifeRatio) : 0f)) : 4f;
-                            Vector2 initialProjectileVelocity = npc.Center.DirectionTo(Main.player[npc.target].Center) * skullProjSpeed;
-                            int type = ProjectileID.Skull;
-                            int damage = npc.GetProjectileDamage(type);
-                            for (int k = 0; k < chargeSkullAmt + 1; k++)
-                            {
-                                Vector2 perturbedSpeed = initialProjectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, k / (float)(chargeSkullAmt - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, -1f);
-                                Main.projectile[proj].timeLeft = 600;
-                                if (death)
-                                {
-                                    int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, -2f);
-                                    Main.projectile[proj2].timeLeft = 600;
                                 }
                             }
                         }
