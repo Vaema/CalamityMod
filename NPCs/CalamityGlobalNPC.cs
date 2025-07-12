@@ -1413,7 +1413,6 @@ namespace CalamityMod.NPCs
                 { NPCID.GolemFistLeft, 0.15f },
                 { NPCID.GolemFistRight, 0.15f },
                 { NPCID.GolemHead, 0.15f },
-                { NPCID.GolemHeadFree, 0.15f },
                 { NPCID.GraniteFlyer, 0.1f },
                 { NPCID.GraniteGolem, 0.15f },
                 { NPCID.GreekSkeleton, 0.1f },
@@ -1668,6 +1667,14 @@ namespace CalamityMod.NPCs
 
             BoundNPCSafety(Mod, npc);
         }
+
+        public override bool? CanFallThroughPlatforms(NPC npc)
+        {
+            // Allow the free Golem Head to pass through platforms
+            if (npc.type == NPCID.GolemHeadFree)
+                return true;
+            return base.CanFallThroughPlatforms(npc);
+        }
         #endregion
 
         #region Boss Health UI Variable Setting
@@ -1839,10 +1846,6 @@ namespace CalamityMod.NPCs
             else if (npc.type == NPCID.GolemFistLeft || npc.type == NPCID.GolemFistRight)
             {
                 npc.scale *= 1.15f;
-            }
-            else if (npc.type == NPCID.GolemHeadFree)
-            {
-                npc.dontTakeDamage = false;
             }
             else if (npc.type == NPCID.HallowBoss)
             {
@@ -7436,6 +7439,20 @@ namespace CalamityMod.NPCs
                 Rectangle glowFrame2 = frame;
                 spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
                 shouldDrawBool = false;
+
+                // Draw the sparkle telegraphs for the laser spread attack
+                if (npc.ai[0] == 3f && npc.ai[1] <= 60f)
+                {
+                    spriteBatch.SetBlendState(BlendState.Additive);
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        Texture2D sparkle = Request<Texture2D>("CalamityMod/Particles/Sparkle2").Value;
+                        Vector2 sparkleDraw = headDrawPosition + new Vector2(14f * i, -15f) * npc.scale;
+                        Color drawFade = Color.Yellow * Utils.GetLerpValue(0, 30, 60f - npc.ai[1], true);
+                        spriteBatch.Draw(sparkle, sparkleDraw, null, drawFade, MathHelper.Pi * 0.02f * npc.ai[1] * i, sparkle.Size() / 2f, 1.25f * npc.scale, SpriteEffects.None, 0f);
+                    }
+                    spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                }
             }
 
             if (Main.LocalPlayer.Calamity().trippy && !npc.IsABestiaryIconDummy)
