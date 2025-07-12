@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -20,6 +22,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const int TotalRows = 2;
 
+        internal const int TotalTeeth = 4;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Leviatitan>();
+        }
         internal const int TotalTeeth = 3;
 
         public override void SetDefaults()

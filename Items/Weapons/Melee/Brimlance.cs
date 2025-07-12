@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,8 +13,8 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Spears[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SeethingDischarge>();
         }
-
         public override void SetDefaults()
         {
             Item.width = 56;

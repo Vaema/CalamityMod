@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -16,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Spears[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TerrorBlade>();
         }
 
         public override void SetDefaults()
