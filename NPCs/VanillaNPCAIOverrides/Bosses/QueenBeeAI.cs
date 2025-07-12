@@ -196,7 +196,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
-                    int maxRandom = phase4 ? 5 : 4;
+                    int maxRandom = phase4 ? (death ? 5 : 4) : 4;
                     do phase = Main.rand.Next(maxRandom);
                     while (phase == npc.ai[1] || phase == 1 || (phase == 2 && phase4) || (death && phase6 && phase == 3));
 
