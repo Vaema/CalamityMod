@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Become more aggressive and start firing double stingers (triple in death mode) phase
             bool phase2 = lifeRatio < 0.85f;
 
-            // Begin launching beehives instead of bees phase
+            // Stingers have slightly higher velocity
             bool phase3 = lifeRatio < 0.7f;
 
             // Stop spawning bees from ass and start performing stinger arcs + diagonal dashes, spawn bees while charging and become more aggressive phase
@@ -196,21 +196,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
-                    int maxRandom = phase4 ? (death ? 6 : 5) : 4;
+                    int maxRandom = phase4 ? 5 : 4;
                     do phase = Main.rand.Next(maxRandom);
                     while (phase == npc.ai[1] || phase == 1 || (phase == 2 && phase4) || (death && phase6 && phase == 3));
 
                     bool charging = phase == 0;
                     bool stingerArcs = phase == 4;
-                    bool beenadeVomit = phase == 5;
 
                     // 5 is stinger arc and charge
                     if (stingerArcs)
                         phase = 5;
 
-                    // 6 is beenade vomit
-                    if (beenadeVomit)
-                        phase = 6;
 
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     npc.ai[0] = phase;
@@ -589,7 +585,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] += 1f;
 
                 bool spawnBee = false;
-                float beeSpawnCheck = (phase3 ? 45f : 15f) - (phase3 ? 18f : 6f) * enrageScale;
+                float beeSpawnCheck = 9 * enrageScale;
                 if (npc.ai[1] > beeSpawnCheck)
                 {
                     npc.ai[1] = 0f;
@@ -604,63 +600,58 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if (phase3)
+
+                        int spawnType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
+                        if (Main.zenithWorld)
                         {
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), beeSpawnLocation, (Main.player[npc.target].Center - beeSpawnLocation).SafeNormalize(Vector2.UnitY), ProjectileID.BeeHive, 0, 0f, Main.myPlayer, 0f, 0f, 1f);
+                            if (phase3)
+                                spawnType = Main.rand.NextBool(3) ? ModContent.NPCType<PlagueChargerLarge>() : ModContent.NPCType<PlagueCharger>();
+                            else
+                                spawnType = NPCID.Hellbat;
                         }
-                        else
+                        else if (death)
                         {
-                            int spawnType = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
-                            if (Main.zenithWorld)
+                            int random = hornetLimitReached ? 0 : beeLimitReached ? Main.rand.Next(6, 12) : Main.rand.Next(12);
+                            switch (random)
                             {
-                                if (phase3)
-                                    spawnType = Main.rand.NextBool(3) ? ModContent.NPCType<PlagueChargerLarge>() : ModContent.NPCType<PlagueCharger>();
-                                else
-                                    spawnType = NPCID.Hellbat;
+                                default:
+                                case 0:
+                                case 1:
+                                case 2:
+                                case 3:
+                                case 4:
+                                case 5:
+                                    break;
+
+                                case 6:
+                                case 7:
+                                case 8:
+                                    spawnType = NPCID.LittleHornetHoney;
+                                    break;
+
+                                case 9:
+                                case 10:
+                                    spawnType = NPCID.HornetHoney;
+                                    break;
+
+                                case 11:
+                                    spawnType = NPCID.BigHornetHoney;
+                                    break;
                             }
-                            else if (death)
-                            {
-                                int random = hornetLimitReached ? 0 : beeLimitReached ? Main.rand.Next(6, 12) : Main.rand.Next(12);
-                                switch (random)
-                                {
-                                    default:
-                                    case 0:
-                                    case 1:
-                                    case 2:
-                                    case 3:
-                                    case 4:
-                                    case 5:
-                                        break;
-
-                                    case 6:
-                                    case 7:
-                                    case 8:
-                                        spawnType = NPCID.LittleHornetHoney;
-                                        break;
-
-                                    case 9:
-                                    case 10:
-                                        spawnType = NPCID.HornetHoney;
-                                        break;
-
-                                    case 11:
-                                        spawnType = NPCID.BigHornetHoney;
-                                        break;
-                                }
-                            }
-
-                            int spawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)beeSpawnLocation.X, (int)beeSpawnLocation.Y, spawnType);
-                            Vector2 beeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                            Main.npc[spawn].velocity = beeVelocity;
-                            Main.npc[spawn].velocity *= 5f;
-                            if (!Main.zenithWorld)
-                            {
-                                Main.npc[spawn].ai[2] = enrageScale;
-                                Main.npc[spawn].ai[3] = 1f;
-                            }
-                            Main.npc[spawn].timeLeft = 600;
-                            Main.npc[spawn].netUpdate = true;
                         }
+
+                        int spawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)beeSpawnLocation.X, (int)beeSpawnLocation.Y, spawnType);
+                        Vector2 beeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
+                        Main.npc[spawn].velocity = beeVelocity;
+                        Main.npc[spawn].velocity *= 5f;
+                        if (!Main.zenithWorld)
+                        {
+                            Main.npc[spawn].ai[2] = enrageScale;
+                            Main.npc[spawn].ai[3] = 1f;
+                        }
+                        Main.npc[spawn].timeLeft = 600;
+                        Main.npc[spawn].netUpdate = true;
+                        
                     }
                 }
 
@@ -676,7 +667,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.spriteDirection = npc.direction;
 
                 // Go to a random phase
-                float numSpawns = phase3 ? (death ? 1f : 2f) : (death ? 3f : 5f);
+                float numSpawns = death ? 3f : 5f;
                 if (npc.ai[2] > numSpawns || (beeLimitReached && hornetLimitReached))
                 {
                     npc.ai[0] = -1f;
@@ -906,46 +897,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else
                     npc.SimpleFlyMovement(idealVelocity, stingerAttackAccel);
-            }
-
-            // Spit beenades
-            else if (npc.ai[0] == 6f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                // Direction
-                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                npc.direction = playerLocation < 0 ? 1 : -1;
-                npc.spriteDirection = npc.direction;
-
-                float beenadeAttackSpeed = 16f + 4f * enrageScale;
-                float beenadeAttackAccel = 0.5f;
-                Vector2 targetVector = Main.player[npc.target].Center - Vector2.UnitY * 240f;
-
-                if (npc.Distance(targetVector) > 160f)
-                    npc.SimpleFlyMovement(npc.SafeDirectionTo(targetVector) * beenadeAttackSpeed, beenadeAttackAccel);
-                else
-                    npc.velocity *= 0.8f;
-
-                float phaseLimit = 180f;
-                npc.ai[1] += 1f;
-                if (npc.ai[1] >= phaseLimit)
-                {
-                    npc.ai[0] = -1f;
-                    npc.ai[1] = 5f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
-                }
-                else if (npc.ai[1] % 61f == 0f)
-                {
-                    Vector2 beenadeSpawnLocation = npc.Center + new Vector2(20f * npc.direction, -40f);
-                    SoundEngine.PlaySound(SoundID.Item76, beenadeSpawnLocation);
-                    int type = ModContent.ProjectileType<QueenBeenade>();
-                    int damage = npc.GetProjectileDamage(type);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), beenadeSpawnLocation, Vector2.UnitX * 6f * npc.direction, type, damage, 0f, Main.myPlayer);
-                }
             }
 
             if (Main.dedServ)
