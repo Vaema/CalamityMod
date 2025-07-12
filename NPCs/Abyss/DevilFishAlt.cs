@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 136;
             NPC.height = 62;
             NPC.defense = 999999;
-            NPC.lifeMax = 500;
+            NPC.lifeMax = 800;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
-                NPC.defense = 15;
+                NPC.defense = 25;
                 if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)
