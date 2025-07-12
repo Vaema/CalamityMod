@@ -43,14 +43,5 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
         }
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 5).
-                AddIngredient<BloodSample>(15).
-                AddIngredient(ItemID.Vertebrae, 5).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

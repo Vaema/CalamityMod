@@ -37,15 +37,5 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 4).
-                AddIngredient<RottenMatter>(12).
-                AddIngredient(ItemID.RottenChunk, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

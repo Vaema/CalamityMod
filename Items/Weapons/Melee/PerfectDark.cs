@@ -43,14 +43,5 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             target.AddBuff(ModContent.BuffType<BrainRot>(), 300);
         }
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 5).
-                AddIngredient<RottenMatter>(15).
-                AddIngredient(ItemID.RottenChunk, 5).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

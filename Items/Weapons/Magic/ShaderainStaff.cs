@@ -79,15 +79,5 @@ namespace CalamityMod.Items.Weapons.Magic
 
             return false;
         }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 3).
-                AddIngredient<RottenMatter>(9).
-                AddIngredient(ItemID.RottenChunk, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

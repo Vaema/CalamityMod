@@ -22,12 +22,11 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const int TotalRows = 2;
 
-        internal const int TotalTeeth = 4;
+        internal const int TotalTeeth = 3;
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Leviatitan>();
         }
-        internal const int TotalTeeth = 3;
 
         public override void SetDefaults()
         {

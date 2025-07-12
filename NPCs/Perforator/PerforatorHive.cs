@@ -606,7 +606,6 @@ namespace CalamityMod.NPCs.Perforator
                 normalOnly.Add(ItemID.CrimtaneBar, 1, 10, 15);
                 normalOnly.Add(ItemID.Vertebrae, 1, 10, 15);
                 normalOnly.Add(ItemID.CrimsonSeeds, 1, 10, 15);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodSample>(), 1, 25, 30));
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.Hardmode(), ItemID.Ichor, 1, 10, 20));
 
                 // Equipment

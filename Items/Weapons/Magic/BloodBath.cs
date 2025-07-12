@@ -93,15 +93,5 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             return false;
         }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(9).
-                AddIngredient(ItemID.Vertebrae, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }
