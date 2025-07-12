@@ -134,9 +134,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (npc.ai[1] == 0f)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-
                     float hoverSpeed = 7f;
                     float hoverAcceleration = 0.15f;
                     hoverSpeed += 5f * enrageScale;
@@ -220,9 +217,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else if (npc.ai[1] == 1f)
                 {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
                     npc.rotation = eyeRotation;
                     float additionalVelocityPerCharge = 2f;
                     float chargeSpeed = 8f + npc.ai[3] * additionalVelocityPerCharge;
@@ -239,9 +233,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else if (npc.ai[1] == 2f)
                 {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
                     int chargeDelay = death ? (75 - (int)Math.Round(30f * (1f - lifeRatio))) : 95;
                     if (CalamityWorld.LegendaryMode)
                         chargeDelay -= 30;
@@ -251,9 +242,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
                     {
-                        // Avoid cheap bullshit
-                        npc.damage = 0;
-
                         float decelerationScalar = death ? ((lifeRatio - phase2LifeRatio) / (1f - phase2LifeRatio)) : 1f;
                         if (decelerationScalar < 0f)
                             decelerationScalar = 0f;
@@ -279,9 +267,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float numCharges = death ? 4f : 3f;
                         if (npc.ai[3] >= numCharges)
                         {
-                            // Avoid cheap bullshit
-                            npc.damage = 0;
-
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
                         }
@@ -292,9 +277,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (phase2)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-
                     npc.ai[0] = 1f;
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
@@ -307,9 +289,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             else if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 if (CalamityWorld.LegendaryMode)
                     npc.reflectsProjectiles = true;
 
