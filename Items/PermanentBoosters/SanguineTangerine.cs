@@ -71,7 +71,7 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<BloodOrb>(10).
                 AddIngredient(ItemID.SoulofFright, 5).
                 AddIngredient(ItemID.SoulofMight, 5).

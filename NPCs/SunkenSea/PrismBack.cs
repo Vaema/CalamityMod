@@ -65,7 +65,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 88;
             NPC.height = 66;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
