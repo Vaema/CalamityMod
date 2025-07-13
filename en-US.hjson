@@ -1,0 +1,12 @@
+Mods: {
+	CalamityMod: {
+		Items: {
+			Debug: {
+				DialogueDisplayDebugItem: {
+					DisplayName: Dialogue Display Debug Item
+					Tooltip: ""
+				}
+			}
+		}
+	}
+}

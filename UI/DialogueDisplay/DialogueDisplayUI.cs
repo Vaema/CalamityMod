@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
@@ -21,18 +22,18 @@ using static ReLogic.Graphics.DynamicSpriteFont;
 
 namespace CalamityMod.UI.DialogueDisplay
 {
-    public class DialogueDisplayUI : UIState
+    internal class DialogueDisplayUI : UIState
     {
-        public static readonly Dictionary<string, DialogueDisplay> Dialogues = [];
-        public static readonly Dictionary<string, Entity> DialogueEntities = [];
-        public static readonly Dictionary<string, int> DialogueUptimes = [];
-        public static readonly List<string> DialoguesToRemove = [];
+        internal static readonly Dictionary<string, (DialogueDisplay ui, DialogueTextData data)> Dialogues = [];
+        internal static readonly Dictionary<string, Entity> DialogueEntities = [];
+        internal static readonly Dictionary<string, int> DialogueUptimes = [];
+        internal static readonly List<string> DialoguesToRemove = [];
 
         public override void Update(GameTime gameTime)
         {
             foreach (string key in DialoguesToRemove)
             {
-                RemoveChild(Dialogues[key]);
+                RemoveChild(Dialogues[key].ui);
                 Dialogues.Remove(key);
                 DialogueEntities.Remove(key);
                 DialogueUptimes.Remove(key);
@@ -42,19 +43,80 @@ namespace CalamityMod.UI.DialogueDisplay
             foreach (var pair in DialogueEntities)
             {
                 if (pair.Value != null && pair.Value.active)
-                    Dialogues[pair.Key].Position = pair.Value.Center;
+                    Dialogues[pair.Key].ui.Position = pair.Value.Center;
                 else
-                    Dialogues[pair.Key].ClosingDialogue = true;
+                    Dialogues[pair.Key].ui.ClosingDialogue = true;
             }
 
             foreach (var pair in DialogueUptimes)
             {
-                if (Dialogues[pair.Key].Uptime >= pair.Value)
+                if (Dialogues[pair.Key].ui.Uptime >= pair.Value)
                 {
-                    if (Dialogues[pair.Key].ProgressDialogue)
-                        Dialogues[pair.Key].SwitchingPage = true;
+                    if (Dialogues[pair.Key].ui.ProgressDialogue)
+                        Dialogues[pair.Key].ui.SwitchingPage = true;
                     else
-                        Dialogues[pair.Key].ClosingDialogue = true;
+                        Dialogues[pair.Key].ui.ClosingDialogue = true;
+                }
+            }
+
+            foreach (var pair in Dialogues)
+            {
+                float distFromSource = 0;
+                DialogueDisplay dialogue = pair.Value.ui;
+                DialogueTextData data = pair.Value.data;
+                if (dialogue.DisplayEffects.FadeWhenTooFar)
+                {
+                    distFromSource = Vector2.Distance(Main.LocalPlayer.Center, dialogue.Position);
+                    // If the player is too far, cancel the dialogue
+                    if (distFromSource > dialogue.DisplayEffects.FadeBuffer + dialogue.DisplayEffects.FadeDistance)
+                    {
+                        DialoguesToRemove.Add(pair.Key);
+                        continue;
+                    }
+                }
+
+                if (dialogue.DialoguePage.Event != null)
+                {
+                    if (dialogue.DialoguePage.Event.IsOver)
+                    {
+                        if (!dialogue.ProgressDialogue)
+                            DialoguesToRemove.Add(pair.Key);
+                        else
+                        {
+                            if (++data.Page >= data.PageCount)
+                                DialoguesToRemove.Add(pair.Key);
+                            else
+                            {
+                                dialogue.DialoguePage = data.Pages[data.Page];
+                                dialogue.SwitchingPage = false;
+                                dialogue.SwitchCounter = 0;
+                                Activate();
+                            }
+                        }
+                        return;
+                    }
+                }
+                if (dialogue.Switching)
+                {
+                    if (dialogue.SwitchCounter >= dialogue.DisplayEffects.TimeToDisappear)
+                    {
+                        if (dialogue.ClosingDialogue || !dialogue.ProgressDialogue)
+                            DialoguesToRemove.Add(pair.Key);
+                        else
+                        {
+                            if (++data.Page >= data.PageCount)
+                                DialoguesToRemove.Add(pair.Key);
+                            else
+                            {
+                                dialogue.DialoguePage = data.Pages[data.Page];
+                                dialogue.SwitchingPage = false;
+                                dialogue.SwitchCounter = 0;
+                                Activate();
+                            }
+                        }
+                        continue;
+                    }
+                    dialogue.SwitchCounter++;
                 }
             }
 
@@ -62,7 +124,7 @@ namespace CalamityMod.UI.DialogueDisplay
         }
     }
 
-    public class DialogueDisplay(string key, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, string font = "MouseText") : UIElement
+    public class DialogueDisplay : UIElement
     {
         public static readonly Dictionary<string, SoundStyle> DialogueSounds = new()
         {
@@ -84,43 +146,41 @@ namespace CalamityMod.UI.DialogueDisplay
             { "Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value }
         };
 
-        public int TextTimer = 0;
+        /// <summary>
+        /// How long this dialogue has existed
+        /// </summary>
+        public int DialogueTimer = 0;
         /// <summary>
         /// Which page are we reading?
         /// </summary>
-        public int currentPage = startPage;
+        //public int currentPage;
         /// <summary>
-        /// The localization key for the dialogue
-        /// </summary>
-        public string Key = key;
-        /// <summary>
-        /// The bottom position of the text
+        /// The position from which the text originates
         /// </summary>
         public Vector2 Position = Vector2.Zero;
         /// <summary>
         /// How many page there are
         /// </summary>
-        public int pageCount => DialogueData.Length;
+        //public int pageCount => DialogueData.Length;
 
         public bool SwitchingPage = false;
         public bool ProgressDialogue = true;
         public bool ClosingDialogue = false;
-        public bool ScreenLocked = screenLocked;
+        public bool ScreenLocked;
 
         public Vector2 TextSize { get; private set; }
         public Vector2 SizeOffsetFromStart { get; private set; }
 
         public bool Switching => SwitchingPage || ClosingDialogue;
-        private int SwitchCounter = 0;
+        internal int SwitchCounter = 0;
 
-        internal DialogueTextData DialogueData = DialogueDisplaySystem.Deserialize(key);
-        internal DialogueDisplayEffects DisplayEffects = displayEffects;
+        internal DialoguePage DialoguePage;
+        internal DialogueDisplayEffects DisplayEffects;
         internal string Text = "";
-        private int CharacterTimer = 0;
+        private int TextTimer = 0;
         internal int textIndex = 0;
         internal int Uptime = 0;
-        internal string Font = font;
-
+        internal string Font;
 
         //Effects
         internal Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueColors = [];
@@ -134,6 +194,15 @@ namespace CalamityMod.UI.DialogueDisplay
         private int storedDelay = 0;
         private bool lockDelay = false;
 
+        public DialogueDisplay(DialoguePage textData, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, string font = "MouseText")
+        {
+            DisplayEffects = displayEffects;
+            ScreenLocked = screenLocked;
+            DialoguePage = textData;
+            DisplayEffects = displayEffects;
+            Font = font;
+        }
+
         public override void OnActivate()
         {
             Text = "";
@@ -142,32 +211,30 @@ namespace CalamityMod.UI.DialogueDisplay
             TextEffects = [];
             UniqueScales = [];
 
-            if (DialogueData.Dialogues[currentPage].Event != null)
+            if (DialoguePage.Event != null)
                 return;
 
-            int[] lineLengths = new int[DialogueData[currentPage].Lines.Length];
+            int[] lineLengths = new int[DialoguePage.Lines.Length];
 
             int fullLength = 0;
-            for (int i = 0; i < DialogueData[currentPage].Lines.Length; i++)
+            for (int i = 0; i < DialoguePage.Lines.Length; i++)
             {
-                string fullLine = DialogueData[currentPage].Lines[i];
+                string fullLine = DialoguePage.Lines[i];
 
                 FindEffects(ref fullLine, fullLength);
 
-                if (i != DialogueData[currentPage].Lines.Length - 1 && fullLine[^1] != ' ')
+                if (i != DialoguePage.Lines.Length - 1 && fullLine[^1] != ' ')
                     fullLine += ' ';
 
                 Text += fullLine;
-                if (i < DialogueData[currentPage].Lines.Length - 1)
+                if (i < DialoguePage.Lines.Length - 1)
                     Text += '\n';
                 fullLength += fullLine.Length + 1;
                 lineLengths[i] = fullLine.Length + 1;
             }
 
-            if (DialogueData[currentPage].BaseColor != null)
-                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData[currentPage].BaseColor);
-            else if (DialogueData.DefaultColor != null)
-                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialogueData.DefaultColor);
+            if (DialoguePage.BaseColor != null)
+                BaseColor = DialogueDisplaySystem.GetColorFromHex(DialoguePage.BaseColor);
 
             CharacterData = new DialogueCharacterData[Text.Length];
 
@@ -186,10 +253,10 @@ namespace CalamityMod.UI.DialogueDisplay
 
             textIndex = 0;
             Crawling = true;
-            CharacterTimer = -30;
+            TextTimer = -30;
             storedDelay = 0;
             lockDelay = false;
-            TextTimer = 0;
+            DialogueTimer = 0;
             Uptime = 0;
 
             Vector2 zero = Vector2.Zero;
@@ -216,10 +283,8 @@ namespace CalamityMod.UI.DialogueDisplay
                 Vector2 scale = Vector2.One;
                 if (UniqueScales.TryGetValue(i, out Vector2 result))
                     scale = result;
-                else if (DialogueData[currentPage].TextScale != -1)
-                    scale *= DialogueData[currentPage].TextScale;
-                else
-                    scale *= DialogueData.DefaultScale;
+                else if (DialoguePage.TextScale != -1)
+                    scale *= DialoguePage.TextScale;
 
                 //Checks for Special Characters, and handles Line Breaks
                 switch (c)
@@ -273,7 +338,6 @@ namespace CalamityMod.UI.DialogueDisplay
             float textHeight = zero.Y;
 
             TextSize = new Vector2(textWidth + 8, textHeight + 12) + SizeOffsetFromStart;
-            Main.NewText(Text);
         }
 
         private void FindEffects(ref string fullLine, int fullLength)
@@ -434,59 +498,40 @@ namespace CalamityMod.UI.DialogueDisplay
 
         public override void Update(GameTime gameTime)
         {
-            float distFromSource = 0;
-            if (DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeWhenTooFar)
-            {
-                distFromSource = Vector2.Distance(Main.LocalPlayer.Center, Position);
-                // If the player is too far from the pearl, cancel the dialogue
-                if (distFromSource > DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeBuffer + DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeDistance)
-                {
-                    DialogueDisplaySystem.RemoveDialogue(Key);
-                    return;
-                }
-            }
             base.Update(gameTime);
 
-            if (DialogueData[currentPage].Event != null)
-            {
-                DialogueData[currentPage].Event.UpdateEvent();
-                if (DialogueData[currentPage].Event.IsOver)
-                {
-                    SwitchingPage = false;
-                    SwitchCounter = 0;
-                    currentPage++;
-
-                    Activate();
-                    return;
-                }
-            }
+            if (DialoguePage.Event != null)
+                DialoguePage.Event.UpdateEvent();
             else if (!Switching)
             {
-                if (DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeWhenTooFar)
-                    SwitchCounter = (int)(MathHelper.Clamp((distFromSource - DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeBuffer) / DialogueDisplayUI.Dialogues[Key].DisplayEffects.FadeDistance, 0f, 1f) * DialogueDisplayUI.Dialogues[Key].DisplayEffects.TimeToDisappear);
-
-                int textDelay = DialogueData.TextDelay;
-                if (DialogueData[currentPage].TextDelay != -1)
-                    textDelay = DialogueData[currentPage].TextDelay;
-
-                if (DialogueData[currentPage].Event != null && !DialogueData[currentPage].Event.IsOver)
+                if (DisplayEffects.FadeWhenTooFar)
                 {
-                    DialogueData[currentPage].Event.UpdateEvent();
+                    float distFromSource = Vector2.Distance(Main.LocalPlayer.Center, Position);
+                    SwitchCounter = (int)(MathHelper.Clamp((distFromSource - DisplayEffects.FadeBuffer) / DisplayEffects.FadeDistance, 0f, 1f) * DisplayEffects.TimeToDisappear);
+                }
+
+                int textDelay = DialoguePage.TextDelay;
+                if (DialoguePage.TextDelay != -1)
+                    textDelay = DialoguePage.TextDelay;
+
+                if (DialoguePage.Event != null && !DialoguePage.Event.IsOver)
+                {
+                    DialoguePage.Event.UpdateEvent();
                 }
 
                 if (textIndex < Text.Length)
                 {
-                    if (CharacterTimer == 0)
+                    if (TextTimer == 0)
                     {
                         if (!lockDelay)
                         {
-                            var data = DialogueData.BasePunctuationDelay;
-                            if (DialogueData[currentPage].BasePunctuationDelay != null)
-                                data = DialogueData[currentPage].BasePunctuationDelay;
+                            var data = DialoguePage.BasePunctuationDelay;
+                            if (DialoguePage.BasePunctuationDelay != null)
+                                data = DialoguePage.BasePunctuationDelay;
 
-                            if (DialogueData[currentPage].PunctuationDelays != null && DialogueData[currentPage].PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
+                            if (DialoguePage.PunctuationDelays != null && DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
                                 data = value;
-                            else if (DialogueData.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
+                            else if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
                                 data = value;
 
                             switch (Text[textIndex])
@@ -521,7 +566,7 @@ namespace CalamityMod.UI.DialogueDisplay
                             storedDelay = (int)(pause * 60);
                     }
 
-                    if (++CharacterTimer % ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? textDelay + storedDelay : textDelay) == 0 && CharacterTimer >= 0)
+                    if (++TextTimer % ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? textDelay + storedDelay : textDelay) == 0 && TextTimer >= 0)
                     {
                         if (Text[textIndex] == ' ')
                         {
@@ -530,55 +575,33 @@ namespace CalamityMod.UI.DialogueDisplay
                         }
                         else
                         {
-                            string speaker = DialogueData.DefaultSpeaker;
-                            if (DialogueData[currentPage].Speaker != null)
-                                speaker = DialogueData[currentPage].Speaker;
+                            string speaker = null;
+                            if (DialoguePage.Speaker != null)
+                                speaker = DialoguePage.Speaker;
 
                             if (speaker != null)
                                 SoundEngine.PlaySound(DialogueSounds[speaker]);
                         }
 
-                        CharacterTimer = 0;
+                        TextTimer = 0;
                         ++textIndex;
                     }
                 }
                 else
                     Crawling = false;
             }
-            else
-            {
-                if (SwitchCounter >= DialogueDisplayUI.Dialogues[Key].DisplayEffects.TimeToDisappear)
-                {
-                    if (ClosingDialogue || !ProgressDialogue)
-                        DialogueDisplaySystem.RemoveDialogue(Key);
-                    else
-                    {
-                        if (++currentPage >= pageCount)
-                            DialogueDisplaySystem.RemoveDialogue(Key);
-                        else
-                        {
-                            SwitchingPage = false;
-                            SwitchCounter = 0;
-                            Activate();
-                        }
-                    }
-                    return;
-                }
-
-                SwitchCounter++;
-            }
 
             if (!Crawling)
                 Uptime++;
-            TextTimer++;
+            DialogueTimer++;
         }
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            Vector2 textTop = DialogueDisplayUI.Dialogues[Key].DisplayEffects.TextOffsetFromStart(Position, TextSize);
+            Vector2 textTop = DisplayEffects.TextOffsetFromStart(Position, TextSize);
             Vector2 pageTop = textTop - SizeOffsetFromStart;
 
-            DisplayEffects.PreDraw(spriteBatch, pageTop, TextSize, TextTimer, SwitchCounter);
+            DisplayEffects.PreDraw(spriteBatch, pageTop, TextSize, DialogueTimer, SwitchCounter);
 
             #region Shadow Drawing
             for (int i = 0; i < textIndex; i++)
@@ -610,24 +633,24 @@ namespace CalamityMod.UI.DialogueDisplay
                 else
                     color = BaseColor;
 
-                if (CharacterData[i].Timer < DialogueDisplayUI.Dialogues[Key].DisplayEffects.TimeToAppear)
+                if (CharacterData[i].Timer < DisplayEffects.TimeToAppear)
                 {
-                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayEffects.AppearPositioning(Position, textTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
-                    opacity = DialogueDisplayUI.Dialogues[Key].DisplayEffects.AppearOpacity(opacity, CharacterData[i].Timer, CharacterData[i]);
-                    color = DialogueDisplayUI.Dialogues[Key].DisplayEffects.AppearColoring(color, CharacterData[i].Timer, CharacterData[i]);
-                    rotation = DialogueDisplayUI.Dialogues[Key].DisplayEffects.AppearRotation(rotation, CharacterData[i].Timer, CharacterData[i]);
-                    scale = DialogueDisplayUI.Dialogues[Key].DisplayEffects.AppearScale(scale, CharacterData[i].Timer, CharacterData[i]);
+                    drawPos = DisplayEffects.AppearPositioning(Position, textTop + CharacterData[i].TextPosition, CharacterData[i].Timer, CharacterData[i]);
+                    opacity = DisplayEffects.AppearOpacity(opacity, CharacterData[i].Timer, CharacterData[i]);
+                    color = DisplayEffects.AppearColoring(color, CharacterData[i].Timer, CharacterData[i]);
+                    rotation = DisplayEffects.AppearRotation(rotation, CharacterData[i].Timer, CharacterData[i]);
+                    scale = DisplayEffects.AppearScale(scale, CharacterData[i].Timer, CharacterData[i]);
                 }
                 else
                     drawPos = textTop + CharacterData[i].TextPosition;
 
                 if (SwitchCounter > 0)
                 {
-                    drawPos = DialogueDisplayUI.Dialogues[Key].DisplayEffects.DisappearPositioning(drawPos, SwitchCounter, CharacterData[i]);
-                    opacity = DialogueDisplayUI.Dialogues[Key].DisplayEffects.DisappearOpacity(opacity, SwitchCounter, CharacterData[i]);
-                    color = DialogueDisplayUI.Dialogues[Key].DisplayEffects.DisappearColoring(color, SwitchCounter, CharacterData[i]);
-                    rotation = DialogueDisplayUI.Dialogues[Key].DisplayEffects.DisappearRotation(rotation, SwitchCounter, CharacterData[i]);
-                    scale = DialogueDisplayUI.Dialogues[Key].DisplayEffects.DisappearScale(scale, SwitchCounter, CharacterData[i]);
+                    drawPos = DisplayEffects.DisappearPositioning(drawPos, SwitchCounter, CharacterData[i]);
+                    opacity = DisplayEffects.DisappearOpacity(opacity, SwitchCounter, CharacterData[i]);
+                    color = DisplayEffects.DisappearColoring(color, SwitchCounter, CharacterData[i]);
+                    rotation = DisplayEffects.DisappearRotation(rotation, SwitchCounter, CharacterData[i]);
+                    scale = DisplayEffects.DisappearScale(scale, SwitchCounter, CharacterData[i]);
                 }
 
                 if (!ScreenLocked)
@@ -688,18 +711,15 @@ namespace CalamityMod.UI.DialogueDisplay
             }
             #endregion
 
-            DisplayEffects.PostDraw(spriteBatch, pageTop, TextSize, TextTimer, SwitchCounter);
+            DisplayEffects.PostDraw(spriteBatch, pageTop, TextSize, DialogueTimer, SwitchCounter);
         }
     }
 
     public class DialogueDisplaySystem : ModSystem
     {
-        /// <summary>
-        /// Checks if the dialogue is active
-        /// </summary>
-        public static DialogueDisplayUI State;
+        internal static DialogueDisplayUI State;
 
-        public static UserInterface UI;
+        internal static UserInterface UI;
 
         public override void Load()
         {
@@ -768,22 +788,27 @@ namespace CalamityMod.UI.DialogueDisplay
         {
             if (DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val))
             {
-                if (val.SwitchingPage)
+                DialogueDisplay display = val.ui;
+                if (display.SwitchingPage)
                     return;
 
                 // If the text crawl hasnt finished, finish it instantly
-                if (val.textIndex < val.Text.Length - 1)
-                    val.textIndex = val.Text.Length - 1;
+                if (display.textIndex < display.Text.Length - 1)
+                    display.textIndex = display.Text.Length - 1;
                 // If the text crawl has finished, progress to the next page or finish if we're out of pages
                 else
-                    val.SwitchingPage = true;
+                    display.SwitchingPage = true;
             }
         }
 
-        public static void EndDialogue(string pearlKey)
+        /// <summary>
+        /// Ends the dialogue if it exists in the world
+        /// </summary>
+        /// <param name="key">The name of the dialogue's localization key</param>
+        public static void EndDialogue(string key)
         {
-            if (DialogueDisplayUI.Dialogues.TryGetValue(pearlKey, out var val))
-                val.ClosingDialogue = true;
+            if (DialogueDisplayUI.Dialogues.TryGetValue(key, out var val))
+                val.ui.ClosingDialogue = true;
         }
 
         public static void RemoveDialogue(string key)
@@ -802,12 +827,14 @@ namespace CalamityMod.UI.DialogueDisplay
             State ??= new();
             effects ??= new DialogueDisplayEffects();
 
-            DialogueDisplay display = new(key, effects)
+            DialogueTextData textData = Deserialize(key);
+
+            DialogueDisplay display = new(textData.Pages[0], effects)
             {
                 Position = startPosition,
                 ProgressDialogue = progressDialogue,
             };
-            DialogueDisplayUI.Dialogues.Add(key, display);
+            DialogueDisplayUI.Dialogues.Add(key, (display, textData));
             if (Uptime != -1)
                 DialogueDisplayUI.DialogueUptimes.Add(key, Uptime);
             State.Append(display);
@@ -829,11 +856,13 @@ namespace CalamityMod.UI.DialogueDisplay
             State ??= new();
             effects ??= new DialogueDisplayEffects();
 
-            DialogueDisplay display = new(key, effects)
+            DialogueTextData textData = Deserialize(key);
+
+            DialogueDisplay display = new(textData[0], effects)
             {
                 Position = entity.Center
             };
-            DialogueDisplayUI.Dialogues.Add(key, display);
+            DialogueDisplayUI.Dialogues.Add(key, (display, textData));
             DialogueDisplayUI.DialogueEntities.Add(key, entity);
             if (Uptime != -1)
                 DialogueDisplayUI.DialogueUptimes.Add(key, Uptime);
@@ -857,22 +886,52 @@ namespace CalamityMod.UI.DialogueDisplay
 
     public class DialogueTextData
     {
-        public DialogueLine[] Dialogues { get; set; }
-        public DialogueLine this[int index] { get => Dialogues[index]; set => Dialogues[index] = value; }
-        public int Length => Dialogues.Length;
+        public DialoguePage[] Pages { get; init; }
+        public DialoguePage this[int index] { get => Pages[index]; set => Pages[index] = value; }
 
-        public string DefaultColor { get; set; } = null;
-        public string DefaultSpeaker { get; set; } = null;
+        public int Page { get; set; }
+        public int PageCount => Pages.Length;
 
-        public int DefaultScale { get; set; } = 1;
+        public string DefaultColor { get; init; }
+        public string DefaultSpeaker { get; init; }
 
-        public int TextDelay { get; set; } = 3;
-        public PunctuationData BasePunctuationDelay { get; set; } = new PunctuationData();
-        public int PunctuationDelayCap { get; set; } = 30;
-        public Dictionary<string, PunctuationData> PunctuationDelays { get; set; } = [];
+        public int DefaultScale { get; init; }
+
+        public int TextDelay { get; init; }
+        public PunctuationData BasePunctuationDelay { get; init; }
+        public int PunctuationDelayCap { get; init; }
+        public Dictionary<string, PunctuationData> PunctuationDelays { get; init; }
+
+        [JsonConstructor]
+        public DialogueTextData(DialoguePage[] pages, int page = 0, string defaultColor = null, string defaultSpeaker = null, int defaultScale = 1, int textDelay = 3, PunctuationData basePunctuationDelay = null, int punctuationDelayCap = 60, Dictionary<string, PunctuationData> punctuationDelays = null)
+        {
+            Pages = pages;
+            Page = page;
+            DefaultColor = defaultColor;
+            DefaultSpeaker = defaultSpeaker;
+            DefaultScale = defaultScale;
+            TextDelay = textDelay;
+            BasePunctuationDelay = basePunctuationDelay ?? new();
+            PunctuationDelayCap = punctuationDelayCap;
+            PunctuationDelays = punctuationDelays ?? [];
+
+            foreach (DialoguePage p in Pages)
+            {
+                p.BaseColor ??= defaultColor;
+                p.Speaker ??= defaultSpeaker;
+                if (p.TextScale == -1)
+                    p.TextScale = DefaultScale;
+                if (p.TextDelay == -1)
+                    p.TextDelay = TextDelay;
+                p.BasePunctuationDelay ??= BasePunctuationDelay;
+                if (p.PunctuationDelayCap == -1)
+                    p.PunctuationDelayCap = PunctuationDelayCap;
+                p.PunctuationDelays ??= PunctuationDelays;
+            }
+        }
     }
 
-    public class DialogueLine
+    public class DialoguePage
     {
         public string[] Lines { get; set; }
 
@@ -915,7 +974,7 @@ namespace CalamityMod.UI.DialogueDisplay
         public Vector2 DrawPosition;
         public Rectangle Frame;
         public Color DrawColor;
-        public float Rotation ;
+        public float Rotation;
         public Vector2 Scale;
 
         internal void SetDrawInfo(Vector2 drawPos, Rectangle frame, Color color, float rotation, Vector2 scale)
