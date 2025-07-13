@@ -187,20 +187,23 @@ namespace CalamityMod.UI.DialogueDisplay
         internal Dictionary<int, float> Pauses = [];
         internal Dictionary<int, List<(TextEffect Effect, float[] args)>> TextEffects = [];
         internal Dictionary<int, Vector2> UniqueScales = [];
+        internal List<int> LineBreakIndexes = [];
 
         private DialogueCharacterData[] CharacterData;
         private Color BaseColor = Color.White;
         internal bool Crawling = true;
         private int storedDelay = 0;
         private bool lockDelay = false;
+        private float WrapWidth = -1;
 
-        public DialogueDisplay(DialoguePage textData, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, string font = "MouseText")
+        public DialogueDisplay(DialoguePage textData, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, string font = "MouseText")
         {
             DisplayEffects = displayEffects;
             ScreenLocked = screenLocked;
             DialoguePage = textData;
             DisplayEffects = displayEffects;
             Font = font;
+            WrapWidth = wrapWidth;
         }
 
         public override void OnActivate()
@@ -214,23 +217,59 @@ namespace CalamityMod.UI.DialogueDisplay
             if (DialoguePage.Event != null)
                 return;
 
-            int[] lineLengths = new int[DialoguePage.Lines.Length];
-
             int fullLength = 0;
+            List<string> lines = [];
             for (int i = 0; i < DialoguePage.Lines.Length; i++)
             {
                 string fullLine = DialoguePage.Lines[i];
 
                 FindEffects(ref fullLine, fullLength);
 
-                if (i != DialoguePage.Lines.Length - 1 && fullLine[^1] != ' ')
+                if (fullLine[^1] != ' ')
                     fullLine += ' ';
 
-                Text += fullLine;
-                if (i < DialoguePage.Lines.Length - 1)
-                    Text += '\n';
-                fullLength += fullLine.Length + 1;
-                lineLengths[i] = fullLine.Length + 1;
+                lines.Add(fullLine);
+                fullLength += fullLine.Length;
+            }
+
+            if (WrapWidth != -1)
+            {
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string line = lines[i];
+                    int finalIndex = 0;
+                    float width = MeasureString(line, Fonts[Font]).X;
+                    Main.NewText(width);
+                    if (width > WrapWidth)
+                    {
+                        string yoinked = "";
+                        do
+                        {
+                            finalIndex = line.LastIndexOf(' ');
+                            yoinked = line.Substring(finalIndex) + yoinked;
+                            line = line.Remove(finalIndex);
+                        } while (MeasureString(line, Fonts[Font]).X > WrapWidth);
+
+                        lines[i] = line;
+                        if (i >= lines.Count - 1)
+                            lines.Add(yoinked);
+                        else
+                            lines[i + 1] = yoinked + lines[i + 1];
+                    }
+                }
+            }
+            
+            fullLength = 0;
+            int[] lineLengths = new int[lines.Count];
+            LineBreakIndexes.Clear();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                lineLengths[i] = lines[i].Length;
+
+                Text += lines[i];
+
+                fullLength += lines[i].Length;
+                LineBreakIndexes.Add(fullLength);
             }
 
             if (DialoguePage.BaseColor != null)
@@ -290,7 +329,6 @@ namespace CalamityMod.UI.DialogueDisplay
                 switch (c)
                 {
                     case '\n':
-
                         if (zero.X > textWidth)
                             textWidth = zero.X;
 
@@ -309,6 +347,25 @@ namespace CalamityMod.UI.DialogueDisplay
                         continue;
                     case '\r':
                         continue;
+                }
+
+                if(LineBreakIndexes.Contains(i))
+                {
+                    if (zero.X > textWidth)
+                        textWidth = zero.X;
+
+                    zero.X = 0;
+
+                    float highestYscale = 1f;
+                    for (int j = i + 1; j < Text.Length; j++)
+                    {
+                        if (Text[j] == '\n')
+                            break;
+                        if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
+                            highestYscale = uniqueScale.Y;
+                    }
+                    zero.Y += Fonts[Font].LineSpacing * highestYscale;
+                    newLine = true;
                 }
 
                 //Sets the character's position within the full text
@@ -336,6 +393,22 @@ namespace CalamityMod.UI.DialogueDisplay
             if (zero.X > textWidth)
                 textWidth = zero.X;
             float textHeight = zero.Y;
+
+            if (DialoguePage.AlignType != Alignment.Left)
+            {
+                for (int i = 0; i < lineLengths.Length; i++)
+                {
+                    DialogueCharacterData furthestChar = CharacterData.Last(d => d.LineNumber == i && Text[d.Index] != '\n');
+                    float xPos = furthestChar.TextPosition.X;
+                    float dif = textWidth - xPos;
+                    if (DialoguePage.AlignType == Alignment.Center)
+                        foreach (var c in CharacterData.Where(c => c.LineNumber == i))
+                            c.TextPosition.X += dif / 2f;
+                    else
+                        foreach (var c in CharacterData.Where(c => c.LineNumber == i))
+                            c.TextPosition.X += dif;
+                }               
+            }
 
             TextSize = new Vector2(textWidth + 8, textHeight + 12) + SizeOffsetFromStart;
         }
@@ -494,6 +567,72 @@ namespace CalamityMod.UI.DialogueDisplay
                     }
                 }
             }
+        }
+
+        private Vector2 MeasureString(string text, DynamicSpriteFont font)
+        {
+            if (text.Length == 0)
+                return Vector2.Zero;
+
+            Vector2 zero = Vector2.Zero;
+            zero.Y = font.LineSpacing;
+            float val = 0f;
+            int num = 0;
+            float num2 = 0f;
+            bool newLine = true;
+            for(int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                Vector2 scale = Vector2.One;
+                if (UniqueScales.TryGetValue(i, out Vector2 result))
+                    scale = result;
+                else if (DialoguePage.TextScale != -1)
+                    scale *= DialoguePage.TextScale;
+
+                //Checks for Special Characters, and handles Line Breaks
+                switch (c)
+                {
+                    case '\n':
+                        zero.X = 0;
+
+                        float highestYscale = 1f;
+                        for (int j = i + 1; j < text.Length; j++)
+                        {
+                            if (text[j] == '\n')
+                                break;
+                            if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
+                                highestYscale = uniqueScale.Y;
+                        }
+                        zero.Y += font.LineSpacing * highestYscale;
+                        newLine = true;
+                        continue;
+                    case '\r':
+                        continue;
+                }
+
+                //Sets the character's position within the full text
+                SpriteCharacterData spriteData = font.SpriteCharacters[c];
+                Vector3 kerning = spriteData.Kerning;
+                Rectangle padding = spriteData.Padding;
+
+                if (newLine)
+                    kerning.X = Math.Max(kerning.X, 0f);
+                else
+                    zero.X += font.CharacterSpacing * scale.X;
+
+                zero.X += kerning.X * scale.X;
+                Vector2 position = zero + spriteData.Glyph.Size() * 0.5f;
+                position.X += padding.X * scale.X;
+                position.Y += padding.Y * scale.Y;
+
+                zero.X += (kerning.Y + kerning.Z) * scale.X;
+                newLine = false;
+            }
+
+            zero.X += Math.Max(num2, 0f);
+            zero.Y += num * font.LineSpacing;
+            zero.X = Math.Max(zero.X, val);
+            return zero;
         }
 
         public override void Update(GameTime gameTime)
@@ -750,6 +889,11 @@ namespace CalamityMod.UI.DialogueDisplay
                 UI?.Update(gameTime);
         }
 
+        public static readonly JsonSerializerOptions stringEnumOptions = new()
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
+
         public static DialogueTextData Deserialize(string key)
         {
             string activeExtension = LanguageManager.Instance.ActiveCulture.Name;
@@ -765,7 +909,7 @@ namespace CalamityMod.UI.DialogueDisplay
 
             Stream stream = CalamityMod.Instance.GetFileStream(path);
 
-            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(stream);
+            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(stream, stringEnumOptions);
 
             stream.Close();
 
@@ -884,6 +1028,14 @@ namespace CalamityMod.UI.DialogueDisplay
         }
     }
 
+    public enum Alignment
+    {
+        None = -1,
+        Left,
+        Center,
+        Right
+    }
+
     public class DialogueTextData
     {
         public DialoguePage[] Pages { get; init; }
@@ -897,13 +1049,15 @@ namespace CalamityMod.UI.DialogueDisplay
 
         public int DefaultScale { get; init; }
 
+        public Alignment AlignType { get; init; }
+
         public int TextDelay { get; init; }
         public PunctuationData BasePunctuationDelay { get; init; }
         public int PunctuationDelayCap { get; init; }
         public Dictionary<string, PunctuationData> PunctuationDelays { get; init; }
 
         [JsonConstructor]
-        public DialogueTextData(DialoguePage[] pages, int page = 0, string defaultColor = null, string defaultSpeaker = null, int defaultScale = 1, int textDelay = 3, PunctuationData basePunctuationDelay = null, int punctuationDelayCap = 60, Dictionary<string, PunctuationData> punctuationDelays = null)
+        public DialogueTextData(DialoguePage[] pages, int page = 0, string defaultColor = null, string defaultSpeaker = null, int defaultScale = 1, Alignment alignType = Alignment.Left, int textDelay = 3, PunctuationData basePunctuationDelay = null, int punctuationDelayCap = 60, Dictionary<string, PunctuationData> punctuationDelays = null)
         {
             Pages = pages;
             Page = page;
@@ -914,6 +1068,7 @@ namespace CalamityMod.UI.DialogueDisplay
             BasePunctuationDelay = basePunctuationDelay ?? new();
             PunctuationDelayCap = punctuationDelayCap;
             PunctuationDelays = punctuationDelays ?? [];
+            AlignType = alignType;
 
             foreach (DialoguePage p in Pages)
             {
@@ -923,6 +1078,8 @@ namespace CalamityMod.UI.DialogueDisplay
                     p.TextScale = DefaultScale;
                 if (p.TextDelay == -1)
                     p.TextDelay = TextDelay;
+                if (p.AlignType == Alignment.None)
+                    p.AlignType = AlignType;
                 p.BasePunctuationDelay ??= BasePunctuationDelay;
                 if (p.PunctuationDelayCap == -1)
                     p.PunctuationDelayCap = PunctuationDelayCap;
@@ -937,7 +1094,10 @@ namespace CalamityMod.UI.DialogueDisplay
 
         public string BaseColor { get; set; } = null;
         public string Speaker { get; set; } = null;
+
         public int TextScale { get; set; } = -1;
+        public Alignment AlignType { get; set; } = Alignment.None;
+
 
         public int TextDelay { get; set; } = -1;
         public PunctuationData BasePunctuationDelay { get; set; } = null;
