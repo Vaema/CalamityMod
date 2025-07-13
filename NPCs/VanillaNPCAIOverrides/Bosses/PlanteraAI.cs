@@ -160,8 +160,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (death)
             {
-                velocity += velocity * 0.35f * (1f - lifeRatio);
-                acceleration += acceleration * 0.35f * (1f - lifeRatio);
+                velocity += velocity * 0.35f * ((1f - lifeRatio) / 2);
+                acceleration += acceleration * 0.35f * ((1f - lifeRatio) / 2);
                 if (phase2)
                 {
                     float aggressionScale = (phase2LifeRatio - lifeRatio) / phase2LifeRatio;
@@ -567,7 +567,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxDistanceFromHooks += 150f;
                 if (death)
                 {
-                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * (1f - lifeRatio);
+                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * ((1f - lifeRatio) / 2);
                     maxDistanceFromHooks += 200f;
                 }
 
@@ -651,7 +651,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (CalamityWorld.LegendaryMode)
                         npc.localAI[1] += 1f;
 
-                    float shootProjectileGateValue = death ? 30f : 60f;
+                    float shootProjectileGateValue = death ? 40f : 60f;
                     if (npc.localAI[1] >= shootProjectileGateValue)
                     {
                         npc.localAI[1] = 0f;
@@ -727,7 +727,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] == 1f)
                     {
                         npc.localAI[0] = 2f;
-                        int totalTentacles = death ? 12 : 8;
+                        int totalTentacles = death ? 11 : 8;
                         if (CalamityWorld.LegendaryMode)
                             totalTentacles += 6;
                         if (CalamityWorld.LegendaryMode)
@@ -949,7 +949,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (phase2)
                         {
                             int spore = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.Spore, npc.whoAmI);
-                            float sporeSpeed = death ? 9f : 6f;
+                            float sporeSpeed = death ? 8f : 6f;
                             Vector2 sporeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * sporeSpeed;
                             Main.npc[spore].velocity.X = sporeVelocity.X;
                             Main.npc[spore].velocity.Y = sporeVelocity.Y;
@@ -1009,7 +1009,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[0] = 0f;
 
                 // Timer dictating whether to pick a new location or not
-                float moveBoost = death ? 6f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
+                float moveBoost = death ? 4f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
                 npc.localAI[0] -= 1f + moveBoost;
                 if (enrage)
                     npc.localAI[0] -= 6f;
@@ -1078,7 +1078,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[0] > 0f && npc.ai[1] > 0f)
             {
                 // Hook movement velocity
-                float velocityBoost = death ? 9f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
+                float velocityBoost = death ? 6f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
                 float velocity = 7f + velocityBoost;
                 if (enrage)
                     velocity *= 2f;
@@ -1202,7 +1202,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Velocity and acceleration
-            float tentacleAcceleration = death ? 2.4f : 1.6f;
+            float tentacleAcceleration = 1.6f;
             float extendedDistanceFromPlantera = Math.Abs(npc.ai[0] + npc.ai[1]) / maxOffset;
             float tentacleDistance = MathHelper.Lerp(50f, 100f + (extendedDistanceFromPlantera * 300f), npc.localAI[0] / extendTime);
             float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);

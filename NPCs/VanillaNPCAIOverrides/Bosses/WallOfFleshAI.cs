@@ -126,24 +126,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (lifeRatio < 0.5f && death)
                         {
-                            float fireballVelocity = npc.velocity.Length() + 3f;
-                            projectileVelocity = projectileVelocity.SafeNormalize(Vector2.UnitY) * fireballVelocity;
+                            float fireballSpeed = (npc.velocity.Length() + 3f) * 2.25f; 
+
+                            Vector2 predictiveFireballVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center + Main.player[npc.target].velocity * 40f, -Vector2.UnitY) * fireballSpeed;
+
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.Fireball;
-                                damage = npc.GetProjectileDamage(type);
-                                int numProj = 3;
-                                int spread = 15;
-                                float rotation = MathHelper.ToRadians(spread);
-                                fireballVelocity *= 0.12f;  
-                                for (int j = 0; j < numProj; j++)
-                                {
-                                    Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(fireballVelocity, fireballVelocity);
-                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1))) + randomVelocity;
-                                    int newProj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                    Main.projectile[newProj].timeLeft = 100;
+                                int fireballDamage = npc.GetProjectileDamage(type); 
 
-                                }
+                                Vector2 fireballSpawnPosition = npc.Center + predictiveFireballVelocity.SafeNormalize(Vector2.UnitY) * 50f;
+
+                                int newProj = Projectile.NewProjectile(npc.GetSource_FromAI(), fireballSpawnPosition, predictiveFireballVelocity, type, fireballDamage, 0f, Main.myPlayer);
+                                Main.projectile[newProj].timeLeft = 140;
+                                Main.projectile[newProj].scale *= 1.25f;
                             }
                         }
                     }
