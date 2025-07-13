@@ -931,10 +931,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("15%", "9%"));
             }
 
-            // Worm Scarf only gives 14% DR instead of 17%
-            if (item.type == ItemID.WormScarf)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("17%", "14%"));
-
             // Feral Claws line melee speed and true melee damage changes
             if (item.type == ItemID.FeralClaws)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("12%", "10%"));
