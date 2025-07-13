@@ -160,7 +160,6 @@ FathomSwarmerBreastplate: {
 	DisplayName: Fathom Swarmer Breastplate
 	Tooltip:
 		'''
-		6% increased damage reduction
 		Increases your max number of minions by 1
 		10% increased summon damage
 		Reduces defense loss within the Abyss
