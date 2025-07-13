@@ -1,4 +1,4 @@
-﻿namespace CalamityMod.UI.DialogueDisplay
+﻿namespace CalamityMod.UI.DialogueDisplay.DialogueEvents
 {
     public abstract class DialogueEvent
     {

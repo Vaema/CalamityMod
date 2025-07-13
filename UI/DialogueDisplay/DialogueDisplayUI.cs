@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.UI.DialogueDisplay.DialogueEvents;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
+using CalamityMod.UI.DialogueDisplay.TextEffects;
 using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -175,7 +178,7 @@ namespace CalamityMod.UI.DialogueDisplay
         internal int SwitchCounter = 0;
 
         internal DialoguePage DialoguePage;
-        internal DialogueDisplayEffects DisplayEffects;
+        internal DisplayEffect DisplayEffects;
         internal string Text = "";
         private int TextTimer = 0;
         internal int textIndex = 0;
@@ -196,7 +199,7 @@ namespace CalamityMod.UI.DialogueDisplay
         private bool lockDelay = false;
         private float WrapWidth = -1;
 
-        public DialogueDisplay(DialoguePage textData, DialogueDisplayEffects displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, string font = "MouseText")
+        public DialogueDisplay(DialoguePage textData, DisplayEffect displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, string font = "MouseText")
         {
             DisplayEffects = displayEffects;
             ScreenLocked = screenLocked;
@@ -549,7 +552,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                 foreach (string s in returnString)
                                     storedLen += s.Length;
 
-                                string path = "CalamityMod.UI.DialogueDisplay.";
+                                string path = "CalamityMod.UI.DialogueDisplay.TextEffects.";
                                 Type t = Type.GetType(path + ID) ?? throw new Exception("Invalid text effect ID found");
                                 TextEffect te = (TextEffect)Activator.CreateInstance(t);
                                 if (TextEffects.TryGetValue(index - storedLen, out var value))
@@ -965,11 +968,11 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="startPosition">The position of the text in the world</param>
-        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DialogueDisplayEffects effects = null)
+        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null)
         {
             UI ??= new();
             State ??= new();
-            effects ??= new DialogueDisplayEffects();
+            effects ??= new DisplayEffect();
 
             DialogueTextData textData = Deserialize(key);
 
@@ -994,11 +997,11 @@ namespace CalamityMod.UI.DialogueDisplay
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="entity">The entity this dialogue will appear with</param>
         /// <param name="Uptime">The entity this dialogue will appear with</param>
-        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DialogueDisplayEffects effects = null)
+        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DisplayEffect effects = null)
         {
             UI ??= new();
             State ??= new();
-            effects ??= new DialogueDisplayEffects();
+            effects ??= new DisplayEffect();
 
             DialogueTextData textData = Deserialize(key);
 
@@ -1148,114 +1151,4 @@ namespace CalamityMod.UI.DialogueDisplay
         #endregion
     }
 
-    public class DialogueDisplayEffects
-    {
-        public virtual Vector2 TextOffsetFromStart(Vector2 startPos, Vector2 textSize) => startPos + new Vector2(-textSize.X / 2f, -(textSize.Y + 40));
-
-        public virtual bool FadeWhenTooFar => true;
-
-        public virtual float FadeBuffer => 150f;
-
-        public virtual float FadeDistance => 150f;
-
-        public virtual void PreDraw(SpriteBatch spriteBatch, Vector2 textStart, Vector2 textSize, int textTimer, int switchTimer) { }
-
-        public virtual void PostDraw(SpriteBatch spriteBatch, Vector2 textStart, Vector2 textSize, int textTimer, int switchTimer) { }
-
-        public virtual float TimeToAppear => 30;
-
-        #region Appear Functions
-        public virtual Vector2 AppearPositioning(Vector2 startPos, Vector2 goalPos, float time, DialogueCharacterData charData) => Vector2.Lerp(startPos, goalPos, CalamityUtils.SineOutEasing(time / TimeToAppear, 1));
-
-        public virtual Color AppearColoring(Color goalColor, float time, DialogueCharacterData charData) => goalColor;
-
-        public virtual float AppearOpacity(float goalOpacity, float time, DialogueCharacterData charData) => CalamityUtils.SineOutEasing(MathHelper.Clamp(time / 20f, 0f, 1f), 1);
-
-        public virtual float AppearRotation(float goalRotation, float time, DialogueCharacterData charData) => goalRotation;
-
-        public virtual Vector2 AppearScale(Vector2 goalScale, float time, DialogueCharacterData charData) => Vector2.Lerp(Vector2.Zero, goalScale, CalamityUtils.CircOutEasing(time / TimeToAppear, 1));
-        #endregion
-
-        public virtual float TimeToDisappear => 30;
-
-        #region Disappear Functions
-        public virtual Vector2 DisappearPositioning(Vector2 startPos, float time, DialogueCharacterData charData) => startPos;
-
-        public virtual Color DisappearColoring(Color startColor, float time, DialogueCharacterData charData) => startColor;
-
-        public virtual float DisappearOpacity(float startOpacity, float time, DialogueCharacterData charData) => 1 - CalamityUtils.SineOutEasing(MathHelper.Clamp(time / (TimeToDisappear * 0.66f), 0f, 1f), 1);
-
-        public virtual float DisappearRotation(float startRotation, float time, DialogueCharacterData charData) => startRotation;
-
-        public virtual Vector2 DisappearScale(Vector2 startScale, float time, DialogueCharacterData charData) => Vector2.Lerp(startScale, startScale * 1.5f, CalamityUtils.ExpOutEasing(time / TimeToDisappear, 1));
-        #endregion
-    }
-
-    #region Display Types
-    public class AlwayOnScreen : DialogueDisplayEffects
-    {
-        Vector2 StartPosition;
-
-        public override bool FadeWhenTooFar => false;
-
-        public override Vector2 TextOffsetFromStart(Vector2 startPos, Vector2 textSize)
-        {
-            StartPosition = startPos;
-
-            Vector2 playerPos = Main.LocalPlayer.Center;
-            Vector2 halfSize = textSize * 0.5f;
-            Vector2 newPos = startPos - halfSize + (Vector2.UnitY * -(textSize.Y + 36));
-            Vector2 screenPos = newPos.ToScreenPosition();
-
-            Vector2 boundTopLeftScreen = new((Main.screenWidth / 2f) - (Main.screenWidth / 2.5f), (Main.screenHeight / 2f) - (Main.screenHeight / 2.5f));
-
-            if (screenPos.X < boundTopLeftScreen.X)
-                newPos.X = playerPos.X - (Main.screenWidth / 2.5f);
-            if (screenPos.Y < boundTopLeftScreen.Y)
-                newPos.Y = playerPos.Y - (Main.screenHeight / 2.5f);
-
-            if (newPos.X > playerPos.X + (Main.screenWidth / 2.5f) - textSize.X)
-                newPos.X = playerPos.X + (Main.screenWidth / 2.5f) - textSize.X;
-            if (newPos.Y > playerPos.Y + (Main.screenHeight / 2.5f) - textSize.Y)
-                newPos.Y = playerPos.Y + (Main.screenHeight / 2.5f) - textSize.Y;
-
-            return newPos;
-        }
-
-        public override void PreDraw(SpriteBatch spriteBatch, Vector2 textTopLeft, Vector2 textSize, int textTimer, int switchTimer)
-        {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/UI/DialogueDisplay/Assets/DialogueArrow").Value;
-            Vector2 textCenter = textTopLeft + textSize * 0.5f;
-            Vector2 toStart = (StartPosition - textCenter).SafeNormalize(-Vector2.UnitY) * 64;
-            spriteBatch.Draw(tex, textCenter + toStart - Main.screenPosition, null, Color.White, toStart.ToRotation(), tex.Size() * 0.5f, 1f, 0, 0);
-        }
-    }
-
-    public class WackyEffects : DialogueDisplayEffects
-    {
-        public override Vector2 AppearPositioning(Vector2 startPos, Vector2 goalPos, float time, DialogueCharacterData charData) => Vector2.Lerp(goalPos + Vector2.UnitX.RotatedBy(charData.Index) * 400, goalPos, time / TimeToAppear);
-
-        public override float AppearRotation(float goalRotation, float time, DialogueCharacterData charData) => MathHelper.Lerp(goalRotation + MathHelper.TwoPi * 2, goalRotation, time / TimeToAppear);
-    }
-
-    public class WhisperingPearlEffects : DialogueDisplayEffects
-    {
-        public override void PreDraw(SpriteBatch spriteBatch, Vector2 textStart, Vector2 textSize, int textTimer, int switchTimer)
-        {
-            if (textTimer < 0)
-                return;
-
-            float Opacity = 1f;
-            if (textTimer < 30f)
-                Opacity = MathHelper.Lerp(0f, 1f, CalamityUtils.CircOutEasing(textTimer / 30f, 1));
-
-            if (switchTimer > 0)
-                Opacity *= 1 - CalamityUtils.CircOutEasing(switchTimer / 60f, 1);
-
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloom").Value;
-            spriteBatch.Draw(tex, textStart + textSize * 0.5f - Main.screenPosition, null, Color.Black * 0.6f * Opacity, 0f, tex.Size() * 0.5f, new Vector2(textSize.X / 160f, textSize.Y / 120f), 0, 0);
-        }
-    }
-
-    #endregion
 }

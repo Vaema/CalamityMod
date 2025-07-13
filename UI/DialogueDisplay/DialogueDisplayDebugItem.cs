@@ -2,6 +2,7 @@
 using Terraria.ModLoader;
 using Terraria;
 using System.Linq;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 
 namespace CalamityMod.UI.DialogueDisplay
 {
@@ -19,7 +20,11 @@ namespace CalamityMod.UI.DialogueDisplay
         }
         public override bool? UseItem(Player player)
         {
-            DialogueDisplaySystem.StartDialogue("RoyalBlue", Main.npc.First(n => n.active), 90, effects: new WhisperingPearlEffects());
+            if (DialogueDisplayUI.Dialogues.ContainsKey("RoyalBlue"))
+                DialogueDisplaySystem.ProgressDialogue("RoyalBlue");
+            else
+                DialogueDisplaySystem.StartDialogue("RoyalBlue", Main.npc.First(n => n.active), -1, effects: new WhisperingPearlEffects());
+
             return true;
         }
     }
