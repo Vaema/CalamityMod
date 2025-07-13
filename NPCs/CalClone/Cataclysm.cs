@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.CalClone
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 50; // 100
+            NPC.damage = 45; // 90
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -225,9 +225,6 @@ namespace CalamityMod.NPCs.CalClone
 
             if (NPC.ai[1] == 0f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-
                 float calCloneBroProjAttackMaxSpeed = 5f;
                 float calCloneBroProjAttackAccel = 0.1f;
                 calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
@@ -347,9 +344,6 @@ namespace CalamityMod.NPCs.CalClone
             {
                 if (NPC.ai[1] == 1f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
                     NPC.rotation = calCloneBroRotation;
 
@@ -396,9 +390,6 @@ namespace CalamityMod.NPCs.CalClone
 
                 if (NPC.ai[1] == 2f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     NPC.ai[2] += 1f + (death ? 0.5f * (1f - lifeRatio) : 0f);
                     if (expertMode)
                         NPC.ai[2] += 0.25f;
@@ -407,9 +398,6 @@ namespace CalamityMod.NPCs.CalClone
 
                     if (NPC.ai[2] >= 75f)
                     {
-                        // Avoid cheap bullshit
-                        NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-
                         NPC.velocity.X *= 0.93f;
                         NPC.velocity.Y *= 0.93f;
 
