@@ -1198,6 +1198,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Percent life remaining
             float golemLifeRatio = Main.npc[NPC.golemBoss].life / (float)Main.npc[NPC.golemBoss].lifeMax;
+            float PosDelay = 270f;
 
             // Phases
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
@@ -1233,7 +1234,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[0] = 3f;
                 npc.ai[1] = 0f;
                 npc.ai[2] = 0f;
-                npc.ai[3] = 360f;
+                npc.ai[3] = PosDelay;
                 calamityGlobalNPC.newAI[3] = 0;
                 npc.netUpdate = true;
                 npc.SyncExtraAI();
@@ -1244,14 +1245,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float maxDistanceStraight = 450f;
             if (npc.ai[3] <= 0f)
             {
-                npc.ai[3] = 360f;
+                npc.ai[3] = PosDelay;
                 calamityGlobalNPC.newAI[3] += phase2 ? 1 : 0;
                 if (calamityGlobalNPC.newAI[3] >= 8)
                 {
                     calamityGlobalNPC.newAI[3] = 0;
                     npc.ai[0] = 3f;
                     npc.ai[1] = 0f;
-                    npc.ai[3] = 360f;
+                    npc.ai[3] = PosDelay;
                 }
 
                 // Four positions around target
@@ -1294,7 +1295,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ForceNetUpdate();
             }
 
-            float positioningInc = enrage ? 6.5f : phase3 ? 3.5f : phase2 ? 2f : 1f;
+            float positioningInc = enrage ? 6f : phase3 ? 2.5f : phase2 ? 1.5f : 1f;
             npc.ai[3] -= positioningInc;
 
             // Move in a circle around the player in final phase
@@ -1358,7 +1359,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 npc.ai[1]++;
                 // Grrrrr stop incrementing the damn timer
-                npc.ai[3] = 360f;
+                npc.ai[3] = PosDelay;
                 // Laser spread
                 if (npc.ai[1] >= telegraphTime && npc.ai[1] < laserEndTime && npc.ai[1] % 2f == 0f)
                 {
@@ -1415,7 +1416,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Lasers
             npc.ai[2] += 1f;
 
-            int laserGateValue = (int)(360f / positioningInc);
+            int laserGateValue = (int)(PosDelay / positioningInc);
             if (canFireProjectiles && Main.netMode != NetmodeID.MultiplayerClient && (npc.ai[2] % (laserGateValue / 2) == 0))
             {
                 int numLasers = 2;
