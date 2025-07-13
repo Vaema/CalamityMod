@@ -404,7 +404,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 npc.chaseable = !spazInPhase1;
 
-                int setDamage = (int)Math.Round(npc.defDamage * RetinazerPhase2ContactDamageMult);
+                npc.damage = (int)Math.Round(npc.defDamage * RetinazerPhase2ContactDamageMult);
                 npc.defense = npc.defDefense + 10;
                 calamityGlobalNPC.DR = spazInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = spazInPhase1;
@@ -1049,8 +1049,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.chaseable = !retInPhase1;
 
                 // Increase defense and damage
-                int setDamage = (int)Math.Round(npc.defDamage * SpazmatismPhase2ContactDamageMult);
-                int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
+                npc.damage = (int)Math.Round(npc.defDamage * SpazmatismPhase2ContactDamageMult);
                 npc.defense = npc.defDefense + 18;
                 calamityGlobalNPC.DR = retInPhase1 ? 0.9999f : 0.2f;
                 calamityGlobalNPC.unbreakableDR = retInPhase1;
