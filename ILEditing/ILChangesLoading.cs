@@ -171,7 +171,6 @@ namespace CalamityMod.ILEditing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
             // World generation
-            IL_WorldGen.Pyramid += ReplacePharaohSetInPyramids;
             IL_WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
             On_WorldGen.SmashAltar += PreventSmashAltarCode;
             IL_WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;

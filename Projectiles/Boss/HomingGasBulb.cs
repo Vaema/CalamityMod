@@ -90,7 +90,8 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     int type = ModContent.ProjectileType<HomingGasBulbSporeGas>();
                     float ai0 = Main.rand.Next(3);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 0.2f, type, PlanteraAI.PinkCloudDamage, 0f, Main.myPlayer, ai0);
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 0.2f, type, PlanteraAI.PinkCloudDamage, 0f, Main.myPlayer, ai0);
+                    Main.projectile[proj].timeLeft = 120;
                 }
             }
         }
