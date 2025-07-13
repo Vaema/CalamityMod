@@ -62,9 +62,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool vomitFreeTentacles = lifeRatio < 0.25f && death;
             bool phase4 = lifeRatio < 0.2f;
 
-            // Contact damage values for phase 2
-            int setDamage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
-            int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
+            if (phase2)
+                npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
 
             // Variables and target
             bool enrage = !BossRushEvent.BossRushActive;
@@ -400,9 +399,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Slow down and return to normal behavior
                 if (npc.ai[3] <= BeginChargeSlowDownGateValue)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
                     npc.velocity *= chargeDeceleration;
                     float timeToDecelerateDecrement = phase4 ? 1.5f : 1f;
                     npc.ai[3] -= timeToDecelerateDecrement;
@@ -437,9 +433,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Emit spore gas in phase 3
                 else if (npc.ai[3] <= BeginChargeGateValue)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     float sporeGasDashGateValue = death ? 6f : 9f;
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
@@ -469,9 +462,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Move a specified distance away from the target and charge once that distance is reached
                 else
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
                     // Line up before charging
                     if (npc.Calamity().newAI[0] == 0f)
                     {
@@ -511,9 +501,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] -= timeToLineUpChargeDecrement;
                     if (npc.ai[3] <= BeginChargeGateValue)
                     {
-                        // Set damage
-                        npc.damage = setDamage;
-
                         // Charge
                         npc.ai[3] = BeginChargeGateValue;
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
@@ -561,9 +548,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                // Avoid cheap bullshit
-                npc.damage = phase2 ? reducedSetDamage : 0;
-
                 // Velocity ranges from 4 to 7.2, Acceleration ranges from 0.04 to 0.072, non-enraged phase 1
                 // Velocity ranges from 7 to 12.6, Acceleration ranges from 0.07 to 0.126, non-enraged phase 2
                 // Velocity ranges from 9 to 16.2, Acceleration ranges from 0.07 to 0.126, non-enraged phase 3
@@ -1181,8 +1165,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float extendTime = 180f;
             if (planteraIsCharging)
             {
-                npc.damage = 0;
-
                 if (npc.localAI[0] > 0f)
                 {
                     npc.localAI[0] = 0f;
@@ -1191,7 +1173,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else if (npc.localAI[0] < extendTime)
             {
-                npc.damage = npc.defDamage;
                 npc.localAI[0] += 1f;
                 if (npc.localAI[0] >= extendTime)
                     npc.SyncExtraAI();
