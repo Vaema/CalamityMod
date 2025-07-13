@@ -624,7 +624,7 @@ namespace CalamityMod.Items.Accessories
 
                         SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
                         p.Kill();
-
+                        Player.grapCount = 0;
                     }
                 }
 

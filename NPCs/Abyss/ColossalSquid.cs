@@ -38,7 +38,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 180;
             NPC.height = 180;
             NPC.defense = 50;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 130000; // Previously 220,000
             NPC.aiStyle = -1;
             AIType = -1;

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class AuroradicalThrow : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Nebulash>();
+        }
         public override void SetDefaults()
         {
             Item.width = 34;

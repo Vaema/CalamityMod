@@ -119,6 +119,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
             Initialized = 0f;
+            BuffModeBuffer = 15;
         }
 
         //Returns the npc if targetable, returns null if not
@@ -391,8 +392,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             ShootTimer = ShootDelay;
 
-                            // 1/3 chance to directly recharge the Rover Drive shield by 1 point
-                            if (Main.rand.NextBool(3) && modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
+                            if (modPlayer.roverDrive && modPlayer.RoverDriveShieldDurability < RoverDrive.ShieldDurabilityMax)
                             {
                                 CalamityPlayer buffedCalPlayer = playerToBuff.Calamity();
                                 buffedCalPlayer.RoverDriveShieldDurability++;

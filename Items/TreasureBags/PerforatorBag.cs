@@ -60,7 +60,6 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<PerforatorHive>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<BloodSample>(), 1, 30, 40);
             itemLoot.Add(ItemID.CrimtaneBar, 1, 15, 20);
             itemLoot.Add(ItemID.Vertebrae, 1, 15, 20);
             itemLoot.AddIf(() => Main.hardMode, ItemID.Ichor, 1, 25, 30);

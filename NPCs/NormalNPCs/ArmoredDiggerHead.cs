@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 54;
             NPC.height = 54;
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
