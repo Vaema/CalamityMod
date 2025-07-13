@@ -527,20 +527,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
 
             if (CalamityWorld.LegendaryMode)
                 baseVelocity *= 1.15f;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = baseVelocity * 0.25f;
-            float minimalDamageVelocity = baseVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

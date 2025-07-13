@@ -227,21 +227,6 @@ namespace CalamityMod.NPCs.StormWeaver
                 else if (targetX > 0f)
                     NPC.spriteDirection = 1;
             }
-
-            // Calculate contact damage based on velocity
-            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
-            float minimalContactDamageVelocity = velocity * 0.25f;
-            float minimalDamageVelocity = velocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

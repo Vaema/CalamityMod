@@ -1044,19 +1044,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                     }
                 }
             }
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = baseVelocity * 0.25f;
-            float minimalDamageVelocity = baseVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

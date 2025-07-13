@@ -138,28 +138,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 else if (playerXPos > 0f)
                     NPC.spriteDirection = -1;
             }
-
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHeadYoung.SegmentVelocity_ZenithSeed :
-                CalamityWorld.LegendaryMode ? DesertNuisanceHeadYoung.SegmentVelocity_GoodWorld :
-                death ? DesertNuisanceHeadYoung.SegmentVelocity_Death :
-                DesertNuisanceHeadYoung.SegmentVelocity_Expert;
-            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (death)
-                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

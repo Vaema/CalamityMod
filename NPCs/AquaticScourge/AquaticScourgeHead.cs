@@ -149,6 +149,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     // Kiss my motherfucking ass you piece of shit game
                     NPC.timeLeft *= 20;
                     NPC.npcSlots = 16f;
+                    NPC.damage = NPC.defDamage;
                     CalamityGlobalNPC.BossKillTimes.TryGetValue(NPC.type, out int revKillTime);
                     calamityGlobalNPC.KillTime = revKillTime;
                     calamityGlobalNPC.newAI[0] = 1f;
@@ -571,20 +572,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 }
 
                 NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
-            }
-
-            // Calculate contact damage based on velocity
-            if (!nonHostile)
-            {
-                float minimalContactDamageVelocity = scourgeMaxSpeed * 0.25f;
-                float minimalDamageVelocity = scourgeMaxSpeed * 0.5f;
-                if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-                }
             }
         }
 

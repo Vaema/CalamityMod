@@ -162,6 +162,8 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
             if (doNotDealDamage)
                 NPC.damage = 0;
+            else
+                NPC.damage = NPC.defDamage;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -775,20 +777,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
             if (calamityGlobalNPC.newAI[1] < resistanceTime && ((NPC.position - NPC.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
                 calamityGlobalNPC.newAI[1] += 1f;
-
-            // Calculate contact damage based on velocity
-            if (!doNotDealDamage)
-            {
-                float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-                float minimalDamageVelocity = segmentVelocity * 0.5f;
-                if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-                }
-            }
         }
 
         public override bool CheckActive()

@@ -1002,35 +1002,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
                 calamityGlobalNPC.newAI[1] += 1f;
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            if (npc.type == NPCID.TheDestroyer)
-            {
-                if (npc.velocity.Length() <= minimalContactDamageVelocity)
-                {
-                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
-                }
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
-                }
-            }
-            else
-            {
-                float bodyAndTailVelocity = (npc.position - npc.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-                {
-                    npc.damage = 0;
-                }
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
-                }
-            }
-
             return false;
         }
 
