@@ -82,7 +82,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseAcceleration *= 1.05f;
                 idlePhaseVelocity *= 1.08f;
                 chargeTime -= 1;
-                chargeVelocity *= 1.13f;
+                chargeVelocity *= 1.1f;
             }
 
             if (CalamityWorld.LegendaryMode)
@@ -177,11 +177,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (death)
             {
-                idlePhaseTimer -= 6;
-                idlePhaseAcceleration *= 1.2f;
-                idlePhaseVelocity *= 1.2f;
-                chargeTime -= 4;
-                chargeVelocity += 3f;
+                chargeTime -= 2;
+                chargeVelocity += 1f;
             }
 
             if (CalamityWorld.LegendaryMode)
@@ -413,7 +410,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (enrage)
                             npc.ai[2] = sharknadoPhaseTimer - 40;
                         else if (death)
-                            npc.ai[2] = sharknadoPhaseTimer - 60;
+                            npc.ai[2] = sharknadoPhaseTimer - 40;
                     }
 
                     // Go to phase 2
@@ -1007,21 +1004,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.dust[phase3ChargeDust].noLight = true;
                     Main.dust[phase3ChargeDust].velocity /= 4f;
                     Main.dust[phase3ChargeDust].velocity -= npc.velocity;
-                }
-
-                // Spawn bubbles during charge in Master Mode (these bubbles have special behavior that makes them float upward, doing no damage, before returning to their normal behavior)
-                if (death && phase4)
-                {
-                    if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble, 0, 0f, -60f);
-                        }
-                    }
                 }
 
                 npc.ai[2] += 1f;
