@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void SetDefaults()
         {
-            NPC.damage = 96; // 192
+            NPC.damage = 90; // 180
             NPC.npcSlots = 5f;
             NPC.width = 40;
             NPC.height = 40;

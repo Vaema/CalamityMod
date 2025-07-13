@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void SetDefaults()
         {
-            NPC.damage = 64; // 128
+            NPC.damage = 60; // 120
             NPC.npcSlots = 5f;
             NPC.width = 52;
             NPC.height = 68;

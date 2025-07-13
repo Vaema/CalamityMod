@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 180; // 360
+            NPC.damage = 150; // 300
             NPC.npcSlots = 5f;
             NPC.width = 90;
             NPC.height = 90;
