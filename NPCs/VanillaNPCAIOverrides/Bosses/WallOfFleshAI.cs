@@ -126,9 +126,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (lifeRatio < 0.5f && death)
                         {
-                            float fireballSpeed = (npc.velocity.Length() + 3f) * 2.25f; 
+                            float fireballSpeed = (npc.velocity.Length() + 3f) * 2f; 
 
-                            Vector2 predictiveFireballVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center + Main.player[npc.target].velocity * 40f, -Vector2.UnitY) * fireballSpeed;
+                            Vector2 predictiveFireballVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center + Main.player[npc.target].velocity * 60f, -Vector2.UnitY) * fireballSpeed;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
