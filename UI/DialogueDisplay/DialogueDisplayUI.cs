@@ -968,7 +968,7 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="startPosition">The position of the text in the world</param>
-        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null)
+        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
         {
             UI ??= new();
             State ??= new();
@@ -976,7 +976,7 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DialogueTextData textData = Deserialize(key);
 
-            DialogueDisplay display = new(textData.Pages[0], effects)
+            DialogueDisplay display = new(textData.Pages[0], effects, wrapWidth: wrapWidth)
             {
                 Position = startPosition,
                 ProgressDialogue = progressDialogue,
@@ -997,7 +997,7 @@ namespace CalamityMod.UI.DialogueDisplay
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="entity">The entity this dialogue will appear with</param>
         /// <param name="Uptime">The entity this dialogue will appear with</param>
-        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DisplayEffect effects = null)
+        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DisplayEffect effects = null, float wrapWidth = -1)
         {
             UI ??= new();
             State ??= new();
@@ -1005,7 +1005,7 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DialogueTextData textData = Deserialize(key);
 
-            DialogueDisplay display = new(textData[0], effects)
+            DialogueDisplay display = new(textData[0], effects, wrapWidth: wrapWidth)
             {
                 Position = entity.Center
             };

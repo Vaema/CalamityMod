@@ -23,7 +23,7 @@ namespace CalamityMod.UI.DialogueDisplay
             if (DialogueDisplayUI.Dialogues.ContainsKey("RoyalBlue"))
                 DialogueDisplaySystem.ProgressDialogue("RoyalBlue");
             else
-                DialogueDisplaySystem.StartDialogue("RoyalBlue", Main.npc.First(n => n.active), -1, effects: new WhisperingPearlEffects());
+                DialogueDisplaySystem.StartDialogue("RoyalBlue", Main.npc.First(n => n.active), -1, effects: new AlwayOnScreen());
 
             return true;
         }
