@@ -18,7 +18,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float DRIncreaseTime = 600f;
 
         // Rev+ exclusive
-        public static int FireballDamage = 11; // 44; Applies to both Cursed Flames and Shadowflame fireballs
+        public static int FireballDamage = 12; // 48; Applies to both Cursed Flames and (Death) Shadowflame fireballs
 
         public static bool BuffedEaterofWorldsAI(NPC npc, Mod mod)
         {
