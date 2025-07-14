@@ -80,8 +80,10 @@ Cosmolight: {
 	DisplayName: Cosmolight
 	Tooltip:
 		'''
-		Advances time immediately to the next dawn, noon, dusk or midnight
-		Does not work while a boss is alive
+		A magical artifact, rekindled by the touch of godly fire
+		<left> to fast forward time
+		<right> to freeze time
+		This does not work while a boss is alive
 		'''
 }
 
@@ -250,5 +252,15 @@ WulfrumTreasurePinger: {
 		'''
 		Locates nearby metal that's hopefully more valuable than wulfrum
 		This contraption seems incredibly shoddy. [c/FC4903:It'll break sooner than later for sure]
+		'''
+}
+
+Bakidon: {
+	DisplayName: Bakidon
+	Tooltip:
+		'''
+		A magical artifact, whose flame died out long ago
+		Using it freezes the passage of time
+		This does not work while a boss is alive
 		'''
 }
