@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.World;
 using Terraria;
 using Terraria.GameContent.Creative;
@@ -57,7 +58,8 @@ namespace CalamityMod.Items.Tools.ClimateChange
             CreateRecipe().
                 AddIngredient<Bakidon>().
                 AddIngredient(ItemID.Sundial).
-                AddIngredient<UnholyEssence>(5).
+                AddIngredient<AstralOre>(10).
+                AddIngredient(ItemID.FragmentSolar, 15).
                 AddTile(TileID.DemonAltar).
                 Register();
         }
