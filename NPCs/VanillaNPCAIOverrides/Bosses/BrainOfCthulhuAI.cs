@@ -197,9 +197,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Rubber band movement
                         if (!despawn)
                         {
-                            float velocityScale = death ? 6f : 4.5f;
+                            float velocityScale = death ? 5.5f : 4.5f;
                             float velocityBoost = velocityScale * (1f - lifeRatio);
-                            float nonChargeSpeed = (death ? 24f : 18f) + velocityBoost + 3f * enrageScale;
+                            float nonChargeSpeed = (death ? 22f : 18f) + velocityBoost + 3f * enrageScale;
                             if (CalamityWorld.LegendaryMode)
                                 nonChargeSpeed *= 1.15f;
 
@@ -287,7 +287,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.ai[2] += 1f;
 
-                    float timer = (death ? 0f : 30f) + npc.ai[3];
+                    float timer = (death ? 15f : 30f) + npc.ai[3];
 
                     // Move the brain away from the target in order to ensure fairness
                     if (npc.ai[2] >= timer - 5f)
@@ -298,7 +298,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[2] -= 1f;
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (-chargeVelocity - 2f * enrageScale);
                             if (death)
-                                npc.velocity *= 1.25f;
+                                npc.velocity *= 1.2f;
                             if (CalamityWorld.LegendaryMode)
                                 npc.velocity *= 1.15f;
                         }
@@ -308,7 +308,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[2] >= timer)
                     {
                         // Shoot projectiles from 4 directions, alternating between diagonal and cardinal
-                        float bloodShotVelocity = (death ? 7.5f : 6f) + enrageScale;
+                        float bloodShotVelocity = (death ? 7f : 6f) + enrageScale;
 
                         // Scale projectile velocity
                         float phase7ProjectileVelocityMult = 1.2f;
@@ -388,16 +388,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         int type = ProjectileID.BloodShot;
                                         int damage = npc.GetProjectileDamage(type);
                                         int numProj = death ? 6 : 4;
-                                        int spread = death ? 30 : 15;
+                                        int spread = death ? 25 : 15;
                                         if (phase7)
                                         {
-                                            numProj = death ? 5 : 2;
-                                            spread = death ? 25 : 10;
+                                            numProj = death ? 3 : 2;
+                                            spread = death ? 15 : 10;
                                         }
                                         else if (phase5)
                                         {
-                                            numProj = death ? 6 : 3;
-                                            spread = death ? 40 : 20;
+                                            numProj = death ? 4 : 3;
+                                            spread = death ? 28 : 20;
                                         }
 
                                         float rotation = MathHelper.ToRadians(spread);
@@ -421,16 +421,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int type = ProjectileID.BloodNautilusShot;
                             int damage = npc.GetProjectileDamage(type);
                             int numProj = death ? 9 : 7;
-                            int spread = death ? 60 : 40;
+                            int spread = death ? 55 : 40;
                             if (phase7)
                             {
-                                numProj = death ? 5 : 2;
-                                spread = death ? 25 : 5;
+                                numProj = death ? 3 : 2;
+                                spread = death ? 10 : 5;
                             }
                             else if (phase5)
                             {
-                                numProj = death ? 5 : 2;
-                                spread = death ? 25 : 10;
+                                numProj = death ? 3 : 2;
+                                spread = death ? 15 : 10;
                             }
                             else if (phase4)
                             {
@@ -480,7 +480,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? (death ? 15 : 30) : (death ? 30 : 60);
+                            int maxRandomTime = phase7 ? (death ? 20 : 30) : (death ? 40 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                             npc.localAI[1] = 0f;
                             npc.alpha = 0;

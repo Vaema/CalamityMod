@@ -340,7 +340,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Skull shooting
-            if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
+            if ((handsDead) && npc.ai[1] == 0f && !phase4)
             {
                 float skullProjFrequency = phase2 ? (48f - (death ? 10f * (1f - lifeRatio) : 0f)) : 60f;
                 if (CalamityWorld.LegendaryMode)

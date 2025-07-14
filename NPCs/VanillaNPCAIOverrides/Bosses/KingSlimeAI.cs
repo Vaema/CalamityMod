@@ -304,7 +304,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (speedMult > 2f)
                             speedMult = 2f;
 
-                        bool deathModeRapidHops = death && lifeRatio < 0.3f;
+                        bool deathModeRapidHops = death && lifeRatio < 0.2f;
                         if (deathModeRapidHops)
                             npc.ai[1] = 2f;
 
@@ -386,7 +386,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Adjust size based on max health
             float maxScale = CalamityWorld.LegendaryMode ? 3f : death ? 2.5f : 1.5f;
-            float minScale = death ? 0.65f : 0.75f;
+            float minScale = 0.75f;
             float maxScaledValue = maxScale - minScale;
 
             // Inverse scaling in FTW
