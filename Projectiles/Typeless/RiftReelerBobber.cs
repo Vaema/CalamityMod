@@ -13,6 +13,11 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.height = 14;
             Projectile.aiStyle = ProjAIStyleID.Bobber;
             Projectile.bobber = true;
+            Projectile.friendly = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 10;
+            Projectile.penetrate = -1;
+            Projectile.ArmorPenetration = 100;
         }
 
         public override bool PreDrawExtras()
