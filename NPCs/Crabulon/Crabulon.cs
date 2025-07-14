@@ -73,7 +73,7 @@ namespace CalamityMod.NPCs.Crabulon
             }
         }
 
-        public static int MushroomShotDamage = 11; // 44
+        public static int MushroomShotDamage = 9; // 36
 
         public override void SetDefaults()
         {

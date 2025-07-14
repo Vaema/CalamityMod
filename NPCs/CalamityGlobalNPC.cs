@@ -5327,21 +5327,6 @@ namespace CalamityMod.NPCs
 
             switch (npc.type)
             {
-                case NPCID.VileSpitEaterOfWorlds:
-                case NPCID.VileSpit:
-
-                    target.AddBuff(BuffType<BrainRot>(), 180);
-                    if (Main.rand.NextBool(10))
-                        target.AddBuff(BuffID.Weak, 3600);
-                    else if (Main.rand.NextBool(5))
-                        target.AddBuff(BuffID.Weak, 720);
-                    else if (Main.rand.NextBool(2))
-                        target.AddBuff(BuffID.Weak, 120);
-                    else
-                        target.AddBuff(BuffID.Weak, 60);
-
-                    break;
-
                 case NPCID.DevourerHead:
                 case NPCID.FaceMonster:
                     target.AddBuff(BuffID.Weak, 180);
