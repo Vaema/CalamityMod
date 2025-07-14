@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.damage = 0;
 
-                        NPC.velocity *= death ? 0.94f : 0.96f;
+                        NPC.velocity *= 0.94f;
 
                         NPC.ai[1] += 1f;
 
@@ -208,7 +208,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     {
                         NPC.damage = NPC.defDamage;
 
-                        float chargeSpeed = death ? 24f : 16f;
+                        float chargeSpeed = 22f;
                         NPC.velocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center + Main.player[NPC.target].velocity * 10f, -Vector2.UnitY) * chargeSpeed; // Slightly predictive
                         NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
