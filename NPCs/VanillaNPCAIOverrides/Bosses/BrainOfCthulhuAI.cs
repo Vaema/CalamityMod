@@ -690,7 +690,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float targetXDistPhase1 = Main.player[npc.target].Center.X - brainCenterPhase1.X;
                     float targetYDistPhase1 = Main.player[npc.target].Center.Y - brainCenterPhase1.Y;
                     float targetDistancePhase1 = (float)Math.Sqrt(targetXDistPhase1 * targetXDistPhase1 + targetYDistPhase1 * targetYDistPhase1);
-                    float maxMoveVelocity = (death ? 2.25f : 1.5f) + velocityScale; // This used to be 4f in death. Yeah
+                    float maxMoveVelocity = (death ? 2.15f : 1.5f) + velocityScale; // This used to be 4f in death. Yeah
                     if (CalamityWorld.LegendaryMode)
                         maxMoveVelocity *= 2f;
 
