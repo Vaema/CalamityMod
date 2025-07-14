@@ -41,13 +41,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool rubySpawnPhaseActive = death ? (lifeRatio < 0.75f) : (lifeRatio < 0.5f);
 
             bool redCrystalAlive = NPC.AnyNPCs(ModContent.NPCType<KingSlimeJewelRuby>());
-            bool greenCrystalAlive = true; // Based on provided code, this is always true
-
 
             // npc.Calamity().newAI[0] as a flag for Ruby spawn state: 0f = can spawn, 1f = spawned
             bool rubySpawnedForCurrentPhase = npc.Calamity().newAI[0] == 1f;
 
-            int setDamage = npc.defDamage;
+            int setDamage = npc.defDamage; // Defined externally
             npc.defense = npc.defDefense;
 
             if (rubySpawnPhaseActive && !redCrystalAlive && !rubySpawnedForCurrentPhase)
@@ -204,7 +202,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.ai[0] >= 60f)
                     teleported = true;
 
-                if (npc.ai[0] == 60f && !Main.dedServ)
+                if (npc.ai[0] == 60f && !Main.dedServ) 
                     Gore.NewGore(npc.GetSource_FromAI(), npc.Center + new Vector2(-40f, -(float)npc.height / 2), npc.velocity, 734, 1f);
 
                 if (npc.ai[0] >= 60f && Main.netMode != NetmodeID.MultiplayerClient)
@@ -334,12 +332,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] += 1f;
                         }
 
-                        if (!greenCrystalAlive)
-                        {
-                            npc.velocity.X *= 1.2f;
-                            npc.velocity.Y *= 0.6f;
-                        }
-
                         if (death)
                             npc.velocity.X *= 1.25f;
 
@@ -350,7 +342,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            else if (npc.target < Main.maxPlayers)
+            else if (npc.target < Main.maxPlayers) // Velocity factoring
             {
                 float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
                 if (death)
@@ -394,7 +386,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Adjust size based on max health
             float maxScale = CalamityWorld.LegendaryMode ? 3f : death ? 2.5f : 1.5f;
-            float minScale = death ? 0.5f : 0.75f;
+            float minScale = death ? 0.65f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
             // Inverse scaling in FTW
@@ -461,7 +453,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if ((Main.raining && Main.hardMode) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
-                        if (death)
+                        if (death) // 50% chance to spawn a spiked slime instead of the above npcType value
                         {
                             if (Main.rand.NextBool())
                             {
