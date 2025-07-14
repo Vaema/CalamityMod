@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Tools.ClimateChange
             itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
         }
 
-        public override bool CanUseItem(Player player) => !CalamityPlayer.areThereAnyDamnBosses;
 
         public override bool AltFunctionUse(Player player)
         {
@@ -73,19 +72,6 @@ namespace CalamityMod.Items.Tools.ClimateChange
             {
                 timeRate *= 120;
             }
-        }
-
-        public override void PostUpdateEverything()
-        {
-            //When outside of Journey Mode, time freeze disables during bosses
-            if (CalamityUtils.AnyBossNPCS() && !Main.GameModeInfo.IsJourneyMode)
-                if (Main.netMode != NetmodeID.MultiplayerClient && (CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>().Enabled))
-                {
-                    var power = CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>();
-                    NetPacket packet = NetCreativePowersModule.PreparePacket(power.PowerId, 1);
-                    packet.Writer.Write(!power.Enabled);
-                    NetManager.Instance.SendToServerOrLoopback(packet);
-                }
         }
     }
 }
