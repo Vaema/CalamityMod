@@ -18,7 +18,7 @@ namespace CalamityMod.Buffs.Alcohol
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().grapeBeer = true;
-            player.GetCritChance<GenericDamageClass>() -= GrapeBeer.CritLoss;
+            player.Calamity().critDamage -= GrapeBeer.CritLoss * 0.01f;
         }
     }
 }
