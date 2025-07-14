@@ -298,7 +298,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[2] -= 1f;
                             npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (-chargeVelocity - 2f * enrageScale);
                             if (death)
-                                npc.velocity *= 1.5f;
+                                npc.velocity *= 1.25f;
                             if (CalamityWorld.LegendaryMode)
                                 npc.velocity *= 1.15f;
                         }
@@ -387,16 +387,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     {
                                         int type = ProjectileID.BloodShot;
                                         int damage = npc.GetProjectileDamage(type);
-                                        int numProj = death ? 9 : 4;
-                                        int spread = death ? 32 : 15;
+                                        int numProj = death ? 6 : 4;
+                                        int spread = death ? 30 : 15;
                                         if (phase7)
                                         {
-                                            numProj = death ? 7 : 2;
+                                            numProj = death ? 5 : 2;
                                             spread = death ? 25 : 10;
                                         }
                                         else if (phase5)
                                         {
-                                            numProj = death ? 8 : 3;
+                                            numProj = death ? 6 : 3;
                                             spread = death ? 40 : 20;
                                         }
 
@@ -420,22 +420,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             int type = ProjectileID.BloodNautilusShot;
                             int damage = npc.GetProjectileDamage(type);
-                            int numProj = death ? 13 : 7;
+                            int numProj = death ? 9 : 7;
                             int spread = death ? 60 : 40;
                             if (phase7)
                             {
-                                numProj = death ? 7 : 2;
-                                spread = death ? 23 : 5;
+                                numProj = death ? 5 : 2;
+                                spread = death ? 25 : 5;
                             }
                             else if (phase5)
                             {
-                                numProj = death ? 8 : 2;
-                                spread = death ? 30 : 10;
+                                numProj = death ? 5 : 2;
+                                spread = death ? 25 : 10;
                             }
                             else if (phase4)
                             {
-                                numProj = death ? 9 : 3;
-                                spread = death ? 30 : 10;
+                                numProj = death ? 6 : 3;
+                                spread = death ? 25 : 10;
                             }
 
                             float rotation = MathHelper.ToRadians(spread);
