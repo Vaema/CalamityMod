@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     float variance = Utils.GetLerpValue(0, dusts, i, true) * Main.rand.NextFloat(0.9f, 1f);
                     float rot = MathHelper.Lerp(-0.7f * scaleFx, 0.7f * scaleFx, variance) * Projectile.direction;
-                    float swingDirScale = Projectile.ai[1] != 1 ? (1 - variance) : variance;
+                    float swingDirScale = Projectile.ai[1] == 1 ? (1 - variance) : variance;
                     float scale = 0.4f + swingDirScale * 2f;
                     float rotScaling = 1 - Math.Abs(rot);
                     Vector2 vel = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(rot) * (70 / scaleFx + 80 * (float)Math.Pow(rotScaling, 1.5f) * Main.rand.NextFloat(0.85f, 1f)) * scaleFx;
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
 
             Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
-            float launchPower = (Projectile.ai[2] == 5 ? 35 : 10);
+            float launchPower = (Projectile.ai[2] == 5 ? 35 : 14);
             target.MoveNPC(launchVel, launchPower, true);
 
             if (Projectile.ai[2] == 5)
@@ -145,9 +145,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Vector2 rotationPoint = new Vector2(proj.Width * 0.85f, proj.Height / 2);
             Vector2 drawPosition = Projectile.Center - Main.screenPosition + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 105;
 
-            SpriteEffects spfx = (Projectile.ai[1] == 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
+            SpriteEffects spfx = (Projectile.ai[1] != 1 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             if (Projectile.direction == -1)
-                spfx = (Projectile.ai[1] != 0 ? SpriteEffects.None : SpriteEffects.FlipVertically);
+                spfx = (Projectile.ai[1] == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             Main.EntitySpriteDraw(proj, drawPosition, null, Color.White with { A = 0 } * sizeLerp, drawRotation, rotationPoint, squash * Projectile.scale * scaleFx, spfx);
             /*for (int i = 0; i < 15; i++)
             {

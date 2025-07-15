@@ -19,16 +19,19 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public float scaleFx = 1;
         public int fireRate => Owner.itemAnimationMax;
         public int time = 0;
-        public bool longSwing => swingCount >= 1;
+        public bool longSwing => swingCount >= 2;
         public int cooldown => -Owner.itemAnimationMax * (Owner.Calamity().buffedAuger ? 2 : longSwing ? 3 : 1);
-        public float bladeRot = 0;
-        public int swingCount = -1;
-        public float bladefx = 0;
+        public float bladeRot = 0; // Rotation of the blade
+        public int swingCount = 0; // Increases at the start of a swing
+        public float bladefx = 0; // Scaling on the effects of the blade
+        // Both checks to make sure sounds/hitboxes only happen once per swing
         public bool makeSound = true;
         public bool makeHitbox = true;
         public int cooldownGiven => (int)(400 / Owner.GetAttackSpeed<MeleeDamageClass>()); // Cooldown is effected by melee speed, lines up perfectly so you do 10 swings and end in time for a big swing
-        public float pullFx = 1;
+        public float pullFx = 1; // Scaling on the effects of the blade when it's buffed
         public bool pressedRight = false;
+        // Spawns a hitbox to do damage, rather than dealing damage itself
+        // Theres many reasons this is better, but at the very least it prevents bloating this single projectile's code
         public override bool? CanDamage() => false;
         public override void SetDefaults()
         {
@@ -42,13 +45,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
-        public override void AI()
+        public void Positioning(Vector2 toMouse) // Hand and holdout positioning
         {
-            if (!Owner.CantUseHoldout(false))
-                Projectile.timeLeft = 5;
-
-            // Hand and holdout positioning
-            Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
             Owner.heldProj = Projectile.whoAmI;
             Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Owner.direction).ToRotation();
@@ -61,9 +59,32 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.velocity = toMouse.RotatedBy(bladeRot * Owner.direction);
             Projectile.rotation = Projectile.velocity.ToRotation();
             Projectile.Center = handPos;
+        }
+        public void OnSpawn()
+        {
+            if (time == 0)
+            {
+                scaleFx = Owner.Calamity().buffedAuger ? 1.5f : 1;
+                attackTimer = cooldown;
+                if (Owner.Calamity().buffedAuger)
+                {
+                    swingCount = 1;
+                }
+            }
+        }
+        public override void AI()
+        {
+            if (!Owner.CantUseHoldout(false))
+                Projectile.timeLeft = 5;
+
+            Vector2 toMouse = Utils.DirectionTo(Owner.Center, Owner.ClampedMouseWorld());
+
+            Positioning(toMouse);
+
             if (Owner.Calamity().mouseRight)
                 pressedRight = true;
 
+            #region Right Click
             if (Projectile.ai[2] > 0) // Right click "gravity well" and buff
             {
                 if (Projectile.ai[2] == 5)
@@ -100,18 +121,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 attackTimer++;
                 return;
             }
+            #endregion
 
-            if (time == 0) // On spawn stuff
-            {
-                scaleFx = Owner.Calamity().buffedAuger ? 1.5f : 1;
-                attackTimer = cooldown;
-                if (Owner.Calamity().buffedAuger)
-                {
-                    swingCount = 0;
-                }
-            }
+            OnSpawn();
+
             if (scaleFx > 1 && !Owner.Calamity().buffedAuger) // Fade out the extra size from the big blade
                 scaleFx = MathHelper.Lerp(scaleFx, 1, 0.15f * Owner.GetAttackSpeed<MeleeDamageClass>());
+
+            #region Not Swinging
             if (attackTimer < 0) // When the sword isn't swinging
             {
                 if ((pressedRight || Owner.Calamity().mouseRight) && !Owner.Calamity().buffedAuger && Owner.Calamity().arsenalCooldown <= 0)
@@ -120,7 +137,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     pressedRight = false;
                 if (longSwing && attackTimer == -1)
                 {
-                    swingCount = -1;
+                    swingCount = 0;
                 }
                 attackTimer++;
                 time++;
@@ -137,7 +154,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         Projectile.Kill();
                         return;
                     }
-                    
+
                     float lerp = Utils.GetLerpValue((longSwing ? cooldown * 0.35f : cooldown), -1, attackTimer, true);
                     bladefx = MathHelper.Lerp(bladefx, 1.5f, lerp);
                 }
@@ -159,12 +176,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
                 else // Wind up animation in prep for the next swing
                 {
-                    int swingDir = (swingCount % 2 == 0 ? 1 : -1);
+                    int swingDir = (swingCount % 2 != 0 ? 1 : -1);
                     float lerp = Utils.GetLerpValue(cooldown, -1, attackTimer, true);
                     bladeRot = MathHelper.Lerp(-MathHelper.Pi * swingDir, -MathHelper.PiOver4 * 3 * swingDir, CalamityUtils.EaseInOutExp(lerp, 2f, 2f));
                 }
                 return;
             }
+            #endregion
+
             if (attackTimer >= fireRate) // Once the swing is done, put it on cooldown
             {
                 attackTimer = cooldown * (Owner.Calamity().buffedAuger ? 3 : 1);
@@ -175,7 +194,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
             else // Do the swing
             {
-                int swingDir = (swingCount % 2 == 0 ? -1 : 1);
+                #region Swinging
+                int swingDir = (swingCount % 2 != 0 ? -1 : 1);
                 float lerp = Utils.GetLerpValue(0, fireRate - 1, attackTimer, true);
                 bladeRot = MathHelper.Lerp(-MathHelper.PiOver4 * 3 * swingDir, MathHelper.Pi * swingDir, CalamityUtils.EaseInOutExp(lerp, 5f, 3f));
 
@@ -183,19 +203,20 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     if (makeHitbox)
                     {
-                        SoundStyle swing = Owner.Calamity().buffedAuger ? new("CalamityMod/Sounds/Item/AugerBigSlash") : swingCount % 2 == 0 ? new("CalamityMod/Sounds/Item/AugerSlash1") : new("CalamityMod/Sounds/Item/AugerSlash2");
+                        SoundStyle swing = Owner.Calamity().buffedAuger ? new("CalamityMod/Sounds/Item/AugerBigSlash") : swingCount % 2 != 0 ? new("CalamityMod/Sounds/Item/AugerSlash1") : new("CalamityMod/Sounds/Item/AugerSlash2");
                         SoundEngine.PlaySound(swing with { Volume = Owner.Calamity().buffedAuger ? 1f : 0.7f, Pitch = -0.1f, MaxInstances = 2 }, Projectile.Center);
 
                         int damage = Projectile.damage;
                         if (Owner.Calamity().buffedAuger)
                         {
-                            Owner.Calamity().GeneralScreenShakePower = 4f;
+                            Owner.Calamity().GeneralScreenShakePower = 5f;
                             damage = (int)(damage * 2.5f);
                         }
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + toMouse * 20 * (float)Math.Pow(scaleFx, 4), toMouse * 25, ModContent.ProjectileType<AugerSlash>(), damage, 0, Projectile.owner, 0, swingCount, Owner.Calamity().buffedAuger ? 5 : 0);
                         makeHitbox = false;
                     }
                 }
+                #endregion
             }
             time++;
             attackTimer++;
@@ -222,28 +243,26 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float length = MathHelper.Lerp(0f, 0.1f, CalamityUtils.EaseInOutExp(lerp, 1f, 1f));
             float bladeRotation = drawRotation + MathHelper.PiOver2 * Owner.direction;
             Vector2 bladePlaceAdjust = (bladeRotation - MathHelper.PiOver2).ToRotationVector2();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++) // The actual energy blade
                 Main.EntitySpriteDraw(blade, drawPosition + bladePlaceAdjust * 20, null, (i == 0 ? Effects.ArsenalEffects.ArsenalGaussColor : Color.White) with { A = 0 }, bladeRotation, new Vector2(blade.Width / 2, blade.Height), new Vector2((i == 0 ? 0.2f : 0.1f) * randSize, 0.2f * bladefx) * Projectile.scale * 0.07f * bladefx * scaleFx, SpriteEffects.None);
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++) // The glow at the "hilt"
                 Main.EntitySpriteDraw(bloom, drawPosition + bladePlaceAdjust * 20, null, (i == 0 ? Effects.ArsenalEffects.ArsenalGaussColor : Color.White) with { A = 0 }, bladeRotation, bloom.Size() / 2, (Projectile.ai[2] > 0 ? new Vector2(randSize, randSize * (i == 0 ? 1f : 0.9f)) * 0.1f : new Vector2(0.15f * bladefx * randSize, (i == 0 ? 0.1f : 0.05f))) * Projectile.scale * 0.9f * (Projectile.ai[2] > 0 ? pullFx : bladefx) * scaleFx, SpriteEffects.None);
 
-            if (scaleFx > 1)
+            if (scaleFx > 1) // Extra blade tips for the improved slash
             {
                 for (int b = -2; b <= 2; b++)
                 {
-                    if (b == 0)
-                        b++;
+                    if (b == 0) b++;
                     for (int i = 0; i < 2; i++)
                     {
                         Main.EntitySpriteDraw(blade, drawPosition + bladePlaceAdjust * 20, null, (i == 0 ? Effects.ArsenalEffects.ArsenalGaussColor : Color.White) with { A = 0 }, bladeRotation + (MathHelper.PiOver4 * 0.55f * b), new Vector2(blade.Width / 2, blade.Height), new Vector2(0.65f * (i == 0 ? 0.1f : 0.05f), 0.09f * (i == 0 ? 1f : 0.9f) * (2 - Math.Abs(b * 0.5f))) * randSize * Projectile.scale * 0.2f * bladefx * (scaleFx - 1), SpriteEffects.None);
                     }
-
                 }
             }
             Vector2 placeAdjust = (drawRotation + MathHelper.PiOver2).ToRotationVector2() * 2.5f;
-            Main.EntitySpriteDraw(texture, drawPosition + placeAdjust, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(texture, drawPosition + placeAdjust, null, drawColor, drawRotation, rotationPoint, Projectile.scale, flipSprite); // The holdout
 
-            Main.EntitySpriteDraw(glow, drawPosition + placeAdjust, null, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite);
+            Main.EntitySpriteDraw(glow, drawPosition + placeAdjust, null, Color.White, drawRotation, rotationPoint, Projectile.scale, flipSprite); // The glow
 
             return false;
         }
