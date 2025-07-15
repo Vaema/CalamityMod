@@ -14,10 +14,10 @@ Auger: {
 	DisplayName: P-GSS: Auger
 	Tooltip:
 		'''
-		A high-frequency magnetic energy blade made to be worn on the wrist
-		<right> to create a breif magnetic pull at your cursor and amplify your next slash
-		[c/1FFBFF:'Originally manufactured to be used for large scale metal serration and transportaion.]
-		[c/1FFBFF:Its design as a lightweight tool that did not occupy the hands made it exceptionally efficent.']
+		A wrist-mounted device which emits a magnetic energy blade
+		<right> to create a brief magnetic pull at your cursor and amplify your next slash
+		[c/1FFBFF:'Initially manufactured to serrate and separate chunks of raw material for transport.]
+		[c/1FFBFF:Keeping both hands free without compromising on power made it exceptionally ergonomic.']
 		'''
 }
 
