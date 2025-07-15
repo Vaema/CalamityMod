@@ -678,11 +678,15 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Graveyard
-                // Alternate Blood Orb obtainment methods (10%)
+                // Alternate Blood Orb obtainment methods (20%)
                 case NPCID.MaggotZombie:
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 5);
+                    break;
+
+                // 100%, 3-6 each
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
-                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 3, 6);
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
