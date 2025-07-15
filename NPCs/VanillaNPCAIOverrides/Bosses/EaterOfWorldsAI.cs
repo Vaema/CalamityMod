@@ -37,26 +37,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
-            bool enrage = !BossRushEvent.BossRushActive;
-            int targetTileX = (int)Main.player[npc.target].Center.X / 16;
-            int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
-
-            Tile tile = Framing.GetTileSafely(targetTileX, targetTileY);
-            if (tile.WallType == WallID.EbonstoneUnsafe)
-                enrage = false;
-
-            float enrageScale = 0f;
-            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
-            {
-                calamityGlobalNPC.CurrentlyEnraged = true;
-                enrageScale += 0.5f;
-            }
-            if (!Main.player[npc.target].ZoneCorrupt && enrage)
-            {
-                calamityGlobalNPC.CurrentlyEnraged = true;
-                enrageScale += 2f;
-            }
-
             // Total body segments
             float totalSegments = GetEaterOfWorldsSegmentsCountRevDeath();
 
@@ -77,7 +57,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Boost velocity by 50% phase
             bool phase4 = lifeRatio < (death ? 0.5f : 0.2f);
 
-            // Go fucking crazy in Master Mode
+            // Go fucking crazy in Death Mode
             bool phase5 = lifeRatio < 0.1f && death;
             bool phase6 = lifeRatio < 0.05f && death;
 
@@ -110,7 +90,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[1] > vileSpitGateValue - ProjectileTelegraphDuration)
                     {
                         Vector2 dustCenter = vileSpitShootLocation + Main.rand.NextVector2CircularEdge(5f, 5f);
-                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.CorruptGibs, npc.velocity.X * 0.1f, npc.velocity.Y * 0.1f, 80, default, 2f);
                         dust.noGravity = true;
                         dust.velocity *= 0.3f;
                     }
@@ -121,12 +101,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (phase2)
                     {
-                        float timer = enrageScale > 0f ? 90f : 120f;
+                        float timer = 120f;
                         float shootBoost = lifeRatio * 90f;
                         timer += shootBoost;
-
-                        if (enrageScale >= 2f)
-                            timer = 60f;
 
                         float showTelegraphGateValue = timer - ProjectileTelegraphDuration;
 
@@ -150,21 +127,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation())
                             {
                                 calamityGlobalNPC.newAI[0] = 0f;
-                                Vector2 cursedFlameDirection = npc.Center;
-                                float targetXDirection = Main.player[npc.target].Center.X - cursedFlameDirection.X;
-                                float targetYDirection = Main.player[npc.target].Center.Y - cursedFlameDirection.Y;
-                                float projSpeed = 7f + enrageScale * 2f;
-                                float flameTargetDistance = (float)Math.Sqrt(targetXDirection * targetXDirection + targetYDirection * targetYDirection);
-                                flameTargetDistance = projSpeed / flameTargetDistance;
-                                targetXDirection *= flameTargetDistance;
-                                targetYDirection *= flameTargetDistance;
-                                targetYDirection += npc.velocity.Y * 0.5f;
-                                targetXDirection += npc.velocity.X * 0.5f;
-                                cursedFlameDirection.X -= targetXDirection;
-                                cursedFlameDirection.Y -= targetYDirection;
-
+                                Vector2 cursedFlameDirection = Utils.DirectionTo(npc.Center, Main.player[npc.target].Center) * 7f + (npc.velocity * 0.5f);
                                 int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), cursedFlameDirection.X, cursedFlameDirection.Y, targetXDirection, targetYDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity, cursedFlameDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
                             }
                         }
 
@@ -355,10 +320,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (!inTiles && npc.type == NPCID.EaterofWorldsHead)
             {
                 Rectangle rectangle = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
-                int noFlyZone = death ? (800 - (phase5 ? 400 : 200)) : 900;
-                noFlyZone -= (int)(enrageScale * 200f);
-                if (noFlyZone < 100)
-                    noFlyZone = 100;
+                int noFlyZone = death ? (phase5 ? 400 : 600) : 900;
 
                 bool freeMoveAnyway = true;
                 for (int k = 0; k < Main.maxPlayers; k++)
@@ -379,32 +341,32 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Velocity and acceleration
-            float velocityScale = (death ? 4.8f : 2.4f) * enrageScale;
+            float velocityScale = death ? 4.8f : 2.4f;
             float velocityBoost = velocityScale * (1f - lifeRatio);
-            float accelerationScale = (death ? 0.06f : 0.03f) * enrageScale;
+            float accelerationScale = death ? 0.06f : 0.03f;
             float accelerationBoost = accelerationScale * (1f - lifeRatio);
             float segmentVelocity = 12f + velocityBoost;
             float segmentAcceleration = 0.15f + accelerationBoost;
 
             if (phase6)
             {
-                segmentVelocity += 2.4f * (enrageScale + 1f);
-                segmentAcceleration += 0.12f * (enrageScale + 1f);
+                segmentVelocity += 2.4f;
+                segmentAcceleration += 0.12f;
             }
             else if (phase5)
             {
-                segmentVelocity += 1.8f * (enrageScale + 1f);
-                segmentAcceleration += 0.09f * (enrageScale + 1f);
+                segmentVelocity += 1.8f;
+                segmentAcceleration += 0.09f;
             }
             else if (phase4)
             {
-                segmentVelocity += 1.2f * (enrageScale + 1f);
-                segmentAcceleration += 0.06f * (enrageScale + 1f);
+                segmentVelocity += 1.2f;
+                segmentAcceleration += 0.06f;
             }
             else if (phase3)
             {
-                segmentVelocity += 0.6f * (enrageScale + 1f);
-                segmentAcceleration += 0.03f * (enrageScale + 1f);
+                segmentVelocity += 0.6f;
+                segmentAcceleration += 0.03f;
             }
 
             if (death)
@@ -541,13 +503,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     targetPosY *= timeToReachTarget;
 
                     // Despawn
-                    bool shouldDespawn = npc.type == NPCID.EaterofWorldsHead && Main.player[npc.target].dead;
+                    bool shouldDespawn = npc.type == NPCID.EaterofWorldsHead && (Main.player[npc.target].dead || !Main.player[npc.target].ZoneCorrupt || !Main.player[npc.target].ZoneCrimson) && !BossRushEvent.BossRushActive;
                     if (shouldDespawn)
                     {
                         bool everyoneDead = true;
-                        for (int i = 0; i < Main.maxPlayers; i++)
+                        foreach (Player p in Main.ActivePlayers)
                         {
-                            if (Main.player[i].active && !Main.player[i].dead)
+                            if (!p.dead && p.ZoneCorrupt)
                             {
                                 everyoneDead = false;
                                 break;
@@ -568,13 +530,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     npc.life = 0;
 
                                     if (Main.dedServ)
-                                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segmentAmt, 0f, 0f, 0f, 0, 0, 0);
+                                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segmentAmt);
 
                                     segmentAmt = attachedSegments;
                                 }
 
                                 if (Main.dedServ)
-                                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI, 0f, 0f, 0f, 0, 0, 0);
+                                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
                             }
                             targetPosX = 0f;
                             targetPosY = segmentVelocity;
@@ -653,7 +615,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float pushDistanceLowerLimit = 14f - numHeads;
                         float pushDistanceUpperLimit = 140f - numHeads * 10f;
                         float pushDistance = MathHelper.Lerp(pushDistanceLowerLimit, pushDistanceUpperLimit, 1f - lifeRatio) * npc.scale;
-                        float pushVelocity = 0.25f + enrageScale * 0.125f;
+                        float pushVelocity = 0.25f;
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             if (Main.npc[i].active)
