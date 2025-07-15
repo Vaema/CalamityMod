@@ -6313,6 +6313,12 @@ namespace CalamityMod.NPCs
                 maxSpawns = (int)(maxSpawns * 10f);
             }
 
+            if (CalamityWorld.death && player.ZoneGraveyard)
+            {
+                spawnRate = (int)(spawnRate * 0.6);
+                maxSpawns = (int)(maxSpawns * 1.5f);
+            }
+
             if (NPC.LunarApocalypseIsUp)
             {
                 if ((player.ZoneTowerNebula && NPC.ShieldStrengthTowerNebula == 0) || (player.ZoneTowerStardust && NPC.ShieldStrengthTowerStardust == 0) ||
@@ -6581,6 +6587,15 @@ namespace CalamityMod.NPCs
                     if (!NPC.AnyNPCs(NPCID.FairyCritterPink))
                         pool[NPCID.FairyCritterPink] = SpawnCondition.Overworld.Chance * 5f;
                 }
+            }
+
+            // Increased Maggot Zombie,the Groom, and the Bride spawn rates in a Graveyard
+            if (spawnInfo.Player.ZoneGraveyard)
+            {
+                pool[NPCID.MaggotZombie] = SpawnCondition.OverworldNightMonster.Chance * 0.2f;
+                pool[NPCID.TheGroom] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
+                pool[NPCID.TheBride] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
+
             }
 
             // Disable vanilla spawns while in the Brimstone Crag
