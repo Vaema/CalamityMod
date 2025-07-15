@@ -210,6 +210,7 @@ namespace CalamityMod.Systems
                 if (effect.Active && effect.ShouldRegisterTile(i, j))
                 {
                     int tileType = Main.tile[i, j].TileType;
+                    Lighting.AddLight(i,j,0.1f,0.1f,0.1f);
                     bool solid = true;
 
                     //Necessary separation in the color lighting mode.
@@ -333,7 +334,7 @@ namespace CalamityMod.Systems
             //Fade on the edges
             if (distanceFromCenter + 8 > currentExpansion)
                 brightness *= 1 - (distanceFromCenter - currentExpansion + 8f) / 16f;
-
+            
             //Fade away with the effect
             brightness *= 1 - Math.Max(PingProgress - 0.9f, 0) / (0.1f);
 
