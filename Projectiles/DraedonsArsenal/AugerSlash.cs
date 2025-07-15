@@ -149,13 +149,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.direction == -1)
                 spfx = (Projectile.ai[1] == 1 ? SpriteEffects.None : SpriteEffects.FlipVertically);
             Main.EntitySpriteDraw(proj, drawPosition, null, Color.White with { A = 0 } * sizeLerp, drawRotation, rotationPoint, squash * Projectile.scale * scaleFx, spfx);
-            /*for (int i = 0; i < 15; i++)
-            {
-                Color auraColor = Effects.ArsenalEffects.ArsenalGaussColor with { A = 0 } * 0.05f;
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 15f).ToRotationVector2() * 0.7f;
-                Main.EntitySpriteDraw(proj, drawPosition + drawOffset, null, drawColor * (float)Math.Pow(sizeLerp, 1.8f), drawRotation, rotationPoint, squash * Projectile.scale, spfx);
-            }*/
-            //Main.EntitySpriteDraw(proj, drawPosition, null, Color.White with { A = 0 }, drawRotation, rotationPoint, squash * Projectile.scale * 0.06f, SpriteEffects.None);
             return false;
         }
     }
