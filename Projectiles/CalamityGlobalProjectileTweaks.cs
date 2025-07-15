@@ -302,7 +302,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.DeerclopsRangedProjectile, defenseDamage }, // Deerclops rubble
                 { ProjectileID.DemonSickle, defenseDamage },
                 { ProjectileID.FairyQueenLance, defenseDamage }, // Empress of Light's lance walls
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
