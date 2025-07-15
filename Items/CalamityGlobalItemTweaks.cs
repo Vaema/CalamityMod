@@ -1382,15 +1382,14 @@ namespace CalamityMod.Items
             var shimmerTransmute = ItemID.Sets.ShimmerTransformToItem;
 
             // Note: Making Luminite Ore -> Astral Ore makes Deus almost completely skippable with no (recipe-related) downsides.
-
+            // Adding Cryonic Ore to the shimmer chain has the same issue.
             shimmerTransmute[ModContent.ItemType<AuricOre>()] = ModContent.ItemType<UelibloomOre>();
             shimmerTransmute[ModContent.ItemType<UelibloomOre>()] = ModContent.ItemType<ExodiumCluster>();
             shimmerTransmute[ModContent.ItemType<ExodiumCluster>()] = ItemID.LunarOre;
             shimmerTransmute[ModContent.ItemType<AstralOre>()] = ModContent.ItemType<ScoriaOre>();
             shimmerTransmute[ModContent.ItemType<ScoriaOre>()] = ModContent.ItemType<PerennialOre>();
             shimmerTransmute[ModContent.ItemType<PerennialOre>()] = shimmerTransmute[ItemID.LunarOre];
-            shimmerTransmute[ModContent.ItemType<HallowedOre>()] = ModContent.ItemType<CryonicOre>();
-            shimmerTransmute[ModContent.ItemType<CryonicOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
+            shimmerTransmute[ModContent.ItemType<HallowedOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
             shimmerTransmute[ModContent.ItemType<AerialiteOre>()] = shimmerTransmute[ItemID.CobaltOre];
 
             //shimmerTransmute[ItemID.LunarOre] = ModContent.ItemType<AstralOre>();

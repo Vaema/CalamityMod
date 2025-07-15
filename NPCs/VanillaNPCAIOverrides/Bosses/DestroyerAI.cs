@@ -27,7 +27,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float PhaseTransitionTelegraphTime = 180f;
         public const float GroundTelegraphStartGateValue = FlightPhaseResetGateValue - PhaseTransitionTelegraphTime;
         public const float FlightTelegraphStartGateValue = FlightPhaseGateValue - PhaseTransitionTelegraphTime;
-        private const int OneInXChanceToFireLaser = 200;
 
         public const float ProbeLaserGateValue_Mechdusa = 360f;
         public const float ProbeLaserGateValue_Rev = 240f;
@@ -120,13 +119,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool increaseSpeed = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles;
             bool increaseSpeedMore = Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles;
 
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                calamityGlobalNPC.CurrentlyEnraged = !BossRushEvent.BossRushActive;
-                enrageScale += 2f;
-            }
-
             // Phase for flying at the player
             bool flyAtTarget = (calamityGlobalNPC.newAI[3] >= FlightPhaseGateValue && startFlightPhase) || hasSpawnDR;
 
@@ -217,10 +209,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             speed += speedBoost;
             turnSpeed += turnSpeedBoost;
 
-            segmentVelocity += 5f * enrageScale;
-            speed += 0.05f * enrageScale;
-            turnSpeed += 0.075f * enrageScale;
-
             if (flyAtTarget)
             {
                 float speedMultiplier = phase5 ? 1.8f : phase4 ? 1.65f : 1.5f;
@@ -245,18 +233,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool probeLaunched = npc.ai[2] == 1f;
             if (npc.type == NPCID.TheDestroyerBody)
             {
-                // Enrage, fire more cyan lasers
-                if (enrageScale > 0f)
-                {
-                    if (calamityGlobalNPC.newAI[2] < 480f)
-                        calamityGlobalNPC.newAI[2] += 1f;
-                }
-                else
-                {
-                    if (calamityGlobalNPC.newAI[2] > 0f)
-                        calamityGlobalNPC.newAI[2] -= 1f;
-                }
-
                 // Regenerate Probes in Death Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
                 if (death && probeLaunched)
                 {
@@ -426,9 +402,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
                     }
 
-                    if (calamityGlobalNPC.newAI[2] > 0f)
-                        calamityGlobalNPC.destroyerLaserColor = 2;
-
                     npc.SyncDestroyerLaserColor();
                 }
 
@@ -529,7 +502,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Laser speed
                         float projectileSpeed = (death ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
-                        projectileSpeed += enrageScale;
 
                         // Set projectile damage and type
                         int projectileType = ProjectileID.DeathLaser;
@@ -736,7 +708,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Despawn
-            if (player.dead)
+            if ((player.dead || Main.IsItDay()) && !BossRushEvent.BossRushActive)
             {
                 shouldFly = false;
                 npc.velocity.Y += 2f;
