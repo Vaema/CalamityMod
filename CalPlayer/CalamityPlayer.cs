@@ -305,6 +305,9 @@ namespace CalamityMod.CalPlayer
         public int furyFuelMax = 1800;
         public int furyFuel = 1800;
         public float furyRefuelTimer = 0;
+        /// <summary> Variable used to track if Auger can do a big slash </summary>
+        public bool buffedAuger = false;
+
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;

@@ -245,7 +245,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TravelingMerchantNames =
         {
             "Stan Pines",
-            "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =

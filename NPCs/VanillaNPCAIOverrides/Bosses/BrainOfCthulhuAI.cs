@@ -36,28 +36,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 CalamityUtils.CalamityTargeting(npc, options);
             }
 
-            bool enrage = !BossRushEvent.BossRushActive;
-            int targetTileX = (int)Main.player[npc.target].Center.X / 16;
-            int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
-
-            Tile tile = Framing.GetTileSafely(targetTileX, targetTileY);
-            if (tile.WallType == WallID.CrimstoneUnsafe)
-                enrage = false;
-
-            float enrageScale = death ? 0.5f : 0f;
-            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
-            {
-                npc.Calamity().CurrentlyEnraged = true;
-                enrageScale += 0.5f;
-            }
-            if (!Main.player[npc.target].ZoneCrimson && enrage)
-            {
-                npc.Calamity().CurrentlyEnraged = true;
-                enrageScale += 2f;
-            }
-
             // Despawn check
-            bool despawn = Main.player[npc.target].dead;
+            bool despawn = (Main.player[npc.target].dead || !Main.player[npc.target].ZoneCrimson) && !BossRushEvent.BossRushActive;
 
             // Despawn
             if (despawn)
@@ -70,9 +50,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else if (npc.localAI[3] > 0f)
                 npc.localAI[3] -= 1f;
-
-            // Extra distance for teleports if enraged
-            int teleportDistanceIncrease = (int)Math.Round(enrageScale * 3);
 
             // Spawn Creepers
             if (Main.netMode != NetmodeID.MultiplayerClient && npc.localAI[0] == 0f)
@@ -207,7 +184,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Charge variables
-                float chargeVelocity = (death ? 18f : 15f) + 3f * enrageScale;
+                float chargeVelocity = death ? 19.5f : 15f;
                 if (phase7)
                     chargeVelocity *= 1.2f;
 
@@ -238,7 +215,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             float velocityScale = death ? 6f : 4.5f;
                             float velocityBoost = velocityScale * (1f - lifeRatio);
-                            float nonChargeSpeed = (death ? 24f : 18f) + velocityBoost + 3f * enrageScale;
+                            float nonChargeSpeed = (death ? 25.5f : 18f) + velocityBoost;
                             if (CalamityWorld.LegendaryMode)
                                 nonChargeSpeed *= 1.15f;
 
@@ -246,7 +223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float maxInertia = death ? 70f : 100f;
                             float inertia = MathHelper.Lerp(minInertia, maxInertia, lifeRatio);
 
-                            Vector2 destination = Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 20f * enrageScale : Vector2.Zero);
+                            Vector2 destination = Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 10f : Vector2.Zero);
                             Vector2 idealVelocity = (destination - npc.Center).SafeNormalize(Vector2.UnitY) * nonChargeSpeed;
                             npc.velocity = (npc.velocity * (inertia - 1f) + idealVelocity) / inertia;
                         }
@@ -292,7 +269,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             SoundEngine.PlaySound(SoundID.ForceRoarPitched, npc.Center);
 
                             // Velocity
-                            npc.velocity = (Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 20f * enrageScale : Vector2.Zero) - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
+                            npc.velocity = (Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 10f : Vector2.Zero) - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
                             if (CalamityWorld.LegendaryMode)
                                 npc.velocity *= 1.15f;
                         }
@@ -335,7 +312,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) < minChargeDistance)
                         {
                             npc.ai[2] -= 1f;
-                            npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * (-chargeVelocity - 2f * enrageScale);
+                            npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * -chargeVelocity;
                             if (death)
                                 npc.velocity *= 1.5f;
                             if (CalamityWorld.LegendaryMode)
@@ -347,7 +324,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[2] >= timer)
                     {
                         // Shoot projectiles from 4 directions, alternating between diagonal and cardinal
-                        float bloodShotVelocity = (death ? 7.5f : 6f) + enrageScale;
+                        float bloodShotVelocity = death ? 8f : 6f;
 
                         // Scale projectile velocity
                         float phase7ProjectileVelocityMult = 1.2f;
@@ -571,8 +548,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     }
                                 }
 
-                                int teleportX = Main.rand.Next(minX, maxX + 1) + teleportDistanceIncrease;
-                                int teleportY = Main.rand.Next(minY, maxY + 1) + teleportDistanceIncrease;
+                                int teleportX = Main.rand.Next(minX, maxX + 1);
+                                int teleportY = Main.rand.Next(minY, maxY + 1);
 
                                 if (Main.rand.NextBool())
                                     teleportX *= -1;
@@ -699,7 +676,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     creeperCount = GetBrainOfCthuluCreepersCountRevDeath();
 
                 float creeperRatio = creeperCount / (float)GetBrainOfCthuluCreepersCountRevDeath();
-                float velocityScale = MathHelper.Lerp(0f, 2f, 1f - creeperRatio) + enrageScale;
+                float velocityScale = MathHelper.Lerp(0f, 2f, 1f - creeperRatio) + (death ? 0.5f : 0f);
 
                 // Check for phase 2
                 bool phase2 = creeperCount <= 0;
@@ -772,8 +749,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 phase1TeleportTileX = (int)Main.player[npc.target].Center.X / 16;
                                 phase1TeleportTileY = (int)Main.player[npc.target].Center.Y / 16;
 
-                                int min = 28 + teleportDistanceIncrease;
-                                int max = 30 + teleportDistanceIncrease;
+                                int min = 28;
+                                int max = 30;
 
                                 if (Main.rand.NextBool())
                                     phase1TeleportTileX += Main.rand.Next(min, max);
@@ -865,16 +842,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, default);
 
-            float enrageScaleMax = 2f;
-            float enrageScale = death ? 0.5f : 0f;
-            if ((npc.position.Y / 16f) < Main.worldSurface)
-                enrageScale += 0.5f;
-            if (!Main.player[npc.target].ZoneCrimson)
-                enrageScale += 1f;
-
-            if (enrageScale > enrageScaleMax)
-                enrageScale = enrageScaleMax;
-
             bool brainIsNotTeleportingOrCharging = Main.npc[NPC.crimsonBoss].ai[0] == 0f || Main.npc[NPC.crimsonBoss].ai[0] == -1f || Main.npc[NPC.crimsonBoss].ai[0] == -6f;
             bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
 
@@ -883,7 +850,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (creeperCount > GetBrainOfCthuluCreepersCountRevDeath())
                 creeperCount = GetBrainOfCthuluCreepersCountRevDeath();
 
-            float creeperRatio = 1f;
+            float creeperRatio;
             if (death && brainIsInPhase2)
             {
                 bool brainIsInPhase3 = Main.npc[NPC.crimsonBoss].localAI[0] == 2f;
@@ -897,10 +864,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Scale the aggressiveness of the charges with amount of Creepers remaining
             float chargeAggressionScale = creeperRatio <= 0.1f ? 1.75f : creeperRatio <= 0.2f ? 1.25f : creeperRatio <= 0.4f ? 0.875f : creeperRatio <= 0.6f ? 0.5f : creeperRatio <= 0.8f ? 0.25f : 0f;
-            if (enrageScale > 0f)
-                chargeAggressionScale *= 1f + enrageScale;
             if (death)
-                chargeAggressionScale *= 1.25f;
+                chargeAggressionScale *= 1.875f;
 
             // Give off blood dust before charging
             float beginTelegraphGateValue = TimeBeforeCreeperAttack - CreeperTelegraphTime;
@@ -929,8 +894,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float brainXDist = Main.npc[NPC.crimsonBoss].Center.X - creeperCenter.X;
                 float brainYDist = Main.npc[NPC.crimsonBoss].Center.Y - creeperCenter.Y;
                 float brainDistance = (float)Math.Sqrt(brainXDist * brainXDist + brainYDist * brainYDist);
-                float velocity = (death ? 16f : 8f) + chargeAggressionScale;
-                velocity += 2f * enrageScale;
+                float velocity = (death ? 17f : 8f) + chargeAggressionScale;
                 if (brainIsInPhase2)
                 {
                     float velocityFloor = Main.npc[NPC.crimsonBoss].velocity.Length() + velocity * 0.5f;
@@ -985,8 +949,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Always fully visible while charging
                 npc.alpha = 0;
 
-                float chargeVelocity = (death ? 12f : 6f) + chargeAggressionScale;
-                chargeVelocity += 2f * enrageScale;
+                float chargeVelocity = (death ? 13f : 6f) + chargeAggressionScale;
                 float returnToBrainGateValue = 1f;
                 if (!brainIsInPhase2)
                 {

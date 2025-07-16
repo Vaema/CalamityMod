@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
                     float scaleFactor2 = Projectile.velocity.Length();
                     velocity.Normalize();
                     velocity *= scaleFactor2;
-                    Projectile.velocity = (Projectile.velocity * 24f + velocity) / 25f;
+                    Projectile.velocity = (Projectile.velocity * 22f + velocity) / (death ? 12f : 15f); // Tracking strength
                     Projectile.velocity.Normalize();
                     Projectile.velocity *= scaleFactor2;
                 }
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Boss
                     int type = ModContent.ProjectileType<HomingGasBulbSporeGas>();
                     float ai0 = Main.rand.Next(3);
                     int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 0.2f, type, PlanteraAI.PinkCloudDamage, 0f, Main.myPlayer, ai0);
-                    Main.projectile[proj].timeLeft = 120;
+                    Main.projectile[proj].timeLeft = 180;
                 }
             }
         }

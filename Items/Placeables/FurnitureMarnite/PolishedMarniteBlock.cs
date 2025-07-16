@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
 
         public override void AddRecipes()
         {
-            CreateRecipe().
+            CreateRecipe(4).
                 AddIngredient(ItemID.Marble, 2).
                 AddIngredient(ItemID.Granite, 2).
                 AddRecipeGroup(RecipeSystem.AnyGoldOre, 1).

@@ -3324,10 +3324,6 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.BloodNautilus)
                 return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
 
-            // More telegraphs
-            if (npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SpikedJungleSlime || npc.type == NPCID.SlimeSpiked)
-                return SlimeAI.BuffedSlimeAI(npc, Mod);
-
             // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
             // Also limit the amount of times Vortex Larvae and Hornets can evolve
             if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
@@ -3591,6 +3587,8 @@ namespace CalamityMod.NPCs
                                 case NPCID.ToxicSludge:
                                 case NPCID.IceSlime:
                                 case NPCID.Crimslime:
+                                case NPCID.SpikedIceSlime:
+                                case NPCID.SpikedJungleSlime:
                                 case NPCID.UmbrellaSlime:
                                 case NPCID.RainbowSlime:
                                 case NPCID.SlimeMasked:
@@ -3600,6 +3598,7 @@ namespace CalamityMod.NPCs
                                 case NPCID.SlimeRibbonGreen:
                                 case NPCID.SlimeRibbonRed:
                                 case NPCID.SandSlime:
+                                case NPCID.SlimeSpiked:
                                 case NPCID.GoldenSlime:
                                 case NPCID.ShimmerSlime:
                                     return SlimeAI.BuffedSlimeAI(npc, Mod);
@@ -6291,6 +6290,12 @@ namespace CalamityMod.NPCs
                 maxSpawns = (int)(maxSpawns * 10f);
             }
 
+            if (CalamityWorld.death && player.ZoneGraveyard)
+            {
+                spawnRate = (int)(spawnRate * 0.6);
+                maxSpawns = (int)(maxSpawns * 1.5f);
+            }
+
             if (NPC.LunarApocalypseIsUp)
             {
                 if ((player.ZoneTowerNebula && NPC.ShieldStrengthTowerNebula == 0) || (player.ZoneTowerStardust && NPC.ShieldStrengthTowerStardust == 0) ||
@@ -6559,6 +6564,15 @@ namespace CalamityMod.NPCs
                     if (!NPC.AnyNPCs(NPCID.FairyCritterPink))
                         pool[NPCID.FairyCritterPink] = SpawnCondition.Overworld.Chance * 5f;
                 }
+            }
+
+            // Increased Maggot Zombie,the Groom, and the Bride spawn rates in a Graveyard
+            if (spawnInfo.Player.ZoneGraveyard)
+            {
+                pool[NPCID.MaggotZombie] = SpawnCondition.OverworldNightMonster.Chance * 0.2f;
+                pool[NPCID.TheGroom] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
+                pool[NPCID.TheBride] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
+
             }
 
             // Disable vanilla spawns while in the Brimstone Crag
