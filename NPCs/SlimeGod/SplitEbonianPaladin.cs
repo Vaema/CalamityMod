@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 40; // 80
+            NPC.damage = 36; // 72
             NPC.LifeMaxNERB(2000, 2400, 110000);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.width = Width;

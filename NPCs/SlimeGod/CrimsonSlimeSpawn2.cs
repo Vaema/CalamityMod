@@ -26,10 +26,12 @@ namespace CalamityMod.NPCs.SlimeGod
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
+        public static int SmallSpikeDamage = 11; // 44
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.damage = 35; // 70
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
             if (CalamityWorld.LegendaryMode)

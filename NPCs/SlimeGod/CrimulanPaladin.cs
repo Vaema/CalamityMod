@@ -28,12 +28,12 @@ namespace CalamityMod.NPCs.SlimeGod
             this.HideFromBestiary();
         }
 
-        public static int CrimsonSpikeDamage = 12; // 48
+        public static int BigSpikeDamage = 15; // 60
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 50; // 100
+            NPC.damage = 42; // 84
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 12;

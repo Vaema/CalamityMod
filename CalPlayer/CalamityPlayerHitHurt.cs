@@ -1387,22 +1387,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.Cursed, 180);
                 }
-                else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
-                {
-                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
-                    if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 300);
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
-                else if (proj.type == ProjectileID.PoisonSeedPlantera)
-                {
-                    // 75% chance of Poison for 3 to 5 seconds, guaranteed Poison for 2 seconds (vanilla also has a 50% chance of Poison for 3 to 7 seconds)
-                    if (Main.rand.Next(4) > 0)
-                        Player.AddBuff(BuffID.Poisoned, Main.rand.Next(180, 301));
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
                     Player.AddBuff(BuffID.Poisoned, 420);

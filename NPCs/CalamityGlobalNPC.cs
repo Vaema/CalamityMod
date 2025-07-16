@@ -2642,7 +2642,6 @@ namespace CalamityMod.NPCs
                 case NPCID.StardustWormHead:
                 case NPCID.EaterofWorldsHead:
                 case NPCID.SkeletronHead:
-                case NPCID.SkeletronHand:
                 case NPCID.WallofFlesh:
                 case NPCID.TheHungry:
                 case NPCID.TheHungryII:

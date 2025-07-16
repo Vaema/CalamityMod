@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Bat;
-            NPC.damage = 30; // 60
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
             if (CalamityWorld.LegendaryMode)

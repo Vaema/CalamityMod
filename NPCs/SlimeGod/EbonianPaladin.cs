@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 45; // 90
+            NPC.damage = 40; // 80
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 10;
