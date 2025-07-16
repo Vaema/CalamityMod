@@ -296,8 +296,7 @@ namespace CalamityMod.NPCs.Perforator
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
-                target.AddBuff(BuffID.Ichor, 120);
+                target.AddBuff(BuffID.Ichor, 240);
             }
         }
     }

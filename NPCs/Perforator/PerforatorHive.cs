@@ -633,15 +633,6 @@ namespace CalamityMod.NPCs.Perforator
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedPerforator, ModContent.ItemType<LorePerforators>(), desc: DropHelper.FirstKillText);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-            {
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 300);
-                target.AddBuff(BuffID.Ichor, 300);
-            }
-        }
-
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < hit.Damage / NPC.lifeMax * 100.0; k++)

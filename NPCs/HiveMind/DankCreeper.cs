@@ -120,7 +120,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 180);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
