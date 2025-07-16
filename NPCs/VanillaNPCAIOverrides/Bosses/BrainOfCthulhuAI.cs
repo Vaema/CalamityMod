@@ -480,7 +480,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? (death ? 20 : 30) : (death ? 40 : 60);
+                            int maxRandomTime = phase7 ? (death ? 22 : 30) : (death ? 45 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                             npc.localAI[1] = 0f;
                             npc.alpha = 0;
@@ -633,7 +633,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[1] = playerLocation < 0 ? 1f : -1f;
                             npc.ai[2] = 0f;
 
-                            int maxRandomTime = phase7 ? (death ? 15 : 30) : (death ? 30 : 60);
+                            int maxRandomTime = phase7 ? (death ? 22 : 30) : (death ? 45 : 60);
                             npc.ai[3] = Main.rand.Next(maxRandomTime) + 1;
                         }
                         else
@@ -690,7 +690,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float targetXDistPhase1 = Main.player[npc.target].Center.X - brainCenterPhase1.X;
                     float targetYDistPhase1 = Main.player[npc.target].Center.Y - brainCenterPhase1.Y;
                     float targetDistancePhase1 = (float)Math.Sqrt(targetXDistPhase1 * targetXDistPhase1 + targetYDistPhase1 * targetYDistPhase1);
-                    float maxMoveVelocity = (death ? 2.15f : 1.5f) + velocityScale; // This used to be 4f in death. Yeah
+                    float maxMoveVelocity = (death ? 1.9f : 1.5f) + velocityScale; // This used to be 4f in death. Yeah
                     if (CalamityWorld.LegendaryMode)
                         maxMoveVelocity *= 2f;
 
@@ -715,7 +715,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!despawn)
                             npc.localAI[1] += (death ? 2f : 1f) + velocityScale;
 
-                        if (npc.localAI[1] >= (death ? 540f : 360f))
+                        if (npc.localAI[1] >= (death ? 570f : 360f))
                         {
                             // Teleport location
                             npc.localAI[1] = 0f;
