@@ -85,6 +85,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     brainY += Main.rand.Next(-npc.height, npc.height);
 
                     int creeperSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)brainX, (int)brainY, NPCID.Creeper, 0, 0f, i * attackTimerIncrement);
+                    Main.npc[creeperSpawn].lifeMax = (int) (Main.npc[creeperSpawn].lifeMax * 0.8f);
                     Main.npc[creeperSpawn].velocity = new Vector2(Main.rand.Next(-30, 31) * 0.1f, Main.rand.Next(-30, 31) * 0.1f);
                     Main.npc[creeperSpawn].netUpdate = true;
                 }
@@ -287,7 +288,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.ai[2] += 1f;
 
-                    float timer = (death ? 15f : 30f) + npc.ai[3];
+                    float timer = (death ? 20f : 30f) + npc.ai[3];
 
                     // Move the brain away from the target in order to ensure fairness
                     if (npc.ai[2] >= timer - 5f)
@@ -375,41 +376,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                                     default:
                                         break;
-                                }
-
-                                Vector2 projectileVelocity = (Main.player[npc.target].Center - position).SafeNormalize(Vector2.UnitY) * bloodShotVelocity;
-                                float minFiringDistance = 560f; // 35 tile distance
-                                bool firedFromRealBrain = Vector2.Distance(position, npc.Center) < 8f;
-                                if (Vector2.Distance(position, Main.player[npc.target].Center) > minFiringDistance && !firedFromRealBrain) // The projectiles can only be fired if the target is more than 15 tiles away from the firing position
-                                {
-                                    bool canHit = Collision.CanHitLine(position, 1, 1, Main.player[npc.target].Center, 1, 1);
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    {
-                                        int type = ProjectileID.BloodShot;
-                                        int damage = npc.GetProjectileDamage(type);
-                                        int numProj = death ? 6 : 4;
-                                        int spread = death ? 25 : 15;
-                                        if (phase7)
-                                        {
-                                            numProj = death ? 3 : 2;
-                                            spread = death ? 15 : 10;
-                                        }
-                                        else if (phase5)
-                                        {
-                                            numProj = death ? 4 : 3;
-                                            spread = death ? 28 : 20;
-                                        }
-
-                                        float rotation = MathHelper.ToRadians(spread);
-                                        for (int j = 0; j < numProj; j++)
-                                        {
-                                            Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), position + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                            Main.projectile[proj].timeLeft = 600;
-                                            if (!canHit)
-                                                Main.projectile[proj].tileCollide = false;
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -862,8 +828,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float chargeAggressionScale = creeperRatio <= 0.1f ? 1.75f : creeperRatio <= 0.2f ? 1.25f : creeperRatio <= 0.4f ? 0.875f : creeperRatio <= 0.6f ? 0.5f : creeperRatio <= 0.8f ? 0.25f : 0f;
             if (enrageScale > 0f)
                 chargeAggressionScale *= 1f + enrageScale;
-            if (death)
-                chargeAggressionScale *= 1.25f;
 
             // Give off blood dust before charging
             float beginTelegraphGateValue = TimeBeforeCreeperAttack - CreeperTelegraphTime;
@@ -892,7 +856,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float brainXDist = Main.npc[NPC.crimsonBoss].Center.X - creeperCenter.X;
                 float brainYDist = Main.npc[NPC.crimsonBoss].Center.Y - creeperCenter.Y;
                 float brainDistance = (float)Math.Sqrt(brainXDist * brainXDist + brainYDist * brainYDist);
-                float velocity = (death ? 12f : 8f) + chargeAggressionScale;
+                float velocity = (death ? 10f : 8f) + chargeAggressionScale;
                 velocity += 2f * enrageScale;
                 if (brainIsInPhase2)
                 {
