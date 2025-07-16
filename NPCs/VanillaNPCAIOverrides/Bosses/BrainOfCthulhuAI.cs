@@ -85,7 +85,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     brainY += Main.rand.Next(-npc.height, npc.height);
 
                     int creeperSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)brainX, (int)brainY, NPCID.Creeper, 0, 0f, i * attackTimerIncrement);
-                    Main.npc[creeperSpawn].lifeMax = (int) (Main.npc[creeperSpawn].lifeMax * 0.8f);
                     Main.npc[creeperSpawn].velocity = new Vector2(Main.rand.Next(-30, 31) * 0.1f, Main.rand.Next(-30, 31) * 0.1f);
                     Main.npc[creeperSpawn].netUpdate = true;
                 }
