@@ -6,7 +6,6 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.ILEditing.ILChanges;
 
 namespace CalamityMod.Items.Dyes
 {
