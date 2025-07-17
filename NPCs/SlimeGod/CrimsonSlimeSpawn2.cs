@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 spikeTimer -= 1f;
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
-            int damage = CrimulanPaladin.CrimsonSpikeDamage;
+            int damage = SmallSpikeDamage;
             if (Main.zenithWorld)
                 type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
 

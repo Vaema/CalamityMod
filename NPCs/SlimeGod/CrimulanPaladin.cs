@@ -220,7 +220,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         Main.dust[slimeDust].noGravity = true;
                     }
 
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, CrimsonSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, BigSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                 }
 
                 // Die
@@ -597,7 +597,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                     Main.dust[slimeDust].noGravity = true;
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, CrimsonSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, BigSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                             }
                         }
 
