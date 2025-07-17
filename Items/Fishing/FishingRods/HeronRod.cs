@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,6 +29,29 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<HeronBobber>();
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
+            Item.accessory = true;
+        }
+
+        public override bool AllowPrefix(int pre)
+        {
+            if (pre == 0)
+                return true;
+            return false;
+        }
+
+        public override bool CanReforge()
+        {
+            return false;
+        }
+        public override void HoldItem(Player player)
+        {
+            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.HeronRod;
+        }
+
+        public override void UpdateEquip(Player player)
+        {
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.HeronRod;
         }
 
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
