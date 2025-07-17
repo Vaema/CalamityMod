@@ -12,7 +12,6 @@ namespace CalamityMod.Items.Dyes
 {
     public class InvisibleDye : BaseDye
     {
-        public override string Texture => "CalamityMod/Items/Dyes/CeaselessDye";
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/InvisibleDyeShader"), "DyePass");
 
         public override void SafeSetStaticDefaults()
