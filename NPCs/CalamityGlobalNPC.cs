@@ -959,7 +959,7 @@ namespace CalamityMod.NPCs
             if (IncreasedWaterEffects_Amulet1)
                 waterDamageMult += 0.35;
             if (IncreasedWaterEffects_Amulet2)
-                waterDamageMult += 0.75;
+                waterDamageMult += 0.6;
 
             if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
             {
