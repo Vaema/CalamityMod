@@ -50,9 +50,9 @@ namespace CalamityMod.NPCs.Perforator
 
 
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private bool small = false;
-        private bool medium = false;
-        private bool large = false;
+        private bool smallSpawned = false;
+        private bool mediumSpawned = false;
+        private bool largeSpawned = false;
         private int wormsAlive = 0;
 
         private float squash;
@@ -119,9 +119,9 @@ namespace CalamityMod.NPCs.Perforator
         {
             writer.Write(biomeEnrageTimer);
             writer.Write(wormsAlive);
-            writer.Write(small);
-            writer.Write(medium);
-            writer.Write(large);
+            writer.Write(smallSpawned);
+            writer.Write(mediumSpawned);
+            writer.Write(largeSpawned);
             writer.Write(NPC.localAI[2]);
         }
 
@@ -129,9 +129,9 @@ namespace CalamityMod.NPCs.Perforator
         {
             biomeEnrageTimer = reader.ReadInt32();
             wormsAlive = reader.ReadInt32();
-            small = reader.ReadBoolean();
-            medium = reader.ReadBoolean();
-            large = reader.ReadBoolean();
+            smallSpawned = reader.ReadBoolean();
+            mediumSpawned = reader.ReadBoolean();
+            largeSpawned = reader.ReadBoolean();
             NPC.localAI[2] = reader.ReadSingle();
         }
 
@@ -162,6 +162,10 @@ namespace CalamityMod.NPCs.Perforator
 
             // Phases based on life percentage
             bool phase2 = lifeRatio < 0.7f;
+
+            bool spawnSmall = CalamityWorld.LegendaryMode ? lifeRatio < 0.85f : lifeRatio < 0.75f;
+            bool spawnMedium = CalamityWorld.LegendaryMode ? lifeRatio < 0.60f : lifeRatio < 0.50f;
+            bool spawnLarge = CalamityWorld.LegendaryMode ? lifeRatio < 0.45f : lifeRatio < 0.25f;
 
             // Enrage
             if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
@@ -206,6 +210,8 @@ namespace CalamityMod.NPCs.Perforator
                     return;
                 }
             }
+
+            // Natural despawn prevention
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
@@ -250,19 +256,14 @@ namespace CalamityMod.NPCs.Perforator
 
             NPC.Calamity().DR = wormsAlive * 0.3f;
 
-            if (NPC.ai[3] == 0f && NPC.life > 0)
-                NPC.ai[3] = NPC.lifeMax;
-
             float stretch = NPC.velocity.Y * 0.03f;
-           // stretch = Math.Abs(stretch) + addedStretch;
 
-            bool canSpawnWorms = !small || !medium || !large || CalamityWorld.LegendaryMode;
+            bool canSpawnWorms = !smallSpawned || !mediumSpawned || !largeSpawned || CalamityWorld.LegendaryMode;
             if (NPC.life > 0 && canSpawnWorms)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int wormSpawnGateValue = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.15 : 0.25));
-                    if ((NPC.life + wormSpawnGateValue) < NPC.ai[3])
+                    if (spawnSmall || spawnMedium || spawnLarge)
                     {
                         // Blood vars change based on worm spawned
                         Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f)); 
@@ -270,25 +271,25 @@ namespace CalamityMod.NPCs.Perforator
                         float minScale = 1f;
                         float maxScale = 1.8f;
 
-                        NPC.ai[3] = NPC.life;
+                        // NPC.ai[3] = NPC.life;
                         int wormType = ModContent.NPCType<PerforatorHeadSmall>();
-                        if (!small)
+                        if (!smallSpawned)
                         {
-                            small = true;
+                            smallSpawned = true;
                             bloodAmt = 12;
                         }
-                        else if (!medium)
+                        else if (!mediumSpawned)
                         {
-                            medium = true;
+                            mediumSpawned = true;
                             wormType = ModContent.NPCType<PerforatorHeadMedium>();
                             bloodColor = Color.Lerp(Color.Yellow, Color.Orange, Main.rand.NextFloat(0.9f));
                             bloodAmt = 12;
                             minScale = 1.5f;
                             maxScale = 2.4f;
                         }
-                        else if (!large)
+                        else if (!largeSpawned)
                         {
-                            large = true;
+                            largeSpawned = true;
                             wormType = ModContent.NPCType<PerforatorHeadLarge>();
                             bloodAmt = 18;
                             minScale = 1.4f;
@@ -359,7 +360,7 @@ namespace CalamityMod.NPCs.Perforator
             // Emit ichor blobs
             if (phase2)
             {
-                if (wormsAlive == 0 || large || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
+                if (wormsAlive == 0 || largeSpawned || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
                 {
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= blobPhaseGateValue)
@@ -388,7 +389,7 @@ namespace CalamityMod.NPCs.Perforator
                                     Main.dust[ichorDust].scale = 0.5f;
                             }
 
-                            bool ichorBlobBigWormPhase = wormsAlive > 0 && large;
+                            bool ichorBlobBigWormPhase = wormsAlive > 0 && largeSpawned;
                             int numBlobs = expertMode ? (ichorBlobBigWormPhase ? 4 : 6) : (ichorBlobBigWormPhase ? 2 : 4);
                             if (CalamityWorld.LegendaryMode)
                                 numBlobs *= 2;
@@ -504,11 +505,11 @@ namespace CalamityMod.NPCs.Perforator
                         // Set damage
                         NPC.damage = NPC.defDamage;
 
-                        if (large || death)
+                        if (largeSpawned || death)
                             Movement(player, 13f + velocityEnrageIncrease, death ? 0.115f : 0.1f, 20f);
-                        else if (medium)
+                        else if (mediumSpawned)
                             Movement(player, 12f + velocityEnrageIncrease, death ? 0.11f : 0.095f, 30f);
-                        else if (small)
+                        else if (smallSpawned)
                             Movement(player, 11f + velocityEnrageIncrease, death ? 0.105f : 0.09f, 40f);
                         else
                             Movement(player, 10f + velocityEnrageIncrease, death ? 0.1f : 0.085f, 50f);
@@ -722,7 +723,7 @@ namespace CalamityMod.NPCs.Perforator
                     float bloodScale = Main.rand.NextFloat(1.7f, 3f);
                     Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f));
                     float randomSpeedMultiplier = Main.rand.NextFloat(0.6f, 1.1f);
-                    Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 8 * randomSpeedMultiplier;
+                    Vector2 bloodVelocity = Main.rand.NextVector2Unit(5) * 5 * randomSpeedMultiplier;
                     bloodVelocity.Y -= 5f;
 
                     BloodParticle blood = new BloodParticle(NPC.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
