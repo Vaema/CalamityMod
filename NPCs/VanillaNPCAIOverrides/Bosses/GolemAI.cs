@@ -1337,19 +1337,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
                 CalamityUtils.SmoothMovement(npc, 80f, distanceFromDestination, velocity, acceleration, !phase2 || npc.ai[0] == 3f);
 
-            if (death && calamityGlobalNPC.newAI[2] < 120f)
-            {
-                calamityGlobalNPC.newAI[2] += 1f;
-
-                if (calamityGlobalNPC.newAI[2] % 15f == 0f)
-                {
-                    npc.netUpdate = true;
-                    npc.SyncExtraAI();
-                }
-
-                return false;
-            }
-
             // Laser spread attack, followed by lingering flame bolts
             if (npc.ai[0] == 3f)
             {
@@ -1404,7 +1391,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     npc.ai[0] = phase3 ? 2f : 1f;
                     npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
+                    if (phase3)
+                        calamityGlobalNPC.newAI[2] = Main.rand.Next(120); // Used as a random start point for phase 3 circling
+                    npc.ai[2] = calamityGlobalNPC.newAI[2];
                     npc.localAI[0] = 0f;
                     // Needs to be done to properly put it in the top left corner afterwards in phase 2
                     calamityGlobalNPC.newAI[0] = -maxDistanceDiagonal;
@@ -1417,7 +1406,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.ai[2] += 1f;
 
             int laserGateValue = (int)(PosDelay / positioningInc);
-            if (canFireProjectiles && Main.netMode != NetmodeID.MultiplayerClient && (npc.ai[2] % (laserGateValue / 2) == 0))
+            if (canFireProjectiles && Main.netMode != NetmodeID.MultiplayerClient && ((npc.ai[2] - calamityGlobalNPC.newAI[2]) % (laserGateValue / 2) == 0f))
             {
                 int numLasers = 2;
                 for (int i = 0; i < numLasers; i++)
@@ -1425,17 +1414,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 freeHeadProjSpawn = new Vector2(npc.Center.X, npc.Center.Y - 20f * npc.scale);
                     freeHeadProjSpawn.X += 14f * npc.scale * (i == 1).ToDirectionInt();
 
-                    float freeHeadProjSpeed = 5f + (death ? 5f * (1f - golemLifeRatio) : 3f * (1f - golemLifeRatio));
+                    float freeHeadProjSpeed = 7f + (5f * (1f - golemLifeRatio));
+                    Vector2 laserVelocity = Main.player[npc.target].Center - freeHeadProjSpawn;
+                    laserVelocity = laserVelocity.SafeNormalize(Vector2.UnitY) * freeHeadProjSpeed;
 
-                    float freeHeadProjTargetX = Main.player[npc.target].Center.X - freeHeadProjSpawn.X;
-                    float freeHeadProjTargetY = Main.player[npc.target].Center.Y - freeHeadProjSpawn.Y;
-                    float freeHeadProjTargetDist = (float)Math.Sqrt(freeHeadProjTargetX * freeHeadProjTargetX + freeHeadProjTargetY * freeHeadProjTargetY);
-
-                    freeHeadProjTargetDist = freeHeadProjSpeed / freeHeadProjTargetDist;
-                    freeHeadProjTargetX *= freeHeadProjTargetDist;
-                    freeHeadProjTargetY *= freeHeadProjTargetDist;
-
-                    Vector2 laserVelocity = new Vector2(freeHeadProjTargetX, freeHeadProjTargetY);
                     int type = ProjectileID.EyeBeam;
                     int damage = npc.GetProjectileDamage(type);
                     int freeHeadLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), freeHeadProjSpawn + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
