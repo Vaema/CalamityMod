@@ -1242,7 +1242,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Move to new location
             float maxDistanceDiagonal = 330f;
-            float maxDistanceStraight = 450f;
+            float maxDistanceStraight = 460f;
             if (npc.ai[3] <= 0f)
             {
                 npc.ai[3] = PosDelay;
@@ -1285,8 +1285,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Above target
                     else
                     {
-                        calamityGlobalNPC.newAI[0] = Main.rand.NextFloat(-100f, 100f);
-                        calamityGlobalNPC.newAI[1] = -maxDistanceStraight * 0.8f;
+                        calamityGlobalNPC.newAI[0] = Main.rand.NextFloat(-150f, 150f);
+                        calamityGlobalNPC.newAI[1] = -maxDistanceStraight * 0.85f;
                     }
                 }
 

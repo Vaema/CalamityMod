@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -34,7 +35,9 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Kill();
 
             // Add visual effects
-            Dust.NewDustPerfect(Projectile.Center, DustID.InfernoFork, Vector2.Zero);
+            MediumMistParticle mist = new(Projectile.Center, Main.rand.NextVector2Circular(3f, 3f), Color.Gray, Color.DarkGray, 0.5f, 192f);
+            GeneralParticleHandler.SpawnParticle(mist);
+            Dust.NewDustPerfect(Projectile.Center, DustID.InfernoFork, Main.rand.NextVector2Circular(2f, 2f), Scale: 1.75f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire, 360);
