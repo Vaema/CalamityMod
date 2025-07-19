@@ -256,8 +256,6 @@ namespace CalamityMod.NPCs.Perforator
 
             NPC.Calamity().DR = wormsAlive * 0.3f;
 
-            float stretch = NPC.velocity.Y * 0.03f;
-
             bool canSpawnWorms = !smallSpawned || !mediumSpawned || !largeSpawned || CalamityWorld.LegendaryMode;
             if (NPC.life > 0 && canSpawnWorms)
             {
@@ -270,33 +268,36 @@ namespace CalamityMod.NPCs.Perforator
                         int bloodAmt = 0;
                         float minScale = 1f;
                         float maxScale = 1.8f;
+                        int wormType = -1;
 
-                        // NPC.ai[3] = NPC.life;
-                        int wormType = ModContent.NPCType<PerforatorHeadSmall>();
                         if (!smallSpawned)
                         {
+
                             smallSpawned = true;
+                            wormType = ModContent.NPCType<PerforatorHeadSmall>();
+
                             bloodAmt = 12;
                         }
-                        else if (!mediumSpawned)
+                        else if (!mediumSpawned && spawnMedium)
                         {
                             mediumSpawned = true;
                             wormType = ModContent.NPCType<PerforatorHeadMedium>();
+
                             bloodColor = Color.Lerp(Color.Yellow, Color.Orange, Main.rand.NextFloat(0.9f));
                             bloodAmt = 12;
                             minScale = 1.5f;
                             maxScale = 2.4f;
                         }
-                        else if (!largeSpawned)
+                        else if (!largeSpawned && spawnLarge)
                         {
                             largeSpawned = true;
                             wormType = ModContent.NPCType<PerforatorHeadLarge>();
+
                             bloodAmt = 18;
                             minScale = 1.4f;
                             maxScale = 2.2f;
                         }
 
-                        squashTimer = squashInterval;
                         for (int i = 0; i < bloodAmt; ++i)
                         {
                             int bloodLifetime = Main.rand.Next(80, 140);
@@ -319,8 +320,10 @@ namespace CalamityMod.NPCs.Perforator
                             else if (lifeRatio > 0.05f)
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadSmall>(), 1);
                         }
-                        else
+                        if (wormType != -1)
                         {
+                            squashTimer = squashInterval; // Start scaling animation
+
                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
 
                             // Spawn two small worms in Death
@@ -717,14 +720,14 @@ namespace CalamityMod.NPCs.Perforator
                     Main.dust[bloodDust].velocity *= 2f;
                 }
                 // Blood burst
-                for (int i = 0; i < 16; ++i)
+                for (int i = 0; i < 24; ++i)
                 {
                     int bloodLifetime = Main.rand.Next(90, 160);
-                    float bloodScale = Main.rand.NextFloat(1.7f, 3f);
+                    float bloodScale = Main.rand.NextFloat(1.2f, 2.4f);
                     Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f));
-                    float randomSpeedMultiplier = Main.rand.NextFloat(0.6f, 1.1f);
-                    Vector2 bloodVelocity = Main.rand.NextVector2Unit(5) * 5 * randomSpeedMultiplier;
-                    bloodVelocity.Y -= 5f;
+                    float randomSpeedMultiplier = Main.rand.NextFloat(4.5f, 9f);
+                    Vector2 bloodVelocity = Main.rand.NextVector2Unit(6) * 2.5f * randomSpeedMultiplier;
+                    bloodVelocity.Y -= 14f;
 
                     BloodParticle blood = new BloodParticle(NPC.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
                     GeneralParticleHandler.SpawnParticle(blood);
