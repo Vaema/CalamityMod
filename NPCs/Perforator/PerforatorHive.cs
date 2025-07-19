@@ -286,12 +286,12 @@ namespace CalamityMod.NPCs.Perforator
 
                 if (wormSpawnStateTimer >= slowDownDuration && wormSpawnStateTimer < totalStateDuration)
                 {
-                    if (Main.rand.NextBool(5))
+                    if (Main.rand.NextBool(7))
                     {
-                        int bloodLifetime = Main.rand.Next(20, 50);
+                        int bloodLifetime = Main.rand.Next(20, 45);
                         float bloodScale = Main.rand.NextFloat(0.5f, 1f);
                         Color bloodColor = Color.Lerp(Color.Yellow, Color.DarkRed, Main.rand.NextFloat(0.7f));
-                        float randomSpeedMultiplier = Main.rand.NextFloat(1f, 2f);
+                        float randomSpeedMultiplier = Main.rand.NextFloat(0.8f, 1.6f);
                         Vector2 bloodVelocity = Main.rand.NextVector2Unit(5) * 1.5f * randomSpeedMultiplier;
                         bloodVelocity.Y -= 8f;
 
