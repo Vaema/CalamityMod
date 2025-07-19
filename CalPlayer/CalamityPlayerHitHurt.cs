@@ -1370,14 +1370,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.DeathLaser || proj.type == ProjectileID.RocketSkeleton || proj.type == ProjectileID.BombSkeletronPrime)
-                {
-                    Player.AddBuff(BuffID.OnFire, 180);
-                }
-                else if (proj.type == ProjectileID.Skull)
-                {
-                    Player.AddBuff(BuffID.Weak, 180);
-                }
                 else if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
                 {
                     // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)

@@ -551,13 +551,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.defense = npc.defDefense;
             if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.5)
             {
-                npc.damage = death ? 180 : 120;
+                npc.damage = npc.defDamage * 2;
                 npc.defense = 30;
                 acceleration += death ? 0.1f : 0.08f;
             }
             else if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.75)
             {
-                npc.damage = death ? 135 : 90;
+                npc.damage = (int)Math.Round(npc.defDamage * 1.5f);
                 npc.defense = 20;
                 acceleration += death ? 0.05f : 0.04f;
             }
