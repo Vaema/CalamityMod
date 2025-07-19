@@ -60,6 +60,7 @@ namespace CalamityMod.NPCs.Perforator
         private int squashTimer = 0; // Tracks current progress in scaling animation
         private const int squashInterval = 24;
         private const float maxSquash = 0.3f; // Upper intensity
+        private float wormSpawnStateTimer = 0f; // For managing worm spawn animation
 
         public override void SetStaticDefaults()
         {
@@ -123,6 +124,7 @@ namespace CalamityMod.NPCs.Perforator
             writer.Write(mediumSpawned);
             writer.Write(largeSpawned);
             writer.Write(NPC.localAI[2]);
+            writer.Write(wormSpawnStateTimer); 
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -133,6 +135,7 @@ namespace CalamityMod.NPCs.Perforator
             mediumSpawned = reader.ReadBoolean();
             largeSpawned = reader.ReadBoolean();
             NPC.localAI[2] = reader.ReadSingle();
+            wormSpawnStateTimer = reader.ReadSingle();
         }
 
         public override void AI()
@@ -256,89 +259,129 @@ namespace CalamityMod.NPCs.Perforator
 
             NPC.Calamity().DR = wormsAlive * 0.3f;
 
-            bool canSpawnWorms = !smallSpawned || !mediumSpawned || !largeSpawned || CalamityWorld.LegendaryMode;
-            if (NPC.life > 0 && canSpawnWorms)
+            if (Main.netMode != NetmodeID.MultiplayerClient && wormSpawnStateTimer == 0f)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if ((!smallSpawned && spawnSmall) ||
+                    (!mediumSpawned && spawnMedium) ||
+                    (!largeSpawned && spawnLarge))
                 {
-                    if (spawnSmall || spawnMedium || spawnLarge)
+                    wormSpawnStateTimer = 1f; // Start slowing down to spawn a worm
+                    NPC.netUpdate = true;
+                }
+            }
+
+            if (wormSpawnStateTimer > 0f)
+            {    
+
+                NPC.velocity *= 0.94f; // Slow down
+                NPC.rotation = NPC.velocity.X * 0.04f; // Update rotation to match velocity
+
+                NPC.damage = 0;
+
+                wormSpawnStateTimer++;
+
+                int slowDownDuration = 20;
+                int waitBeforeSpawnDuration = 40; 
+                int totalStateDuration = slowDownDuration + waitBeforeSpawnDuration;
+
+                if (wormSpawnStateTimer >= slowDownDuration && wormSpawnStateTimer < totalStateDuration)
+                {
+                    if (Main.rand.NextBool(5))
                     {
-                        // Blood vars change based on worm spawned
-                        Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f)); 
-                        int bloodAmt = 0;
-                        float minScale = 1f;
-                        float maxScale = 1.8f;
-                        int wormType = -1;
+                        int bloodLifetime = Main.rand.Next(20, 50);
+                        float bloodScale = Main.rand.NextFloat(0.5f, 1f);
+                        Color bloodColor = Color.Lerp(Color.Yellow, Color.DarkRed, Main.rand.NextFloat(0.7f));
+                        float randomSpeedMultiplier = Main.rand.NextFloat(1f, 2f);
+                        Vector2 bloodVelocity = Main.rand.NextVector2Unit(5) * 1.5f * randomSpeedMultiplier;
+                        bloodVelocity.Y -= 8f;
 
-                        if (!smallSpawned)
-                        {
+                        Vector2 randomOffset = Main.rand.NextVector2Unit() * Main.rand.NextFloat(25f, 50f);
+                        Vector2 spawnPosition = NPC.Center + randomOffset;
 
-                            smallSpawned = true;
-                            wormType = ModContent.NPCType<PerforatorHeadSmall>();
-
-                            bloodAmt = 12;
-                        }
-                        else if (!mediumSpawned && spawnMedium)
-                        {
-                            mediumSpawned = true;
-                            wormType = ModContent.NPCType<PerforatorHeadMedium>();
-
-                            bloodColor = Color.Lerp(Color.Yellow, Color.Orange, Main.rand.NextFloat(0.9f));
-                            bloodAmt = 12;
-                            minScale = 1.5f;
-                            maxScale = 2.4f;
-                        }
-                        else if (!largeSpawned && spawnLarge)
-                        {
-                            largeSpawned = true;
-                            wormType = ModContent.NPCType<PerforatorHeadLarge>();
-
-                            bloodAmt = 18;
-                            minScale = 1.4f;
-                            maxScale = 2.2f;
-                        }
-
-                        for (int i = 0; i < bloodAmt; ++i)
-                        {
-                            int bloodLifetime = Main.rand.Next(80, 140);
-                            float bloodScale = Main.rand.NextFloat(minScale, maxScale);
-
-                            float randomSpeedMultiplier = Main.rand.NextFloat(1.4f, 2.2f);
-                            Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 4 * randomSpeedMultiplier;
-                            bloodVelocity.Y -= 5f;
-                            BloodParticle blood = new BloodParticle(NPC.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                            GeneralParticleHandler.SpawnParticle(blood);
-                        }
-
-
-                        if (CalamityWorld.LegendaryMode && lifeRatio < 0.5f)
-                        {
-                            if (lifeRatio > 0.35f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
-                            else if (lifeRatio > 0.2f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadMedium>(), 1);
-                            else if (lifeRatio > 0.05f)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadSmall>(), 1);
-                        }
-                        if (wormType != -1)
-                        {
-                            squashTimer = squashInterval; // Start scaling animation
-
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
-
-                            // Spawn two small worms in Death
-                            if (death)
-                            {
-                                if (wormType == ModContent.NPCType<PerforatorHeadSmall>())
-                                    NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
-                            }
-                        }
-
-                        NPC.TargetClosest();
-
-                        SoundEngine.PlaySound(WormSpawn, NPC.Center);
+                        BloodParticle blood = new BloodParticle(spawnPosition, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+                        GeneralParticleHandler.SpawnParticle(blood);
                     }
                 }
+
+                else if (wormSpawnStateTimer >= totalStateDuration)
+                {
+                    // Blood vars change based on worm spawned
+                    Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f)); 
+                    int bloodAmt = 0;
+                    float minScale = 1f;
+                    float maxScale = 1.8f;
+                    int wormType = -1;
+
+                    if (!smallSpawned)
+                    {
+
+                        smallSpawned = true;
+                        wormType = ModContent.NPCType<PerforatorHeadSmall>();
+
+                        bloodAmt = 12;
+                    }
+                    else if (!mediumSpawned && spawnMedium)
+                    {
+                        mediumSpawned = true;
+                        wormType = ModContent.NPCType<PerforatorHeadMedium>();
+
+                        bloodColor = Color.Lerp(Color.Yellow, Color.Orange, Main.rand.NextFloat(0.9f));
+                        bloodAmt = 12;
+                        minScale = 1.5f;
+                        maxScale = 2.4f;
+                    }
+                    else if (!largeSpawned && spawnLarge)
+                    {
+                        largeSpawned = true;
+                        wormType = ModContent.NPCType<PerforatorHeadLarge>();
+
+                        bloodAmt = 18;
+                        minScale = 1.4f;
+                        maxScale = 2.2f;
+                    }
+
+                    for (int i = 0; i < bloodAmt; ++i)
+                    {
+                        int bloodLifetime = Main.rand.Next(80, 140);
+                        float bloodScale = Main.rand.NextFloat(minScale, maxScale);
+
+                        float randomSpeedMultiplier = Main.rand.NextFloat(1.4f, 2.2f);
+                        Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 4 * randomSpeedMultiplier;
+                        bloodVelocity.Y -= 5f;
+                        BloodParticle blood = new BloodParticle(NPC.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+                        GeneralParticleHandler.SpawnParticle(blood);
+                    }
+
+
+                    if (CalamityWorld.LegendaryMode && lifeRatio < 0.5f)
+                    {
+                        if (lifeRatio > 0.35f)
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
+                        else if (lifeRatio > 0.2f)
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadMedium>(), 1);
+                        else if (lifeRatio > 0.05f)
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadSmall>(), 1);
+                    }
+                    if (wormType != -1)
+                    {
+                        squashTimer = squashInterval; // Start scaling animation
+
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+
+                        // Spawn two small worms in Death
+                        if (death)
+                        {
+                            if (wormType == ModContent.NPCType<PerforatorHeadSmall>())
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), wormType, 1);
+                        }
+                    }
+
+                    NPC.TargetClosest();
+                    SoundEngine.PlaySound(WormSpawn, NPC.Center);
+                    wormSpawnStateTimer = 0f; // Resets for next time its called
+                    NPC.netUpdate = true;
+                }
+                return; // Don't progress in the AI loop until a worm has finished spawning
             }
 
             if (squashTimer > 0)
@@ -374,7 +417,27 @@ namespace CalamityMod.NPCs.Perforator
                                 NPC.velocity *= 0.96f;
                             else
                                 NPC.ai[2] = blobPhaseGateValue + 300f;
+
                         }
+
+                        if (NPC.ai[2] < blobPhaseGateValue + 180f)
+                        {
+                            if (Main.rand.NextBool(4))
+                            {
+                                int bloodLifetime = Main.rand.Next(25, 35);
+                                float bloodScale = Main.rand.NextFloat(0.6f, 0.95f);
+                                Color bloodColor = Color.Lerp(Color.Yellow, Color.Orange, Main.rand.NextFloat(0.8f));
+                                float randomSpeedMultiplier = Main.rand.NextFloat(1.5f, 2.5f);
+                                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * randomSpeedMultiplier;
+
+                                Vector2 spawnPosition = NPC.Center;
+                                spawnPosition.Y += 42;
+
+                                BloodParticle blood = new BloodParticle(spawnPosition, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
+                                GeneralParticleHandler.SpawnParticle(blood);
+                            }
+                        }
+
                         else
                         {
                             NPC.ai[2] = 0f;
@@ -722,8 +785,8 @@ namespace CalamityMod.NPCs.Perforator
                 // Blood burst
                 for (int i = 0; i < 24; ++i)
                 {
-                    int bloodLifetime = Main.rand.Next(90, 160);
-                    float bloodScale = Main.rand.NextFloat(1.2f, 2.4f);
+                    int bloodLifetime = Main.rand.Next(120, 200);
+                    float bloodScale = Main.rand.NextFloat(1.3f, 2.6f);
                     Color bloodColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat(0.9f));
                     float randomSpeedMultiplier = Main.rand.NextFloat(4.5f, 9f);
                     Vector2 bloodVelocity = Main.rand.NextVector2Unit(6) * 2.5f * randomSpeedMultiplier;
