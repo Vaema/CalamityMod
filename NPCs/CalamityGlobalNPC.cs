@@ -1716,7 +1716,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    npc.lifeMax = 30000;
+                    npc.lifeMax = 40000;
                     break;
 
                 case NPCID.GolemHead:
@@ -1836,7 +1836,7 @@ namespace CalamityMod.NPCs
             }
             else if (npc.type == NPCID.Golem)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.275);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                 npc.npcSlots = 64f;
             }
             else if (npc.type == NPCID.GolemHead)

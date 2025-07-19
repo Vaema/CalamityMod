@@ -210,62 +210,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        if (death)
+                        if (npc.ai[3] == 0f)
+                            npc.ai[3] = (death ? !leftFistAlive && !rightFistAlive : !headAlive) ? Main.rand.Next(1, 2+1) : 1f;
+
+                        switch ((int)npc.ai[3])
                         {
-                            float straightUpJumpHeight = 640f;
-                            if (npc.ai[3] == 0f)
-                                npc.ai[3] = (!headAlive && npc.Bottom.Y - straightUpJumpHeight > Main.player[npc.target].Top.Y) ? Main.rand.Next(3) + 1f : (!leftFistAlive && !rightFistAlive) ? Main.rand.Next(2) + 1f : 1f;
+                            default:
+                            case 0:
+                            case 1:
+                                NormalJump(canJump);
+                                break;
 
-                            switch ((int)npc.ai[3])
-                            {
-                                default:
-                                case 0:
-                                case 1:
-                                    NormalJump(canJump);
-                                    break;
-
-                                // Jump directly above the target's head and slam down
-                                case 2:
-                                    SlamJump(canJump);
-                                    break;
-
-                                // Jump straight up and create a wall of lasers on both sides
-                                case 3:
-
-                                    npc.velocity.Y = ((turboEnrage || CalamityWorld.LegendaryMode) ? -15.5f : -11.75f) + (enrage ? -4f : 0f);
-
-                                    npc.noTileCollide = true;
-
-                                    npc.ai[0] = 1f;
-                                    npc.ai[1] = 0f;
-                                    npc.ai[2] = 2f;
-
-                                    float jumpDuration = (float)Math.Floor(straightUpJumpHeight / Math.Abs(npc.velocity.Y));
-                                    npc.ai[3] = jumpDuration;
-
-                                    npc.netUpdate = true;
-
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            if (npc.ai[3] == 0f)
-                                npc.ai[3] = !headAlive ? Main.rand.Next(1, 2+1) : 1f;
-
-                            switch ((int)npc.ai[3])
-                            {
-                                default:
-                                case 0:
-                                case 1:
-                                    NormalJump(canJump);
-                                    break;
-
-                                // Jump directly above the target's head and slam down
-                                case 2:
-                                    SlamJump(canJump);
-                                    break;
-                            }
+                            // Jump directly above the target's head and slam down
+                            case 2:
+                                SlamJump(canJump);
+                                break;
                         }
 
                         void NormalJump(bool jump)
@@ -1241,13 +1200,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Move to new location
-            float maxDistanceDiagonal = 330f;
-            float maxDistanceStraight = 460f;
+            float maxDistanceDiagonal = 360f;
+            float maxDistanceStraight = 480f;
             if (npc.ai[3] <= 0f)
             {
                 npc.ai[3] = PosDelay;
                 calamityGlobalNPC.newAI[3] += phase2 ? 1 : 0;
-                if (calamityGlobalNPC.newAI[3] >= 8)
+                if (calamityGlobalNPC.newAI[3] >= 7)
                 {
                     calamityGlobalNPC.newAI[3] = 0;
                     npc.ai[0] = 3f;
@@ -1295,7 +1254,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ForceNetUpdate();
             }
 
-            float positioningInc = enrage ? 6f : phase3 ? 2.5f : phase2 ? 1.5f : 1f;
+            float positioningInc = enrage ? 6f : phase3 ? 2.5f : phase2 ? 1.8f : 1f;
             npc.ai[3] -= positioningInc;
 
             // Move in a circle around the player in final phase
@@ -1324,7 +1283,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (enrage)
                 velocity = (phase3 || turboEnrage) ? 35f : 25f;
 
-            float acceleration = npc.ai[0] == 3f ? 1.5f : phase2 ? 0f : turboEnrage ? 6f : enrage ? 4.8f : 0.7f;
+            float acceleration = npc.ai[0] == 3f ? 1.5f : phase2 ? 0f : turboEnrage ? 5f : enrage ? 3f : 0.3f;
 
             // How far Golem's Head is from where it's supposed to be
             Vector2 distanceFromDestination = destination - npc.Center;
