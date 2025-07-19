@@ -294,7 +294,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[segment].realLife = npc.whoAmI;
                         Main.npc[segment].ai[1] = index;
                         Main.npc[index].ai[0] = segment;
-                        Main.npc[index].Calamity().newAI[0] = -90f - Main.npc[index].ai[0] * (death ? 12f : 3f); // This controls the delay between laser shots
+                        Main.npc[index].Calamity().newAI[0] = -90f - Main.npc[index].ai[0] * (death ? 8f : 3f); // This controls the delay between laser shots
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
                         index = segment;
                     }
@@ -467,23 +467,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Controls the fire rate getting slower as health lowers
                     if (!death)
                     {
-                        if (npc.localAI[3] == 0f && phase2)
+                        if (npc.localAI[3] == 0f && phase3)
                         {
                             npc.localAI[3] = 1f;
                             npc.SyncVanillaLocalAI();
                             laserShootTimeBonus -= npc.ai[0] * 2f;
                         }
-                        else if (npc.localAI[3] == 1f && phase3)
+                        else if (npc.localAI[3] == 1f && startFlightPhase)
                         {
                             npc.localAI[3] = 2f;
                             npc.SyncVanillaLocalAI();
                             laserShootTimeBonus -= npc.ai[0] * 2f;
-                        }
-                        else if (npc.localAI[3] == 2f && startFlightPhase)
-                        {
-                            npc.localAI[3] = 3f;
-                            npc.SyncVanillaLocalAI();
-                            laserShootTimeBonus -= npc.ai[0];
                         }
                     }
                     calamityGlobalNPC.newAI[0] = laserShootTimeBonus;
@@ -493,7 +487,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
                     {
                         // Laser speed
-                        float projectileSpeed = (death ? 4.5f : 3.5f) + Main.rand.NextFloat() * 1.5f;
+                        float projectileSpeed = death ? 5f : 4f;
 
                         // Set projectile damage and type
                         int projectileType = ProjectileID.DeathLaser;
