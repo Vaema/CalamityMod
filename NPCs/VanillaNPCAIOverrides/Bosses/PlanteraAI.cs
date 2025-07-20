@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
 
             // Variables and target
-            bool enrage = !BossRushEvent.BossRushActive;
+            bool enrage = false;
             bool despawn = false;
 
             // Check for Jungle
