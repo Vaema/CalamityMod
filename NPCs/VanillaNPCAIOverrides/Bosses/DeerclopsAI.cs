@@ -63,7 +63,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float resistDamageAmount = MathHelper.Clamp((distanceFromTarget - IncreaseDRTriggerDistance) / (MaxDRIncreaseDistance - IncreaseDRTriggerDistance), 0f, 1f);
             npc.localAI[3] = MathHelper.Lerp(0f, 30f, resistDamageAmount);
             float dustAndDRScalar = Utils.Remap(npc.localAI[3], 0f, 30f, 0f, 1f);
-            calamityGlobalNPC.DR = MathHelper.Lerp(0.05f, 0.9f, dustAndDRScalar);
+            calamityGlobalNPC.DR = MathHelper.Lerp(0f, 0.9f, dustAndDRScalar);
 
             if (borderDelay > 0f)
                 borderDelay -= 1f;
