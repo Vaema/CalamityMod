@@ -319,11 +319,11 @@ namespace CalamityMod.CalPlayer
                     GeneralParticleHandler.SpawnParticle(Plus);
                 }
             }
-            if (calamityPlayer.bloomStoneDR > 0 && drawInfo.shadow == 0f)
+            if (calamityPlayer.bloomStoneBuffedHealRateTimer > 0 && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(10))
                 {
-                    MediumMistParticle pollenCloud = new(Player.Center, Main.rand.NextVector2Circular(1f, 1f), Color.Yellow, Color.Gold, 0.85f, 100f);
+                    MediumMistParticle  pollenCloud = new(Player.Center, Main.rand.NextVector2Circular(1f, 1f), Color.Yellow, Color.Gold, 0.85f, 100f);
                     GeneralParticleHandler.SpawnParticle(pollenCloud);
                 }
                 if (Main.rand.NextBool(4))

@@ -696,15 +696,6 @@ namespace CalamityMod.CalPlayer
             else
                 pinkCandleHealFraction = 0D;
 
-            if (BloomStoneRegen)
-            {
-                float dayTimeCompletion = !Main.dayTime ? 1f : (float)(Main.time / Main.dayLength);
-                float regenBenefitFactor = MathHelper.SmoothStep(0.25f, 1f, Utils.GetLerpValue(0f, 0.24f, dayTimeCompletion, true) * Utils.GetLerpValue(1f, 0.76f, dayTimeCompletion, true));
-
-                Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
-                Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
-            }
-            
             if (manaOverloader)
             {
                 float manaRatio = Player.statMana / (float)Player.statManaMax2;

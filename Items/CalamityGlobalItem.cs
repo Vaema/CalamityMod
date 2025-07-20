@@ -693,11 +693,8 @@ namespace CalamityMod.Items
             {
                 // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
                 modPlayer.bloomStone = false;
-                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
                 modPlayer.bloomStone = true;
-
-                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
-                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
             }
 
             // Staff/Axe of Regrowth growing Calamity grass

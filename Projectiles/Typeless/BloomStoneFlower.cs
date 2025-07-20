@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Typeless
                             continue;
 
                         if (Projectile.Hitbox.Intersects(p.Hitbox))
-                            p.Calamity().bloomStoneDR = 360;
+                            p.Calamity().bloomStoneBuffedHealRateTimer = 360;
                     }
                     break;
             }

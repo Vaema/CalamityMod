@@ -805,10 +805,11 @@ namespace CalamityMod.CalPlayer
         public int transformerStoredKills = 0;
         public bool bloomStone = false;
         public bool bloomStoneHookVisuals = false;
-        public int bloomStoneHealInc = 0;
+        public int bloomStoneHealPool = 0;
         public int bloomStoneTotalHeal = 0;
-        public int bloomStoneHealTimer = 0;
-        public int bloomStoneDR = 0;
+        public float bloomStoneHealTimer = 0;
+        public float bloomStoneHealRate = 0;
+        public int bloomStoneBuffedHealRateTimer = 0;
         public bool hideOfDeus = false;
         public bool dAmulet = false;
         public bool rampartOfDeities = false;
@@ -2840,10 +2841,10 @@ namespace CalamityMod.CalPlayer
             auralisAurora = 0;
             necroReviveCounter = -1;
             hideOfDeusTimer = 0;
-            bloomStoneHealInc = 0;
+            bloomStoneHealPool = 0;
             bloomStoneTotalHeal = 0;
             bloomStoneHealTimer = 0;
-            bloomStoneDR = 0;
+            bloomStoneHealRate = 0;
             murasamaHitCooldown = 0;
             SulphWaterPoisoningLevel = 0f;
             holyInfernoFadeIntensity = 0f;

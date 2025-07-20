@@ -2075,15 +2075,27 @@ namespace CalamityMod.CalPlayer
             if (theBeeCooldown > 0)
                 theBeeCooldown--;
 
-            if (bloomStoneHealTimer > 0)
+            if (bloomStoneTotalHeal > 0)
             {
-                if (bloomStone && bloomStoneHealTimer % 40 == 0)
+                float healRateDiv = (Player.statLife >= Player.statLifeMax ? 5 : // 5 times as slow if at max hp already (overheal prevention)
+                bloomStoneBuffedHealRateTimer > 0 ? Utils.Remap(bloomStoneBuffedHealRateTimer, 90, 0, 0.5f, 1f, true) // 2 times faster if pollen buffed, scales back down to regular speed as the buff fades
+                : 1); // Regular speed
+                bloomStoneHealRate = 1 / healRateDiv;
+
+                if (!bloomStone) // If you take it off, all your healing is instantly gone
+                    bloomStoneTotalHeal = 0;
+
+                float secondsOfHealing = 16; // Number of seconds healing occurs over at base, this can be met slower or faster depending on heal rate
+                if (bloomStoneHealTimer >= 60) // heal the player a portion of their potion every second
                 {
-                    Player.HealPlayer(Math.Min(bloomStoneHealInc, bloomStoneTotalHeal));
+                    int healAmount = (int)(Math.Max(Math.Min(bloomStoneHealPool, (int)(bloomStoneTotalHeal / secondsOfHealing)), 1));
+                    Player.HealPlayer(healAmount);
+                    bloomStoneHealPool -= healAmount; // Subtract the amount healed from the pool until it's empty
+
                     // Special specifically programmed interaction with Chalice of the Blood God: Healing over time clears bits of the bleedout buffer.
                     if (chaliceOfTheBloodGod && chaliceBleedoutBuffer > 0D)
                     {
-                        float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * bloomStoneHealInc;
+                        float amountOfBleedToClear = ChaliceOfTheBloodGod.HealingPotionRatioForBufferClear * healAmount;
                         chaliceBleedoutBuffer -= amountOfBleedToClear;
                         // Display text indicating that healing was applied to the bleedout buffer.
                         if (!Main.dedServ)
@@ -2094,22 +2106,16 @@ namespace CalamityMod.CalPlayer
                         }
                     }
 
-                    bloomStoneTotalHeal -= bloomStoneHealInc;
-                    if (bloomStoneTotalHeal < 0)
+                    if (bloomStoneHealPool == 0) // When you're out of healing, reset values
+                    {
                         bloomStoneTotalHeal = 0;
+                    }
+                    bloomStoneHealTimer = 0;
                 }
-                bloomStoneHealTimer--;
+                bloomStoneHealTimer += bloomStoneHealRate;
             }
-            else
-            {
-                bloomStoneTotalHeal = 0;
-                bloomStoneHealInc = 0;
-            }
-            if (bloomStoneDR > 0)
-            { 
-                Player.endurance += bloomStoneHealTimer > 0 ? 0.12f : 0.06f;
-                bloomStoneDR--;
-            }
+            if (bloomStoneBuffedHealRateTimer > 0)
+                bloomStoneBuffedHealRateTimer--;
 
             if (summonProjCooldown > 0f)
                 summonProjCooldown -= 1f;
