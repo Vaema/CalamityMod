@@ -66,7 +66,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
 
             // Variables and target
-            bool enrage = !BossRushEvent.BossRushActive;
+            bool enrage = false;
             bool despawn = false;
 
             // Check for Jungle

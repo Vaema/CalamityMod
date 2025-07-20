@@ -650,10 +650,9 @@ namespace CalamityMod.NPCs.CalClone
                 float phaseTimer = 400f - (death ? 120f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[2] >= phaseTimer || phase4)
                 {
-                    if (death && !phase4 && Main.rand.NextBool() && !brotherAlive)
-                        NPC.ai[1] = 4f;
-                    else
-                        NPC.ai[1] = 1f;
+                    // Prevent going to other positions during brothers phase
+                    if (!brotherAlive)
+                        NPC.ai[1] = death && !phase4 && Main.rand.NextBool() ? 4f : 1f;
 
                     NPC.ai[2] = 0f;
                     if (death)
@@ -662,18 +661,15 @@ namespace CalamityMod.NPCs.CalClone
                     NPC.netUpdate = true;
                 }
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !brotherAlive)
                 {
                     NPC.localAI[1] += 1f;
-                    if (!brotherAlive)
-                    {
-                        if (expertMode)
-                            NPC.localAI[1] += death ? 2f * (1f - lifeRatio) : 1f - lifeRatio;
-                        if (revenge)
-                            NPC.localAI[1] += 0.5f;
-                    }
+                    if (expertMode)
+                        NPC.localAI[1] += death ? 2f * (1f - lifeRatio) : 1f - lifeRatio;
+                    if (revenge)
+                        NPC.localAI[1] += 0.5f;
 
-                    if (NPC.localAI[1] >= (brotherAlive ? 180f : 120f))
+                    if (NPC.localAI[1] >= 120f)
                     {
                         NPC.localAI[1] = 0f;
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
@@ -697,24 +693,21 @@ namespace CalamityMod.NPCs.CalClone
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !brotherAlive)
                 {
                     NPC.localAI[1] += 1f;
-                    if (!brotherAlive)
-                    {
-                        if (revenge)
-                            NPC.localAI[1] += 0.5f;
-                        if (expertMode)
-                            NPC.localAI[1] += 0.5f;
-                    }
+                    if (revenge)
+                        NPC.localAI[1] += 0.5f;
+                    if (expertMode)
+                        NPC.localAI[1] += 0.5f;
 
-                    if (NPC.localAI[1] >= (brotherAlive ? 75f : 50f) && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
+                    if (NPC.localAI[1] >= 50f && Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                     {
                         NPC.localAI[1] = 0f;
 
                         float projectileVelocity = expertMode ? 12.5f : 11f;
                         projectileVelocity += 3f * enrageScale;
-                        int type = brotherAlive ? ModContent.ProjectileType<BrimstoneHellfireball>() : ModContent.ProjectileType<BrimstoneHellblast>();
+                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
                         int damage = brotherAlive ? HellfireballDamage : HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -726,9 +719,7 @@ namespace CalamityMod.NPCs.CalClone
                         }
                         else
                         {
-                            float ai0 = type == ModContent.ProjectileType<BrimstoneHellblast>() ? 1f : player.position.X;
-                            float ai1 = type == ModContent.ProjectileType<BrimstoneHellblast>() ? 0f : player.position.Y;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, ai0, ai1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f);
                         }
                     }
                 }
@@ -737,10 +728,12 @@ namespace CalamityMod.NPCs.CalClone
                 float phaseTimer = 240f - (death ? 60f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[2] >= phaseTimer || phase4)
                 {
-                    if (death && !phase4 && Main.rand.NextBool() && !brotherAlive)
+                    if (brotherAlive)
+                        NPC.ai[1] = 0f;
+                    else if (death && !phase4 && Main.rand.NextBool())
                         NPC.ai[1] = 0f;
                     else
-                        NPC.ai[1] = !brotherAlive && phase2 && revenge ? 4f : 0f;
+                        NPC.ai[1] = phase2 && revenge ? 4f : 0f;
 
                     NPC.ai[2] = 0f;
                     if (death)
@@ -753,7 +746,7 @@ namespace CalamityMod.NPCs.CalClone
             {
                 // Set damage
                 NPC.damage = NPC.defDamage;
-                SoundEngine.PlaySound(CalamitasClone.ChargeSound, NPC.Center);
+                SoundEngine.PlaySound(ChargeSound, NPC.Center);
                 NPC.rotation = rotation;
 
                 float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
