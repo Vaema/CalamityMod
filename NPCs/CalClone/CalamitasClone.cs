@@ -708,7 +708,7 @@ namespace CalamityMod.NPCs.CalClone
                         float projectileVelocity = expertMode ? 12.5f : 11f;
                         projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                        int damage = brotherAlive ? HellfireballDamage : HellblastDamage;
+                        int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
 
