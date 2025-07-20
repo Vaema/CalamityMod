@@ -96,11 +96,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            if (Projectile.ai[0] >= 120f)
-            {
-                target.AddBuff(BuffID.Frostburn, 180, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
-            }
+            target.AddBuff(BuffID.Frostburn, 180, true);
         }
     }
 }

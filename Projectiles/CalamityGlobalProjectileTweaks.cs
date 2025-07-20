@@ -314,7 +314,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmalSphere, defenseDamage },
                 { ProjectileID.Present, defenseDamage }, // Falling present bombs in Frost Moon
                 { ProjectileID.QueenSlimeSmash, defenseDamage },
-                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.RockGolemRock, defenseDamage },
                 { ProjectileID.RuneBlast, defenseDamage }, // Rune Wizard shots
                 { ProjectileID.SaucerDeathray, defenseDamage },

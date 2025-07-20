@@ -5384,29 +5384,6 @@ namespace CalamityMod.NPCs
                         target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
 
-                case NPCID.EyeofCthulhu:
-                    if (npc.ai[0] > 2f)
-                        target.AddBuff(BuffID.Bleeding, 180);
-                    break;
-
-                case NPCID.WallofFlesh:
-                    target.AddBuff(BuffID.Bleeding, 300);
-                    break;
-
-                case NPCID.Spazmatism:
-                    if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.SkeletronPrime:
-                    if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.PrimeSaw:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120);
-                    break;
-
                 case NPCID.Plantera:
                     if (npc.life < npc.lifeMax / 2)
                         target.AddBuff(BuffID.Poisoned, 360);

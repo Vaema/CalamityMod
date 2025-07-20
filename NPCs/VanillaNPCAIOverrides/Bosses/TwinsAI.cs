@@ -14,11 +14,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class TwinsAI
     {
         // Vanilla values
-        public static float RapidFireDamageMult = 0.75f; // 68
+        public static float RapidFireDamageMult = 0.75f; // 80
         public static float RetinazerPhase2ContactDamageMult = 1.5f; // 114
         public static float SpazmatismPhase2ContactDamageMult = 1.5f; // 127
-        public static int LaserDamage = 19; // 76
-        public static int RedLaserDamage = 23; // 92
+        public static int LaserDamage = 23; // 92
+        public static int RedLaserDamage = 27; // 108
         public static int FlamethrowerDamage = 27; // 108; Applies to both flamethrower types
         public static int FireballDamage = 22; // 88; Applies to both fireball types
 
@@ -215,19 +215,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float laserSpeed = death ? 11.4f : 10.5f;
 
                                 int type = ProjectileID.EyeLaser;
-                                int damage = LaserDamage;
-
-                                // Reduce mech boss projectile damage depending on the new ore progression changes
-                                if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && !BossRushEvent.BossRushActive)
-                                {
-                                    double firstMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkFirstMechStatMultiplier_Expert;
-                                    double secondMechMultiplier = CalamityGlobalNPC.EarlyHardmodeProgressionReworkSecondMechStatMultiplier_Expert;
-                                    if (!NPC.downedMechBossAny)
-                                        damage = (int)(damage * firstMechMultiplier);
-                                    else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
-                                        damage = (int)(damage * secondMechMultiplier);
-                                }
-
+                                int damage = LaserDamage.CalculateMechDamage();
                                 Vector2 laserVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * laserSpeed;
                                 Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + laserVelocity.SafeNormalize(Vector2.UnitY) * 90f, laserVelocity, type, damage, 0f, Main.myPlayer);
                             }

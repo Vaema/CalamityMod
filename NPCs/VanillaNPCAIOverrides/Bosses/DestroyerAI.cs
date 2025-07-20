@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float ProbeLaserTelegraphTime = 60f;
 
         // Vanilla values
-        public static int LaserDamage = 18; // 72; Applies to all Rev+ lasers
+        public static int LaserDamage = 25; // 100; Applies to all Rev+ lasers
         public static int ProbeLaserDamage = 22; // 88
 
         public static bool BuffedDestroyerAI(NPC npc, Mod mod)
