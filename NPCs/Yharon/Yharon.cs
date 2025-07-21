@@ -56,11 +56,9 @@ namespace CalamityMod.NPCs.Yharon
         private int invincibilityCounter = 0;
         private int fastChargeTelegraphTime = 120;
 
-        private const float ai2GateValue = 0.55f;
-        public const int Phase2InvincibilityTime = 300;
-
-        public static float normalDR = 0.22f;
-        public static float EnragedDR = 0.9f;
+        private const float AI2GateValue = 0.55f;
+        private const int Phase2InvincibilityTime = 300;
+        private const float EnragedDR = 0.9f;
 
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/Yharon/YharonRoar");
         public static readonly SoundStyle ShortRoarSound = new("CalamityMod/Sounds/Custom/Yharon/YharonRoarShort");
@@ -113,7 +111,6 @@ namespace CalamityMod.NPCs.Yharon
             AIType = -1;
             NPC.value = Item.buyPrice(2, 50, 0, 0);
             NPC.boss = true;
-            NPC.DR_NERD(normalDR);
 
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -218,7 +215,7 @@ namespace CalamityMod.NPCs.Yharon
             float phase2GateValue = revenge ? 0.9f : expertMode ? 0.85f : 0.8f;
             bool phase2Check = death || lifeRatio <= phase2GateValue;
             bool phase3Check = lifeRatio <= (death ? 0.8f : revenge ? 0.75f : expertMode ? 0.7f : 0.65f);
-            bool phase4Check = lifeRatio <= ai2GateValue;
+            bool phase4Check = lifeRatio <= AI2GateValue;
             bool phase1Change = NPC.ai[0] > -1f;
             bool phase2Change = NPC.ai[0] > 5f;
             bool phase3Change = NPC.ai[0] > 12f;
@@ -396,7 +393,7 @@ namespace CalamityMod.NPCs.Yharon
             // Set DR based on protection boost (aka enrage)
             bool chargeTelegraph = (NPC.ai[0] == 0f || NPC.ai[0] == 6f || NPC.ai[0] == 13f) && NPC.localAI[1] > 0f;
             bool bulletHell = NPC.ai[0] == 8f || NPC.ai[0] == 15f;
-            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : normalDR;
+            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : 0f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = protectionBoost;
 
             // Increased DR during phase transitions
@@ -404,17 +401,17 @@ namespace CalamityMod.NPCs.Yharon
             {
                 if (phase3Change)
                 {
-                    calamityGlobalNPC.DR = phase4Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase4Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4Check;
                 }
                 else if (phase2Change)
                 {
-                    calamityGlobalNPC.DR = phase3Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase3Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3Check;
                 }
                 else if (phase1Change)
                 {
-                    calamityGlobalNPC.DR = phase2Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase2Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2Check;
                 }
             }
@@ -1714,7 +1711,7 @@ namespace CalamityMod.NPCs.Yharon
             // Set DR based on protection boost (aka enrage)
             bool bulletHell = NPC.ai[0] == 5f;
             NPC.dontTakeDamage = bulletHell;
-            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : normalDR;
+            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : 0f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = protectionBoost;
 
             // Increased DR during phase transitions
@@ -1724,21 +1721,21 @@ namespace CalamityMod.NPCs.Yharon
                 {
                     case 1:
 
-                        calamityGlobalNPC.DR = phase2 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase2 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2;
 
                         break;
 
                     case 2:
 
-                        calamityGlobalNPC.DR = phase3 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase3 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3;
 
                         break;
 
                     case 3:
 
-                        calamityGlobalNPC.DR = phase4 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase4 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4;
 
                         break;
@@ -1792,7 +1789,7 @@ namespace CalamityMod.NPCs.Yharon
             }
 
             float flareSpawnDecelerationTimer = death ? 75f : 90f;
-            int flareSpawnPhaseTimerReduction = revenge ? (int)(flareSpawnDecelerationTimer * (ai2GateValue - lifeRatio)) : 0;
+            int flareSpawnPhaseTimerReduction = revenge ? (int)(flareSpawnDecelerationTimer * (AI2GateValue - lifeRatio)) : 0;
             float flareSpawnPhaseTimer = (death ? 150f : 180f) - flareSpawnPhaseTimerReduction;
 
             float teleportPhaseTimer = 45f;
