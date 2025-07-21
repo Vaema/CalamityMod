@@ -33,7 +33,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.width = 30;
             NPC.height = 30;
             NPC.defense = 45;
-            NPC.DR_NERD(0.1f);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.chaseable = false;

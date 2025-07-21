@@ -42,7 +42,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.noTileCollide = true;
             NPC.damage = 0; // No contact damage
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = CalamityWorld.death ? 1500 : 2500;
             if (BossRushEvent.BossRushActive)
             {
