@@ -83,7 +83,7 @@ namespace CalamityMod.Items
                 { ItemID.CobaltRepeater, Do(PointBlank, UseExact(18)) },
                 { ItemID.CobaltSword, Do(UseTurn, DamageExact(60), UseExact(9)) },
                 { ItemID.Code2, Do(AutoReuse, DamageExact(43)) },
-                { ItemID.CoinGun, Do(UseExact(14)) },
+                { ItemID.CoinGun, Do(UseExact(12)) },
                 { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(20)) }, // Malaise
                 { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
                 { ItemID.CrystalBullet, Do(DamageExact(6)) },
