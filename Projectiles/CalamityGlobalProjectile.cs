@@ -3691,7 +3691,6 @@ namespace CalamityMod.Projectiles
                         var Waterline = GetWaterLine();
                         if (Waterline.Y >= projectile.Center.Y)
                         {
-                            TimerToCatch = 300;
                             projectile.velocity.Y += 0.4f;
                         }
                         else if (projectile.ai[0] <= 0)
@@ -3705,9 +3704,6 @@ namespace CalamityMod.Projectiles
                         projectile.velocity *= 0.975f;
                         if (projectile.wet)
                             projectile.velocity *= 0.99f;
-                        var AdjustedOwnerWaterline = Waterline;
-                        if (AdjustedOwnerWaterline.Y < owner.Center.Y)
-                            AdjustedOwnerWaterline.Y = owner.Center.Y;
 
                         if (projectile.ai[0] == 0)
                         {
