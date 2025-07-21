@@ -3184,9 +3184,11 @@ namespace CalamityMod.Projectiles
                         WorldGen.CheckAchievement_RealEstateAndTownSlimes();
                     }
                 }
-                else if (Main.rand.Next(7) == 0 && !owner.accFishingLine)
+                else if (Main.rand.NextBool(7) && !owner.accFishingLine)
                 {
                     projectile.ai[0] = 2f;
+                    projectile.ai[1] = 0;
+                    projectile.localAI[1] = 0;
                 }
                 else
                 {
@@ -3255,7 +3257,7 @@ namespace CalamityMod.Projectiles
 
                         if (CatchTime < 0)
                             CatchTime++;
-                        if (projectile.wet || projectile.lavaWet || projectile.honeyWet)
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
                             TimerToCatch++;
                         var speedup = Math.Min(owner.Calamity().consecutiveCaughtFish * 5, 25);
                         var totalTime = 60 - speedup;
@@ -3381,11 +3383,8 @@ namespace CalamityMod.Projectiles
                                 projectile.velocity.X += 0.125f;
                         }
                         projectile.velocity *= 0.975f;
-                        var AdjustedOwnerWaterline = Waterline;
-                        if (AdjustedOwnerWaterline.Y < owner.Center.Y)
-                            AdjustedOwnerWaterline.Y = owner.Center.Y;
 
-                        if (Waterline.Y <= projectile.Center.Y && projectile.ai[0] == 0)
+                        if (Waterline.Y <= projectile.Center.Y && projectile.ai[0] == 0 && !(projectile.lavaWet && !owner.accLavaFishing))
                         {
                             TimerToCatch -= Main.rand.Next(1, 5);
                             if (TimerToCatch <= 0)
@@ -3425,6 +3424,13 @@ namespace CalamityMod.Projectiles
                                 {
                                     Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Torch);
                                 }
+                                    var particle = new HeavySmokeParticle(PersistentFishingDataVector2, Vector2.One.RotatedByRandom(6.28) * Main.rand.NextFloat(1f, 4f), Color.Lerp(Color.DarkOrange,Color.DarkGray,Main.rand.NextFloat()), 15, 0.2f, 1);// (PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                            if (projectile.lavaWet)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                                GeneralParticleHandler.SpawnParticle(particle);
                             }
                             List<(Vector2, int)> validRifts = new();
 
@@ -3441,6 +3447,8 @@ namespace CalamityMod.Projectiles
                                 {
                                     projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
                                     ReelTheBobberChecks();
+                                    if (projectile.ai[0] < 2)
+                                        projectile.ai[0] = 1;
                                     Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
                                     Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
                                     break;
@@ -3523,7 +3531,7 @@ namespace CalamityMod.Projectiles
                         projectile.velocity *= 0.975f;
                         if (CatchTime < 0)
                             CatchTime++;
-                        if (projectile.wet || projectile.lavaWet || projectile.honeyWet)
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
                             TimerToCatch++;
                         var speedup = 15;
                         var totalTime = 60 - speedup;
@@ -3705,6 +3713,11 @@ namespace CalamityMod.Projectiles
                         if (projectile.wet)
                             projectile.velocity *= 0.99f;
 
+                        if (projectile.lavaWet)
+                        {
+                            var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
                         if (projectile.ai[0] == 0)
                         {
 
@@ -3723,7 +3736,7 @@ namespace CalamityMod.Projectiles
                             if (TimerToCatch <= 0)
                             {
                                 projectile.FishingCheck();
-                                if (projectile.ai[1] < 0)
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
                                 {
 
                                     CaughtItemID = (int)projectile.localAI[1];
@@ -3769,9 +3782,8 @@ namespace CalamityMod.Projectiles
                             {
                                 if (projectile.Distance(item.Item1) < 16)
                                 {
-
                                     projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
-                                    ReelTheBobberChecks();
+                                    projectile.ai[0] = -1;
                                     Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
                                     Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
                                     break;
@@ -3780,7 +3792,11 @@ namespace CalamityMod.Projectiles
                             }
                         }
                         if (projectile.ai[0] == -1 && (Waterline.Y <= projectile.Center.Y || projectile.velocity.Length() < 0.5f))
-                            projectile.ai[0] = 1;
+                        {
+                            ReelTheBobberChecks();
+                            if (projectile.ai[0] < 2)
+                                projectile.ai[0] = 1;
+                        }
                         if (projectile.ai[0] == 0)
                             return true;
                         break;
