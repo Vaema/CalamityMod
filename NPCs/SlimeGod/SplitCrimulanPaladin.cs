@@ -47,7 +47,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.height = Height;
             NPC.defense = 10;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(gold: 1);
             NPC.Opacity = 1f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
