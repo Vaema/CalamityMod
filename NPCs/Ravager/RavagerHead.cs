@@ -21,8 +21,8 @@ namespace CalamityMod.NPCs.Ravager
             NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
-        public static int NukeDamage = 36; // 144
-        public static int PostProviNukeBuff = 24; // +96 = 240
+        public static int NukeDamage = 35; // 140
+        public static int PostProviNukeBuff = 25; // +100 = 240
 
         public override void SetDefaults()
         {

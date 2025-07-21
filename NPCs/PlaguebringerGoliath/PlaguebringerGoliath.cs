@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         }
 
         public static int StingerDamage = 28; // 112
-        public static int NukeDamage = 36; // 144; Also applies to GFB Peanuts and Gauss Nukes
+        public static int NukeDamage = 35; // 140; Also applies to GFB Peanuts and Gauss Nukes
 
         public override void SetDefaults()
         {
