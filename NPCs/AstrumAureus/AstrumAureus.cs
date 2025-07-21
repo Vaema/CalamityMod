@@ -106,7 +106,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 15);
             NPC.boss = true;
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;

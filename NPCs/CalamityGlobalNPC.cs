@@ -1557,8 +1557,6 @@ namespace CalamityMod.NPCs
             if (BossRushEvent.BossRushActive)
                 BossRushStatChanges(npc, Mod);
 
-            BossValueChanges(npc);
-
             if (CalamityWorld.revenge)
                 RevDeathStatChanges(npc, Mod);
 
@@ -1691,16 +1689,6 @@ namespace CalamityMod.NPCs
             if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
             {
                 npc.lifeMax = newHP;
-            }
-        }
-        #endregion
-
-        #region Boss Value Changes
-        private void BossValueChanges(NPC npc)
-        {
-            if (BossValueDict.TryGet(npc.type, out var value))
-            {
-                npc.value = value;
             }
         }
         #endregion
