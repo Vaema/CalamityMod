@@ -1418,18 +1418,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
                 }
-                else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
-                }
-                else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
-                }
-                else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
-                }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
                     Player.AddBuff(ModContent.BuffType<BurningBlood>(), 240);

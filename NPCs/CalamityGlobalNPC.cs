@@ -5384,15 +5384,6 @@ namespace CalamityMod.NPCs
                         target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
 
-                case NPCID.Plantera:
-                    if (npc.life < npc.lifeMax / 2)
-                        target.AddBuff(BuffID.Poisoned, 360);
-                    break;
-
-                case NPCID.PlanterasTentacle:
-                    target.AddBuff(BuffID.Poisoned, 180);
-                    break;
-
                 case NPCID.Golem:
                     target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
@@ -5402,19 +5393,6 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
-                    break;
-
-                case NPCID.DukeFishron:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.AncientLight:
-                    target.AddBuff(BuffType<Daybroken>(), 120);
-                    break;
-
-                case NPCID.HallowBoss:
-                    if (NPC.ShouldEmpressBeEnraged())
-                        target.AddBuff(BuffType<Daybroken>(), 360);
                     break;
 
                 case NPCID.BloodNautilus:

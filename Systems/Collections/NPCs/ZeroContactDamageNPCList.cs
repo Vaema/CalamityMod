@@ -81,6 +81,7 @@ namespace CalamityMod.Systems.Collections
                 NPCID.MartianSaucerCannon,
                 NPCID.MartianSaucerCore,
                 NPCID.MartianSaucerTurret,
+                NPCID.Probe,
                 NPCID.CultistBoss,
                 NPCID.GolemHead,
                 NPCID.GolemHeadFree,
