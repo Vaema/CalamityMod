@@ -545,7 +545,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -826,7 +826,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -1193,7 +1193,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -1837,7 +1837,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 if (!targetDead)
                 {
-                    if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                    if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                         NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                     else
                         NPC.velocity *= 0.98f;

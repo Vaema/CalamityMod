@@ -528,7 +528,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region SoC Buffs & Vortex Booster keeping stealth
+        #region SoC Buffs & Vortex Booster Keeping Stealth
         private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
             //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
@@ -568,7 +568,7 @@ namespace CalamityMod.ILEditing
                             self.ApplyDamageToNPC(hitNPC, (int)dmg, kb, direction, crit, DamageClass.Melee);
                         }
                         self.eocDash = 10;
-                        self.dashDelay = 30;
+                        self.dashDelay = BalancingConstants.OnShieldBonkCooldown;
                         self.velocity.X = -direction * 9;
                         self.velocity.Y = -4f;
                         self.GiveImmuneTimeForCollisionAttack(8); //This is normally 4 in vanilla
