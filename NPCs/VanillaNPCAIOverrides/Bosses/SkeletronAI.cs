@@ -210,7 +210,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Hand DR, scale DR up if the hands are still alive as Skeletron's HP lowers
             npc.chaseable = handsDead;
-            float minDR = 0.05f;
+            float minDR = 0f;
             float maxDR = 0.9999f;
             calamityGlobalNPC.DR = !handsDead ? (float)Math.Sqrt(MathHelper.Lerp(minDR, maxDR, respawnHands ? (respawnHandsLifeRatio - lifeRatio) / respawnHandsLifeRatio : 2f - lifeRatio / respawnHandsLifeRatio)) : minDR;
             calamityGlobalNPC.unbreakableDR = !handsDead;

@@ -27,7 +27,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 104;
             NPC.height = 104;
             NPC.defense = 9;
-            NPC.DR_NERD(0.1f);
 
             NPC.LifeMaxNERB(4200, 5000, 1150000);
             if (CalamityWorld.LegendaryMode)

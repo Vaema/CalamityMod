@@ -982,30 +982,23 @@ namespace CalamityMod.CalPlayer
             // Reduce damage from vanilla traps
 
             // Explosives
-            // 350 in normal, 450 in expert
+            // 350 damage
             if (proj.type == ProjectileID.Explosives)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.225f : 0.35f);
+                modifiers.SourceDamage *= 0.7f;
 
             // Rolling Cacti
-            // 45 in normal, 65 in expert for cactus
-            // 30 in normal, 36 in expert for spikes
+            // 42 in normal, 84 in expert for cactus
+            // 36 in normal, 72 in expert for spikes
             else if (proj.type == ProjectileID.RollingCactus || proj.type == ProjectileID.RollingCactusSpike)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.3f : 0.5f);
+                modifiers.SourceDamage *= 0.6f;
 
-            // Normal Boulders and Temple traps
-            if (Main.expertMode)
+            // Boulders
+            if (Main.expertMode && !areThereAnyDamnBosses)
             {
-                // 140 in normal, 182 in expert, 273 in master
-                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder)
-                    modifiers.SourceDamage *= 0.65f;
-
-                // 80 in normal, 100 in expert, 150 in master
-                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.FlamesTrap || proj.type == ProjectileID.PoisonDartTrap)
-                    modifiers.SourceDamage *= 0.625f;
-
-                // 120 in normal, 144 in expert, 216 in master
-                else if (proj.type == ProjectileID.SpearTrap)
-                    modifiers.SourceDamage *= 0.6f;
+                // 140 in normal, 210 in expert, 315 in master for boulder
+                // 104 in normal, 156 in expert, 234 in master for mini boulder
+                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder || proj.type == ProjectileID.BouncyBoulder || proj.type == ProjectileID.LifeCrystalBoulder)
+                    modifiers.SourceDamage *= 0.75f;
             }
 
             bool isFallingBlock = (proj.type == ProjectileID.SandBallFalling) || (proj.type == ProjectileID.SiltBall) || (proj.type == ProjectileID.AshBallFalling) ||

@@ -959,7 +959,7 @@ namespace CalamityMod.NPCs
             if (IncreasedWaterEffects_Amulet1)
                 waterDamageMult += 0.35;
             if (IncreasedWaterEffects_Amulet2)
-                waterDamageMult += 0.75;
+                waterDamageMult += 0.6;
 
             if (IncreasedSicknessAndWaterEffects_CorrosiveSpine)
             {
@@ -1372,7 +1372,6 @@ namespace CalamityMod.NPCs
             #region Setup Vanilla DR Values
             DRValues = new SortedDictionary<int, float> {
                 { NPCID.CultistBoss, 0.15f },
-                { NPCID.Deerclops, 0.05f },
                 { NPCID.DukeFishron, 0.15f },
                 { NPCID.DungeonGuardian, 0.9f },
                 { NPCID.Golem, 0.15f },
@@ -1384,23 +1383,17 @@ namespace CalamityMod.NPCs
                 { NPCID.MoonLordHand, 0.15f },
                 { NPCID.MoonLordHead, 0.15f },
                 { NPCID.Plantera, 0.15f },
-                { NPCID.PlanterasTentacle, 0.1f },
                 { NPCID.HallowBoss, 0.15f },
                 { NPCID.PrimeCannon, 0.2f },
                 { NPCID.PrimeLaser, 0.2f },
                 { NPCID.PrimeSaw, 0.2f },
                 { NPCID.PrimeVice, 0.2f },
-                { NPCID.Probe, 0.2f },
-                { NPCID.QueenBee, 0.05f },
                 { NPCID.Retinazer, 0.2f },
-                { NPCID.SkeletronHand, 0.05f },
-                { NPCID.SkeletronHead, 0.05f },
                 { NPCID.SkeletronPrime, 0.2f },
                 { NPCID.Spazmatism, 0.2f },
                 { NPCID.TheDestroyer, 0.1f },
                 { NPCID.TheDestroyerBody, 0.2f },
                 { NPCID.TheDestroyerTail, 0.35f },
-                { NPCID.TheHungry, 0.1f },
                 { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
@@ -1564,8 +1557,6 @@ namespace CalamityMod.NPCs
             if (BossRushEvent.BossRushActive)
                 BossRushStatChanges(npc, Mod);
 
-            BossValueChanges(npc);
-
             if (CalamityWorld.revenge)
                 RevDeathStatChanges(npc, Mod);
 
@@ -1698,16 +1689,6 @@ namespace CalamityMod.NPCs
             if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
             {
                 npc.lifeMax = newHP;
-            }
-        }
-        #endregion
-
-        #region Boss Value Changes
-        private void BossValueChanges(NPC npc)
-        {
-            if (BossValueDict.TryGet(npc.type, out var value))
-            {
-                npc.value = value;
             }
         }
         #endregion

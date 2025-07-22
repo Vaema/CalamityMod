@@ -2238,6 +2238,9 @@ namespace CalamityMod.NPCs.Yharon
 
                 if (NPC.ai[1] >= fireballBreathTimer)
                 {
+                    // Set damage once charge starts
+                    NPC.damage = setDamage;
+
                     if (NPC.ai[1] % (expertMode ? 6f : 8f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         float xOffset = 30f;
