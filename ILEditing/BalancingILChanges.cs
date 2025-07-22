@@ -546,8 +546,8 @@ namespace CalamityMod.ILEditing
                     Rectangle npcHitbox = hitNPC.getRect();
                     if (DashHitbox.Intersects(npcHitbox) && (hitNPC.noTileCollide || self.CanHit(hitNPC)))
                     {
-                        float dmg = self.GetTotalDamage(DamageClass.Melee).ApplyTo(30f);
-                        float kb = self.GetTotalKnockback(DamageClass.Melee).ApplyTo(9f);
+                        float dmg = self.GetTotalDamage(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 300f : 30f);
+                        float kb = self.GetTotalKnockback(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 12f : 9f);
                         bool crit = false;
                         if (Main.rand.Next(100) < self.GetTotalCritChance(DamageClass.Melee))
                         {
