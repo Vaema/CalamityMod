@@ -217,13 +217,13 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 if (EchoHammerPrep > 40)
                 {
-                    int hammer = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<GalaxySmasherEcho>(), Projectile.damage * 10, Projectile.knockBack * 2.5f, Projectile.owner, 0f, Projectile.ai[1]);
+                    int hammer = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity, ModContent.ProjectileType<GalaxySmasherEcho>(), Projectile.damage * 9, Projectile.knockBack * 2.5f, Projectile.owner, 0f, Projectile.ai[1]);
                     Main.projectile[hammer].localAI[0] = Math.Sign(Projectile.velocity.X);
                     Main.projectile[hammer].netUpdate = true;
                     Projectile.Kill();
                 }
                 else
-                    EchoHammerPrep += 0.2f;
+                    EchoHammerPrep += 0.275f;
             }
 
             if (targetDist < 1400)

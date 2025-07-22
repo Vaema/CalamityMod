@@ -173,12 +173,15 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity = newVelocity;
             }
         }
-        public override void ModifyDamageHitbox(ref Rectangle hitbox)
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            int size = 60;
-            if (Slash3)
-                hitbox.Inflate(size, size);
+            Vector2 lineEnd = Main.player[Projectile.owner].Center + Projectile.velocity * (Slash3 ? 11.35f : 8.6f);
+            // The slash sprite is top-heavy, so make the width lean in a direction
+            float lineWidth = (Projectile.direction == 1 && projHitbox.Center.X > targetHitbox.Center.X) || (Projectile.direction == -1 && projHitbox.Center.X < targetHitbox.Center.X) ? 320f : 200f;
+            float _ = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Main.player[Projectile.owner].Center, lineEnd, lineWidth, ref _);
         }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target.Organic())

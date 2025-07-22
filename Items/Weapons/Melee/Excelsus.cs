@@ -21,11 +21,10 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 78;
             Item.height = 94;
-            Item.damage = 250;
+            Item.damage = 206;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 15;
+            Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
             Item.useTurn = true;
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
@@ -62,18 +61,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<LaserFountain>(), 0, 0, player.whoAmI);
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<LaserFountain>(), 0, 0, player.whoAmI);
         }
     }
 }
