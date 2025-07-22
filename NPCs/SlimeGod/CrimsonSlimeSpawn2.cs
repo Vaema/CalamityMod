@@ -26,10 +26,12 @@ namespace CalamityMod.NPCs.SlimeGod
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
+        public static int SmallSpikeDamage = 11; // 44
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
             if (CalamityWorld.LegendaryMode)
@@ -101,7 +103,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 spikeTimer -= 1f;
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
-            int damage = NPC.GetProjectileDamage(type);
+            int damage = SmallSpikeDamage;
             if (Main.zenithWorld)
                 type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
 

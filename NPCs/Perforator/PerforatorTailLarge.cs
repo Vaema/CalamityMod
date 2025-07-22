@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 16; // 32
             NPC.width = 60;
             NPC.height = 78;
             NPC.defense = 12;
@@ -137,21 +137,6 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.spriteDirection = -1;
             }
 
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = 16f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
-
             if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
             {
                 if (NPC.alpha > 0 && NPC.life > 0)
@@ -229,7 +214,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 120, true);
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 180, true);
         }
     }
 }

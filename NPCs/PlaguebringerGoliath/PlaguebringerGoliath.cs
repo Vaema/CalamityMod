@@ -84,10 +84,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
         }
 
+        public static int StingerDamage = 28; // 112
+        public static int NukeDamage = 35; // 140; Also applies to GFB Peanuts and Gauss Nukes
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.npcSlots = 64f;
             NPC.width = 198;
             NPC.height = 198;
@@ -860,7 +863,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                         if (Main.zenithWorld)
                             type = ModContent.ProjectileType<HiveBombGoliath>();
 
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = type == ModContent.ProjectileType<HiveBombGoliath>() ? NukeDamage : StingerDamage;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), stingerSpawnPos.X, stingerSpawnPos.Y, projXDist, projYDist, type, damage, 0f, Main.myPlayer, challengeAmt, player.position.Y);
                         NPC.netUpdate = true;
                     }
@@ -906,7 +909,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 missileVelocity += 2f * enrageScale;
 
                 int type = ModContent.ProjectileType<HiveBombGoliath>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = NukeDamage;
 
                 int chargeDistanceX = 600;
                 float chargeSpeed = revenge ? 28f : 26f;
@@ -1374,7 +1377,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

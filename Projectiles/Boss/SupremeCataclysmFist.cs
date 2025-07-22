@@ -280,13 +280,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => (Projectile.Opacity >= 1f || Projectile.ai[2] >= 3);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 240, true);
-        }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             SoundStyle b = new("CalamityMod/Sounds/Custom/Kickball");

@@ -32,11 +32,13 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
+        public static int ShotDamage = 60; // 240
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0;
             NPC.width = 40;
             NPC.height = 40;
             NPC.lifeMax = 50000;
@@ -166,11 +168,10 @@ namespace CalamityMod.NPCs.Polterghast
                     {
                         float shotSpeed = 10f * tileEnrageMult;
                         int type = ModContent.ProjectileType<PhantomHookShot>();
-                        int damage = NPC.GetProjectileDamage(type);
                         targetDistance = shotSpeed / targetDistance;
                         targetX *= targetDistance;
                         targetY *= targetDistance;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, ShotDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
                 return;

@@ -1363,14 +1363,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.DeathLaser || proj.type == ProjectileID.RocketSkeleton || proj.type == ProjectileID.BombSkeletronPrime)
-                {
-                    Player.AddBuff(BuffID.OnFire, 180);
-                }
-                else if (proj.type == ProjectileID.Skull)
-                {
-                    Player.AddBuff(BuffID.Weak, 180);
-                }
                 else if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
                 {
                     // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
@@ -1379,22 +1371,6 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.DesertDjinnCurse)
                 {
                     Player.AddBuff(BuffID.Cursed, 180);
-                }
-                else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
-                {
-                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
-                    if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 300);
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
-                else if (proj.type == ProjectileID.PoisonSeedPlantera)
-                {
-                    // 75% chance of Poison for 3 to 5 seconds, guaranteed Poison for 2 seconds (vanilla also has a 50% chance of Poison for 3 to 7 seconds)
-                    if (Main.rand.Next(4) > 0)
-                        Player.AddBuff(BuffID.Poisoned, Main.rand.Next(180, 301));
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
@@ -1434,18 +1410,6 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.PhantasmalDeathray)
                 {
                     Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
-                }
-                else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
-                }
-                else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
-                }
-                else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -126,7 +127,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     float speedX = (float)Main.rand.Next(-35, 36) * 0.02f;
                     float speedY = (float)Main.rand.Next(-35, 36) * 0.02f;
-                    Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, new Vector2(speedX, speedY), type, (int)Math.Round(Projectile.damage * 0.85), 0f, Main.myPlayer, 0f, minVelocity, maxVelocity);
+                    Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, new Vector2(speedX, speedY), type, QueenBeeAI.BeenadeBeeDamage, 0f, Main.myPlayer, 0f, minVelocity, maxVelocity);
                 }
             }
         }

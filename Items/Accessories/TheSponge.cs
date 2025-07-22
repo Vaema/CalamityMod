@@ -32,12 +32,11 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/RoverDriveActivate") { Volume = 0.85f };
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
-        public static int ShieldDurabilityMax = 180;
+        public static int ShieldDurabilityMax = 120;
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(8); // Was 6, then was 9
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(10); // Was 6
 
-        // While active, The Sponge gives 20 defense and 10% DR
-        public static int ShieldActiveDefense = 20;
+        // While active, The Sponge gives 10% DR
         public static float ShieldActiveDamageReduction = 0.1f;
 
         public int OwnerPlayer { get; set; }
@@ -91,10 +90,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.spongeShieldVisible = !hideVisual;
 
             if (modPlayer.SpongeShieldDurability > 0)
-            {
-                player.statDefense += ShieldActiveDefense;
                 player.endurance += ShieldActiveDamageReduction;
-            }
         }
 
         // In vanity, provides a visual shield but no actual functionality

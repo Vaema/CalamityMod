@@ -302,8 +302,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.DeerclopsRangedProjectile, defenseDamage }, // Deerclops rubble
-                { ProjectileID.DemonSickle, defenseDamage },
                 { ProjectileID.FairyQueenLance, defenseDamage }, // Empress of Light's lance walls
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
@@ -316,7 +314,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmalSphere, defenseDamage },
                 { ProjectileID.Present, defenseDamage }, // Falling present bombs in Frost Moon
                 { ProjectileID.QueenSlimeSmash, defenseDamage },
-                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets, reused by Rev+ Skeletron Prime
                 { ProjectileID.RockGolemRock, defenseDamage },
                 { ProjectileID.RuneBlast, defenseDamage }, // Rune Wizard shots
                 { ProjectileID.SaucerDeathray, defenseDamage },

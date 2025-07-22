@@ -27,9 +27,11 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             }
         }
 
+        public static int FireballDamage = 110; // 440
+
         public override void SetDefaults()
         {
-            NPC.damage = 100;
+            NPC.damage = 0;
             NPC.width = 110;
             NPC.height = 88;
             NPC.defense = 0;
@@ -63,8 +65,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void AI()
         {
-            NPC.damage = 0;
-
             // Difficulty modes
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
@@ -134,8 +134,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             Vector2 destination = Main.player[Main.npc[(int)NPC.ai[2]].target].Center - NPC.Center;
                             Vector2 velocity = Vector2.Normalize(destination) * fireballVelocity;
                             int type = ProjectileID.CultistBossFireBallClone;
-                            int damage = NPC.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, FireballDamage, 0f, Main.myPlayer);
                             Main.projectile[proj].tileCollide = false;
                         }
                     }

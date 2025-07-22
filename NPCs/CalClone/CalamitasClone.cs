@@ -61,10 +61,15 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
+        public static int DartDamage = 23; // 92
+        public static int HellblastDamage = 27; // 108
+        public static int HellfireballDamage = 27; // 108
+        public static int FireblastDamage = 35; // 140; Also applies to GFB Gigablasts
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 60; // 120
             NPC.npcSlots = 14f;
             NPC.width = 120;
             NPC.height = 120;
@@ -447,7 +452,7 @@ namespace CalamityMod.NPCs.CalClone
                         if (calamityGlobalNPC.newAI[2] == 2f)
                         {
                             int type = ModContent.ProjectileType<SCalBrimstoneFireblast>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = FireblastDamage;
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
@@ -480,7 +485,7 @@ namespace CalamityMod.NPCs.CalClone
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ModContent.ProjectileType<BrimstoneHellblast2>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = HellblastDamage;
                             float projSpeed = 4f;
                             // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
                             if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f && calamityGlobalNPC.newAI[2] != 2f)
@@ -605,7 +610,7 @@ namespace CalamityMod.NPCs.CalClone
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<BrimstoneHellblast2>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = HellblastDamage;
                         float projSpeed = 4f;
                         if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
                         {
@@ -672,12 +677,11 @@ namespace CalamityMod.NPCs.CalClone
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                        int damage = NPC.GetProjectileDamage(type);
                         bool shootPredictiveShot = CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool();
                         Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
-                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         Main.projectile[proj].netUpdate = true;
                     }
                 }
@@ -704,15 +708,14 @@ namespace CalamityMod.NPCs.CalClone
                         float projectileVelocity = expertMode ? 12.5f : 11f;
                         projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
 
                         if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
                             type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                            damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                         else
                         {
@@ -782,9 +785,8 @@ namespace CalamityMod.NPCs.CalClone
                     if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
                     {
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                        int damage = NPC.GetProjectileDamage(type);
                         Vector2 fireballVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
                     }
                 }
 
@@ -995,7 +997,6 @@ namespace CalamityMod.NPCs.CalClone
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
