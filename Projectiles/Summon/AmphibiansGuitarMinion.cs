@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Summon
                 SoundStyle spawnSound = new("CalamityMod/Sounds/Item/AmphibiansGuitarSummon");
                 SoundEngine.PlaySound(spawnSound with { Volume = 0.8f, Pitch = (GuitarSprite == 2 || GuitarSprite == 5) ? -0.15f : 0f }, Projectile.Center);
 
-                ShootTimer = GuitarSprite * 10f;
+                ShootTimer = GuitarSprite * 12f;
 
                 _hasSpawned = true;
             }
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Summon
             if (Target != null)
             {
                 bool bigShot = ShootCount % 3 == 0;
-                if (ShootTimer > 80f && Main.myPlayer == Projectile.owner)
+                if (ShootTimer > 96f && Main.myPlayer == Projectile.owner)
                 {
                     for (int i = 0; i < (bigShot ? 3 : 1); i++)
                     {
@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.NewProjectile(
                             Projectile.GetSource_FromThis(),
                             Projectile.Center,
-                            CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, 18f * (1f - Math.Abs(rot))).RotatedBy(rot),
+                            CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, Target, (bigShot ? 36f : 25f) * (1f - Math.Abs(rot))).RotatedBy(rot),
                             ProjectileType<AmphibiansGuitarProjectile>(),
                             Projectile.damage,
                             Projectile.knockBack,
@@ -139,8 +139,6 @@ namespace CalamityMod.Projectiles.Summon
                 ShootTimer++;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         public override bool PreDraw(ref Color lightColor)
         {

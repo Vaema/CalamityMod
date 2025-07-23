@@ -20,8 +20,8 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 100;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (!target.friendly)
             {
-                target.AddBuff(BuffID.Confused, 300);
+                target.AddBuff(BuffID.Confused, 60);
             }
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Confused, 300);

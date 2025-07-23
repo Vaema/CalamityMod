@@ -21,8 +21,8 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 80;
             NPC.width = 40;
             NPC.height = 40;
-            NPC.defense = 18;
-            NPC.lifeMax = 375;
+            NPC.defense = 32;
+            NPC.lifeMax = 600;
             NPC.knockBackResist = 0.95f;
             NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.HitSound = SoundID.NPCHit7;
@@ -32,10 +32,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<BohldohrBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

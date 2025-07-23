@@ -39,7 +39,7 @@ SetBonus: {
 		'''
 		Multiplies all cold-based debuff damage by 1.25x
 		Cold enemies will deal reduced contact damage to the player
-		Provides immunity to the Chilled, Frozen, Frostburn and Glacial State debuffs
+		Provides immunity to the Chilled, Frozen, and Frostburn debuffs
 		'''
 	Rain:
 		'''
@@ -60,7 +60,6 @@ SetBonus: {
 		'''
 	Gladiator:
 		'''
-		+3 defense
 		+60 maximum stealth
 		5% increased rogue damage and 10% increased velocity
 		'''

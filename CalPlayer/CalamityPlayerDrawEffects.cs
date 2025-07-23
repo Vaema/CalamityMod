@@ -71,15 +71,29 @@ namespace CalamityMod.CalPlayer
             if (DoG != null && Main.mapStyle != 2)
             {
                 Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-                var dis = Player.Distance(DoG.NPC.Center);
-                if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                var rift = DoG.GetRiftLocationSafe();
+                if (rift != Vector2.Zero)
                 {
-                    string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                    /*string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
                     string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
-                    var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
-
-                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.5f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;*/
+                    var dist = Player.Distance(rift);
+                    var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
+                    float scale = 1f;
+                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(rift) * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition, null, Color.White * 0.15f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1), 0, tex.Size() / 2f, scale * 0.9f, SpriteEffects.FlipHorizontally, 0);
                 }
+                else
+                {
+                    var dis = Player.Distance(DoG.NPC.Center);
+                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    {
+                        string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                        string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
+                        var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
+                        Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.15f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    }
+                }
+                
             }
 
             // Dust modifications while high.
@@ -254,15 +268,6 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.eutrophication && drawInfo.shadow == 0f)
                 Eutrophication.DrawEffects(drawInfo);
-
-            if (calamityPlayer.gState && drawInfo.shadow == 0f)
-            {
-                // These lines cannot be moved to Glacial State's own file
-                r *= 0.13f;
-                g *= 0.66f;
-
-                GlacialState.DrawEffects(drawInfo);
-            }
 
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
@@ -475,52 +480,6 @@ namespace CalamityMod.CalPlayer
 
             Player drawPlayer = drawInfo.drawPlayer;
             Item item = drawPlayer.ActiveItem();
-
-            // Vanity accessory effects, allows them to draw while the game is paused
-            if (drawPlayer.Calamity().ghostBracelet)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if (drawPlayer.Calamity().punchCard)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            // Need to set all of these so that certain vanity pieces like Capricorn Tail don't screw it up
-            if (drawPlayer.Calamity().ghostBracelet || ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide) ||
-                drawPlayer.Calamity().punchCard || ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide) ||
-                ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide))
-            {
-                drawInfo.legsGlowMask = -1;
-                drawInfo.legsOffset = Vector2.Zero;
-                drawInfo.bodyGlowMask = -1;
-                drawInfo.headGlowMask = -1;
-                drawInfo.helmetOffset = Vector2.Zero;
-            }
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&

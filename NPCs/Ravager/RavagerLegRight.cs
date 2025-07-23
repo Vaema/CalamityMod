@@ -20,7 +20,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 0;
+            NPC.damage = 0; // No contact damage
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 40;
@@ -45,10 +45,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()

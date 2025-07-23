@@ -22,6 +22,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<AgedLablightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 299;
@@ -77,11 +78,6 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             r = 31f / 510f;
             g = 251f / 510f;
             b = 255f / 510f;
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<AgedLablightItem>());
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

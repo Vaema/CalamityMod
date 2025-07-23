@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 10;
-            NPC.lifeMax = 75;
+            NPC.lifeMax = 100;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.9f;
             NPC.value = Item.buyPrice(0, 0, 5, 0);
@@ -43,10 +43,6 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()

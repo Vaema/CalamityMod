@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 12;
-            NPC.lifeMax = 750;
+            NPC.lifeMax = 500;
             NPC.knockBackResist = 0.25f;
             NPC.noTileCollide = true;
             NPC.aiStyle = -1;
@@ -96,10 +96,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

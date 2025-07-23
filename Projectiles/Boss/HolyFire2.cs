@@ -50,15 +50,11 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.frame > 3)
                 Projectile.frame = 0;
 
-            float maxVelocity = Projectile.ai[0] == 0f ? 7f : BossRushEvent.BossRushActive ? 13f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
+            float maxVelocity = Projectile.ai[0] == 0f ? 7f : CalamityWorld.death ? 11f : CalamityWorld.revenge ? 10f : Main.expertMode ? 9f : 7f;
             if (Math.Abs(Projectile.velocity.X) < maxVelocity)
                 Projectile.velocity.X *= 1.05f;
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
-
-            // Natural damage is removed from GFB
-            if (Projectile.ai[1] == 0f && !Main.zenithWorld)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Providence>());
 
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 180f && Projectile.ai[1] > 60f)

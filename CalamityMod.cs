@@ -34,7 +34,7 @@ namespace CalamityMod
         public override void Load()
         {
             // Initialize the EnemyStats struct as early as it is safe to do so
-            NPCStats.Load();
+            NPCStats.LoadDebuffs();
 
             // Initialize Calamity Balance, since it is tightly coupled with the remaining systems
             CalamityGlobalItem.LoadTweaks();
@@ -58,7 +58,7 @@ namespace CalamityMod
         #region Unload
         public override void Unload()
         {
-            NPCStats.Unload();
+            NPCStats.UnloadDebuffs();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
 

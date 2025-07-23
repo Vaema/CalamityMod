@@ -54,7 +54,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             width = 20;
             height = 20;
-
             return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
         }
 
@@ -219,8 +218,6 @@ namespace CalamityMod.Projectiles.Rogue
             }
             else
             {
-                //Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
-
                 Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/SamsaraSlicerGlow").Value, Projectile.Center - Main.screenPosition + randVec, tex.Frame(), new Color(0f, 1f, 0f, 0f), Projectile.rotation, tex.Frame().Center(), 1f, SpriteEffects.None);
             }
             return false;

@@ -305,7 +305,7 @@ namespace CalamityMod.Tiles
 
                 // Drop Evil Smasher on every 12 alter smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
-                    DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true);
+                    DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true, prefix: true);
             }
 
             // Drop Golden Bombs at a 0.33% chance from Pots
@@ -356,7 +356,7 @@ namespace CalamityMod.Tiles
             }
         }
 
-        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default)
+        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default, bool prefix = false)
         {
             // Multiplayer Client should not spawn item themselves
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -366,14 +366,14 @@ namespace CalamityMod.Tiles
             if (asStack)
             {
                 Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
-                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity);
+                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity, prefixGiven: prefix ? -1 : 0);
             }
             else
             {
                 for (int k = 0; k < quantity; k += 1)
                 {
                     Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
-                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1);
+                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1, prefixGiven: prefix ? -1 : 0);
                 }
             }
         }

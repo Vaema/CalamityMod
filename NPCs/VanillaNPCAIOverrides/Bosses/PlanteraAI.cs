@@ -27,12 +27,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float StopChargeGateValue = BeginChargeSlowDownGateValue - 30f;
         public const float MovementVelocityMultiplierForSlowAttacks = 0.5f;
 
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.4f; // 140
+        public static int PinkSeedDamage = 19; // 76
+        public static int PoisonSeedDamage = 24; // 96
+        public static int ThornBallDamage = 27; // 108
+        public static int ThornBallSpikeDamage = 22; // 88
+
+        // Rev+ exclusive
+        public static int GasBulbDamage = 27; // 108
+        public static int PinkCloudDamage = 22; // 88
+        public static int GreenCloudDamage = 24; // 96
+
         public static bool BuffedPlanteraAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
@@ -51,16 +62,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool vomitFreeTentacles = lifeRatio < 0.25f && death;
             bool phase4 = lifeRatio < 0.2f;
 
-            // Contact damage values for phase 2
-            int setDamage = (int)Math.Round(npc.defDamage * 1.4);
-            int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
+            if (phase2)
+                npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
 
             // Variables and target
-            bool enrage = bossRush;
+            bool enrage = false;
             bool despawn = false;
 
             // Check for Jungle
-            bool surface = !bossRush && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
+            bool surface = !BossRushEvent.BossRushActive && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
 
             // Tentacle limits
             int maxTentaclesAfterFirstTentaclePhase = death ? 4 : 2;
@@ -121,22 +131,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             hookPositionY /= numHooksSpawned;
 
             // Velocity and acceleration
-            float velocity = bossRush ? 12f : phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
-            float acceleration = bossRush ? 0.12f : phase3 ? 0.06f : 0.04f;
-            float chargeLineUpVelocity = bossRush ? 20f : phase4 ? 12f : phase3 ? 10f : 8f;
-            float chargeLineUpAcceleration = bossRush ? 0.8f : phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
-            float chargeVelocity = bossRush ? 30f : phase4 ? 22f : phase3 ? 20f : 18f;
-            float chargeDeceleration = bossRush ? 0.85f : phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
+            float velocity = phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
+            float acceleration = phase3 ? 0.06f : 0.04f;
+            float chargeLineUpVelocity = phase4 ? 12f : phase3 ? 10f : 8f;
+            float chargeLineUpAcceleration = phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
+            float chargeVelocity = phase4 ? 22f : phase3 ? 20f : 18f;
+            float chargeDeceleration = phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
 
             // Enrage if target is on the surface
-            if (!bossRush && (surface || Main.player[npc.target].position.Y > Main.UnderworldLayer * 16))
+            if (!BossRushEvent.BossRushActive && (surface || Main.player[npc.target].position.Y > Main.UnderworldLayer * 16))
             {
                 enrage = true;
                 velocity += 8f;
                 acceleration = 0.15f;
             }
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && enrage;
+            npc.Calamity().CurrentlyEnraged = enrage;
 
             // Movement relative to the target and hook positions
             Vector2 npcCenterAccountingForHooks = new Vector2(hookPositionX, hookPositionY);
@@ -214,7 +224,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool shootPoisonSeed = npc.ai[1] % 9f == 0f && !shootThornBall;
                         float projectileSpeed = 14f;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
-                        int damage = npc.GetProjectileDamage(projectileType);
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -302,7 +312,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int totalProjectiles = death ? 36 : 30;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
                         float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
@@ -321,7 +330,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * randomSpeed, type, GreenCloudDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
@@ -368,7 +377,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     float projectileSpeed = 9f;
                     int projectileType = ModContent.ProjectileType<HomingGasBulb>();
-                    int damage = npc.GetProjectileDamage(projectileType);
                     Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                     Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -382,7 +390,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, GasBulbDamage, 0f, Main.myPlayer);
                 }
             }
 
@@ -391,11 +399,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Slow down and return to normal behavior
                 if (npc.ai[3] <= BeginChargeSlowDownGateValue)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
                     npc.velocity *= chargeDeceleration;
-                    float timeToDecelerateDecrement = bossRush ? 2f : phase4 ? 1.5f : 1f;
+                    float timeToDecelerateDecrement = phase4 ? 1.5f : 1f;
                     npc.ai[3] -= timeToDecelerateDecrement;
                     if (npc.ai[3] <= StopChargeGateValue)
                     {
@@ -428,14 +433,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Emit spore gas in phase 3
                 else if (npc.ai[3] <= BeginChargeGateValue)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     float sporeGasDashGateValue = death ? 6f : 9f;
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
                         int projectileType = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(projectileType);
                         float randomVelocityMultiplier = secondCharge ? 0.05f : death ? 0.3f : 0.2f;
                         Vector2 projectileVelocity = npc.velocity * Main.rand.NextVector2CircularEdge(randomVelocityMultiplier, randomVelocityMultiplier);
                         Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 30f;
@@ -450,7 +451,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float ai0 = Main.rand.Next(3);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, ai0);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, GasBulbDamage, 0f, Main.myPlayer, ai0);
                     }
 
                     npc.ai[3] -= 1f;
@@ -461,9 +462,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Move a specified distance away from the target and charge once that distance is reached
                 else
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
                     // Line up before charging
                     if (npc.Calamity().newAI[0] == 0f)
                     {
@@ -503,9 +501,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] -= timeToLineUpChargeDecrement;
                     if (npc.ai[3] <= BeginChargeGateValue)
                     {
-                        // Set damage
-                        npc.damage = setDamage;
-
                         // Charge
                         npc.ai[3] = BeginChargeGateValue;
                         npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
@@ -523,7 +518,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int totalProjectiles = secondCharge ? 6 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
                         float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
@@ -542,7 +536,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, GasBulbDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
@@ -554,9 +548,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else
             {
-                // Avoid cheap bullshit
-                npc.damage = phase2 ? reducedSetDamage : 0;
-
                 // Velocity ranges from 4 to 7.2, Acceleration ranges from 0.04 to 0.072, non-enraged phase 1
                 // Velocity ranges from 7 to 12.6, Acceleration ranges from 0.07 to 0.126, non-enraged phase 2
                 // Velocity ranges from 9 to 16.2, Acceleration ranges from 0.07 to 0.126, non-enraged phase 3
@@ -679,7 +670,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool shootPoisonSeed = (CalamityWorld.LegendaryMode || Main.rand.NextBool(death ? 2 : 4)) && !shootThornBall;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         float projectileSpeed = death ? 16f : 14f;
-                        int damage = npc.GetProjectileDamage(projectileType);
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
                         Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
 
@@ -793,8 +784,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[3] >= shootProjectileGateValue)
                     {
                         float projectileSpeed = 14f;
-                        if (bossRush)
-                            projectileSpeed += 4f;
 
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
 
@@ -806,7 +795,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             numProj++;
 
                         int type = ProjectileID.PoisonSeedPlantera;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = PoisonSeedDamage;
                         float rotation = MathHelper.ToRadians(spread);
                         bool vomitTentacles = vomitFreeTentacles && NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxTentaclesAfterFirstTentaclePhase;
                         if (vomitTentacles)
@@ -818,7 +807,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootPinkSeed)
                             {
                                 type = ProjectileID.SeedPlantera;
-                                damage = npc.GetProjectileDamage(type);
+                                damage = PinkSeedDamage;
                             }
                             else
                                 type = ProjectileID.PoisonSeedPlantera;
@@ -870,7 +859,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootThornBall)
                             {
                                 type = ProjectileID.ThornBall;
-                                damage = npc.GetProjectileDamage(type);
+                                damage = ThornBallDamage;
                                 Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -968,7 +957,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static bool BuffedPlanterasHookAI(NPC npc, Mod mod)
         {
             // Variables
-            bool enrage = BossRushEvent.BossRushActive;
+            bool enrage = false;
             bool despawn = false;
             bool death = CalamityWorld.death || enrage;
 
@@ -989,7 +978,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 despawn = true;
 
             // Enrage if Plantera's target is on the surface
-            if (!enrage && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
+            if (!enrage && !BossRushEvent.BossRushActive && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
             {
                 npc.localAI[0] -= 4f;
                 enrage = true;
@@ -1176,8 +1165,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float extendTime = 180f;
             if (planteraIsCharging)
             {
-                npc.damage = 0;
-
                 if (npc.localAI[0] > 0f)
                 {
                     npc.localAI[0] = 0f;
@@ -1186,7 +1173,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
             else if (npc.localAI[0] < extendTime)
             {
-                npc.damage = npc.defDamage;
                 npc.localAI[0] += 1f;
                 if (npc.localAI[0] >= extendTime)
                     npc.SyncExtraAI();

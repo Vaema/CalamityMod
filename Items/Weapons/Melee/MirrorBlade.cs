@@ -11,6 +11,8 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.Audio;
+using CalamityMod.Items.Weapons.Summon;
 using Terraria.ModLoader;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -34,6 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             base.SetStaticDefaults();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidConcentrationStaff>();
         }
         public override void SetDefaults()
         {

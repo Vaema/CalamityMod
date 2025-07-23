@@ -10,11 +10,11 @@ namespace CalamityMod.Items.Weapons.Magic
     public class ValkyrieRay : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        // The base use time of the weapon is 47: 28 charge frames + 19 cooldown frames.
+        // The base use time of the weapon is 28: 18 charge frames + 10 cooldown frames.
         // The rate at which it progresses through its charge and discharge cycle is dynamically sped up by reforges.
         // This math is handled in its holdout projectile, ValkyrieRayStaff.
-        public const int ChargeFrames = 28;
-        public const int CooldownFrames = 19;
+        public const int ChargeFrames = 18;
+        public const int CooldownFrames = 10;
         public const float GemDistance = 18f;
         public static readonly Color LightColor = new Color(235, 40, 121);
 
@@ -27,14 +27,14 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 54;
             Item.height = 52;
-            Item.damage = 53;
+            Item.damage = 115;
             Item.knockBack = 8.5f;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 26;
+            Item.mana = 17;
             Item.useTime = ChargeFrames + CooldownFrames;
             Item.useAnimation = ChargeFrames + CooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.NPCDeath7;
+            Item.UseSound = SoundID.NPCDeath7 with { Volume = 0.7f };
             Item.useTurn = false;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -44,6 +44,8 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 25f;
             Item.autoReuse = true;
         }
+
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 11;
 
         public override void AddRecipes()
         {

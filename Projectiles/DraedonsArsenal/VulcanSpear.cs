@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         else
                             p.velocity *= 0.9f;
                         if (p.ai[0] % 2 == 0)
-                            p.timeLeft++;
+                            p.timeLeft += p.MaxUpdates;
                     }
                 }
             }

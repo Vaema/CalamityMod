@@ -90,19 +90,6 @@ namespace CalamityMod.Projectiles.Rogue
                     int ice = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicIceBurst>(), (int)(Projectile.damage * 1.5), Projectile.knockBack, Projectile.owner, 0f, 0.85f + Main.rand.NextFloat() * 1.15f, 1f);
                     if (ice.WithinBounds(Main.maxProjectiles))
                         Main.projectile[ice].DamageType = RogueDamageClass.Instance;
-
-                    int buffType = ModContent.BuffType<GlacialState>();
-                    float radius = 112f; // 7 blocks
-
-                    foreach (Player player in Main.ActivePlayers)
-                    {
-                        Player owner = Main.player[Projectile.owner];
-                        if ((owner.team != player.team || player.team == 0) && player.hostile && owner.hostile && !player.dead && !player.buffImmune[buffType] && Vector2.Distance(Projectile.Center, player.Center) <= radius)
-                        {
-                            if (player.FindBuffIndex(buffType) == -1)
-                                player.AddBuff(buffType, 60, false);
-                        }
-                    }
                 }
             }
         }

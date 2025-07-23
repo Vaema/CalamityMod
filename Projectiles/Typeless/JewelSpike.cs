@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int index = 0; index < 3; ++index)
+                for (int index = 0; index < 2; ++index)
                 {
                     float SpeedX = -Projectile.velocity.X * Main.rand.NextFloat(0.4f, 0.7f) + Main.rand.NextFloat(-8f, 8f);
                     float SpeedY = -Projectile.velocity.Y * Main.rand.NextFloat(0.4f, 0.7f) + Main.rand.NextFloat(-8f, 8f);

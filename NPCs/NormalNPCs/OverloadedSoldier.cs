@@ -29,8 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 18;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = NPC.downedMoonlord ? 1700 : 170;
+            NPC.lifeMax = NPC.downedMoonlord ? 3000 : 300;
             NPC.knockBackResist = 0.3f;
             NPC.value = Item.buyPrice(0, 0, 2, 0);
             NPC.HitSound = SoundID.NPCHit2;
@@ -39,10 +38,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<OverloadedSoldierBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

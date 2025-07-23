@@ -12,13 +12,26 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EmpressofLightAI
     {
+        // Vanilla values
+        public static float DashDamageMult = 1.5f; // 165
+        public static int PrismaticBoltDamage = 30; // 120
+        public static int EverlastingRainbowDamage = 30; // 120
+        public static int EtherealLanceDamage = 30; // 120
+        public static int SunDanceDamage = 35; // 140
+
+        // Vanilla sets her defDamage to 184 (80 * 2 * 1.15) in Expert Mode
+        // However, some weird contraption in her Expert AI that knocks her base contact damage to the intended value of 110
+        // This hasn't been found anywhere so our solution for now is avoid using defDamage altogether
+        public static int ContactDamageCorrection = 110;
+
+        public static int CalculateDamageForEnrage(this int damage) => NPC.ShouldEmpressBeEnraged() ? damage * 2 : damage;
+
         public static bool BuffedEmpressofLightAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             // Difficulty bools.
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Rotation
             npc.rotation = npc.velocity.X * 0.005f;
@@ -44,9 +57,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.life == npc.lifeMax && dayTimeEnrage && !npc.AI_120_HallowBoss_IsGenuinelyEnraged())
                 npc.ai[3] += 2f;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && dayTimeEnrage;
-
-            int projectileDamageMultiplier = dayTimeEnrage ? 2 : 1;
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && dayTimeEnrage;
 
             Vector2 rainbowStreakDistance = new Vector2(-250f, -350f);
             Vector2 everlastingRainbowDistance = new Vector2(0f, -450f);
@@ -354,7 +365,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     NPCAimedTarget targetData5 = npc.GetTargetData();
                     bool despawnFlag = false;
-                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                     {
                         if (!Main.dayTime)
                             despawnFlag = true;
@@ -406,7 +417,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((int)npc.ai[1] % streakSpawnFrequency == 0 && npc.ai[1] < 60f)
                     {
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = PrismaticBoltDamage.CalculateDamageForEnrage();
 
                         float ai3 = npc.ai[1] / 60f;
                         Vector2 rainbowStreakVelocity = new Vector2(0f, death ? -10f : -8f).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
@@ -540,7 +551,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = EtherealLanceDamage.CalculateDamageForEnrage();
 
                             Vector2 v3 = targetHoverPos - spawnLocation;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -620,9 +631,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         for (float i = 0f; i < 1f; i += 1f / totalProjectiles)
                         {
                             int projectileType = ProjectileID.HallowBossLastingRainbow;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = EverlastingRainbowDamage.CalculateDamageForEnrage();
                             int projectileType2 = ProjectileID.HallowBossRainbowStreak;
-                            int projectileDamage2 = npc.GetProjectileDamage(projectileType2) * projectileDamageMultiplier;
+                            int projectileDamage2 = PrismaticBoltDamage.CalculateDamageForEnrage();
 
                             float projRotationMultiplier = i;
                             Vector2 spinningpoint = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 + MathHelper.TwoPi * projRotationMultiplier + projRotation);
@@ -676,7 +687,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     // Increase durability.
-                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (bossRush ? 0.99f : 0.575f);
+                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : 0.575f;
 
                     int totalSunDances = phase2 ? 2 : 3;
                     float sunDanceGateValue = dayTimeEnrage ? 35f : death ? 40f : 50f;
@@ -693,7 +704,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] % sunDanceGateValue == 0f && npc.ai[1] < totalSunDancePhaseTime)
                     {
                         int projectileType = ProjectileID.FairyQueenSunDance;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = SunDanceDamage.CalculateDamageForEnrage();
 
                         int sunDanceExtension = (int)(npc.ai[1] / sunDanceGateValue);
                         int targetFloatDirection = (targetData2.Center.X > npc.Center.X) ? 1 : 0;
@@ -813,7 +824,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = EtherealLanceDamage.CalculateDamageForEnrage();
 
                             for (float i = 0f; i <= 1f; i += 1f / totalProjectiles)
                             {
@@ -895,7 +906,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if ((npc.ai[1] - 1f) % rainbowStreakGateValue == 0f)
                         {
                             int projectileType = ProjectileID.HallowBossRainbowStreak;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = PrismaticBoltDamage.CalculateDamageForEnrage();
 
                             float ai3 = (npc.ai[1] - chargeGateValue - 1f) / chargeDuration;
                             Vector2 rainbowStreakVelocity = new Vector2(0f, death ? -5f : -4f).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
@@ -936,7 +947,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[1] == chargeGateValue + chargeDuration)
                             npc.velocity *= 0.45f;
 
-                        npc.damage = (int)Math.Round(npc.defDamage * (dayTimeEnrage ? 3D : 1.5));
+                        // Unlike other temporary damage boosts from bosses, vanilla Empress AI increases damage as defDamage while dashing, so we don't need to account for it
+                        npc.damage = (int)Math.Round(ContactDamageCorrection.CalculateDamageForEnrage() * DashDamageMult);
                     }
                     else
                     {
@@ -1065,7 +1077,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = EtherealLanceDamage.CalculateDamageForEnrage();
 
                             Vector2 v = straightLanceSpawnPredict - straightLanceSpawnDirection;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1142,7 +1154,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((int)npc.ai[1] % stationaryStreakSpawnFrequency == 0 && shouldSpawnStreaks)
                     {
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = PrismaticBoltDamage.CalculateDamageForEnrage();
 
                         Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((death ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1211,7 +1223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool shouldDespawn = false;
                     if (!trueDespawnFlag)
                     {
-                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                         {
                             if (!Main.dayTime)
                                 shouldDespawn = true;

@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             if (Projectile.timeLeft == 600)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Yharon>());
+                Projectile.damage = Yharon.TornadoDamage;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= 600;

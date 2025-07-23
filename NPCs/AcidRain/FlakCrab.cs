@@ -43,7 +43,6 @@ namespace CalamityMod.NPCs.AcidRain
             if (DownedBossSystem.downedPolterghast)
             {
                 NPC.lifeMax = 4200;
-                NPC.DR_NERD(0.2f);
             }
 
             NPC.knockBackResist = 0f;
@@ -60,10 +59,6 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
