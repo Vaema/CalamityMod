@@ -83,10 +83,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
+        public static int OrbDamage = 85; // 340
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 172;
             NPC.height = 108;
             NPC.defense = 100;
@@ -439,10 +441,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<AresTeslaOrb>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 Vector2 orbOffset = Vector2.Normalize(teslaOrbVelocity) * 40f + Vector2.UnitY * 8f;
                                 float identity = fireMoreOrbs ? -2f : calamityGlobalNPC.newAI[3] + (calamityGlobalNPC.newAI[2] - teslaOrbTelegraphDuration) / divisor;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + orbOffset, teslaOrbVelocity, type, damage, 0f, Main.myPlayer, identity);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + orbOffset, teslaOrbVelocity, type, OrbDamage, 0f, Main.myPlayer, identity);
                             }
 
                             // Recoil
@@ -479,8 +480,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     telSound.Stop();
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -692,7 +691,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

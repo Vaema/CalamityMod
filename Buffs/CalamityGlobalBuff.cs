@@ -36,10 +36,6 @@ namespace CalamityMod.Buffs
             {
                 player.arrowDamage *= 0.955f;
             }
-            else if (type == BuffID.Ironskin)
-            {
-                player.statDefense += CalamityUtils.GetScalingDefense(-1) - 8;
-            }
             else if (type == BuffID.MagicPower)
             {
                 player.GetDamage<MagicDamageClass>() -= 0.1f;
@@ -92,10 +88,6 @@ namespace CalamityMod.Buffs
             else if (type == BuffID.Shine)
             {
                 player.Calamity().shine = true;
-            }
-            else if (type == BuffID.IceBarrier)
-            {
-                player.endurance -= 0.1f;
             }
 
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
@@ -212,10 +204,6 @@ namespace CalamityMod.Buffs
 
                 case BuffID.IceBarrier:
                     tip = tip.Replace("25", "15");
-                    break;
-
-                case BuffID.Ironskin:
-                    tip = tip.Replace("8", CalamityUtils.GetScalingDefense(-1).ToString());
                     break;
 
                 case BuffID.LeafCrystal:

@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
         {
             var modPlayer = player.Calamity();
             player.thorns += 0.5f;
-            player.statLifeMax2 += 60;
+            player.statLifeMax2 += 50;
             player.GetDamage<GenericDamageClass>() += 0.11f;
             player.GetCritChance<GenericDamageClass>() += 8;
         }

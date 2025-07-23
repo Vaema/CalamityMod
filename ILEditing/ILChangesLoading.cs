@@ -74,7 +74,7 @@ namespace CalamityMod.ILEditing
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
-            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
+            On_Player.DashMovement += DashMovementEdits;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;

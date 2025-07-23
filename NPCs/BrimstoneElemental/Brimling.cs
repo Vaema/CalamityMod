@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage values are pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 0;
@@ -146,7 +146,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     float projectileVelocity = 5f;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = BrimstoneElemental.DartDamage;
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocity * 3f);
                 }
             }
@@ -239,7 +239,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             {
                 float projectileVelocity = 5f;
                 int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = BrimstoneElemental.HellfireballDamage;
                 SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, NPC.Center);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.X, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.Y);
             }
