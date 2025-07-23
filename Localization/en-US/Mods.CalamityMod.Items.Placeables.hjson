@@ -1888,6 +1888,101 @@ CosmiliteWorkBench: {
 	Tooltip: ""
 }
 
+DriftwoodBaroqueCello: {
+	DisplayName: Driftwood Baroque Cello
+	Tooltip: ""
+}
+
+DriftwoodBathtub: {
+	DisplayName: Driftwood Bathtub
+	Tooltip: ""
+}
+
+DriftwoodBed: {
+	DisplayName: Driftwood Bed
+	Tooltip: ""
+}
+
+DriftwoodBookcase: {
+	DisplayName: Driftwood Bookcase
+	Tooltip: ""
+}
+
+DriftwoodCandelabra: {
+	DisplayName: Driftwood Candelabra
+	Tooltip: ""
+}
+
+DriftwoodCandle: {
+	DisplayName: Driftwood Candle
+	Tooltip: ""
+}
+
+DriftwoodChair: {
+	DisplayName: Driftwood Chair
+	Tooltip: ""
+}
+
+DriftwoodChandelier: {
+	DisplayName: Driftwood Chandelier
+	Tooltip: ""
+}
+
+DriftwoodChest: {
+	DisplayName: Driftwood Chest
+	Tooltip: ""
+}
+
+DriftwoodDoor: {
+	DisplayName: Driftwood Door
+	Tooltip: ""
+}
+
+DriftwoodDresser: {
+	DisplayName: Driftwood Dresser
+	Tooltip: ""
+}
+
+DriftwoodLamp: {
+	DisplayName: Driftwood Lamp
+	Tooltip: ""
+}
+
+DriftwoodLantern: {
+	DisplayName: Driftwood Lantern
+	Tooltip: ""
+}
+
+DriftwoodPlatform: {
+	DisplayName: Driftwood Platform
+	Tooltip: ""
+}
+
+DriftwoodSink: {
+	DisplayName: Driftwood Sink
+	Tooltip: Counts as a water source
+}
+
+DriftwoodSofa: {
+	DisplayName: Driftwood Sofa
+	Tooltip: ""
+}
+
+DriftwoodSundial: {
+	DisplayName: Driftwood Sundial
+	Tooltip: ""
+}
+
+DriftwoodTable: {
+	DisplayName: Driftwood Table
+	Tooltip: ""
+}
+
+DriftwoodWorkBench: {
+	DisplayName: Driftwood Work Bench
+	Tooltip: ""
+}
+
 AncientSmoothNavystone: {
 	DisplayName: Ancient Smooth Navystone
 	Tooltip: ""
