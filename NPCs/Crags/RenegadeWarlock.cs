@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 18;
             NPC.height = 40;
             NPC.defense = 16;
-            NPC.lifeMax = 100;
+            NPC.lifeMax = 300;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.ZombieXmas;
             AIType = NPCID.ChaosElemental;
@@ -46,10 +46,6 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

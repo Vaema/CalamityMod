@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -229,7 +230,5 @@ namespace CalamityMod.Projectiles.Summon
         {
             return new Color(100, 250, 250, Projectile.alpha);
         }
-
-        public override bool? CanDamage() => false;
     }
 }

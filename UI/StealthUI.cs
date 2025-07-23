@@ -98,7 +98,7 @@ namespace CalamityMod.UI
                     string maxStealthStr = (100f * modPlayer.rogueStealthMax).ToString("n2");
                     string textToDisplay = $"{CalamityUtils.GetTextValue("UI.Stealth")}: {stealthStr}/{maxStealthStr}\n";
 
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
                         textToDisplay += CalamityUtils.GetTextValue("UI.StealthShiftText");
                     }

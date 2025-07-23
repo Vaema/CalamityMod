@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
             Lighting.AddLight(Projectile.Center, 0f, 0.15f, 0.3f);
 
             float xVelocityMultiplier = 1.025f;
-            float xVelocityLimit = BossRushEvent.BossRushActive ? 24f : 12f;
+            float xVelocityLimit = 12f;
             if (Math.Abs(Projectile.velocity.X) < xVelocityLimit)
                 Projectile.velocity.X *= xVelocityMultiplier;
         }

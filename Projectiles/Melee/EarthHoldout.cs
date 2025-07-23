@@ -302,11 +302,11 @@ namespace CalamityMod.Projectiles.Melee
                 spawnBoom = false;
             }
 
-            int healPower = Projectile.ai[1] == -1 ? 90 : 80;
-            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
+            int healPower = Projectile.ai[1] == -1 ? 60 : 50;
+            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 35, 1, healPower));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.2f);
             }
 
             if (Projectile.numHits <= 2)

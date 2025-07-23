@@ -1224,6 +1224,11 @@ namespace CalamityMod.Items
                     player.GetCritChance<MagicDamageClass>() -= 15;
                     break;
 
+                case ItemID.ShroomiteBreastplate:
+                    player.GetDamage<RangedDamageClass>() -= 0.05f;
+                    player.GetCritChance<RangedDamageClass>() -= 5;
+                    break;
+
                 case ItemID.SquireAltHead:
                     player.GetDamage<MeleeDamageClass>() += 0.05f;
                     player.GetDamage<SummonDamageClass>() += 0.05f;
@@ -1496,9 +1501,6 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.FleshKnuckles || item.type == ItemID.BerserkerGlove || item.type == ItemID.HeroShield)
                 modPlayer.fleshKnuckles = true;
-
-            if (item.type == ItemID.WormScarf)
-                player.endurance -= 0.03f;
 
             if (item.type == ItemID.RoyalGel)
                 modPlayer.royalGel = true;

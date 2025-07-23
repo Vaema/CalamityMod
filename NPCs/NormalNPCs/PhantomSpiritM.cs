@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 32;
             NPC.height = 80;
             NPC.scale *= 1.1f;
-            NPC.defense = 25;
+            NPC.defense = 50;
             NPC.lifeMax = 2500;
             NPC.knockBackResist = 0.15f;
             AIType = -1;
@@ -37,10 +37,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             Banner = ModContent.NPCType<PhantomSpirit>();
             BannerItem = ModContent.ItemType<PhantomSpiritBanner>();
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

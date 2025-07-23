@@ -11,6 +11,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class GolemAI
     {
+        // Rev+ exclusive
+        public static int FireballDamage = 24; // 96 (modified to be always at maximum Expert damage and does not scale)
+        public static int LaserDamage = 29; // 116 (modified to be always at maximum Expert damage and does not scale)
+        public static int InfernoBoltDamage = 35; // 140
+
         public static bool BuffedGolemAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -22,8 +27,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.75f;
             bool phase3 = lifeRatio < 0.5f;
             bool phase4 = lifeRatio < 0.25f;
@@ -32,13 +36,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.localAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 npc.localAI[0] = 1f;
-                int numFists = death ? 2 : 1;
-                for (int i = 0; i < numFists; i++)
-                {
-                    float fistPunchTimeOffset = i * 30f;
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0, 0f, fistPunchTimeOffset);
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0, 0f, fistPunchTimeOffset);
-                }
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0);
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0);
                 NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 3, (int)npc.Center.Y - 57, NPCID.GolemHead);
             }
 
@@ -51,8 +50,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
             {
@@ -63,15 +62,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && (enrage || turboEnrage);
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && (enrage || turboEnrage);
 
             bool reduceFallSpeed = npc.velocity.Y > 0f && Collision.SolidCollision(npc.position + Vector2.UnitY * 1.1f * npc.velocity.Y, npc.width, npc.height);
 
@@ -207,10 +206,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             Vector2 laserVelocity = new Vector2(laserTargetXDist, laserTargetYDist);
                             int type = ProjectileID.EyeBeam;
-                            int damage = npc.GetProjectileDamage(type);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
+                                int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, LaserDamage, 0f, Main.myPlayer);
                                 Main.projectile[bodyLaser].timeLeft = enrage ? 720 : 360;
                                 if (turboEnrage && CalamityWorld.LegendaryMode)
                                     Main.projectile[bodyLaser].extraUpdates += 1;
@@ -518,23 +516,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 11.25f : 7.5f;
+                        float projectileVelocity = death ? 7.5f : 4.75f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
                             projectileVelocity *= 1.25f;
 
                         int type = ProjectileID.Fireball;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = FireballDamage;
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
                         int totalFireballsPerSide = 3;
-                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 25 : 35;
+                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 40 : 60;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
                         {
-                            // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
+                            // Spawn projectiles 0, 1, 2, 22, 23, and 24
                             if (i < totalFireballsPerSide || i >= totalIterations - totalFireballsPerSide)
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));
@@ -567,7 +565,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Vector2 fireFrom = new Vector2(npc.Center.X, npc.Center.Y - 60f);
                                 int projectileAmt = 2;
                                 int type = ProjectileID.EyeBeam;
-                                int damage = npc.GetProjectileDamage(type);
+                                int damage = LaserDamage;
                                 Vector2 laserVelocity = Vector2.UnitY * npc.velocity.Y * (turboEnrage ? 2f : enrage ? 1f : 0.5f);
                                 for (int i = 0; i < projectileAmt; i++)
                                 {
@@ -699,14 +697,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             NPC golem = Main.npc[NPC.golemBoss];
             Player player = Main.player[npc.target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (player.Center.Y > Main.worldSurface * 16.0)
+            if (player.Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)player.Center.X / 16;
                 int targetTilePosY = (int)player.Center.Y / 16;
@@ -715,12 +712,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             float aggression = turboEnrage ? (CalamityWorld.LegendaryMode ? 4f : 3f) : enrage ? 2f : death ? 1.7f : 1f;
@@ -891,54 +888,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 float maxPunchDistance = 700f;
-                int explosionLimit = 2;
                 if (death)
                 {
                     if (npc.life < npc.lifeMax / 2)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                     if (npc.life < npc.lifeMax / 4)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                 }
 
                 if (distanceFromRestPosition > maxPunchDistance || npc.collideX || npc.collideY)
                 {
                     // Avoid cheap bullshit
                     npc.damage = 0;
-
                     npc.noTileCollide = true;
                     npc.ai[0] = 0f;
-
-                    if (death)
-                    {
-                        int type = ProjectileID.InfernoHostileBlast;
-                        bool shootExplosion = true;
-                        int numExplosions = 0;
-                        for (int i = 0; i < Main.maxProjectiles; i++)
-                        {
-                            if (Main.projectile[i].active && Main.projectile[i].type == type)
-                            {
-                                numExplosions++;
-                                if (numExplosions >= explosionLimit)
-                                {
-                                    shootExplosion = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (shootExplosion)
-                        {
-                            int damage = npc.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 0f, 0f, 1f);
-                        }
-                    }
                 }
             }
             else
@@ -1019,8 +982,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Count body parts
             bool leftFistAlive = NPC.AnyNPCs(NPCID.GolemFistLeft);
@@ -1031,9 +993,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.Center = Main.npc[NPC.golemBoss].Center - new Vector2(3f, 57f) * npc.scale;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1042,12 +1004,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             // Alpha
@@ -1086,7 +1048,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     headFireballTargetY *= headFireballTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
                     int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(headFireballTargetX, headFireballTargetY);
@@ -1138,7 +1100,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     fireballFistsDedTargetY *= fireballFistsDedTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
                     int fireballAmount = death ? 3 : 1;
                     Vector2 fireballVelocity = new Vector2(fireballFistsDedTargetX, fireballFistsDedTargetY);
@@ -1162,7 +1124,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] = 0f;
 
                     int projType = ProjectileID.EyeBeam;
-                    int dmg = npc.GetProjectileDamage(projType);
+                    int dmg = LaserDamage;
 
                     if (npc.localAI[1] == 0f)
                     {
@@ -1268,16 +1230,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float golemLifeRatio = Main.npc[NPC.golemBoss].life / (float)Main.npc[NPC.golemBoss].lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.7f || golemLifeRatio < 0.85f || death;
             bool phase3 = lifeRatio < 0.55f || golemLifeRatio < 0.7f || death;
             bool phase4 = lifeRatio < 0.4f || golemLifeRatio < 0.55f || death;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1286,12 +1247,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || CalamityWorld.LegendaryMode;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || CalamityWorld.LegendaryMode)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             if (turboEnrage)
@@ -1455,7 +1416,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 freeHeadTargetY *= freeHeadTargetDist;
 
                 int projectileType = (phase3 || death) ? ProjectileID.InfernoHostileBolt : ProjectileID.Fireball;
-                int damage = npc.GetProjectileDamage(projectileType);
+                int damage = projectileType == ProjectileID.InfernoHostileBolt ? InfernoBoltDamage : FireballDamage;
                 float ai0 = projectileType == ProjectileID.InfernoHostileBolt ? Main.player[npc.target].Center.X : 0f;
                 float ai1 = projectileType == ProjectileID.InfernoHostileBolt ? Main.player[npc.target].Center.Y : 0f;
                 float ai2 = projectileType == ProjectileID.InfernoHostileBolt ? 1f : 0f;
@@ -1519,7 +1480,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     Vector2 laserVelocity = new Vector2(freeHeadProjTargetX, freeHeadProjTargetY);
                     int type = ProjectileID.EyeBeam;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = LaserDamage;
                     int freeHeadLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), freeHeadProjSpawn + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
                     Main.projectile[freeHeadLaser].timeLeft = enrage ? 600 : 300;
                     if (turboEnrage && CalamityWorld.LegendaryMode)

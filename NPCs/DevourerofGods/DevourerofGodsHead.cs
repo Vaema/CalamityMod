@@ -7,6 +7,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -212,10 +213,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             });
         }
 
+        public static int LaserWallDamage = 75; // 300
+        public static int FireballDamage = 60; // 240; Also applies to Legendary Mode Ichor Blob
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 104;
             NPC.height = 104;
@@ -239,9 +243,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(60, 0);
             if (CalamityWorld.LegendaryMode)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -379,10 +380,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             bool flyUpDuringLaserWalls = laserWallPhase == (int)LaserWallPhase.FireLaserWalls || (laserWallPhase == (int)LaserWallPhase.End && teleportTimer > 0);
             bool flies = NPC.ai[3] == 0f || flyUpDuringLaserWalls;
             Vector2 destination = flyUpDuringLaserWalls ? (player.Center - Vector2.UnitY * 480f) : player.Center;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -401,14 +401,14 @@ namespace CalamityMod.NPCs.DevourerofGods
             extrapitch = Main.zenithWorld ? 0.3f : 0f;
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - (lifeRatio * 0.75f + 0.25f));
 
-            float speed = bossRush ? 18f : death ? 16.5f : 15f;
-            float turnSpeed = bossRush ? 0.36f : death ? 0.33f : 0.3f;
-            float homingSpeed = bossRush ? 36f : death ? 30f : 24f;
-            float homingTurnSpeed = bossRush ? 0.48f : death ? 0.405f : 0.33f;
+            float speed = death ? 16.5f : 15f;
+            float turnSpeed = death ? 0.33f : 0.3f;
+            float homingSpeed = death ? 30f : 24f;
+            float homingTurnSpeed = death ? 0.405f : 0.33f;
 
             if (expertMode)
             {
@@ -418,7 +418,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 homingTurnSpeed += 0.15f * (1f - (lifeRatio * 0.75f + 0.25f));
             }
 
-            float groundPhaseTurnSpeed = bossRush ? 0.3f : death ? 0.24f : 0.18f;
+            float groundPhaseTurnSpeed = death ? 0.24f : 0.18f;
 
             if (expertMode)
                 groundPhaseTurnSpeed += 0.1f * (1f - (lifeRatio * 0.75f + 0.25f));
@@ -496,7 +496,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
-                Teleport(player, bossRush, death, revenge, expertMode, phase5);
+                Teleport(player, death, revenge, expertMode, phase5);
 
             // Just in case the projectile cap is reached and the teleport rift doesn't spawn.
             if (AwaitingPhase2Teleport && NPC.localAI[2] == 0f)
@@ -546,7 +546,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Dialogue the moment the second phase starts
-                if (NPC.localAI[2] == 60f && !bossRush)
+                if (NPC.localAI[2] == 60f && !BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.DoGPhase2";
                     Color messageColor = Color.Cyan;
@@ -655,7 +655,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         }
                         // Teleport
                         if (teleportTimer == 0)
-                            Teleport(player, bossRush, death, revenge, expertMode, phase5);
+                            Teleport(player, death, revenge, expertMode, phase5);
                     }
 
                     // Do the death animation once killed.
@@ -751,7 +751,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     calamityGlobalNPC.newAI[3] = 0f;
 
                                     // Anger message
-                                    if (!bossRush)
+                                    if (!BossRushEvent.BossRushActive)
                                     {
                                         string key = "Mods.CalamityMod.Status.Boss.DoGPhase3";
                                         Color messageColor = Color.Cyan;
@@ -825,7 +825,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
                                     int type = ModContent.ProjectileType<DoGFire>();
-                                    int damage = NPC.GetProjectileDamage(type);
+                                    int damage = FireballDamage;
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
@@ -846,7 +846,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (death && phase6)
                         {
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             float spacing = 320;
                             float miniInterval = 12;
                             float megaInterval = 120;
@@ -1269,8 +1269,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                         #region Flying AI
                         else
                         {
-                            double maximumSpeed1 = bossRush ? 0.52 : death ? 0.46 : 0.4;
-                            double maximumSpeed2 = bossRush ? 1.25 : death ? 1.125 : 1D;
+                            double maximumSpeed1 = death ? 0.46 : 0.4;
+                            double maximumSpeed2 = death ? 1.125 : 1D;
 
                             if (expertMode)
                             {
@@ -1494,7 +1494,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (revenge)
                             spawnDoGCountdown = 10;
 
-                        if (!bossRush)
+                        if (!BossRushEvent.BossRushActive)
                         {
                             string key = "Mods.CalamityMod.Status.Boss.DoGSubphase1";
                             Color messageColor = Color.Cyan;
@@ -1522,8 +1522,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Laser barrage attack variables
-                float laserBarrageGateValue = 1440f;
-                float laserBarrageShootGateValue = bossRush ? 160f : 240f;
+                float laserBarrageGateValue = death ? 1320f : 1440f;
+                float laserBarrageShootGateValue = 240f;
                 float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue;
 
                 // Spawn segments
@@ -1582,7 +1582,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -1945,8 +1945,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        double maximumSpeed1 = bossRush ? 0.52 : death ? 0.46 : 0.4;
-                        double maximumSpeed2 = bossRush ? 1.25 : death ? 1.125 : 1D;
+                        double maximumSpeed1 = death ? 0.46 : 0.4;
+                        double maximumSpeed2 = death ? 1.125 : 1D;
 
                         if (expertMode)
                         {
@@ -2074,61 +2074,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.netUpdate = true;
                     }
                 }
-                #endregion
-                #region Laser Wall AI
-                else if (NPC.ai[3] == 2)
-                {
-                    calamityGlobalNPC.newAI[2]++;
-                    if (laserWallPhase != (int)LaserWallPhase.End)
-                    {
-
-
-                        var dogRotation = player.DirectionTo(NPC.Center).ToRotation();
-                        var DOGDIR = 1;
-
-                        var goalpos = player.Center + new Vector2(1000, 0).RotatedBy(dogRotation + 0.05f * DOGDIR);
-
-                        var currentVelLength = NPC.velocity.Length();
-                        var goalVel = NPC.DirectionTo(goalpos) * currentVelLength;
-
-
-                        TurnTowards(goalpos, maxSpeed: 6f * calamityGlobalNPC.newAI[2] / 120f);
-                        NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength);
-
-                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
-                    }
-                }
-                #endregion
-                #region Decoil AI
-                else
-                {
-                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
-                    calamityGlobalNPC.newAI[2]++;
-                    if (calamityGlobalNPC.newAI[2] >= 45)
-                    {
-                        NPC.ai[3] = 0;
-                        calamityGlobalNPC.newAI[2] = 0;
-                    }
-                }
-                #endregion
             }
-            #endregion
+
             // There is no escape...
             if (NPC.Distance(player.Center) > 2400f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
 
             if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                 NPC.life = Main.npc[(int)NPC.ai[0]].life;
@@ -2174,7 +2124,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
         }
 
-        private void Teleport(Player player, bool bossRush, bool death, bool revenge, bool expertMode, bool phase5)
+        private void Teleport(Player player, bool death, bool revenge, bool expertMode, bool phase5)
         {
             Vector2 newPosition = GetRiftLocation(true);
 
@@ -2185,7 +2135,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = FireballDamage;
                     float finalVelocity = death ? 12f : 10f;
                     int totalSpreads = revenge ? 6 : 3;
                     float mult = revenge ? 1.5f : 3f;
@@ -2193,7 +2143,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         if (!death && i % 3 == 2)
                             continue;
-                        int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : bossRush ? 18 : 12;
+                        int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float newVelocity = finalVelocity - i * mult;
                         float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
@@ -2212,7 +2162,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             NPC.TargetClosest();
             NPC.position = newPosition;
-            float chargeVelocity = bossRush ? 30f : death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
+            float chargeVelocity = death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
             chargeVelocity *= (death) ? (!(phase6 && NPC.ai[3] < 7)) ? 2.5f : 3 : 2.25f;
             float maxChargeDistance = 1800f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
@@ -2442,7 +2392,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<CosmiliteBrick>();
         }
@@ -2752,7 +2702,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                 }
                 // Speak in Wingdings if the Punch Card is equipped
-                if (target.Calamity().punchCard && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 {
                     Vector2 vector = DoGWingdings.Wingdings.MeasureString(Language.GetTextValue(text));
                     // This is how normal combat text spawn positioning is handled

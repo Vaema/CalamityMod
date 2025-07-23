@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 36;
             Item.height = 40;
-            Item.damage = 70;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 12;
@@ -32,16 +32,14 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = SoundID.Item9;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<Icicle>();
-            Item.shootSpeed = 15f;
+            Item.shootSpeed = 16f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (!Main.rand.NextBool(4))
             {
-                Vector2 speed = velocity.RotatedBy(MathHelper.ToRadians(Main.rand.Next(-15, 16)));
-                speed.Normalize();
-                speed *= 15f;
+                Vector2 speed = velocity.RotatedByRandom(MathHelper.Pi / 12f);
                 speed.Y -= Math.Abs(speed.X) * 0.2f;
                 int p = Projectile.NewProjectile(source, position, speed, ModContent.ProjectileType<FrostShardFriendly>(), damage, knockback, player.whoAmI);
                 if (p.WithinBounds(Main.maxProjectiles))
@@ -52,8 +50,8 @@ namespace CalamityMod.Items.Weapons.Magic
                 SoundEngine.PlaySound(SoundID.Item1, position);
                 Projectile.NewProjectile(source, position.X, position.Y, velocity.X * 1.2f, velocity.Y * 1.2f, ModContent.ProjectileType<Snowball>(), damage, knockback * 2f, player.whoAmI);
             }
-            velocity.X += Main.rand.Next(-40, 41) * 0.05f;
-            velocity.Y += Main.rand.Next(-40, 41) * 0.05f;
+            velocity.X += Main.rand.NextFloat(-2f, 2f);
+            velocity.Y += Main.rand.NextFloat(-2f, 2f);
             return true;
         }
     }

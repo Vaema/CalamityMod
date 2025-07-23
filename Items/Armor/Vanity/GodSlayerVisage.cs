@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Rarities;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Vanity
@@ -15,7 +16,7 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.height = 18;
             Item.vanity = true;
             Item.value = Item.buyPrice(gold: 8); // Sold by Clothier
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.rare = ItemRarityID.Blue;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

@@ -19,7 +19,6 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.coldDamage = true;
             Projectile.penetrate = 1;
-            Projectile.extraUpdates = 1;
             Projectile.coldDamage = true;
         }
 

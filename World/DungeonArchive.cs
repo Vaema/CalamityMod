@@ -135,6 +135,7 @@ namespace CalamityMod.World
                 else
                 {
                     chest.item[i].SetDefaults(contents2[i].Type);
+                    chest.item[i].Prefix(-1);
                     chest.item[i].stack = contents2[i].Stack;
                 }
             }

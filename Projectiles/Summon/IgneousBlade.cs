@@ -91,6 +91,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Firing)

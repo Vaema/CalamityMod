@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
 using Terraria;
@@ -21,6 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.Yoyo[Type] = true;
             ItemID.Sets.GamepadExtraRange[Type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Deathwind>();
         }
 
         public override void SetDefaults()

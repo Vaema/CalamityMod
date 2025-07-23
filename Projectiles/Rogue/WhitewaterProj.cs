@@ -164,7 +164,6 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                     {
-                        Projectile.Kill();
                         if (Projectile.Calamity().stealthStrike)
                         {
                             foreach (Projectile p in Main.ActiveProjectiles)
@@ -175,8 +174,9 @@ namespace CalamityMod.Projectiles.Rogue
                                         p.timeLeft = 30;
                                 }
                             }
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.3f), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WhitewaterAura>(), (int)(Projectile.damage * 0.25f), Projectile.knockBack, Projectile.owner, 0f, 0f);
                         }
+                        Projectile.Kill();
                     }
                 }
             }

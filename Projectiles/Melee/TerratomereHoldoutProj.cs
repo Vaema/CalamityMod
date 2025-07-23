@@ -277,19 +277,6 @@ namespace CalamityMod.Projectiles.Melee
         #endregion Drawing
 
         #region Hit Effects and Collision
-
-        public void OnHitHealEffect(int damage)
-        {
-            int heal = (int)Math.Round(damage * 0.025);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
-
-            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
-        }
-
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float point = 0f;
@@ -300,9 +287,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-
-            if (target.lifeMax > 5)
-                OnHitHealEffect(hit.Damage);
+            Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.025), 0.75f);
 
             // Create a slash creator on top of the hit target.
             int slashCreatorID = ModContent.ProjectileType<TerratomereSlashCreator>();
@@ -311,12 +296,6 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, slashCreatorID, Projectile.damage, Projectile.knockBack, Projectile.owner, target.whoAmI, Main.rand.NextFloat(MathHelper.TwoPi));
                 Owner.ownedProjectileCounts[slashCreatorID]++;
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<GlacialState>(), Terratomere.TrueMeleeGlacialStateTime);
-            OnHitHealEffect(info.Damage);
         }
         #endregion Hit Effects and Collision
     }

@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 64;
             Projectile.height = 66;
             Projectile.scale = 1.5f;

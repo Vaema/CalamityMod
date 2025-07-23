@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 6;
             Projectile.DamageType = DamageClass.Summon;
-            Projectile.Calamity().BloodstoneOrbValue = 20; //Bloodstone Orb lifesteal. May want to go back to regular lifesteal.
+            Projectile.Calamity().BloodstoneOrbValue = 12; //Bloodstone Orb lifesteal. May want to go back to regular lifesteal.
         }
 
         public override void AI()

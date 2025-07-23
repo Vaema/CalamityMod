@@ -35,9 +35,9 @@ namespace CalamityMod.Projectiles.Magic
             // Calculate how quickly the staff should charge. Charge increases by some number close to 1 every frame.
             // Speed increasing reforges make this number greater than 1. Slowing reforges make it smaller than 1.
             if (Projectile.localAI[0] == 0f)
-                Projectile.localAI[0] = 47f / player.ActiveItem().useTime;
+                Projectile.localAI[0] = (ValkyrieRay.ChargeFrames + ValkyrieRay.CooldownFrames) / player.ActiveItem().useTime;
 
-            // Increment the timer for the staff. If the timer has passed 47, destroy it.
+            // Increment the timer for the staff. If the timer has passed the total time, destroy it.
             Projectile.ai[0] += Projectile.localAI[0];
             int maxTime = ValkyrieRay.ChargeFrames + ValkyrieRay.CooldownFrames;
             if (Projectile.ai[0] > maxTime)
@@ -127,8 +127,8 @@ namespace CalamityMod.Projectiles.Magic
 
         private void FiringEffects(Vector2 center)
         {
-            SoundEngine.PlaySound(SoundID.Item28, center);
-            SoundEngine.PlaySound(SoundID.Item60, center);
+            SoundEngine.PlaySound(SoundID.Item28 with { Volume = 0.7f }, center);
+            SoundEngine.PlaySound(SoundID.Item60 with { Volume = 0.7f }, center);
             int numDust = 36;
             int dustID = 73;
             for (int i = 0; i < numDust; ++i)

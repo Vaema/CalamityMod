@@ -84,14 +84,22 @@ namespace CalamityMod.NPCs.OldDuke
             }
         }
 
+        public static float Phase2ContactDamageMult = 1.1f; // 308
+        public static float Phase3ContactDamageMult = 1.2f; // 336
+        public static int GoreDamage = 60; // 240
+        public static int VortexDamage = 105; // 420
+
+        // GFB exclusive
+        public static int FartDamage = 80; // 320
+
         public override void SetDefaults()
         {
+            NPC.damage = 140; // 280
             NPC.alpha = 255;
             NPC.width = 150;
             NPC.height = 100;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.defense = 90;
             NPC.DR_NERD(0.5f, null, null, null, true);
             NPC.LifeMaxNERB(500000, 600000, 400000);
@@ -110,9 +118,6 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -193,10 +198,9 @@ namespace CalamityMod.NPCs.OldDuke
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             float exhaustionGateValue = 360f;
             if (CalamityWorld.LegendaryMode)
@@ -235,12 +239,12 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.defense = exhausted ? 0 : NPC.defDefense;
             if (phase3AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.2);
+                setDamage = (int)Math.Round(setDamage * Phase3ContactDamageMult);
                 NPC.defense = exhausted ? 0 : NPC.defDefense - 40;
             }
             else if (phase2AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.1);
+                setDamage = (int)Math.Round(setDamage * Phase2ContactDamageMult);
                 NPC.defense = exhausted ? 0 : NPC.defDefense - 20;
             }
 
@@ -271,15 +275,7 @@ namespace CalamityMod.NPCs.OldDuke
                 chargeVelocity = expertMode ? 24f : 23f;
             }
 
-            if (bossRush)
-            {
-                idlePhaseTimer = 35;
-                idlePhaseAcceleration *= 1.25f;
-                idlePhaseVelocity *= 1.2f;
-                chargeTime -= 3;
-                chargeVelocity *= 1.25f;
-            }
-            else if (death)
+            if (death)
             {
                 idlePhaseTimer = 51;
                 idlePhaseAcceleration *= 1.05f;
@@ -304,22 +300,22 @@ namespace CalamityMod.NPCs.OldDuke
                 idlePhaseVelocity *= 0.25f;
 
             // Variables
-            int maxToothBallBelches = bossRush ? 5 : death ? 4 : 3;
-            int toothBallBelchPhaseDivisor = bossRush ? 24 : death ? 30 : 40;
+            int maxToothBallBelches = death ? 4 : 3;
+            int toothBallBelchPhaseDivisor = death ? 30 : 40;
             int toothBallBelchPhaseTimer = toothBallBelchPhaseDivisor * maxToothBallBelches;
-            float toothBallBelchPhaseAcceleration = bossRush ? 0.95f : death ? 0.6f : 0.55f;
-            float toothBallBelchPhaseVelocity = bossRush ? 14f : death ? 10f : 9f;
+            float toothBallBelchPhaseAcceleration = death ? 0.6f : 0.55f;
+            float toothBallBelchPhaseVelocity = death ? 10f : 9f;
             float toothBallFinalVelocity = death ? 14f : revenge ? 13f : 12f;
             float goreVelocityX = death ? 8f : revenge ? 7.5f : expertMode ? 7f : 6f;
             float goreVelocityY = death ? 10.5f : revenge ? 10f : expertMode ? 9.5f : 8f;
-            float sharkronVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+            float sharkronVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
             int attackTimer = 120;
             int phaseTransitionTimer = 180;
             int teleportPauseTimer = 30;
-            int toothBallSpinPhaseDivisor = bossRush ? 27 : death ? 32 : 45;
+            int toothBallSpinPhaseDivisor = death ? 32 : 45;
             int toothBallSpinTimer = maxToothBallBelches * toothBallSpinPhaseDivisor;
             float spinTime = toothBallSpinTimer / 2f;
-            float toothBallSpinToothBallVelocity = bossRush ? 14f : death ? 9.5f : 9f;
+            float toothBallSpinToothBallVelocity = death ? 9.5f : 9f;
             float spinAttackSpeed = Main.zenithWorld ? 44f : 22f;
             float spinSpeed = MathHelper.TwoPi / spinTime;
 
@@ -388,12 +384,11 @@ namespace CalamityMod.NPCs.OldDuke
                         dist.X += Main.rand.NextFloat(-0.5f, 0.5f);
                         dist.Y += Main.rand.NextFloat(-0.5f, 0.5f);
                         int type = ModContent.ProjectileType<SandPoisonCloudOldDuke>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, -dist, type, damage, 0, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, -dist, type, FartDamage, 0, Main.myPlayer);
                     }
                 }
 
-                calamityGlobalNPC.newAI[0] -= bossRush ? 1.5f : 1f;
+                calamityGlobalNPC.newAI[0] -= 1f;
                 if (calamityGlobalNPC.newAI[0] <= 0f)
                 {
                     calamityGlobalNPC.newAI[0] = 0f;
@@ -402,14 +397,14 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // Enrage variable
-            bool enrage = !bossRush &&
+            bool enrage = !BossRushEvent.BossRushActive &&
                 (player.position.Y < 300f || player.position.Y > Main.worldSurface * 16.0 ||
                 (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
 
             // Check for the flipped Abyss
             if (Main.remixWorld)
             {
-                enrage = !bossRush &&
+                enrage = !BossRushEvent.BossRushActive &&
                     (player.position.Y < Main.UnderworldLayer * 16 * 0.8f || player.position.Y > Main.UnderworldLayer * 16 ||
                     (player.position.X > 8000f && player.position.X < (Main.maxTilesX * 16 - 8000)));
             }
@@ -425,11 +420,11 @@ namespace CalamityMod.NPCs.OldDuke
 
             bool biomeEnraged = NPC.localAI[1] <= 0f;
 
-            NPC.Calamity().CurrentlyEnraged = biomeEnraged || bossRush;
+            NPC.Calamity().CurrentlyEnraged = biomeEnraged;
 
             // Increased DR while transitioning phases and not exhausted
             if (!exhausted)
-                calamityGlobalNPC.DR = (NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f) ? (bossRush ? 0.99f : 0.75f) : 0.5f;
+                calamityGlobalNPC.DR = (NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f) ? 0.75f : 0.5f;
 
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f;
 
@@ -1200,10 +1195,9 @@ namespace CalamityMod.NPCs.OldDuke
 
                     SoundEngine.PlaySound(VortexSpawnSound, NPC.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
-                    int damage = NPC.GetProjectileDamage(type);
                     Vector2 vortexSpawn = NPC.Center + NPC.velocity.RotatedBy(MathHelper.PiOver2 * -NPC.direction) * spinTime / MathHelper.TwoPi;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), vortexSpawn, Vector2.Zero, type, damage, 0f, Main.myPlayer, vortexSpawn.X, vortexSpawn.Y);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), vortexSpawn, Vector2.Zero, type, VortexDamage, 0f, Main.myPlayer, vortexSpawn.X, vortexSpawn.Y);
                 }
 
                 if (NPC.ai[2] % toothBallSpinPhaseDivisor == 0f)
@@ -1290,7 +1284,6 @@ namespace CalamityMod.NPCs.OldDuke
                     {
                         Vector2 phase2GoreDirection = NPC.rotation.ToRotationVector2() * (Vector2.UnitX * NPC.direction) * (NPC.width + 20) / 2f + NPC.Center;
                         int type = ModContent.ProjectileType<OldDukeGore>();
-                        int damage = NPC.GetProjectileDamage(type);
                         int totalGore = CalamityWorld.LegendaryMode ? 40 : 20;
                         for (int i = 0; i < totalGore; i++)
                         {
@@ -1303,7 +1296,7 @@ namespace CalamityMod.NPCs.OldDuke
                                 velocityY *= Main.rand.NextFloat() + 0.5f;
                             }
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), phase2GoreDirection.X, phase2GoreDirection.Y, velocityX, -velocityY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), phase2GoreDirection.X, phase2GoreDirection.Y, velocityX, -velocityY, type, GoreDamage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -1666,7 +1659,6 @@ namespace CalamityMod.NPCs.OldDuke
                     {
                         Vector2 phase3GoreDirection = NPC.rotation.ToRotationVector2() * (Vector2.UnitX * NPC.direction) * (NPC.width + 20) / 2f + NPC.Center;
                         int type = ModContent.ProjectileType<OldDukeGore>();
-                        int damage = NPC.GetProjectileDamage(type);
                         int totalGore = CalamityWorld.LegendaryMode ? 40 : 20;
                         for (int i = 0; i < totalGore; i++)
                         {
@@ -1679,7 +1671,7 @@ namespace CalamityMod.NPCs.OldDuke
                                 velocityY *= Main.rand.NextFloat() + 0.5f;
                             }
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), phase3GoreDirection.X, phase3GoreDirection.Y, velocityX, -velocityY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), phase3GoreDirection.X, phase3GoreDirection.Y, velocityX, -velocityY, type, GoreDamage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -1731,10 +1723,9 @@ namespace CalamityMod.NPCs.OldDuke
 
                     SoundEngine.PlaySound(VortexSpawnSound, NPC.Center);
                     int type = ModContent.ProjectileType<OldDukeVortex>();
-                    int damage = NPC.GetProjectileDamage(type);
                     Vector2 vortexSpawn = NPC.Center + NPC.velocity.RotatedBy(MathHelper.PiOver2 * -NPC.direction) * spinTime / MathHelper.TwoPi;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), vortexSpawn, Vector2.Zero, type, damage, 0f, Main.myPlayer, vortexSpawn.X, vortexSpawn.Y);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), vortexSpawn, Vector2.Zero, type, VortexDamage, 0f, Main.myPlayer, vortexSpawn.X, vortexSpawn.Y);
                 }
 
                 if (NPC.ai[2] % toothBallSpinPhaseDivisor == 0f)
@@ -1809,7 +1800,6 @@ namespace CalamityMod.NPCs.OldDuke
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void ModifyTypeName(ref string typeName)
@@ -2092,7 +2082,7 @@ namespace CalamityMod.NPCs.OldDuke
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }

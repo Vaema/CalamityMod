@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,7 +30,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
         #endregion
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToxicantTwister>();
+        }
 
         public override void SetDefaults()
         {

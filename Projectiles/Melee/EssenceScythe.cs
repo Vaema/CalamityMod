@@ -78,11 +78,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-            if (target.life <= 0 && target.lifeMax > 5)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), BalancingConstants.LifeStealRange, 0f);
-            }
+            if (target.life <= 0)
+                Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<EssenceFlame>(), 8, 0f);
         }
     }
 }

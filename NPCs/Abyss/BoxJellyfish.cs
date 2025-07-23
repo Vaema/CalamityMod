@@ -29,8 +29,8 @@ namespace CalamityMod.NPCs.Abyss
             NPC.damage = 44;
             NPC.width = 30;
             NPC.height = 33;
-            NPC.defense = 5;
-            NPC.lifeMax = 115;
+            NPC.defense = 8;
+            NPC.lifeMax = 100;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -44,10 +44,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

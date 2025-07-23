@@ -32,7 +32,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
             player.Calamity().eskimoSet = true;
 
             player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
         }
     }
 }

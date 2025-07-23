@@ -66,7 +66,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 160;
             NPC.height = 120;
             NPC.defense = 9999;
-            NPC.DR_NERD(0.3f);
             NPC.lifeMax = Main.hardMode ? 7500 : 1250;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -79,10 +78,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<ClamDenBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

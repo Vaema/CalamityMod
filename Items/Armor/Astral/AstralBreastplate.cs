@@ -20,7 +20,6 @@ namespace CalamityMod.Items.Armor.Astral
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
             player.statManaMax2 += 80;
             player.GetDamage<GenericDamageClass>() += 0.07f;
         }

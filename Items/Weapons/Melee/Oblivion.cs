@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Melee.Yoyos;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -20,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.Yoyo[Type] = true;
             ItemID.Sets.GamepadExtraRange[Type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Animosity>();
         }
 
         public override void SetDefaults()
@@ -27,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 28;
             Item.height = 38;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 55;
+            Item.damage = 50;
             Item.knockBack = 4f;
             Item.useTime = 22;
             Item.useAnimation = 22;

@@ -65,14 +65,20 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
+        // These values are all applied alongside their respective GFB attacks (too many to list)
+        public static int DartDamage = 21; // 84
+        public static int HellblastDamage = 25; // 100
+        public static int HellfireballDamage = 25; // 100
+        public static int RayDamage = 35; // 140
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 64f;
-            NPC.GetNPCDamage();
+            NPC.damage = 52; // 104
             NPC.width = 100;
             NPC.height = 150;
             NPC.defense = 15;
-            NPC.value = Item.buyPrice(0, 16, 0, 0);
+            NPC.value = Item.buyPrice(gold: 12);
             NPC.LifeMaxNERB(41000, 49200, 500000);
             NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
@@ -88,9 +94,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BrimstoneCragsBiome>().Type };
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -182,16 +185,15 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables for buffing the AI
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool phase2 = lifeRatio < 0.5f && revenge;
             bool phase3 = lifeRatio < 0.33f;
 
             // Enrage
-            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !bossRush)
+            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !BossRushEvent.BossRushActive)
             {
                 if (calamityGlobalNPC.newAI[3] > 0f)
                     calamityGlobalNPC.newAI[3] -= 1f;
@@ -199,17 +201,17 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             else
                 calamityGlobalNPC.newAI[3] = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f || bossRush;
+            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
-            if (biomeEnraged && (!player.ZoneUnderworldHeight || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneUnderworldHeight)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (biomeEnraged && (!player.Calamity().ZoneCalamity || bossRush))
+            if (biomeEnraged && !player.Calamity().ZoneCalamity)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -339,7 +341,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     NPC.localAI[1] += 1f;
 
-                    if (NPC.localAI[1] >= (bossRush ? 90f : death ? 120f : 180f))
+                    if (NPC.localAI[1] >= (death ? 120f : 180f))
                     {
                         NPC.TargetClosest();
                         NPC.localAI[1] = 0f;
@@ -393,7 +395,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                NPC.alpha += bossRush ? 8 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
+                NPC.alpha += death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (NPC.alpha >= 255)
                 {
                     int spawnType = currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();
@@ -428,7 +430,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         SoundEngine.PlaySound(SoundID.Item68, NPC.Center);
                         int type = ModContent.ProjectileType<BrimstoneRay>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = RayDamage;
                         Vector2 pos = NPC.Center;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -501,7 +503,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     float velocity = (death ? 7f : revenge ? 6f : 5f) + (2f * enrageScale) + (expertMode ? 3f * (1f - lifeRatio) : 0f);
                     int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellfireballDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<FrostMist>();
@@ -525,7 +527,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         velocity = (death ? 5f : 4f) + 2f * enrageScale;
                         type = ModContent.ProjectileType<BrimstoneBarrage>();
-                        damage = NPC.GetProjectileDamage(type);
+                        damage = DartDamage;
                         if (currentMode == 4)
                         {
                             type = ModContent.ProjectileType<WaterSpear>();
@@ -607,7 +609,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     int totalProjectiles = 6;
                     float offsetAngle = MathHelper.Pi * radialOffset;
                     int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellblastDamage;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -626,7 +628,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     totalProjectiles = 12;
                     float radians2 = MathHelper.TwoPi / totalProjectiles;
                     type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    damage = NPC.GetProjectileDamage(type);
+                    damage = DartDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<SirenSong>();
@@ -699,7 +701,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
                 Vector2 source = new Vector2(NPC.Center.X + (NPC.spriteDirection > 0 ? 34f : -34f), NPC.Center.Y - 74f);
                 Vector2 aimAt = player.Center + player.velocity * 20f;
-                float aimResponsiveness = bossRush ? 0.05f : (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
+                float aimResponsiveness = (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
 
                 Vector2 aimVector = (aimAt - source).SafeNormalize(Vector2.UnitY);
                 if (aimVector.HasNaNs())
@@ -748,7 +750,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             Vector2 laserVelocity2 = new Vector2(NPC.localAI[0], NPC.localAI[1]);
                             laserVelocity2 = laserVelocity2.SafeNormalize(Vector2.UnitY);
                             int type = ModContent.ProjectileType<BrimstoneRay>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = RayDamage;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                             if (CalamityWorld.LegendaryMode)
@@ -889,7 +891,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }
@@ -958,7 +960,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

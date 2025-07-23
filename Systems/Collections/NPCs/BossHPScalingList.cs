@@ -96,7 +96,6 @@ namespace CalamityMod.Systems.Collections
                 NPCType<DesertNuisanceTailYoung>(),
                 NPCType<PolterPhantom>(),
                 NPCType<PhantomFuckYou>(),
-                NPCType<BloodlettingServant>(),
                 NPCType<KingSlimeJewelEmerald>(),
                 NPCType<KingSlimeJewelRuby>(),
                 NPCType<KingSlimeJewelSapphire>(),

@@ -79,23 +79,16 @@ namespace CalamityMod.Projectiles.Rogue
         {
             SoundEngine.PlaySound(SoundID.Item74, Projectile.position);
             Vector2 vector2 = new Vector2(20f, 20f);
-            for (int index = 0; index < 3; ++index)
+            for (int i = 0; i < 3; ++i)
                 Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.SpookyWood, 0.0f, 0.0f, 0, Color.Red, 1f);
-            for (int index1 = 0; index1 < 5; ++index1)
+            for (int j = 0; j < 5; ++j)
             {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
-                Dust dust = Main.dust[index2];
-                dust.velocity *= 1.4f;
-            }
-            for (int index1 = 0; index1 < 10; ++index1)
-            {
-                int index2 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
-                Dust dust1 = Main.dust[index2];
-                dust1.noGravity = true;
-                dust1.velocity *= 5f;
-                int index3 = Dust.NewDust(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 1.5f);
-                Dust dust2 = Main.dust[index3];
-                dust2.velocity *= 3f;
+                Dust smoke = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f);
+                smoke.velocity *= 1.4f;
+
+                Dust fire = Dust.NewDustDirect(Projectile.Center - vector2 / 2f, (int)vector2.X, (int)vector2.Y, DustID.Torch, 0.0f, 0.0f, 100, new Color(), 2.5f);
+                fire.noGravity = true;
+                fire.velocity *= 5f;
             }
             int fireAmt = Main.rand.Next(2, 4);
             if (Projectile.owner == Main.myPlayer)

@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.HiveMind
         {
             NPC.npcSlots = 0.1f;
             NPC.aiStyle = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 25;
             NPC.height = 25;
 
@@ -188,7 +188,7 @@ namespace CalamityMod.NPCs.HiveMind
                         playerX *= playerDist;
                         playerY *= playerDist;
                         int type = (CalamityWorld.LegendaryMode && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
-                        int damage = type == ProjectileID.CursedFlameHostile ? 30 : NPC.GetProjectileDamage(type);
+                        int damage = type == ProjectileID.CursedFlameHostile ? HiveBlob.CursedFlameDamage : HiveBlob.VileClotDamage;
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)
                         {

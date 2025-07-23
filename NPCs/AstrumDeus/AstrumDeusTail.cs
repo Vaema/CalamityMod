@@ -41,7 +41,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 60; // 120
             NPC.npcSlots = 5f;
             NPC.width = 52;
             NPC.height = 68;
@@ -52,9 +52,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             AIType = -1;
             NPC.knockBackResist = 0f;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.5f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.4f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.35f;
@@ -72,9 +70,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.dontCountMe = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -101,15 +96,14 @@ namespace CalamityMod.NPCs.AstrumDeus
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             // Difficulty variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
-            if (Main.IsItDay() || bossRush)
+            float enrageScale = 0f;
+            if (Main.IsItDay())
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
                 enrageScale += 1.5f;
             }
 
@@ -117,6 +111,8 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
             if (doNotDealDamage)
                 NPC.damage = 0;
+            else
+                NPC.damage = NPC.defDamage;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -302,21 +298,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
             if (calamityGlobalNPC.newAI[1] < resistanceTime && ((NPC.position - NPC.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
                 calamityGlobalNPC.newAI[1] += 1f;
-
-            // Calculate contact damage based on velocity
-            if (!doNotDealDamage)
-            {
-                float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-                float minimalDamageVelocity = segmentVelocity * 0.5f;
-                float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-                    NPC.damage = 0;
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-                }
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -431,7 +412,6 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

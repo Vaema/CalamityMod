@@ -69,11 +69,17 @@ namespace CalamityMod.NPCs.Signus
             }
         }
 
+        public static int ScytheDamage = 60; // 240
+        public static int DustDamage = 60; // 240; Also applies to Legendary Mode Peanuts
+
+        // GFB exclusive
+        public static int StealthStrikeMult = 2; // 480
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 160; // 320
             NPC.npcSlots = 32f;
-            NPC.GetNPCDamage();
             NPC.width = 130;
             NPC.height = 130;
             NPC.defense = 60;
@@ -89,9 +95,6 @@ namespace CalamityMod.NPCs.Signus
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -129,10 +132,9 @@ namespace CalamityMod.NPCs.Signus
 
             CalamityGlobalNPC.signus = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Vector2 vectorCenter = NPC.Center;
 
@@ -141,8 +143,8 @@ namespace CalamityMod.NPCs.Signus
             lifeToAlpha = (int)((CalamityWorld.LegendaryMode ? 200D : 100D) * (1D - lifeRatio));
             int maxCharges = death ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             int maxTeleports = (death && lifeRatio < 0.9) ? 1 : revenge ? 2 : expertMode ? 3 : 4;
-            float inertia = bossRush ? 9f : death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
-            float chargeVelocity = bossRush ? 16f : death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
+            float inertia = death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
+            float chargeVelocity = death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
             if (CalamityWorld.LegendaryMode)
             {
                 inertia *= 0.5f;
@@ -251,7 +253,7 @@ namespace CalamityMod.NPCs.Signus
                 if (phase3 || revenge)
                     NPC.knockBackResist = 0f;
 
-                float speed = bossRush ? 20f : revenge ? 15f : expertMode ? 14f : 12f;
+                float speed = revenge ? 15f : expertMode ? 14f : 12f;
                 if (expertMode)
                     speed += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -293,7 +295,7 @@ namespace CalamityMod.NPCs.Signus
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.localAI[1] += bossRush ? 1.5f : 1f;
+                    NPC.localAI[1] += 1f;
 
                     if (expertMode)
                         NPC.localAI[1] += death ? 3f * (float)(1D - lifeRatio) : 2f * (float)(1D - lifeRatio);
@@ -356,7 +358,7 @@ namespace CalamityMod.NPCs.Signus
                     Main.dust[dust].fadeIn = 1f;
                 }
 
-                NPC.alpha += bossRush ? 3 : 2;
+                NPC.alpha += 2;
                 if (expertMode)
                     NPC.alpha += death ? (int)Math.Round(4.5D * (1D - lifeRatio)) : (int)Math.Round(3D * (1D - lifeRatio));
 
@@ -473,7 +475,7 @@ namespace CalamityMod.NPCs.Signus
                 NPC.direction = playerLocation < 0f ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                float divisor = expertMode ? (bossRush ? 10f : death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
+                float divisor = expertMode ? (death ? 12f : revenge ? 15f : 20f) - (float)Math.Ceiling(5D * (1D - lifeRatio)) : 20f;
                 float scytheBarrageTime = divisor * 3f;
                 float scytheBarrageCooldown = divisor * 3f;
 
@@ -496,16 +498,14 @@ namespace CalamityMod.NPCs.Signus
                             scytheXDist *= scytheDistance;
                             scytheYDist *= scytheDistance;
                             int type = ModContent.ProjectileType<SignusScythe>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, ScytheDamage, 0f, Main.myPlayer, 0f, NPC.target + 1);
                             if (stealthTimer >= maxStealth)
                             {
-                                damage *= 2;
                                 SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
                                 for (int i = 0; i < 4; i++)
                                 {
                                     Vector2 offset = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, ScytheDamage * StealthStrikeMult, 0f, Main.myPlayer, 0f, NPC.target + 1);
                                 }
                                 stealthTimer = 0;
                             }
@@ -513,8 +513,8 @@ namespace CalamityMod.NPCs.Signus
                     }
                 }
 
-                float maxVelocityY = bossRush ? 1.5f : death ? 2.5f : 3f;
-                float maxVelocityX = bossRush ? 5f : death ? 7f : 8f;
+                float maxVelocityY = death ? 2.5f : 3f;
+                float maxVelocityX = death ? 7f : 8f;
 
                 if (NPC.position.Y > player.position.Y - 250f)
                 {
@@ -635,7 +635,7 @@ namespace CalamityMod.NPCs.Signus
                     // Avoid cheap bullshit
                     NPC.damage = 0;
 
-                    float velocity = bossRush ? 18f : revenge ? 16f : expertMode ? 15f : 14f;
+                    float velocity = revenge ? 16f : expertMode ? 15f : 14f;
                     if (expertMode)
                         velocity += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
 
@@ -713,14 +713,13 @@ namespace CalamityMod.NPCs.Signus
                         {
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
                             int type = (CalamityWorld.LegendaryMode) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
-                            int damage = (CalamityWorld.LegendaryMode) ? 60 : NPC.GetProjectileDamage(type);
                             Vector2 velocity = Main.zenithWorld ? new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) : Vector2.Zero;
                             if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
                             {
                                 velocity = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
                             }
                             int ai = buffed ? 69 : 0;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, damage, 0f, Main.myPlayer, ai);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, DustDamage, 0f, Main.myPlayer, ai);
                         }
                     }
 
@@ -916,7 +915,7 @@ namespace CalamityMod.NPCs.Signus
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }
@@ -984,7 +983,6 @@ namespace CalamityMod.NPCs.Signus
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)
