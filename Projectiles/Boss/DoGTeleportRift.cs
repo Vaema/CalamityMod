@@ -123,7 +123,10 @@ namespace CalamityMod.Projectiles.Boss
 
                 // Perform the explosion right at the point where DoG emerges.
                 if (Timer >= RiftLifetime)
+                {
                     SwitchAIStates();
+                    AIState = 1;
+                }
 
                 if (Projectile.timeLeft < 30)
                     Projectile.timeLeft = 30;

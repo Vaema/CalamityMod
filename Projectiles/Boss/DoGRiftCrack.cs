@@ -77,7 +77,10 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(CrackPoints, new(CrackWidthFunction, CrackColorFunction, null, false));
+            if (CrackPoints is not null)
+            {
+                PrimitiveRenderer.RenderTrail(CrackPoints, new(CrackWidthFunction, CrackColorFunction, null, false));
+            }
             return false;
         }
     }

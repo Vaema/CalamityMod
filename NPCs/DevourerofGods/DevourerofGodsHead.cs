@@ -2220,7 +2220,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         float fireballSpeed = 8f;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
                         int type = ModContent.ProjectileType<DoGFire>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = FireballDamage;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, fireballVelocity, type, damage, 0f, Main.myPlayer, 2f);
@@ -2231,30 +2231,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 }
             }
 
-            // Continuously spawn a stream of flames and cinders at DoG's mouth while he's in fireball phase.
-            if (Main.rand.NextBool(2))
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    Vector2 flameSpawnPosition = mouthPosition + Main.rand.NextVector2Circular(10f, 10f);
-                    Vector2 flameVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(12f, 18f);
-                    int flameLifetime = Main.rand.Next(45, 60);
-                    float flameScale = Main.rand.NextFloat(0.6f, 0.9f);
-                    float flameOpacity = Main.rand.NextFloat(0.7f, 0.9f);
-                    Color flameColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0f, 0.4f));
-
-                    HeavySmokeParticle fireballFlames = new(flameSpawnPosition, flameVelocity, flameColor, flameLifetime, flameScale, flameOpacity, 0.01f, true);
-                    GeneralParticleHandler.SpawnParticle(fireballFlames);
-                }
-
-                Vector2 cinderVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(14f, 20f);
-                float cinderScale = Main.rand.NextFloat(0.15f, 0.3f);
-                Color cinderColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0.2f, 0.6f));
-                int cinderLifetime = Main.rand.Next(30, 45);
-
-                SquishyLightParticle cinder = new(mouthPosition, cinderVelocity, cinderScale, cinderColor, cinderLifetime);
-                GeneralParticleHandler.SpawnParticle(cinder);
-            }
         }
 
         private void SpawnTeleportLocation(Player player, bool phase2Transition = false)
@@ -2491,29 +2467,8 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             DeathAnimationTimer++;
         }
 
+        //public Vector2 GetRiftLocation()
         private Vector2 GetRiftLocation()
-        /*private Vector2 GetRiftLocation(bool spawnDust)
-        {
-            Vector2 realSpot = default;
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
-                {
-                    if (!spawnDust)
-                        proj.ai[0] = -1f;
-
-                    proj.Kill();
-
-                    if (proj.ai[2] == 1f)
-                        continue;
-
-                    realSpot = proj.Center;
-                }
-            }
-            return realSpot;
-        }
-
-        public Vector2 GetRiftLocationSafe()*/
         {
             Vector2 realSpot = Vector2.Zero;
             foreach (Projectile proj in Main.ActiveProjectiles)
@@ -2523,6 +2478,19 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     realSpot = proj.Center;
                     // Safeguard for if the rift doesn't activate at its designated time.
                     proj.ModProjectile<DoGTeleportRift>().SwitchAIStates();
+                }
+            }
+            return realSpot;
+        }
+
+        public Vector2 GetRiftLocationSafe()
+        {
+            Vector2 realSpot = Vector2.Zero;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
+                {
+                    realSpot = proj.Center;
                 }
             }
             return realSpot;

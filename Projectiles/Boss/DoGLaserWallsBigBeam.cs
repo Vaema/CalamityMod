@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -100,6 +101,7 @@ namespace CalamityMod.Projectiles.Boss
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
             base.OnHitPlayer(target, info);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

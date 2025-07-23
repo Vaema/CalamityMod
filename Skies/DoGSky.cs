@@ -304,7 +304,7 @@ namespace CalamityMod.Skies
                 for (int j = 0; j < DistortionRiftArms[i].ArmPoints.Count - 1; j++)
                     parallaxedPoints.Add((DistortionRiftArms[i].ArmPoints[j] - screenCenter) * depthFactor + screenCenter);
 
-                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_) => Color.White, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
+                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
             }
         }
 
@@ -436,7 +436,7 @@ namespace CalamityMod.Skies
             {
                 Vector2 depthFactor = new(1f / RealityCracks[i].Depth, 1.1f / RealityCracks[i].Depth);
                 Vector2 drawPosition = (RealityCracks[i].Position - screenCenter) * depthFactor + screenCenter - Main.screenPosition;
-                spriteBatch.Draw(cracksTexture, drawPosition, new Rectangle(0, 0, cracksTexture.Width, cracksTexture.Height), Color.White, RealityCracks[i].Rotation, cracksTexture.Size() * 0.5f, RealityCracks[i].Scale * 0.5f, 0, 0f);
+                spriteBatch.Draw(cracksTexture, drawPosition, new Rectangle(0, 0, cracksTexture.Width, cracksTexture.Height), DoGSkyColor*0.75f, RealityCracks[i].Rotation, cracksTexture.Size() * 0.5f, RealityCracks[i].Scale * 0.5f, 0, 0f);
             }
         }
 
