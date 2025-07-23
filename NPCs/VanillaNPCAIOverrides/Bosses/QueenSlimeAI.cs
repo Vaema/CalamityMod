@@ -13,8 +13,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class QueenSlimeAI
     {
         // Vanilla values
-        public static int SmallGelDamage = 15; // 60
-        public static int SpikeDamage = 15; // 60
+        public static int SmallGelDamage = Main.masterMode ? 20 : 17; // 68
+        public static int SpikeDamage = Main.masterMode ? 20 : 17; // 68
         public static int LargeGelDamage = 30; // 120
         public static int SlamDamage = 40; // 160
 
