@@ -637,7 +637,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Phase 2
                 else
                 {
-                    # region Misc Stuff I Want To Be Able To Collapse
+                    #region Misc Stuff I Want To Be Able To Collapse
                     // Immunity after teleport and when dying
                     NPC.dontTakeDamage = postTeleportTimer > 0 || Dying;
 
@@ -864,14 +864,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                         }
                         else
                         {
-                            float divisor = bossRush || death ? 100f : 120f;
+                            float divisor = death ? 100f : 120f;
                             if (phase6)
                                 divisor -= 15;
 
                             if (calamityGlobalNPC.newAI[1] % divisor == 0f)
                             {
                                 int type = ModContent.ProjectileType<DoGDeath>();
-                                int damage = NPC.GetProjectileDamage(type);
+                                int damage = LaserWallDamage;
                                 float spacing = death ? 144 : 160;
                                 if (divisor == 0)
                                     spacing += 64;
@@ -880,12 +880,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int bType = Main.rand.Next(0, 5 + 1);
-                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, spacing, bType);
+                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.5f, spacing, bType);
                                     if (phase6 || death)
-                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 0, bType);
+                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, 0.5f, 0, bType);
 
                                     if (Main.zenithWorld)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.55f : 0.5f, 120, 6);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.5f, 120, 6);
                                 }
                             }
                             calamityGlobalNPC.newAI[1] += 1f;
@@ -1415,8 +1415,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                         calamityGlobalNPC.newAI[2]++;
                         if (laserWallPhase != (int)LaserWallPhase.End)
                         {
-                            
-
                             var dogRotation = player.DirectionTo(NPC.Center).ToRotation();
                             var DOGDIR = 1;
 
@@ -1424,7 +1422,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             var currentVelLength = NPC.velocity.Length();
                             var goalVel = NPC.DirectionTo(goalpos) * currentVelLength;
-
 
                             TurnTowards(goalpos,maxSpeed: 6f * calamityGlobalNPC.newAI[2] / 120f);
                             NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength > 42 ? currentVelLength - 0.2f : currentVelLength);
@@ -1436,7 +1433,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     #region Portal AI
                     else
                     {
-                        
                         if (calamityGlobalNPC.newAI[2] == 0)
                         {
                             SpawnTeleportLocation(player);
@@ -1475,7 +1471,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
                                     int type = ModContent.ProjectileType<DoGFire>();
-                                    int damage = NPC.GetProjectileDamage(type);
+                                    int damage = FireballDamage;
 
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
@@ -1522,7 +1518,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Laser barrage attack variables
-                float laserBarrageGateValue = death ? 1320f : 1440f;
+                float laserBarrageGateValue = 1440f;
                 float laserBarrageShootGateValue = 240f;
                 float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue;
 
@@ -1587,10 +1583,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.4f : 0.45f, 170, bType);
+                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.45f, 170, bType);
 
                                 if (Main.zenithWorld)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, (bossRush) ? 0.4f : 0.45f, 120, 6);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.45f, 120, 6);
                             }
                         }
                     }
@@ -1598,7 +1594,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 // Opacity
                 if (!(phase2 && calamityGlobalNPC.newAI[1] >= laserBarragePhaseGateValue) && !bigDaddyPhase2)
-                
                 {
                     // 2 seconds to become fully visible again
                     NPC.Opacity += 0.0083f;
@@ -2074,7 +2069,44 @@ namespace CalamityMod.NPCs.DevourerofGods
                         NPC.netUpdate = true;
                     }
                 }
+                #endregion
+
+                #region Laser Wall AI
+                else if (NPC.ai[3] == 2)
+                {
+                    calamityGlobalNPC.newAI[2]++;
+                    if (laserWallPhase != (int)LaserWallPhase.End)
+                    {
+                        var dogRotation = player.DirectionTo(NPC.Center).ToRotation();
+                        var DOGDIR = 1;
+
+                        var goalpos = player.Center + new Vector2(1000, 0).RotatedBy(dogRotation + 0.05f * DOGDIR);
+
+                        var currentVelLength = NPC.velocity.Length();
+                        var goalVel = NPC.DirectionTo(goalpos) * currentVelLength;
+
+                        TurnTowards(goalpos, maxSpeed: 6f * calamityGlobalNPC.newAI[2] / 120f);
+                        NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength);
+
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+                    }
+                }
+                #endregion
+
+                #region Decoil AI
+                else
+                {
+                    NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+                    calamityGlobalNPC.newAI[2]++;
+                    if (calamityGlobalNPC.newAI[2] >= 45)
+                    {
+                        NPC.ai[3] = 0;
+                        calamityGlobalNPC.newAI[2] = 0;
+                    }
+                }
+                #endregion
             }
+            #endregion
 
             // There is no escape...
             if (NPC.Distance(player.Center) > 2400f)
