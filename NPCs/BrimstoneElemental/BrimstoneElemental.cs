@@ -75,6 +75,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         {
             NPC.npcSlots = 64f;
             NPC.damage = 52; // 104
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 100;
             NPC.height = 150;
             NPC.defense = 15;
@@ -839,7 +840,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
         public override void FindFrame(int frameHeight) // 9 total frames

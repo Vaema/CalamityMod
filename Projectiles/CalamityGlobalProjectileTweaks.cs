@@ -313,7 +313,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
                 { ProjectileID.Present, defenseDamage }, // Falling present bombs in Frost Moon
-                { ProjectileID.QueenSlimeSmash, defenseDamage },
                 { ProjectileID.RockGolemRock, defenseDamage },
                 { ProjectileID.RuneBlast, defenseDamage }, // Rune Wizard shots
                 { ProjectileID.SaucerDeathray, defenseDamage },
