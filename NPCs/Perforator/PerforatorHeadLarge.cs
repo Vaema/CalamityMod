@@ -49,11 +49,14 @@ namespace CalamityMod.NPCs.Perforator
             }
         }
 
+        // GFB exclusive
+        public static int LaserWallDamage = 10; // 40
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.npcSlots = 5f;
             NPC.width = 70;
             NPC.height = 84;
@@ -217,7 +220,7 @@ namespace CalamityMod.NPCs.Perforator
                         for (int i = 0; i < spitProjectileAmount; i++)
                         {
                             int type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = type == ModContent.ProjectileType<IchorShot>() ? PerforatorHive.IchorShotDamage : PerforatorHive.BloodGeyserDamage;
                             Projectile.NewProjectile(NPC.GetSource_FromAI(),
                                 spitLocation + Main.rand.NextVector2CircularEdge(8f, 8f),
                                 NPC.velocity.SafeNormalize(Vector2.UnitY) * spitProjectileBaseVelocity + Main.rand.NextVector2CircularEdge(spitProjectileRandomVelocityLimit, spitProjectileRandomVelocityLimit),
@@ -233,11 +236,10 @@ namespace CalamityMod.NPCs.Perforator
                             for (int i = 0; i < spitBlobAmount; i++)
                             {
                                 int type = ModContent.ProjectileType<IchorBlob>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(),
                                     spitLocation + Main.rand.NextVector2CircularEdge(8f, 8f),
                                     NPC.velocity.SafeNormalize(Vector2.UnitY) * spitBlobBaseVelocity + Main.rand.NextVector2CircularEdge(spitBlobRandomVelocityLimit, spitBlobRandomVelocityLimit),
-                                    type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                    type, PerforatorHive.IchorShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
                     }
@@ -359,7 +361,7 @@ namespace CalamityMod.NPCs.Perforator
                 float laserOffset = 1500f;
                 float laserVelocity = 4f;
                 int type = ModContent.ProjectileType<DoGDeath>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = LaserWallDamage;
 
                 NPC.Calamity().newAI[3]++;
                 if (NPC.Calamity().newAI[3] > 180f) // Effectively 10 seconds but give a little headstart in case players kill it too fast
@@ -530,19 +532,6 @@ namespace CalamityMod.NPCs.Perforator
 
             if (NPC.Distance(player.Center) > 1280f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChargeSpeed * 0.25f;
-            float minimalDamageVelocity = maxChargeSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
 
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
 

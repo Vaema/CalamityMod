@@ -17,6 +17,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         private const int TotalDeathModeWorms = 4;
         public const float DRIncreaseTime = 600f;
 
+        // Rev+ exclusive
+        public static int FireballDamage = 12; // 48; Applies to both Cursed Flames and (Death) Shadowflame fireballs
+
         public static bool BuffedEaterofWorldsAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -129,7 +132,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 calamityGlobalNPC.newAI[0] = 0f;
                                 Vector2 cursedFlameDirection = Utils.DirectionTo(npc.Center, Main.player[npc.target].Center) * 7f + (npc.velocity * 0.5f);
                                 int type = (death && phase3) ? ModContent.ProjectileType<ShadowflameFireball>() : ProjectileID.CursedFlameHostile;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity, cursedFlameDirection, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + npc.velocity, cursedFlameDirection, type, FireballDamage, 0f, Main.myPlayer);
                             }
                         }
 
@@ -666,38 +669,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // 10 seconds of resistance to prevent spawn killing
             if (calamityGlobalNPC.newAI[1] < DRIncreaseTime && ((npc.position - npc.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 0f))
                 calamityGlobalNPC.newAI[1] += 1f;
-
-            // Calculate contact damage based on velocity
-            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
-            float minimalContactDamageHeadVelocity = segmentVelocity * 0.25f;
-            float minimalDamageHeadVelocity = segmentVelocity * 0.5f;
-            float minimalContactDamageBodyVelocity = segmentVelocity * 0.4f;
-            float minimalDamageBodyVelocity = segmentVelocity * 0.8f;
-            if (npc.type == NPCID.EaterofWorldsHead)
-            {
-                if (npc.velocity.Length() <= minimalContactDamageHeadVelocity)
-                {
-                    npc.damage = (int)Math.Round(npc.defDamage * 0.5);
-                }
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((npc.velocity.Length() - minimalContactDamageHeadVelocity) / minimalDamageHeadVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp((float)Math.Round(npc.defDamage * 0.5), npc.defDamage, velocityDamageScalar);
-                }
-            }
-            else
-            {
-                float bodyAndTailVelocity = (npc.position - npc.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageBodyVelocity)
-                {
-                    npc.damage = 0;
-                }
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageBodyVelocity) / minimalDamageBodyVelocity, 0f, 1f);
-                    npc.damage = (int)MathHelper.Lerp(0f, npc.defDamage, velocityDamageScalar);
-                }
-            }
 
             if (npc.type == NPCID.EaterofWorldsHead || (npc.type != NPCID.EaterofWorldsHead && Main.npc[(int)npc.ai[1]].alpha >= 85))
             {

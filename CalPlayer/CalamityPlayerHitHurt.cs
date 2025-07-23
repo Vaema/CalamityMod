@@ -982,30 +982,23 @@ namespace CalamityMod.CalPlayer
             // Reduce damage from vanilla traps
 
             // Explosives
-            // 350 in normal, 450 in expert
+            // 350 damage
             if (proj.type == ProjectileID.Explosives)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.225f : 0.35f);
+                modifiers.SourceDamage *= 0.7f;
 
             // Rolling Cacti
-            // 45 in normal, 65 in expert for cactus
-            // 30 in normal, 36 in expert for spikes
+            // 42 in normal, 84 in expert for cactus
+            // 36 in normal, 72 in expert for spikes
             else if (proj.type == ProjectileID.RollingCactus || proj.type == ProjectileID.RollingCactusSpike)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.3f : 0.5f);
+                modifiers.SourceDamage *= 0.6f;
 
-            // Normal Boulders and Temple traps
-            if (Main.expertMode)
+            // Boulders
+            if (Main.expertMode && !areThereAnyDamnBosses)
             {
-                // 140 in normal, 182 in expert, 273 in master
-                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder)
-                    modifiers.SourceDamage *= 0.65f;
-
-                // 80 in normal, 100 in expert, 150 in master
-                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.FlamesTrap || proj.type == ProjectileID.PoisonDartTrap)
-                    modifiers.SourceDamage *= 0.625f;
-
-                // 120 in normal, 144 in expert, 216 in master
-                else if (proj.type == ProjectileID.SpearTrap)
-                    modifiers.SourceDamage *= 0.6f;
+                // 140 in normal, 210 in expert, 315 in master for boulder
+                // 104 in normal, 156 in expert, 234 in master for mini boulder
+                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder || proj.type == ProjectileID.BouncyBoulder || proj.type == ProjectileID.LifeCrystalBoulder)
+                    modifiers.SourceDamage *= 0.75f;
             }
 
             bool isFallingBlock = (proj.type == ProjectileID.SandBallFalling) || (proj.type == ProjectileID.SiltBall) || (proj.type == ProjectileID.AshBallFalling) ||
@@ -1370,14 +1363,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.DeathLaser || proj.type == ProjectileID.RocketSkeleton || proj.type == ProjectileID.BombSkeletronPrime)
-                {
-                    Player.AddBuff(BuffID.OnFire, 180);
-                }
-                else if (proj.type == ProjectileID.Skull)
-                {
-                    Player.AddBuff(BuffID.Weak, 180);
-                }
                 else if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
                 {
                     // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
@@ -1386,22 +1371,6 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.DesertDjinnCurse)
                 {
                     Player.AddBuff(BuffID.Cursed, 180);
-                }
-                else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
-                {
-                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
-                    if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 300);
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
-                else if (proj.type == ProjectileID.PoisonSeedPlantera)
-                {
-                    // 75% chance of Poison for 3 to 5 seconds, guaranteed Poison for 2 seconds (vanilla also has a 50% chance of Poison for 3 to 7 seconds)
-                    if (Main.rand.Next(4) > 0)
-                        Player.AddBuff(BuffID.Poisoned, Main.rand.Next(180, 301));
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
@@ -1441,18 +1410,6 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.PhantasmalDeathray)
                 {
                     Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
-                }
-                else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
-                }
-                else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
-                }
-                else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {

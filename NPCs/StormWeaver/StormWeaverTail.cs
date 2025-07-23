@@ -35,9 +35,11 @@ namespace CalamityMod.NPCs.StormWeaver
             }
         }
 
+        public static int LightningOrbDamage = 64; // 256
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 80; // 160
             NPC.npcSlots = 5f;
             NPC.width = 48;
             NPC.height = 80;
@@ -148,8 +150,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (Main.npc[(int)NPC.ai[2]].localAI[0] % spawnOrbGateValue == 0f)
                     {
                         int type = ProjectileID.CultistBossLightningOrb;
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, LightningOrbDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -225,21 +226,6 @@ namespace CalamityMod.NPCs.StormWeaver
                     NPC.spriteDirection = -1;
                 else if (targetX > 0f)
                     NPC.spriteDirection = 1;
-            }
-
-            // Calculate contact damage based on velocity
-            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
-            float minimalContactDamageVelocity = velocity * 0.25f;
-            float minimalDamageVelocity = velocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -364,7 +350,6 @@ namespace CalamityMod.NPCs.StormWeaver
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

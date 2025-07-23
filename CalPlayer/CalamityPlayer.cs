@@ -1984,7 +1984,7 @@ namespace CalamityMod.CalPlayer
         public override void ResetEffects()
         {
             if (fleshKnuckles)
-                Player.statLifeMax2 += 45;
+                Player.statLifeMax2 += 25;
 
             int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both

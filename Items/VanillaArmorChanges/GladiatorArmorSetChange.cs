@@ -44,7 +44,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
             player.Calamity().wearingRogueArmor = true;
             player.GetDamage<ThrowingDamageClass>() += 0.05f;
             player.Calamity().rogueVelocity += 0.1f;
-            player.statDefense += 3;
         }
     }
 }

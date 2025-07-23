@@ -78,13 +78,12 @@ namespace CalamityMod.Projectiles.Boss
                 int totalProjectiles = 8;
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<IceRain>();
-                int damage = (int)Math.Round(Projectile.damage * 0.75);
                 float velocity = 1f;
                 Vector2 spinningPoint = new Vector2(0f, -velocity);
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vector255, type, damage, 0f, Projectile.owner, 1f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vector255, type, Cryogen.IceRainDamage, 0f, Projectile.owner, 1f, 0f);
                 }
             }
 
@@ -97,11 +96,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            if (Projectile.ai[0] >= 120f)
-            {
-                target.AddBuff(BuffID.Frostburn, 180, true);
-                target.AddBuff(BuffID.Chilled, 90, true);
-            }
+            target.AddBuff(BuffID.Frostburn, 180, true);
         }
     }
 }

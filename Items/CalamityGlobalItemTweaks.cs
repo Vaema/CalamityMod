@@ -83,6 +83,7 @@ namespace CalamityMod.Items
                 { ItemID.CobaltRepeater, Do(PointBlank, UseExact(18)) },
                 { ItemID.CobaltSword, Do(UseTurn, DamageExact(60), UseExact(9)) },
                 { ItemID.Code2, Do(AutoReuse, DamageExact(43)) },
+                { ItemID.CoinGun, Do(UseExact(12)) },
                 { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(20)) }, // Malaise
                 { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
                 { ItemID.CrystalBullet, Do(DamageExact(6)) },
@@ -125,7 +126,6 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
-                { ItemID.GoldCoin, Do(DamageExact(75)) }, // For Coin Gun
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
@@ -201,7 +201,6 @@ namespace CalamityMod.Items
                 { ItemID.Phantasm, Do(PointBlank, DamageExact(48)) },
                 { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(20)) },
                 { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
-                { ItemID.PlatinumCoin, Do(DamageExact(150)) }, // For Coin Gun
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
                 { ItemID.PoisonStaff, Do(DamageExact(57)) },
                 { ItemID.PossessedHatchet, Do(DamageExact(135)) },
@@ -300,35 +299,13 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 2: Defense Balancing
-                { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.AnkhShield, Do(DefenseDelta(+4)) }, // 8 total
-                { ItemID.CobaltShield, Do(DefenseDelta(+3)) }, // 4 total
-                { ItemID.EoCShield, Do(DefenseDelta(+1)) }, // Shield of Cthulhu
-                { ItemID.FrozenShield, Do(DefenseDelta(+4)) }, // 10 total (plus the Frozen Turtle Shell DR effect)
-                { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
-                { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
-                { ItemID.LavaSkull, Do(DefenseExact(4)) }, // Magma Skull
-                { ItemID.MoltenCharm, Do(DefenseExact(4)) }, //Magma Charm
-                { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
-                { ItemID.ObsidianShield, Do(DefenseDelta(+4)) }, // 6 total
-                { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) }, // 2 total
-                { ItemID.ObsidianSkullRose, Do(DefenseExact(4)) },
-                { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumLeggings, Do(DefenseDelta(+4)) },
-                { ItemID.OrichalcumMask, Do(DefenseDelta(+3)) },
-                { ItemID.PaladinsShield, Do(DefenseDelta(+2)) }, // 8 total
-                { ItemID.PalladiumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.PalladiumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
-                { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
-                { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
-                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) },
+                { ItemID.LavaSkull, Do(DefenseExact(3)) }, // Magma Skull
+                { ItemID.MoltenCharm, Do(DefenseExact(3)) }, //Magma Charm
+                { ItemID.MoltenSkullRose, Do(DefenseExact(4)) },
+                { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
+                { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
+                { ItemID.Shackle, Do(DefenseExact(3)) },
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set
                 { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
                 { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
                 { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },

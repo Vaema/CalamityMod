@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.defense = 12; //43
+            Item.defense = 8; // 32
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

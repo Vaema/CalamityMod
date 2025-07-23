@@ -1372,7 +1372,6 @@ namespace CalamityMod.NPCs
             #region Setup Vanilla DR Values
             DRValues = new SortedDictionary<int, float> {
                 { NPCID.CultistBoss, 0.15f },
-                { NPCID.Deerclops, 0.05f },
                 { NPCID.DukeFishron, 0.15f },
                 { NPCID.DungeonGuardian, 0.9f },
                 { NPCID.Golem, 0.15f },
@@ -1384,23 +1383,17 @@ namespace CalamityMod.NPCs
                 { NPCID.MoonLordHand, 0.15f },
                 { NPCID.MoonLordHead, 0.15f },
                 { NPCID.Plantera, 0.15f },
-                { NPCID.PlanterasTentacle, 0.1f },
                 { NPCID.HallowBoss, 0.15f },
                 { NPCID.PrimeCannon, 0.2f },
                 { NPCID.PrimeLaser, 0.2f },
                 { NPCID.PrimeSaw, 0.2f },
                 { NPCID.PrimeVice, 0.2f },
-                { NPCID.Probe, 0.2f },
-                { NPCID.QueenBee, 0.05f },
                 { NPCID.Retinazer, 0.2f },
-                { NPCID.SkeletronHand, 0.05f },
-                { NPCID.SkeletronHead, 0.05f },
                 { NPCID.SkeletronPrime, 0.2f },
                 { NPCID.Spazmatism, 0.2f },
                 { NPCID.TheDestroyer, 0.1f },
                 { NPCID.TheDestroyerBody, 0.2f },
                 { NPCID.TheDestroyerTail, 0.35f },
-                { NPCID.TheHungry, 0.1f },
                 { NPCID.WallofFlesh, 0.15f },
             };
             #endregion
@@ -1564,8 +1557,6 @@ namespace CalamityMod.NPCs
             if (BossRushEvent.BossRushActive)
                 BossRushStatChanges(npc, Mod);
 
-            BossValueChanges(npc);
-
             if (CalamityWorld.revenge)
                 RevDeathStatChanges(npc, Mod);
 
@@ -1698,16 +1689,6 @@ namespace CalamityMod.NPCs
             if (BossRushHPChangeDict.TryGet(npc.type, out var newHP))
             {
                 npc.lifeMax = newHP;
-            }
-        }
-        #endregion
-
-        #region Boss Value Changes
-        private void BossValueChanges(NPC npc)
-        {
-            if (BossValueDict.TryGet(npc.type, out var value))
-            {
-                npc.value = value;
             }
         }
         #endregion
@@ -2597,13 +2578,6 @@ namespace CalamityMod.NPCs
         {
             EditGlobalCoinDrops(npc);
 
-            // Put this first so that any boss damage value modifications aren't reset
-            bool vanillaNPC = npc.type < NPCID.Count;
-            if (vanillaNPC && NPCStats.EnemyStats.ContactDamageValues.ContainsKey(npc.type))
-            {
-                npc.GetNPCDamage();
-                npc.defDamage = npc.damage;
-            }
             if ((npc.boss && npc.type != NPCID.MartianSaucerCore) || BossHPScalingList.Includes(npc.type))
             {
                 double HPBoost = CalamityServerConfig.Instance.BossHealthBoost * 0.01;
@@ -2649,7 +2623,6 @@ namespace CalamityMod.NPCs
                 case NPCID.StardustWormHead:
                 case NPCID.EaterofWorldsHead:
                 case NPCID.SkeletronHead:
-                case NPCID.SkeletronHand:
                 case NPCID.WallofFlesh:
                 case NPCID.TheHungry:
                 case NPCID.TheHungryII:
@@ -5333,21 +5306,6 @@ namespace CalamityMod.NPCs
 
             switch (npc.type)
             {
-                case NPCID.VileSpitEaterOfWorlds:
-                case NPCID.VileSpit:
-
-                    target.AddBuff(BuffType<BrainRot>(), 180);
-                    if (Main.rand.NextBool(10))
-                        target.AddBuff(BuffID.Weak, 3600);
-                    else if (Main.rand.NextBool(5))
-                        target.AddBuff(BuffID.Weak, 720);
-                    else if (Main.rand.NextBool(2))
-                        target.AddBuff(BuffID.Weak, 120);
-                    else
-                        target.AddBuff(BuffID.Weak, 60);
-
-                    break;
-
                 case NPCID.DevourerHead:
                 case NPCID.FaceMonster:
                     target.AddBuff(BuffID.Weak, 180);
@@ -5407,38 +5365,6 @@ namespace CalamityMod.NPCs
                         target.AddBuff(BuffType<Shadowflame>(), 120);
                     break;
 
-                case NPCID.EyeofCthulhu:
-                    if (npc.ai[0] > 2f)
-                        target.AddBuff(BuffID.Bleeding, 180);
-                    break;
-
-                case NPCID.WallofFlesh:
-                    target.AddBuff(BuffID.Bleeding, 300);
-                    break;
-
-                case NPCID.Spazmatism:
-                    if (npc.ai[0] != 1f && npc.ai[0] != 2f && npc.ai[0] != 0f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.SkeletronPrime:
-                    if (npc.ai[1] == 1f || npc.ai[1] == 2f)
-                        target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.PrimeSaw:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 120);
-                    break;
-
-                case NPCID.Plantera:
-                    if (npc.life < npc.lifeMax / 2)
-                        target.AddBuff(BuffID.Poisoned, 360);
-                    break;
-
-                case NPCID.PlanterasTentacle:
-                    target.AddBuff(BuffID.Poisoned, 180);
-                    break;
-
                 case NPCID.Golem:
                     target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
@@ -5448,19 +5374,6 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
                     target.AddBuff(BuffType<ArmorCrunch>(), 240);
-                    break;
-
-                case NPCID.DukeFishron:
-                    target.AddBuff(BuffType<HeavyBleeding>(), 180);
-                    break;
-
-                case NPCID.AncientLight:
-                    target.AddBuff(BuffType<Daybroken>(), 120);
-                    break;
-
-                case NPCID.HallowBoss:
-                    if (NPC.ShouldEmpressBeEnraged())
-                        target.AddBuff(BuffType<Daybroken>(), 360);
                     break;
 
                 case NPCID.BloodNautilus:

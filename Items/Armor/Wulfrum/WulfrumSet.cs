@@ -143,7 +143,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 //Stats
                 player.statDefense += 13;
-                player.endurance += 0.05f; //10% DR in total with the chestplate
+                player.endurance += 0.1f;
 
                 //Can't account for previous fullbody transformations but at this point, whatever
                 bool transformed = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
@@ -255,7 +255,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.GetDamage<SummonDamageClass>() += 0.05f;
         }
 
         public override void AddRecipes()
@@ -294,7 +294,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => WulfrumHat.ModifySetTooltips(this, tooltips);
 
-        public override void UpdateEquip(Player player) => player.endurance += 0.05f;
+        public override void UpdateEquip(Player player)
+        {
+            player.GetDamage<SummonDamageClass>() += 0.05f;
+        }
 
         public override void AddRecipes()
         {
