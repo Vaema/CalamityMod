@@ -5491,43 +5491,6 @@ namespace CalamityMod.CalPlayer
             }
         }
 
-        private bool IsValidTransitionFrame(AnimationType currentAnim, AnimationType newAnim, int frame, int counter) //this exists so it doesn't loop through the entire walk/idle anim just to find one frame for switching.
-        {
-            bool result = newAnim != AnimationType.Jump && currentAnim != AnimationType.Jump;
-            if (currentAnim == AnimationType.Walk && newAnim == AnimationType.Idle)
-            {
-                result = counter <= 0 && (frame == 11 || frame == 15 || frame == 19);
-            }
-            else if (currentAnim == AnimationType.Idle && newAnim == AnimationType.Walk)
-            {
-                result = counter <= 0 && (frame == 2 || frame == 6);
-            }
-            return currentAnim != newAnim && result; //swapping to jumps should be instant, no need to check the counter here
-        }
-
-        private int HandlePSCAnimationFrames(AnimationType newType)
-        {
-            int key = profanedCrystalAnimCounter.Key; //0-based indexing
-            int value = profanedCrystalAnimCounter.Value - 1;
-            AnimationType currentType = key < 8 ? AnimationType.Idle : key == 8 ? AnimationType.Jump : AnimationType.Walk;
-
-            bool isInvalidTransFrame = !IsValidTransitionFrame(currentType, newType, key, value); //to make the transition between walk and idle frames less jarring and smoother
-            AnimationType type = isInvalidTransFrame ? newType : currentType;
-            int frameCount = type == AnimationType.Walk || (!profanedCrystalForce && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 7 : 10;
-            int lowerRange = type == AnimationType.Idle ? 0 : type == AnimationType.Jump ? 8 : 9;
-            int upperRange = type == AnimationType.Idle ? 7 : type == AnimationType.Jump ? 8 : 22;
-            if (value <= 0 || !isInvalidTransFrame)
-            {
-                value = frameCount;
-                if (key >= lowerRange && key < upperRange)
-                    key++;
-                else
-                    key = lowerRange;
-            }
-            profanedCrystalAnimCounter = new KeyValuePair<int, int>(key, value);
-            return profanedCrystalAnimCounter.Key;
-        }
-
         public override void PostUpdate() 
         {
             if (subtitletext != null)
@@ -5540,21 +5503,6 @@ namespace CalamityMod.CalPlayer
                     subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
                     subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime/120f);
                 }
-            }
-
-            //needs to be here else it doesn't work properly, otherwise i'd have stuck it with the wing anim stuffs
-            bool validEquipSlot = Player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
-                                  Player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
-            if (!profanedCrystalHide && (profanedCrystal || profanedCrystalForce) && validEquipSlot)
-            {
-                bool usingCarpet = Player.carpetTime > 0 && Player.controlJump; //doesn't make sense for carpet to use jump frame since you have solid ground
-                AnimationType animType = AnimationType.Walk;
-                if ((Player.sliding || Player.velocity.Y != 0 || Player.mount.Active || (Player.grappling[0] != -1 || !Player.CheckSolidGround()) || Player.GoingDownWithGrapple) && !usingCarpet)
-                    animType = AnimationType.Jump;
-                else if (Player.velocity.X == 0 || usingCarpet)
-                    animType = AnimationType.Idle;
-                int frame = HandlePSCAnimationFrames(animType);
-                Player.legFrame.Y = Player.legFrame.Height * frame;
             }
         }
 
