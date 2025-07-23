@@ -120,7 +120,13 @@ namespace CalamityMod.Items.BaseItems
                     self.Transformation().currentTransformation = transformation;
             }
 
-            if (self.Transformation().currentTransformation != null && itemSlot == 19) // last item slot, can set equip slots to our transformation if one is equipped
+            int finalSlot = 17;
+            if (self.CanDemonHeartAccessoryBeShown())
+                finalSlot = 18;
+            if (self.CanMasterModeAccessoryBeShown())
+                finalSlot = 19;
+
+            if (self.Transformation().currentTransformation != null && itemSlot == finalSlot) // last item slot, can set equip slots to our transformation if one is equipped
             {
                 TransformationAccessory trans = self.Transformation().currentTransformation;
                 bool[] list = new bool[15];
@@ -135,6 +141,7 @@ namespace CalamityMod.Items.BaseItems
                 }
                 if(trans.ShouldHideAccessories)
                     self.HideAccessories();
+
             }
 
             self.Transformation().prevSlot = itemSlot;
