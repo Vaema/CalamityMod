@@ -426,7 +426,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((int)npc.ai[1] % streakSpawnFrequency == 0 && npc.ai[1] < 60f)
                     {
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
-                        int projectileDamage = boltDamage
+                        int projectileDamage = boltDamage;
 
                         float ai3 = npc.ai[1] / 60f;
                         Vector2 rainbowStreakVelocity = new Vector2(0f, death ? -10f : -8f).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
