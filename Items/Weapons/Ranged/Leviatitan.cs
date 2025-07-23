@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Build.Tasks;
@@ -21,6 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<AnahitasArpeggio>();
         }
 
         public override void SetDefaults()

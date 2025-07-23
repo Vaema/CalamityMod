@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + Vector2.Normalize(Projectile.velocity) * -6f, type, (int)Math.Round(Projectile.damage * 0.5), 0f, Main.myPlayer);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + Vector2.Normalize(Projectile.velocity) * -6f, type, AresGaussNuke.SparkDamage, 0f, Main.myPlayer);
                     }
                 }
             }

@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.defense = 14;
+            Item.defense = 10;
         }
 
         public override void UpdateEquip(Player player)

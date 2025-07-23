@@ -188,6 +188,7 @@ namespace CalamityMod.NPCs
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
             "Yarrim", // <@!290061123137306624> (borb9834)
+            "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
         };
         private static readonly string[] PrincessNames =
         {
@@ -245,7 +246,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TravelingMerchantNames =
         {
             "Stan Pines",
-            "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
         };
         private static readonly string[] TruffleNames =
@@ -1150,10 +1151,10 @@ namespace CalamityMod.NPCs
             bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.9;
 
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
+            Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
             Condition roguePlayer = CalamityConditions.PlayerHasRogueArmor;
             Condition wingedPlayer = CalamityConditions.PlayerHasWings;
             Condition revengeance = CalamityConditions.InRevengeanceMode;
-            Condition drunk = CalamityConditions.PlayerAlcoholPoisoned;
             Condition downedPolterghast = CalamityConditions.DownedPolterghast;
             Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
 
@@ -1292,7 +1293,6 @@ namespace CalamityMod.NPCs
                 musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
-                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), Condition.InHallow)
                 .Add(ItemType<LanternCenter>())
                 .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
@@ -1312,7 +1312,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.BestiaryGirl)
             {
-                shop.AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 10), Condition.DownedPlantera);
+                shop.AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), bestiaryProgressLacewing);
             }
 
             if (type == NPCID.Truffle)

@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             float collisionPoint = 0f;
-            float bladeLength = 100 * Projectile.scale;
+            float bladeLength = 105 * Projectile.scale;
             float bladeWidth = 20 * Projectile.scale;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, Projectile.Center + (direction * bladeLength), bladeWidth, ref collisionPoint);
         }
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Melee
 
 
                 //Manage position and rotation
-                Projectile.scale = 1 + Empowerment / maxEmpowerment * 1.5f;
+                Projectile.scale = 1 + Empowerment / maxEmpowerment * 1.85f;
 
                 oldDirection = direction;
                 direction = direction.RotatedBy(MathHelper.Clamp(Empowerment * 1.1f / maxEmpowerment, 0.45f, 1f) * MathHelper.PiOver4 * 0.20f);
@@ -222,6 +222,8 @@ namespace CalamityMod.Projectiles.Melee
                 modifiers.SourceDamage *= MathHelper.Lerp(1f, TrueBiomeBlade.HolyAttunement_ThrowDamageBoost, Empowerment / maxEmpowerment);
             else
                 modifiers.SourceDamage *= MathHelper.Lerp(TrueBiomeBlade.HolyAttunement_BaseSwingDamageMult, TrueBiomeBlade.HolyAttunement_FullSwingDamageMult, Empowerment / maxEmpowerment);
+
+            modifiers.HitDirectionOverride = (Owner.Center.X > target.Center.X).ToDirectionInt();
         }
 
         public override void OnKill(int timeLeft)

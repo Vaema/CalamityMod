@@ -135,11 +135,13 @@ namespace CalamityMod.NPCs.HiveMind
             }
         }
 
+        public static int ShaderainDamage = 12; // 48
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 40; // 64 (1.6x expert scaling)
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
 
             // this is the only allowed case for using constant directly
             // as it doesn't have proper frame info yet
@@ -151,7 +153,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 8, 0, 0);
+            NPC.value = Item.buyPrice(gold: 5);
             NPC.boss = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -1095,10 +1097,9 @@ namespace CalamityMod.NPCs.HiveMind
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     Vector2 cloudSpawnPos = new Vector2(NPC.position.X + Main.rand.Next(NPC.width), NPC.position.Y + Main.rand.Next(NPC.height));
                                     Vector2 randomVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(4f, 4f) : Vector2.Zero;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), cloudSpawnPos, randomVelocity, type, damage, 0, Main.myPlayer, 11f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), cloudSpawnPos, randomVelocity, type, ShaderainDamage, 0, Main.myPlayer, 11f);
                                 }
 
                                 if (NPC.ai[0] == 10f)
@@ -1242,7 +1243,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 360);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 240);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => NPC.scale == 1f; // Only draw HP bar while at full size
@@ -1260,7 +1261,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -1371,7 +1372,6 @@ namespace CalamityMod.NPCs.HiveMind
                 normalOnly.Add(ItemID.DemoniteBar, 1, 10, 15);
                 normalOnly.Add(ItemID.RottenChunk, 1, 10, 15);
                 normalOnly.Add(ItemID.CorruptSeeds, 1, 10, 15);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenMatter>(), 1, 25, 30));
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.Hardmode(), ItemID.CursedFlame, 1, 10, 20));
 
                 // Equipment

@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 50;
+            player.statLifeMax2 += 25;
 
             // Inherits all effects of Honey Dew
             CalamityPlayer modPlayer = player.Calamity();

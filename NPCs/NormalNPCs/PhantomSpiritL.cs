@@ -22,10 +22,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 5;
         }
 
+        public static int ShotDamage = 60; // 240
+
         public override void SetDefaults()
         {
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
-            NPC.damage = 100;
             NPC.width = 32;
             NPC.height = 80;
             NPC.scale *= 1.2f;
@@ -83,11 +85,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.ai[2] = 0f;
                 float projSpeed = 10f;
                 int type = ModContent.ProjectileType<PhantomGhostShot>();
-                int damage = NPC.GetProjectileDamage(type);
                 targetDistance = projSpeed / targetDistance;
                 targetXDist *= targetDistance;
                 targetYDist *= targetDistance;
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), spiritPosition.X, spiritPosition.Y, targetXDist, targetYDist, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), spiritPosition.X, spiritPosition.Y, targetXDist, targetYDist, type, ShotDamage, 0f, Main.myPlayer, 0f, 0f);
             }
         }
 

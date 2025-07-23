@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Avalanche : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HoarfrostBow>();
+        }
         public override void SetDefaults()
         {
             Item.width = 64;

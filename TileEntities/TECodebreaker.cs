@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Packets;
 using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.DraedonSummoner;
@@ -65,7 +65,7 @@ namespace CalamityMod.TileEntities
         public bool ContainsVoltageRegulationSystem;
         public bool ContainsCoolingCell;
 
-        public bool ContainsBloodSample;
+        public bool ContainsBloodyVein;
 
         public bool CanDecryptHeldSchematic
         {
@@ -163,7 +163,7 @@ namespace CalamityMod.TileEntities
                     totalCellsToDrop = 999;
 
                 InputtedCellCount -= totalCellsToDrop;
-                int itemType = ContainsBloodSample ? ModContent.ItemType<BloodSample>() : ModContent.ItemType<DraedonPowerCell>();
+                int itemType = ContainsBloodyVein ? ModContent.ItemType<BloodyVein>() : ModContent.ItemType<DraedonPowerCell>();
                 Item.NewItem(new EntitySource_TileEntity(this), x * 16, y * 16, 32, 32, itemType, totalCellsToDrop);
             }
         }
@@ -270,7 +270,7 @@ namespace CalamityMod.TileEntities
             tag["HeldSchematicID"] = HeldSchematicID;
             tag["DecryptionCountdown"] = DecryptionCountdown;
             tag["InitialCellCountBeforeDecrypting"] = InitialCellCountBeforeDecrypting;
-            tag["ContainsBloodSample"] = ContainsBloodSample;
+            tag["ContainsBloodyVein"] = ContainsBloodyVein;
         }
 
         public override void LoadData(TagCompound tag)
@@ -284,7 +284,7 @@ namespace CalamityMod.TileEntities
             HeldSchematicID = tag.GetInt("HeldSchematicID");
             DecryptionCountdown = tag.GetInt("DecryptionCountdown");
             InitialCellCountBeforeDecrypting = tag.GetInt("InitialCellCountBeforeDecrypting");
-            ContainsBloodSample = tag.GetBool("ContainsBloodSample");
+            ContainsBloodyVein = tag.GetBool("ContainsBloodyVein");
         }
 
         public override void NetSend(BinaryWriter writer)
@@ -298,7 +298,7 @@ namespace CalamityMod.TileEntities
             writer.Write(HeldSchematicID);
             writer.Write(DecryptionCountdown);
             writer.Write(InitialCellCountBeforeDecrypting);
-            writer.Write(ContainsBloodSample);
+            writer.Write(ContainsBloodyVein);
         }
 
         public override void NetReceive(BinaryReader reader)
@@ -312,7 +312,7 @@ namespace CalamityMod.TileEntities
             HeldSchematicID = reader.ReadInt32();
             DecryptionCountdown = reader.ReadInt32();
             InitialCellCountBeforeDecrypting = reader.ReadInt32();
-            ContainsBloodSample = reader.ReadBoolean();
+            ContainsBloodyVein = reader.ReadBoolean();
         }
     }
 }

@@ -27,6 +27,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         private const int BoltShootGateValue_Death = 75;
         private const float LightTelegraphDuration = 45f;
 
+        public static int JewelBoltDamage = 10; // 40
+
         public override void SetStaticDefaults()
         {
             NPCID.Sets.NeedsExpertScaling[Type] = true;
@@ -38,7 +40,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0;
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 10;
@@ -151,7 +153,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int damage = NPC.GetProjectileDamage(type);
                     if (death)
                     {
                         int numProj = 4;
@@ -159,11 +160,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projVector.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, perturbedSpeed, type, JewelBoltDamage, 0f, Main.myPlayer);
                         }
                     }
                     else
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, JewelBoltDamage, 0f, Main.myPlayer);
                 }
 
                 NPC.netUpdate = true;

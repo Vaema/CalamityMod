@@ -305,6 +305,9 @@ namespace CalamityMod.CalPlayer
         public int furyFuelMax = 1800;
         public int furyFuel = 1800;
         public float furyRefuelTimer = 0;
+        /// <summary> Variable used to track if Auger can do a big slash </summary>
+        public bool buffedAuger = false;
+
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
@@ -1985,7 +1988,7 @@ namespace CalamityMod.CalPlayer
         public override void ResetEffects()
         {
             if (fleshKnuckles)
-                Player.statLifeMax2 += 45;
+                Player.statLifeMax2 += 25;
 
             int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both

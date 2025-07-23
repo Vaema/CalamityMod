@@ -57,11 +57,13 @@ namespace CalamityMod.NPCs.Leviathan
                 AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
         }
 
+        public static int BoulderDamage = 40; // 160
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 20f;
-            NPC.GetNPCDamage();
+            NPC.damage = 100; // 200
             NPC.width = 900;
             NPC.height = 450;
             NPC.defense = 40;
@@ -71,7 +73,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
-            NPC.value = Item.buyPrice(0, 12, 50, 0);
+            NPC.value = Item.buyPrice(gold: 7, silver: 50);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.noTileCollide = true;
@@ -389,7 +391,6 @@ namespace CalamityMod.NPCs.Leviathan
                             {
                                 float speed = (sirenAlive && !phase4 && !death) ? 13.5f : 16f;
                                 int type = ModContent.ProjectileType<LeviathanBomb>();
-                                int damage = NPC.GetProjectileDamage(type);
 
                                 if (expertMode)
                                     speed = (sirenAlive && !phase4 && !death) ? 14f : 17f;
@@ -410,10 +411,9 @@ namespace CalamityMod.NPCs.Leviathan
                                 {
                                     type = CalamityWorld.LegendaryMode ? ProjectileID.BouncyBoulder : ProjectileID.Boulder;
                                     leviCenter.Y -= 5; //Shoot a bit more up since boulders are affected by gravity
-                                    damage *= 2;
                                 }
 
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), leviCenter.X, leviCenter.Y, xDestination, yDestination, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), leviCenter.X, leviCenter.Y, xDestination, yDestination, type, BoulderDamage, 0f, Main.myPlayer);
                                 if (Main.zenithWorld)
                                     Main.projectile[proj].scale *= 5f;
 
@@ -971,7 +971,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }
