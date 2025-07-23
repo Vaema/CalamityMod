@@ -731,41 +731,6 @@ namespace CalamityMod.Items
             {
                 return false;
             }
-            if (player.ActiveItem().type == ModContent.ItemType<IgneousExaltation>())
-            {
-                bool hasBlades = false;
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
-                    {
-                        hasBlades = true;
-                        break;
-                    }
-                }
-                if (hasBlades)
-                {
-                    foreach (Projectile p in Main.ActiveProjectiles)
-                    {
-                        if (p.ModProjectile is IgneousBlade)
-                        {
-                            if (p.ModProjectile<IgneousBlade>().Firing)
-                                continue;
-                        }
-                        if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
-                        {
-                            p.rotation = MathHelper.PiOver2 + MathHelper.PiOver4;
-                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                            p.velocity = p.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 22f;
-                            p.rotation += p.velocity.ToRotation();
-                            p.ai[0] = 180f;
-                            p.ModProjectile<IgneousBlade>().Firing = true;
-                            p.tileCollide = true;
-                            p.netUpdate = true;
-                        }
-                    }
-                }
-                return false;
-            }
             if (player.ActiveItem().type == ModContent.ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationBlackhole>()] == 0)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
