@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Vanilla sets her defDamage to 184 (80 * 2 * 1.15) in Expert Mode
         // However, some weird contraption in her Expert AI that knocks her base contact damage to the intended value of 110
         // This hasn't been found anywhere so our solution for now is avoid using defDamage altogether
-        public static int ContactDamageCorrection = 110;
+        public static int ContactDamageCorrection = Main.masterMode ? 248 : 110;
 
         public static int CalculateDamageForEnrage(this int damage) => NPC.ShouldEmpressBeEnraged() ? damage * 2 : damage;
 
