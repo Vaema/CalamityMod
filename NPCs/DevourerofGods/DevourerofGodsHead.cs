@@ -53,16 +53,24 @@ namespace CalamityMod.NPCs.DevourerofGods
         public static int phase1IconIndex;
         public static int phase2IconIndex;
 
-        public static Asset<Texture2D> Texture_Glow;
-        public static Asset<Texture2D> Texture_Glow2;
-        public static Asset<Texture2D> Phase2Texture;
-        public static Asset<Texture2D> Phase2Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture_Glow2;
+        public static Asset<Texture2D> Texture_Glow_Purple;
+        public static Asset<Texture2D> Texture_Glow_Cyan;
+        public static Asset<Texture2D> TextureP2;
+        public static Asset<Texture2D> TextureP2_Glow_Purple;
+        public static Asset<Texture2D> TextureP2_Glow_Cyan;
+
+        public static Asset<Texture2D> JawTexture;
+        public static Asset<Texture2D> JawTexture_Glow;
+        public static Asset<Texture2D> JawTextureP2;
+        public static Asset<Texture2D> JawTextureP2_Glow;
+        public static Asset<Texture2D> GodSlayerDashJawTexture;
+
+        public static Asset<Texture2D> TextureP2_Full;
 
         public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
-            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHeadS_Head_Boss";
+            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
             
             phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
@@ -127,6 +135,13 @@ namespace CalamityMod.NPCs.DevourerofGods
         public bool Dying;
         public int DeathAnimationTimer;
         public int DestroyedSegmentCount;
+
+        // Jaw related variables.
+        public float JawRotation;
+        public float JawChompDownProgress;
+        public float GodSlayerDashJawFadeProgress;
+        public float GodSlayerDashJawTimer;
+        public bool ShouldSpawnChompVFX;
 
         // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DevourerSpawn");
@@ -197,11 +212,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             if (!Main.dedServ)
             {
-                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
-                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+                Texture_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_Glow_Purple", AssetRequestMode.AsyncLoad);
+                Texture_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_Glow_Cyan", AssetRequestMode.AsyncLoad);
+                TextureP2 = ModContent.Request<Texture2D>(Texture + "_Jawless_P2", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_Jawless_P2_Glow_Purple", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_Jawless_P2_Glow_Cyan", AssetRequestMode.AsyncLoad);
+
+                JawTexture = ModContent.Request<Texture2D>(Texture + "_Jaw", AssetRequestMode.AsyncLoad);
+                JawTexture_Glow = ModContent.Request<Texture2D>(Texture + "_Jaw_Glow", AssetRequestMode.AsyncLoad);
+                JawTextureP2 = ModContent.Request<Texture2D>(Texture + "_Jaw_P2", AssetRequestMode.AsyncLoad);
+                JawTextureP2_Glow = ModContent.Request<Texture2D>(Texture + "_Jaw_P2_Glow", AssetRequestMode.AsyncLoad);
+                GodSlayerDashJawTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/DevourerofGods/GodSlayerDashJaw", AssetRequestMode.AsyncLoad);
+
+                // For bestiary.
+                TextureP2_Full = ModContent.Request<Texture2D>(Texture + "_P2", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -295,6 +319,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             writer.Write(DeathAnimationTimer);
             writer.Write(DestroyedSegmentCount);
 
+            // Jaw animation syncs
+            writer.Write(JawRotation);
+            writer.Write(JawChompDownProgress);
+            writer.Write(GodSlayerDashJawFadeProgress);
+            writer.Write(GodSlayerDashJawTimer);
+            writer.Write(ShouldSpawnChompVFX);
+
             // Frame syncs
             writer.Write(NPC.frame.X);
             writer.Write(NPC.frame.Y);
@@ -341,6 +372,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             DeathAnimationTimer = reader.ReadInt32();
             DestroyedSegmentCount = reader.ReadInt32();
 
+            // Jaw animation syncs
+            JawRotation = reader.ReadSingle();
+            JawChompDownProgress = reader.ReadSingle();
+            GodSlayerDashJawFadeProgress = reader.ReadSingle();
+            GodSlayerDashJawTimer = reader.ReadSingle();
+            ShouldSpawnChompVFX = reader.ReadBoolean();
+
             // Misc syncs
             extrapitch = reader.ReadSingle();
 
@@ -370,12 +408,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-            if (DeathAnimationTimer < 435)
-            {
-                player.shimmerMonolithShader = true;
-                if (Main.shimmerDarken > 0.75f)
-                    Main.shimmerDarken = 0.75f;
-            }
+            //if (DeathAnimationTimer < 435)
+            //{
+            //    player.shimmerMonolithShader = true;
+            //    if (Main.shimmerDarken > 0.75f)
+            //        Main.shimmerDarken = 0.75f;
+            //}
             // Variables
             bool flyUpDuringLaserWalls = laserWallPhase == (int)LaserWallPhase.FireLaserWalls || (laserWallPhase == (int)LaserWallPhase.End && teleportTimer > 0);
             bool flies = NPC.ai[3] == 0f || flyUpDuringLaserWalls;
@@ -488,13 +526,15 @@ namespace CalamityMod.NPCs.DevourerofGods
             float timeWhenDoGShouldTeleportDuringPhase2Countdown = 61f;
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
-            if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
+/*
+if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 30)
             {
                 Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
                 GeneralParticleHandler.SpawnParticle(pulse);
             }
+*/
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
                 Teleport(player, death, revenge, expertMode, phase5);
 
@@ -555,29 +595,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     CalamityUtils.DisplayLocalizedText(key, messageColor);
-                }
-                if (NPC.localAI[2] > 0 && NPC.localAI[2] < 60)
-                {
-                    if (doTpFX)
-                    {
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
-                        SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
-                        for (int i = 0; i < 2; i++)
-                            SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
-                        doTpFX = false;
-                    }
-                    var Size = 1.6f;
-                    if (NPC.localAI[2] == 1)
-                    {
-                        Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
-                        GeneralParticleHandler.SpawnParticle(pulse);
-                        doTpFX = true;
-                    }
-                    Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
-                    GeneralParticleHandler.SpawnParticle(jaws);
-                    Particle jaws2 = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 56, NPC.velocity, Color.Aqua, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size - 0.3f, Size - 0.3f, 2);
-                    GeneralParticleHandler.SpawnParticle(jaws2);
                 }
             }
 
@@ -645,14 +662,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (teleportTimer > 0)
                     {
                         teleportTimer--;
-                        if (teleportTimer == 115)
+                        /*if (teleportTimer == 115)
                             SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
                         if (teleportTimer == 30)
                         {
 
                             Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
                             GeneralParticleHandler.SpawnParticle(pulse);
-                        }
+                        }*/
                         // Teleport
                         if (teleportTimer == 0)
                             Teleport(player, death, revenge, expertMode, phase5);
@@ -700,7 +717,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 // Disable teleports
                                 if (teleportTimer > 0)
                                 {
-                                    GetRiftLocation(false);
+                                    GetRiftLocation();
                                     teleportTimer = 0;
                                 }
                             }
@@ -772,31 +789,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                         // Set opacity after teleport
                         if (postTeleportTimer > 0)
                         {
-                            if (doTpFX && dashes > 0)
-                            {
-                                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 9f)
-                                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 9f;
-                                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
-                                for (int i = 0; i < 2; i++)
-                                    SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = -0.2f, MaxInstances = -1 }, NPC.Center);
-                                doTpFX = false;
-                            }
-                            var Size = 1.6f;
-                            if (postTeleportTimer == 1 && NPC.localAI[2] < 1)
-                            {
-                                dashes++;
-                                Particle pulse = new DirectionalPulseRing(NPC.Center, NPC.velocity, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 2f, 18);
-                                GeneralParticleHandler.SpawnParticle(pulse);
-                                doTpFX = true;
-                            }
-                            Particle jaws = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 64, NPC.velocity, Color.Fuchsia, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size, Size, 2);
-                            GeneralParticleHandler.SpawnParticle(jaws);
-                            Particle jaws2 = new Jaws(NPC.Center + NPC.velocity.SafeNormalize(Vector2.Zero) * 56, NPC.velocity, Color.Aqua, new Vector2(0.8f, 1f), NPC.velocity.ToRotation() + MathHelper.PiOver2, Size - 0.3f, Size - 0.3f, 2);
-                            GeneralParticleHandler.SpawnParticle(jaws2);
+                            NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+
                             postTeleportTimer--;
                             NPC.Opacity = 1f - (postTeleportTimer / 255f);
                             if (NPC.ai[3] < 2)
-                                    calamityGlobalNPC.newAI[2] = 0;
+                                calamityGlobalNPC.newAI[2] = 0;
                         }
                         else
                         {
@@ -809,7 +807,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Fireballs
                     if (isInPassiveState)
                     {
-                        calamityGlobalNPC.newAI[0] += 1f;
+                        ShootFireballs(player, distanceFromTarget, revenge);
+
+                        /*calamityGlobalNPC.newAI[0] += 1f;
                         if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
                         {
                             float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
@@ -833,7 +833,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     calamityGlobalNPC.newAI[0] = 0f;
                                 }
                             }
-                        }
+                        }*/
+
                     }
                     else
                     {
@@ -1455,7 +1456,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                     // Fireballs
                     if (isInPassiveState)
                     {
-                        calamityGlobalNPC.newAI[0] += 1f;
+                        ShootFireballs(player, distanceFromTarget, revenge);
+                    } 
+                    else
+                        /*calamityGlobalNPC.newAI[0] += 1f;
                         if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
                         {
                             float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
@@ -1480,7 +1484,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 }
                             }
                         }
-                    } else
+                    } else*/
+
                     {
                         calamityGlobalNPC.newAI[0] = 0f;
                     }
@@ -2112,8 +2117,144 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.Distance(player.Center) > 2400f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
+            // Jaw movement.
+            float targetRotationReset = ((Phase2Started || phase3) && isInPassiveState) ? MathHelper.ToRadians(10f) : 0f;
+            float targetRotationOpenJaw = MathHelper.ToRadians(Phase2Started ? 32f : 22f);
+            float targetRotationChompDown = MathHelper.ToRadians(Phase2Started ? -25f : -15f);
+            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+            bool rotatedTowardsPlayer = dotProduct > 0.8f;
+
+            // Reset slowly at all times.
+            JawRotation = MathHelper.Lerp(JawRotation, targetRotationReset, 0.08f);
+
+            // Chomp down when close enough to the player.
+            if (distanceFromTarget < 110f)
+            {
+                JawRotation = MathHelper.Lerp(JawRotation, targetRotationChompDown, JawChompDownProgress);
+                JawChompDownProgress = MathHelper.Clamp(JawChompDownProgress + 0.28f, 0f, 1f);
+
+                // Spawn some particle effects when chomping down
+                if (JawChompDownProgress >= 0.94f && ShouldSpawnChompVFX)
+                {
+                    Vector2 jawChompPosition = (NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * 36f) + (NPC.velocity * 1.45f);
+                    Color jawParticleColor = isInPassiveState ? Color.Cyan : Color.Purple;
+                    for (int i = 0; i < 20; i++)
+                    {
+                        Vector2 sparkVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(26f, 32f);
+                        int sparkLifetime = Main.rand.Next(20, 30);
+                        float sparkScale = Main.rand.NextFloat(1.4f, 1.8f);
+                        Color sparkColor = Color.Lerp(jawParticleColor, Color.White, Main.rand.NextFloat(0f, 0.3f));
+
+                        SparkParticle chompSpark = new(jawChompPosition, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                        GeneralParticleHandler.SpawnParticle(chompSpark);
+                    }
+
+                    // Play a sound and add some screenshake with it if you're close enough too.
+                    float shakeStrength = Phase2Started ? 14f : 8f;
+                    CalamityUtils.AddScreenshakeAt(jawChompPosition, shakeStrength, 100f);
+                    SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = -0.45f }, jawChompPosition);
+                    ShouldSpawnChompVFX = false;
+                    NPC.netUpdate = true;
+                }
+            }
+            // Only open up when DoG is facing the player.
+            else if (distanceFromTarget < 480f && rotatedTowardsPlayer)
+            {
+                JawRotation = MathHelper.Lerp(JawRotation, targetRotationOpenJaw, 0.28f);
+                if (!ShouldSpawnChompVFX)
+                    ShouldSpawnChompVFX = true;
+            }
+
+            // Fade out the special jaw texture during rift dashes.
+            GodSlayerDashJawTimer--;
+            if (GodSlayerDashJawTimer <= 0f)
+            {
+                GodSlayerDashJawFadeProgress = MathHelper.Lerp(GodSlayerDashJawFadeProgress, 0f, 0.15f);
+                if (GodSlayerDashJawTimer < 0f)
+                    GodSlayerDashJawTimer = 0f;
+            }
             if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                 NPC.life = Main.npc[(int)NPC.ai[0]].life;
+        }
+
+        private void ShootFireballs(Player player, float distanceFromTarget, bool revenge)
+        {
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+            Vector2 mouthPosition = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * (Phase2Started ? 28f : -16f);
+
+            calamityGlobalNPC.newAI[0] += 1f;
+            if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
+            {
+                float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+                if (dotProduct > 0.8f)
+                {
+                    if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
+                    {
+                        // Flame and cinder particles from the mouth.
+                        for (int i = 0; i < 18; i++)
+                        {
+                            Vector2 flameVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(32f, 44f);
+                            int flameLifetime = Main.rand.Next(45, 60);
+                            float flameScale = Main.rand.NextFloat(0.6f, 0.9f);
+                            float flameOpacity = Main.rand.NextFloat(0.7f, 0.9f);
+                            Color flameColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0f, 0.4f));
+
+                            HeavySmokeParticle fireballFlames = new(mouthPosition, flameVelocity, flameColor, flameLifetime, flameScale, flameOpacity, 0.01f, true);
+                            GeneralParticleHandler.SpawnParticle(fireballFlames);
+                        }
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            Vector2 cinderVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(36f, 48f);
+                            float cinderScale = Main.rand.NextFloat(0.3f, 0.5f);
+                            Color cinderColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0.2f, 0.6f));
+                            int cinderLifetime = Main.rand.Next(45, 60);
+
+                            SquishyLightParticle cinder = new(mouthPosition, cinderVelocity, cinderScale, cinderColor, cinderLifetime);
+                            GeneralParticleHandler.SpawnParticle(cinder);
+                        }
+
+                        // Open DoG's mouth a bit everytime a fireball is fired.
+                        JawRotation = MathHelper.ToRadians(22f);
+
+                        float fireballSpeed = 8f;
+                        Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
+                        int type = ModContent.ProjectileType<DoGFire>();
+                        int damage = NPC.GetProjectileDamage(type);
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, fireballVelocity, type, damage, 0f, Main.myPlayer, 2f);
+
+                        calamityGlobalNPC.newAI[0] = 0f;
+                        NPC.ForceNetUpdate(false);
+                    }
+                }
+            }
+
+            // Continuously spawn a stream of flames and cinders at DoG's mouth while he's in fireball phase.
+            if (Main.rand.NextBool(2))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 flameSpawnPosition = mouthPosition + Main.rand.NextVector2Circular(10f, 10f);
+                    Vector2 flameVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(12f, 18f);
+                    int flameLifetime = Main.rand.Next(45, 60);
+                    float flameScale = Main.rand.NextFloat(0.6f, 0.9f);
+                    float flameOpacity = Main.rand.NextFloat(0.7f, 0.9f);
+                    Color flameColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0f, 0.4f));
+
+                    HeavySmokeParticle fireballFlames = new(flameSpawnPosition, flameVelocity, flameColor, flameLifetime, flameScale, flameOpacity, 0.01f, true);
+                    GeneralParticleHandler.SpawnParticle(fireballFlames);
+                }
+
+                Vector2 cinderVelocity = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(14f, 20f);
+                float cinderScale = Main.rand.NextFloat(0.15f, 0.3f);
+                Color cinderColor = Color.Lerp(Color.Cyan, Color.White, Main.rand.NextFloat(0.2f, 0.6f));
+                int cinderLifetime = Main.rand.Next(30, 45);
+
+                SquishyLightParticle cinder = new(mouthPosition, cinderVelocity, cinderScale, cinderColor, cinderLifetime);
+                GeneralParticleHandler.SpawnParticle(cinder);
+            }
         }
 
         private void SpawnTeleportLocation(Player player, bool phase2Transition = false)
@@ -2141,16 +2282,26 @@ namespace CalamityMod.NPCs.DevourerofGods
                     distance += 450; //More breathing room for rapid dash
                 }
                 Vector2 targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                int rift = Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                if (Main.projectile.IndexInRange(rift))
+                {
+                    int timeForPhaseTransition = ((CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal);
+                    Main.projectile[rift].ModProjectile<DoGTeleportRift>().RiftLifetime = phase2Transition ? timeForPhaseTransition : teleportTimer;
+                }
 
+                // GFB, spawn a ton of fake rifts alongside the real one.
                 if (Main.zenithWorld)
                 {
-                    // Fake portals galore
                     randomRange = 2000;
                     for (int k = 0; k < 35; k++)
                     {
                         targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI, ai2: 1f);
+                        int faker = Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
+                        if (Main.projectile.IndexInRange(faker))
+                        {
+                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().FakeRift = true;
+                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().RiftLifetime = teleportTimer;
+                        }
                     }
                 }
             }
@@ -2158,7 +2309,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         private void Teleport(Player player, bool death, bool revenge, bool expertMode, bool phase5)
         {
-            Vector2 newPosition = GetRiftLocation(true);
+            Vector2 newPosition = GetRiftLocation();
 
             if ((!AwaitingPhase2Teleport && (player.dead || !player.active)) || newPosition == default)
                 return;
@@ -2234,6 +2385,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
             }
 
+            GodSlayerDashJawFadeProgress = 1f;
+            GodSlayerDashJawTimer = 60f;
             SoundEngine.PlaySound(AttackSound with { Pitch = AttackSound.Pitch + extrapitch }, player.Center);
         }
 
@@ -2338,7 +2491,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             DeathAnimationTimer++;
         }
 
-        private Vector2 GetRiftLocation(bool spawnDust)
+        private Vector2 GetRiftLocation()
+        /*private Vector2 GetRiftLocation(bool spawnDust)
         {
             Vector2 realSpot = default;
             foreach (Projectile proj in Main.ActiveProjectiles)
@@ -2359,7 +2513,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             return realSpot;
         }
 
-        public Vector2 GetRiftLocationSafe()
+        public Vector2 GetRiftLocationSafe()*/
         {
             Vector2 realSpot = Vector2.Zero;
             foreach (Projectile proj in Main.ActiveProjectiles)
@@ -2367,6 +2521,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
                 {
                     realSpot = proj.Center;
+                    // Safeguard for if the rift doesn't activate at its designated time.
+                    proj.ModProjectile<DoGTeleportRift>().SwitchAIStates();
                 }
             }
             return realSpot;
@@ -2374,8 +2530,18 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
+            bool actuallyInPhaseTwo = (Phase2Started && NPC.localAI[2] <= 60f);
+            Texture2D mainTexture = actuallyInPhaseTwo ? TextureP2.Value : TextureAssets.Npc[Type].Value;
+            Texture2D mainGlowTexture = actuallyInPhaseTwo ? TextureP2_Glow_Purple.Value : Texture_Glow_Purple.Value;
+            Texture2D mainJawTexture = actuallyInPhaseTwo ? JawTextureP2.Value : JawTexture.Value;
+            Texture2D mainJawGlowTexture = actuallyInPhaseTwo ? JawTextureP2_Glow.Value : JawTexture_Glow.Value;
+
+            // Draw the custom worm bestiary sprite separately.
             if (NPC.IsABestiaryIconDummy)
+            {
                 NPC.Opacity = 1f;
+                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureP2_Full.Value, DevourerofGodsBody.TextureP2.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
+            }
 
             float disintegrationFactor = DeathAnimationTimer / 800f;
             if (disintegrationFactor > 0f)
@@ -2387,36 +2553,52 @@ namespace CalamityMod.NPCs.DevourerofGods
                 GameShaders.Misc["CalamityMod:DoGDisintegration"].Apply();
             }
 
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (NPC.spriteDirection == 1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
+            SpriteEffects spriteEffects = (NPC.spriteDirection == 1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Vector2 halfSizeTexture = mainTexture.Size() * 0.5f;
 
-            bool useOtherTextures = (Phase2Started && NPC.localAI[2] <= 60f) || NPC.IsABestiaryIconDummy;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
-            if (NPC.IsABestiaryIconDummy)
+            Vector2 drawPosition = NPC.Center - screenPos;
+            drawPosition -= new Vector2(mainTexture.Width, mainTexture.Height) * NPC.scale / 2f;
+            drawPosition += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+
+            // Draw DoG's mouth and its glow masks.
+            Vector2 jawOrigin = mainJawTexture.Size() * 0.5f;
+            for (int i = -1; i <= 1; i += 2)
             {
-                return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, texture2D15, DevourerofGodsBody.Phase2Texture.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
+                float jawBaseOffset = actuallyInPhaseTwo ? 42f : 28f;
+                SpriteEffects jawSpriteEffect = (i == 1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                Vector2 jawDrawPosition = drawPosition;
+                jawDrawPosition += Vector2.UnitX.RotatedBy(NPC.rotation + JawRotation * i) * i * (jawBaseOffset + MathF.Sin(JawRotation) * 24f);
+                jawDrawPosition -= Vector2.UnitY.RotatedBy(NPC.rotation) * ((actuallyInPhaseTwo ? 44f : 8f) + MathF.Sin(JawRotation) * (actuallyInPhaseTwo ? 30f : -6f));
+
+                spriteBatch.Draw(mainJawTexture, jawDrawPosition, null, NPC.GetAlpha(drawColor), NPC.rotation + JawRotation * i, jawOrigin, NPC.scale, jawSpriteEffect, 0f);
+                spriteBatch.Draw(mainJawGlowTexture, jawDrawPosition, null, NPC.GetAlpha(Color.White), NPC.rotation + JawRotation * i, jawOrigin, NPC.scale, jawSpriteEffect, 0f);
+
+                // Draw the additional special jaw textures above these for the Rift Dash attack.
+                if (GodSlayerDashJawFadeProgress > 0.02f && disintegrationFactor <= 0f)
+                {
+                    spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                    {
+                        Vector2 godSlayerJawOrigin = GodSlayerDashJawTexture.Size() * 0.5f;
+                        float godSlayerJawOpacity = GodSlayerDashJawFadeProgress;
+
+                        spriteBatch.Draw(GodSlayerDashJawTexture.Value, jawDrawPosition, null, NPC.GetAlpha(Color.Fuchsia) * godSlayerJawOpacity, NPC.rotation + JawRotation * i, godSlayerJawOrigin, NPC.scale * 1.6f, jawSpriteEffect, 0f);
+                        spriteBatch.Draw(GodSlayerDashJawTexture.Value, jawDrawPosition, null, NPC.GetAlpha(Color.Cyan) * godSlayerJawOpacity, NPC.rotation + JawRotation * i, godSlayerJawOrigin, NPC.scale * 1.3f, jawSpriteEffect, 0f);
+                    });
+                }
             }
 
-            Vector2 drawLocation = NPC.Center - screenPos;
-            drawLocation -= new Vector2(texture2D15.Width, texture2D15.Height) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            // Draw the main head.
+            spriteBatch.Draw(mainTexture, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            if (NPC.Opacity > 0.25f)
-            {
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow.Value : Texture_Glow.Value;
+            // Draw the head glow masks. There are two glow mask textures for each head which are split between purple and cyan highlights.
+            // Each color is exaggerated by a similar color slightly when drawn to make them pop out more.
+            Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
+            spriteBatch.Draw(mainGlowTexture, drawPosition, NPC.frame, NPC.GetAlpha(glowmaskColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-                Color glowmaskLerp = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
-
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow2.Value;
-
-                glowmaskLerp = Color.Lerp(Color.White, Color.Cyan, 0.5f);
-
-                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskLerp, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-            }
+            mainGlowTexture = actuallyInPhaseTwo ? TextureP2_Glow_Cyan.Value : Texture_Glow_Cyan.Value;
+            glowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.5f);
+            spriteBatch.Draw(mainGlowTexture, drawPosition, NPC.frame, NPC.GetAlpha(glowmaskColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             if (disintegrationFactor > 0f)
                 spriteBatch.ExitShaderRegion();

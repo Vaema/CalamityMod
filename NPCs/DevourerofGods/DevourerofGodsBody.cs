@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void Load()
         {
-            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyS_Head_Boss";
+            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsBody_P2_Head_Boss";
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
@@ -41,9 +41,9 @@ namespace CalamityMod.NPCs.DevourerofGods
         public int SegmentIndex;
 
         public static Asset<Texture2D> Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture;
-        public static Asset<Texture2D> Phase2Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture_Glow2;
+        public static Asset<Texture2D> TextureP2;
+        public static Asset<Texture2D> TextureP2_Glow_Purple;
+        public static Asset<Texture2D> TextureP2_Glow_Cyan;
 
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DevourerofGodsHead.DisplayName");
 
@@ -52,10 +52,10 @@ namespace CalamityMod.NPCs.DevourerofGods
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
-                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "_Glow", AssetRequestMode.AsyncLoad);
+                TextureP2 = ModContent.Request<Texture2D>(Texture + "_P2", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Purple", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Cyan", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -296,7 +296,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
+            Texture2D texture2D15 = useOtherTextures ? TextureP2.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -306,14 +306,14 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInPassiveState && NPC.Opacity > 0.25f && useOtherTextures)
             {
-                texture2D15 = Phase2Texture_Glow.Value;
+                texture2D15 = TextureP2_Glow_Purple.Value;
                 Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
             if ((!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInAgressiveState || !useOtherTextures) && NPC.Opacity > 0.25f)
             {
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow.Value;
+                texture2D15 = useOtherTextures ? TextureP2_Glow_Cyan.Value : Texture_Glow.Value;
                 Color glowmaskColor2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor2, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
