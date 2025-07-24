@@ -66,9 +66,9 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         }
 
         // These values are all applied alongside their respective GFB attacks (too many to list)
-        public static int DartDamage = 21; // 84
-        public static int HellblastDamage = 25; // 100
-        public static int HellfireballDamage = 25; // 100
+        public static int DartDamage = 19; // 76
+        public static int HellblastDamage = 22; // 88
+        public static int HellfireballDamage = 22; // 88
         public static int RayDamage = 35; // 140
 
         public override void SetDefaults()

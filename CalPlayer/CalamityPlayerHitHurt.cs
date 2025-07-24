@@ -1374,7 +1374,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (proj.type == ProjectileID.ThornBall)
                 {
-                    Player.AddBuff(BuffID.Poisoned, 420);
+                    Player.AddBuff(BuffID.Venom, 120);
                 }
                 else if (proj.type == ProjectileID.CultistBossFireBall)
                 {

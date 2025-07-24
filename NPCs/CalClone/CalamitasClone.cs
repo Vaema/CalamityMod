@@ -61,9 +61,9 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
-        public static int DartDamage = 23; // 92
-        public static int HellblastDamage = 27; // 108
-        public static int HellfireballDamage = 27; // 108
+        public static int DartDamage = 22; // 88
+        public static int HellblastDamage = 25; // 100
+        public static int HellfireballDamage = 25; // 100
         public static int FireblastDamage = 35; // 140; Also applies to GFB Gigablasts
 
         public override void SetDefaults()
@@ -1008,7 +1008,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
     }
 }
