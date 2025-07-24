@@ -68,11 +68,7 @@ SetBonus: {
 		All enemies have a {0}% chance to drop 1 extra gold
 		All bosses drop {1} extra gold
 		'''
-	Iron:
-		'''
-		Increases damage reduction by 6%
-		+1 HP/s life regen
-		'''
+	Iron: Multiplies all player-inflicted knockback by {0}x
 	Jungle: 10% reduced mana costs
 	Lead: Grants immunity to knockback
 	Meteor: All magic guns cost 33% mana
@@ -127,13 +123,7 @@ SetBonus: {
 		Getting hit again resets the timer, delaying the heal
 		'''
 	Tin: "{0}% increased critical strike chance"
-	Tungsten:
-		'''
-		Increases your critical strike chance by 100% of the knockback of your held weapon
-		This effect caps at Insane knockback, which gives 10% increased critical strike chance
-		Increases all knockback by 33%, this counts for the above boost
-		Current bonus: {0}% critical strike chance from {1} knockback
-		'''
+	Tungsten: Grappling hooks pull and retract {0}% faster
 	MagicHat: Increases maximum mana by 40
 	Wizard: 4% increased magic critical strike chance
 	CrystalAssassin:

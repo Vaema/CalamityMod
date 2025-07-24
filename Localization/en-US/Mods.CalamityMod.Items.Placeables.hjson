@@ -4519,3 +4519,98 @@ OldDukeMonolith: {
 	DisplayName: Elden Diorama
 	Tooltip: ""
 }
+
+DriftwoodWorkBench: {
+	Tooltip: ""
+	DisplayName: Driftwood Work Bench
+}
+
+DriftwoodTable: {
+	Tooltip: ""
+	DisplayName: Driftwood Table
+}
+
+DriftwoodSundial: {
+	Tooltip: ""
+	DisplayName: Driftwood Sundial
+}
+
+DriftwoodSofa: {
+	Tooltip: ""
+	DisplayName: Driftwood Sofa
+}
+
+DriftwoodSink: {
+	Tooltip: ""
+	DisplayName: Driftwood Sink
+}
+
+DriftwoodPlatform: {
+	Tooltip: ""
+	DisplayName: Driftwood Platform
+}
+
+DriftwoodLantern: {
+	Tooltip: ""
+	DisplayName: Driftwood Lantern
+}
+
+DriftwoodLamp: {
+	Tooltip: ""
+	DisplayName: Driftwood Lamp
+}
+
+DriftwoodDresser: {
+	Tooltip: ""
+	DisplayName: Mods.CalamityMod.Items.Placeables.DriftwoodDresser.DisplayName
+}
+
+DriftwoodDoor: {
+	Tooltip: ""
+	DisplayName: Driftwood Door
+}
+
+DriftwoodChest: {
+	Tooltip: ""
+	DisplayName: Mods.CalamityMod.Items.Placeables.DriftwoodChest.DisplayName
+}
+
+DriftwoodChandelier: {
+	Tooltip: ""
+	DisplayName: Driftwood Chandelier
+}
+
+DriftwoodChair: {
+	Tooltip: ""
+	DisplayName: Driftwood Chair
+}
+
+DriftwoodCandle: {
+	Tooltip: ""
+	DisplayName: Driftwood Candle
+}
+
+DriftwoodCandelabra: {
+	Tooltip: ""
+	DisplayName: Driftwood Candelabra
+}
+
+DriftwoodBookcase: {
+	Tooltip: ""
+	DisplayName: Driftwood Bookcase
+}
+
+DriftwoodBed: {
+	Tooltip: ""
+	DisplayName: Driftwood Bed
+}
+
+DriftwoodBathtub: {
+	Tooltip: ""
+	DisplayName: Driftwood Bathtub
+}
+
+DriftwoodBaroqueCello: {
+	Tooltip: ""
+	DisplayName: Driftwood Baroque Cello
+}
