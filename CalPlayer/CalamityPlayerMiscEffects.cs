@@ -4409,7 +4409,7 @@ namespace CalamityMod.CalPlayer
                                 break;
                             case BuffID.Confused:
                                 Player.confused = false;
-                                Player.statDefense += 10;
+                                Player.statDefense += 15;
                                 break;
                             case BuffID.Cursed:
                                 Player.cursed = false;
