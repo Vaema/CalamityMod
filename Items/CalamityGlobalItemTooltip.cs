@@ -580,10 +580,6 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcheryPotion)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcheryPotion"));
 
-            // Buffed Ironskin Potion tooltip
-            if (item.type == ItemID.IronskinPotion)
-                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("IronskinPotion").Format(CalamityUtils.GetScalingDefense(-1)));
-
             // Nerfed Swiftness Potion tooltip
             if (item.type == ItemID.SwiftnessPotion)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
@@ -934,10 +930,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("80", "60"));
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("15%", "9%"));
             }
-
-            // Worm Scarf only gives 14% DR instead of 17%
-            if (item.type == ItemID.WormScarf)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("17%", "14%"));
 
             // Feral Claws line melee speed and true melee damage changes
             if (item.type == ItemID.FeralClaws)
@@ -1560,20 +1552,16 @@ namespace CalamityMod.Items
             switch (item.prefix)
             {
                 case PrefixID.Hard:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("1", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.25f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.25f));
                     return;
                 case PrefixID.Guarding:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("2", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.5f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.5f));
                     return;
                 case PrefixID.Armored:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("3", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.75f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.75f));
                     return;
                 case PrefixID.Warding:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("4", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(1f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(1f));
                     return;
                 case PrefixID.Lucky:
                     EditTooltipByName("PrefixAccCritChance", (line) => line.Text += AddedTooltip("LuckyPrefix"));

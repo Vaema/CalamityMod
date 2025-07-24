@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 36; // 72
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 25;
@@ -101,6 +101,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     // Kiss my motherfucking ass you piece of shit game
                     NPC.timeLeft *= 20;
                     NPC.npcSlots = 16f;
+                    NPC.damage = NPC.defDamage;
                     CalamityGlobalNPC.BossKillTimes.TryGetValue(NPC.type, out int revKillTime);
                     calamityGlobalNPC.KillTime = revKillTime;
                     calamityGlobalNPC.newAI[0] = 1f;
@@ -280,21 +281,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 else if (scourgeTargetX > 0f)
                     NPC.spriteDirection = 1;
             }
-
-            // Calculate contact damage based on velocity
-            if (!nonHostile)
-            {
-                float minimalContactDamageVelocity = scourgeMaxSpeed * 0.25f;
-                float minimalDamageVelocity = scourgeMaxSpeed * 0.5f;
-                float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-                    NPC.damage = 0;
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-                }
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -344,7 +330,6 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -370,7 +355,7 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 180, true);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 300, true);
         }
     }
 }

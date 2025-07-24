@@ -69,14 +69,20 @@ namespace CalamityMod.NPCs.Ravager
             }
         }
 
+        // GFB exclusive
+        public static int BlasterDamage = 92; // 368
+
+        // Legendary exclusive
+        public static int RockDamage = 60; // 240
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 90; // 180
             NPC.lavaImmune = true;
             NPC.noGravity = true;
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 332;
             NPC.height = 214;
             NPC.defense = 55;
@@ -241,7 +247,7 @@ namespace CalamityMod.NPCs.Ravager
 
                 Vector2 Pos = player.Center; //Spawn projectiles based on player's center. Having it be based on the boss turned out weird. (Except for final)
                 int type = ModContent.ProjectileType<RavagerBlaster>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = BlasterDamage;
                 if (finalStand) //Circle
                 {
                     Vector2 circleOffset = Pos + (Vector2.UnitY * 640f).RotatedBy(MathHelper.ToRadians(NPC.localAI[1] * 3f));
@@ -601,7 +607,7 @@ namespace CalamityMod.NPCs.Ravager
                                 if (i < 4 || i > 6)
                                 {
                                     Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 30f * NPC.scale + Vector2.Normalize(perturbedSpeed) * 30f * NPC.scale, perturbedSpeed, type, 60, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 30f * NPC.scale + Vector2.Normalize(perturbedSpeed) * 30f * NPC.scale, perturbedSpeed, type, RockDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -892,7 +898,6 @@ namespace CalamityMod.NPCs.Ravager
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

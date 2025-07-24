@@ -81,10 +81,13 @@ namespace CalamityMod.NPCs.SlimeGod
             }
         }
 
+        public static int GlobDamage = 15; // 60
+        public static int PossessionDamageBoost = 10; // +20 flat contact damage
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.npcSlots = 10f;
             NPC.width = 96;
             NPC.height = 98;
@@ -500,17 +503,15 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                         else
                         {
                             float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                     }
                 }

@@ -15,6 +15,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
 
+        // Death exclusive
+        public static float SapphireJewelContactDamageMult = 1.5f; // 144
+
         public static bool BuffedKingSlimeAI(NPC npc, Mod mod)
         {
             // Percent life remaining
@@ -74,7 +77,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.defense = npc.defDefense;
             if (blueCrystalAlive)
             {
-                setDamage = (int)Math.Round(setDamage * 1.5);
+                setDamage = (int)Math.Round(setDamage * SapphireJewelContactDamageMult);
                 npc.defense *= 2;
             }
 

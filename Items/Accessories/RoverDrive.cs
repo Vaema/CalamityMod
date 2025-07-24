@@ -27,9 +27,6 @@ namespace CalamityMod.Items.Accessories
         public static int ShieldDurabilityMax = 20;
         public static int ShieldRechargeTime = CalamityUtils.SecondsToFrames(10);
 
-        // While active, Rover Drive gives 10 defense
-        public static int ShieldDefenseBoost = 10;
-
         // Interface stuff.
         public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.RoverDriveDepth;
@@ -78,9 +75,6 @@ namespace CalamityMod.Items.Accessories
 
             modPlayer.roverDrive = true;
             modPlayer.roverDriveShieldVisible = !hideVisual;
-
-            if (modPlayer.RoverDriveShieldDurability > 0)
-                player.statDefense += ShieldDefenseBoost;
         }
 
         // In vanity, provides a visual shield but no actual functionality
