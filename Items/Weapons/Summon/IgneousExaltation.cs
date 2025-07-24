@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool AltFunctionUse(Player player)
         {
-            return true;// base.AltFunctionUse(player);// player.ownedProjectileCounts[Item.shoot] > 0;
+            return player.ownedProjectileCounts[Item.shoot] > 0;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
