@@ -67,6 +67,7 @@ SetBonus: {
 		'''
 		All enemies have a {0}% chance to drop 1 extra gold
 		All bosses drop {1} extra gold
+		You gain {2}% critical strike chance for every gold in your inventory, capped at {3}%
 		'''
 	Iron: Multiplies all player-inflicted knockback by {0}x
 	Jungle: 10% reduced mana costs
