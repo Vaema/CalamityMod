@@ -33,6 +33,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int PoisonSeedDamage = 24; // 96
         public static int ThornBallDamage = 27; // 108
 
+        // Expert AI has uses a magic number which we have to correct for
+        public static int ContactDamageCorrection = 100;
+
         // Rev+ exclusive
         public static int ThornBallSpikeDamage = 22; // 88
         public static int GasBulbDamage = 27; // 108
@@ -63,8 +66,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool vomitFreeTentacles = lifeRatio < 0.25f && death;
             bool phase4 = lifeRatio < 0.2f;
 
-            if (phase2)
-                npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
+            npc.damage = (int)Math.Round(ContactDamageCorrection * (phase2 ? Phase2ContactDamageMult : 1f));
 
             // Variables and target
             bool enrage = false;
@@ -434,7 +436,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Emit spore gas in phase 3
                 else if (npc.ai[3] <= BeginChargeGateValue)
                 {
-                    npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult * DashDamageMult);
+                    npc.damage = (int)Math.Round(ContactDamageCorrection * Phase2ContactDamageMult * DashDamageMult);
                     float sporeGasDashGateValue = death ? 6f : 9f;
                     if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
                     {
