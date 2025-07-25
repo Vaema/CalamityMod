@@ -45,35 +45,6 @@ namespace CalamityMod.World
                 action.Invoke(i);
         }
 
-        public static void ReLogicParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
-        {
-            FastParallel.For(fromInclusive, toExclusive, (start, end, _) =>
-            {
-                for (int i = start; i < end; i += step)
-                    action.Invoke(i);
-            });
-        }
-
-        public static void CSharpParallelFor(int fromInclusive, int toExclusive, int step, Action<int> action)
-        {
-            var partitioner = Partitioner.Create(fromInclusive, toExclusive, step);
-            Parallel.ForEach(partitioner, (range, _) =>
-            {
-                for (int i = range.Item1; i < range.Item2; i += step)
-                    action.Invoke(i);
-            });
-        }
-
-        /// <summary>
-        /// The delegate that describes the method of a type of for loop.
-        /// </summary>
-        public delegate void ForLoopMethod(int fromInclusive, int toExclusive, int step, Action<int> action);
-
-        /// <summary>
-        /// The current type of for loop used to generate the Sunken Sea.
-        /// </summary>
-        public static ForLoopMethod ForLoop;
-
         public static void PlaceTimelessShores(int startPosX, int startPosY)
         {
             int biomeSize = 250 + (Main.maxTilesX / 180);
@@ -91,7 +62,7 @@ namespace CalamityMod.World
                 else
                     return -steepness * x + steepness;
             }
-            ForLoop.Invoke(startPosX - biomeSize - 5, startPosX + biomeSize + 20, 15, (X) =>
+            for (int X = startPosX - biomeSize - 5; X < startPosX + biomeSize + 20; X += 15)
             {
                 float height = MathHelper.Lerp(startPosY + 35, startPosY - 15, trapezoidLateralSteep(Utils.GetLerpValue(startPosX - biomeSize - 20, startPosX + biomeSize + 20, X)));
                 for (int Y = startPosY + 25; Y >= height; Y -= 10)
@@ -104,13 +75,13 @@ namespace CalamityMod.World
                     }));
                     WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 }
-            });
+            }
 
             //
             // Makes the bottom borders of the Timeless Shores curved downwards.
             //
             const int totalCuveDepth = 90;
-            ForLoop.Invoke(startPosX - biomeSize - 10, startPosX - biomeSize + 200, 10, (x) =>
+            for (int x = startPosX - biomeSize - 10; x < startPosX - biomeSize + 200; x += 10)
             {
                 int curveDepth = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 17, startPosX - biomeSize + 200, x, true)));
                 for (int y = startPosY + 50; y <= startPosY + 70 + curveDepth; y += 5)
@@ -123,8 +94,9 @@ namespace CalamityMod.World
                     }));
                     WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 }
-            });
-            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize + 10, 5, (x) =>
+            }
+
+            for (int x = startPosX + biomeSize - 200; x < startPosX + biomeSize + 10; x += 5)
             {
                 int curveDepth = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 20, startPosX + biomeSize - 200, x, true)));
                 for (int y = startPosY + 50; y <= startPosY + 70 + curveDepth; y += 5)
@@ -137,11 +109,11 @@ namespace CalamityMod.World
                     }));
                     WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 }
-            });
+            }
 
             // Clear a smaller square out of the center where the biomes stuff will be
             // Added curves to the top of the biome via curve depth -hpu 02/19/25
-            ForLoop.Invoke(startPosX - biomeSize + 10, startPosX + biomeSize - 10, 1, (X) =>
+            for (int X = startPosX - biomeSize + 10; X < startPosX + biomeSize - 10; X += 1)
             {
                 int curveDepth = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 20, startPosX + biomeSize - 200, X, true)));
                 int curveDepth2 = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 17, startPosX - biomeSize + 200, X, true)));
@@ -161,12 +133,12 @@ namespace CalamityMod.World
                         new Actions.Clear()
                     }));
                 }
-            });
+            }
 
             //
             // Places slopes at the sides of the shores to actually make shores.
             //
-            ForLoop.Invoke(startPosX - biomeSize - 15, startPosX - biomeSize + 200, 20, (moundX) =>
+            for (int moundX = startPosX - biomeSize - 15; moundX < startPosX - biomeSize + 200; moundX += 20)
             {
                 int RandomX = Main.rand.Next(15, 20);
                 ShapeData mound = new();
@@ -177,8 +149,9 @@ namespace CalamityMod.World
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
-            });
-            ForLoop.Invoke(startPosX + biomeSize - 200, startPosX + biomeSize - 15, 20, (moundX) =>
+            }
+
+            for (int moundX = startPosX + biomeSize - 200; moundX < startPosX + biomeSize - 15; moundX += 20)
             {
                 ShapeData mound = new();
                 GenAction blotchMod = new Modifiers.Blotches().Output(mound);
@@ -187,8 +160,7 @@ namespace CalamityMod.World
 
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
-            });
-
+            }
 
             //
             // Makes a large platform in the middle of the Timeless Shores.
@@ -196,7 +168,7 @@ namespace CalamityMod.World
             const int platformSize = 130;
             const int platformHeight = 35; // Remember that because of Terraria's coordinate system, making it lower actually makes it higher.
             const int platformDepth = 35; // How deep it goes. Like above, the higher it is, the lower it goes.
-            ForLoop.Invoke(startPosX - platformSize / 2, startPosX + platformSize / 2, 5, (platformX) =>
+            for (int platformX = startPosX - platformSize / 2; platformX <  startPosX + platformSize / 2; platformX += 5)
             {
                 // This makes the "stem" of the platform be thinner towards the base and then expand on the top.
                 int thickness = (int)(MathF.Pow(CalamityUtils.Convert01To010(Utils.GetLerpValue(startPosX - platformSize / 2, startPosX + platformSize / 2, platformX)), 3f) * platformDepth) + platformHeight;
@@ -209,16 +181,16 @@ namespace CalamityMod.World
                         new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>())
                     }));
                 }
-            });
-            ForLoop.Invoke(startPosX - platformSize / 2, startPosX + platformSize / 2, 1, (x) =>
+            }
+            for (int x = startPosX - platformSize / 2; x < startPosX + platformSize / 2; x += 1)
             {
                 float interpolator = CalamityUtils.Convert01To010(Utils.GetLerpValue(startPosX - platformSize / 2, startPosX + platformSize / 2, x, true));
                 int elevation = (int)MathHelper.Lerp(4f, 1f, interpolator);
                 WorldUtils.Gen(new Point(x, startPosY + platformHeight - 7), new Shapes.Circle(elevation), Actions.Chain(new GenAction[] { new Actions.Clear(), }));
-            });
+            }
 
             // Plateau
-            ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 100, (wallPillarX) =>
+            for (int wallPillarX = startPosX - biomeSize; wallPillarX < startPosX + biomeSize; wallPillarX += 100)
             {
                 int randomDisplacement = WorldGen.genRand.Next(-27, 46);
                 int RandomX = Main.rand.Next(15, 20);
@@ -246,23 +218,23 @@ namespace CalamityMod.World
                     ;
                 }
 
-            });
+            }
 
             //place water below the clear barrier for the islands so that theres water inbetween them
-            ForLoop.Invoke(startPosX - biomeSize + 35, startPosX + biomeSize - 35, 1, (WaterX) =>
+            for (int WaterX = startPosX - biomeSize + 35; WaterX < startPosX + biomeSize - 35; WaterX += 1)
             {
                 for (int WaterY = startPosY + 37; WaterY <= startPosY + 60; WaterY++)
                 {
                     Main.tile[WaterX, WaterY].Get<LiquidData>().LiquidType = LiquidID.Water;
                     Main.tile[WaterX, WaterY].LiquidAmount = byte.MaxValue;
                 }
-            });
+            }
 
             //
             // Generates pillars made out of walls at random points in the Timeless Shores.
             //
             const int furthestDistanceFromCenter = 100;
-            ForLoop.Invoke(startPosX - (biomeSize / 2) - furthestDistanceFromCenter, startPosX + (biomeSize / 2) + furthestDistanceFromCenter, 100, (wallPillarX) =>
+            for (int wallPillarX = startPosX - (biomeSize / 2) - furthestDistanceFromCenter; wallPillarX < startPosX + (biomeSize / 2) + furthestDistanceFromCenter; wallPillarX += 100)
             {
                 int randomDisplacementX = WorldGen.genRand.Next(-10, 10);
                 int RandomX = Main.rand.Next(3, 6);
@@ -288,13 +260,13 @@ namespace CalamityMod.World
                     }))
                     ;
                 }
-            });
+            }
 
             //
             // Makes the transition area to the Timeless Shores.
             // Replaces tiles, walls, and places some water spots.
             //
-            ForLoop.Invoke(startPosX - biomeSize - 30, startPosX + biomeSize + 30, 20, (x) =>
+            for (int x = startPosX - biomeSize - 30; x < startPosX + biomeSize + 30; x += 20)
             {
                 int curveDepth = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX + biomeSize + 30, startPosX + biomeSize - 200, x, true)));
                 int curveDepth2 = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startPosX - biomeSize - 30, startPosX - biomeSize + 200, x, true)));
@@ -360,7 +332,7 @@ namespace CalamityMod.World
                 }
 
                 // Place layer of sand on valid runestone blocks.
-                ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 1, (X) =>
+                for (int X = startPosX - biomeSize; X < startPosX + biomeSize; X += 1)
                 {
                     for (int Y = startPosY - 100; Y <= startPosY + 100; Y++)
                     {
@@ -409,16 +381,16 @@ namespace CalamityMod.World
                         //}
                     }
 
-                });
+                }
 
 
                 // Slope tiles
-                ForLoop.Invoke(startPosX - biomeSize, startPosX + biomeSize, 1, (X) =>
+                for (int X = startPosX - biomeSize; X < startPosX + biomeSize; X += 1)
                 {
                     for (int Y = startPosY - 300; Y <= startPosY + 200; Y++)
                         Tile.SmoothSlope(X, Y);
-                });
-            });
+                }
+            }
         }
 
         // Sides of the sunken sea (radiant reefs)
@@ -506,7 +478,7 @@ namespace CalamityMod.World
             }
 
             // Cleanup
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -526,10 +498,10 @@ namespace CalamityMod.World
                             WorldGen.KillTile(X, Y);
                     }
                 }
-            });
+            }
 
             // Place layer of sand blocks on valid surfaces
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -546,10 +518,10 @@ namespace CalamityMod.World
                             PlaceSand(X, Y, 5, ModContent.TileType<EutrophicSand>());
                     }
                 }
-            });
+            }
 
             // Cleanup again
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -578,7 +550,7 @@ namespace CalamityMod.World
                         Tile.SmoothSlope(X, Y);
                     }
                 }
-            });
+            }
         }
 
         // Middle of the sunken sea (polyp forest)
@@ -682,7 +654,7 @@ namespace CalamityMod.World
             }
 
             //cleanup
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -706,10 +678,10 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
             //place extra tiles
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 20; Y <= origin.Y + verticalRadius + 20; Y++)
                 {
@@ -731,8 +703,8 @@ namespace CalamityMod.World
 
                     }
                 }
-            });
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            }
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 20; Y <= origin.Y + verticalRadius + 20; Y++)
                 {
@@ -753,11 +725,11 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
 
             //cleanup again
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -790,7 +762,7 @@ namespace CalamityMod.World
                         Tile.SmoothSlope(X, Y);
                     }
                 }
-            });
+            }
         }
         //bottom of the biome (gleaming burrows)
         public static void PlaceGleamingBurrows(int startPosX, int startPosY)
@@ -816,7 +788,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             //place another barrier so the gleaming burrows doesnt just burst into the gully
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 10, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 10)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y += 2)
                 {
@@ -845,7 +817,7 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
 
 
@@ -927,7 +899,7 @@ namespace CalamityMod.World
 
 
             //cleanup the perlin caves
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -951,11 +923,11 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
 
             //place extra tiles
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -975,7 +947,7 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
             //cleanup again, also place geodes
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
@@ -1103,7 +1075,7 @@ namespace CalamityMod.World
 
 
             //cleanup the perlin caves
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -1127,11 +1099,11 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
 
             //place extra tiles
-            ForLoop.Invoke(origin.X - biomeSize - 3, origin.X + biomeSize + 3, 1, (X) =>
+            for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
             {
                 for (int Y = (int)(origin.Y - verticalRadius * 0.4f) - 3; Y <= origin.Y + verticalRadius + 3; Y++)
                 {
@@ -1151,7 +1123,7 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
 
             //cleanup again
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
@@ -1198,7 +1170,7 @@ namespace CalamityMod.World
             int XLeft = GenVars.UndergroundDesertLocation.Left + 40;
             int XRight = GenVars.UndergroundDesertLocation.Right - 70;
             //place blocks of basalt all the way down to hell, here it just places one block and wall so it doesnt hurt preformance
-            ForLoop.Invoke(startPosX - biomeSize - 60, startPosX + biomeSize + 60, 1, (X) =>
+            for (int X = startPosX - biomeSize - 60; X < startPosX + biomeSize + 60; X += 1)
             {
                 //const int totalCuveDepth = -120;
                 //const int totalCuveDepth2 = 120;
@@ -1229,7 +1201,7 @@ namespace CalamityMod.World
                     WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Basalt>());
                     WorldGen.PlaceWall(X, Y, ModContent.WallType<LargeBasaltWall>());
                 }
-            });
+            }
 
             //place caverns and lava
             for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X <= startPosX + biomeSize + (Main.maxTilesX / 25); X++)
@@ -1256,7 +1228,7 @@ namespace CalamityMod.World
             }
 
             //place sand blocks
-            ForLoop.Invoke(startPosX - biomeSize - (Main.maxTilesX / 25), startPosX + biomeSize + (Main.maxTilesX / 25), 1, (X) =>
+            for (int X = startPosX - biomeSize - (Main.maxTilesX / 25); X < startPosX + biomeSize + (Main.maxTilesX / 25); X += 1)
             {
                 for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
                 {
@@ -1273,10 +1245,10 @@ namespace CalamityMod.World
                         PlaceSand(X, Y, 3, ModContent.TileType<VolcanicSand>());
                     }
                 }
-            });
+            }
 
             //cleanup
-            ForLoop.Invoke(startPosX - biomeSize - (Main.maxTilesX / 25), startPosX + biomeSize + (Main.maxTilesX / 25), 1, (X) =>
+            for(int X = startPosX - biomeSize - (Main.maxTilesX / 25); X < startPosX + biomeSize + (Main.maxTilesX / 25); X += 1)
             {
                 for (int Y = startPosY; Y <= Main.maxTilesY - 210; Y++)
                 {
@@ -1305,7 +1277,7 @@ namespace CalamityMod.World
                     }
                     Tile.SmoothSlope(X, Y);
                 }
-            });
+            }
         }
 
         //cleanup is done separately because for whatever reason it keeps placing water inside of the gully if the cleanup is done before it
@@ -1902,7 +1874,7 @@ namespace CalamityMod.World
                 getAttachedPoints(x, y - 1, points);
             }
 
-            ForLoop.Invoke(20, Main.maxTilesX - 20, 1, (x) =>
+            for (int x = 20; x < Main.maxTilesX - 20; x += 1)
             {
                 for (int y = 20; y < Main.maxTilesY - 20; y++)
                 {
@@ -1922,7 +1894,7 @@ namespace CalamityMod.World
                         }
                     }
                 }
-            });
+            }
         }
 
 
