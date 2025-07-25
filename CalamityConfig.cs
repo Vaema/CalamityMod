@@ -45,18 +45,6 @@ namespace CalamityMod
             }
         }
 
-        #region Multi-Threading Settings
-        [Header("Multithreading")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(0f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float SunkenSeaMultiThreading { get; set; } 
-        #endregion
-
         #region Graphics Changes
         [Header("Graphics")]
         
