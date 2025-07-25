@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Statigel
@@ -12,6 +13,13 @@ namespace CalamityMod.Items.Armor.Statigel
     public class StatigelHeadMagic : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MagicDamageBoost = 0.1f;
+        public static float ManaCostReduction = 0.1f;
+        public static int MagicCritBoost = 7;
+        public static int MaxManaBoost = 40;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), ManaCostReduction.ToPercent(), MagicCritBoost, MaxManaBoost);
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -28,20 +36,20 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
+            player.setBonus = CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusHurtDamageThreshold, StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();
-            Player.jumpHeight += 5;
-            player.jumpSpeedBoost += 0.6f;
+            Player.jumpHeight += (int)(StatigelArmor.SetBonusJumpHeightPercentBoost * 15);
+            player.jumpSpeedBoost += StatigelArmor.SetBonusJumpSpeedBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MagicDamageClass>() += 0.1f;
-            player.GetCritChance<MagicDamageClass>() += 7;
-            player.manaCost *= 0.9f;
-            player.statManaMax2 += 40;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
+            player.manaCost -= ManaCostReduction;
+            player.statManaMax2 += MaxManaBoost;
         }
 
         public override void AddRecipes()

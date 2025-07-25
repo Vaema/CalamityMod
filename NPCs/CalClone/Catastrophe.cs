@@ -43,13 +43,13 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
-        public static int BallDamage = 27; // 108
+        public static int BallDamage = 22; // 88
 
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 50; // 100
+            NPC.damage = 45; // 90
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -542,7 +542,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
     }
 }

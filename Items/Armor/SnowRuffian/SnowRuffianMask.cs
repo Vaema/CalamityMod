@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.SnowRuffian
@@ -11,6 +12,11 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         private bool shouldBoost = false;
 
+        public static float RangedDamageBoost = 0.02f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
+        public static float SetBonusRangedDamageBoost = 0.04f;
+        public static int SetBonusRangedCritBoost = 4; // NOTE: Tooltip shares this number with damage % as they're equal
 
         public override void Load()
         {
@@ -38,9 +44,9 @@ namespace CalamityMod.Items.Armor.SnowRuffian
         {
             var modPlayer = player.Calamity();
             modPlayer.snowRuffianSet = true;
-            player.GetCritChance<RangedDamageClass>() += 4;
-            player.GetDamage<RangedDamageClass>() += 0.04f;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.GetCritChance<RangedDamageClass>() += SetBonusRangedCritBoost;
+            player.GetDamage<RangedDamageClass>() += SetBonusRangedDamageBoost;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRangedDamageBoost.ToPercent());
 
             if (player.controlJump)
             {
@@ -59,10 +65,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             }
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<RangedDamageClass>() += 0.02f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
 
         public override void AddRecipes()
         {

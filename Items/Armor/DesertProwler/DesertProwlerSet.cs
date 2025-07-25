@@ -27,6 +27,12 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public static readonly SoundStyle SmokeBombEndSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBombEnd");
         public static readonly SoundStyle CDResetSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerCDReset");
 
+        public static int RogueCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueCritBoost);
+
+        // Set Bonus
+        public static float SetBonusRogueDamageBoost = 0.05f;
+        public static float SetBonusRogueStealth = 0.5f;
         public static int SmokeCooldown = 25 * 60;
         public static int SmokeDuration = 5 * 60;
         public static int LightsOutReset = (int)(1.5f * 60);
@@ -77,10 +83,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(); //More gets edited in elsewhere
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueDamageBoost.ToPercent(), SetBonusRogueStealth.ToStealth()); //More gets edited in elsewhere
             player.Calamity().wearingRogueArmor = true;
-            player.Calamity().rogueStealthMax += 0.5f;
-            player.GetDamage<ThrowingDamageClass>() += 0.05f;
+            player.Calamity().rogueStealthMax += SetBonusRogueStealth;
+            player.GetDamage<ThrowingDamageClass>() += SetBonusRogueDamageBoost;
 
             DesertProwlerPlayer armorPlayer = player.GetModPlayer<DesertProwlerPlayer>();
             armorPlayer.desertProwlerSet = true;
@@ -182,10 +188,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => ModifySetTooltips(this, tooltips);
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetCritChance<ThrowingDamageClass>() += 4;
-        }
+        public override void UpdateEquip(Player player) => player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
 
         public override void AddRecipes()
         {
@@ -202,6 +205,9 @@ namespace CalamityMod.Items.Armor.DesertProwler
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/DesertProwler/DesertProwlerShirt_Bulk";
+
+        public static int RogueCritBoost = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueCritBoost);
 
         public override void SetStaticDefaults()
         {
@@ -225,10 +231,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => DesertProwlerHat.ModifySetTooltips(this, tooltips);
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetCritChance<ThrowingDamageClass>() += 5;
-        }
+        public override void UpdateEquip(Player player) => player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
 
         public override void AddRecipes()
         {
@@ -245,6 +248,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
     public class DesertProwlerPants : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MoveSpeedBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -253,11 +260,13 @@ namespace CalamityMod.Items.Armor.DesertProwler
             Item.rare = ItemRarityID.Blue;
             Item.defense = 2;
         }
+
         public override void ModifyTooltips(List<TooltipLine> tooltips) => DesertProwlerHat.ModifySetTooltips(this, tooltips);
+
         public override void UpdateEquip(Player player)
         {
             player.buffImmune[BuffID.WindPushed] = true;
-            player.moveSpeed += 0.1f;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

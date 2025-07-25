@@ -27,11 +27,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             this.HideFromBestiary();
         }
 
-        public static int ToothDamage = 23; // 92
+        public static int ToothDamage = 25; // 100
 
         public override void SetDefaults()
         {
             NPC.damage = 52; // 104
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 20;

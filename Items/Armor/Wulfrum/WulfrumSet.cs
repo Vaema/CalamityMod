@@ -35,7 +35,13 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public static readonly SoundStyle SetBreakSound = new("CalamityMod/Sounds/Custom/AbilitySounds/WulfrumBastionBreak");
         public static readonly SoundStyle SetBreakSoundSafe = new("CalamityMod/Sounds/Custom/AbilitySounds/WulfrumBastionBreakSafely");
 
-        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 1;
+        public static int BastionDefenseBoost = 13;
+        public static float BastionDRBoost = 0.1f;
         public static int BastionBuildTime = (int)(0.55f * 60);
         public static int BastionTime = 30 * 60;
         public static int TimeLostPerHit = 2 * 60;
@@ -132,8 +138,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             armorPlayer.wulfrumSet = true;
 
-            player.setBonus = this.GetLocalization("SetBonus").Format(MinionSlotBoost); //The cooler part of the set bonus happens in modifytooltips because I can't recolor it otherwise. Madge
-            player.maxMinions += MinionSlotBoost;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost); //The cooler part of the set bonus happens in modifytooltips because I can't recolor it otherwise. Madge
+            player.maxMinions += SetBonusMinionSlotBoost;
             if (PowerModeEngaged(player, out var cd))
             {
                 if (cd.timeLeft == BastionCooldown + BastionTime)
@@ -142,8 +148,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 }
 
                 //Stats
-                player.statDefense += 13;
-                player.endurance += 0.1f;
+                player.statDefense += BastionDefenseBoost;
+                player.endurance += BastionDRBoost;
 
                 //Can't account for previous fullbody transformations but at this point, whatever
                 bool transformed = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
@@ -253,10 +259,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips) => ModifySetTooltips(this, tooltips);
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<SummonDamageClass>() += 0.05f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
 
         public override void AddRecipes()
         {
@@ -273,6 +276,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
     public class WulfrumJacket : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float SummonDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
@@ -294,10 +301,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => WulfrumHat.ModifySetTooltips(this, tooltips);
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<SummonDamageClass>() += 0.05f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
 
         public override void AddRecipes()
         {
@@ -314,6 +318,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
     public class WulfrumOveralls : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MoveSpeedBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -329,10 +337,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
             }
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips) => WulfrumHat.ModifySetTooltips(this, tooltips);
-        public override void UpdateEquip(Player player)
-        {
-            player.moveSpeed += 0.05f;
-        }
+
+        public override void UpdateEquip(Player player) => player.moveSpeed += MoveSpeedBoost;
 
         public override void AddRecipes()
         {
@@ -347,10 +353,6 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
     public class WulfrumArmorPlayer : ModPlayer
     {
-        public static int BastionShootDamage = 10;
-        public static float BastionShootSpeed = 18f;
-        public static int BastionShootTime = 10;
-
         public bool wulfrumSet = false;
 
         public override void ResetEffects()

@@ -1067,6 +1067,8 @@ namespace CalamityMod.CalPlayer
         /// <summary> Calamity's Silver armor set bonus; taking over 20 damage heals 10 health if the player avoids damage for 2 seconds. </summary>
         public bool silverMedkit = false;
         public int silverMedkitTimer = 0;
+        /// <summary> Calamity's Tungsten armor set bonus; makes grappling hooks fly and retract faster. </summary>
+        public bool tungstenArmorHookBoost = false;
         /// <summary> Calamity's Gold armor set bonus; makes enemies drop Gold Coins. </summary>
         public bool goldArmorGoldDrops = false;
         /// <summary> Calamity's Mining armor set bonus; gives a chance for extra items to drop when mining ores. </summary>
@@ -2366,6 +2368,7 @@ namespace CalamityMod.CalPlayer
             forbiddenCirclet = false;
 
             silverMedkit = false;
+            tungstenArmorHookBoost = false;
             goldArmorGoldDrops = false;
 
             miningSet = false;
@@ -3079,6 +3082,7 @@ namespace CalamityMod.CalPlayer
             #region Armor Set Bonuses
             silverMedkit = false;
             silverMedkitTimer = 0;
+            tungstenArmorHookBoost = false;
             goldArmorGoldDrops = false;
             miningSet = false;
             miningSetCooldown = 0;

@@ -16,6 +16,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
@@ -32,6 +33,10 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         public static readonly SoundStyle LiftGoAwaySound = new("CalamityMod/Sounds/Item/MarniteLiftUnsummon");
         public static readonly SoundStyle LiftHummSound = new("CalamityMod/Sounds/Item/MarniteLiftHumm") { IsLooped = true };
 
+        public static int TileRangeBoost = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(TileRangeBoost);
+
+        // Set Bonus
         public static float LiftRaiseSpeed = 2f;
         public static float MaxLiftHeight = 138f;
 
@@ -95,8 +100,8 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             //Tile range is a static variable did you know that? That's quite funny. I assume it's just because its not like other players would need to know about the players reach
             if (Main.myPlayer == player.whoAmI)
             {
-                Player.tileRangeX += 5;
-                Player.tileRangeY += 5; //Extendo grip also increases vertical tile range by one less than horizontal <-- This is silly lmao
+                Player.tileRangeX += TileRangeBoost;
+                Player.tileRangeY += TileRangeBoost; //Extendo grip also increases vertical tile range by one less than horizontal <-- This is silly lmao
             }
         }
 
@@ -136,6 +141,10 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
     public class MarniteArchitectToga : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float PlacementSpeedBoost = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(PlacementSpeedBoost.ToPercent());
+
         public override void Load()
         {
             if (Main.dedServ)
@@ -160,8 +169,8 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void UpdateEquip(Player player)
         {
-            player.tileSpeed += 0.5f;
-            player.wallSpeed += 0.5f;
+            player.tileSpeed += PlacementSpeedBoost;
+            player.wallSpeed += PlacementSpeedBoost;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => MarniteArchitectHeadgear.ModifySetTooltips(this, tooltips);
