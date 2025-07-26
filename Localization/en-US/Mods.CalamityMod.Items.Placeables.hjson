@@ -1995,103 +1995,203 @@ DriftwoodWorkBench: {
 	Tooltip: ""
 }
 
+AncientNavystoneBathtub: {
+	DisplayName: Ancient Navystone Bathtub
+	Tooltip: ""
+}
+
+AncientNavystoneBed: {
+	DisplayName: Ancient Navystone Bed
+	Tooltip: ""
+}
+
+AncientNavystoneBench: {
+	DisplayName: Ancient Navystone Bench
+	Tooltip: ""
+}
+
+AncientNavystoneBookcase: {
+	DisplayName: Ancient Navystone Bookcase
+	Tooltip: ""
+}
+
+AncientNavystoneCandelabra: {
+	DisplayName: Ancient Navystone Candelabra
+	Tooltip: ""
+}
+
+AncientNavystoneCandle: {
+	DisplayName: Ancient Navystone Candle
+	Tooltip: ""
+}
+
+AncientNavystoneChair: {
+	DisplayName: Ancient Navystone Chair
+	Tooltip: ""
+}
+
+AncientNavystoneChandelier: {
+	DisplayName: Ancient Navystone Chandelier
+	Tooltip: ""
+}
+
+AncientNavystoneChest: {
+	DisplayName: Ancient Navystone Chest
+	Tooltip: ""
+}
+
+AncientNavystoneClock: {
+	DisplayName: Ancient Navystone Clock
+	Tooltip: ""
+}
+
+AncientNavystoneDoor: {
+	DisplayName: Ancient Navystone Door
+	Tooltip: ""
+}
+
+AncientNavystoneDresser: {
+	DisplayName: Ancient Navystone Dresser
+	Tooltip: ""
+}
+
+AncientNavystoneLamp: {
+	DisplayName: Ancient Navystone Lamp
+	Tooltip: ""
+}
+
+AncientNavystoneLantern: {
+	DisplayName: Ancient Navystone Lantern
+	Tooltip: ""
+}
+
+AncientNavystonePiano: {
+	DisplayName: Ancient Navystone Piano
+	Tooltip: ""
+}
+
+AncientNavystonePlatform: {
+	DisplayName: Ancient Navystone Platform
+	Tooltip: ""
+}
+
+AncientNavystoneSink: {
+	DisplayName: Ancient Navystone Sink
+	Tooltip: Counts as a water source
+}
+
+AncientNavystoneTable: {
+	DisplayName: Ancient Navystone Table
+	Tooltip: ""
+}
+
+AncientNavystoneWorkBench: {
+	DisplayName: Ancient Navystone Work Bench
+	Tooltip: ""
+}
+
 AncientSmoothNavystone: {
 	DisplayName: Ancient Smooth Navystone
 	Tooltip: ""
 }
 
-EutrophicBathtub: {
-	DisplayName: Eutrophic Bathtub
+NavystoneBathtub: {
+	DisplayName: Navystone Bathtub
 	Tooltip: ""
 }
 
-EutrophicBed: {
-	DisplayName: Eutrophic Bed
+NavystoneBed: {
+	DisplayName: Navystone Bed
 	Tooltip: ""
 }
 
-EutrophicBench: {
-	DisplayName: Eutrophic Bench
+NavystoneBookcase: {
+	DisplayName: Navystone Bookcase
 	Tooltip: ""
 }
 
-EutrophicBookcase: {
-	DisplayName: Eutrophic Bookcase
+NavystoneCandelabra: {
+	DisplayName: Navystone Candelabra
 	Tooltip: ""
 }
 
-EutrophicCandelabra: {
-	DisplayName: Eutrophic Candelabra
+NavystoneCandle: {
+	DisplayName: Navystone Candle
 	Tooltip: ""
 }
 
-EutrophicCandle: {
-	DisplayName: Eutrophic Candle
+NavystoneChair: {
+	DisplayName: Navystone Chair
 	Tooltip: ""
 }
 
-EutrophicChair: {
-	DisplayName: Eutrophic Chair
+NavystoneChandelier: {
+	DisplayName: Navystone Chandelier
 	Tooltip: ""
 }
 
-EutrophicChandelier: {
-	DisplayName: Eutrophic Chandelier
+NavystoneChest: {
+	DisplayName: Navystone Chest
 	Tooltip: ""
 }
 
-EutrophicChest: {
-	DisplayName: Eutrophic Chest
+NavystoneClock: {
+	DisplayName: Navystone Clock
 	Tooltip: ""
 }
 
-EutrophicClock: {
-	DisplayName: Eutrophic Clock
+NavystoneDoor: {
+	DisplayName: Navystone Door
 	Tooltip: ""
 }
 
-EutrophicDoor: {
-	DisplayName: Eutrophic Door
+NavystoneDresser: {
+	DisplayName: Navystone Dresser
 	Tooltip: ""
 }
 
-EutrophicDresser: {
-	DisplayName: Eutrophic Dresser
+NavystoneLamp: {
+	DisplayName: Navystone Lamp
 	Tooltip: ""
 }
 
-EutrophicLamp: {
-	DisplayName: Eutrophic Lamp
+NavystoneLantern: {
+	DisplayName: Navystone Lantern
 	Tooltip: ""
 }
 
-EutrophicLantern: {
-	DisplayName: Eutrophic Lantern
+NavystoneLyre: {
+	DisplayName: Navystone Lyre
 	Tooltip: ""
 }
 
-EutrophicPiano: {
-	DisplayName: Eutrophic Piano
+NavystonePlatform: {
+	DisplayName: Navystone Platform
 	Tooltip: ""
 }
 
-EutrophicPlatform: {
-	DisplayName: Eutrophic Platform
-	Tooltip: ""
-}
-
-EutrophicSink: {
-	DisplayName: Eutrophic Sink
+NavystoneSink: {
+	DisplayName: Navystone Sink
 	Tooltip: Counts as a water source
 }
 
-EutrophicTable: {
-	DisplayName: Eutrophic Table
+NavystoneTable: {
+	DisplayName: Navystone Table
 	Tooltip: ""
 }
 
-EutrophicWorkBench: {
-	DisplayName: Eutrophic Work Bench
+NavystoneToilet: {
+	DisplayName: Navystone Toilet
+	Tooltip: ""
+}
+
+NavystoneTriclinium: {
+	DisplayName: Navystone Triclinium
+	Tooltip: ""
+}
+
+NavystoneWorkBench: {
+	DisplayName: Navystone Work Bench
 	Tooltip: ""
 }
 
