@@ -302,11 +302,9 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.FairyQueenLance, defenseDamage }, // Empress of Light's lance walls
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
                 { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
-                { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // Empress of Light's lingering rainbow trail hitboxes
                 { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
                 { ProjectileID.JavelinHostile, defenseDamage },
                 { ProjectileID.PaladinsHammerHostile, defenseDamage },
