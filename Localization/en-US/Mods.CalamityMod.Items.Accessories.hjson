@@ -361,8 +361,8 @@ BloomStone: {
 		'''
 		Healing Potions are 50% more effective, but provide their healing over time
 		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
-		Touching a flower makes it burst into pollen which gives a temporary 6% damage reduction boost
-		The damage reduction boost increases to 12% while receiving healing over time
+		Touching a flower makes it burst into pollen which gives a temporary boost to potion healing over time
+		Potion healing slows drastically when at full health
 		'One of the ancient relics'
 		'''
 }

@@ -803,6 +803,7 @@ namespace CalamityMod.CalPlayer
         public int transformerCooldown = 0;
         public int transformerDelay = 0;
         public int transformerStoredKills = 0;
+        public int hookPullVisuals = 0;
         public bool bloomStone = false;
         public bool bloomStoneHookVisuals = false;
         public int bloomStoneHealPool = 0;
@@ -1050,7 +1051,6 @@ namespace CalamityMod.CalPlayer
         public bool rottenDogTooth = false;
         public bool angelicAlliance = false;
         public int angelicActivate = -1;
-        public bool BloomStoneRegen = false;
         public bool ChaosStone = false;
         public bool CryoStone = false;
         public bool CryoStoneVanity = false;
@@ -2303,7 +2303,6 @@ namespace CalamityMod.CalPlayer
             scionsCurio = false;
             rottenDogTooth = false;
             angelicAlliance = false;
-            BloomStoneRegen = false;
             ChaosStone = false;
             CryoStone = false;
             CryoStoneVanity = false;

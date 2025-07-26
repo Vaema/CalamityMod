@@ -3872,10 +3872,9 @@ namespace CalamityMod.Projectiles
             }
 
             // Spawn Bloom Stone flower on landed hooks
-            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook, no pollen exists
+            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook
             if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.ai[0] == 2f &&
-                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower &&
-                !CalamityUtils.AnyOwnedProjectiles(ProjectileType<BloomStoneFlower>(), projectile.owner))
+                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower)
             {
                 hookCanSpawnFlower = true;
                 if (Main.myPlayer == projectile.owner)
@@ -3968,7 +3967,21 @@ namespace CalamityMod.Projectiles
         {
             if (player.Calamity().bloomStoneHookVisuals)
             {
-                // Insert vine effect when spawning a hook
+                for (int i = 0; i < 8; i++)
+                {
+                    Particle floweyFromHitGameUndertale = new CustomSpark(player.Center, Utils.DirectionTo(player.Center, player.Calamity().mouseWorld).RotatedByRandom(0.6f) * Main.rand.NextFloat(4f, 11f), 
+                        "CalamityMod/Particles/MiniFlower", false, Main.rand.Next(65, 78 + 1), Main.rand.NextFloat(1.8f, 2.8f), 
+                        Color.Lerp(Color.HotPink, Color.Plum, Main.rand.NextFloat(0, 0.65f)), new Vector2(1f, 1f), true, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(floweyFromHitGameUndertale);
+
+                    Dust pollenDust = Dust.NewDustPerfect(player.Center, DustType<SquashDust>());
+                    pollenDust.noLightEmittence = true;
+                    pollenDust.noGravity = true;
+                    pollenDust.scale = Main.rand.NextFloat(0.9f, 1.4f);
+                    pollenDust.color = Main.rand.NextBool() ? Color.Gold : Color.HotPink;
+                    pollenDust.velocity = Utils.DirectionTo(player.Center, player.Calamity().mouseWorld).RotatedByRandom(0.6f) * Main.rand.NextFloat(4f, 11f);
+                    pollenDust.fadeIn = -0.5f;
+                }
             }
         }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
@@ -3982,12 +3995,9 @@ namespace CalamityMod.Projectiles
                 mult += 0.5f;
             speed *= mult;
 
-            // Visual flowers while being pulled
-            if (player.Calamity().bloomStoneHookVisuals && player.miscCounter % 5 == 0 && player.velocity.Length() > 2f)
+            if (player.velocity.Length() > 2f)
             {
-                Vector2 spawnPos = player.Center + Main.rand.NextVector2Circular(20f, 20f);
-                CustomSprite flowey = new(spawnPos, Vector2.Zero, 12, "CalamityMod/Projectiles/Magic/GleamingBolt", 0.425f, Color.White * 0.75f, 0f, false);
-                GeneralParticleHandler.SpawnParticle(flowey);
+                player.Calamity().hookPullVisuals = 60;
             }
         }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
