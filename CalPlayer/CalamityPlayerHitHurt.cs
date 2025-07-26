@@ -31,6 +31,7 @@ using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -1015,7 +1016,7 @@ namespace CalamityMod.CalPlayer
             if (Player.Calamity().trapProtection && isReducedTrap)
                 modifiers.SourceDamage *= 0.35f;
 
-            // Reduce damage dealt by rainbow trails depending on how faded they are.
+            // Reduce damage dealt by rainbow trails
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
             {
                 // Find the oldPos of the projectile that is intersecting the player hitbox.
@@ -1030,11 +1031,10 @@ namespace CalamityMod.CalPlayer
                         hitbox.X = (int)trailHitbox.X;
                         hitbox.Y = (int)trailHitbox.Y;
 
-                        // Adjust damage based on what part of the trail intersected the player hitbox.
                         if (hitbox.Intersects(Player.Hitbox))
                         {
                             if (k > startOfDamageFalloff)
-                                modifiers.SourceDamage *= MathHelper.Lerp(0.4f, 1f, 1f - (k - startOfDamageFalloff) / (float)(trailLength - startOfDamageFalloff));
+                                modifiers.SourceDamage *= EmpressofLightAI.EverlastingRainbowTrailDamageMult;
 
                             break;
                         }
