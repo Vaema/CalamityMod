@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -25,11 +27,18 @@ namespace CalamityMod.Systems
         public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
         public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
+        public static FieldInfo journeySliderCacheField; // The current value of the journey mode difficulty slider
+        public static MethodInfo journeyDifficultyUpdateMethod; // The method which updates difficulty modes in journey mode
+
         public override void Load()
         {
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
             Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new ExpertDifficulty(), new MasterDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
+
+            // Reflect private journey difficulty slider info
+            journeySliderCacheField = typeof(CreativePowers.DifficultySliderPower).GetField("_sliderCurrentValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
+            journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
             CalculateDifficultyData();
         }
@@ -42,9 +51,9 @@ namespace CalamityMod.Systems
         // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
-            if (Main.expertMode && !Main.masterMode && GetCurrentDifficulty == DeathDifficulty.Instance)
+            if (Main.GameMode == GameModeID.Expert && GetCurrentDifficulty == DeathDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
-            if (Main.masterMode && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
+            if (Main.GameMode == GameModeID.Master && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
         }
 
@@ -161,7 +170,22 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => true;
-            set => Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
+            set
+                {
+                    if (!Main.GameModeInfo.IsJourneyMode)
+                    {
+                        Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
+                    }
+                    else
+                    {
+                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                        if (power.GetIsUnlocked())
+                        {
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.33f : 0.66f);
+                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                        }
+                    }
+                }
         }
 
         private Asset<Texture2D> _texture;
@@ -207,7 +231,22 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => Main.expertMode;
-            set => Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+            set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
+                {
+                    Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+                }
+                else
+                {
+                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                    if (power.GetIsUnlocked())
+                    {
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.66f : 0.33f);
+                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                    }
+                }
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -255,7 +294,22 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => Main.masterMode;
-            set => Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+            set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
+                {
+                    Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+                }
+                else
+                {
+                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                    if (power.GetIsUnlocked())
+                    {
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                    }
+                }
+            }
         }
 
         private Asset<Texture2D> _texture;
