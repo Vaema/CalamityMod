@@ -1767,7 +1767,7 @@ namespace CalamityMod.NPCs.Yharon
 
             float fireballBreathTimer = 60f;
             float fireballBreathPhaseTimer = fireballBreathTimer + 80f;
-            float fireballBreathPhaseVelocity = expertMode ? 32f : 30f;
+            float fireballBreathPhaseVelocity = expertMode ? 28f : 25f;
 
             float splittingFireballBreathTimer = 40f;
             float splittingFireballBreathPhaseVelocity = 22f;
@@ -2251,9 +2251,6 @@ namespace CalamityMod.NPCs.Yharon
                         int type = ModContent.ProjectileType<FlareDust2>();
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer);
                     }
-
-                    if (Math.Abs(targetData.Center.X - NPC.Center.X) > 700f && Math.Abs(NPC.velocity.X) < chargeSpeed)
-                        NPC.velocity.X += Math.Sign(NPC.velocity.X) * 0.5f;
                 }
 
                 if (NPC.ai[1] >= fireballBreathPhaseTimer)
