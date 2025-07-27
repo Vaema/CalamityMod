@@ -17,10 +17,10 @@ namespace CalamityMod.Items.Placeables.FurnitureNavystone
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Navystone>(15).
+                AddIngredient<SmoothNavystone>(15).
                 AddIngredient(ItemID.Bone, 4).
                 AddIngredient(ItemID.Book).
-                AddTile<EutrophicShelf>().
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

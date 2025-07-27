@@ -6,7 +6,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.CraftingStations
+namespace CalamityMod.Tiles.FurnitureStatigel
 {
     public class StaticRefiner : ModTile
     {
@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.StaticRefiner>());
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureStatigel.StaticRefiner>());
             AnimationFrameHeight = 54;
             //also counts as a Solidifier
             AdjTiles = new int[] { TileID.Solidifier };

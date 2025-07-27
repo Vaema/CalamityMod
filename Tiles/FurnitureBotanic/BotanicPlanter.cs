@@ -7,9 +7,9 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.CraftingStations
+namespace CalamityMod.Tiles.FurnitureBotanic
 {
-    public class SilvaBasin : ModTile
+    public class BotanicPlanter : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -20,15 +20,15 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.newTile.StyleLineSkip = 2;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.EffulgentManipulator>());
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureBotanic.BotanicPlanter>());
             AnimationFrameHeight = 54;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<SilvaTileGold>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.ChlorophyteWeapon, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<BloomTileGold>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<BloomTileLeaves>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -37,25 +37,15 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             num = fail ? 1 : 3;
         }
 
-        public override void AnimateTile(ref int frame, ref int frameCounter)
-        {
-            frameCounter++;
-            if (frameCounter >= 6)
-            {
-                frame = (frame + 1) % 10;
-                frameCounter = 0;
-            }
-        }
-
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             Tile tile = Main.tile[i, j];
             //227 79 79
             if (tile.TileFrameX < 54)
             {
-                r = 0.6f;
-                g = 1f;
-                b = 0.8f;
+                r = 0.8f;
+                g = 0.9f;
+                b = 0.3f;
             }
         }
 

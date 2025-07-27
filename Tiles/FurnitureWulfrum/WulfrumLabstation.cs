@@ -1,23 +1,28 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Items.Placeables.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.CraftingStations
+namespace CalamityMod.Tiles.FurnitureWulfrum
 {
-    [LegacyName("MonolithCrafting")]
-    public class MonolithAmalgam : ModTile
+    public class WulfrumLabstation : ModTile
     {
         public override void SetStaticDefaults()
         {
-            this.SetUpBookcase(ModContent.ItemType<Items.Placeables.Furniture.CraftingStations.MonolithAmalgam>(), true, false, false);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.MonolithAmalgam>());
+            Main.tileFrameImportant[Type] = true;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.addTile(Type);
+            AddMapEntry(new Color(100, 153, 100), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.WulfrumLabstationItem>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, ModContent.DustType<AstralBasic>(), 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.TerraBlade, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -33,7 +38,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
             int xPos = Main.tile[i, j].TileFrameX;
             int yPos = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CraftingStations/MonolithAmalgamGlow").Value;
+            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumLabstationGlow").Value;
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;

@@ -18,8 +18,8 @@ namespace CalamityMod.Items.Placeables.FurnitureNavystone
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Navystone>(4).
-                AddTile<EutrophicShelf>().
+                AddIngredient<SmoothNavystone>(4).
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

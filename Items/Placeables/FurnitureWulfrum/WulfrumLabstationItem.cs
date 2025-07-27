@@ -2,22 +2,16 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
+namespace CalamityMod.Items.Placeables.FurnitureWulfrum
 {
     public class WulfrumLabstationItem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetDefaults()
         {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.WulfrumLabstation>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureWulfrum.WulfrumLabstation>());
             Item.value = Item.sellPrice(silver: 1); // This is REALLY too easy to craft to sell for 2 gold
         }
-
-        public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
-        {
-            itemGroup = ContentSamples.CreativeHelper.ItemGroup.CraftingObjects;
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().

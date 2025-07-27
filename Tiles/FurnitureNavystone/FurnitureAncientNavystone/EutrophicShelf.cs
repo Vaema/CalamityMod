@@ -6,7 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.CraftingStations
+namespace CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone
 {
     [LegacyName("EutrophicCrafting")]
     public class EutrophicShelf : ModTile
@@ -41,7 +41,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newAlternate.Direction = TileObjectDirection.PlaceRight;
             TileObjectData.addAlternate(1);
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.EutrophicShelf>());
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureNavystone.FurnitureAncientNavystone.EutrophicShelf>());
             AnimationFrameHeight = 54;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
         }

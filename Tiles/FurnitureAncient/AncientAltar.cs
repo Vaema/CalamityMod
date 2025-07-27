@@ -7,7 +7,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.CraftingStations
+namespace CalamityMod.Tiles.FurnitureAncient
 {
     public class AncientAltar : ModTile
     {
@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.Furniture.CraftingStations.AncientAltar>());
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureAncient.AncientAltar>());
             AnimationFrameHeight = 54;
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
         }
@@ -58,7 +58,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawStaticFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/CraftingStations/AncientAltarFlame").Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
+            CalamityUtils.DrawStaticFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAncient/AncientAltarFlame").Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

@@ -19,10 +19,10 @@ namespace CalamityMod.Items.Placeables.FurnitureNavystone.FurnitureAncientNavyst
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Navystone>(4).
+                AddIngredient<AncientSmoothNavystone>(4).
                 AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-                AddTile<EutrophicShelf>().
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

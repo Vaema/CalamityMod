@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Tools
             CreateRecipe().
                 AddIngredient<PurifiedGel>(12).
                 AddIngredient<BlightedGel>(12).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
 

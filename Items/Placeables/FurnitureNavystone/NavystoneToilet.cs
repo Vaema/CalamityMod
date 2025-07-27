@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureNavystone
         {
             CreateRecipe().
                 AddIngredient<SmoothNavystone >(6).
-                AddTile(TileID.WorkBenches).
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }
