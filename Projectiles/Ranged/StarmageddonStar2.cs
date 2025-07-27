@@ -134,21 +134,31 @@ namespace CalamityMod.Projectiles.Ranged
                                 Main.dust[starDust].velocity = Vector2.Normalize(position - speed * 3f - Main.dust[starDust].position) * 1.25f;
                             }
 
-                            int type = Utils.SelectRandom(Main.rand, new int[]
-                            {
+                            int type = Utils.SelectRandom(Main.rand,
+                            [
                                 ModContent.ProjectileType<PlasmaBlast>(),
                                 ModContent.ProjectileType<AstralStar>(),
                                 ProjectileID.StarCannonStar,
                                 ProjectileID.Starfury
-                            });
+                            ]);
 
-                            int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, speed, type, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
+                            Projectile starCenter = Projectile;
+                            foreach (Projectile p in Main.ActiveProjectiles)
+                            {
+                                if (p.type == ModContent.ProjectileType<StarmageddonBinaryStarCenter>() && p.owner == Projectile.owner)
+                                {
+                                    starCenter = p;
+                                    break;
+                                }
+                            }
+                            Vector2 predictSpeed = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(position, Main.npc[(int)starCenter.ai[2]], 12f, 5);
+                            int star = Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, predictSpeed, type, Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
                             if (star.WithinBounds(Main.maxProjectiles))
                             {
                                 if (type == ModContent.ProjectileType<PlasmaBlast>() || type == ModContent.ProjectileType<AstralStar>())
                                     Main.projectile[star].ai[0] = 1f;
 
-                                Main.projectile[star].extraUpdates += 4;
+                                Main.projectile[star].extraUpdates = 4;
                                 Main.projectile[star].penetrate = 1;
                                 Main.projectile[star].timeLeft = 300;
                                 Main.projectile[star].DamageType = DamageClass.Ranged;

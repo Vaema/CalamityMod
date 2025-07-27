@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 56;
             Item.height = 24;
-            Item.damage = 95;
+            Item.damage = 75;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
             Item.useAnimation = 4;
@@ -42,19 +42,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.Calamity().canFirePointBlankShots = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+        public override bool AltFunctionUse(Player player) => true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int shotType = (player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>());
+            int shotType = player.altFunctionUse == 2 ? type : ModContent.ProjectileType<ChargedBlast>();
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             position = position + (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.UnitX) * 65;
@@ -62,10 +55,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             SineCounter++;
             if (SineCounter % 4 == 0)
             {
-                Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
-                Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
-                int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 1 : 0);
-                int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 1 : 0);
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    Vector2 helixVel = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(i * sine));
+                    Projectile.NewProjectile(source, position, helixVel, shotType, damage, knockback, player.whoAmI, 0, 0, player.altFunctionUse != 2 ? 1 : 0);
+                }
             }
             else if (player.altFunctionUse != 2)
             {

@@ -83,7 +83,6 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<DrataliornusBow>(),
                 ProjectileType<FlakKrakenHoldout>(),
                 ProjectileType<BuzzkillHoldout>(),
-                ProjectileType<StarfleetMK2Gun>(),
                 ProjectileType<SuperradiantSlaughtererHoldout>(),
                 ProjectileType<NorfleetCannon>(),
                 ProjectileType<FlurrystormCannonShooting>(),

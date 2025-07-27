@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.height = 4;
             Projectile.light = 0.5f;
             Projectile.alpha = 255;
-            Projectile.extraUpdates = 5;
+            Projectile.extraUpdates = 10;
             Projectile.scale = 1.18f;
             Projectile.tileCollide = false;
             Projectile.friendly = true;

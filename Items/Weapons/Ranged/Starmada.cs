@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -19,37 +20,43 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 122;
             Item.height = 50;
-            Item.damage = 135;
-            Item.knockBack = 15f;
-            Item.shootSpeed = 16f;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useAnimation = Item.useTime = 27;
-            Item.UseSound = SoundID.Item92;
-            Item.shoot = ModContent.ProjectileType<StarfleetMK2Gun>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.noMelee = true;
-            Item.noUseGraphic = true;
+            Item.damage = 150;
             Item.DamageType = DamageClass.Ranged;
-            Item.channel = true;
-            Item.useTurn = false;
-            Item.useAmmo = AmmoID.FallenStar;
+            Item.useAnimation = Item.useTime = 15;
+            Item.knockBack = 15f;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = SoundID.Item92;
             Item.autoReuse = true;
+            Item.noMelee = true;
+            Item.shoot = ModContent.ProjectileType<PlasmaBlast>();
+            Item.shootSpeed = 16f;
+            Item.useAmmo = AmmoID.FallenStar;
             Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        // Spawning the holdout cannot consume ammo
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool(3) && player.ownedProjectileCounts[Item.shoot] > 0;
-
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool(3);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<StarfleetMK2Gun>(), 0, 0f, player.whoAmI);
+            for (int i = 0; i < 5; i++)
+            {
+                int starType = Utils.SelectRandom(Main.rand,
+                [
+                    ModContent.ProjectileType<PlasmaBlast>(),
+                    ModContent.ProjectileType<AstralStar>(),
+                    ProjectileID.StarCannonStar,
+                    ProjectileID.Starfury
+                ]);
+                int star = Projectile.NewProjectile(source, position + Main.rand.NextVector2Circular(21f, 21f), velocity * Main.rand.NextFloat(0.8f, 1.2f), starType, damage, knockback, player.whoAmI);
+                if (star.WithinBounds(Main.maxProjectiles))
+                {
+                    Main.projectile[star].penetrate = 1;
+                    Main.projectile[star].timeLeft = 300;
+                    Main.projectile[star].DamageType = DamageClass.Ranged;
+                    Main.projectile[star].netUpdate = true;
+                }
+            }
             return false;
         }
 
