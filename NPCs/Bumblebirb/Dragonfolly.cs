@@ -61,7 +61,7 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override string BossHeadTexture => "CalamityMod/NPCs/Bumblebirb/Birb_Head_Boss";
 
         public static int FeatherDamage = 42; // 168
-        public static int LightningDamage = 75; // 300
+        public static int LightningDamage = 65; // 260
 
         public override void SetDefaults()
         {
