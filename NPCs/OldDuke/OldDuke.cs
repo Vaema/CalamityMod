@@ -293,7 +293,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 chargeVelocity *= 1.25f;
 
             if (exhausted)
@@ -450,7 +450,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 chargeTime *= 2;
 
             // Set variables for spawn effects
@@ -754,7 +754,7 @@ namespace CalamityMod.NPCs.OldDuke
                 NPC.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 10f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 10f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1129,7 +1129,7 @@ namespace CalamityMod.NPCs.OldDuke
                 NPC.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 8f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 8f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1522,7 +1522,7 @@ namespace CalamityMod.NPCs.OldDuke
                 NPC.damage = setDamage;
 
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 6f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 6f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);

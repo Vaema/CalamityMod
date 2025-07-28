@@ -54,6 +54,12 @@ namespace CalamityMod.World
         /// <summary> Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy). </summary>
         public static bool LegendaryMode => Main.getGoodWorld && ReflectMasterMode();
 
+        /// <summary>
+        /// Evaluates to whether "Malice Mode" is enabled (Death Mode on For the Worthy).<br/>
+        /// Note that the effects of this difficulty are unaffiliated with the removed Malice Mode.
+        /// </summary>
+        public static bool MaliceMode => Main.getGoodWorld && ReflectMasterMode() && revenge;
+
         // FTW automatically bumps difficulties up and has no proper check for Master since a world generated in Expert Mode will be classified as Master
         // Therefore gotta reflect!
         public static bool ReflectMasterMode()
