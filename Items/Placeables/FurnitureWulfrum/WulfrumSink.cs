@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
             CreateRecipe().
                 AddIngredient<WulfrumPlating>(6).
                 AddIngredient(ItemID.WaterBucket).
-                AddTile(TileID.Anvils).
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

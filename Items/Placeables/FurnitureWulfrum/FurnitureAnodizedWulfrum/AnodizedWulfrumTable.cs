@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum
         {
             CreateRecipe().
                 AddIngredient<RoundedAnodizedWulfrumPanels>(8).
-                AddTile(TileID.Anvils).
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }
