@@ -440,7 +440,19 @@ namespace CalamityMod.Systems
             {
                 if (Main.getGoodWorld)
                 {
-                    Main.GameMode = GameModeID.Master;
+                    if (!Main.GameModeInfo.IsJourneyMode)
+                    {
+                        Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+                    }
+                    else
+                    {
+                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                        if (power.GetIsUnlocked())
+                        {
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                        }
+                    }
                     CalamityWorld.death = value;
                 }
                 else

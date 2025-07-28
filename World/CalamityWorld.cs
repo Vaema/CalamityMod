@@ -5,9 +5,11 @@ using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Creative;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -56,6 +58,13 @@ namespace CalamityMod.World
         // Therefore gotta reflect!
         public static bool ReflectMasterMode()
         {
+            if (Main.GameModeInfo.IsJourneyMode)
+            {
+                CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                float level = (float)DifficultyModeSystem.journeySliderCacheField.GetValue(power);
+                return level == 1f;
+            }
+
             FieldInfo findInfo = typeof(Main).GetField("_currentGameModeInfo", BindingFlags.Static | BindingFlags.NonPublic);
             GameModeData data = (GameModeData)findInfo.GetValue(null);
             return data.IsMasterMode;
