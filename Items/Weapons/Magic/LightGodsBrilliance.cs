@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.damage = 111;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 6;
-            Item.useAnimation = Item.useTime = 4;
+            Item.useAnimation = Item.useTime = 6;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3f;
