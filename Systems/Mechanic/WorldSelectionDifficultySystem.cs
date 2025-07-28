@@ -51,11 +51,19 @@ namespace CalamityMod.Systems
 
         public static bool GetDeath(AWorldListItem item)
         {
+            // Grab data from the listed world
+            FieldInfo worldDataField = typeof(UIWorldListItem).GetField("_data", BindingFlags.NonPublic | BindingFlags.Instance);
+            WorldFileData worldData = (WorldFileData)worldDataField.GetValue(item);
+
             if (item.Data.TryGetHeaderData<WorldSelectionDifficultySystem>(out TagCompound tag))
             {
                 if (tag.ContainsKey("DeathMode") && tag.GetBool("DeathMode"))
                 {
                     return true;
+                }
+                else if (tag.ContainsKey("RevengeanceMode") && tag.GetBool("RevengeanceMode"))
+                {
+                    return worldData.ForTheWorthy;
                 }
             }
             return false;

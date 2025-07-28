@@ -150,10 +150,12 @@ namespace CalamityMod.Systems
         public float DifficultyScale;
         public LocalizedText Name;
         public LocalizedText ShortDescription;
+        public Color ChatTextColor;
+
+        public LocalizedText FTWName;
+        public Color FTWTextColor;
 
         public SoundStyle ActivationSound;
-
-        public Color ChatTextColor;
 
         internal int _difficultyTier;
 
@@ -214,12 +216,15 @@ namespace CalamityMod.Systems
         public NoDifficulty()
         {
             DifficultyScale = 0;
-            Name = GetText("UI.Classic");
+            Name = Language.GetText("UI.Normal");
             ShortDescription = GetText("UI.ClassicInfo");
+            ChatTextColor = Color.White;
+
+            FTWName = Language.GetText("UI.Expert");
+            FTWTextColor = new Color(255, 186, 117); // World display: Main.mcColor
 
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
-            ChatTextColor = Color.White;
             Instance = this;
         }
 
@@ -277,12 +282,15 @@ namespace CalamityMod.Systems
         public ExpertDifficulty()
         {
             DifficultyScale = 0.1f;
-            Name = GetText("UI.Expert");
+            Name = Language.GetText("UI.Expert");
             ShortDescription = GetText("UI.ExpertShortInfo");
+            ChatTextColor = new Color(255, 186, 117); // World display: Main.mcColor
+
+            FTWName = Language.GetText("UI.Master");
+            FTWTextColor = new Color(28, 255, 170); // World display: Main.hcColor
 
             ActivationSound = SoundID.ForceRoarPitched;
 
-            ChatTextColor = new Color(255, 186, 117);
             Instance = this;
         }
 
@@ -340,12 +348,15 @@ namespace CalamityMod.Systems
         public MasterDifficulty()
         {
             DifficultyScale = 0.25f;
-            Name = GetText("UI.Master");
+            Name = Language.GetText("UI.Master");
             ShortDescription = GetText("UI.MasterShortInfo");
+            ChatTextColor = new Color(28, 255, 170); // World display: Main.hcColor
+
+            FTWName = Language.GetText("UI.Legendary");
+            FTWTextColor = Main.legendaryModeColor;
 
             ActivationSound = SoundID.NPCDeath10;
 
-            ChatTextColor = new Color(28, 255, 170);
             Instance = this;
         }
 
@@ -398,10 +409,13 @@ namespace CalamityMod.Systems
             DifficultyScale = 0.25f;
             Name = GetText("UI.Revengeance");
             ShortDescription = GetText("UI.RevengeanceShortInfo");
+            ChatTextColor = new Color(211, 42, 42);
+
+            FTWName = GetText("UI.Death");
+            FTWTextColor = new Color(192, 64, 219);
 
             ActivationSound = SoundID.Item119;
 
-            ChatTextColor = new Color(211, 42, 42);
             Instance = this;
         }
 
@@ -413,7 +427,16 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => CalamityWorld.death;
-            set => CalamityWorld.death = value;
+            set
+            {
+                if (Main.getGoodWorld)
+                {
+                    Main.GameMode = GameModeID.Master;
+                    CalamityWorld.death = value;
+                }
+                else
+                    CalamityWorld.death = value;
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -446,10 +469,13 @@ namespace CalamityMod.Systems
             DifficultyScale = 0.5f;
             Name = GetText("UI.Death");
             ShortDescription = GetText("UI.DeathShortInfo");
+            ChatTextColor = new Color(192, 64, 219);
+
+            FTWName = GetText("UI.DeathLegend");
+            FTWTextColor = new Color(220, 255, 132);
 
             ActivationSound = DemonshadeHelm.ActivationSound;
 
-            ChatTextColor = new Color(192, 64, 219);
             Instance = this;
         }
 
