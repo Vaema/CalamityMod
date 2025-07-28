@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             if (projScale == 1f)
-                ProvUtils.ApplyGFBDamage(Projectile, 400, 20);
+                ProvUtils.ApplyGFBDamage(Projectile, 240, 20);
 
             Projectile.scale = (float)Math.Sin(Projectile.localAI[0] * MathHelper.Pi / (scissorLasers ? 100f : 180f)) * 10f * projScale;
             if (Projectile.scale > projScale)
@@ -240,7 +240,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 400);
+            ProvUtils.ApplyDebuffs(target, 240);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;
