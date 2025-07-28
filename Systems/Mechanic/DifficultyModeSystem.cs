@@ -368,7 +368,16 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => CalamityWorld.revenge;
-            set => CalamityWorld.revenge = value;
+            set
+            {
+                if (Main.getGoodWorld)
+                {
+                    CalamityWorld.revenge = value;
+                    CalamityWorld.death = value;
+                }
+                else
+                    CalamityWorld.revenge = value;
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -426,7 +435,7 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => CalamityWorld.death;
+            get => Main.getGoodWorld ? CalamityWorld.death && CalamityWorld.LegendaryMode : CalamityWorld.death;
             set
             {
                 if (Main.getGoodWorld)
