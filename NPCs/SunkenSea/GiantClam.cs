@@ -127,6 +127,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 hasBeenHit = true;
             }
 
+            if (!hasBeenHit)
+            {
+                // No contact damage while chillaxing
+                NPC.damage = 0;
+            }
+
             NPC.chaseable = hasBeenHit;
 
             if (hitAmount == 5)
