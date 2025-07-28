@@ -230,7 +230,7 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => Main.expertMode;
+            get => Main.getGoodWorld ? Main.masterMode : Main.expertMode;
             set
             {
                 if (!Main.GameModeInfo.IsJourneyMode)
@@ -293,7 +293,7 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => Main.masterMode;
+            get =>  Main.getGoodWorld ? CalamityWorld.LegendaryMode : Main.masterMode;
             set
             {
                 if (!Main.GameModeInfo.IsJourneyMode)
