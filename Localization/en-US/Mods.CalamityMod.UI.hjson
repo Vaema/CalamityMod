@@ -64,7 +64,6 @@ RevengeanceExpandedInfo:
 	[c/F7342A:This mode is more difficult than Expert. Be sure to prepare for the challenge]
 	'''
 Death: Death
-DeathLegend: Death+Legend
 DeathShortInfo: "[c/E066F7:A far more difficult challenge than Revengeance Mode! Can only be enabled in Master Mode!]"
 DeathExpandedInfo:
 	'''
@@ -73,6 +72,8 @@ DeathExpandedInfo:
 	[c/B834E0:Debuffs are especially lethal and the Abyss is significantly more dangerous]
 	[c/E945FF:Vigilance and tenacity are crucial to survival]
 	'''
+// Legendary (FTW + Master) + Death Mode
+Malice: Malice
 // Calamity Health Bar
 ExoTwinsNameNormal: XS-01 Artemis and XS-03 Apollo
 ExoTwinsNameHekate: Eyes of XB-∞ Hekate

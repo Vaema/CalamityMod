@@ -492,8 +492,8 @@ namespace CalamityMod.Systems
             ShortDescription = GetText("UI.DeathShortInfo");
             ChatTextColor = new Color(192, 64, 219);
 
-            FTWName = GetText("UI.DeathLegend");
-            FTWTextColor = new Color(220, 255, 132);
+            FTWName = GetText("UI.Malice");
+            FTWTextColor = new Color(240, 128, 128);
 
             ActivationSound = DemonshadeHelm.ActivationSound;
 
