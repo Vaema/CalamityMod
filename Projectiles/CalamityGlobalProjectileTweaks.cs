@@ -293,12 +293,8 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 5: Defense Damage support
-                { ProjectileID.BombSkeletronPrime, defenseDamage },
                 { ProjectileID.CannonballHostile, defenseDamage },
                 { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
-                { ProjectileID.CultistBossFireBall, defenseDamage },
-                { ProjectileID.CultistBossIceMist, defenseDamage },
-                { ProjectileID.CultistBossLightningOrbArc, defenseDamage }, // Reused by Storm Weaver
                 { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },

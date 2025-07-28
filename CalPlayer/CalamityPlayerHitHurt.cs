@@ -1363,53 +1363,9 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
-                {
-                    // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
-                    Player.AddBuff(BuffID.CursedInferno, 60);
-                }
                 else if (proj.type == ProjectileID.DesertDjinnCurse)
                 {
                     Player.AddBuff(BuffID.Cursed, 180);
-                }
-                else if (proj.type == ProjectileID.ThornBall)
-                {
-                    Player.AddBuff(BuffID.Venom, 120);
-                }
-                else if (proj.type == ProjectileID.CultistBossFireBall)
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
-                }
-                else if (proj.type == ProjectileID.CultistBossIceMist)
-                {
-                    if (!Player.frozen)
-                        Player.AddBuff(BuffID.Frozen, 60);
-
-                    Player.AddBuff(BuffID.Chilled, 180);
-                }
-                else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
-                {
-                    Player.AddBuff(BuffID.Electrified, 180);
-                }
-                else if (proj.type == ProjectileID.AncientDoomProjectile)
-                {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
-                }
-                else if (proj.type == ProjectileID.CultistBossFireBallClone)
-                {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 180);
-                }
-                else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
-                }
-                else if (proj.type == ProjectileID.PhantasmalSphere)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 210);
-                }
-                else if (proj.type == ProjectileID.PhantasmalDeathray)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
@@ -1422,6 +1378,47 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.RuneBlast && Main.zenithWorld)
                 {
                     Player.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
+                }
+
+                if (CalamityWorld.revenge)
+                {
+                    if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
+                    {
+                        // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
+                        Player.AddBuff(BuffID.CursedInferno, 60);
+                    }
+                    else if (proj.type == ProjectileID.ThornBall)
+                    {
+                        Player.AddBuff(BuffID.Venom, 120);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossFireBall)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
+                    {
+                        Player.AddBuff(BuffID.Chilled, 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
+                    {
+                        Player.AddBuff(BuffID.Electrified, 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossFireBallClone)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Shadowflame>(), 240);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalSphere)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalDeathray)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 240);
+                    }
                 }
             }
 

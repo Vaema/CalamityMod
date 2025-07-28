@@ -2640,8 +2640,6 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistLeft:
                 case NPCID.GolemFistRight:
                 case NPCID.CultistDragonHead:
-                case NPCID.AncientCultistSquidhead:
-                case NPCID.AncientLight:
                 case NPCID.DD2OgreT2:
                 case NPCID.DD2OgreT3:
                 case NPCID.DD2Betsy:
@@ -5366,14 +5364,16 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    target.AddBuff(BuffType<ArmorCrunch>(), 480);
+                    if (CalamityWorld.revenge)
+                        target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
 
                 case NPCID.GolemHead:
                 case NPCID.GolemHeadFree:
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
-                    target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    if (CalamityWorld.revenge)
+                        target.AddBuff(BuffType<ArmorCrunch>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:
