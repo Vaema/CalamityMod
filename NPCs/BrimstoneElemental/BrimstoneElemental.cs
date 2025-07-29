@@ -303,9 +303,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
             if (NPC.ai[0] == -1f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
@@ -334,9 +331,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Pick a location to teleport to
             else if (NPC.ai[0] == 0f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
-
                 NPC.chaseable = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -385,7 +379,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Teleport to location
             else if (NPC.ai[0] == 1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage for some time while fading away
                 NPC.damage = 0;
 
                 NPC.chaseable = true;
@@ -422,9 +416,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Either teleport again or go to next AI state
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (NPC.alpha >= 255)
                 {
                     if (Main.zenithWorld)
@@ -464,6 +455,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.alpha -= 50;
                 if (NPC.alpha <= 0)
                 {
+                    // Restore contact damage once returned to proper opacity
+                    NPC.damage = NPC.defDamage;
                     NPC.chaseable = true;
                     NPC.ai[3] += 1f;
                     NPC.alpha = 0;
@@ -485,9 +478,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Float above target and fire projectiles
             else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.chaseable = true;
                 NPC.rotation = NPC.velocity.X * 0.04f;
 
@@ -576,9 +566,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Cocoon bullet hell
             else if (NPC.ai[0] == 4f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.defense = NPC.defDefense * 4;
 
                 NPC.chaseable = false;
@@ -693,9 +680,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Laser beam attack
             else if (NPC.ai[0] == 5f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.chaseable = true;
 
                 NPC.defense = NPC.defDefense * 2;
