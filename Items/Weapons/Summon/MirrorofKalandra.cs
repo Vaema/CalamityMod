@@ -20,19 +20,19 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float Axe_MinRamSpeed = 30f;
         public static float Axe_MaxRamSpeed = 50f;
-        public static int Axe_IFrames = 15;
+        public static int Axe_IFrames = 20;
         public static float Axe_SpinSpeed = 25f; // In degrees per frame.
 
         public static float Purple_MinRamSpeed = 40f;
         public static float Purple_MaxRamSpeed = 60f;
-        public static int Purple_IFrames = 23;
-        public static float Purple_BlastDMGModifier = 2.25f;
+        public static int Purple_IFrames = 28;
+        public static float Purple_BlastDMGModifier = 2f;
         public static float Purple_BlastFireRate = 240f; // In frames.
         public static int Purple_BlastSize = 300;
         public static int Purple_BlastChargeTime = 10;
         public static float Purple_SpinSpeed = 25f; // In degrees per frame.
 
-        public static int Scimitar_IFrames = 36; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
+        public static int Scimitar_IFrames = 40; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
 
         public static int Wind_BowChargeTime = 5; // Therefore, the higher the time, the slower the fire rate will be, and viceversa.
         public static float Wind_ArrowSpeed = 5f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 58;
             Item.height = 50;
-            Item.damage = 317;
+            Item.damage = 256;
             Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 4f;
             Item.mana = 10;

@@ -17,15 +17,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 58;
             Item.height = 60;
+            Item.damage = 190;
+            Item.DamageType = DamageClass.Summon;
+            Item.useAnimation = Item.useTime = 10;
+            Item.mana = 10;
+            Item.knockBack = 3f;
+
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item60;
-            Item.DamageType = DamageClass.Summon;
-            Item.mana = 10;
-            Item.damage = 232;
-            Item.knockBack = 3f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<EndoHydraBody>();
             Item.shootSpeed = 10f;
 

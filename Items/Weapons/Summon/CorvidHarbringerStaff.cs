@@ -17,15 +17,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 54;
             Item.height = 52;
+            Item.damage = 99;
+            Item.DamageType = DamageClass.Summon;
+            Item.useAnimation = Item.useTime = 10;
+            Item.mana = 10;
+            Item.knockBack = 2f;
+
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.DD2_BetsyFlyingCircleAttack;
-            Item.DamageType = DamageClass.Summon;
-            Item.mana = 10;
-            Item.damage = 114;
-            Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 10;
             Item.shoot = ModContent.ProjectileType<PowerfulRaven>();
             Item.shootSpeed = 13f;
 
