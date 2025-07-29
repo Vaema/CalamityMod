@@ -479,7 +479,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (hurtInfo.Damage <= 0)
                 return;
-            target.AddBuff(BuffID.OnFire3, 120);
+            target.AddBuff(BuffID.OnFire, 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
