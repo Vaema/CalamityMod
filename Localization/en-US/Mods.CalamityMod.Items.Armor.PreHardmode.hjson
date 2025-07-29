@@ -90,11 +90,11 @@ DesertProwlerShirt: {
 MarniteArchitectHeadgear: {
 	DisplayName: Marnite Architect Headgear
 	Tooltip: Increases block placement & tool range by {0}
-	AbilityBrief: Marnite Lift - You can summon a lift under your feet to reach higher up
-	AbilityDescription:
+	SetBonus:
 		'''
-		The lift gets summoned when the mount hotkey gets pressed [c/D4C870:without any mounts equipped]
-		Using the {$Key.UP} and {$Key.DOWN} keys can change the lift's height
+		[c/{0}:Marnite Lift - You can summon a lift under your feet to reach higher up]
+		[c/91C5EF:The lift gets summoned when the mount hotkey gets pressed] [c/D4C870:without any mounts equipped]
+		[c/91C5EF:Press {$Key.UP} and {$Key.DOWN} to change the lift's height, reaching up to {1} tiles above ground]
 		'''
 }
 

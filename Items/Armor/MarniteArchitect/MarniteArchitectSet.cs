@@ -39,6 +39,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
         // Set Bonus
         public static float LiftRaiseSpeed = 2f;
         public static float MaxLiftHeight = 138f;
+        public static float LiftHeightOffset = 22f; // Height of the lift itself minus the foot offset; 138 + 22 = 160 (10 tiles)
 
         public override void Load()
         {
@@ -91,7 +92,8 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = "Marnite Lift"; //Replaced below
+            Color AbilityBriefColor = Color.Lerp(new Color(255, 243, 161), new Color(137, 162, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), (MaxLiftHeight + LiftHeightOffset).ToTiles());
             player.GetModPlayer<MarniteArchitectPlayer>().setEquipped = true;
         }
 
@@ -104,27 +106,6 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 Player.tileRangeY += TileRangeBoost; //Extendo grip also increases vertical tile range by one less than horizontal <-- This is silly lmao
             }
         }
-
-        public static void ModifySetTooltips(ModItem item, List<TooltipLine> tooltips)
-        {
-            if (HasArmorSet(Main.LocalPlayer))
-            {
-                int setBonusIndex = tooltips.FindIndex(x => x.Name == "SetBonus" && x.Mod == "Terraria");
-
-                if (setBonusIndex != -1)
-                {
-                    tooltips[setBonusIndex].Text = CalamityUtils.GetTextValueFromModItem<MarniteArchitectHeadgear>("AbilityBrief");
-                    tooltips[setBonusIndex].OverrideColor = Color.Lerp(new Color(255, 243, 161), new Color(137, 162, 255), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
-
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<MarniteArchitectHeadgear>("AbilityDescription"));
-                    setBonus1.OverrideColor = new Color(145, 197, 239);
-                    tooltips.Insert(setBonusIndex + 1, setBonus1);
-                }
-
-            }
-        }
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => ModifySetTooltips(this, tooltips);
-
 
         public override void AddRecipes()
         {
@@ -152,12 +133,6 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/MarniteArchitect/MarniteArchitectToga_Legs", EquipType.Legs, this);
         }
 
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -172,9 +147,6 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             player.tileSpeed += PlacementSpeedBoost;
             player.wallSpeed += PlacementSpeedBoost;
         }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => MarniteArchitectHeadgear.ModifySetTooltips(this, tooltips);
-
 
         public override void AddRecipes()
         {

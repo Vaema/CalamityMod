@@ -110,7 +110,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             armorPlayer.wulfrumSet = true;
 
-            Color AbilityBriefColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            Color AbilityBriefColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
             var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
             player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), hotkey, BastionTime.FramesToSeconds(), TimeLostPerHit.FramesToSeconds());
 
