@@ -94,6 +94,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetDefaults()
         {
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 140; // 280
             NPC.alpha = 255;
             NPC.width = 150;
@@ -216,8 +217,6 @@ namespace CalamityMod.NPCs.OldDuke
 
             Phase = phase3 ? 2 : phase2 ? 1 : 0;
             NuclearOverlayVisual = (Phase == 2 && NPC.Calamity().newAI[1] != 1) ? MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f) : MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
-
-            NPC.Calamity().canBreakPlayerDefense = true;
 
             bool charging = NPC.ai[3] < 10f;
             if (calamityGlobalNPC.newAI[0] >= exhaustionGateValue)
@@ -361,7 +360,8 @@ namespace CalamityMod.NPCs.OldDuke
 
             if (exhausted)
             {
-                NPC.Calamity().canBreakPlayerDefense = false;
+                // Disable contact damage while tired
+                NPC.damage = 0;
 
                 // Play exhausted sound
                 if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
