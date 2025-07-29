@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.lifeMax = 90000;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 20, 0, 0);
+            NPC.value = Item.buyPrice(gold: 20);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;

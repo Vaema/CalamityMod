@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 280;
             NPC.knockBackResist = 0.05f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 25, 0);
+            NPC.value = Item.buyPrice(silver: 25);
             NPC.HitSound = SoundID.NPCHit12;
             NPC.DeathSound = SoundID.NPCDeath18;
             NPC.rarity = 2;

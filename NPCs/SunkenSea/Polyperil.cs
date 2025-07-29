@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             // Banner = NPC.type;
             // BannerItem = ModContent.ItemType<PolyperilBanner>();
 

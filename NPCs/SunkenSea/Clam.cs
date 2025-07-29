@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Main.hardMode ? Item.buyPrice(silver: 5) : Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.knockBackResist = 0;
             Banner = NPC.type;

@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.defense = 32;
             NPC.lifeMax = 900;
             NPC.knockBackResist = 0.3f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit22;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<VirulingBanner>();

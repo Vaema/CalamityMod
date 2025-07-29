@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.05f;
-            NPC.value = Item.buyPrice(0, 1, 50, 0);
+            NPC.value = Item.buyPrice(gold: 1, silver: 50);
             NPC.dontTakeDamage = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

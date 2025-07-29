@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.defense = 26;
             NPC.knockBackResist = 0.65f;
             NPC.lifeMax = 280;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             AnimationType = NPCID.GiantFlyingFox;
             Banner = NPC.type;
