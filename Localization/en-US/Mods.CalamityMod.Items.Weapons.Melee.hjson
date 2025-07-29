@@ -397,7 +397,7 @@ DragonRage: {
 	Tooltip:
 		'''
 		Twirls a baton that causes explosions on enemy hits
-		Every eleven hits will summon a ring of fireballs
+		Every ten hits will summon a ring of fireballs
 		'''
 }
 
