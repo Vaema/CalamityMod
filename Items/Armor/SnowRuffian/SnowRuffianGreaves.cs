@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float MoveSpeedBoost = 0.1f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent());
+        public static int RangedCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
 
         public override void SetDefaults()
         {
@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.defense = 4; //12
         }
 
-        public override void UpdateEquip(Player player) => player.moveSpeed += MoveSpeedBoost;
+        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
 
         public override void AddRecipes()
         {

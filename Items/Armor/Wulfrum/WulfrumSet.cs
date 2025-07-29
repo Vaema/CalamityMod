@@ -41,10 +41,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
         // Set Bonus
         public static int BastionDefenseBoost = 12;
         public static float BastionDRBoost = 0.1f;
-        public static int BastionBuildTime = (int)(0.55f * 60);
-        public static int BastionTime = 30 * 60;
-        public static int TimeLostPerHit = 2 * 60;
-        public static int BastionCooldown = 20 * 60;
+        public static int BastionBuildTime = CalamityUtils.SecondsToFrames(0.55f);
+        public static int BastionTime = CalamityUtils.SecondsToFrames(30);
+        public static int TimeLostPerHit = CalamityUtils.SecondsToFrames(2);
+        public static int BastionCooldown = CalamityUtils.SecondsToFrames(20);
 
         internal static Item DummyCannon = new Item(); //Used for the attack swap. Basically we force the player to hold a fake item.
 

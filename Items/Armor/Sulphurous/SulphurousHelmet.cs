@@ -15,11 +15,11 @@ namespace CalamityMod.Items.Armor.Sulphurous
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float RogueDamageBoost = 0.04f;
-        public static int RogueCritBoost = 2;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueCritBoost);
+        public static int RogueCritBoost = 6;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueCritBoost);
 
         // Set Bonus
+        public static int SetBonusPoisonDuration = CalamityUtils.SecondsToFrames(1);
         public static float SetBonusRogueStealth = 0.65f;
         public static int BubbleDamage = 20;
 
@@ -39,18 +39,16 @@ namespace CalamityMod.Items.Armor.Sulphurous
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), SetBonusPoisonDuration.FramesToSeconds());
             var modPlayer = player.Calamity();
             modPlayer.sulphurSet = true;
             player.GetJumpState<SulphurJump>().Enable();
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.ignoreWater = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
             player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
             if (player.Calamity().countsAsAnyWet)
                 player.gills = true;

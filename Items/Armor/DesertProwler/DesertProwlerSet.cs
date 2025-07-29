@@ -35,9 +35,9 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public static float SmokeMoveSpeedMult = 1.5f;
         public static float SmokeDefenseMult = 0.75f;
         public static float SmokeAggroMult = 0.5f;
-        public static int SmokeCooldown = 25 * 60;
-        public static int SmokeDuration = 5 * 60;
-        public static int LightsOutReset = (int)(1.5f * 60);
+        public static int SmokeCooldown = CalamityUtils.SecondsToFrames(25);
+        public static int SmokeDuration = CalamityUtils.SecondsToFrames(5);
+        public static int LightsOutReset = CalamityUtils.SecondsToFrames(2);
         public static int FreeCrit = 200;
         public static int BonusDamageCap = 200;
 

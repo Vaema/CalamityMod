@@ -9,6 +9,8 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -1293,7 +1295,7 @@ namespace CalamityMod.CalPlayer
             if (omegaBlueChestplate)
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
-                target.AddBuff(BuffID.Poisoned, 60);
+                target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
             if (ilSpark && Player.Calamity().countsAsAnyWet)
             {
                 int duration = 60;
@@ -1313,7 +1315,7 @@ namespace CalamityMod.CalPlayer
             }
             if (snowRuffianSet && ranged && crit)
             {
-                target.AddBuff(BuffID.Frostburn, 300, false);
+                target.AddBuff(BuffID.Frostburn, SnowRuffianMask.SetBonusFrostburnDuration, false);
             }
         }
         #endregion

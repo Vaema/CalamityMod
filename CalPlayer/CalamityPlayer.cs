@@ -4925,7 +4925,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Player.mount.Active)
                     {
-                        Player.velocity.Y *= 0.9f;
+                        Player.velocity.Y *= SnowRuffianMask.GlideFallSpeedMult;
                         Player.wingFrame = 3;
                     }
                     Player.noFallDmg = true;

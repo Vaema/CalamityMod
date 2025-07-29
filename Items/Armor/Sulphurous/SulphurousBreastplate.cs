@@ -14,8 +14,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
         public static float RogueDamageBoost = 0.06f;
-        public static int RogueCritBoost = 4;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueCritBoost);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent());
 
         public override void SetDefaults()
         {
@@ -26,11 +25,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
             Item.rare = ItemRarityID.Green;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
-            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
 
         public override void AddRecipes()
         {
