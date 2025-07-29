@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Armor.Brimflame
             player.GetDamage<MagicDamageClass>() += 0.05f;
             player.GetCritChance<MagicDamageClass>() += 5;
             player.statManaMax2 += 80;
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
             player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.Frostburn] = true;

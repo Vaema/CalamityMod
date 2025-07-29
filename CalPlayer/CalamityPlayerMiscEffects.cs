@@ -2583,7 +2583,7 @@ namespace CalamityMod.CalPlayer
             // Permafrost's Concoction bonuses/debuffs
             if (permafrostsConcoction)
             {
-                Player.manaCost *= 0.85f;
+                Player.manaCost -= 0.15f;
                 Player.statManaMax2 += 50;
             }
 
@@ -3515,7 +3515,7 @@ namespace CalamityMod.CalPlayer
             if (starBeamRye)
             {
                 Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost *= (1f - StarBeamRye.ManaCostReduction);
+                Player.manaCost -= StarBeamRye.ManaCostReduction;
                 Player.statManaMax2 += StarBeamRye.MaxManaBoost;
             }
 
@@ -3977,7 +3977,7 @@ namespace CalamityMod.CalPlayer
 
             if (eArtifact)
             {
-                Player.manaCost *= 0.75f;
+                Player.manaCost -= 0.25f;
                 Player.maxMinions++;
             }
 
