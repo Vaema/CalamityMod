@@ -28,7 +28,9 @@ using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Victide;
+using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
@@ -3920,6 +3922,28 @@ namespace CalamityMod.CalPlayer
             }
             if (prismaticSet && !Player.HasCooldown(PrismaticLaser.ID) && prismaticLasers <= 0)
                 prismaticLasers = CalamityUtils.SecondsToFrames(35f);
+            if (WulfrumHat.HasArmorSet(Player))
+            {
+                //Only activate if no cooldown & available scrap.
+                if (cooldowns.TryGetValue(WulfrumBastion.ID, out CooldownInstance cd))
+                {
+                    // Quick dismount if activated again
+                    if (cd.timeLeft > WulfrumHat.BastionCooldown && cd.timeLeft < WulfrumHat.BastionCooldown + WulfrumHat.BastionTime - 60 * 3)
+                    {
+                        cd.timeLeft = WulfrumHat.BastionCooldown + 1;
+                        SyncCooldownDictionary(false);
+                    }
+                }
+
+                else if (Player.HasItem(ItemType<WulfrumMetalScrap>()))
+                {
+                    Player.ConsumeItem(ItemType<WulfrumMetalScrap>());
+                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right
+                    Player.AddCooldown(WulfrumBastion.ID, WulfrumHat.BastionCooldown + WulfrumHat.BastionTime);
+                    //Though do I need to sync that or is the player inventory auto synced?
+                    WulfrumHat.DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
+                }
+            }
         }
         #endregion
 

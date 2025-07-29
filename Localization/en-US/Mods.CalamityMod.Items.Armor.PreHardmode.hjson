@@ -300,25 +300,24 @@ WulfrumHat: {
 	DisplayName: Wulfrum Hat & Goggles
 	Tooltip:
 		'''
-		{0}% increased summon damage
+		{$Common.SummonDamage}
 		Comes equipped with hair extensions
 		'''
-	SetBonus: +{0} max minion
-	AbilityBrief: Wulfrum Bastion - Double tap {0} while dismounted to equip wulfrum power armor
-	AbilityDescription:
+	SetBonus:
 		'''
-		While the armor is active, you can only use the integrated fusion cannon, but your defensive stats are increased
-		Calling down the armor consumes one piece of {0}, and the armor will lose durability faster when hit
+		[c/{0}:Wulfrum Bastion - Press {1} to equip a power armor, costing one] [i:CalamityMod/WulfrumMetalScrap] [c/{0}:{$Items.Materials.WulfrumMetalScrap.DisplayName}]
+		[c/6EC05D:While active, you can only use the integrated fusion cannon, but your defensive stats are increased]
+		[c/6EC05D:The armor lasts up to {2} seconds, but each hit loses {3} seconds of duration]
+		[c/BEBEBE:Hold Shift to see the stats of the fusion cannon]
 		'''
-	ShiftToExpand: Hold Shift to see the stats of the fusion cannon
 }
 
 WulfrumJacket: {
 	DisplayName: Wulfrum Jacket
-	Tooltip: "{0}% increased summon damage"
+	Tooltip: "{$CommonItemTooltip.IncreasesMaxMinionsBy}"
 }
 
 WulfrumOveralls: {
 	DisplayName: Wulfrum Overalls
-	Tooltip: "{0}% increased movement speed"
+	Tooltip: "{$Common.SummonDamage}"
 }

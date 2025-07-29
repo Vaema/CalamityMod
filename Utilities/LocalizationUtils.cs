@@ -81,6 +81,8 @@ namespace CalamityMod
         public static string GetTextValueFromModItem<T>(string suffix) where T : ModItem => GetTextFromModItem(ModContent.ItemType<T>(), suffix).ToString();
 
         #region Tooltip Format Helper
+        public static string EmbedItemIcon(this int itemID) => $"[i:{itemID}] " + GetItemName(itemID);
+
         public static string FramesToSeconds(this int frame) => Round(frame / 60f, "N2");
 
         public static string ToMph(this float velocity) => Round(velocity * 216000f / 42240f, "N0");
