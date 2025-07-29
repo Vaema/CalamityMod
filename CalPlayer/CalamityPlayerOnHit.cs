@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -632,7 +633,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (astralStarRain && crit && astralStarRainCooldown <= 0)
                 {
-                    astralStarRainCooldown = 60;
+                    astralStarRainCooldown = AstralHelm.StarRainCooldown;
                     for (int n = 0; n < 3; n++)
                     {
                         int projectileType = Utils.SelectRandom(Main.rand, new int[]
@@ -643,7 +644,7 @@ namespace CalamityMod.CalPlayer
                             ProjectileID.StarCannonStar
                         });
 
-                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
+                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(AstralHelm.StarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 12f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -702,7 +703,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (astralStarRain && crit && astralStarRainCooldown <= 0)
                 {
-                    astralStarRainCooldown = 60;
+                    astralStarRainCooldown = AstralHelm.StarRainCooldown;
                     for (int n = 0; n < 3; n++)
                     {
                         int projectileType = Utils.SelectRandom(Main.rand, new int[]
@@ -713,7 +714,7 @@ namespace CalamityMod.CalPlayer
                             ProjectileID.StarCannonStar
                         });
 
-                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
+                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(AstralHelm.StarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 25f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
