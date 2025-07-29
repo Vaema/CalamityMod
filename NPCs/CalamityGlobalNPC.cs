@@ -2645,11 +2645,6 @@ namespace CalamityMod.NPCs
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.25);
                     break;
 
-                case NPCID.ChatteringTeethBomb:
-                    npc.damage = 100;
-                    canBreakPlayerDefense = true;
-                    break;
-
                 case NPCID.LarvaeAntlion:
                     npc.lifeMax = 15;
                     break;
