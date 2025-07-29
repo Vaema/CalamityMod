@@ -61,30 +61,30 @@ AerospecLeggings: {
 
 DesertProwlerHat: {
 	DisplayName: Desert Prowler Hat
-	Tooltip: "{0}% increased rogue critical strike chance"
+	Tooltip: "{$Common.RogueCrit}"
 	SetBonus:
 		'''
-		{0}% increased rogue damage
-		+{1} maximum stealth
-		'''
-	AbilityBrief: Sandsmoke Bomb - Double tap {0} to shroud yourself in a small cloud of sand
-	AbilityDescription:
-		'''
-		While the sand cloud is active, gain increased mobility but heavily reduced defense
-		Using a rogue weapon instantly dispels the sand cloak, but guarantees a supercrit for {0}% damage
-		The super crit applies only as long as the resulting hit wouldn't exceed {1} damage
-		Landing the killing blow on an enemy with this shot shortens the ability's cooldown to {2} seconds
+		+{0} maximum stealth
+		[c/{1}:Sandsmoke Bomb - Press {2} to shroud yourself in a small cloud of sand]
+		[c/CCB648:While the sand cloud is active, gain increased mobility but heavily reduced defense]
+		[c/CCB648:Using a rogue weapon instantly dispels the sand cloak, but guarantees a supercrit for {3}% damage]
+		[c/CCB648:The supercrit applies only as long as the resulting hit wouldn't exceed {4} damage]
+		[c/CCB648:Landing the killing blow on an enemy with this shot shortens the ability's cooldown to {5} seconds]
 		'''
 }
 
 DesertProwlerPants: {
 	DisplayName: Desert Prowler Pants
-	Tooltip: "{0}% increased movement speed and immunity to the Mighty Wind debuff"
+	Tooltip:
+		'''
+		{$Common.RogueCrit}
+		Grants immunity to {$BuffName.WindPushed}
+		'''
 }
 
 DesertProwlerShirt: {
 	DisplayName: Desert Prowler Shirt
-	Tooltip: "{0}% increased rogue critical strike chance"
+	Tooltip: "{$Common.RogueDamage}"
 }
 
 MarniteArchitectHeadgear: {

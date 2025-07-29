@@ -4823,7 +4823,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
-                Player.statDefense -= (int)(Player.statDefense * 0.75);
+                Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }
         #endregion
 

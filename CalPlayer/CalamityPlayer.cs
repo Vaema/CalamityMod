@@ -21,6 +21,7 @@ using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Armor.DesertProwler;
 using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
@@ -3944,6 +3945,8 @@ namespace CalamityMod.CalPlayer
                     WulfrumHat.DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
                 }
             }
+            if (DesertProwlerHat.HasArmorSet(Player) && !Player.HasCooldown(SandsmokeBomb.ID))
+                Player.AddCooldown(SandsmokeBomb.ID, DesertProwlerHat.SmokeCooldown + DesertProwlerHat.SmokeDuration);
         }
         #endregion
 
