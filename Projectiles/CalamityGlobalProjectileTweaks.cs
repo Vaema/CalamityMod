@@ -300,7 +300,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves, reused by Storm Weaver
                 { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
                 { ProjectileID.JavelinHostile, defenseDamage },
                 { ProjectileID.PaladinsHammerHostile, defenseDamage },
