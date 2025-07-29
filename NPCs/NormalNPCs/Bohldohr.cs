@@ -15,7 +15,6 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 80;

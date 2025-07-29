@@ -38,7 +38,6 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 55;
             NPC.width = 60;
             NPC.height = 58;
