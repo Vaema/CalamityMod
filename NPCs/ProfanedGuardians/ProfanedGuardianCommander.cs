@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<ProfanedGuardianBossBar>();
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;
@@ -1262,7 +1262,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 300);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

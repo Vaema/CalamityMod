@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,25 +14,16 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Tin";
 
-        public const float HeadCrit = 4f;
-        public const int ChestLifeRegen = 1;
-        public const float LegsMoveSpeed = 0.05f;
-        public const float SetBonusArmorPen = 5.0f;
-
-        public override void ApplyHeadPieceEffect(Player player) => player.GetCritChance<GenericDamageClass>() += HeadCrit;
-
-        public override void ApplyBodyPieceEffect(Player player) => player.lifeRegen += ChestLifeRegen;
-
-        public override void ApplyLegPieceEffect(Player player) => player.moveSpeed += LegsMoveSpeed;
+        public const float SetBonusCrit = 10f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SetBonusCrit)}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            player.GetArmorPenetration<GenericDamageClass>() += SetBonusArmorPen;
+            player.GetCritChance<GenericDamageClass>() += SetBonusCrit;
         }
     }
 }

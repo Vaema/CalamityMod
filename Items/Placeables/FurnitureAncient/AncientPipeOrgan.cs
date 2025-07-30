@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
                 AddIngredient<BrimstoneSlag>(15).
                 AddIngredient(ItemID.Bone, 4).
                 AddIngredient(ItemID.Book).
-                AddTile<AncientAltar>().
+                AddTile<AshenAltar>().
                 Register();
         }
     }

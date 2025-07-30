@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
 
-            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 40);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 60);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.FurnitureDriftwood
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4); //This Cello has bookcase dimensions
             TileObjectData.newTile.LavaDeath = false;
             TileObjectData.addTile(Type);
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetText("Tiles.PipeOrgan"));
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetText("Tiles.BaroqueCello"));
         }
 
         public override bool CreateDust(int i, int j, ref int type)

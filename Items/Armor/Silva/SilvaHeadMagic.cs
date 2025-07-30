@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.Silva
 
         public override void UpdateEquip(Player player)
         {
-            player.manaCost *= 0.81f;
+            player.manaCost -= 0.19f;
             player.GetDamage<MagicDamageClass>() += 0.23f;
             player.GetCritChance<MagicDamageClass>() += 13;
             player.statManaMax2 += 100;

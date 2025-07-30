@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Astral
@@ -10,6 +11,18 @@ namespace CalamityMod.Items.Armor.Astral
     public class AstralHelm : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float DamageBoost = 0.05f;
+        public static int CritBoost = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 3;
+        public static float SetBonusDamageBoost = 0.1f;
+        public static int SetBonusCritBoost = 10; // NOTE: Tooltip shares this number with damage % as they're equal
+        public static int StarRainCooldown = CalamityUtils.SecondsToFrames(1);
+        public static int StarDamage = 120;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -31,20 +44,20 @@ namespace CalamityMod.Items.Armor.Astral
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusDamageBoost.ToPercent(), StarRainCooldown.FramesToSeconds());
             var modPlayer = player.Calamity();
             modPlayer.astralStarRain = true;
             modPlayer.omniscience = true;
-            player.GetDamage<GenericDamageClass>() += 0.1f;
-            player.maxMinions += 3;
-            player.GetCritChance<GenericDamageClass>() += 10;
+            player.maxMinions += SetBonusMinionSlotBoost;
+            player.GetDamage<GenericDamageClass>() += SetBonusDamageBoost;
+            player.GetCritChance<GenericDamageClass>() += SetBonusCritBoost;
             player.Calamity().wearingRogueArmor = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.05f;
-            player.GetCritChance<GenericDamageClass>() += 10;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
         }
 
         public override void AddRecipes()

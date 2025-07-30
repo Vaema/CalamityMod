@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void SetDefaults()
         {
-            NPC.damage = 110; // 220
+            NPC.damage = 100; // 200
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
             AIType = -1;

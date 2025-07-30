@@ -89,8 +89,8 @@ namespace CalamityMod.NPCs.Cryogen
             }
         }
 
-        public static int IceBlastDamage = 22; // 88; Also applies to GFB darts
-        public static int IceRainDamage = 22; // 88; Also applies to GFB darts
+        public static int IceBlastDamage = 23; // 92; Also applies to GFB darts
+        public static int IceRainDamage = 23; // 92; Also applies to GFB darts
         public static int IceBombDamage = 30; // 120; Also applies to GFB fireblasts
 
         public override void SetDefaults()

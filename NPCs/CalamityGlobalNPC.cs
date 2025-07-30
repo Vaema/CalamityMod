@@ -2590,42 +2590,14 @@ namespace CalamityMod.NPCs
                 case NPCID.EyeofCthulhu:
                 case NPCID.BrainofCthulhu:
                 case NPCID.QueenBee:
-                case NPCID.Crawdad:
-                case NPCID.Crawdad2:
-                case NPCID.ManEater:
-                case NPCID.AngryTrapper:
-                case NPCID.Snatcher:
-                case NPCID.SpikeBall:
-                case NPCID.DesertBeast:
-                case NPCID.BoneLee:
                 case NPCID.Paladin:
                 case NPCID.BigMimicCorruption:
                 case NPCID.BigMimicCrimson:
                 case NPCID.BigMimicHallow:
-                case NPCID.DiggerHead:
-                case NPCID.SeekerHead:
-                case NPCID.DuneSplicerHead:
-                case NPCID.SolarCrawltipedeHead:
-                case NPCID.Mimic:
-                case NPCID.SandShark:
-                case NPCID.SandsharkCorrupt:
-                case NPCID.SandsharkCrimson:
-                case NPCID.SandsharkHallow:
-                case NPCID.Butcher:
-                case NPCID.DeadlySphere:
                 case NPCID.Mothron:
-                case NPCID.Reaper:
-                case NPCID.Psycho:
-                case NPCID.PresentMimic:
-                case NPCID.Yeti:
-                case NPCID.NebulaBeast:
-                case NPCID.SolarCorite:
-                case NPCID.StardustWormHead:
                 case NPCID.EaterofWorldsHead:
                 case NPCID.SkeletronHead:
                 case NPCID.WallofFlesh:
-                case NPCID.TheHungry:
-                case NPCID.TheHungryII:
                 case NPCID.Spazmatism:
                 case NPCID.Retinazer:
                 case NPCID.TheDestroyer:
@@ -2640,19 +2612,13 @@ namespace CalamityMod.NPCs
                 case NPCID.GolemFistLeft:
                 case NPCID.GolemFistRight:
                 case NPCID.CultistDragonHead:
-                case NPCID.AncientCultistSquidhead:
-                case NPCID.AncientLight:
                 case NPCID.DD2OgreT2:
                 case NPCID.DD2OgreT3:
                 case NPCID.DD2Betsy:
                 case NPCID.PumpkingBlade:
                 case NPCID.SantaNK1:
                 case NPCID.DukeFishron:
-                case NPCID.RockGolem:
-                case NPCID.BloodEelHead:
                 case NPCID.BloodNautilus:
-                case NPCID.GoblinShark:
-                case NPCID.ZombieMerman:
                 case NPCID.HallowBoss:
                 case NPCID.QueenSlimeBoss:
                 case NPCID.Deerclops:
@@ -2661,10 +2627,6 @@ namespace CalamityMod.NPCs
 
                 // Enemies that should have coldDamage set to true
                 case NPCID.IceMimic:
-                    canBreakPlayerDefense = true;
-                    npc.coldDamage = true;
-                    break;
-
                 case NPCID.IceBat:
                 case NPCID.IceTortoise:
                     npc.coldDamage = true;
@@ -2681,11 +2643,6 @@ namespace CalamityMod.NPCs
 
                 case NPCID.BloodSquid:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.25);
-                    break;
-
-                case NPCID.ChatteringTeethBomb:
-                    npc.damage = 100;
-                    canBreakPlayerDefense = true;
                     break;
 
                 case NPCID.LarvaeAntlion:
@@ -2723,8 +2680,6 @@ namespace CalamityMod.NPCs
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                     npc.damage = (int)Math.Round(npc.damage * DesertEnemyStatMultiplier);
                     npc.defDamage = npc.damage;
-                    // Tomb Crawler Head has 0 defense so there is no need to reduce it
-                    canBreakPlayerDefense = true;
                     break;
 
                 case NPCID.TombCrawlerBody:
@@ -5366,14 +5321,16 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.Golem:
-                    target.AddBuff(BuffType<ArmorCrunch>(), 480);
+                    if (CalamityWorld.revenge)
+                        target.AddBuff(BuffType<ArmorCrunch>(), 480);
                     break;
 
                 case NPCID.GolemHead:
                 case NPCID.GolemHeadFree:
                 case NPCID.GolemFistRight:
                 case NPCID.GolemFistLeft:
-                    target.AddBuff(BuffType<ArmorCrunch>(), 240);
+                    if (CalamityWorld.revenge)
+                        target.AddBuff(BuffType<ArmorCrunch>(), 240);
                     break;
 
                 case NPCID.BloodNautilus:

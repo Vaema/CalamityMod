@@ -14,6 +14,7 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
@@ -3979,6 +3980,8 @@ namespace CalamityMod.Projectiles
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += 0.5f;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;
@@ -3996,6 +3999,8 @@ namespace CalamityMod.Projectiles
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += 0.5f;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;
