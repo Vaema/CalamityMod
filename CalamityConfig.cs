@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
+using CalamityMod.Enums;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
@@ -287,8 +288,10 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [DrawTicks]
+        [DefaultValue(SetBonusDoubleTapOptions.Auto)]
+        public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

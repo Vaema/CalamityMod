@@ -3526,19 +3526,16 @@ namespace CalamityMod.CalPlayer
             {
                 PlayerLoader.ArmorSetBonusActivated(Player);
 
-                if (CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap)
+                // Activate vanilla set bonuses
+                if (Player.setVortex && !Player.mount.Active)
+                    Player.vortexStealthActive = !Player.vortexStealthActive;
+
+                if (Player.setForbidden)
                 {
-                    // Activate vanilla set bonuses
-                    if (Player.setVortex && !Player.mount.Active)
-                        Player.vortexStealthActive = !Player.vortexStealthActive;
+                    Player.MinionRestTargetAim();
 
-                    if (Player.setForbidden)
-                    {
-                        Player.MinionRestTargetAim();
-
-                        if (!Player.setForbiddenCooldownLocked)
-                            Player.CommandForbiddenStorm();
-                    }
+                    if (!Player.setForbiddenCooldownLocked)
+                        Player.CommandForbiddenStorm();
                 }
             }
 
@@ -3751,10 +3748,6 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
-            // Don't trigger set bonuses if the config is disabled and the double-tap hotkey was triggered
-            if (!(CalamityKeybinds.ArmorSetBonusHotKey.JustPressed || CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap))
-                return;
-
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
