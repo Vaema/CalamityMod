@@ -975,6 +975,14 @@ namespace CalamityMod.Items
 
             // Pre-Hardmode armor tooltip edits
             #region Pre-Hardmode Armor
+            // Gladiator
+            if (item.type == ItemID.GladiatorHelmet)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
+            if (item.type == ItemID.GladiatorBreastplate)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
+            if (item.type == ItemID.GladiatorLeggings)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
+
             // Jungle
             if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
             {
@@ -1146,18 +1154,14 @@ namespace CalamityMod.Items
 
             EditTooltipByName("SetBonus", (line) => VanillaArmorChangeManager.ApplySetBonusTooltipChanges(item, ref line.Text));
 
-            // Gladiator
-            if (item.type == ItemID.GladiatorHelmet)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
-            if (item.type == ItemID.GladiatorBreastplate)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
-            if (item.type == ItemID.GladiatorLeggings)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
-
             // Forbidden (UNLESS you are wearing the Circlet, which is Summon/Rogue and does not get this line)
             if ((item.type == ItemID.AncientBattleArmorHat || item.type == ItemID.AncientBattleArmorShirt || item.type == ItemID.AncientBattleArmorPants)
                 && !Main.LocalPlayer.Calamity().forbiddenCirclet)
-                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN")));
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(CalamityUtils.GetArmorSetBonusKey()));
+
+            // Vortex (hotkey spoof)
+            if (item.type == ItemID.VortexHelmet || item.type == ItemID.VortexBreastplate || item.type == ItemID.VortexLeggings)
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Vortex").Format(CalamityUtils.GetArmorSetBonusKey()));
             #endregion
 
             // Provide the full stats of every vanilla yoyo

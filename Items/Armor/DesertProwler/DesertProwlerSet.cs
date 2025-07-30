@@ -67,8 +67,7 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public override void UpdateArmorSet(Player player)
         {
             Color AbilityBriefColor = Color.Lerp(new Color(255, 229, 156), new Color(233, 225, 198), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), AbilityBriefColor.Hex3(), hotkey, FreeCrit, BonusDamageCap, LightsOutReset.FramesToSeconds()); //More gets edited in elsewhere
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), AbilityBriefColor.Hex3(), CalamityUtils.GetArmorSetBonusKey(), FreeCrit, BonusDamageCap, LightsOutReset.FramesToSeconds()); //More gets edited in elsewhere
             player.Calamity().wearingRogueArmor = true;
             player.Calamity().rogueStealthMax += SetBonusRogueStealth;
 
