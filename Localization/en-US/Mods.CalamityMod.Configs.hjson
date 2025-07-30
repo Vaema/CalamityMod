@@ -249,7 +249,7 @@ CalamityClientConfig: {
 		Tooltip:
 			'''
 			Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
-			Set to Auto to automatically turn off double-tap as long as {$Keybinds.ArmorSetBonus.DisplayName} is bound.
+			Set to Auto to automatically turn off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
 			'''
 
 		Options: {

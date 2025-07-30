@@ -1,4 +1,6 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Enums;
+using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -99,5 +101,25 @@ namespace CalamityMod
         public static string Round(this float number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
         public static string Round(this double number, string precision = "N4") => float.Parse((number).ToString(precision)).ToString();
         #endregion
+
+        public static string GetArmorSetBonusKey()
+        {
+            ModKeybind setBonusKey = CalamityKeybinds.ArmorSetBonusHotKey;
+            bool hasHotkey = setBonusKey.GetAssignedKeys().Count != 0;
+            string directionKey = (Main.ReversedUpDownArmorSetBonuses ? Language.GetTextValue("Key.UP") : Language.GetTextValue("Key.DOWN"));
+
+            // Allow both
+            if (hasHotkey && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.On)
+                return GetText("Common.BothArmorSetBonusKeys").Format(setBonusKey.TooltipHotkeyString(), directionKey);
+            // Literally bind nothing (mentions the key name to you)
+            else if (!hasHotkey && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return GetTextValue("Common.NoArmorSetBonusKey");
+            // Hotkey only
+            else if (hasHotkey)
+                return GetText("Common.ArmorSetBonusKey").Format(setBonusKey.TooltipHotkeyString());
+            // Double tap only
+            else
+                return GetText("Common.DoubleTapDown").Format(directionKey);
+        }
     }
 }

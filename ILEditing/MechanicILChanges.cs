@@ -322,7 +322,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if ((CalamityKeybinds.ArmorSetBonusHotKey != null && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
                 return;
 
             orig(self, keyDir);
