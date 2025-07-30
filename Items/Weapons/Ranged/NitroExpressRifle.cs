@@ -64,8 +64,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
         {
-            player.Calamity().GeneralScreenShakePower = 2f;
-
             player.velocity += velocity.SafeNormalize(Vector2.UnitX) * -7f;
             if (type == ProjectileID.Bullet)
                 type = ModContent.ProjectileType<NitroShot>();
