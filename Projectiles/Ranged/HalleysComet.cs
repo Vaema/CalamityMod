@@ -91,6 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
                 dust.noGravity = true;
             }
+            Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 15;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)

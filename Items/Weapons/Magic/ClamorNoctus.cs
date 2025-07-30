@@ -38,8 +38,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shoot = ModContent.ProjectileType<ClamorNoctusStar>();
             Item.shootSpeed = 25f;
         }
-
-
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 600);
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float projSpeed = Item.shootSpeed;

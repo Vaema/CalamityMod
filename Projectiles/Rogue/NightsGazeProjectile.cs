@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -29,6 +30,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.MaxUpdates = 2;
         }
 
         private int SplitProjDamage => (int)(Projectile.damage * 0.6f);
@@ -37,26 +39,30 @@ namespace CalamityMod.Projectiles.Rogue
         {
             if (Projectile.ai[0] == 0f)
                 Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.ToRadians(45);
-
-            if (Projectile.Calamity().stealthStrike)
-            {
-                if (Main.rand.NextBool(8))
-                {
-                    int projID = ModContent.ProjectileType<NightsGazeStar>();
-                    int starDamage = SplitProjDamage;
-                    float starKB = 5f;
-                    Vector2 velocity = Projectile.velocity;
-
-                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projID, starDamage, starKB, Projectile.owner, 1f, 0f);
-                    Main.projectile[p].penetrate = 1;
-                }
-            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Voidfrost>(), Projectile.timeLeft);
+            
             OnHitEffects();
+            var owner = Main.player[Projectile.owner];
+            if (Projectile.Calamity().stealthStrike && owner.Calamity().AvaliableStarburst >= 15)
+            {
+                foreach (var item in Main.ActiveProjectiles)
+                {
+                    if (item.type == ModContent.ProjectileType<NightsGazeStar>() && item.owner == Projectile.owner)
+                    {
+                        item.ai[2] = target.whoAmI + 1;
+                        item.timeLeft = Math.Max(300,item.timeLeft);
+                        item.penetrate = 1;
+                        item.usesIDStaticNPCImmunity = false;
+                        item.usesLocalNPCImmunity = true;
+                        item.localNPCHitCooldown = 10;
+                    }
+                }
+                owner.Calamity().StratusStarburst -= 15;
+            }
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
@@ -68,16 +74,22 @@ namespace CalamityMod.Projectiles.Rogue
         private void OnHitEffects()
         {
             int onHitCount = 6;
-            int chanceOfStar = 2;
             float spread = 20f;
             int projectileDamage = SplitProjDamage;
             float kb = 5f;
             int sparkID = ModContent.ProjectileType<NightsGazeSpark>();
             int starID = ModContent.ProjectileType<NightsGazeStar>();
+            if (Projectile.Calamity().stealthStrike)
+                for (int i = 0; i < 1; i++)
+                {
+                    int projID = ModContent.ProjectileType<LyraConstellation>();
+                        Vector2 velocity = Vector2.Zero;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, projID, projectileDamage, kb, Projectile.owner);
+                }
             for (int i = 0; i < onHitCount; i++)
             {
-                int projID = Main.rand.NextBool(chanceOfStar) ? starID : sparkID;
-                Vector2 velocity = Projectile.oldVelocity.RotateRandom(MathHelper.ToRadians(spread));
+                int projID = i % 3 == 0 ? starID : sparkID;
+                Vector2 velocity = Projectile.oldVelocity.RotateRandom(MathHelper.ToRadians(spread)) * 0.5f;
                 float speed = Main.rand.NextFloat(1.5f, 2f);
                 float moveDuration = Main.rand.Next(5, 15);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity * speed, projID, projectileDamage, kb, Projectile.owner, 0f, moveDuration);
@@ -86,6 +98,9 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item62 with { Volume = SoundID.Item62.Volume * 0.6f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item68 with { Volume = SoundID.Item68.Volume * 0.2f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item122 with { Volume = SoundID.Item122.Volume * 0.4f }, Projectile.position);
+            Main.player[Projectile.owner].Calamity().StratusStarburst++;
+            if (Main.player[Projectile.owner].Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                Main.player[Projectile.owner].Calamity().StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

@@ -1,0 +1,113 @@
+﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Projectiles.Ranged
+{
+    public class HalleysStarburst : ModProjectile, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "CalamityMod/Projectiles/Typeless/StratusStarburst";
+        Color drawColor = Color.Black;
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Type] = 6;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 24;
+            Projectile.friendly = true;
+            Projectile.tileCollide = false;
+            Projectile.ignoreWater = true;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.penetrate = 1;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 300 * Projectile.MaxUpdates;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.frame = Main.rand.Next(0, 6);
+            Projectile.scale = 0.75f;
+        }
+
+        public override void AI()
+        {
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter > 5)
+            {
+                Projectile.frame++;
+                Projectile.frameCounter = 0;
+            }
+            if (Projectile.frame > 5)
+                Projectile.frame = 0;
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (drawColor == Color.Black)
+            {
+                switch (Main.rand.Next(1, 7))
+                {
+                    case 1:
+                        drawColor = Color.HotPink;
+                        break;
+                    case 2:
+                        drawColor = Color.Yellow;
+                        break;
+                    case 3:
+                        drawColor = Color.LimeGreen;
+                        break;
+                    case 4:
+                        drawColor = Color.SkyBlue;
+                        break;
+                    case 5:
+                        drawColor = Color.Lavender;
+                        break;
+                    case 6:
+                        drawColor = Color.White;
+                        break;
+                }
+            }
+            lightColor = drawColor;
+            return base.PreDraw(ref lightColor);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            //Both Elf Melter and Flamethrower in vanilla do 20 seconds of their debuff. This is done to match.
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), CalamityUtils.SecondsToFrames(20));
+            SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
+
+            // Dust emission on hit
+            for (int i = 0; i < 14; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 172 : 206, Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(1.1f, 1.9f);
+                dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
+                dust.noGravity = true;
+            }
+            Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 7;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 450);
+            SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
+
+            // Dust emission on hit
+            for (int i = 0; i < 14; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(3) ? 172 : 206, Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(1.1f, 1.9f);
+                dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
+                dust.noGravity = true;
+            }
+        }
+    }
+}

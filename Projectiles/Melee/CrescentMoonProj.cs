@@ -25,14 +25,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
-            Projectile.timeLeft = 140;
+            Projectile.penetrate = 2;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.localNPCHitCooldown = 60;
             Projectile.extraUpdates = 2;
             Projectile.aiStyle = ProjAIStyleID.Sickle;
             AIType = ProjectileID.DeathSickle;
+            Projectile.timeLeft = 240 * Projectile.MaxUpdates;
         }
 
         public override void AI()
@@ -46,8 +46,8 @@ namespace CalamityMod.Projectiles.Melee
                     SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
                 }
             }
-
-            CalamityUtils.HomeInOnNPC(Projectile, true, 375f, 12f, 20f);
+            if (Projectile.timeLeft < 225 * Projectile.MaxUpdates)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)

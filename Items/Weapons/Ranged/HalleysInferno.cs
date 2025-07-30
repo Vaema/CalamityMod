@@ -5,6 +5,7 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,12 +43,54 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+        }
+
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
 
         public override Vector2? HoldoutOffset() => new Vector2(-15, 0);
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 600);
+        }
 
-        public override void HoldItem(Player player) => player.scope = true;
+        public override bool AltFunctionUse(Player player)
+        {
+            if (player.Calamity().AvaliableStarburst > 0)
+            return true;
+            return false;
+        }
+
+        public override bool? UseItem(Player player)
+        {
+            return base.UseItem(player);
+        }
+
+        public override void UseItemFrame(Player player)
+        {
+            if (player.altFunctionUse == 2 && (player.itemAnimation > 4 || player.itemTime > 4))
+            {
+                player.itemAnimation = 2;
+                player.itemTime = 2;
+            }
+        }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            if (player.altFunctionUse == 2)
+            {
+                if (player.Calamity().StratusStarburst > 0)
+                {
+                    Projectile.NewProjectile(source,position,velocity*1.5f, ModContent.ProjectileType<HalleysStarburst>(), damage,knockback,player.whoAmI);
+                    player.Calamity().StratusStarburst--;
+                }
+                return false;
+            }
+            return base.Shoot(player, source, position, velocity, type, damage, knockback);
+        }
 
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
 

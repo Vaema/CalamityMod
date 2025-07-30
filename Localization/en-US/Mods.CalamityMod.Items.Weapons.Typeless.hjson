@@ -69,3 +69,8 @@ StarStruckWater: {
 	DisplayName: Star Struck Water
 	Tooltip: Spreads the Astral Infection to some blocks
 }
+
+StratusSphere: {
+	DisplayName: Stratus Sphere
+	Tooltip: ""
+}

@@ -27,12 +27,12 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.extraUpdates = 2;
-            Projectile.timeLeft = 135 * Projectile.MaxUpdates;
+            Projectile.timeLeft = 240 * Projectile.MaxUpdates;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 13;
+            Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 10;
         }
 
         public override void AI()
@@ -47,7 +47,8 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
             Projectile.rotation += Projectile.direction * 0.55f;
-            CalamityUtils.HomeInOnNPC(Projectile, true, 250f, 10f, 25f);
+            if (Projectile.timeLeft < 230 * Projectile.MaxUpdates)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 10f, 25f);
         }
 
         public override bool PreDraw(ref Color lightColor)

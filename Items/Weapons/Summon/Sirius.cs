@@ -1,7 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Linq;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
+using log4net.Util;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,12 +16,12 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 6f;
+        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 1f;
 
         public override void SetDefaults()
         {
             Item.width = Item.height = 62;
-            Item.damage = 600;
+            Item.damage = 300;
             Item.useAnimation = Item.useTime = 10;
             Item.mana = 10;
             Item.knockBack = 10f;
@@ -32,15 +34,29 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.noMelee = true;
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && player.maxMinions >= 6;
+        public override bool CanUseItem(Player player) => true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            CalamityUtils.KillShootProjectiles(true, type, player);
-            int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
-            return false;
+            if (player.ownedProjectileCounts[type] > 0)
+            {
+                Projectile sirius = null;
+                foreach (var item in Main.ActiveProjectiles)
+                {
+                    if (item.type == type && item.owner == player.whoAmI)
+                    {
+                        if (item.type == type)
+                            sirius = item;
+                    }
+                }
+                if (sirius != null)
+                {
+                    sirius.ai[1]++;
+                    
+                }
+                return false;
+            } else
+                return true;
         }
 
         public override void AddRecipes()

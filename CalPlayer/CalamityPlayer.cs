@@ -175,8 +175,25 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
-
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+
+        /// <summary>
+        /// How many Starbursts the player has
+        /// </summary>
+        public int StratusStarburst = 0;
+        public int AvaliableStarburst = 0;
+        public static int MaxStratusStarburst = 100;
+        /// <summary>
+        /// Used for Halley's Inferno to generate starbursts
+        /// </summary>
+        public int HalleyHitCooldown = 0;
+        public float StarburstSpawnFrameCounter = 0;
+        /// <summary>
+        /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
+        /// </summary>
+        public int HasStratusItemCooldown = 0;
+
+        public List<StarburstEntity> StarburstEntities = new();
         #endregion
 
         #region Speedrun Timer
@@ -1988,7 +2005,7 @@ namespace CalamityMod.CalPlayer
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
-            int percentMaxLifeIncrease = 0;
+                int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2038,6 +2055,78 @@ namespace CalamityMod.CalPlayer
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
+            //Stratus Starburst amount management
+            if (HalleyHitCooldown > 0)
+            {
+                if (HalleyHitCooldown > 350)
+                    HalleyHitCooldown = 350;
+                StarburstSpawnFrameCounter += MathF.Pow(HalleyHitCooldown* 0.01f, 0.5f) * 0.03f;
+                HalleyHitCooldown--;
+            }
+            if (StarburstSpawnFrameCounter >= 1)
+            {
+                StratusStarburst++;
+                StarburstSpawnFrameCounter--;
+            }
+            if (HasStratusItemCooldown > 0)
+                HasStratusItemCooldown--;
+            else if (StratusStarburst > 0)
+                StratusStarburst--;
+            if (StratusStarburst > MaxStratusStarburst)
+                StratusStarburst = MaxStratusStarburst;
+            var starpower = 0;
+            var avaliableStarpower = 0;
+            var oneCount = 0;
+            Vector2 starSpawnPos = Player.Center;
+            for (var i = 0; i < StarburstEntities.Count(); i++)
+            {
+                starpower += StarburstEntities[i].value;
+                if (StarburstEntities[i].AICooldown <= 0)
+                    avaliableStarpower += StarburstEntities[i].value;
+                if (starpower > StratusStarburst)
+                {
+                    var deadStar = StarburstEntities[i];
+                    starpower -= deadStar.value;
+                    StarburstEntities.RemoveAt(i);
+                    starSpawnPos = deadStar.Center;
+                    i--;
+                    continue;
+                }
+                if (StarburstEntities[i].value == 1)
+                    oneCount++;
+            }
+            while (starpower < StratusStarburst)
+            {
+                StarburstEntities.Add(new(starSpawnPos));
+                oneCount++;
+                starpower++;
+                avaliableStarpower++;
+            }
+            while (oneCount >= 10)
+            {
+                var bigStar = StarburstEntities.First(x => x.value == 1);
+                bigStar.value = 10;
+                for (var i = 0; i < 9; i++)
+                {
+                    var star = StarburstEntities.Last(x => x.value == 1);
+                    bigStar.MergeChildren.Add(star);
+                    star.MergeTarget = bigStar;
+                    StarburstEntities.Remove(star);
+                }
+                oneCount -= 10;
+            }
+            AvaliableStarburst = avaliableStarpower;
+            if (HasStratusItemCooldown > 0)
+            {
+                if (cooldowns.TryGetValue(Starburst.ID, out var cooldown))
+                {
+                    cooldown.timeLeft = MaxStratusStarburst - StratusStarburst;
+                }
+                else
+                {
+                    Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
+                }
+            }
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
@@ -4509,6 +4598,24 @@ namespace CalamityMod.CalPlayer
             #endregion
             
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
+        }
+
+        public override void PostUpdate()
+        {
+            for (var i = 0; i < StarburstEntities.Count; i++)
+            {
+                StarburstEntity star = StarburstEntities[i];
+                star.AI(Player,i);
+                star.UpdatePosition();
+                star.UpdateAnimation();
+                var safeStarLooper = star.MergeChildren.ToList();
+                foreach (var ministar in safeStarLooper)
+                {
+                    ministar.AI(Player, i);
+                    ministar.UpdatePosition();
+                    ministar.UpdateAnimation();
+                }
+            }
         }
         #endregion
 

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -32,7 +33,10 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool MeleePrefix() => true;
-
+        public override void HoldItem(Player player)
+        {
+            player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 600);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().

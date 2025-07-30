@@ -4,10 +4,13 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -57,6 +60,24 @@ namespace CalamityMod.CalPlayer
 
             CalamityPlayer calamityPlayer = Player.Calamity();
 
+            if (StarburstEntities.Count > 0)
+            {
+                var tex = TextureAssets.Projectile[ModContent.ProjectileType<HalleysStarburst>()].Value;
+                foreach (StarburstEntity star in StarburstEntities)
+                {
+                    var color = star.color;
+                    var value = star.value;
+                    value -= star.MergeChildren.Count;
+                    var ScaleMod = MathHelper.Lerp(0.6f,1f,value/10f);
+                    Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, tex.Frame(1,6,0,star.frame), color * 0.3f, 0, new Vector2(6,6.5f), star.scale * ScaleMod, SpriteEffects.None, 1);
+                    foreach (var ministar in star.MergeChildren)
+                    {
+
+                        ScaleMod = MathHelper.Lerp(0.6f, 1f, ministar.value / 10f);
+                        Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, tex.Frame(1, 6, 0, ministar.frame), ministar.color * 0.3f, 0, new Vector2(6, 6.5f), ministar.scale * ScaleMod, SpriteEffects.None, 1);
+                    }
+                }
+            }
             // Dust modifications while high.
             if (calamityPlayer.trippy)
             {
