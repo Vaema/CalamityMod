@@ -316,6 +316,12 @@ namespace CalamityMod.ILEditing
 
         private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
+
             if ((CalamityKeybinds.ArmorSetBonusHotKey != null && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
                 return;
 
