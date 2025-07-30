@@ -783,18 +783,11 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HandOfCreation)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
-            // Frozen Turtle Shell rebalance.
-            if (item.type == ItemID.FrozenTurtleShell)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
-            if (item.type == ItemID.FrozenShield)
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
             // Ale and Sake rebalance and Alcohol Poisoning.
             if (item.type == ItemID.Ale || item.type == ItemID.Sake)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AleSake"));
 
-            //Flame Waker Boots buff.
+            // Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));
 
