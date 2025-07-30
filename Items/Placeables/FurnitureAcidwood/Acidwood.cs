@@ -1,11 +1,13 @@
-﻿using CalamityMod.Items.Placeables.FurnitureMonolith;
+﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Walls;
+using CalamityMod.Tiles.Abyss;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Tiles.FurnitureAcidwood;
 
-namespace CalamityMod.Items.Placeables.Astral
+namespace CalamityMod.Items.Placeables.FurnitureAcidwood
 {
-    public class AstralMonolith : ModItem, ILocalizedModType
+    public class Acidwood : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
@@ -14,24 +16,22 @@ namespace CalamityMod.Items.Placeables.Astral
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Wood;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Astral.AstralMonolith>());
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<AcidwoodTile>());
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {
-            // It's not really wood... but it comes from trees!
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.Wood;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AstralMonolithWall>(4).
-                AddTile(TileID.WorkBenches).
+                AddIngredient<AcidwoodPlatform>(2).
                 DisableDecraft().
                 Register();
-
             CreateRecipe().
-                AddIngredient<MonolithPlatform>(2).
+                AddIngredient<AcidwoodWallItem>(4).
+                AddTile(TileID.WorkBenches).
                 DisableDecraft().
                 Register();
         }

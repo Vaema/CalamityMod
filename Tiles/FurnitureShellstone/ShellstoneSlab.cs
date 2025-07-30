@@ -3,8 +3,9 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 using CalamityMod.Systems;
+using CalamityMod.Tiles.SunkenSea;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.FurnitureShellstone
 {
     public class ShellstoneSlab : ModTile
     {

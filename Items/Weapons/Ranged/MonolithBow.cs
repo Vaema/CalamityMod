@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.FurnitureMonolith;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using CalamityMod.Systems;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.FurnitureNavystone
 {
     public class PolishedNavystoneBrick : ModTile
     {

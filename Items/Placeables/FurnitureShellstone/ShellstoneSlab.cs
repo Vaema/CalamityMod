@@ -1,8 +1,8 @@
 ﻿using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-namespace CalamityMod.Items.Placeables.SunkenSea
+using CalamityMod.Items.Placeables.SunkenSea;
+namespace CalamityMod.Items.Placeables.FurnitureShellstone
 {
     public class ShellstoneSlab : ModItem, ILocalizedModType
     {
@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.ShellstoneSlab>());
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureShellstone.ShellstoneSlab>());
 
         public override void AddRecipes()
         {

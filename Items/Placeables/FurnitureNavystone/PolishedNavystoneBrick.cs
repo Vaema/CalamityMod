@@ -1,7 +1,8 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Placeables.SunkenSea;
 
-namespace CalamityMod.Items.Placeables.SunkenSea
+namespace CalamityMod.Items.Placeables.FurnitureNavystone
 {
     public class PolishedNavystoneBrick : ModItem, ILocalizedModType
     {
@@ -11,7 +12,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             Item.ResearchUnlockCount = 100;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.PolishedNavystoneBrick>());
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureNavystone.PolishedNavystoneBrick>());
 
         public override void AddRecipes()
         {

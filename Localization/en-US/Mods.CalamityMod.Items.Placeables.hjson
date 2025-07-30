@@ -4623,3 +4623,8 @@ MiniAgedFloodlightItem: {
 	DisplayName: Mini Aged Floodlight
 	Tooltip: ""
 }
+
+AridSoil: {
+	DisplayName: Arid Soil
+	Tooltip: ""
+}

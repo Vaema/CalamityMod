@@ -5,6 +5,7 @@ using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;

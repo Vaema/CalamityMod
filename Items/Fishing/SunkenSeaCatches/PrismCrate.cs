@@ -1,4 +1,4 @@
-using CalamityMod.Tiles.SunkenSea;
+﻿using CalamityMod.Tiles.SunkenSea;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
             {
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.Navystone>(), 1, 20, 50),
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>(), 1, 20, 50),
-                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.SunkenSea.Driftwood>(), 1, 20, 50)
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
             }));
 
             itemLoot.AddBiomeCrateLootRules();

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.SunkenSea;
+﻿using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
