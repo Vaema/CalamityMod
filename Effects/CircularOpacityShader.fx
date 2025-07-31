@@ -15,6 +15,8 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float4 color = tex2D(baseTexture, coords);
     
     // Fade out from the edges of the texture to the middle depending on the cutoff value.
+    // "fadeoutPower" values which vary from 1 will affect how strong the edges fade while also increasing the brightness of 
+    // the non-faded parts of the image to the middle. Use this wisely.
     if (-polarCoords.y < opacityCutoffValue)
         color.rgba *= pow(-polarCoords.y / (polarCoords.y - opacityCutoffValue), -fadeoutPower);
    

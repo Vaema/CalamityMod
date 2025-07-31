@@ -6,6 +6,7 @@ using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
@@ -717,7 +718,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                                 // Disable teleports
                                 if (teleportTimer > 0)
                                 {
-                                    GetRiftLocation();
+                                    GetRiftLocation(true);
                                     teleportTimer = 0;
                                 }
                             }
@@ -2237,16 +2238,17 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
         {
             if (teleportTimer > 0 || player.dead || !player.active)
                 return;
+
             if (NPC.ai[3] < 2)
-            {
                 NPC.ai[3] = 3;
-            }
+
+            int baseTeleportTime = ((CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal);
+            if ((CalamityWorld.death || BossRushEvent.BossRushActive) && NPC.life / (float)NPC.lifeMax < 0.25f && NPC.ai[3] < 8 && NPC.ai[3] > 3)
+                baseTeleportTime -= 45;
+
             if (!phase2Transition)
-                teleportTimer = (CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal;
-            if ((CalamityWorld.death || BossRushEvent.BossRushActive) && NPC.life / (float)NPC.lifeMax < 0.25f && NPC.ai[3] < 8 && NPC.ai[3] > 3) 
-            {
-                teleportTimer -= 45; //Much faster for the first 3 dashes in death.
-            }
+                teleportTimer = baseTeleportTime;
+            
             SoundEngine.PlaySound(RiftOpenSound with {Volume = 1.5f}, player.Center);
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -2260,10 +2262,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 Vector2 targetVector = player.Center + player.velocity.SafeNormalize(Vector2.UnitX) * distance + new Vector2(Main.rand.Next(-randomRange, randomRange + 1), Main.rand.Next(-randomRange, randomRange + 1));
                 int rift = Projectile.NewProjectile(NPC.GetSource_FromAI(), targetVector, Vector2.Zero, ModContent.ProjectileType<DoGTeleportRift>(), 0, 0f, Main.myPlayer, NPC.whoAmI);
                 if (Main.projectile.IndexInRange(rift))
-                {
-                    int timeForPhaseTransition = ((CalamityWorld.death || BossRushEvent.BossRushActive) ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal);
-                    Main.projectile[rift].ModProjectile<DoGTeleportRift>().RiftLifetime = phase2Transition ? timeForPhaseTransition : teleportTimer;
-                }
+                    Main.projectile[rift].ModProjectile<DoGTeleportRift>().RiftLifetime = baseTeleportTime;
 
                 // GFB, spawn a ton of fake rifts alongside the real one.
                 if (Main.zenithWorld)
@@ -2276,7 +2275,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         if (Main.projectile.IndexInRange(faker))
                         {
                             Main.projectile[faker].ModProjectile<DoGTeleportRift>().FakeRift = true;
-                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().RiftLifetime = teleportTimer;
+                            Main.projectile[faker].ModProjectile<DoGTeleportRift>().RiftLifetime = baseTeleportTime;
                         }
                     }
                 }
@@ -2285,7 +2284,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
 
         private void Teleport(Player player, bool death, bool revenge, bool expertMode, bool phase5)
         {
-            Vector2 newPosition = GetRiftLocation();
+            Vector2 newPosition = GetRiftLocation(true);
 
             if ((!AwaitingPhase2Teleport && (player.dead || !player.active)) || newPosition == default)
                 return;
@@ -2467,30 +2466,21 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             DeathAnimationTimer++;
         }
 
-        //public Vector2 GetRiftLocation()
-        private Vector2 GetRiftLocation()
+        public Vector2 GetRiftLocation(bool activateRift = false)
         {
             Vector2 realSpot = Vector2.Zero;
             foreach (Projectile proj in Main.ActiveProjectiles)
             {
                 if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
                 {
-                    realSpot = proj.Center;
-                    // Safeguard for if the rift doesn't activate at its designated time.
-                    proj.ModProjectile<DoGTeleportRift>().SwitchAIStates();
-                }
-            }
-            return realSpot;
-        }
+                    if (proj.ModProjectile is DoGTeleportRift rift && !rift.FakeRift)
+                    {
+                        realSpot = proj.Center;
 
-        public Vector2 GetRiftLocationSafe()
-        {
-            Vector2 realSpot = Vector2.Zero;
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                if (proj.type == ModContent.ProjectileType<DoGTeleportRift>())
-                {
-                    realSpot = proj.Center;
+                        // Safeguard for if the rift doesn't activate at its designated time.
+                        if (activateRift)
+                            proj.ModProjectile<DoGTeleportRift>().SwitchAIStates();
+                    }
                 }
             }
             return realSpot;
@@ -2509,16 +2499,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             {
                 NPC.Opacity = 1f;
                 return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureP2_Full.Value, DevourerofGodsBody.TextureP2.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
-            }
-
-            float disintegrationFactor = DeathAnimationTimer / 800f;
-            if (disintegrationFactor > 0f)
-            {
-                spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseOpacity(disintegrationFactor);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseSaturation(NPC.whoAmI);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseImage0("Images/Misc/Perlin");
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].Apply();
             }
 
             SpriteEffects spriteEffects = (NPC.spriteDirection == 1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -2543,7 +2523,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 spriteBatch.Draw(mainJawGlowTexture, jawDrawPosition, null, NPC.GetAlpha(Color.White), NPC.rotation + JawRotation * i, jawOrigin, NPC.scale, jawSpriteEffect, 0f);
 
                 // Draw the additional special jaw textures above these for the Rift Dash attack.
-                if (GodSlayerDashJawFadeProgress > 0.02f && disintegrationFactor <= 0f)
+                if (GodSlayerDashJawFadeProgress > 0.02f && !DoGDeathAnimationRenderer.ValidToDraw(NPC))
                 {
                     spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
                     {
@@ -2567,9 +2547,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             mainGlowTexture = actuallyInPhaseTwo ? TextureP2_Glow_Cyan.Value : Texture_Glow_Cyan.Value;
             glowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.5f);
             spriteBatch.Draw(mainGlowTexture, drawPosition, NPC.frame, NPC.GetAlpha(glowmaskColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-
-            if (disintegrationFactor > 0f)
-                spriteBatch.ExitShaderRegion();
 
             return false;
         }

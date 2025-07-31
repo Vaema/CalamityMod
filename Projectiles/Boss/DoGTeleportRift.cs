@@ -4,6 +4,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Effects;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
+using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -19,6 +20,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/NPCHit/CryogenPhaseTransitionCrack");
 
+        // GFB exclusive; DoG can spawn fake rifts on that seed to confuse the player.
         public bool FakeRift;
 
         public int RiftLifetime;
@@ -96,7 +98,7 @@ namespace CalamityMod.Projectiles.Boss
                         {
                             Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(8f, 12f) * effectsLifetimeInterpolant * 0.7f;
                             float sparkScale = Main.rand.NextFloat(1.2f, 1.6f) * effectsLifetimeInterpolant * 0.62f;
-                            Color sparkColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, new Color(0, 221, 250), new(117, 21, 161)), Color.White, 0.65f);
+                            Color sparkColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, DoGSky.DoGLightBlue, DoGSky.DoGTwlight), Color.White, 0.65f);
                             SparkParticle crackSpark = new(Projectile.Center, sparkVelocity, false, Main.rand.Next(30, 45), sparkScale, sparkColor);
                             GeneralParticleHandler.SpawnParticle(crackSpark);
                         }
@@ -105,7 +107,7 @@ namespace CalamityMod.Projectiles.Boss
                         {
                             Vector2 lightVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(12f, 14f) * effectsLifetimeInterpolant * 0.5f;
                             float lightScale = Main.rand.NextFloat(1.2f, 1.6f) * effectsLifetimeInterpolant * 0.62f;
-                            Color lightColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, new Color(0, 221, 250), new(117, 21, 161)), Color.White, 0.65f);
+                            Color lightColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, DoGSky.DoGLightBlue, DoGSky.DoGTwlight), Color.White, 0.65f);
                             SquishyLightParticle crackLight = new(Projectile.Center, lightVelocity, lightScale, lightColor, Main.rand.Next(30, 45));
                             GeneralParticleHandler.SpawnParticle(crackLight);
                         }
@@ -113,23 +115,21 @@ namespace CalamityMod.Projectiles.Boss
                         CalamityUtils.AddScreenshakeAt(Projectile.Center, 6f * effectsLifetimeInterpolant * 0.8f);
                     }
 
-                    CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f * effectsLifetimeInterpolant, 45);
+                    float brightnessMultiplier = FakeRift ? 0.75f : 1f;
+                    CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f * effectsLifetimeInterpolant, 45);
                     GeneralParticleHandler.SpawnParticle(shineExplosion2);
 
                     // Increase the scale and exposure of the actual crack at each interval.
-                    CrackScale += 0.45f * effectsLifetimeInterpolant * 0.75f;
+                    CrackScale += 0.525f * effectsLifetimeInterpolant * 0.75f;
                     MaxExposure = MathHelper.Clamp(MaxExposure + 0.25f * effectsLifetimeInterpolant, 0f, 0.95f);
                 }
 
                 // Perform the explosion right at the point where DoG emerges.
                 if (Timer >= RiftLifetime)
-                {
                     SwitchAIStates();
-                    AIState = 1;
-                }
 
-                if (Projectile.timeLeft < 30)
-                    Projectile.timeLeft = 30;
+                if (Projectile.timeLeft < 45)
+                    Projectile.timeLeft = 45;
 
                 CrackExposure = MathHelper.Lerp(CrackExposure, MaxExposure, 0.075f);
                 Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.05f, 0f, 1f);
@@ -139,8 +139,8 @@ namespace CalamityMod.Projectiles.Boss
             // Post-explosion, slowly fade out.
             if (AIState == 1f)
             {
-                Projectile.Opacity = MathHelper.Lerp(1f, 0f, Timer / RiftLifetime);
-                Projectile.scale = MathHelper.Lerp(1f, 0f, Timer / RiftLifetime);
+                Projectile.Opacity = MathHelper.Lerp(1f, 0f, Timer / 45f);
+                CrackExposure = MathHelper.Lerp(MaxExposure, 0f, Timer / 45f);
             }
 
             Timer++;
@@ -150,6 +150,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             AIState = 1f;
             Timer = 0f;
+            CrackScale += 3f;
             Projectile.timeLeft = 30;
             SpawnExplosionVisuals();
             Projectile.netUpdate = true;
@@ -184,7 +185,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(12f, 16f);
                     float sparkScale = Main.rand.NextFloat(1.8f, 2f);
-                    Color sparkColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, new Color(0, 221, 250), new(117, 21, 161)), Color.White, 0.65f);
+                    Color sparkColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, DoGSky.DoGLightBlue, DoGSky.DoGTwlight), Color.White, 0.65f);
                     SparkParticle crackSpark = new(Projectile.Center, sparkVelocity, false, Main.rand.Next(30, 45), sparkScale, sparkColor);
                     GeneralParticleHandler.SpawnParticle(crackSpark);
                 }
@@ -193,22 +194,21 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 lightVelocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(16f, 20f);
                     float lightScale = Main.rand.NextFloat(1.8f, 2f);
-                    Color lightColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, new Color(0, 221, 250), new(117, 21, 161)), Color.White, 0.65f);
+                    Color lightColor = Color.Lerp(Utils.SelectRandom(Main.rand, Color.Fuchsia, DoGSky.DoGLightBlue, DoGSky.DoGTwlight), Color.White, 0.65f);
                     SquishyLightParticle crackLight = new(Projectile.Center, lightVelocity, lightScale, lightColor, Main.rand.Next(30, 45));
                     GeneralParticleHandler.SpawnParticle(crackLight);
                 }
 
                 // Explosion visuals.
-                Color brightTwlight = Color.Lerp(new(109, 21, 150), Color.White, 0.15f);
                 for (int i = 0; i < 3; i++)
                 {
-                    CustomPulse plasmaExplosion = new(Projectile.Center, Vector2.Zero, brightTwlight * 0.8f * brightnessMultiplier, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 1.25f + i * 0.05f, 45);
+                    CustomPulse plasmaExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * 0.8f * brightnessMultiplier, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 1.25f + i * 0.05f, 45);
                     GeneralParticleHandler.SpawnParticle(plasmaExplosion);
                 }
                 
-                CustomPulse shineExplosion = new(Projectile.Center, Vector2.Zero, brightTwlight * 0.75f * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.75f, 45);
+                CustomPulse shineExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.75f, 45);
                 GeneralParticleHandler.SpawnParticle(shineExplosion);
-                CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White * 0.7f * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f, 45);
+                CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White * 0.6f * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f, 45);
                 GeneralParticleHandler.SpawnParticle(shineExplosion2);
                 StrongBloom bloom = new(Projectile.Center, Vector2.Zero, Color.White * 0.8f * brightnessMultiplier, 8f, 30);
                 GeneralParticleHandler.SpawnParticle(bloom);
@@ -220,10 +220,8 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    PulseRing fakerDeathRing = new(Projectile.Center, Vector2.Zero, Color.White * brightnessMultiplier, 0f, 3f + i * 0.25f, 30 + i * 15);
+                    PulseRing fakerDeathRing = new(Projectile.Center, Vector2.Zero, Color.White * 0.45f * brightnessMultiplier, 0f, 3f + i * 0.1f, 30 + i * 15);
                     GeneralParticleHandler.SpawnParticle(fakerDeathRing);
-                    StrongBloom bloom = new(Projectile.Center, Vector2.Zero, Color.White * 0.55f * brightnessMultiplier, 6f, 30);
-                    GeneralParticleHandler.SpawnParticle(bloom);
                 }
             }
         }
@@ -233,35 +231,54 @@ namespace CalamityMod.Projectiles.Boss
             Texture2D crackTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing").Value;
             Texture2D starTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarProj").Value;
             Texture2D bloomRingTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
+
             float chargeInterpolant = CalamityUtils.SineInOutEasing(Timer / RiftLifetime, 1);
+            float brightnessMultiplier = FakeRift ? 0.6f : 1f;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            Vector2 verticalStarPartScale = new Vector2(1f, 6f) * chargeInterpolant * Projectile.scale * 3.25f;
-            Vector2 horizontalStarPartScale = new Vector2(1f, 3f) * chargeInterpolant * Projectile.scale * 3.25f;
+            Vector2 verticalStarPartScale = new Vector2(1f, 8f) * chargeInterpolant * Projectile.scale * 3.25f;
+            Vector2 horizontalStarPartScale = new Vector2(1f, 5f) * chargeInterpolant * Projectile.scale * 3.25f;
 
             Main.spriteBatch.SetBlendState(BlendState.Additive);
 
             // Draw the glowing star.
-            Main.EntitySpriteDraw(starTexture, drawPosition, null, Color.White * 0.7f * chargeInterpolant, 0f, starTexture.Size() * 0.5f, verticalStarPartScale, 0);
-            Main.EntitySpriteDraw(starTexture, drawPosition, null, Color.White * 0.7f * chargeInterpolant, MathHelper.PiOver2, starTexture.Size() * 0.5f, horizontalStarPartScale, 0);
+            Main.EntitySpriteDraw(starTexture, drawPosition, null, Color.White * 0.7f * brightnessMultiplier * chargeInterpolant, 0f, starTexture.Size() * 0.5f, verticalStarPartScale, 0);
+            Main.EntitySpriteDraw(starTexture, drawPosition, null, Color.White * 0.7f * brightnessMultiplier * chargeInterpolant, MathHelper.PiOver2, starTexture.Size() * 0.5f, horizontalStarPartScale, 0);
+
+            // Draw a smaller, twlight colored star at the center if this isn't a fake rift.
+            if (!FakeRift)
+            {
+                Main.EntitySpriteDraw(starTexture, drawPosition, null, DoGSky.DoGTwlight * 0.9f * brightnessMultiplier * chargeInterpolant, 0f, starTexture.Size() * 0.5f, verticalStarPartScale * 0.8f, 0);
+                Main.EntitySpriteDraw(starTexture, drawPosition, null, DoGSky.DoGTwlight * 0.9f * brightnessMultiplier * chargeInterpolant, MathHelper.PiOver2, starTexture.Size() * 0.5f, horizontalStarPartScale * 0.8f, 0);
+            }
 
             // Draw the crack.
-            var opacityShader = CalamityShaders.CircularOpacityShader;
-            float crackOpcity = (AIState == 1f) ? Projectile.Opacity * 0.15f : 0.15f;
+            Effect crackShader = CalamityShaders.DoGRealityCrackShader;
+            float crackOpcity = (AIState == 1f) ? Projectile.Opacity * 0.1f : 0.1f;
+            Color darkerPixelColor = FakeRift ? Color.White : DoGSky.DoGTwlight;
 
-            opacityShader.Parameters["opacityCutoffValue"].SetValue(CrackExposure);
-            opacityShader.Parameters["fadeoutPower"].SetValue(1f);
-            opacityShader.Parameters["overallOpacity"].SetValue(crackOpcity);
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, opacityShader, Main.GameViewMatrix.TransformationMatrix, () =>
+            crackShader.Parameters["opacityCutoffValue"].SetValue(CrackExposure);
+            crackShader.Parameters["fadeoutPower"].SetValue(1f);
+            crackShader.Parameters["overallOpacity"].SetValue(crackOpcity * brightnessMultiplier);
+            crackShader.Parameters["minBrightnessValue"].SetValue(0.75f);
+            crackShader.Parameters["darkerPixelColor"].SetValue(darkerPixelColor.ToVector3());
+            crackShader.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader, Main.GameViewMatrix.TransformationMatrix, () =>
             {
-                Main.EntitySpriteDraw(crackTexture, drawPosition + Vector2.UnitY * 8f, null, Color.White * Projectile.Opacity, 0f, crackTexture.Size() * 0.5f, CrackScale, 0);
+                int crackCount = FakeRift ? 1 : 3;
+                for (int i = 0; i < crackCount; i++)
+                {
+                    float crackRotation = i * MathHelper.TwoPi / crackCount;
+                    Main.EntitySpriteDraw(crackTexture, drawPosition + Vector2.UnitY * 8f, null, Color.White * Projectile.Opacity, crackRotation, crackTexture.Size() * 0.5f, CrackScale, 0);
+                }
             });
 
             if (AIState != 1f)
             {
                 // Draw the bloom ring which closes inwards.
                 float ringScale = MathHelper.Lerp(8f, 0f, chargeInterpolant);
-                Main.EntitySpriteDraw(bloomRingTexture, drawPosition, null, Color.White * chargeInterpolant * 0.6f, 0f, bloomRingTexture.Size() * 0.5f, ringScale, 0);
+                Color ringColor = FakeRift ? Color.White : Color.Lerp(Color.White, DoGSky.DoGTwlight, chargeInterpolant);
+                Main.EntitySpriteDraw(bloomRingTexture, drawPosition, null, ringColor * brightnessMultiplier * chargeInterpolant * 0.6f, 0f, bloomRingTexture.Size() * 0.5f, ringScale, 0);
             }
 
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);

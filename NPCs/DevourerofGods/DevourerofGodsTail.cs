@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Sounds;
 using CalamityMod.World;
@@ -303,16 +304,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (Main.npc[NPC.realLife].type != ModContent.NPCType<DevourerofGodsHead>())
                 return true;
 
-            float disintegrationFactor = Main.npc[NPC.realLife].ModNPC<DevourerofGodsHead>().DeathAnimationTimer / 640f;
-            if (disintegrationFactor > 0f)
-            {
-                spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseOpacity(disintegrationFactor);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseSaturation(NPC.whoAmI);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseImage1("Images/Misc/Perlin");
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].Apply();
-            }
-
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
@@ -340,9 +331,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                 spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
-
-            if (disintegrationFactor > 0f)
-                spriteBatch.ExitShaderRegion();
 
             return false;
         }

@@ -85,32 +85,40 @@ namespace CalamityMod.Systems.Graphic
 
         public override void PostUpdateEverything()
         {
-            // Randomly flicker between different values to create a natural lightning effect in the background of the 
-            // Distortion rift's clouds.
-            if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
+            if (DoGSky.SkyIntensity > 0.1f)
             {
-                BackgroundLightningTimer = Main.rand.NextBool(10) ? Main.rand.Next(30, 45) : Main.rand.Next(5, 20);
-                BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
+                // Disable ambient sky entities while DoG's background effects are active.
+                if (SkyManager.Instance["Ambience"].IsActive())
+                    SkyManager.Instance["Ambience"].Deactivate();
+
+                // Randomly flicker between different values to create a natural lightning effect in the background of the 
+                // Distortion rift's clouds.
+                if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
+                {
+                    BackgroundLightningTimer = Main.rand.NextBool(10) ? Main.rand.Next(30, 45) : Main.rand.Next(5, 20);
+                    BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
+                }
+
+                if (BackgroundLightningTimer > 0f)
+                {
+                    float minFill = BackgroundLightningMax * 0.5f;
+                    BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
+                    BackgroundLightningTimer--;
+                }
+                else
+                {
+                    if (BackgroundLightningTimer < 0f)
+                        BackgroundLightningTimer = 0f;
+                    BackgroundLightningFill = MathHelper.Lerp(BackgroundLightningFill, 0f, 0.05f);
+                }
             }
 
-            if (BackgroundLightningTimer > 0f)
-            {
-                float minFill = BackgroundLightningMax * 0.5f;
-                BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
-                BackgroundLightningTimer--;
-            }
-            else
-            {
-                if (BackgroundLightningTimer < 0f)
-                    BackgroundLightningTimer = 0f;
-                BackgroundLightningFill = MathHelper.Lerp(BackgroundLightningFill, 0f, 0.05f);
-            }
+            
         }
 
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
         {
-            var cplayer = Main.LocalPlayer.Calamity();
-            if (cplayer.monolithDevourerBShader > 0 || cplayer.monolithDevourerPShader > 0 || NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()))
+            if (DoGSky.SkyIntensity > 0f)
                 FillProgress += 0.05f;
             else
                 FillProgress -= 0.05f;
@@ -134,9 +142,12 @@ namespace CalamityMod.Systems.Graphic
 
         private void DiscardCelestialObjects(On_Main.orig_DrawSunAndMoon orig, Main self, Main.SceneArea sceneArea, Color moonColor, Color sunColor, float tempMushroomInfluence)
         {
-            // Fade out the sun during DoG's fight.
+            // Fade out the sun and moon during DoG's fight.
             if (DoGSky.SkyIntensity > 0f)
+            {
                 tempMushroomInfluence = DoGSky.SkyIntensity;
+                moonColor *= 1f - DoGSky.SkyIntensity;
+            }
 
             orig(self, sceneArea, moonColor, sunColor, tempMushroomInfluence);
         }
@@ -150,12 +161,13 @@ namespace CalamityMod.Systems.Graphic
                 DistortionRiftBackgroundContentsTarget.SwapTo();
                 DrawDistortionRiftBackground();
 
-                // Draw the primitives which compromise the rift to another render target.
-                DistortionRiftPrimitivesTarget.SwapTo();
-
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+
+                // Draw the primitives which comprise the rift to another render target.
+                DistortionRiftPrimitivesTarget.SwapTo();                
                 if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
                     (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
+
                 Main.spriteBatch.End();
             }
 
@@ -200,15 +212,16 @@ namespace CalamityMod.Systems.Graphic
         {
             Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
+            Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);           
-            Color darkPixelColor = Color.Lerp(Color.Lerp(Color.Black, Color.DarkGray, 0.25f), Color.Black, BackgroundLightningFill * 0.8f);
-            Color brightPixelColor = Color.Lerp(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.3f), Color.Black, BackgroundLightningFill * 0.8f);
+            Color darkPixelColor = Color.Lerp(Color.Lerp(Color.Black, Color.DarkGray, 0.3f), Color.Black, BackgroundLightningFill * 0.8f);
+            Color brightPixelColor = Color.Lerp(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.6f), Color.Black, BackgroundLightningFill * 0.8f);
 
             rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(0.8f);
-            rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.12f);
+            rollingCloudsShader.Parameters["overallOpacity"].SetValue(1f);
+            rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.24f);
             rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(2f);
             rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
             rollingCloudsShader.Parameters["erosionTextureScale"].SetValue(0.26f);
@@ -221,7 +234,7 @@ namespace CalamityMod.Systems.Graphic
             rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(darkPixelColor.ToVector3());
             rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(brightPixelColor.ToVector3());
 
-            Main.instance.GraphicsDevice.Textures[1] = cloudsTexture;
+            Main.instance.GraphicsDevice.Textures[1] = distortionTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
             Main.instance.GraphicsDevice.Textures[2] = erosionTexture;

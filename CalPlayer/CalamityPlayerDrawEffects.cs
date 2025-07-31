@@ -71,8 +71,8 @@ namespace CalamityMod.CalPlayer
             if (DoG != null && Main.mapStyle != 2)
             {
                 Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-                var rift = DoG.GetRiftLocationSafe();
-                if (rift != Vector2.Zero)
+                var rift = DoG.GetRiftLocation();
+                if (rift != Vector2.Zero && !Main.zenithWorld)
                 {
                     var dist = Player.Distance(rift);
                     var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;

@@ -234,6 +234,13 @@ namespace CalamityMod.Effects
 
         // Allows a texture to control its opacity from the edges to the center in the shape of a circle.
         internal static Effect CircularOpacityShader;
+
+        // The shader effect imposed onto the static crack textures seen during DoG's fight. Fades out the texture from its edges to its center and 
+        // allows it to lerp between two colors depending on the brightness of individual pixels along the sampled texture.
+        internal static Effect DoGRealityCrackShader;
+
+        // The distorted circular effect seen emanating from the distortion rift during DoG's fight.
+        internal static Effect DoGRiftAuraShader;
         #endregion
 
         public override void PostSetupContent()
@@ -465,6 +472,12 @@ namespace CalamityMod.Effects
 
             CircularOpacityShader = LoadShader("CircularOpacityShader");
             RegisterMiscShader(CircularOpacityShader, "CircularOpacityPass", "CircularOpacity");
+
+            DoGRealityCrackShader = LoadShader("DoGRealityCrackShader");
+            RegisterMiscShader(DoGRealityCrackShader, "DoGRealityCrackPass", "DoGRealityCrack");
+
+            DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
+            RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
             #endregion
         }
 
