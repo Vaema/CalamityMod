@@ -21,6 +21,7 @@ using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Armor.DesertProwler;
 using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
@@ -28,7 +29,9 @@ using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Victide;
+using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.PermanentBoosters;
@@ -3535,19 +3538,16 @@ namespace CalamityMod.CalPlayer
             {
                 PlayerLoader.ArmorSetBonusActivated(Player);
 
-                if (CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap)
+                // Activate vanilla set bonuses
+                if (Player.setVortex && !Player.mount.Active)
+                    Player.vortexStealthActive = !Player.vortexStealthActive;
+
+                if (Player.setForbidden)
                 {
-                    // Activate vanilla set bonuses
-                    if (Player.setVortex && !Player.mount.Active)
-                        Player.vortexStealthActive = !Player.vortexStealthActive;
+                    Player.MinionRestTargetAim();
 
-                    if (Player.setForbidden)
-                    {
-                        Player.MinionRestTargetAim();
-
-                        if (!Player.setForbiddenCooldownLocked)
-                            Player.CommandForbiddenStorm();
-                    }
+                    if (!Player.setForbiddenCooldownLocked)
+                        Player.CommandForbiddenStorm();
                 }
             }
 
@@ -3760,10 +3760,6 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
-            // Don't trigger set bonuses if the config is disabled and the double-tap hotkey was triggered
-            if (!(CalamityKeybinds.ArmorSetBonusHotKey.JustPressed || CalamityClientConfig.Instance.CalamityArmorSetBonusDoubleTap))
-                return;
-
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
             if (victideBurrowSet && !Player.tongued && !Player.shimmering && !Player.HasCooldown(BubblyBurrow.ID))
             {
@@ -3956,6 +3952,30 @@ namespace CalamityMod.CalPlayer
             }
             if (prismaticSet && !Player.HasCooldown(PrismaticLaser.ID) && prismaticLasers <= 0)
                 prismaticLasers = CalamityUtils.SecondsToFrames(35f);
+            if (WulfrumHat.HasArmorSet(Player))
+            {
+                //Only activate if no cooldown & available scrap.
+                if (cooldowns.TryGetValue(WulfrumBastion.ID, out CooldownInstance cd))
+                {
+                    // Quick dismount if activated again
+                    if (cd.timeLeft > WulfrumHat.BastionCooldown && cd.timeLeft < WulfrumHat.BastionCooldown + WulfrumHat.BastionTime - 60 * 3)
+                    {
+                        cd.timeLeft = WulfrumHat.BastionCooldown + 1;
+                        SyncCooldownDictionary(false);
+                    }
+                }
+
+                else if (Player.HasItem(ItemType<WulfrumMetalScrap>()))
+                {
+                    Player.ConsumeItem(ItemType<WulfrumMetalScrap>());
+                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right
+                    Player.AddCooldown(WulfrumBastion.ID, WulfrumHat.BastionCooldown + WulfrumHat.BastionTime);
+                    //Though do I need to sync that or is the player inventory auto synced?
+                    WulfrumHat.DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
+                }
+            }
+            if (DesertProwlerHat.HasArmorSet(Player) && !Player.HasCooldown(SandsmokeBomb.ID))
+                Player.AddCooldown(SandsmokeBomb.ID, DesertProwlerHat.SmokeCooldown + DesertProwlerHat.SmokeDuration);
         }
         #endregion
 
@@ -4942,7 +4962,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Player.mount.Active)
                     {
-                        Player.velocity.Y *= 0.9f;
+                        Player.velocity.Y *= SnowRuffianMask.GlideFallSpeedMult;
                         Player.wingFrame = 3;
                     }
                     Player.noFallDmg = true;

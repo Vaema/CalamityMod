@@ -14,11 +14,11 @@ namespace CalamityMod.Items.Armor.Statigel
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float MagicDamageBoost = 0.1f;
-        public static float ManaCostReduction = 0.1f;
-        public static int MagicCritBoost = 7;
         public static int MaxManaBoost = 40;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), ManaCostReduction.ToPercent(), MagicCritBoost, MaxManaBoost);
+        public static float ManaCostReduction = 0.1f;
+        public static float MagicDamageBoost = 0.1f;
+        public static int MagicCritBoost = 7;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, ManaCostReduction.ToPercent(), MagicDamageBoost.ToPercent(), MagicCritBoost);
 
         public override void SetDefaults()
         {
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Armor.Statigel
             CreateRecipe().
                 AddIngredient<PurifiedGel>(5).
                 AddIngredient<BlightedGel>(5).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelArmor>()).
                 Register();
         }

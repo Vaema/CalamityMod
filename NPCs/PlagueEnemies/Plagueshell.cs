@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.GiantTortoise;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(silver: 15);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.noGravity = false;
             Banner = NPC.type;

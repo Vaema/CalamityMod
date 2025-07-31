@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.LifeMaxNERB(7500, 9000, 160000);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.knockBackResist = 0f;
-            NPC.value = 0f;
             NPC.Opacity = 1f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

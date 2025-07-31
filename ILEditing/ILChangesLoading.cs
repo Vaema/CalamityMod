@@ -76,6 +76,7 @@ namespace CalamityMod.ILEditing
             IL_Player.DashMovement += FixAllDashMechanics;
             On_Player.DashMovement += DashMovementEdits;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
+            On_Player.KeyDoubleTap += DisableDoubleTapOnConfig;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;

@@ -12,6 +12,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EmpressofLightAI
     {
+        // NOTE: This is applied to all difficulties, in CalamityPlayerHitHurt
+        public static float EverlastingRainbowTrailDamageMult = 0.75f;
+
         // Vanilla values
         public static float DashDamageMult = 1.5f; // 165
         public static int PrismaticBoltDamage = 30; // 120

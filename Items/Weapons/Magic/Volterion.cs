@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             if (player.ownedProjectileCounts[Item.shoot] <= 0)
                 player.statMana += manaConsumed;
+                player.Calamity().GeneralScreenShakePower = 3f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

@@ -706,18 +706,8 @@ AltarOfTheAccursedItem: {
 		'''
 }
 
-AncientAltar: {
-	DisplayName: Ancient Altar
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 AshenAltar: {
 	DisplayName: Ashen Altar
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-BotanicPlanter: {
-	DisplayName: Botanic Planter
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
@@ -739,21 +729,6 @@ DraedonsForge: {
 		'''
 }
 
-EffulgentManipulator: {
-	DisplayName: Effulgent Manipulator
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-EutrophicShelf: {
-	DisplayName: Eutrophic Shelf
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-MonolithAmalgam: {
-	DisplayName: Monolith Amalgam
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 PlagueInfuser: {
 	DisplayName: Plague Infuser
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
@@ -764,18 +739,8 @@ ProfanedCrucible: {
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
-StaticRefiner: {
-	DisplayName: Static Refiner
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
 VoidCondenser: {
 	DisplayName: Void Condenser
-	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
-}
-
-WulfrumLabstationItem: {
-	DisplayName: Wulfrum Labstation
 	Tooltip: "{$CommonItemTooltip.SpecialCrafting}"
 }
 
@@ -1426,6 +1391,11 @@ AcidwoodWorkBench: {
 	Tooltip: ""
 }
 
+AncientAltar: {
+	DisplayName: Ancient Altar
+	Tooltip: ""
+}
+
 AncientBasin: {
 	DisplayName: Ancient Basin
 	Tooltip: ""
@@ -1765,6 +1735,11 @@ BotanicPiano: {
 	Tooltip: ""
 }
 
+BotanicPlanter: {
+	DisplayName: Botanic Planter
+	Tooltip: ""
+}
+
 BotanicPlatform: {
 	DisplayName: Botanic Platform
 	Tooltip: ""
@@ -1995,103 +1970,208 @@ DriftwoodWorkBench: {
 	Tooltip: ""
 }
 
+AncientNavystoneBathtub: {
+	DisplayName: Ancient Navystone Bathtub
+	Tooltip: ""
+}
+
+AncientNavystoneBed: {
+	DisplayName: Ancient Navystone Bed
+	Tooltip: ""
+}
+
+AncientNavystoneBench: {
+	DisplayName: Ancient Navystone Bench
+	Tooltip: ""
+}
+
+AncientNavystoneBookcase: {
+	DisplayName: Ancient Navystone Bookcase
+	Tooltip: ""
+}
+
+AncientNavystoneCandelabra: {
+	DisplayName: Ancient Navystone Candelabra
+	Tooltip: ""
+}
+
+AncientNavystoneCandle: {
+	DisplayName: Ancient Navystone Candle
+	Tooltip: ""
+}
+
+AncientNavystoneChair: {
+	DisplayName: Ancient Navystone Chair
+	Tooltip: ""
+}
+
+AncientNavystoneChandelier: {
+	DisplayName: Ancient Navystone Chandelier
+	Tooltip: ""
+}
+
+AncientNavystoneChest: {
+	DisplayName: Ancient Navystone Chest
+	Tooltip: ""
+}
+
+AncientNavystoneClock: {
+	DisplayName: Ancient Navystone Clock
+	Tooltip: ""
+}
+
+AncientNavystoneDoor: {
+	DisplayName: Ancient Navystone Door
+	Tooltip: ""
+}
+
+AncientNavystoneDresser: {
+	DisplayName: Ancient Navystone Dresser
+	Tooltip: ""
+}
+
+AncientNavystoneLamp: {
+	DisplayName: Ancient Navystone Lamp
+	Tooltip: ""
+}
+
+AncientNavystoneLantern: {
+	DisplayName: Ancient Navystone Lantern
+	Tooltip: ""
+}
+
+AncientNavystonePiano: {
+	DisplayName: Ancient Navystone Piano
+	Tooltip: ""
+}
+
+AncientNavystonePlatform: {
+	DisplayName: Ancient Navystone Platform
+	Tooltip: ""
+}
+
+AncientNavystoneSink: {
+	DisplayName: Ancient Navystone Sink
+	Tooltip: Counts as a water source
+}
+
+AncientNavystoneTable: {
+	DisplayName: Ancient Navystone Table
+	Tooltip: ""
+}
+
+AncientNavystoneWorkBench: {
+	DisplayName: Ancient Navystone Work Bench
+	Tooltip: ""
+}
+
 AncientSmoothNavystone: {
 	DisplayName: Ancient Smooth Navystone
 	Tooltip: ""
 }
 
-EutrophicBathtub: {
-	DisplayName: Eutrophic Bathtub
+EutrophicShelf: {
+	DisplayName: Eutrophic Shelf
 	Tooltip: ""
 }
 
-EutrophicBed: {
-	DisplayName: Eutrophic Bed
+NavystoneBathtub: {
+	DisplayName: Navystone Bathtub
 	Tooltip: ""
 }
 
-EutrophicBench: {
-	DisplayName: Eutrophic Bench
+NavystoneBed: {
+	DisplayName: Navystone Bed
 	Tooltip: ""
 }
 
-EutrophicBookcase: {
-	DisplayName: Eutrophic Bookcase
+NavystoneBookcase: {
+	DisplayName: Navystone Bookcase
 	Tooltip: ""
 }
 
-EutrophicCandelabra: {
-	DisplayName: Eutrophic Candelabra
+NavystoneCandelabra: {
+	DisplayName: Navystone Candelabra
 	Tooltip: ""
 }
 
-EutrophicCandle: {
-	DisplayName: Eutrophic Candle
+NavystoneCandle: {
+	DisplayName: Navystone Candle
 	Tooltip: ""
 }
 
-EutrophicChair: {
-	DisplayName: Eutrophic Chair
+NavystoneChair: {
+	DisplayName: Navystone Chair
 	Tooltip: ""
 }
 
-EutrophicChandelier: {
-	DisplayName: Eutrophic Chandelier
+NavystoneChandelier: {
+	DisplayName: Navystone Chandelier
 	Tooltip: ""
 }
 
-EutrophicChest: {
-	DisplayName: Eutrophic Chest
+NavystoneChest: {
+	DisplayName: Navystone Chest
 	Tooltip: ""
 }
 
-EutrophicClock: {
-	DisplayName: Eutrophic Clock
+NavystoneClock: {
+	DisplayName: Navystone Clock
 	Tooltip: ""
 }
 
-EutrophicDoor: {
-	DisplayName: Eutrophic Door
+NavystoneDoor: {
+	DisplayName: Navystone Door
 	Tooltip: ""
 }
 
-EutrophicDresser: {
-	DisplayName: Eutrophic Dresser
+NavystoneDresser: {
+	DisplayName: Navystone Dresser
 	Tooltip: ""
 }
 
-EutrophicLamp: {
-	DisplayName: Eutrophic Lamp
+NavystoneLamp: {
+	DisplayName: Navystone Lamp
 	Tooltip: ""
 }
 
-EutrophicLantern: {
-	DisplayName: Eutrophic Lantern
+NavystoneLantern: {
+	DisplayName: Navystone Lantern
 	Tooltip: ""
 }
 
-EutrophicPiano: {
-	DisplayName: Eutrophic Piano
+NavystoneLyre: {
+	DisplayName: Navystone Lyre
 	Tooltip: ""
 }
 
-EutrophicPlatform: {
-	DisplayName: Eutrophic Platform
+NavystonePlatform: {
+	DisplayName: Navystone Platform
 	Tooltip: ""
 }
 
-EutrophicSink: {
-	DisplayName: Eutrophic Sink
+NavystoneSink: {
+	DisplayName: Navystone Sink
 	Tooltip: Counts as a water source
 }
 
-EutrophicTable: {
-	DisplayName: Eutrophic Table
+NavystoneTable: {
+	DisplayName: Navystone Table
 	Tooltip: ""
 }
 
-EutrophicWorkBench: {
-	DisplayName: Eutrophic Work Bench
+NavystoneToilet: {
+	DisplayName: Navystone Toilet
+	Tooltip: ""
+}
+
+NavystoneTriclinium: {
+	DisplayName: Navystone Triclinium
+	Tooltip: ""
+}
+
+NavystoneWorkBench: {
+	DisplayName: Navystone Work Bench
 	Tooltip: ""
 }
 
@@ -2352,6 +2432,11 @@ PolishedMarnitePlatform: {
 
 PolishedMarniteWall: {
 	DisplayName: Polished Marnite Wall
+	Tooltip: ""
+}
+
+MonolithAmalgam: {
+	DisplayName: Monolith Amalgam
 	Tooltip: ""
 }
 
@@ -2899,6 +2984,11 @@ SacrilegiousWorkBench: {
 	Tooltip: ""
 }
 
+SilvaBasin: {
+	DisplayName: Silva Basin
+	Tooltip: ""
+}
+
 SilvaBathtub: {
 	DisplayName: Silva Bathtub
 	Tooltip: ""
@@ -2996,6 +3086,11 @@ SilvaTable: {
 
 SilvaWorkBench: {
 	DisplayName: Silva Work Bench
+	Tooltip: ""
+}
+
+StaticRefiner: {
+	DisplayName: Static Refiner
 	Tooltip: ""
 }
 
@@ -3366,6 +3461,11 @@ WulfrumDresser: {
 
 WulfrumEnergyBarrier: {
 	DisplayName: Wulfrum Energy Barrier
+	Tooltip: ""
+}
+
+WulfrumLabstationItem: {
+	DisplayName: Wulfrum Labstation
 	Tooltip: ""
 }
 
@@ -4521,5 +4621,10 @@ MiniCagedFloodlightItem: {
 
 MiniAgedFloodlightItem: {
 	DisplayName: Mini Aged Floodlight
+	Tooltip: ""
+}
+
+AridSoil: {
+	DisplayName: Arid Soil
 	Tooltip: ""
 }

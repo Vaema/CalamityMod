@@ -18,9 +18,9 @@ namespace CalamityMod.Items.Armor.Aerospec
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
 
         // Set Bonus
+        public static float SetBonusRogueStealth = 0.8f;
         public static float SetBonusMoveSpeedBoost = 0.05f;
         public static int SetBonusRogueCritBoost = 5; // NOTE: Tooltip shares this number with move speed % as they're equal
-        public static float SetBonusRogueStealth = 0.8f;
 
         public override void SetStaticDefaults()
         {
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMoveSpeedBoost.ToPercent(), SetBonusRogueStealth.ToStealth())
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), SetBonusMoveSpeedBoost.ToPercent())
             + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.aeroSet = true;

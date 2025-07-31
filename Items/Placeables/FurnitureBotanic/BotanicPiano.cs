@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureBotanic
                 AddIngredient<UelibloomBrick>(15).
                 AddIngredient(ItemID.Bone, 4).
                 AddIngredient(ItemID.Book).
-                AddTile<BotanicPlanter>().
+                AddTile(TileID.LivingLoom).
                 Register();
         }
     }

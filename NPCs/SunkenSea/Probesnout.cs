@@ -424,7 +424,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.catchItem = ModContent.ItemType<ProbesnoutItem>();
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -475,7 +474,6 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.rarity = 3;
             NPC.catchItem = ItemType<ProbesnoutGoldItem>();
-            NPC.value = 100000;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

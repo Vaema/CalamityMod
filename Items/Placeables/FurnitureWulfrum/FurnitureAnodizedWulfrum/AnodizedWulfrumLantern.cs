@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum
             CreateRecipe().
                 AddIngredient<RoundedAnodizedWulfrumPanels>(6).
                 AddIngredient(ItemID.Torch).
-                AddTile<WulfrumLabstation>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

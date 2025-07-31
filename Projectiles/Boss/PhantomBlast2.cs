@@ -110,13 +110,5 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[killGhostDust2].velocity *= 2f;
             }
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
-        }
     }
 }
