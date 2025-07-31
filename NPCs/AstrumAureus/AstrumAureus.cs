@@ -206,7 +206,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             if (expertMode)
                 astralFlameBarrageTimerIncrement += death ? (float)Math.Round(3f * (1f - lifeRatio)) : (float)Math.Round(2f * (1f - lifeRatio));
 
-            float walkingVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 6f : 5f;
+            float walkingVelocity = CalamityWorld.MaliceMode ? 6f : 5f;
             walkingVelocity += 3f * enrageScale;
             if (phase5)
                 walkingVelocity += 2f;
@@ -640,7 +640,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                                 calamityGlobalNPC.newAI[1] = speedMultLimit;
                         }
 
-                        float velocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 27f : 20f;
+                        float velocity = CalamityWorld.MaliceMode ? 27f : 20f;
                         velocity += 6f * enrageScale;
                         if (expertMode)
                             velocity += death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
@@ -770,7 +770,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float laserVelocity = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 7f : death ? 6f : 5f;
+                            float laserVelocity = CalamityWorld.MaliceMode ? 7f : death ? 6f : 5f;
                             int maxProjectiles = !phase3 ? (death ? 11 : 9) : (death ? 15 : 13);
                             int spread = !phase3 ? (death ? 18 : 16) : (death ? 22 : 20);
 
@@ -822,7 +822,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                             fallSpeed += 0.36f * enrageScale;
                             if (expertMode)
                                 fallSpeed += death ? 0.36f * (1f - lifeRatio) : 0.24f * (1f - lifeRatio);
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                            if (CalamityWorld.MaliceMode)
                                 fallSpeed += 0.5f;
 
                             if (calamityGlobalNPC.newAI[1] > 0f)
@@ -849,7 +849,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         velocityXCap += 3.6f * enrageScale;
                         if (expertMode)
                             velocityXCap += death ? 3.6f * (1f - lifeRatio) : 2.4f * (1f - lifeRatio);
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.MaliceMode)
                             velocityXCap += 5f;
 
                         if (calamityGlobalNPC.newAI[0] > 0f)

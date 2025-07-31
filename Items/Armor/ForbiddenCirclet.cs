@@ -44,8 +44,7 @@ namespace CalamityMod.Items.Armor
         public override void UpdateArmorSet(Player player)
         {
             int stormMana = (int)(manaCost * player.manaCost);
-            string hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, stormMana);
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey(), stormMana);
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.forbiddenCirclet = true;
             modPlayer.rogueStealthMax += 0.4f;

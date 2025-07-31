@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.defense = 38;
             NPC.lifeMax = 180;
             NPC.knockBackResist = 0.1f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit41;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.behindTiles = true;

@@ -174,7 +174,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             // Become gradually more pissed as more worms are killed
             int gfbMaxWormCount = 10;
             int gfbWormCount = 0;
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
             if (gfbWormCount > gfbMaxWormCount)
                 gfbWormCount = gfbMaxWormCount;
@@ -406,7 +406,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

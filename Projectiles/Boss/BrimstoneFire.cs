@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
 
             // Cook you up (still scales with player size in case it's manipulated)
             int smokeCount = 4 + (int)MathHelper.Clamp(target.width * 0.1f, 0f, 20f);

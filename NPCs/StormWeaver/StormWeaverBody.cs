@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.StormWeaver
             }
         }
 
-        public static int LaserDamage = 60; // 240
+        public static int LaserDamage = 55; // 220
 
         public override void SetDefaults()
         {

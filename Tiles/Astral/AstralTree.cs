@@ -60,7 +60,7 @@ namespace CalamityMod.Tiles.Astral
             //treeFrame = (i + j * j) % 3;
         }
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.FurnitureMonolith.AstralMonolith>();
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 
         public override int SaplingGrowthType(ref int style)

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Abyss;
+﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

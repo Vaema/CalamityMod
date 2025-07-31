@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 10;
             NPC.lifeMax = 200;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -479,7 +479,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (hurtInfo.Damage <= 0)
                 return;
-            target.AddBuff(BuffID.OnFire3, 120);
+            target.AddBuff(BuffID.OnFire, 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

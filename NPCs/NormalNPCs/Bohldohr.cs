@@ -15,7 +15,6 @@ namespace CalamityMod.NPCs.NormalNPCs
     {
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.damage = 80;
@@ -24,7 +23,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 32;
             NPC.lifeMax = 600;
             NPC.knockBackResist = 0.95f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit7;
             NPC.DeathSound = SoundID.NPCDeath35;
             NPC.behindTiles = true;

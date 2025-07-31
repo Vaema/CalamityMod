@@ -248,6 +248,7 @@ namespace CalamityMod.NPCs
             "Stan Pines",
             "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
+            "Postman Hiss", // <@!454638106122125312> (karinthefairy)
         };
         private static readonly string[] TruffleNames =
         {

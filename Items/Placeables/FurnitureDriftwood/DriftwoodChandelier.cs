@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureDriftwood
                 AddIngredient<Driftwood>(4).
                 AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-                AddTile(TileID.Sawmill).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

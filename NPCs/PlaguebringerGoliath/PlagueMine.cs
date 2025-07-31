@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 90; // 180
+            NPC.damage = 80; // 160
             NPC.width = 42;
             NPC.height = 42;
             NPC.defense = 20;
@@ -151,7 +151,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     target.AddBuff(BuffID.Poisoned, 300);
                     target.AddBuff(BuffID.Venom, 300);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 240);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
             }
         }
 

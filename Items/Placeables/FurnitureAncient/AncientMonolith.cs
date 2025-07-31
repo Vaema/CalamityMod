@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
                 AddIngredient<BrimstoneSlag>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile<AncientAltar>().
+                AddTile<AshenAltar>().
                 Register();
         }
     }

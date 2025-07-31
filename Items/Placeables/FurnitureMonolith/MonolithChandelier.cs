@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
                 AddIngredient<AstralMonolith>(4).
                 AddIngredient(ItemID.Torch, 4).
                 AddIngredient(ItemID.Chain).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

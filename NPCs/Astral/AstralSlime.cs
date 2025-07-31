@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.defense = 18;
             NPC.lifeMax = 240;
             NPC.knockBackResist = 0.6f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 60;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;

@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories
 
             player.statManaMax2 += 150;
             player.GetDamage<MagicDamageClass>() += 0.15f;
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
             player.GetCritChance<MagicDamageClass>() += 5;
         }
 

@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(1, 50, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

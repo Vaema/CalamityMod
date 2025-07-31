@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 320, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 180, 20);
 
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
 
@@ -201,7 +201,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 320);
+            ProvUtils.ApplyDebuffs(target, 180);
         }
     }
 }
