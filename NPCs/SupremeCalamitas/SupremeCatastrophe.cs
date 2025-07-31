@@ -452,7 +452,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if ((broIsAlive == false ? BigAttackLimit <= 3 && BigAttackLimit > 0 : BigAttackLimit == 1) && death)
                     {
                         if (!Main.zenithWorld)
-                            damage = TrailedSlashDamage
+                            damage = TrailedSlashDamage;
 
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), slashSpawnPosition + firingVelocity * 130, (Phase2 ? NPC.DirectionTo(Target.Center) : firingVelocity) * 90f, ModContent.ProjectileType<SupremeCatastropheSlash>(), damage, 0f, Main.myPlayer, 0f, 5, 50);
                         SoundStyle slash = new("CalamityMod/Sounds/Item/MurasamaBigSwing");
