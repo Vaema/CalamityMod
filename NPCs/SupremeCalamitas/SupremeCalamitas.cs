@@ -254,8 +254,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         }
 
         public static int DartDamage = 85; // 340
+        public static int SkullDamage = 90; // 360
         public static int HellblastDamage = 100; // 400
-        public static int SkullDamage = 100; // 400
         public static int FireblastDamage = 100; // 400
         public static int GigablastDamage = 110; // 440
 
