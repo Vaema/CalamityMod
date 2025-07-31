@@ -24,7 +24,7 @@ namespace CalamityMod.NPCs.Signus
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 140; // 280
             NPC.width = 30;
             NPC.height = 30;
             NPC.lifeMax = 4800;

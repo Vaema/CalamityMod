@@ -2,21 +2,21 @@ AstralBreastplate: {
 	DisplayName: Astral Breastplate
 	Tooltip:
 		'''
-		7% increased damage
-		+80 max mana and +20 max life
+		{$CommonItemTooltip.IncreasesMaxManaBy}
+		{$CommonItemTooltip.PercentIncreasedDamage@1}
 		'''
 }
 
 AstralHelm: {
 	DisplayName: Astral Helm
-	Tooltip: 5% increased damage and 10% increased critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance}"
 	SetBonus:
 		'''
-		+3 max minions
-		10% increased damage and critical strike chance
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedDamageCritChance@1}
 		Detects nearby creatures, enemy projectiles, danger sources, and treasure
 		Whenever you crit an enemy, a barrage of stars will rain down
-		This effect has a 1 second cooldown before it can trigger again
+		This effect has a {2} {^2:second;seconds} cooldown before it can trigger again
 		'''
 }
 
@@ -24,8 +24,8 @@ AstralLeggings: {
 	DisplayName: Astral Leggings
 	Tooltip:
 		'''
-		5% increased damage
-		15% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedDamage}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -54,7 +54,7 @@ BrimflameScowl: {
 	SetBonus:
 		'''
 		Grants an additional 15% increased magic damage and critical strike chance
-		Press {0} to trigger a brimflame frenzy effect
+		{0} to trigger a brimflame frenzy effect
 		While under this effect, you get an additional 40% increase to magic damage
 		However, this inflicts rapid life loss and disables mana regeneration and mana potions
 		This can be toggled off, however, brimflame frenzy has a 30 second cooldown
@@ -160,7 +160,6 @@ FathomSwarmerBreastplate: {
 	DisplayName: Fathom Swarmer Breastplate
 	Tooltip:
 		'''
-		6% increased damage reduction
 		Increases your max number of minions by 1
 		10% increased summon damage
 		Reduces defense loss within the Abyss
@@ -190,7 +189,7 @@ ForbiddenCirclet: {
 	SetBonus:
 		'''
 		+40 maximum stealth
-		Press {0} to call an ancient storm to the cursor location
+		{0} to call an ancient storm to the cursor location
 		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
 		Rogue stealth strikes spawn homing eaters on enemy hits
 		Rogue and summon attacks will scale off of the stat with a higher boost
@@ -200,11 +199,7 @@ ForbiddenCirclet: {
 
 HydrothermicArmor: {
 	DisplayName: Hydrothermic Armor
-	Tooltip:
-		'''
-		+20 max life
-		8% increased damage and 4% increased critical strike chance
-		'''
+	Tooltip: 8% increased damage and 4% increased critical strike chance
 	CommonSetBonus:
 		'''
 		Inferno effect when below 50% life
@@ -391,11 +386,7 @@ PlaguebringerPistons: {
 
 PlaguebringerVisor: {
 	DisplayName: Plaguebringer Visor
-	Tooltip:
-		'''
-		15% increased summon damage
-		+20 max life
-		'''
+	Tooltip: 15% increased summon damage
 	SetBonus:
 		'''
 		Grants a plague dash which can slam through enemies without taking damage
@@ -412,8 +403,8 @@ PlagueReaperMask: {
 		25% reduced ammo usage and 5% increased flight time
 		Enemies receive 10% more damage from ranged projectiles when afflicted by the Plague
 		Getting hit causes plague cinders to rain from above
-		Press {0} to blind yourself for 5 seconds but massively boost your ranged damage
-		This has a 25 second cooldown.
+		{0} to blind yourself for 5 seconds but massively boost your ranged damage
+		This has a 25 second cooldown
 		'''
 }
 
@@ -494,11 +485,7 @@ ReaverHeadTank: {
 
 ReaverScaleMail: {
 	DisplayName: Reaver Scale Mail
-	Tooltip:
-		'''
-		9% increased damage and 4% increased critical strike chance
-		+20 max life
-		'''
+	Tooltip: 9% increased damage and 4% increased critical strike chance
 }
 
 TitanHeartBoots: {

@@ -1,7 +1,8 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Sulphurous
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Armor.Sulphurous
     public class SulphurousBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float RogueDamageBoost = 0.06f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 24;
@@ -20,11 +25,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
             Item.rare = ItemRarityID.Green;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<ThrowingDamageClass>() += 0.06f;
-            player.GetCritChance<ThrowingDamageClass>() += 4;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
 
         public override void AddRecipes()
         {

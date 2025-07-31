@@ -74,8 +74,9 @@ namespace CalamityMod.ILEditing
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
-            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
+            On_Player.DashMovement += DashMovementEdits;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
+            On_Player.KeyDoubleTap += DisableDoubleTapOnConfig;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
@@ -171,7 +172,6 @@ namespace CalamityMod.ILEditing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
             // World generation
-            IL_WorldGen.Pyramid += ReplacePharaohSetInPyramids;
             IL_WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
             On_WorldGen.SmashAltar += PreventSmashAltarCode;
             IL_WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;

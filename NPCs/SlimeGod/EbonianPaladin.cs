@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 10;
@@ -49,7 +49,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = 0f;
             NPC.Opacity = 1f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -94,7 +93,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.localAI[1] == 1f)
             {
                 NPC.defense = NPC.defDefense + 20;
-                setDamage += 22;
+                setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
             float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
@@ -312,7 +311,6 @@ namespace CalamityMod.NPCs.SlimeGod
                                 int numProjectiles = CalamityWorld.LegendaryMode ? 12 : death ? 6 : 4;
                                 float projectileVelocity = death ? 8f : 6f;
                                 int type = ModContent.ProjectileType<UnstableEbonianGlob>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y + 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                                 destination *= projectileVelocity;
                                 float rotation = MathHelper.ToRadians(80);
@@ -343,7 +341,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                         Main.dust[slimeDust].noGravity = true;
                                     }
 
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type, SlimeGodCore.GlobDamage, 0f, Main.myPlayer);
                                 }
 
                                 // Fire slime balls directly at players with a max of 2
@@ -377,7 +375,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                             Main.dust[slimeDust].noGravity = true;
                                         }
 
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, projFireDirection, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, projFireDirection, type, SlimeGodCore.GlobDamage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -433,7 +431,6 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             float projectileVelocity = 3f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y + 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                             destination *= projectileVelocity;
                             int dustType = DustID.TintableDust;
@@ -457,7 +454,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                 Main.dust[slimeDust].noGravity = true;
                             }
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, destination, type, damage, 0f, Main.myPlayer, 1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, destination, type, SlimeGodCore.GlobDamage, 0f, Main.myPlayer, 1f);
                         }
 
                         SoundEngine.PlaySound(SlimeGodCore.ShotSound, NPC.Center);

@@ -7,6 +7,7 @@ using CalamityMod.Particles;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Items.Weapons.Summon;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
@@ -16,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GastricBelcherStaff>();
         }
 
         public override void SetDefaults()

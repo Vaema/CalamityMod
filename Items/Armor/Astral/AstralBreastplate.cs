@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Astral
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Armor.Astral
     public class AstralBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MaxManaBoost = 80;
+        public static float DamageBoost = 0.07f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, DamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -20,9 +26,8 @@ namespace CalamityMod.Items.Armor.Astral
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
-            player.statManaMax2 += 80;
-            player.GetDamage<GenericDamageClass>() += 0.07f;
+            player.statManaMax2 += MaxManaBoost;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
         }
 
         public override void AddRecipes()

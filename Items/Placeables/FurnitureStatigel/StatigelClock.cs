@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
                 AddIngredient<StatigelBlock>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

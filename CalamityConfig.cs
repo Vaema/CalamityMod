@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
+using CalamityMod.Enums;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
@@ -44,18 +45,6 @@ namespace CalamityMod
                 CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
             }
         }
-
-        #region Multi-Threading Settings
-        [Header("Multithreading")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(0f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float SunkenSeaMultiThreading { get; set; } 
-        #endregion
 
         #region Graphics Changes
         [Header("Graphics")]
@@ -299,8 +288,10 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [DrawTicks]
+        [DefaultValue(SetBonusDoubleTapOptions.Auto)]
+        public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

@@ -26,10 +26,10 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 36;
             NPC.height = 31;
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.defense = 8;
-            NPC.lifeMax = 250;
+            NPC.defense = 18;
+            NPC.lifeMax = 240;
             NPC.knockBackResist = 0.6f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 60;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
@@ -39,8 +39,8 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 65;
-                NPC.defense = 18;
-                NPC.lifeMax = 375;
+                NPC.defense = 28;
+                NPC.lifeMax = 360;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

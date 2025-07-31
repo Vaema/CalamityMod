@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -25,11 +27,18 @@ namespace CalamityMod.Systems
         public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
         public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
+        public static FieldInfo journeySliderCacheField; // The current value of the journey mode difficulty slider
+        public static MethodInfo journeyDifficultyUpdateMethod; // The method which updates difficulty modes in journey mode
+
         public override void Load()
         {
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
             Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new ExpertDifficulty(), new MasterDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
+
+            // Reflect private journey difficulty slider info
+            journeySliderCacheField = typeof(CreativePowers.DifficultySliderPower).GetField("_sliderCurrentValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
+            journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
             CalculateDifficultyData();
         }
@@ -42,9 +51,9 @@ namespace CalamityMod.Systems
         // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
-            if (Main.expertMode && !Main.masterMode && GetCurrentDifficulty == DeathDifficulty.Instance)
+            if (Main.GameMode == GameModeID.Expert && GetCurrentDifficulty == DeathDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
-            if (Main.masterMode && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
+            if (Main.GameMode == GameModeID.Master && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
                 ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
         }
 
@@ -141,13 +150,12 @@ namespace CalamityMod.Systems
         public float DifficultyScale;
         public LocalizedText Name;
         public LocalizedText ShortDescription;
+        public Color ChatTextColor;
 
-        public string ActivationTextKey;
-        public string DeactivationTextKey;
+        public LocalizedText FTWName;
+        public Color FTWTextColor;
 
         public SoundStyle ActivationSound;
-
-        public Color ChatTextColor;
 
         internal int _difficultyTier;
 
@@ -164,7 +172,22 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => true;
-            set => Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
+            set
+                {
+                    if (!Main.GameModeInfo.IsJourneyMode)
+                    {
+                        Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
+                    }
+                    else
+                    {
+                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                        if (power.GetIsUnlocked())
+                        {
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.33f : 0.66f);
+                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                        }
+                    }
+                }
         }
 
         private Asset<Texture2D> _texture;
@@ -193,15 +216,15 @@ namespace CalamityMod.Systems
         public NoDifficulty()
         {
             DifficultyScale = 0;
-            Name = CalamityUtils.GetText("UI.Classic");
-            ShortDescription = CalamityUtils.GetText("UI.ClassicInfo");
+            Name = Language.GetText("UI.Normal");
+            ShortDescription = GetText("UI.ClassicInfo");
+            ChatTextColor = Color.White;
 
-            ActivationTextKey = string.Empty;
-            DeactivationTextKey = string.Empty;
+            FTWName = Language.GetText("UI.Expert");
+            FTWTextColor = new Color(255, 186, 117); // World display: Main.mcColor
 
             ActivationSound = SoundID.MenuTick with { Volume = 1f };
 
-            ChatTextColor = Color.White;
             Instance = this;
         }
 
@@ -212,8 +235,23 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => Main.expertMode;
-            set => Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+            get => Main.getGoodWorld ? Main.masterMode : Main.expertMode;
+            set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
+                {
+                    Main.GameMode = value == true ? GameModeID.Expert : GameModeID.Normal;
+                }
+                else
+                {
+                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                    if (power.GetIsUnlocked())
+                    {
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.66f : 0.33f);
+                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                    }
+                }
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -239,26 +277,20 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription
-        {
-            get
-            {
-                return GetText("UI.ExpertExpandedInfo");
-            }
-        }
+        public override LocalizedText ExpandedDescription => GetText("UI.ExpertExpandedInfo");
 
         public ExpertDifficulty()
         {
             DifficultyScale = 0.1f;
-            Name = GetText("UI.Expert");
+            Name = Language.GetText("UI.Expert");
             ShortDescription = GetText("UI.ExpertShortInfo");
+            ChatTextColor = new Color(255, 186, 117); // World display: Main.mcColor
 
-            ActivationTextKey = "Mods.CalamityMod.UI.ExpertActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.ExpertDeactivate";
+            FTWName = Language.GetText("UI.Master");
+            FTWTextColor = new Color(28, 255, 170); // World display: Main.hcColor
 
             ActivationSound = SoundID.ForceRoarPitched;
 
-            ChatTextColor = Color.DarkGoldenrod;
             Instance = this;
         }
 
@@ -269,8 +301,23 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => Main.masterMode;
-            set => Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+            get =>  Main.getGoodWorld ? CalamityWorld.LegendaryMode : Main.masterMode;
+            set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
+                {
+                    Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+                }
+                else
+                {
+                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                    if (power.GetIsUnlocked())
+                    {
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                    }
+                }
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -296,26 +343,20 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription
-        {
-            get
-            {
-                return GetText("UI.MasterExpandedInfo");
-            }
-        }
+        public override LocalizedText ExpandedDescription => GetText("UI.MasterExpandedInfo");
 
         public MasterDifficulty()
         {
             DifficultyScale = 0.25f;
-            Name = GetText("UI.Master");
+            Name = Language.GetText("UI.Master");
             ShortDescription = GetText("UI.MasterShortInfo");
+            ChatTextColor = new Color(28, 255, 170); // World display: Main.hcColor
 
-            ActivationTextKey = "Mods.CalamityMod.UI.MasterActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.MasterDeactivate";
+            FTWName = Language.GetText("UI.Legendary");
+            FTWTextColor = Main.legendaryModeColor;
 
             ActivationSound = SoundID.NPCDeath10;
 
-            ChatTextColor = Color.DarkOliveGreen;
             Instance = this;
         }
 
@@ -327,7 +368,16 @@ namespace CalamityMod.Systems
         public override bool Enabled
         {
             get => CalamityWorld.revenge;
-            set => CalamityWorld.revenge = value;
+            set
+            {
+                if (Main.getGoodWorld)
+                {
+                    CalamityWorld.revenge = value;
+                    CalamityWorld.death = value;
+                }
+                else
+                    CalamityWorld.revenge = value;
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -359,22 +409,22 @@ namespace CalamityMod.Systems
             {
                 string rageKey = "[c/FFCE85:" + CalamityKeybinds.RageHotKey.TooltipHotkeyString() + "]";
                 string adrenKey = "[c/79DFBF:" + CalamityKeybinds.AdrenalineHotKey.TooltipHotkeyString() + "]";
-                return CalamityUtils.GetText("UI.RevengeanceExpandedInfo").WithFormatArgs(rageKey, adrenKey);
+                return GetText("UI.RevengeanceExpandedInfo").WithFormatArgs(rageKey, adrenKey);
             }
         }
 
         public RevengeanceDifficulty()
         {
             DifficultyScale = 0.25f;
-            Name = CalamityUtils.GetText("UI.Revengeance");
-            ShortDescription = CalamityUtils.GetText("UI.RevengeanceShortInfo");
+            Name = GetText("UI.Revengeance");
+            ShortDescription = GetText("UI.RevengeanceShortInfo");
+            ChatTextColor = new Color(211, 42, 42);
 
-            ActivationTextKey = "Mods.CalamityMod.UI.RevengeanceActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.RevengeanceDeactivate";
+            FTWName = GetText("UI.Death");
+            FTWTextColor = new Color(192, 64, 219);
 
             ActivationSound = SoundID.Item119;
 
-            ChatTextColor = Color.Crimson;
             Instance = this;
         }
 
@@ -385,8 +435,29 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get => CalamityWorld.death;
-            set => CalamityWorld.death = value;
+            get => Main.getGoodWorld ? CalamityWorld.death && CalamityWorld.LegendaryMode : CalamityWorld.death;
+            set
+            {
+                if (Main.getGoodWorld)
+                {
+                    if (!Main.GameModeInfo.IsJourneyMode)
+                    {
+                        Main.GameMode = value == true ? GameModeID.Master : GameModeID.Expert;
+                    }
+                    else
+                    {
+                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                        if (power.GetIsUnlocked())
+                        {
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
+                        }
+                    }
+                    CalamityWorld.death = value;
+                }
+                else
+                    CalamityWorld.death = value;
+            }
         }
 
         private Asset<Texture2D> _texture;
@@ -412,20 +483,20 @@ namespace CalamityMod.Systems
             }
         }
 
-        public override LocalizedText ExpandedDescription => CalamityUtils.GetText("UI.DeathExpandedInfo");
+        public override LocalizedText ExpandedDescription => GetText("UI.DeathExpandedInfo");
 
         public DeathDifficulty()
         {
             DifficultyScale = 0.5f;
-            Name = CalamityUtils.GetText("UI.Death");
-            ShortDescription = CalamityUtils.GetText("UI.DeathShortInfo");
+            Name = GetText("UI.Death");
+            ShortDescription = GetText("UI.DeathShortInfo");
+            ChatTextColor = new Color(192, 64, 219);
 
-            ActivationTextKey = "Mods.CalamityMod.UI.DeathActivate";
-            DeactivationTextKey = "Mods.CalamityMod.UI.DeathDeactivate";
+            FTWName = GetText("UI.Malice");
+            FTWTextColor = new Color(240, 128, 128);
 
             ActivationSound = DemonshadeHelm.ActivationSound;
 
-            ChatTextColor = Color.MediumOrchid;
             Instance = this;
         }
 
@@ -437,7 +508,7 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i].Name == CalamityUtils.GetText("UI.Master") || tierList[i].Name == CalamityUtils.GetText("UI.Revengeance"))
+                if (tierList[i].Name == GetText("UI.Master") || tierList[i].Name == GetText("UI.Revengeance"))
                     difficulties.Add(i);
             }
 

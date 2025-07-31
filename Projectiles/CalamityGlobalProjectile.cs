@@ -14,9 +14,11 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -1042,8 +1044,6 @@ namespace CalamityMod.Projectiles
 
             else if (projectile.type == ProjectileID.Sharknado)
             {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
                 int num535 = 10;
                 int num536 = 15;
                 float num537 = 1f;
@@ -1144,8 +1144,6 @@ namespace CalamityMod.Projectiles
             // Larger cthulhunadoes
             else if (projectile.type == ProjectileID.Cthulunado)
             {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
                 if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                 {
                     bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
@@ -2501,7 +2499,7 @@ namespace CalamityMod.Projectiles
                                 for (int k = 0; k < totalProjectiles; k++)
                                 {
                                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, (int)Math.Round(projectile.damage * 0.8), 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, PlanteraAI.ThornBallSpikeDamage, 0f, Main.myPlayer);
                                 }
                             }
 
@@ -3871,6 +3869,8 @@ namespace CalamityMod.Projectiles
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += 0.5f;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;
@@ -3888,6 +3888,8 @@ namespace CalamityMod.Projectiles
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
                 mult += 0.5f;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;

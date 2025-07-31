@@ -25,11 +25,11 @@ namespace CalamityMod.NPCs.Crags
             NPC.damage = 40;
             NPC.width = 40;
             NPC.height = 30;
-            NPC.defense = 10;
-            NPC.lifeMax = 380;
+            NPC.defense = 30;
+            NPC.lifeMax = 250;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 50;
             NPC.lavaImmune = true;
             NPC.noGravity = false;

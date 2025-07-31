@@ -106,37 +106,37 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(bBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
-            ApplyDoTDebuff(heavybleeding, 16, purity);
-            ApplyDoTDebuff(laceration, 24, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
-            ApplyDoTDebuff(bFlames, abaddon ? 10 : 20, purity);
-            ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
-            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 15 : 30, purity);
-            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 15 : 30, purity);
-            ApplyDoTDebuff(hFlames, 24, purity);
-            ApplyDoTDebuff(voidfrost, 30, purity);
-            ApplyDoTDebuff(vHex, 24);
-            ApplyDoTDebuff(trueVHex, 36);
-            ApplyDoTDebuff(cDepth, 15, purity);
-            ApplyDoTDebuff(astralInfection, 18, infectedJewel || hideOfDeus || purity);
-            ApplyDoTDebuff(hPressure, 30, purity);
-            ApplyDoTDebuff(pFlames, alchFlask ? 12 : 24, purity);
-            ApplyDoTDebuff(cragsLava, 30); // Being literally submerged in crags lava should do more than brimstone flames
+            ApplyDoTDebuff(heavybleeding, 16, purity);
+            ApplyDoTDebuff(cDepth, 18, purity);
+            ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
-            ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
+            ApplyDoTDebuff(bFlames, abaddon ? 15 : 30, purity);
+            ApplyDoTDebuff(pFlames, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(vHex, 30); // Has other effects
+            ApplyDoTDebuff(cragsLava, 30);
+            ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
+            ApplyDoTDebuff(laceration, 36, purity);
+            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(hFlames, 40, purity);
+            ApplyDoTDebuff(voidfrost, 40, purity);
+            ApplyDoTDebuff(hPressure, 40, purity);
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
-            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 45 : 35);
+            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 50 : 40);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 40) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
+            ApplyDoTDebuff(trueVHex, 50);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 200 : 50) / (dynamoStemCells ? 2 : 1);
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
-            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(miracleBlight, 60);
+            ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
-            ApplyDoTDebuff(miracleBlight, 50);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
@@ -381,8 +381,8 @@ namespace CalamityMod.CalPlayer
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
             if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
             {
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegen += 6;
             }
@@ -419,10 +419,10 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
                         Player.Heal(1);
 
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
-                    intendedPurityDefense = 20 + (currentDebuffs - 1) * 8;
+                    intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
                     if (jewelBonusDefense < intendedPurityDefense)
                         jewelBonusDefense = intendedPurityDefense;
 
@@ -461,10 +461,10 @@ namespace CalamityMod.CalPlayer
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
-                    intendedJewelDefense = 16 + (currentDebuffs - 1) * 5;
+                    intendedJewelDefense = 12 + (currentDebuffs - 1) * 4;
                     if (jewelBonusDefense < intendedJewelDefense)
                         jewelBonusDefense = intendedJewelDefense;
                 }
@@ -487,8 +487,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.buffType.Any(DebuffsList.List.Contains))
                 {
                     Player.lifeRegen += 3;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
                 }
             }
             #endregion
@@ -676,8 +676,8 @@ namespace CalamityMod.CalPlayer
             {
                 Player.lifeRegen += 7;
 
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegenTime += 4;
             }
@@ -748,9 +748,9 @@ namespace CalamityMod.CalPlayer
 
                 if (turboRegenPower > 0)
                 {
-                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 1800 / 3600.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f)
-                        Player.lifeRegenTime = 1800f;
+                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 900 / 3600.
+                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 900f)
+                        Player.lifeRegenTime = 900f;
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;

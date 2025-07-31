@@ -21,12 +21,15 @@ namespace CalamityMod.NPCs.OldDuke
             this.HideFromBestiary();
         }
 
+        public static int ToothDamage = 60; // 240
+        public static int CloudDamage = 70; // 280
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 0;
@@ -183,7 +186,6 @@ namespace CalamityMod.NPCs.OldDuke
                 int totalProjectiles = CalamityWorld.death ? 5 : CalamityWorld.revenge ? 4 : 3;
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<OldDukeToothBallSpike>();
-                int damage = NPC.GetProjectileDamage(type);
                 float velocity = 10f;
                 double angleA = radians * 0.5;
                 double angleB = MathHelper.ToRadians(90f) - angleA;
@@ -192,14 +194,13 @@ namespace CalamityMod.NPCs.OldDuke
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 toothSpikeRotation = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, toothSpikeRotation * 0.1f, type, damage, 0f, Main.myPlayer, toothSpikeRotation.X, toothSpikeRotation.Y);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, toothSpikeRotation * 0.1f, type, ToothDamage, 0f, Main.myPlayer, toothSpikeRotation.X, toothSpikeRotation.Y);
                 }
 
                 if (Main.expertMode)
                 {
                     type = ModContent.ProjectileType<SandPoisonCloudOldDuke>();
-                    damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, CloudDamage, 0f, Main.myPlayer);
                 }
             }
 
@@ -211,14 +212,9 @@ namespace CalamityMod.NPCs.OldDuke
                     int type = ModContent.ProjectileType<OldDukeGore>();
                     for (int i = 0; i < 2; i++)
                         Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center.X + Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                            Main.rand.Next(-1, 2), Main.rand.Next(-6, -3), type, NPC.damage / 2, 0f, Main.myPlayer);
+                            Main.rand.Next(-1, 2), Main.rand.Next(-6, -3), type, OldDuke.GoreDamage, 0f, Main.myPlayer);
                 }
             }
-        }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)/* tModPorter Note: bossLifeScale -> balance (bossAdjustment is different, see the docs for details) */
-        {
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -252,12 +248,6 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             return base.PreDraw(spriteBatch, screenPos, drawColor);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

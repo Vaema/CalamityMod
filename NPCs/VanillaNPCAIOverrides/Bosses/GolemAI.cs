@@ -13,6 +13,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class GolemAI
     {
+        // Rev+ exclusive
+        public static int FireballDamage = 24; // 96 (modified to be always at maximum Expert damage and does not scale)
+        public static int LaserDamage = 29; // 116 (modified to be always at maximum Expert damage and does not scale)
+        public static int InfernoBoltDamage = 35; // 140
+
         public static bool BuffedGolemAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -393,7 +398,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             projectileVelocity *= 1.25f;
 
                         int type = ProjectileID.Fireball;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = FireballDamage;
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
@@ -435,7 +440,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Vector2 fireFrom = new Vector2(npc.Center.X, npc.Center.Y - 60f);
                                 int projectileAmt = 2;
                                 int type = ProjectileID.EyeBeam;
-                                int damage = npc.GetProjectileDamage(type);
+                                int damage = LaserDamage;
                                 Vector2 laserVelocity = Vector2.UnitY * npc.velocity.Y * (turboEnrage ? 2f : enrage ? 1f : 0.5f);
                                 for (int i = 0; i < projectileAmt; i++)
                                 {
@@ -919,7 +924,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     headFireballTargetY *= headFireballTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
                     int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(headFireballTargetX, headFireballTargetY);
@@ -983,7 +988,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     fireballFistsDedTargetY *= fireballFistsDedTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
                     int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(fireballFistsDedTargetX, fireballFistsDedTargetY);
@@ -1007,7 +1012,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] = 0f;
 
                     int projType = ProjectileID.EyeBeam;
-                    int dmg = npc.GetProjectileDamage(projType);
+                    int dmg = LaserDamage;
 
                     if (npc.localAI[1] == 0f)
                     {
@@ -1378,7 +1383,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     laserVelocity = laserVelocity.SafeNormalize(Vector2.UnitY) * freeHeadProjSpeed;
 
                     int type = ProjectileID.EyeBeam;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = LaserDamage;
                     int freeHeadLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), freeHeadProjSpawn + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
                     Main.projectile[freeHeadLaser].timeLeft = enrage ? 600 : 300;
                     if (turboEnrage && CalamityWorld.LegendaryMode)

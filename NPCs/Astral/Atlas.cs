@@ -125,10 +125,9 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 88;
             NPC.damage = 70;
             NPC.defense = 40;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.08f;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
             NPC.rarity = 1;

@@ -45,9 +45,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = NPC.height = HitboxSize;
             NPC.defense = 50;
@@ -279,7 +279,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (Main.zenithWorld)
             {
                 if (hurtInfo.Damage > 0)
-                    target.AddBuff(BuffID.Obstructed, 30, true);
+                    target.AddBuff(BuffID.Blackout, 30, true);
             }
         }
 

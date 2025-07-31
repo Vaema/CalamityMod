@@ -274,8 +274,16 @@ namespace CalamityMod.NPCs
 
                 // Dreamer Ghoul
                 // Trifold Map @ 1% Normal, 2% Expert+
+                // Light Shard @ 10%
                 case NPCID.DesertGhoulHallow:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    npcLoot.ChangeDropRate(ItemID.LightShard, 1, 10);
+                    break;
+
+                // Crystal Thresher
+                // Light Shard @ 10%
+                case NPCID.SandsharkHallow:
+                    npcLoot.ChangeDropRate(ItemID.LightShard, 1, 10);
                     break;
 
                 // Sand Elemental
@@ -286,6 +294,15 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottle>(), 5, 3));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottlewithBoobs>(), 10, 6));
                     npcLoot.Add(ItemID.DungeonDesertKey, 10);
+                    break;
+
+                // Tainted Ghoul, Vile Ghoul, Bone Biter, Flesh Reaver
+                // Dark Shard @ 10%
+                case NPCID.DesertGhoulCorruption:
+                case NPCID.DesertGhoulCrimson:
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                    npcLoot.ChangeDropRate(ItemID.DarkShard, 1, 10);
                     break;
                 #endregion
 
@@ -678,11 +695,15 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Graveyard
-                // Alternate Blood Orb obtainment methods (10%)
+                // Alternate Blood Orb obtainment methods (20%)
                 case NPCID.MaggotZombie:
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 5);
+                    break;
+
+                // 100%, 3-6 each
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
-                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 3, 6);
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)

@@ -84,10 +84,12 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
+        public static int SpitDamage = 8; // 32
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 64 (1.6x expert scaling)
             NPC.defense = 4;
             NPC.npcSlots = 12f;
             NPC.width = 104;
@@ -100,7 +102,7 @@ namespace CalamityMod.NPCs.DesertScourge
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(0, 2, 0, 0);
+            NPC.value = Item.buyPrice(gold: 1);
             NPC.alpha = 255;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -305,12 +307,11 @@ namespace CalamityMod.NPCs.DesertScourge
                                 if (death)
                                 {
                                     int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     for (int i = 0; i < 7; i++)
                                     {
                                         Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
                                         Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, SpitDamage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -360,12 +361,11 @@ namespace CalamityMod.NPCs.DesertScourge
                                 if (death)
                                 {
                                     int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     for (int i = 0; i < 7; i++)
                                     {
                                         Vector2 sandSpitPos = new Vector2((i - 2) * 16f, -Math.Abs((i - 2) * 16f));
                                         Vector2 sandSpitVelocity = ((sandSplashSpawnPos + Vector2.UnitY * 80f) - (sandSplashSpawnPos + sandSpitPos)).SafeNormalize(Vector2.UnitY) * -((Math.Abs(i - 3) + 1) * 3f);
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), sandSplashSpawnPos + sandSpitPos, sandSpitVelocity, type, SpitDamage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
@@ -598,7 +598,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 SoundEngine.PlaySound(SandBlastSound, NPC.Center);
                 float velocity = CalamityWorld.LegendaryMode ? 16f : death ? 8.5f : revenge ? 8f : expertMode ? 7.5f : 6f;
                 int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                int damage = NPC.GetProjectileDamage(type);
                 Vector2 projectileVelocity = (NPC.Center + NPC.velocity * 10f - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                 int numProj = death ? 24 : revenge ? 21 : expertMode ? 18 : 12;
                 if (CalamityWorld.LegendaryMode)
@@ -617,7 +616,7 @@ namespace CalamityMod.NPCs.DesertScourge
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(perturbedSpeed) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(perturbedSpeed) * 5f, perturbedSpeed, type, SpitDamage, 0f, Main.myPlayer);
                 }
 
                 NPC.TargetClosest();
@@ -800,26 +799,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 Vector2 destination = lungeUpward ? new Vector2(player.Center.X, lungeTarget) : player.Center;
                 if (NPC.Distance(destination) > (lungeUpward ? 1000f : 2000f))
                     NPC.velocity += (destination - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
-            }
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            if (hide)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-                {
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-                }
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-                }
             }
 
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
@@ -1067,7 +1046,7 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

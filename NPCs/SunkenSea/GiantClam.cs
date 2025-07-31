@@ -66,11 +66,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 160;
             NPC.height = 120;
             NPC.defense = 9999;
-            NPC.DR_NERD(0.3f);
             NPC.lifeMax = Main.hardMode ? 7500 : 1250;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 5, 0, 0) : Item.buyPrice(0, 1, 0, 0);
+            NPC.value = Main.hardMode ? Item.buyPrice(gold: 5) : Item.buyPrice(gold: 1);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.knockBackResist = 0f;
             NPC.rarity = 2;
@@ -126,6 +125,12 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 ++hitAmount;
                 hasBeenHit = true;
+            }
+
+            if (!hasBeenHit)
+            {
+                // No contact damage while chillaxing
+                NPC.damage = 0;
             }
 
             NPC.chaseable = hasBeenHit;

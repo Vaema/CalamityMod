@@ -24,7 +24,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 34;
             NPC.height = 34;
             NPC.defense = 30;
-            NPC.DR_NERD(0.3f);
             NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -102,21 +101,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.velocity = Vector2.Zero;
                 NPC.position.X = NPC.position.X + targetXDist;
                 NPC.position.Y = NPC.position.Y + targetYDist;
-            }
-
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = CalamityWorld.death ? 13.5f : 10f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 
