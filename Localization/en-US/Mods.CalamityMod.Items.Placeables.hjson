@@ -4628,3 +4628,18 @@ AridSoil: {
 	DisplayName: Arid Soil
 	Tooltip: ""
 }
+
+RunestoneTerracotta: {
+	DisplayName: Runestone Terracotta
+	Tooltip: ""
+}
+
+ShellTrimBrick: {
+	DisplayName: Shell Trim Brick
+	Tooltip: ""
+}
+
+ShellTrimBrickWall: {
+	DisplayName: Shell Trim Brick Wall
+	Tooltip: ""
+}
