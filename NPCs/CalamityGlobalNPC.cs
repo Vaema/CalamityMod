@@ -1583,7 +1583,7 @@ namespace CalamityMod.NPCs
         public override bool? CanFallThroughPlatforms(NPC npc)
         {
             // Allow the free Golem Head to pass through platforms in Rev+
-            if (npc.type == NPCID.GolemHeadFree && CalamityWorld.revenge)
+            if (npc.type == NPCID.GolemHeadFree && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
                 return true;
             return base.CanFallThroughPlatforms(npc);
         }
@@ -6630,6 +6630,7 @@ namespace CalamityMod.NPCs
         {
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
+                // Used to force the head to look to the sides for the laser spread attack
                 if (npc.type == NPCID.GolemHead && (npc.ai[0] == 2f || npc.ai[0] == 3f))
                 {
                     if (npc.localAI[1] == 1f)
@@ -7206,6 +7207,45 @@ namespace CalamityMod.NPCs
 
                     npc.frame.Y = (int)newAI[3];
                 }
+
+                if (npc.type == NPCID.GolemHeadFree)
+                {
+                    // Draw the head as usual.
+                    Texture2D golemHeadTexture = TextureAssets.Npc[npc.type].Value;
+                    Vector2 headDrawPosition = npc.Center - screenPos;
+                    spriteBatch.Draw(golemHeadTexture, headDrawPosition, npc.frame, npc.GetAlpha(drawColor), 0f, npc.frame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+
+                    // Draw the eyes. The way vanilla handles this is hardcoded bullshit that cannot handle different hitboxes and thus requires rewriting.
+                    Color eyeColor = new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, 0);
+                    Vector2 eyesDrawPosition = headDrawPosition - npc.scale * new Vector2(1f, 12f);
+                    Rectangle eyesFrame = new Rectangle(0, 0, TextureAssets.Golem[1].Value.Width, TextureAssets.Golem[1].Value.Height / 2);
+                    spriteBatch.Draw(TextureAssets.Golem[1].Value, eyesDrawPosition, eyesFrame, eyeColor, 0f, eyesFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+
+                    // Draw the glowmasks.
+                    int frameCounter = (int)npc.frameCounter / 4;
+                    Rectangle frame = TextureAssets.Extra[106].Value.Frame(1, 8);
+                    frame.Y += frame.Height * 2 * frameCounter + npc.frame.Y;
+                    Rectangle glowFrame = frame;
+                    spriteBatch.Draw(TextureAssets.Extra[106].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                    frame = npc.frame;
+                    Rectangle glowFrame2 = frame;
+                    spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+
+                    // Draw the sparkle telegraphs for the laser spread attack if applicable.
+                    if (npc.ai[0] == 3f && npc.ai[1] <= 60f)
+                    {
+                        spriteBatch.SetBlendState(BlendState.Additive);
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Texture2D sparkle = Request<Texture2D>("CalamityMod/Particles/Sparkle2").Value;
+                            Vector2 sparkleDraw = headDrawPosition + new Vector2(14f * i, -15f) * npc.scale;
+                            Color drawFade = Color.Yellow * Utils.GetLerpValue(0, 30, 60f - npc.ai[1], true);
+                            spriteBatch.Draw(sparkle, sparkleDraw, null, drawFade, MathHelper.Pi * 0.02f * npc.ai[1] * i, sparkle.Size() / 2f, 1.25f * npc.scale, SpriteEffects.None, 0f);
+                        }
+                        spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                    }
+                    shouldDrawBool = false;
+                }
             }
 
             if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
@@ -7219,45 +7259,6 @@ namespace CalamityMod.NPCs
                 Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
 
                 shouldDrawBool = false;
-            }
-
-            if (npc.type == NPCID.GolemHeadFree)
-            {
-                // Draw the head as usual.
-                Texture2D golemHeadTexture = TextureAssets.Npc[npc.type].Value;
-                Vector2 headDrawPosition = npc.Center - screenPos;
-                spriteBatch.Draw(golemHeadTexture, headDrawPosition, npc.frame, npc.GetAlpha(drawColor), 0f, npc.frame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-
-                // Draw the eyes. The way vanilla handles this is hardcoded bullshit that cannot handle different hitboxes and thus requires rewriting.
-                Color eyeColor = new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, 0);
-                Vector2 eyesDrawPosition = headDrawPosition - npc.scale * new Vector2(1f, 12f);
-                Rectangle eyesFrame = new Rectangle(0, 0, TextureAssets.Golem[1].Value.Width, TextureAssets.Golem[1].Value.Height / 2);
-                spriteBatch.Draw(TextureAssets.Golem[1].Value, eyesDrawPosition, eyesFrame, eyeColor, 0f, eyesFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-
-                // Draw the glowmasks.
-                int frameCounter = (int)npc.frameCounter / 4;
-                Rectangle frame = TextureAssets.Extra[106].Value.Frame(1, 8);
-                frame.Y += frame.Height * 2 * frameCounter + npc.frame.Y;
-                Rectangle glowFrame = frame;
-                spriteBatch.Draw(TextureAssets.Extra[106].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-                frame = npc.frame;
-                Rectangle glowFrame2 = frame;
-                spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
-                shouldDrawBool = false;
-
-                // Draw the sparkle telegraphs for the laser spread attack
-                if (npc.ai[0] == 3f && npc.ai[1] <= 60f)
-                {
-                    spriteBatch.SetBlendState(BlendState.Additive);
-                    for (int i = -1; i <= 1; i += 2)
-                    {
-                        Texture2D sparkle = Request<Texture2D>("CalamityMod/Particles/Sparkle2").Value;
-                        Vector2 sparkleDraw = headDrawPosition + new Vector2(14f * i, -15f) * npc.scale;
-                        Color drawFade = Color.Yellow * Utils.GetLerpValue(0, 30, 60f - npc.ai[1], true);
-                        spriteBatch.Draw(sparkle, sparkleDraw, null, drawFade, MathHelper.Pi * 0.02f * npc.ai[1] * i, sparkle.Size() / 2f, 1.25f * npc.scale, SpriteEffects.None, 0f);
-                    }
-                    spriteBatch.SetBlendState(BlendState.AlphaBlend);
-                }
             }
 
             if (Main.LocalPlayer.Calamity().trippy && !npc.IsABestiaryIconDummy)
