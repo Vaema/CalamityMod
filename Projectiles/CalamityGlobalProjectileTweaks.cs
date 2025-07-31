@@ -298,6 +298,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
+                { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
                 { ProjectileID.PaladinsHammerHostile, defenseDamage },
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
