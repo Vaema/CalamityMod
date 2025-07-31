@@ -226,7 +226,7 @@ VictideBreastplate: {
 
 VictideGreaves: {
 	DisplayName: Victide Greaves
-	Tooltip: "{0}% increased movement speed"
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed}"
 }
 
 VictideHeadBarrier: {
@@ -236,12 +236,11 @@ VictideHeadBarrier: {
 		+{0} HP/s life regen
 		Increases movement acceleration and deceleration by {1}x
 		'''
-	AbilityBrief: "[c/61C8FF:Warding Wave - Generates a tidal shield which can be exploded to propel you]"
-	AbilityDescription:
+	SetBonus:
 		'''
-		[c/A2D0FF:The barrier grants {0} defense and converts {1} points of defense damage into healing]
-		[c/A2D0FF:This effect takes {2} seconds to build up or recover]
-		[c/A2D0FF:Press {3} to disperse the barrier and propel you in the direction of the cursor]
+		[c/{0}:Warding Wave - Generates a tidal barrier which can be exploded to propel you]
+		[c/A2D6FF:The barrier grants {1} defense and converts {2} {^2:point;points} of defense damage into healing]
+		[c/A2D6FF:{3} to disperse it for {4} {^4:second;seconds} and propel you in the direction of the cursor]
 		'''
 }
 
@@ -252,13 +251,13 @@ VictideHeadBurrow: {
 		{0}% increased movement speed and acceleration
 		Grants underwater breathing and slightly reduces breah loss in the abyss
 		'''
-	SetBonus: Allows quick travel in water
-	AbilityBrief: "[c/61C8FF:Bubbly Burrow - Press {0} to transform into an water spirit for a short time]"
-	AbilityDescription:
+	SetBonus:
 		'''
-		[c/A2D0FF:The spirit can be controlled through movement keys and can traverse through tiles]
-		[c/A2D0FF:While in spirit form, you are impervious and unable to use items]
-		[c/A2D0FF:This effect lasts {0} seconds and has a cooldown of {1} seconds]
+		Allows quick travel in water
+		[c/{0}:Bubbly Burrow - {1} to transform into an agile water spirit for a short time]
+		[c/A2D6FF:The spirit can be controlled through movement keys and can traverse through tiles]
+		[c/A2D6FF:While in spirit form, you are impervious and unable to use items]
+		[c/A2D6FF:This effect lasts {2} {^2:second;seconds} and has a cooldown of {3} {^3:second;seconds}]
 		'''
 }
 
@@ -266,14 +265,13 @@ VictideHeadSnail: {
 	DisplayName: Victide Mask
 	Tooltip:
 		'''
-		Increases fishing power by {0}
-		Slightly decreases enemy spawn rates
-		Enemies are less likely to target you
+		{$CommonItemTooltip.IncreasesFishingPowerBy}
+		{$Common.AggroReduction}
 		'''
 	SetBonus:
 		'''
 		Summons a sea snail to fish alongside you
-		It automatically casts and reels while you are standing still and fishing
+		It automatically casts and reels as you are standing still and fishing
 		Fishing stats are inherited from its owner
 		'''
 }

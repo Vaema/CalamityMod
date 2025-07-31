@@ -1,5 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -28,17 +30,15 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 5; // 16
+            Item.defense = 5; // 14
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalizedValue("SetBonus")
-            + "\n" + this.GetLocalization("AbilityBrief").Format(hotkey)
-            + "\n" + this.GetLocalization("AbilityDescription").Format(BurrowDuration.FramesToSeconds(), BurrowCooldown.FramesToSeconds());
+            Color AbilityBriefColor = Color.Lerp(new Color(97, 200, 255), new Color(255, 170, 204), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), CalamityUtils.GetArmorSetBonusKey(), BurrowDuration.FramesToSeconds(), BurrowCooldown.FramesToSeconds());
             player.Calamity().victideBurrowSet = true;
             player.ignoreWater = true;
         }

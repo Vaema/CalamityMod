@@ -18,6 +18,7 @@ using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
@@ -2950,6 +2951,17 @@ namespace CalamityMod.CalPlayer
                 // Apply floor
                 if (defenseDamageTaken < defenseDamageFloor)
                     defenseDamageTaken = defenseDamageFloor;
+            }
+
+            // Victide Barrier interaction: absorbs up to 2 points of Defense Damage and converts it to healing
+            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
+            {
+                int conversionAmount = (defenseDamageTaken >= VictideHeadBarrier.BarrierDefenseDamageRecovery ? VictideHeadBarrier.BarrierDefenseDamageRecovery : defenseDamageTaken);
+                if (conversionAmount > 0)
+                {
+                    defenseDamageTaken -= conversionAmount;
+                    Player.HealPlayer(conversionAmount);
+                }
             }
 
             // The amount of defense damage taken is now final. Apply it.

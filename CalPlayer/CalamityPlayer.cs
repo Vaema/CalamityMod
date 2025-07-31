@@ -1097,7 +1097,6 @@ namespace CalamityMod.CalPlayer
         public bool victideBurrowSet = false;
         public bool victideBurrowHead = false;
         public bool victideSnailSet = false;
-        public bool victideSnailHead = false;
         public bool sulphurSet = false;
         public bool sulphurJump = false;
         public int sulphurBubbleCooldown = 0;
@@ -2388,7 +2387,6 @@ namespace CalamityMod.CalPlayer
             victideBurrowSet = false;
             victideBurrowHead = false;
             victideSnailSet = false;
-            victideSnailHead = false;
 
             sulphurSet = false;
 
@@ -3170,7 +3168,6 @@ namespace CalamityMod.CalPlayer
             victideBarrierHead = false;
             victideBurrowSet = false;
             victideBurrowHead = false;
-            victideSnailHead = false;
             aeroSet = false;
             sulphurSet = false;
             statigelSet = false;
@@ -3776,7 +3773,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    Player.AddCooldown(WardingWave.ID, BarrierCooldown);
+                    Player.AddCooldown(WardingWave.ID, VictideHeadBarrier.BarrierCooldown);
 
                     DeferredDashID = VictideBarrierDash.ID;
                     Player.dash = 0;

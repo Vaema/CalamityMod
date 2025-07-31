@@ -1,5 +1,8 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System;
+using CalamityMod.CalPlayer;
+using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -13,7 +16,7 @@ namespace CalamityMod.Items.Armor.Victide
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static int RegenBoost = 3;
+        public static int RegenBoost = 2;
         public static float RunAccelerationMult = 1.75f;
         public static int BarrierCooldown = CalamityUtils.SecondsToFrames(8);
         public static int BarrierDefenseBoost = 10;
@@ -28,17 +31,19 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 9; // 20
+            Item.defense = 9; // 18
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalizedValue("AbilityBrief")
-            + "\n" + this.GetLocalization("AbilityDescription").Format(BarrierDefenseBoost, BarrierDefenseDamageRecovery, BarrierCooldown.FramesToSeconds(), hotkey);
+            Color AbilityBriefColor = Color.Lerp(new Color(97, 200, 255), new Color(255, 170, 204), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), BarrierDefenseBoost, BarrierDefenseDamageRecovery, CalamityUtils.GetArmorSetBonusKey(), BarrierCooldown.FramesToSeconds());
             player.Calamity().victideBarrierSet = true;
+
+            if (!player.HasCooldown(WardingWave.ID))
+                player.statDefense += BarrierDefenseBoost;
         }
 
         public override void UpdateEquip(Player player)

@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.Victide
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/Victide/VictideBreastplate_Bulk";
 
-        public static int RegenBoost = 3;
+        public static int RegenBoost = 2;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond());
 
@@ -27,7 +27,6 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void SetStaticDefaults()
         {
-
             if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -42,7 +41,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 6;
+            Item.defense = 5;
         }
 
         public override void UpdateEquip(Player player)

@@ -6223,11 +6223,6 @@ namespace CalamityMod.NPCs
             // Reductions
             if (Main.SceneMetrics.PeaceCandleCount > 0)
                 spawnRate = (int)(spawnRate * 1.0989); // On top of 1.3 = 1.4286x (0.77x -> 0.7x spawn rate)
-            if (player.Calamity().victideSnailHead)
-            {
-                spawnRate = (int)(spawnRate * 1.25); // 0.8x spawn rate
-                maxSpawns = (int)(maxSpawns * 0.8f);
-            }
             if (player.Calamity().tranquilityCandle)
             {
                 spawnRate = (int)(spawnRate * 1.6666); // 0.6x spawn rate

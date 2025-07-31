@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 1; // 12
+            Item.defense = 1; // 10
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();
@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().victideSnailHead = true;
             player.fishingSkill += FishingPowerBoost;
             player.aggro -= AggroReduction;
         }
