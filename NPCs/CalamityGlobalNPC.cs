@@ -1582,8 +1582,8 @@ namespace CalamityMod.NPCs
 
         public override bool? CanFallThroughPlatforms(NPC npc)
         {
-            // Allow the free Golem Head to pass through platforms
-            if (npc.type == NPCID.GolemHeadFree)
+            // Allow the free Golem Head to pass through platforms in Rev+
+            if (npc.type == NPCID.GolemHeadFree && CalamityWorld.revenge)
                 return true;
             return base.CanFallThroughPlatforms(npc);
         }
