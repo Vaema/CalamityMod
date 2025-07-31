@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Tiles.SunkenSea;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.FurnitureRunestone
 {
-    public class Runestone : ModTile
+    public class RunestoneTerracotta : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -22,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
             DustType = DustID.Pot;
-            AddMapEntry(new Color(151, 91, 81));
+            AddMapEntry(new Color(186, 130, 130));
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
