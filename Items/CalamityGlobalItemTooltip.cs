@@ -895,7 +895,7 @@ namespace CalamityMod.Items
 
             // Magic Power Potion nerf
             if (item.type == ItemID.MagicPowerPotion)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicPowerPotion"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "10%"));
 
             // Featherfall Potion being stupid broken with Aero Stone
             if (item.type == ItemID.FeatherfallPotion)
