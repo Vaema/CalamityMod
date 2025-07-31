@@ -239,7 +239,8 @@ namespace CalamityMod.NPCs.DevourerofGods
         }
 
         public static int LaserWallDamage = 75; // 300
-        public static int FireballDamage = 60; // 240; Also applies to Legendary Mode Ichor Blob
+        public static int LaserWallMiddleBeamDamage = 85; // 340
+        public static int FireballDamage = 60; // 240
 
         public override void SetDefaults()
         {
@@ -809,33 +810,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     if (isInPassiveState)
                     {
                         ShootFireballs(player, distanceFromTarget, revenge);
-
-                        /*calamityGlobalNPC.newAI[0] += 1f;
-                        if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
-                        {
-                            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
-                            if (dotProduct > 0.8f)
-                            {
-                                if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
-                                {
-                                    float fireballSpeed = 8f;
-                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
-
-                                    Vector2 dustVelocity = fireballVelocity * 2f;
-                                    for (int k = 0; k < 50; k++)
-                                        Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
-
-                                    int type = ModContent.ProjectileType<DoGFire>();
-                                    int damage = FireballDamage;
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
-
-                                    calamityGlobalNPC.newAI[0] = 0f;
-                                }
-                            }
-                        }*/
-
                     }
                     else
                     {
@@ -847,8 +821,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     {
                         if (death && phase6)
                         {
-                            int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = LaserWallDamage;
                             float spacing = 320;
                             float miniInterval = 12;
                             float megaInterval = 120;
@@ -856,11 +828,11 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                             for (var i = 0; i < 3; i++)
                                 if ((int)(calamityGlobalNPC.newAI[1] - miniInterval * i) % megaInterval == 0f)
                                 {
-                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, spacing, 2-i);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, time, spacing, 2-i);
                                     if (i == 2) 
-                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, time, 0, i);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), LaserWallMiddleBeamDamage, 0, Main.myPlayer, time, 0, i);
                                     else if (Main.zenithWorld)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, time, 240, 6);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, time, 240, 6);
                                 }
                             calamityGlobalNPC.newAI[1] += 1f;
                         }
@@ -872,8 +844,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
 
                             if (calamityGlobalNPC.newAI[1] % divisor == 0f)
                             {
-                                int type = ModContent.ProjectileType<DoGDeath>();
-                                int damage = LaserWallDamage;
                                 float spacing = death ? 144 : 160;
                                 if (divisor == 0)
                                     spacing += 64;
@@ -882,12 +852,12 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int bType = Main.rand.Next(0, 5 + 1);
-                                    Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.5f, spacing, bType);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.5f, spacing, bType);
                                     if (phase6 || death)
-                                        Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), (int)(damage * 1.1f), 0, Main.myPlayer, 0.5f, 0, bType);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center, Vector2.Zero, ModContent.ProjectileType<DoGLaserWallsBigBeam>(), LaserWallMiddleBeamDamage, 0, Main.myPlayer, 0.5f, 0, bType);
 
                                     if (Main.zenithWorld)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.5f, 120, 6);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.5f, 120, 6);
                                 }
                             }
                             calamityGlobalNPC.newAI[1] += 1f;
@@ -1460,33 +1430,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         ShootFireballs(player, distanceFromTarget, revenge);
                     } 
                     else
-                        /*calamityGlobalNPC.newAI[0] += 1f;
-                        if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
-                        {
-                            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
-                            if (dotProduct > 0.8f)
-                            {
-                                if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
-                                {
-                                    float fireballSpeed = 8f;
-                                    Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
-
-                                    Vector2 dustVelocity = fireballVelocity * 2f;
-                                    for (int k = 0; k < 50; k++)
-                                        Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
-
-                                    int type = ModContent.ProjectileType<DoGFire>();
-                                    int damage = FireballDamage;
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
-
-                                    calamityGlobalNPC.newAI[0] = 0f;
-                                }
-                            }
-                        }
-                    } else*/
-
                     {
                         calamityGlobalNPC.newAI[0] = 0f;
                     }
@@ -1582,17 +1525,13 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
 
                         if (calamityGlobalNPC.newAI[1] % (int)(laserBarrageShootGateValue * (death ? 0.33f : 0.5f)) == 0f && calamityGlobalNPC.newAI[1] > 0f)
                         {
-                            // Side walls
-                            int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = LaserWallDamage;
-
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int bType = Main.rand.Next(0, 5 + 1);
-                                Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.45f, 170, bType);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.45f, 170, bType);
 
                                 if (Main.zenithWorld)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), damage, 0, Main.myPlayer, 0.45f, 120, 6);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center + Main.rand.NextVector2CircularEdge(600, 600), Vector2.Zero, ModContent.ProjectileType<DoGLaserWalls>(), LaserWallDamage, 0, Main.myPlayer, 0.45f, 120, 6);
                             }
                         }
                     }
@@ -2220,11 +2159,9 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
 
                         float fireballSpeed = 8f;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
-                        int type = ModContent.ProjectileType<DoGFire>();
-                        int damage = FireballDamage;
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, fireballVelocity, type, damage, 0f, Main.myPlayer, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, fireballVelocity, ModContent.ProjectileType<DoGFire>(), FireballDamage, 0f, Main.myPlayer, 2f);
 
                         calamityGlobalNPC.newAI[0] = 0f;
                         NPC.ForceNetUpdate(false);
@@ -2290,33 +2227,31 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 return;
             bool phase6 = NPC.life / (float)NPC.lifeMax < 0.25f;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
+            if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
+            {
+                float finalVelocity = death ? 12f : 10f;
+                int totalSpreads = revenge ? 6 : 3;
+                float mult = revenge ? 1.5f : 3f;
+                for (int i = 0; i < totalSpreads; i++)
                 {
-                    int type = ModContent.ProjectileType<DoGFire>();
-                    int damage = FireballDamage;
-                    float finalVelocity = death ? 12f : 10f;
-                    int totalSpreads = revenge ? 6 : 3;
-                    float mult = revenge ? 1.5f : 3f;
-                    for (int i = 0; i < totalSpreads; i++)
+                    if (!death && i % 3 == 2)
+                        continue;
+                    int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : 12;
+                    float radians = MathHelper.TwoPi / totalProjectiles;
+                    float newVelocity = finalVelocity - i * mult;
+                    float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
+                    double angleA = radians * 0.5;
+                    double angleB = MathHelper.ToRadians(90f) - angleA;
+                    float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
+                    Vector2 spinningPoint = i < 3 ? new Vector2(0f, -newVelocity) : new Vector2(-velocityX, -newVelocity);
+                    float finalVelocityReduction = (float)Math.Pow(1.25, i) - 1f;
+                    for (int k = 0; k < totalProjectiles; k++)
                     {
-                        if (!death && i % 3 == 2)
-                            continue;
-                        int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : 12;
-                        float radians = MathHelper.TwoPi / totalProjectiles;
-                        float newVelocity = finalVelocity - i * mult;
-                        float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
-                        double angleA = radians * 0.5;
-                        double angleB = MathHelper.ToRadians(90f) - angleA;
-                        float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
-                        Vector2 spinningPoint = i < 3 ? new Vector2(0f, -newVelocity) : new Vector2(-velocityX, -newVelocity);
-                        float finalVelocityReduction = (float)Math.Pow(1.25, i) - 1f;
-                        for (int k = 0; k < totalProjectiles; k++)
-                        {
-                            Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), newPosition, vector255, type, damage, 0f, Main.myPlayer, velocityMult, finalVelocity - finalVelocityReduction);
-                        }
+                        Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), newPosition, vector255, ModContent.ProjectileType<DoGFire>(), FireballDamage, 0f, Main.myPlayer, velocityMult, finalVelocity - finalVelocityReduction);
                     }
                 }
+            }
 
             NPC.TargetClosest();
             NPC.position = newPosition;
@@ -2324,24 +2259,23 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             chargeVelocity *= (death) ? (!(phase6 && NPC.ai[3] < 7)) ? 2.5f : 3 : 2.25f;
             float maxChargeDistance = 1800f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
-                int phase6dashcount = death ? 5 : 3;
-                if (phase6 && NPC.ai[3] < 2 + phase6dashcount)
-                {
-                    if (NPC.ai[3] < 3)
-                        NPC.ai[3] = 3;
-                    NPC.ai[3]++;
+            int phase6dashcount = death ? 5 : 3;
+            if (phase6 && NPC.ai[3] < 2 + phase6dashcount)
+            {
+                if (NPC.ai[3] < 3)
+                    NPC.ai[3] = 3;
+                NPC.ai[3]++;
                 if (Main.getGoodWorld && NPC.life / (float)NPC.lifeMax < 0.10f)
                 {
                     NPC.ai[3] = 4;
                     NPC.SimpleStrikeNPC(5000,1);
                 }
-                }
-                else
-                {
-
-                    NPC.ai[3] = 0;
-                }
-                NPC.Calamity().newAI[2] = 0;
+            }
+            else
+            {
+                NPC.ai[3] = 0;
+            }
+            NPC.Calamity().newAI[2] = 0;
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
             NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
@@ -2798,8 +2732,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
         {
             if (hurtInfo.Damage <= 0)
                 return;
-
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 300);
             
             if (target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
             {
@@ -2872,12 +2804,11 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         positionY = (float)location.Y + (float)location.Height * 0.75f + vector.Y * 0.5f;
                     }
                     // Spawn a projectile that mimmicks combat text behaviour
-                    int p = Projectile.NewProjectile(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f, -14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
-                    Projectile proj = Main.projectile[p];
+                    Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f, -14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
                     proj.rotation = proj.velocity.X < 0 ? -0.06f : 0.06f;
 
                     // Pass the spoken dialogue into it
-                    DoGWingdings wingdings = Main.projectile[p].ModProjectile<DoGWingdings>();
+                    DoGWingdings wingdings = proj.ModProjectile<DoGWingdings>();
                     wingdings.dialogue = Language.GetTextValue(text);
                 }
                 else

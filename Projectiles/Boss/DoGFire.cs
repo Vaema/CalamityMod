@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Boss
         }
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.hostile = true;
@@ -90,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), CalamityUtils.SecondsToFrames(6));
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), CalamityUtils.SecondsToFrames(5));
         }
 
         public override void OnKill(int timeLeft)
