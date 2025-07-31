@@ -1099,8 +1099,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 laserVelocity = Vector2.UnitY.RotatedBy(laserFireAngle * -npc.localAI[1]) * (death ? 15f : 12f);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int dmg = npc.GetProjectileDamage(ProjectileID.EyeBeam);
-                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, dmg, 0f, Main.myPlayer, 0f, 1f);
+                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, LaserDamage, 0f, Main.myPlayer, 0f, 1f);
                         Main.projectile[extraLasers].timeLeft = enrage ? 600 : 300;
                         if (turboEnrage && CalamityWorld.LegendaryMode)
                             Main.projectile[extraLasers].extraUpdates += 1;
@@ -1325,8 +1324,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 laserVelocity = -Vector2.UnitY.RotatedBy(laserFireAngle * i) * (death ? 15f : 12f);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int dmg = npc.GetProjectileDamage(ProjectileID.EyeBeam);
-                            int spreadLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, dmg, 0f, Main.myPlayer, 0f, 1f);
+                            int spreadLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, LaserDamage, 0f, Main.myPlayer, 0f, 1f);
                             Main.projectile[spreadLasers].timeLeft = enrage ? 600 : 300;
                             if (turboEnrage && CalamityWorld.LegendaryMode)
                                 Main.projectile[spreadLasers].extraUpdates += 1;
@@ -1346,7 +1344,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 fireBoltVelocity = Utils.DirectionTo(spawnLocation, Main.player[npc.target].Center) * (enrage ? 30f : death ? 16f : 12f);
 
                     int type = ModContent.ProjectileType<GolemInfernoBolt>();
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = InfernoBoltDamage;
                     Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation, fireBoltVelocity, type, damage, 0f, Main.myPlayer, Main.player[npc.target].Center.X, Main.player[npc.target].Center.Y);
                 }
 
