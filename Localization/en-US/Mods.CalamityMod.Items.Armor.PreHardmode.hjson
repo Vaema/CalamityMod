@@ -238,7 +238,7 @@ VictideHeadBarrier: {
 		'''
 	SetBonus:
 		'''
-		[c/{0}:Warding Wave - Generates a tidal barrier which can be exploded to propel you]
+		[c/{0}:Warding Wave - Forms a tidal barrier which can be exploded to propel you]
 		[c/A2D6FF:The barrier grants {1} defense and converts {2} {^2:point;points} of defense damage into healing]
 		[c/A2D6FF:{3} to disperse it for {4} {^4:second;seconds} and propel you in the direction of the cursor]
 		'''

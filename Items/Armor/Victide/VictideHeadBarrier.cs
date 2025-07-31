@@ -2,6 +2,7 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -22,6 +23,7 @@ namespace CalamityMod.Items.Armor.Victide
         public static int BarrierDefenseBoost = 10;
         public static int BarrierDefenseDamageRecovery = 2;
         public static int BarrierExplosionDamage = 100;
+        public static float BarrierExplosionKB = 8f;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), RunAccelerationMult.Round());
 
@@ -43,7 +45,16 @@ namespace CalamityMod.Items.Armor.Victide
             player.Calamity().victideBarrierSet = true;
 
             if (!player.HasCooldown(WardingWave.ID))
+            {
                 player.statDefense += BarrierDefenseBoost;
+
+                if (player.whoAmI == Main.myPlayer && player.ownedProjectileCounts[ModContent.ProjectileType<VictideBarrier>()] < 1)
+                {
+                    // Damage will be set once explosion goes off
+                    var source = player.GetSource_ItemUse(Item);
+                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VictideBarrier>(), 0, BarrierExplosionKB, player.whoAmI);
+                }
+            }
         }
 
         public override void UpdateEquip(Player player)

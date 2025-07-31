@@ -2953,7 +2953,7 @@ namespace CalamityMod.CalPlayer
                     defenseDamageTaken = defenseDamageFloor;
             }
 
-            // Victide Barrier interaction: absorbs up to 2 points of Defense Damage and converts it to healing
+            // Victide Barrier interaction: absorbs defense damage and converts it to healing
             if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
             {
                 int conversionAmount = (defenseDamageTaken >= VictideHeadBarrier.BarrierDefenseDamageRecovery ? VictideHeadBarrier.BarrierDefenseDamageRecovery : defenseDamageTaken);
