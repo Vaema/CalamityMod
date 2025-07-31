@@ -427,90 +427,48 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = npc.defDamage;
 
                     // Velocity when falling
-                    if (npc.ai[2] == 2f)
+                    if ((npc.position.X < Main.player[npc.target].position.X && npc.position.X + npc.width > Main.player[npc.target].position.X + Main.player[npc.target].width) || npc.ai[2] == 1f)
                     {
-                        // Do not collide with tiles while doing this crazy shit
-                        npc.noTileCollide = true;
+                        npc.velocity.X *= npc.ai[2] == 1f ? 0.5f : 0.8f;
 
-                        float laserShootGateValue = death ? 8f : 10.5f;
-                        if (npc.ai[3] % laserShootGateValue == 0f)
+                        if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
                         {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Vector2 fireFrom = new Vector2(npc.Center.X, npc.Center.Y - 60f);
-                                int projectileAmt = 2;
-                                int type = ProjectileID.EyeBeam;
-                                int damage = LaserDamage;
-                                Vector2 laserVelocity = Vector2.UnitY * npc.velocity.Y * (turboEnrage ? 2f : enrage ? 1f : 0.5f);
-                                for (int i = 0; i < projectileAmt; i++)
-                                {
-                                    int totalProjectiles = 2;
-                                    float radians = MathHelper.TwoPi / totalProjectiles;
-                                    for (int j = 0; j < totalProjectiles; j++)
-                                    {
-                                        Vector2 projVelocity = laserVelocity.RotatedBy(radians * j + MathHelper.PiOver2);
-                                        int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer);
-                                        Main.projectile[bodyLaser].timeLeft = enrage ? 720 : 360;
-                                        if (turboEnrage && CalamityWorld.LegendaryMode)
-                                            Main.projectile[bodyLaser].extraUpdates += 1;
-                                    }
-                                }
-                            }
-                        }
+                            float fallSpeedBoost = death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
+                            float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
+                            if (enrage)
+                                fallSpeed *= 2f;
 
-                        npc.ai[3] -= 1f;
-                        if (npc.ai[3] <= 0f)
-                        {
-                            npc.ai[2] = 0f;
-                            npc.ai[3] = 0f;
-                            npc.ForceNetUpdate();
+                            npc.velocity.Y += fallSpeed;
                         }
                     }
                     else
                     {
-                        if ((npc.position.X < Main.player[npc.target].position.X && npc.position.X + npc.width > Main.player[npc.target].position.X + Main.player[npc.target].width) || npc.ai[2] == 1f)
-                        {
-                            npc.velocity.X *= npc.ai[2] == 1f ? 0.5f : 0.8f;
+                        float velocityChangeBoost = death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
+                        float velocityXChange = (death ? 0.285f : 0.2f) + velocityChangeBoost;
+                        if (npc.direction < 0)
+                            npc.velocity.X -= velocityXChange;
+                        else if (npc.direction > 0)
+                            npc.velocity.X += velocityXChange;
 
-                            if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
-                            {
-                                float fallSpeedBoost = death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
-                                float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
-                                if (enrage)
-                                    fallSpeed *= 2f;
+                        float velocityBoost = death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
+                        float velocityXCap = (death ? 6f : 4f) + velocityBoost;
+                        if (enrage)
+                            velocityXCap *= 3f;
 
-                                npc.velocity.Y += fallSpeed;
-                            }
-                        }
-                        else
-                        {
-                            float velocityChangeBoost = death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
-                            float velocityXChange = (death ? 0.285f : 0.2f) + velocityChangeBoost;
-                            if (npc.direction < 0)
-                                npc.velocity.X -= velocityXChange;
-                            else if (npc.direction > 0)
-                                npc.velocity.X += velocityXChange;
+                        float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                        int directionRelativeToTarget = playerLocation < 0 ? 1 : -1;
+                        bool slowDown = directionRelativeToTarget != calamityGlobalNPC.newAI[1];
 
-                            float velocityBoost = death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
-                            float velocityXCap = (death ? 6f : 4f) + velocityBoost;
-                            if (enrage)
-                                velocityXCap *= 3f;
+                        if (slowDown)
+                            velocityXCap *= (enrage ? 0.2f : 0.5f);
 
-                            float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                            int directionRelativeToTarget = playerLocation < 0 ? 1 : -1;
-                            bool slowDown = directionRelativeToTarget != calamityGlobalNPC.newAI[1];
-
-                            if (slowDown)
-                                velocityXCap *= (enrage ? 0.2f : 0.5f);
-
-                            if (npc.velocity.X < -velocityXCap)
-                                npc.velocity.X = -velocityXCap;
-                            if (npc.velocity.X > velocityXCap)
-                                npc.velocity.X = velocityXCap;
-                        }
-
-                        CustomGravity(npc.ai[2] == 1f);
+                        if (npc.velocity.X < -velocityXCap)
+                            npc.velocity.X = -velocityXCap;
+                        if (npc.velocity.X > velocityXCap)
+                            npc.velocity.X = velocityXCap;
                     }
+
+                    CustomGravity(npc.ai[2] == 1f);
                 }
             }
 
