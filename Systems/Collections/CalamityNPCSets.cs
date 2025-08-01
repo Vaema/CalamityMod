@@ -68,14 +68,6 @@ namespace CalamityMod.Systems.Collections
         public static bool[] ForceDrawDebuffDisplay = Factory.CreateBoolSet(NPCID.TargetDummy, NPCID.WallofFleshEye, NPCType<SuperDummyNPC>());
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, prevents Kami Flu's green color filter from being drawn on this NPC.<br/>
-        /// This does NOT grant immunity to the debuff, only prevents its special color drawing.<br/>
-        /// Used to prevent cheesing of Duke boss phase 3s by negating invisibility.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] DoesNotDrawKamiFluDebuffColor = Factory.CreateBoolSet(NPCID.DukeFishron, NPCType<OldDuke>());
-
-        /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will not provide increased Rage generation despite being considered a boss.<br/>
         /// Primarily used by worm boss body and tail segments to prevent Rage being extraordinarily easy to get.<br/>
         /// Defaults to <see langword="false"/>.
@@ -306,32 +298,6 @@ namespace CalamityMod.Systems.Collections
             { NPCID.MoonLordHand, 45000 },
             { NPCID.MoonLordHead, 60000 },
             { NPCID.MoonLordLeechBlob, 800 }
-        };
-
-        /// <summary>
-        /// Associates an NPC type with a new coin drop value. Note that this is applied before Calamity's global increase to coin drop values.<br/>
-        /// If an NPC type is not a key in this dictionary, its coin drop value will be unchanged.
-        /// </summary>
-        public static Dictionary<int, int> BossCoinValue = new Dictionary<int, int>
-        {
-            { NPCID.KingSlime, Item.buyPrice(0, 2) },
-            { NPCID.EyeofCthulhu, Item.buyPrice(0, 2) },
-            // Evil bosses drop 5 gold in vanilla; unmodified
-            { NPCID.QueenBee, Item.buyPrice(0, 8) },
-            { NPCID.Deerclops, Item.buyPrice(0, 8) },
-            { NPCID.SkeletronHead, Item.buyPrice(0, 12) },
-            { NPCID.WallofFlesh, Item.buyPrice(0, 12) },
-            { NPCID.QueenSlimeBoss, Item.buyPrice(0, 16) },
-            { NPCID.Spazmatism, Item.buyPrice(0, 16) },
-            { NPCID.Retinazer, Item.buyPrice(0, 16) },
-            { NPCID.TheDestroyer, Item.buyPrice(0, 16) },
-            { NPCID.SkeletronPrime, Item.buyPrice(0, 16) },
-            { NPCID.Plantera, Item.buyPrice(0, 20) },
-            { NPCID.Golem, Item.buyPrice(0, 25) },
-            { NPCID.HallowBoss, Item.buyPrice(0, 30) },
-            { NPCID.DukeFishron, Item.buyPrice(0, 30) },
-            { NPCID.CultistBoss, Item.buyPrice(0, 50) }
-            // Moon Lord drops 1 plat in vanilla; unmodified
         };
 
         /// <summary>
