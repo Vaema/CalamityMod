@@ -7,6 +7,7 @@ using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -30,11 +31,14 @@ namespace CalamityMod.Systems
         public static FieldInfo journeySliderCacheField; // The current value of the journey mode difficulty slider
         public static MethodInfo journeyDifficultyUpdateMethod; // The method which updates difficulty modes in journey mode
 
-        public override void Load()
+        public override void OnModLoad()
         {
             MostAlternateDifficulties = 1;
             //Initialize base mod difficulties
-            Difficulties = new List<DifficultyMode>() { new NoDifficulty(), new ExpertDifficulty(), new MasterDifficulty(), new RevengeanceDifficulty(), new DeathDifficulty() };
+            Difficulties = new List<DifficultyMode>() { ModContent.GetInstance<NoDifficulty>(),
+                                                        ModContent.GetInstance<ExpertDifficulty>(),
+                                                        ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<RevengeanceDifficulty>(),
+                                                        ModContent.GetInstance<DeathDifficulty>() };
 
             // Reflect private journey difficulty slider info
             journeySliderCacheField = typeof(CreativePowers.DifficultySliderPower).GetField("_sliderCurrentValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -43,7 +47,7 @@ namespace CalamityMod.Systems
             CalculateDifficultyData();
         }
 
-        public override void Unload()
+        public override void OnModUnload()
         {
             Difficulties = null;
         }
@@ -51,10 +55,72 @@ namespace CalamityMod.Systems
         // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
-            if (Main.GameMode == GameModeID.Expert && GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>())
-                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>());
-            if (Main.GameMode == GameModeID.Master && GetCurrentDifficulty == ModContent.GetInstance<RevengeanceDifficulty>())
-                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>());
+            static void HandleExternalGameModeChange(int tier)
+            {
+                switch (tier)
+                {
+                    case GameModeID.Normal:
+                        {
+                            int currentDifficultyTier = GetCurrentDifficulty._difficultyTier;
+                            // vanilla game mode in classic, but cal difficulty >= expert
+                            if (currentDifficultyTier > ModContent.GetInstance<NoDifficulty>()._difficultyTier)
+                            {
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<NoDifficulty>());
+                            }
+                            break;
+                        }
+                    case GameModeID.Expert:
+                        {
+                            // if death was activated, change it to revengence
+                            if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>())
+                            {
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>());
+                            }
+                            break;
+                        }
+                    case GameModeID.Master:
+                        {
+                            // if revengence and master both activated, change it to death
+                            if (GetCurrentDifficulty != ModContent.GetInstance<DeathDifficulty>() && CalamityWorld.revenge)
+                            {
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>());
+                            }
+                            break;
+                        }
+                }
+            }
+
+            switch (Main.GameMode)
+            {
+                case GameModeID.Creative:
+                    {
+                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                        if (power.GetIsUnlocked())
+                        {
+                            int effectiveVanillaDifficulty;
+                            var sliderValue = (float)journeySliderCacheField.GetValue(power);
+                            if(sliderValue == 1)
+                            {
+                                effectiveVanillaDifficulty = GameModeID.Master;
+                            }
+                            else if(sliderValue >= 0.66f)
+                            {
+                                effectiveVanillaDifficulty = GameModeID.Expert;
+                            }
+                            else
+                            {
+                                effectiveVanillaDifficulty = GameModeID.Normal;
+                            }
+                            HandleExternalGameModeChange(effectiveVanillaDifficulty);
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        HandleExternalGameModeChange(Main.GameMode);
+                        break;
+                    }
+            }
         }
 
         public static DifficultyMode GetCurrentDifficulty
@@ -140,7 +206,8 @@ namespace CalamityMod.Systems
     {
         protected override void Register()
         {
-            // This is registered in DifficultyModeSystem.Load
+            // This is registered in DifficultyModeSystem.OnModLoad
+            // Note that DifficultyModeSystem.Load can't ensure system is loaded after all modes
         }
         public abstract bool Enabled
         {
