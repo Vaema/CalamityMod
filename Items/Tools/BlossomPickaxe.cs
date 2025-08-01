@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Tools
         {
             CreateRecipe().
                 AddIngredient<UelibloomBar>(7).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

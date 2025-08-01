@@ -70,6 +70,9 @@ namespace CalamityMod.NPCs
             singleHitboxExemptProjectiles[ProjectileID.NettleBurstLeft] = true;
             singleHitboxExemptProjectiles[ProjectileID.NettleBurstRight] = true;
             singleHitboxExemptProjectiles[ProjectileID.PrincessWeapon] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud2] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud3] = true;
 
             var projectileTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
                 .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModProjectile)));

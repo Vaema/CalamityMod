@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -60,9 +60,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.fireWalk = true;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
-            player.noFallDmg = true;
             modPlayer.tracersDust = !hideVisual;
-            modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersElysian = true;
         }
 

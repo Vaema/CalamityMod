@@ -193,16 +193,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         #endregion
@@ -234,6 +230,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 6f,
+                };
+            }
             CurrentBehavior?.Invoke();
 
             // Leans the Sharkoon towards the direction it's going.
@@ -249,11 +253,13 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (!NPC.wet && !IsExploding)
+            if (!NPC.wet && !IsExploding && CurrentBehavior != OutsideWaterBehavior)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Reset any squish that is done to the Sharkoon.
+
+            // Reset any squish that is done to the Sharkoon, and clamps its upper limit to prevent it from becoming too tall
             if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
                 ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 

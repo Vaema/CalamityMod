@@ -70,10 +70,7 @@ namespace CalamityMod.Projectiles.Typeless
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
             if (!modPlayer.CryoStoneVanity)
-            {
                 target.AddBuff(BuffID.Frostburn2, 180);
-                target.AddBuff(ModContent.BuffType<GlacialState>(), 30);
-            }
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.Size.Length() * 0.5f, targetHitbox);

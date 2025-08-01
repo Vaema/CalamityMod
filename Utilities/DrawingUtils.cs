@@ -41,6 +41,21 @@ namespace CalamityMod
             new Color(199, 62, 62),
         };
 
+        /// <summary>
+        /// The transformation matrix used for drawing backgrounds in Vanilla Terraria. Should be used for any custom background drawing or CustomSky
+        /// drawing, such as independent sky entities or background shader effects. 
+        /// </summary>
+        public static Matrix BackgroundMatrix
+        {
+            get
+            {
+                Matrix backgroundMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
+                Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
+                backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
+                return backgroundMatrix;
+            }
+        }
+
         #region Projectile Afterimages
         /// <summary>
         /// Draws a projectile as a series of afterimages. The first of these afterimages is centered on the center of the projectile's hitbox.<br />
@@ -412,9 +427,7 @@ namespace CalamityMod
         {
             Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f);
 
-            Color color = new Color(250, 250, 250, item.alpha);
-            if (item.type == ModContent.ItemType<GrandGuardian>())
-                color = Color.White;
+            Color color = Color.White;
 
             spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
         }

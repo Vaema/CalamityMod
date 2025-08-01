@@ -51,6 +51,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             HitSound = SoundID.Dig;
         }
     }
+
     public class DriftwoodAmbient3 : ModTile
     {
         public override void SetStaticDefaults()
@@ -72,6 +73,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             HitSound = SoundID.Dig;
         }
     }
+
     public class DriftwoodAmbient4 : ModTile
     {
         public override void SetStaticDefaults()
@@ -93,6 +95,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             HitSound = SoundID.Dig;
         }
     }
+
     public class DriftwoodAmbient5 : ModTile
     {
         public override void SetStaticDefaults()
@@ -114,6 +117,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             HitSound = SoundID.Dig;
         }
     }
+
     public class DriftwoodAmbient6 : ModTile
     {
         public override void SetStaticDefaults()

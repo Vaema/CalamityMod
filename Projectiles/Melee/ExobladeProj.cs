@@ -628,17 +628,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<Exoboom>(), explosionDamage, 0f, Projectile.owner);
                 }
 
-                if (target.lifeMax <= 5 || Owner.lifeSteal <= 0)
-                    return;
-
-                int healAmt = (int)Math.Round(hit.Damage * 0.04);
-                if (healAmt > BalancingConstants.LifeStealCap)
-                    healAmt = BalancingConstants.LifeStealCap;
-
-                if (healAmt <= 0)
-                    return;
-
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Owner, healAmt, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
+                Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.04), 0.4f);
             }
         }
 

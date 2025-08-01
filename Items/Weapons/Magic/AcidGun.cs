@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -63,8 +63,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Acidwood>(35).
-                AddIngredient<SulphuricScale>(10).
+                AddIngredient<Acidwood>(15).
+                AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

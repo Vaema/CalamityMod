@@ -27,9 +27,11 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             }
         }
 
+        public static int FireballDamage = 110; // 440
+
         public override void SetDefaults()
         {
-            NPC.damage = 100;
+            NPC.damage = 0;
             NPC.width = 110;
             NPC.height = 88;
             NPC.defense = 0;
@@ -63,8 +65,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void AI()
         {
-            NPC.damage = 0;
-
             // Difficulty modes
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
@@ -134,8 +134,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                             Vector2 destination = Main.player[Main.npc[(int)NPC.ai[2]].target].Center - NPC.Center;
                             Vector2 velocity = Vector2.Normalize(destination) * fireballVelocity;
                             int type = ProjectileID.CultistBossFireBallClone;
-                            int damage = NPC.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, FireballDamage, 0f, Main.myPlayer);
                             Main.projectile[proj].tileCollide = false;
                         }
                     }
@@ -175,8 +174,14 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             center += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture, center, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
+            // this math is so incredibly scuffed. please someone fix it i dont even know what any of this actually does
+            float brightness = 1f;
+            float nameWasTooLong = Main.GameUpdateCount * 0.01f;
+            float saneVelocity = MathHelper.Clamp((int)PrimordialWyrmHead.PWHeadVelocity, 6f, 8f);
+            brightness = MathF.Sin(nameWasTooLong * (6f + saneVelocity) - NPC.whoAmI);
+            brightness = MathHelper.Clamp(brightness, 0.25f, 1f);
             texture = GlowTexture.Value;
-            spriteBatch.Draw(texture, center, NPC.frame, Color.White * NPC.Opacity, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(texture, center, NPC.frame, Color.White * (NPC.Opacity * brightness), NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
             return false;
         }

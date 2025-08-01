@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -140,21 +141,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-
-            // Elysian Wings, Elysian TRACERS?! and SERAPH TRACERS?!
-            if (calamityPlayer.elysianWingsDust && drawInfo.shadow == 0f)
-            {
-                if (!Player.StandingStill() && !Player.mount.Active)
-                {
-                    if (Main.rand.NextBool())
-                    {
-                        Dust dust = Dust.NewDustDirect(drawInfo.Position - new Vector2(2f), Player.width + 4, Player.height + 4, DustID.GoldCoin, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 1f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0.5f;
-                        drawInfo.DustCache.Add(dust.dustIndex);
-                    }
-                }
-            }
             #endregion
 
             #region Armor Visuals
@@ -244,15 +230,6 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.eutrophication && drawInfo.shadow == 0f)
                 Eutrophication.DrawEffects(drawInfo);
 
-            if (calamityPlayer.gState && drawInfo.shadow == 0f)
-            {
-                // These lines cannot be moved to Glacial State's own file
-                r *= 0.13f;
-                g *= 0.66f;
-
-                GlacialState.DrawEffects(drawInfo);
-            }
-
             if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 
@@ -340,6 +317,20 @@ namespace CalamityMod.CalPlayer
                 {
                     Particle Plus = new HealingPlus(Player.Center, Main.rand.NextFloat(0.7f, 1.4f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.DarkSeaGreen, Color.DarkSeaGreen, Main.rand.Next(10, 15));
                     GeneralParticleHandler.SpawnParticle(Plus);
+                }
+            }
+            if (calamityPlayer.bloomStoneDR > 0 && drawInfo.shadow == 0f)
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    MediumMistParticle pollenCloud = new(Player.Center, Main.rand.NextVector2Circular(1f, 1f), Color.Yellow, Color.Gold, 0.85f, 100f);
+                    GeneralParticleHandler.SpawnParticle(pollenCloud);
+                }
+                if (Main.rand.NextBool(4))
+                {
+                    Dust pollenDust = Dust.NewDustDirect(Player.position, Player.width, Player.height, ModContent.DustType<LightDust>(), newColor: Color.Gold, Scale: 0.4f);
+                    pollenDust.noLightEmittence = true;
+                    pollenDust.noGravity = true;
                 }
             }
             if (calamityPlayer.bloodfinBoost && drawInfo.shadow == 0f)
@@ -450,52 +441,6 @@ namespace CalamityMod.CalPlayer
 
             Player drawPlayer = drawInfo.drawPlayer;
             Item item = drawPlayer.ActiveItem();
-
-            // Vanity accessory effects, allows them to draw while the game is paused
-            if (drawPlayer.Calamity().ghostBracelet)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if (drawPlayer.Calamity().punchCard)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            // Need to set all of these so that certain vanity pieces like Capricorn Tail don't screw it up
-            if (drawPlayer.Calamity().ghostBracelet || ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide) ||
-                drawPlayer.Calamity().punchCard || ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide) ||
-                ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide))
-            {
-                drawInfo.legsGlowMask = -1;
-                drawInfo.legsOffset = Vector2.Zero;
-                drawInfo.bodyGlowMask = -1;
-                drawInfo.headGlowMask = -1;
-                drawInfo.helmetOffset = Vector2.Zero;
-            }
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&

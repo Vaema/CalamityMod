@@ -46,8 +46,11 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.velocity = (Projectile.velocity * 20f + idealVelocity) / 21f;
                 Projectile.velocity = Projectile.velocity.MoveTowards(idealVelocity, 2f);
             }
+            else if (Time >= 48f)
+                Projectile.velocity *= 0.9f;
 
-            if (Main.rand.NextBool(8))
+            int dustRate = (int)MathF.Max(Utils.Remap(Time, 0f, 12f, 20f, 4f), Utils.Remap(Time, 60f, 90f, 4f, 20f));
+            if (Main.rand.NextBool(dustRate))
             {
                 Dust offTrail = Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2Circular(0.2f, 0.2f));
                 offTrail.noGravity = true;
@@ -63,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
         internal Color ColorFunction(float completionRatio) => new Color(91, 62, 153) * Projectile.Opacity;
         public override bool PreDraw(ref Color lightColor)
         {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
             return true;
         }

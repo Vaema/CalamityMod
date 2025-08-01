@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -32,7 +33,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float EnemyTargetingRange = 1300f;
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheSyringe>();
+        
+    }
 
         public override void SetDefaults()
         {

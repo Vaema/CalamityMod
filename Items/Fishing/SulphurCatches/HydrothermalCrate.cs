@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
                 ModContent.ItemType<BrokenWaterFilter>(),
                 ModContent.ItemType<EffigyOfDecay>(),
                 ModContent.ItemType<RustyBeaconPrototype>(),
-                ModContent.ItemType<RustyMedallion>()
+                ModContent.ItemType<ScionsCurio>()
             ));
 
             // Ancient Treasure Chest Loot @ 100%; Individually 10%

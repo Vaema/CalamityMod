@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 40;
+            player.statLifeMax2 += 25;
             player.GetDamage<GenericDamageClass>() += 0.12f;
             player.GetCritChance<GenericDamageClass>() += 8;
         }
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(16).
                 AddIngredient<RuinousSoul>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

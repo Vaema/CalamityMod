@@ -7,6 +7,19 @@ Aestheticus: {
 		'''
 }
 
+ClaretCannon: {
+	DisplayName: Claret Cannon
+	Tooltip:
+		'''
+		Fires a hypercondensed claret round
+		The round explodes upon striking an enemy and releases blood orbs
+		The explosion shreds enemies, inflicting [Laceration] and dramatically reducing their defense
+		Picking up the blood orbs will reduce [Potion Sickness] when possible
+		If you do not have [Potion Sickness], your natural regeneration will be enhanced
+		Can only fire once every 10 seconds
+		'''
+}
+
 EyeofMagnus: {
 	DisplayName: Eye of Magnus
 	Tooltip:
@@ -55,16 +68,4 @@ Skynamite: {
 StarStruckWater: {
 	DisplayName: Star Struck Water
 	Tooltip: Spreads the Astral Infection to some blocks
-}
-
-YanmeisKnife: {
-	DisplayName: Yanmei's Knife
-	Tooltip:
-		'''
-		Enemies you hit are crippled
-		Hits will also give you {0}% increased movement speed and damage for {1} seconds
-		'A knife from an unknown world
-		An owner whose heart is pure and free of taint
-		A heart of iron and valor'
-		'''
 }

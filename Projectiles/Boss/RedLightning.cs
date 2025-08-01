@@ -175,7 +175,7 @@ IL_25092:
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 90);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)

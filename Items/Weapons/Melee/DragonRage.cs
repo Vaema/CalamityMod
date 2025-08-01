@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,10 @@ namespace CalamityMod.Items.Weapons.Melee
     public class DragonRage : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheBurningSky>();
+        }
         public override void SetDefaults()
         {
             Item.width = 128;
@@ -26,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.DD2_SkyDragonsFurySwing;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
     }
 }

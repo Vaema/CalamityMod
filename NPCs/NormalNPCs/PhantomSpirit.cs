@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -23,12 +22,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 70;
             NPC.width = 16;
             NPC.height = 16;
-            NPC.defense = 10;
-            NPC.lifeMax = 1250;
+            NPC.defense = 40;
+            NPC.lifeMax = 1500;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.DungeonSpirit;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.noGravity = true;
@@ -36,10 +35,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<PhantomSpiritBanner>();
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

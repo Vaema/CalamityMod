@@ -21,120 +21,170 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 18;
             Projectile.height = 18;
             Projectile.friendly = true;
-            Projectile.penetrate = 5;
+            Projectile.penetrate = 3;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 12;
         }
 
         public override void AI()
         {
-            if (Projectile.soundDelay == 0 && Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) > 2f)
-            {
-                Projectile.soundDelay = 10;
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            }
-            int sand = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.UnusedBrown, 0f, 0f, 100, default, 2f);
-            Dust dust = Main.dust[sand];
-            dust.velocity *= 0.3f;
-            dust.position.X = Projectile.Center.X + 4f + (float)Main.rand.Next(-4, 5);
-            dust.position.Y = Projectile.Center.Y + (float)Main.rand.Next(-4, 5);
-            dust.noGravity = true;
+            int maxVelocity = 32;
+            Player player = Main.player[Projectile.owner];
+            int height = Main.maxTilesY * 16;
+            int heightRatio = 0;
 
-            if (Main.myPlayer == Projectile.owner && Projectile.ai[0] <= 0f)
+            if (Projectile.ai[0] >= 0f)
+                heightRatio = (int)(Projectile.ai[1] / (float)height);
+
+            bool notBeingChanneled = Projectile.ai[0] == -1f || Projectile.ai[0] == -2f;
+            if (Projectile.penetrate == 1 && Projectile.ai[0] >= 0f && heightRatio == 0)
             {
-                Player player = Main.player[Projectile.owner];
-                if (player.channel)
+                Projectile.ai[1] += height;
+                heightRatio = 1;
+                Projectile.netUpdate = true;
+            }
+            if (Projectile.penetrate == 1 && Projectile.ai[0] == -1f)
+            {
+                Projectile.ai[0] = -2f;
+                Projectile.netUpdate = true;
+            }
+            if (heightRatio > 0 || Projectile.ai[0] == -2f)
+                Projectile.localAI[0] += 1f;
+
+            if (Main.myPlayer == Projectile.owner)
+            {
+                if (Projectile.ai[0] >= 0f)
                 {
-                    float speed = 18f;
-                    float mouseDistX = (float)Main.mouseX + Main.screenPosition.X - Projectile.Center.X;
-                    float mouseDistY = (float)Main.mouseY + Main.screenPosition.Y - Projectile.Center.Y;
-                    if (player.gravDir == -1f)
+                    if (player.channel && player.HeldItem.shoot == Projectile.type)
                     {
-                        mouseDistY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - Projectile.Center.Y;
-                    }
-                    Vector2 mouseVec = new Vector2(mouseDistX, mouseDistY);
-                    float mouseDist = mouseVec.Length();
-                    if (Projectile.ai[0] < 0f)
-                    {
-                        Projectile.ai[0] += 1f;
-                    }
-                    if (mouseDist > speed)
-                    {
-                        mouseDist = speed / mouseDist;
-                        mouseVec.X *= mouseDist;
-                        mouseVec.Y *= mouseDist;
-                        int mouseSpeedX = (int)(mouseVec.X * 1000f);
-                        int projSpeedX = (int)(Projectile.velocity.X * 1000f);
-                        int mouseSpeedY = (int)(mouseVec.Y * 1000f);
-                        int projSpeedY = (int)(Projectile.velocity.Y * 1000f);
-                        if (mouseSpeedX != projSpeedX || mouseSpeedY != projSpeedY)
+                        Vector2 channelPos = Main.MouseWorld;
+                        player.LimitPointToPlayerReachableArea(ref channelPos);
+                        if (Projectile.ai[0] != channelPos.X || Projectile.ai[1] != channelPos.Y)
                         {
                             Projectile.netUpdate = true;
+                            Projectile.ai[0] = channelPos.X;
+                            Projectile.ai[1] = channelPos.Y + (float)(height * heightRatio);
                         }
-                        Projectile.velocity.X = mouseVec.X;
-                        Projectile.velocity.Y = mouseVec.Y;
                     }
                     else
                     {
-                        int mouseSpeedX = (int)(mouseVec.X * 1000f);
-                        int projSpeedX = (int)(Projectile.velocity.X * 1000f);
-                        int mouseSpeedY = (int)(mouseVec.Y * 1000f);
-                        int projSpeedY = (int)(Projectile.velocity.Y * 1000f);
-                        if (mouseSpeedX != projSpeedX || mouseSpeedY != projSpeedY)
+                        Projectile.netUpdate = true;
+                        Projectile.ai[0] = -1f;
+                        Projectile.ai[1] = -1f;
+                        NPC homeTarget = ClosestNPCAtMagicMissileStyle(Projectile.Center, 800f);
+                        if (homeTarget != null)
                         {
+                            int targetIndex = homeTarget.whoAmI;
+                            if (targetIndex != -1)
+                                Projectile.ai[1] = targetIndex;
+                        }
+                        else if (Projectile.velocity.Length() < 2f)
+                            Projectile.velocity = Projectile.DirectionFrom(player.Center) * maxVelocity;
+                        else
+                            Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * maxVelocity;
+                    }
+                }
+
+                if (notBeingChanneled && Projectile.ai[1] == -1f)
+                {
+                    NPC homeTarget = ClosestNPCAtMagicMissileStyle(Projectile.Center, 800f);
+                    if (homeTarget != null)
+                    {
+                        int targetIndex = homeTarget.whoAmI;
+                        if (targetIndex != -1)
+                        {
+                            Projectile.ai[1] = targetIndex;
                             Projectile.netUpdate = true;
                         }
-                        Projectile.velocity.X = mouseVec.X;
-                        Projectile.velocity.Y = mouseVec.Y;
                     }
                 }
-                else if (Projectile.ai[0] <= 0f)
-                {
-                    Projectile.netUpdate = true;
-                    float speed = 12f;
-                    Vector2 projCenter = Projectile.Center;
-                    float mouseDistX = (float)Main.mouseX + Main.screenPosition.X - projCenter.X;
-                    float mouseDistY = (float)Main.mouseY + Main.screenPosition.Y - projCenter.Y;
-                    if (player.gravDir == -1f)
-                    {
-                        mouseDistY = Main.screenPosition.Y + (float)Main.screenHeight - (float)Main.mouseY - projCenter.Y;
-                    }
-                    Vector2 mouseVec = new Vector2(mouseDistX, mouseDistY);
-                    float mouseDist = mouseVec.Length();
-                    if (mouseDist == 0f || Projectile.ai[0] < 0f)
-                    {
-                        projCenter = player.Center;
-                        mouseVec = Projectile.Center - projCenter;
-                        mouseDist = mouseVec.Length();
-                    }
-                    mouseDist = speed / mouseDist;
-                    mouseVec.X *= mouseDist;
-                    mouseVec.Y *= mouseDist;
-                    Projectile.velocity.X = mouseVec.X;
-                    Projectile.velocity.Y = mouseVec.Y;
-                    if (Projectile.velocity.X == 0f && Projectile.velocity.Y == 0f)
-                    {
-                        Projectile.Kill();
-                    }
-                    Projectile.ai[0] = 1f;
-                }
             }
-            if (Projectile.velocity.X != 0f || Projectile.velocity.Y != 0f)
-            {
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            }
-            if (Projectile.velocity.Y > 16f)
-            {
-                Projectile.velocity.Y = 16f;
-            }
-        }
 
-        public override bool PreDraw(ref Color lightColor)
+            Vector2 targetVector = Vector2.Zero;
+            float chaseLerp = 1f;
+            if (Projectile.ai[0] > 0f && Projectile.ai[1] > 0f)
+                targetVector = new Vector2(Projectile.ai[0], Projectile.ai[1] % height);
+
+            if (notBeingChanneled && Projectile.ai[1] >= 0f)
+            {
+                Projectile.tileCollide = false;
+                NPC target = Main.npc[(int)Projectile.ai[1]];
+                if (target.CanBeChasedBy())
+                {
+                    targetVector = target.Center;
+                    float invFineL = Utils.GetLerpValue(0f, 100f, Projectile.Distance(targetVector), true) * Utils.GetLerpValue(600f, 400f, Projectile.Distance(targetVector), true);
+                    chaseLerp = MathHelper.Lerp(0f, 0.2f, Utils.GetLerpValue(200f, 20f, 1f - invFineL, true));
+                }
+                else
+                {
+                    Projectile.ai[1] = -1f;
+                    Projectile.netUpdate = true;
+                }
+            }
+
+            if (targetVector != Vector2.Zero)
+            {
+                if (Projectile.Distance(targetVector) >= 64f)
+                {
+                    Vector2 distanceVector = targetVector - Projectile.Center;
+                    Vector2 moveVelocity = distanceVector.SafeNormalize(Vector2.Zero);
+                    float velocityMult = Math.Min(maxVelocity, distanceVector.Length());
+                    moveVelocity *= velocityMult;
+                    if (Projectile.velocity.Length() < 4f)
+                        Projectile.velocity += Projectile.velocity.RotatedBy(MathHelper.PiOver4).SafeNormalize(Vector2.Zero) * 4f;
+
+                    Projectile.velocity = Vector2.Lerp(Projectile.velocity, moveVelocity, chaseLerp);
+                }
+                else
+                {
+                    Projectile.velocity *= 0.3f;
+                    Projectile.velocity += (targetVector - Projectile.Center) * 0.3f;
+                }
+
+                if (Projectile.timeLeft < 60)
+                    Projectile.timeLeft = 60;
+            }
+
+            if (notBeingChanneled && Projectile.ai[1] < 0f)
+            {
+                if (Projectile.velocity.Length() != maxVelocity)
+                    Projectile.velocity = Projectile.velocity.MoveTowards(Projectile.velocity.SafeNormalize(Vector2.UnitY) * maxVelocity, 4f);
+
+                if (Projectile.timeLeft > 300)
+                    Projectile.timeLeft = 300;
+            }
+
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+        }
+        private NPC ClosestNPCAtMagicMissileStyle(Vector2 origin, float maxDistanceToCheck = 800f)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
+            NPC closestTarget = null;
+            float distance = maxDistanceToCheck;
+
+            for (int i = 0; i < Main.npc.Length; i++)
+            {
+                if (Main.npc[i].CanBeChasedBy() && Projectile.localNPCImmunity[i] == 0)
+                {
+                    float extraDistance = (Main.npc[i].width / 2) + (Main.npc[i].height / 2);
+                    if (Vector2.Distance(origin, Main.npc[i].Center) < distance)
+                    {
+                        distance = Vector2.Distance(origin, Main.npc[i].Center);
+                        closestTarget = Main.npc[i];
+                    }
+                }
+            }
+            return closestTarget;
+        }
+        public override bool OnTileCollide(Vector2 oldVelocity) => Projectile.ai[0] < 0f;
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.ai[0] == -1f)
+            {
+                Projectile.ai[1] = -1f;
+                Projectile.netUpdate = true;
+            }
         }
 
         public override void OnKill(int timeLeft)
@@ -149,16 +199,22 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.Damage();
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
             int dustAmt = 36;
-            for (int index = 0; index < dustAmt; index++)
+            for (int i = 0; i < dustAmt; i++)
             {
                 Vector2 dustPos = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                dustPos = dustPos.RotatedBy((double)((float)(index - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
+                dustPos = dustPos.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
                 Vector2 dustVel = dustPos - Projectile.Center;
                 int sand = Dust.NewDust(dustPos + dustVel, 0, 0, DustID.UnusedBrown, dustVel.X * 1.5f, dustVel.Y * 1.5f, 100, default, 1.2f);
                 Main.dust[sand].noGravity = true;
                 Main.dust[sand].noLight = true;
                 Main.dust[sand].velocity = dustVel;
             }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            return false;
         }
     }
 }

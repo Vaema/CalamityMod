@@ -122,13 +122,17 @@ namespace CalamityMod.NPCs
                 {
                     float oldVelocity = OldVelocity.Length();
 
+                    npc.Center += ForcedVel;
+                    ForcedVel *= 0.995f;
+
                     if (Collision.SolidCollision(npc.Center, (int)(npc.width * 0.5f), (int)(npc.height * 0.5f)) || !WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40))
                     {
                         if (!ForceVelocityOnly)
                         {
-                            int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, 0f, 1f));
+                            int wallImpactDamage = (int)(PotentialEnergyDamage * Math.Clamp(oldVelocity / terminalVelocityForFullFallDamage, (ForcedVel.Length() > 0 ? 1f : 0f), 1f));
                             Projectile wallImpact = Projectile.NewProjectileDirect(attacker.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), wallImpactDamage, 0f, attacker.whoAmI, npc.whoAmI);
                             wallImpact.DamageType = DamageClass.Melee;
+                            wallImpact.CritChance = (int)attacker.GetCritChance(DamageClass.Melee) + attacker.HeldItem.crit;
                         }
 
                         PotentialEnergyDamage = 0;
@@ -136,8 +140,6 @@ namespace CalamityMod.NPCs
                         hitVoid = false;
                     }
 
-                    npc.Center += ForcedVel;
-                    ForcedVel *= 0.995f;
                     if (packetTimer % 30 == 0)
                         npc.SyncMotionToServer();
                     if (!WorldGen.InWorld(npc.Center.ToTileCoordinates().X, npc.Center.ToTileCoordinates().Y, 40) && !hitVoid)

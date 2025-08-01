@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Materials
             ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Type] = true;
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 4));
         }
 
         public override void Unload()
@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricTeslaBar>());
             Item.value = Item.sellPrice(gold: 7);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)
@@ -94,8 +94,7 @@ namespace CalamityMod.Items.Materials
             CreateRecipe(5).
                 AddIngredient<AuricOre>(50).
                 AddIngredient<YharonSoulFragment>().
-                //Not Cosmic Anvil because making a bar at an anvil is a little odd? also allows pre-moon lord scal for those who really want to do it. win-win.
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
         }
     }

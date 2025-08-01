@@ -1,12 +1,9 @@
-﻿
+﻿using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {
@@ -14,7 +11,6 @@ namespace CalamityMod.Tiles.Plates
     {
         public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/ElumplateGlow";
 
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
         internal static GrayscaleTexture1D PulseGradient;
 
         public override void SetupStatic()
@@ -27,7 +23,7 @@ namespace CalamityMod.Tiles.Plates
 
             CalamityUtils.MergeWithGeneral(Type);
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             MineResist = 1f;
             AddMapEntry(new Color(121, 180, 212));
         }

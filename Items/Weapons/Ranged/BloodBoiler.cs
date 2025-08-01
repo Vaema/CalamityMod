@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 60;
             Item.height = 30;
-            Item.damage = 115;
+            Item.damage = 120;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 25;
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             shotReturn = !shotReturn;
-            if (Main.rand.NextFloat() > 0.60f)
+            if (Main.rand.NextFloat() > 0.20f)
                 player.statLife -= 1;
             if (player.statLife <= 0)
             {
@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(6).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

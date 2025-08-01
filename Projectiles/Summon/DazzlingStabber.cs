@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.tileCollide = false;
             Projectile.minion = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = 28;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -303,7 +303,9 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
-        public override bool? CanDamage() => attackCooldown == 0 ? null : false;
+
+        public override bool? CanDamage() => (attackCooldown == 0 ? base.CanDamage() : false);
+
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;

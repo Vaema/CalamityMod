@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Placeables.Plates;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,7 +18,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 28;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
@@ -33,7 +34,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<CosmiliteBar>(5).
                 AddIngredient<Elumplate>(25).
                 AddIngredient<ExodiumCluster>(25).
-                AddTile(TileID.DemonAltar).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

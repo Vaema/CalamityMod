@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.Uzi).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

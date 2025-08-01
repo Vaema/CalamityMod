@@ -351,12 +351,12 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, Color.LightSkyBlue, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
         }
 
+        public override bool MinionContactDamage() => AttackMode == 2;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
-
-        public override bool? CanDamage() => AttackMode == 2;
     }
 }

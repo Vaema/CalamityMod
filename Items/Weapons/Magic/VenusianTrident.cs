@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 70;
             Item.height = 68;
-            Item.damage = 2156;
+            Item.damage = 2800;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 40;
             Item.useTime = 65;
@@ -45,7 +45,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.InfernoFork).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<TwistingNether>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

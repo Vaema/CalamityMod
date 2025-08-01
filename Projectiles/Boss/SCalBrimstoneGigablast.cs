@@ -3,12 +3,14 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Particles;
@@ -19,6 +21,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public static readonly SoundStyle ImpactSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneGigablastImpact");
+        public int DartDamage = 0;
         public bool withinRange = false;
         public bool setLifetime = false;
         public override void SetStaticDefaults()
@@ -38,6 +41,17 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.Opacity = 0f;
             Projectile.tileCollide = false;
             CooldownSlot = ImmunityCooldownID.Bosses;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            DartDamage = SupremeCalamitas.DartDamage;
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<CalamitasClone>())
+                    DartDamage = CalamitasClone.DartDamage;
+            }
         }
 
         public override void AI()
@@ -153,8 +167,12 @@ namespace CalamityMod.Projectiles.Boss
             {
                 if (Main.npc[CalamityGlobalNPC.SCal].active)
                 {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().cirrus)
+                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().permafrost)
+                    {
+                        lightColor.G = (byte)(255 * Projectile.Opacity);
                         lightColor.B = (byte)(255 * Projectile.Opacity);
+                        lightColor.R = 0;
+                    }
                 }
             }
 
@@ -177,16 +195,15 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(ImpactSound, Projectile.Center);
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (Projectile.ai[2] == 0f)
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    int totalProjectiles = bossRush ? 44 : death ? 36 : revenge ? 32 : expertMode ? 28 : 20;
+                    int totalProjectiles = death ? 36 : revenge ? 32 : expertMode ? 28 : 20;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
                     float velocity = 6.5f;
@@ -194,7 +211,7 @@ namespace CalamityMod.Projectiles.Boss
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, Projectile.ai[1], velocity * 1.5f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, DartDamage, 0f, Projectile.owner, 0f, Projectile.ai[1], velocity * 1.5f);
                     }
                 }
 

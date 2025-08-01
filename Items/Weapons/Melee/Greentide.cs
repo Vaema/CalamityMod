@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -20,16 +22,19 @@ namespace CalamityMod.Items.Weapons.Melee
 
         internal const int TotalRows = 2;
 
-        internal const int TotalTeeth = 4;
+        internal const int TotalTeeth = 3;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Leviatitan>();
+        }
 
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 62;
-            Item.damage = 97;
+            Item.damage = 81;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 27;
-            Item.useAnimation = 27;
+            Item.useTime = Item.useAnimation = 30;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 7f;
@@ -46,17 +51,19 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < 2; ++i)
+            for (int i = -2; i <= 2; i++)
             {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(-0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
+                if (i == 0)
+                {
+                    Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, damage, knockback, player.whoAmI, 2f, 0f);
+                    strongTooth.penetrate = -1;
+                    strongTooth.timeLeft = 150;
+                }
+                else
+                {
+                    Projectile.NewProjectile(source, position, velocity.RotatedBy(0.1f * i).RotatedByRandom(0.06f) * (1 - (Math.Abs(i) - 1) * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
+                }
             }
-            for (int i = 0; i < 2; ++i)
-            {
-                Projectile tooth = Projectile.NewProjectileDirect(source, position, velocity.RotatedBy(0.1f * (i + 1)).RotatedByRandom(0.06f) * (1 - i * 0.3f), type, (int)(damage * 0.5f), knockback / 3, player.whoAmI, 1f, 0f);
-            }
-            Projectile strongTooth = Projectile.NewProjectileDirect(source, position, velocity * 1.2f, type, (int)(damage), knockback, player.whoAmI, 2f, 0f);
-            strongTooth.penetrate = -1;
-            strongTooth.timeLeft = 150;
             return false;
         }
 
@@ -81,20 +88,16 @@ namespace CalamityMod.Items.Weapons.Melee
 
             int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
             float teethKnockback = Item.knockBack * 0.2f;
-            bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
-            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
             int centralProjectile = TotalTeeth / 2;
-            int otherCentralProjectile = centralProjectile - 1;
             float teethXVelocityReduction = 0.9f;
             float minVelocityAdjustment = 0.8f;
             float maxVelocityAdjustment = 1f;
-            float velocityAdjustment = minVelocityAdjustment;
             for (int i = 0; i < TotalRows; i++)
             {
                 bool topTeeth = i == 0;
                 for (int j = 0; j < TotalTeeth; j++)
                 {
-                    velocityAdjustment = ((j == centralProjectile || j == otherCentralProjectile) && evenNumberOfProjectiles) ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs((j + amountToAdd) - centralProjectile) / (float)centralProjectile);
+                    float velocityAdjustment = j == centralProjectile ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs(j + 0.5f - centralProjectile) / (float)centralProjectile);
                     if (topTeeth)
                     {
                         position.X += MathHelper.Lerp(-HalvedTeethSpread * 0.3f, HalvedTeethSpread * 0.3f, j / (float)(TotalTeeth - 1));
@@ -131,22 +134,18 @@ namespace CalamityMod.Items.Weapons.Melee
             Vector2 secondVelocity = (destination - secondPosition).SafeNormalize(Vector2.UnitY) * ShootSpeed;
             Vector2 secondCachedVelocity = secondVelocity;
 
-            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.5));
+            int teethDamage = player.CalcIntDamage<MeleeDamageClass>((int)(Item.damage * 0.1f));
             float teethKnockback = Item.knockBack * 0.2f;
-            bool evenNumberOfProjectiles = TotalTeeth % 2 == 0;
-            float amountToAdd = evenNumberOfProjectiles ? 0.5f : 0f;
             int centralProjectile = TotalTeeth / 2;
-            int otherCentralProjectile = centralProjectile - 1;
             float teethXVelocityReduction = 0.9f;
             float minVelocityAdjustment = 0.8f;
             float maxVelocityAdjustment = 1f;
-            float velocityAdjustment = minVelocityAdjustment;
             for (int i = 0; i < TotalRows; i++)
             {
                 bool topTeeth = i == 0;
                 for (int j = 0; j < TotalTeeth; j++)
                 {
-                    velocityAdjustment = ((j == centralProjectile || j == otherCentralProjectile) && evenNumberOfProjectiles) ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs((j + amountToAdd) - centralProjectile) / (float)centralProjectile);
+                    float velocityAdjustment = j == centralProjectile ? minVelocityAdjustment : MathHelper.Lerp(minVelocityAdjustment, maxVelocityAdjustment, Math.Abs(j + 0.5f - centralProjectile) / (float)centralProjectile);
                     if (topTeeth)
                     {
                         position.X += MathHelper.Lerp(-HalvedTeethSpread, HalvedTeethSpread, j / (float)(TotalTeeth - 1));
@@ -173,7 +172,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.9f, 1.5f);
             if (Main.rand.NextBool(3))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 102, dustVel.X, dustVel.Y);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Water_Desert, dustVel.X, dustVel.Y);
         }
     }
 }

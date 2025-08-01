@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 88;
             Item.height = 88;
-            Item.damage = 92;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 28;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -74,14 +74,12 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            player.AddBuff(ModContent.BuffType<BrutalCarnage>(), 180);
             target.AddBuff(BuffID.Venom, 240);
             target.AddBuff(BuffID.OnFire3, 240);
         }
 
         public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
         {
-            player.AddBuff(ModContent.BuffType<BrutalCarnage>(), 180);
             target.AddBuff(BuffID.Venom, 240);
             target.AddBuff(BuffID.OnFire3, 240);
         }
@@ -93,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.BrokenHeroSword).
                 AddIngredient(ItemID.ChlorophyteBar, 15).
                 AddIngredient(ItemID.VialofVenom, 10).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

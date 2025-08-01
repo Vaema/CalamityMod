@@ -71,13 +71,12 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<BloodOrb>(10).
                 AddIngredient(ItemID.SoulofFright, 5).
                 AddIngredient(ItemID.SoulofMight, 5).
                 AddIngredient(ItemID.SoulofSight, 5).
-                //Not an anvil because making fruit at an anvil is a little weird, so here's something more magical.
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

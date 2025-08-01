@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -34,7 +35,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            bool masterMode = Main.masterMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (Projectile.localAI[0] == 0f)
             {
@@ -49,14 +50,14 @@ namespace CalamityMod.Projectiles.Boss
             int closestPlayer = (int)Player.FindClosest(Projectile.Center, 1, 1);
             Vector2 velocity = Main.player[closestPlayer].Center - Projectile.Center;
             Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= (masterMode ? 0f : 30f))
+            if (Projectile.ai[0] >= (death ? 0f : 30f))
             {
-                if (Projectile.ai[0] < (masterMode ? 210f : 150f))
+                if (Projectile.ai[0] < (death ? 210f : 150f))
                 {
                     float scaleFactor2 = Projectile.velocity.Length();
                     velocity.Normalize();
                     velocity *= scaleFactor2;
-                    Projectile.velocity = (Projectile.velocity * 24f + velocity) / 25f;
+                    Projectile.velocity = (Projectile.velocity * 22f + velocity) / (death ? 12f : 15f); // Tracking strength
                     Projectile.velocity.Normalize();
                     Projectile.velocity *= scaleFactor2;
                 }
@@ -67,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            if (Projectile.ai[0] % (masterMode ? 10f : 20f) == 0f)
+            if (Projectile.ai[0] % (death ? 10f : 20f) == 0f)
             {
                 int dustType = 73;
                 int totalDust = 12;
@@ -89,7 +90,8 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     int type = ModContent.ProjectileType<HomingGasBulbSporeGas>();
                     float ai0 = Main.rand.Next(3);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 0.2f, type, (int)Math.Round(Projectile.damage * 0.8), 0f, Main.myPlayer, ai0);
+                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Projectile.velocity) * 0.2f, type, PlanteraAI.PinkCloudDamage, 0f, Main.myPlayer, ai0);
+                    Main.projectile[proj].timeLeft = 180;
                 }
             }
         }

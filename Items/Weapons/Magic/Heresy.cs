@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.DataStructures;
@@ -14,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 6));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Vehemence>();  
         }
 
         public override void SetDefaults()
@@ -36,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.flameLickedShell = true;
+            player.noKnockback = true;
         }
 
         public static void handleParry(Player player)

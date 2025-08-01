@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -45,8 +46,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AcidwoodBow>().
-                AddIngredient<SulphuricScale>(15).
+                AddIngredient<Acidwood>(15).
+                AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();
         }

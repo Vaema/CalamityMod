@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
 
         public override void UpdateEquip(Player player)
         {
-            player.manaCost *= 0.83f;
+            player.manaCost -= 0.17f;
             player.GetDamage<MagicDamageClass>() += 0.2f;
             player.GetCritChance<MagicDamageClass>() += 10;
             player.statManaMax2 += 100;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(11).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<BloodflareBodyArmor>()).
                 Register();
         }

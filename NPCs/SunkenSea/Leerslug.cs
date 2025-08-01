@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 3;
             NPC.lifeMax = 200;
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 0, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -66,11 +66,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-            
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<BasaltGullyBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)

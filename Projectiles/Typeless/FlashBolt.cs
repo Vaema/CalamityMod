@@ -1,5 +1,9 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,9 +16,16 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int time = 0;
-        public float colorValue = 0;
-        public float sizeMult = 1;
+        public int dir = 0;
+        bool setAltPlace = false;
+        public Vector2 altPlace;
+        public Player Owner => Main.player[Projectile.owner];
         public bool invalidTarget => (Projectile.ai[0] < 0f || Projectile.ai[0] > 199f);
+        public bool simplify => Projectile.ai[1] > 0f;
+        public override void SetStaticDefaults()
+        {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
+        }
         public override void SetDefaults()
         {
             Projectile.width = 60;
@@ -24,22 +35,20 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.ignoreWater = true;
             Projectile.DamageType = AverageDamageClass.Instance;
             Projectile.penetrate = 1; // Survives through its first hit by "cheating" and incrementing its own pierce counter
-            Projectile.extraUpdates = 75;
-            Projectile.timeLeft = 200;
+            Projectile.extraUpdates = 0;
+            Projectile.timeLeft = 2;
         }
-
         public override void AI()
         {
-            Player Owner = Main.player[Projectile.owner];
+            // If the target is dead, remove them as a target and hit anything
+            NPC target = (invalidTarget ? null : Main.npc[(int)Projectile.ai[0]]);
+            if (target == null || !target.active || target.life <= 0)
+                Projectile.ai[0] = -1;
+
             // Visibility/Sound toggle on acc visibility
             bool visible = Owner.Calamity().arcFlashRingVisual;
-            colorValue = MathHelper.Lerp(colorValue, 50, 0.025f);
-            Color usedColor = Color.Lerp(Color.Cyan, Color.Orchid, Utils.GetLerpValue(0, 50, colorValue));
-
-            if (time == 0)
+            if (time == 0 && Projectile.ai[0] != -1 && !simplify)
             {
-                colorValue += Main.rand.Next(0, 20);
-                sizeMult = 1;
                 if (visible)
                 {
                     SoundStyle fire = new("CalamityMod/Sounds/Item/ArcFlash");
@@ -47,71 +56,91 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            // If the target is dead, remove them as a target and hit anything
-            NPC target = (invalidTarget ? null : Main.npc[(int)Projectile.ai[0]]);
-            if (target == null || !target.active || target.life <= 0)
-                Projectile.ai[0] = -1;
-
-            float targetDist = Vector2.Distance(Owner.Center, Projectile.Center);
-
-            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            if (targetDist < 1400f)
-            {
-                Vector2 pos = Projectile.Center - Projectile.velocity * 15;
-                if (Projectile.timeLeft % 4 == 0)
-                {
-                    Particle spark2 = new BoltParticle(pos, -Projectile.velocity * 0.05f, false, 30, 0.6f * sizeMult, usedColor * (visible ? 1 : 0.25f), new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                if (Main.rand.NextBool(35))
-                {
-                    Particle spark2 = new BoltParticle(pos, Projectile.velocity.RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.9f), false, 23, Main.rand.NextFloat(0.2f, 0.25f) * sizeMult, usedColor * (visible ? 1 : 0.3f), new Vector2(1.8f, 0.8f), true, true, false, 0.3f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                if (Main.rand.NextBool(10) && visible)
-                {
-                    Particle spark2 = new CustomSpark(pos, Projectile.velocity * Main.rand.NextFloat(-0.4f, 0.4f), "CalamityMod/Particles/DrainLineBloom", false, 80, Main.rand.NextFloat(1.2f, 1.3f) * sizeMult, usedColor * (visible ? 1 : 0.3f), new Vector2(1, 4), true, true);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                }
-                if (time % 5 == 0 && visible)
-                {
-                    Dust dust = Dust.NewDustPerfect(pos, 278, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
-                    dust.noGravity = true;
-                    dust.color = usedColor;
-                }
-            }
-            if (Projectile.numHits > 0)
-            {
-                sizeMult *= 0.97f;
-            }
             time++;
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (!setAltPlace)
+            {
+                NPC target = (invalidTarget ? null : Main.npc[(int)Projectile.ai[0]]);
+                if (target == null || !target.active || target.life <= 0)
+                    Projectile.ai[0] = -1;
+                if (target != null && Projectile.ai[0] != -1)
+                {
+                    float size = (Math.Min(target.width, target.height) * 0.35f) + 10;
+                    altPlace = Projectile.Center + Main.rand.NextVector2Circular(size, size);
+                }
+                setAltPlace = true;
+            }
+
+            if (simplify || !Owner.Calamity().arcFlashRingVisual)
+                return false;
+
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            if (dir == 0)
+                dir = Main.rand.NextBool() ? -1 : 1;
+                
+            int distance = (int)(600 + (altPlace.Y - Owner.Center.Y));
+            int travelAmount = 10;
+            Vector2 currentPos = altPlace;
+            Vector2 lastPos = currentPos;
+            bool zap = false; // Swapping the direction of the bolt
+            Color drawColor = Color.White;
+            float lifeLerp = (Projectile.numHits == 0 ? 1 : (float)Math.Pow(Utils.GetLerpValue(-5, 15, Projectile.timeLeft, true), 3));
+            int angleSwapTimer = 0;
+            int angleSwapMax = 7;
+            for (int i = 0; i < distance; i += travelAmount)
+            {
+                float angleLerp = Math.Min(Utils.GetLerpValue(angleSwapMax, 0, angleSwapTimer, true), Utils.GetLerpValue(0, angleSwapMax, angleSwapTimer, true));
+                float endLerp = Utils.GetLerpValue(0, distance, i, true);
+                drawColor = Color.Lerp(Color.Cyan, Color.Orchid, endLerp);
+                Main.EntitySpriteDraw(tex, currentPos - Main.screenPosition, null, drawColor with { A = 0 }, lastPos.DirectionTo(currentPos).ToRotation() + MathHelper.PiOver2, new Vector2(tex.Width / 2, tex.Height / 2), new Vector2((2.5f - 1.5f * angleLerp) * lifeLerp * Math.Max(endLerp, 0.25f), 1 + 2f * angleLerp) * 0.2f, SpriteEffects.None);
+                lastPos = currentPos;
+                currentPos -= new Vector2(travelAmount * 1.5f * endLerp * dir * (zap ? -1 : 1) * lifeLerp, travelAmount);
+                angleSwapTimer++;
+                if (angleSwapTimer >= angleSwapMax) { zap = !zap; angleSwapTimer = 0; }
+            }
+            return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Stops the projectile from deleting itself, while maintaining the masquerade 
-            Projectile.penetrate++;
-
-            //colorValue = Main.rand.Next(0, 10);
             target.AddBuff(BuffID.Electrified, 180);
-            Projectile.timeLeft = 25;
-            Player Owner = Main.player[Projectile.owner];
-            if (Owner.Calamity().arcFlashRingVisual && Projectile.numHits == 0)
+            if (!simplify)
             {
-                Vector2 pos = target.Center;
-                for (int i = 0; i < 10; i++)
+                // Stops the projectile from deleting itself, while maintaining the masquerade 
+                Projectile.penetrate++;
+
+                Projectile.timeLeft = 15;
+                if (Projectile.numHits == 0)
                 {
-                    Particle spark2 = new BoltParticle(pos, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.9f), true, 13, Main.rand.NextFloat(0.2f, 0.3f) * sizeMult, Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid, new Vector2(1.8f, 0.8f), true, true, false, 0.8f);
-                    GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust = Dust.NewDustPerfect(pos, 278, new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(0.8f, 0.9f));
-                    dust.noGravity = false;
-                    dust.color = Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid;
+                    if (!setAltPlace)
+                    {
+                        if (target != null && Projectile.ai[0] != -1)
+                        {
+                            float size = (Math.Min(target.width, target.height) * 0.35f) + 10;
+                            altPlace = Projectile.Center + Main.rand.NextVector2Circular(size, size);
+                        }
+                        setAltPlace = true;
+                    }
+                    Vector2 pos = altPlace;
+                    if (Owner.Calamity().arcFlashRingVisual)
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            Dust dust = Dust.NewDustPerfect(pos, ModContent.DustType<SquashDust>(), new Vector2(18, 18).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), 0, default, Main.rand.NextFloat(1.3f, 1.5f) * 3);
+                            dust.noGravity = true;
+                            dust.color = Main.rand.NextBool(3) ? Color.Cyan : Color.Orchid;
+                            dust.fadeIn = 7.5f;
+                        }
+                        Particle orb = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.68f, 0.5f, 14);
+                        GeneralParticleHandler.SpawnParticle(orb);
+                        Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White * 0.8f, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.225f, 0.2f, 14);
+                        GeneralParticleHandler.SpawnParticle(orb2);
+                    }
+                    Particle pulse2 = new CustomPulse(pos, Vector2.Zero, Color.Cyan * (Owner.Calamity().arcFlashRingVisual ? 1 : 0.6f), "CalamityMod/Particles/BloomRing", new Vector2(1, 1), 0, 0.3f, 0.95f, 10);
+                    GeneralParticleHandler.SpawnParticle(pulse2);
                 }
-                Particle pulse2 = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/HighResFoggyCircleHardEdge", new Vector2(1, 1), 0, 0f, 0.0715f, 10);
-                GeneralParticleHandler.SpawnParticle(pulse2);
-                Particle orb = new CustomPulse(pos, Vector2.Zero, Color.Orchid, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.78f, 0.5f, 14);
-                GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new CustomPulse(pos, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.325f, 0.2f, 14);
-                GeneralParticleHandler.SpawnParticle(orb2);
             }
         }
         public override bool? CanHitNPC(NPC target)
@@ -120,7 +149,7 @@ namespace CalamityMod.Projectiles.Typeless
                 return null;
             return false;
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : CalamityUtils.CircularHitboxCollision(Projectile.Center, 60 * sizeMult, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.numHits > 0 ? false : base.Colliding(projHitbox, targetHitbox);
         public override bool? CanCutTiles() => false;
     }
 }

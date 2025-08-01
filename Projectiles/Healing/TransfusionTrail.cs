@@ -13,13 +13,11 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void SetDefaults()
         {
-            Projectile.width = 4;
-            Projectile.height = 4;
-            Projectile.penetrate = 1;
-            Projectile.timeLeft = 300;
+            Projectile.width = Projectile.height = 4;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
-            Projectile.extraUpdates = 3;
+            Projectile.MaxUpdates = 4;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
         }
 
         public override void AI()

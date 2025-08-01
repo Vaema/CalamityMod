@@ -67,6 +67,10 @@ namespace CalamityMod.NPCs.AcidRain
             }
         }
 
+        public static int DropletDamage = 55; // 220
+        public static int BubbleDamage = 55; // 220
+        public static int GFBDeathBombDamage = 100; // 400
+
         public override void SetDefaults()
         {
             NPC.noGravity = true;
@@ -74,11 +78,10 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.width = 180;
             NPC.height = 90;
             NPC.defense = 50;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 90000;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 20, 0, 0);
+            NPC.value = Item.buyPrice(gold: 20);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;
@@ -194,12 +197,11 @@ namespace CalamityMod.NPCs.AcidRain
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int bubbleShootType = ModContent.ProjectileType<MaulerAcidBubble>();
-                    int bubbleDamage = NPC.GetProjectileDamage(bubbleShootType);
                     Vector2 baseBubbleShootVelocity = NPC.SafeDirectionTo(mouthPosition) * 13.5f;
                     for (int i = 0; i < bubblesPerBurst; i++)
                     {
                         Vector2 bubbleShootVelocity = baseBubbleShootVelocity + Main.rand.NextVector2Circular(4f, 4f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, bubbleShootVelocity, bubbleShootType, bubbleDamage, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, bubbleShootVelocity, bubbleShootType, BubbleDamage, 0f);
                     }
 
                     // Get launched back after firing. This only happens if in water and there's no obstacles behind.
@@ -290,10 +292,9 @@ namespace CalamityMod.NPCs.AcidRain
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int acidShootType = ModContent.ProjectileType<MaulerAcidDrop>();
-                    int acidDamage = NPC.GetProjectileDamage(acidShootType);
                     Vector2 acidSpawnPosition = NPC.Center + Main.rand.NextVector2Circular(30f, 10f).RotatedBy(NPC.rotation);
                     Vector2 acidShootVelocity = -Vector2.UnitY.RotatedByRandom(0.33f) * Main.rand.NextFloat(8f, 10.5f);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), acidSpawnPosition, acidShootVelocity, acidShootType, acidDamage, 0f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), acidSpawnPosition, acidShootVelocity, acidShootType, DropletDamage, 0f);
                     NPC.netUpdate = true;
                 }
             }
@@ -496,15 +497,14 @@ namespace CalamityMod.NPCs.AcidRain
                 double deltaAngleBoom = spreadBoom / 8f;
                 double offsetAngleBoom;
                 int iBoom;
-                int damageBoom = Main.masterMode ? 127 : Main.expertMode ? 150 : 200;
                 for (iBoom = 0; iBoom < 25; iBoom++)
                 {
                     int projectileType = Main.rand.NextBool() ? ModContent.ProjectileType<SulphuricAcidMist>() : ModContent.ProjectileType<SulphuricAcidBubble>();
                     offsetAngleBoom = startAngleBoom + deltaAngleBoom * (iBoom + iBoom * iBoom) / 2f + 32f * iBoom;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int boom1 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * 6f), (float)(Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
-                        int boom2 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * 6f), (float)(-Math.Cos(offsetAngleBoom) * 6f), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
+                        int boom1 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * 6f), (float)(Math.Cos(offsetAngleBoom) * 6f), projectileType, GFBDeathBombDamage, 0f, Main.myPlayer, 0f, 0f);
+                        int boom2 = Projectile.NewProjectile(NPC.GetSource_Death(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * 6f), (float)(-Math.Cos(offsetAngleBoom) * 6f), projectileType, GFBDeathBombDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
                 for (int i = 0; i < 25; i++)

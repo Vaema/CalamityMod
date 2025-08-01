@@ -43,6 +43,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool playSwingSound = true;
         public bool allowSecondHit = true;
         public float bladeFade = 0;
+        public int armoredHits = 0;
         public override void SetDefaults()
         {
             base.SetDefaults();
@@ -135,6 +136,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 doSwing = true;
                 finalFlip = false;
+                armoredHits = 0;
             }
             else
             {
@@ -255,8 +257,10 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
             Vector2 launchVel = (Projectile.ai[1] != 1 ? Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) : Utils.DirectionTo(Owner.Center, target.Center));
             target.MoveNPC(launchVel, 37, true);
@@ -298,11 +302,11 @@ namespace CalamityMod.Projectiles.Melee
                 spawnBoom = false;
             }
 
-            int healPower = Projectile.ai[1] == -1 ? 90 : 80;
-            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 75, 1, healPower));
+            int healPower = Projectile.ai[1] == -1 ? 60 : 50;
+            int heal = (int)(MathHelper.Clamp(healPower - Projectile.numHits * 35, 1, healPower));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.2f);
             }
 
             if (Projectile.numHits <= 2)
@@ -341,7 +345,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             float minMult = 1f;
             int hitsToMinMult = 1;
-            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
         public override bool PreDraw(ref Color lightColor)

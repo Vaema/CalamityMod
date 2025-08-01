@@ -11,8 +11,8 @@ namespace CalamityMod.Projectiles.Boss
     public class YharonFireball : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-        private float speedX = -1f;
-        private float speedX2 = -2f;
+        private float speedX = -3f;
+        private float speedX2 = -5f;
 
         public override void SetStaticDefaults()
         {
@@ -23,7 +23,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 34;
             Projectile.height = 34;
             Projectile.hostile = true;
@@ -95,13 +94,13 @@ namespace CalamityMod.Projectiles.Boss
             {
                 for (int x = 0; x < 3; x++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX, -6f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
-                    speedX += 1f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX, -50f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
+                    speedX += 3f;
                 }
                 for (int x = 0; x < 2; x++)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX2, -6f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
-                    speedX2 += 4f;
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, speedX2, -75f, ModContent.ProjectileType<YharonFireball2>(), Projectile.damage, 0f, Main.myPlayer);
+                    speedX2 += 10f;
                 }
             }
             Projectile.ExpandHitboxBy(144);

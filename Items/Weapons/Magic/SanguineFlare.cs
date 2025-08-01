@@ -21,12 +21,13 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 56;
             Item.height = 60;
-            Item.damage = 143;
+            Item.damage = 1050;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 22;
+            Item.mana = 36;
             Item.useTime = 25;
             Item.useAnimation = 25;
             Item.useStyle = ItemUseStyleID.Shoot;
+            Item.channel = true;
             Item.noMelee = true;
             Item.knockBack = 8f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
@@ -39,11 +40,7 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < 7; i++)
-            {
-                Vector2 spreadVelocity = velocity.RotatedByRandom(MathHelper.ToRadians(5f)) * Main.rand.NextFloat(0.8f, 1.2f);
-                Projectile.NewProjectile(source, position, spreadVelocity, type, damage, knockback, Main.myPlayer);
-            }
+            velocity *= 0;
             return true; // Fires one directly with no randomness, totaling 8 projectiles
         }
 
@@ -51,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

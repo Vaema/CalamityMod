@@ -16,13 +16,13 @@ namespace CalamityMod.Items.Armor.Tarragon
             Item.height = 18;
             Item.lifeRegen = 3;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.defense = 37;
+            Item.defense = 40;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 40;
+            player.statLifeMax2 += 25;
             player.GetDamage<GenericDamageClass>() += 0.1f;
             player.GetCritChance<GenericDamageClass>() += 5;
         }
@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             CreateRecipe().
                 AddIngredient<UelibloomBar>(15).
                 AddIngredient<DivineGeode>(18).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

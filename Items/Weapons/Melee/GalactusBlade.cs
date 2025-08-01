@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 144;
             Item.height = 146;
-            Item.damage = 828;
+            Item.damage = 185;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = 27;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = SoundID.Item105;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
-            Item.shoot = ModContent.ProjectileType<GalacticaComet>();
+            Item.rare = RarityType<Turquoise>();
+            Item.shoot = ProjectileType<GalacticaComet>();
             Item.shootSpeed = 13f;
             Item.scale = 0.75f;
         }
@@ -99,7 +99,7 @@ namespace CalamityMod.Items.Weapons.Melee
                     {
                         Vector2 clampedMouse = player.ClampedMouseWorld();
                         Vector2 spawnSpot = new Vector2(clampedMouse.X, player.Center.Y) + new Vector2(Main.rand.NextFloat(-850, 850), Main.rand.NextFloat(-750, -1250));
-                        Projectile comet = Projectile.NewProjectileDirect(Item.GetSource_FromThis(), spawnSpot, Utils.DirectionTo(spawnSpot, player.Calamity().mouseWorld + Main.rand.NextVector2Circular(50, 50)) * Item.shootSpeed, Item.shoot, Item.damage / 3, Item.knockBack, player.whoAmI);
+                        Projectile comet = Projectile.NewProjectileDirect(player.GetSource_ItemUse(Item), spawnSpot, Utils.DirectionTo(spawnSpot, player.Calamity().mouseWorld + Main.rand.NextVector2Circular(50, 50)) * Item.shootSpeed, Item.shoot, Item.damage, Item.knockBack, player.whoAmI);
                         comet.extraUpdates = Main.rand.Next(2, 3 + 1);
                     }
                     spawnProj = false;
@@ -135,7 +135,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.StarWrath).
                 AddIngredient<DivineGeode>(10).
                 AddIngredient<GalacticaSingularity>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -37,7 +37,7 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.UseSound = UseSound;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.value = Item.sellPrice(gold: 48);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
@@ -73,11 +73,10 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<AscendantSpiritEssence>().
-                //Not an anvil because making fruit at an anvil is a little weird, so here's something more magical.
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

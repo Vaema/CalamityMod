@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
+using MonoMod.RuntimeDetour;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -12,6 +16,7 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
+using Terraria.GameInput;
 using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
@@ -60,18 +65,18 @@ namespace CalamityMod.ILEditing
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
-            On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
-            On_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
+            IL_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
             // Mechanics / features
-            On_NPC.ApplyTileCollision += AllowTriggeredFallthrough;
+            On_NPC.ApplyTileCollision += AllowFusionFeederToDigThroughSand;
             IL_Player.ApplyEquipFunctional += ScopesRequireVisibilityToZoom;
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
-            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
+            On_Player.DashMovement += DashMovementEdits;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
+            On_Player.KeyDoubleTap += DisableDoubleTapOnConfig;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
@@ -79,16 +84,11 @@ namespace CalamityMod.ILEditing
             On_Item.AffixName += IncorporateEnchantmentInAffix;
             On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
             On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
-            // TODO -- This should be unnecessary. There is now a TML hook for platform collision for ModNPCs.
-            On_NPC.Collision_DecideFallThroughPlatforms += EnableCalamityBossPlatformCollision;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;
-            On_NPC.SpawnBoss += TripletsSpawnTextOverride;
-            On_NPC.DoDeathEvents_BeforeLoot += PreventFoveanatorDefeatMessageIfNotKilledLast;
-            On_NPC.DoDeathEvents_CelebrateBossDeath += TripletsDefeatTextOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
@@ -172,7 +172,6 @@ namespace CalamityMod.ILEditing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
             // World generation
-            IL_WorldGen.Pyramid += ReplacePharaohSetInPyramids;
             IL_WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
             On_WorldGen.SmashAltar += PreventSmashAltarCode;
             IL_WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;
@@ -187,6 +186,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
+            IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
@@ -208,7 +208,12 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
-            On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
+            //On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
+        
+            On_Player.UpdateControlHolds += DelayGravity;
+            On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
+            On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
+            On_Main.DrawInterface += UI_Unflip_End;
 
             // Fix vanilla bugs exposed by Calamity mechanics
             IL_NPC.NPCLoot += FixSplittingWormBannerDrops;

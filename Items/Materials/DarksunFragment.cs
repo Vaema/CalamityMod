@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 32;
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(silver: 60);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)

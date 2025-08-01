@@ -23,6 +23,7 @@ BlazingSun2.DisplayName: Blazing Sun
 BlissfulBombardierDustProjectile.DisplayName: Dust
 BloodBomb.DisplayName: Bomb
 BloodBombExplosion.DisplayName: Explosion
+BloomStoneFlower.DisplayName: Bloom Stone Flower
 BlunderBoosterAura.DisplayName: Red Lightning Aura
 BobbitHead.DisplayName: Bobbit Head
 BossRushEffectThing.DisplayName: Boss Rush Effect Thing
@@ -32,6 +33,7 @@ BossRushTierAnimation.DisplayName: Boss Rush Tier Animation
 ChaoticGeyser.DisplayName: Chaotic Geyser
 ChlorophyteLifePulse.DisplayName: Life Pulse
 ChronoClock.DisplayName: Chrono Clock
+ClaretCannonProj.DisplayName: Claret Round
 CoralBubble.DisplayName: Bubble
 CoralBubbleSmall.DisplayName: Bubble
 CosmicDashExplosion.DisplayName: Cosmic Dash Explosion
@@ -59,6 +61,7 @@ ExoTankLaser.DisplayName: Mini Exo Pulse Laser
 ExoTankMissile.DisplayName: Miracle Missile
 ExoTankMuzzleFlash.DisplayName: Mini Exo Flash
 FeralDoubleBobber.DisplayName: Feral Bobber
+FestiveWingsOrnament.DisplayName: Ornament
 FlameLickedBarrage.DisplayName: Flame Licked Barrage
 FlameLickedHellblast.DisplayName: Flame Licked Hellblast
 FlashBolt.DisplayName: The Reminder
@@ -103,6 +106,7 @@ PauldronExplosion.DisplayName: Pauldron Explosion
 PearlAuraShard.DisplayName: Prism Shard
 PlaguePulse.DisplayName: Plague Pulse
 PoisonousSeawater.DisplayName: Seawater
+ProtolithBangleProjectile.DisplayName: Marble Shatter
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
 PuddleSplash.DisplayName: Puddle Splash
@@ -112,6 +116,7 @@ RedLabSeeker.DisplayName: Seeking Mechanism
 RelicGuard.DisplayName: Relic Guard
 RetaliationProjectile.DisplayName: Retaliation Shard
 RiftReelerBobber.DisplayName: Chaotic Bobber
+RustyMedallionDroplet.DisplayName: Acid Droplet
 SandCloakVeil.DisplayName: Dust Veil
 SandExplosion.DisplayName: Sand
 SCalAltarArenaVisual.DisplayName: Supreme Calamitas Arena Visual
@@ -150,7 +155,9 @@ WulfrumBobber.DisplayName: Wulfrum Bobber
 WulfrumDiggingTurtleProjectile.DisplayName: Digging Turtle
 WulfrumHook.DisplayName: Wulfrum Slingshot
 WulfrumLureSignal.DisplayName: Signal
-YanmeisKnifeSlash.DisplayName: Yanmei's Knife
 YellowLabSeeker.DisplayName: Seeking Mechanism
 VoidofExtinctionCrit.DisplayName: Void of Extinction Crit
 XykDeathAnim.DisplayName: Xyk Death Animation
+XykWings.DisplayName: Xyk Wings
+BatholithBangleProjectile.DisplayName: Batholith Bangle Projectile
+ScionsCurioMini.DisplayName: Scions Curio Mini

@@ -3,12 +3,10 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -47,16 +45,14 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.damage = 88;
                 NPC.lifeMax = 3025;
                 NPC.defense = 18;
-                NPC.DR_NERD(0.05f);
             }
             else if (DownedBossSystem.downedAquaticScourge)
             {
                 NPC.damage = 38;
                 NPC.lifeMax = 220;
-                NPC.DR_NERD(0.05f);
             }
 
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -69,10 +65,6 @@ namespace CalamityMod.NPCs.AcidRain
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AcidRainBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -181,8 +173,6 @@ namespace CalamityMod.NPCs.AcidRain
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<SulphuricScale>(), 2, 1, 3);
-            LeadingConditionRule postAS = npcLoot.DefineConditionalDropSet(DropHelper.PostAS());
-            postAS.Add(ModContent.ItemType<SkyfinBombers>(), 20);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

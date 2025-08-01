@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient<PlaguedFuelPack>().
                 AddIngredient<EffulgentFeather>(8).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

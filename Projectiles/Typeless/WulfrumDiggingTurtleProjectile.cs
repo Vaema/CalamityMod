@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Typeless
         public static int Lifetime = 400;
         public static int DigTime = 350;
         public static float DigSpeed = 1.5f;
-        public static int MaxPickPower = 160;
+        public static int MaxPickPower = 1000;
         public static float ClearSpaceDiagonal = 50;
 
         public override void SetDefaults()

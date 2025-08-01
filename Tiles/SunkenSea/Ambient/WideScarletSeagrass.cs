@@ -30,21 +30,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
-        }
     }
 
     public class WideScarletSeagrass2 : ModTile
@@ -68,22 +53,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 96;
             HitSound = SoundID.Dig;
         }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
-        }
     }
+
     public class WideScarletSeagrass3 : ModTile
     {
         public override void SetStaticDefaults()
@@ -105,22 +76,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 96;
             HitSound = SoundID.Dig;
         }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
-        }
     }
+
     public class WideScarletSeagrass4 : ModTile
     {
         public override void SetStaticDefaults()
@@ -141,21 +98,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             AddMapEntry(new Color(187, 43, 44));
             DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
-        }
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
         }
     }
 }

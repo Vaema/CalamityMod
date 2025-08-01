@@ -58,13 +58,6 @@ namespace CalamityMod.Projectiles.Magic
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Pitch = 0.8f, Volume = 0.6f }, Projectile.Center);
-            Projectile.ExpandHitboxBy(46);
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.damage /= 2;
-            Projectile.Damage();
             for (int i = 0; i < 10; i++)
             {
                 int size = 10;
@@ -86,8 +79,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool? CanDamage() => Projectile.velocity.Y < 0f ? false : null;
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire3, 90);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.OnFire, 90);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire3, 90);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.OnFire, 90);
     }
 }

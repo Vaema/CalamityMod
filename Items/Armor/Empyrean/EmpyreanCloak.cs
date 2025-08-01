@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
             player.GetCritChance<ThrowingDamageClass>() += 7;
             player.GetDamage<ThrowingDamageClass>() += 0.07f;
         }

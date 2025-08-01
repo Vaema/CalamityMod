@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 48;
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.defense = 8; // we buff Ankh Shield to 8
+            Item.defense = 4;
             Item.accessory = true;
         }
 

@@ -59,16 +59,16 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.noGravity = true;
             NPC.damage = 20;
             NPC.width = 88;
             NPC.height = 66;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 8, 0) : Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.DeathSound = SoundID.NPCDeath27;
             NPC.knockBackResist = 0.15f;
@@ -79,11 +79,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -103,16 +98,16 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.chaseable = reader.ReadBoolean();
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                MaxSpeed = 1.8f
-            };
-        }
-
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    MaxSpeed = 1.8f
+                };
+            }
+
             NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
             Lighting.AddLight(NPC.Center, (255 - NPC.alpha) * 0f / 255f, (255 - NPC.alpha) * 0.75f / 255f, (255 - NPC.alpha) * 0.75f / 255f);
 
@@ -239,7 +234,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if ((spawnInfo.Player.Calamity().ZoneRadiantReefs || spawnInfo.Player.Calamity().ZoneGleamingBurrows) && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.9f;
+                return SpawnCondition.CaveJellyfish.Chance * 0.7f;
             }
             return 0f;
         }

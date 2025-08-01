@@ -8,8 +8,8 @@ namespace CalamityMod.Items.Accessories
     public class BlackGlassBand : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public static int cooldown = 420;
-        public static int damage = 40;
+        public static int cooldown = 300;
+        public static int damage = 32;
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -27,9 +27,9 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddRecipeGroup("AnyGoldBar", 5).
-                AddIngredient(ItemID.Diamond, 2).
-                AddIngredient(ItemID.Obsidian, 25).
+                AddRecipeGroup("AnyGoldBar", 8).
+                AddIngredient(ItemID.Diamond, 3).
+                AddIngredient(ItemID.Obsidian, 35).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
                 AddIngredient<AnodizedWulfrumMetal>().
                 AddIngredient<WulfrumMetalScrap>().
                 AddIngredient<EnergyCore>().
-                AddTile(TileID.Anvils).
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

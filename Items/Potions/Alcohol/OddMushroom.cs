@@ -25,8 +25,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToFood(38, 50, ModContent.BuffType<Trippy>(), CalamityUtils.MinutesToFrames(60));
-            // Cirrus overcharges: 10% sell value instead of 20%
-            Item.value = Item.sellPrice(gold: 10);
+
+            Item.value = Item.buyPrice(gold: 5); // Sold by Truffle
             Item.rare = ItemRarityID.LightRed;
         }
 

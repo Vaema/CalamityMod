@@ -46,7 +46,7 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe()
                 .AddIngredient(ItemID.CrimtaneBar, 3)
-                .AddIngredient<BloodSample>(7)
+                .AddIngredient<AerialiteBar>(7)
                 .AddIngredient(ItemID.Vertebrae, 13)
                 .AddTile(TileID.DemonAltar)
                 .AddDecraftCondition(CalamityConditions.DownedPerforator)

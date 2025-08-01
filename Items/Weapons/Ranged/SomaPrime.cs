@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Kingsbane>().
-                AddIngredient<ClockGatlignum>().
+                AddIngredient(ItemID.VenusMagnum).
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().
                 Register();

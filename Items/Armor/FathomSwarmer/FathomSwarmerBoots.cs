@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += 0.08f;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 player.moveSpeed += 0.4f;
             }

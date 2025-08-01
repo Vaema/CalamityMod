@@ -18,6 +18,9 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
 
+        //Used by Arterial Assault
+        public bool DisableEffects = false;
+
         public override string Texture => "CalamityMod/Items/Ammo/BloodfireArrow";
 
         public override void SetStaticDefaults()
@@ -47,14 +50,22 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.localAI[0] == 0)
             {
-                Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
-                player.statLife -= 1;
-                if (player.statLife <= 0)
+                if (DisableEffects)
                 {
-                    PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
-                    player.KillMe(pdr, 1000.0, 0, false);
+
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
+                } else
+                {
+                    Projectile.damage = (int)(Projectile.damage * 1.3f); // damage boost
+                    player.statLife -= 1;
+                    if (player.statLife <= 0)
+                    {
+                        PlayerDeathReason pdr = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.BloodFireArrow" + Main.rand.Next(1, 2 + 1)).ToNetworkText(player.name));
+                        player.KillMe(pdr, 1000.0, 0, false);
+                    }
+                    Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
                 }
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9;
+
             }
 
             Player Owner = Main.player[Projectile.owner];
@@ -101,14 +112,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            if (DisableEffects)
+                return;
             Player player = Main.player[Projectile.owner];
             player.lifeRegenTime += 2;
-
-            if (player.moonLeech)
-                return;
-
-            if (target.lifeMax <= 5)
-                return;
 
             float lifeRatio = (float)player.statLife / player.statLifeMax2;
             float averageHealAmount = MathHelper.Lerp(4.0f, 0.5f, lifeRatio); // Average heal increases from 1/2 to 4 HP based on missing health
@@ -117,11 +124,7 @@ namespace CalamityMod.Projectiles.Ranged
             float chanceOfOneMoreHP = averageHealAmount - guaranteedHeal;
             bool bonusHeal = Main.rand.NextFloat() < chanceOfOneMoreHP;
             int finalHeal = guaranteedHeal + (bonusHeal ? 1 : 0);
-            if (finalHeal > BalancingConstants.LifeStealCap)
-                finalHeal = BalancingConstants.LifeStealCap;
-
-            if (finalHeal > 0)
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], finalHeal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
+            player.SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, finalHeal, 0.5f);
         }
 
         public override bool PreDraw(ref Color lightColor)

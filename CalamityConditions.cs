@@ -21,14 +21,6 @@ namespace CalamityMod
 
         public static readonly Condition PlayerHasRogueArmor            = Create("HasRogueArmor",        () => Main.LocalPlayer.Calamity().rogueStealthMax > 0f && Main.LocalPlayer.Calamity().wearingRogueArmor);
         public static readonly Condition PlayerHasWings                 = Create("HasWings",             () => Main.LocalPlayer.wingTimeMax > 0);
-        public static readonly Condition PlayerAlcoholPoisoned          = Create("AlcoholPoison",        () => Main.LocalPlayer.Calamity().alcoholPoisoning);
-
-        //
-        // NPC conditions
-        //
-
-        /// <summary>Don't use this. It's always `true`.</summary>
-        public static readonly Condition TrasherTextCondition           = Create("Drops.TrasherKill",    () => true);
 
         //
         // Calamity Event Flag conditions
@@ -42,7 +34,7 @@ namespace CalamityMod
         //
 
         public static readonly Condition DownedDesertScourge            = Create("Drops.DownedDS",       () => DownedBossSystem.downedDesertScourge);
-        public static readonly Condition DownedCrabulon                 = Create("Drops.DownedCrabulon", () => DownedBossSystem.downedDesertScourge);
+        public static readonly Condition DownedCrabulon                 = Create("Drops.DownedCrabulon", () => DownedBossSystem.downedCrabulon);
         public static readonly Condition DownedHiveMind                 = Create("Drops.DownedHM",       () => DownedBossSystem.downedHiveMind);
         public static readonly Condition DownedPerforator               = Create("Drops.DownedPerfs",    () => DownedBossSystem.downedPerforator);
         public static readonly Condition DownedSlimeGod                 = Create("Drops.DownedSG",       () => DownedBossSystem.downedSlimeGod);

@@ -41,13 +41,13 @@ namespace CalamityMod.Items.Armor.Auric
             Item.height = 34;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.defense = 48;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateEquip(Player player)
         {
             var modPlayer = player.Calamity();
-            player.statLifeMax2 += 100;
+            player.statLifeMax2 += 50;
             player.GetDamage<GenericDamageClass>() += 0.08f;
             player.GetCritChance<GenericDamageClass>() += 5;
         }

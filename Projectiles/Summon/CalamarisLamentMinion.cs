@@ -54,13 +54,13 @@ namespace CalamityMod.Projectiles.Summon
             }
             else
             {
-                if (Main.rand.NextBool(600))
+                if (Main.rand.NextBool(800))
                 {
                     SoundStyle glubNoise = Main.rand.NextBool() ? SoundID.Zombie35 : SoundID.Zombie34;
                     SoundStyle trollBirdChirpingSound = SoundID.Zombie16;
 
-                    // 1/200th chance to do a bird chirping sound.
-                    SoundEngine.PlaySound(Main.rand.NextBool(200) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
+                    // 1/2000th chance to do a bird chirping sound.
+                    SoundEngine.PlaySound(Main.rand.NextBool(2000) ? trollBirdChirpingSound : glubNoise, Projectile.Center);
                 }
             }
 

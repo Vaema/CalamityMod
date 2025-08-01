@@ -15,6 +15,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void SetStaticDefaults()
         {
+            AnimationFrameHeight = 50;
             Main.tileLighted[Type] = true;
             Main.tileCut[Type] = true;
             Main.tileSolid[Type] = false;
@@ -41,20 +42,16 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             height = 48;
         }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        public override void AnimateTile(ref int frame, ref int frameCounter)
         {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.4f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            if (++frameCounter >= 12)
+            {
+                frameCounter = 0;
+                if (++frame >= 6)
+                {
+                    frame = 0;
+                }
+            }
         }
     }
 }

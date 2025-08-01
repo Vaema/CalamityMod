@@ -14,6 +14,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileLavaDeath[Type] = false;
@@ -24,6 +25,8 @@ namespace CalamityMod.Tiles.FurnitureAuric
             TileObjectData.addTile(Type);
             MinPick = 250;
         }
+
+        public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
         {

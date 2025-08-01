@@ -51,8 +51,8 @@ namespace CalamityMod.Items
                 // We don't care.
                 case ItemID.EaterOfWorldsBossBag:
                     var eowRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 90, 135); // 100% 90-135 Demonite Ore
-                    eowRevLCR.Add(ItemID.ShadowScale, 1, 35, 55); // 100% 35-55 Shadow Scale
+                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 70, 90); // 100% 70-90 Demonite Ore
+                    eowRevLCR.Add(ItemID.ShadowScale, 1, 20, 30); // 100% 20-30 Shadow Scale
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -62,11 +62,9 @@ namespace CalamityMod.Items
                 // This can theoretically be exploited by killing the boss on Expert, then turning on Rev to open the bags.
                 // We don't care.
                 case ItemID.BrainOfCthulhuBossBag:
-                    // BoC drops less partial loot than EoW
-                    // However, sell price is overall higher despite the lower yield
                     var bocRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 80, 120); // 100% 80-120 Crimtane Ore
-                    bocRevLCR.Add(ItemID.TissueSample, 1, 25, 40); // 100% 25-40 Tissue Sample
+                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 70, 90); // 100% 70-90 Crimtane Ore
+                    bocRevLCR.Add(ItemID.TissueSample, 1, 20, 30); // 100% 20-30 Tissue Sample
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
