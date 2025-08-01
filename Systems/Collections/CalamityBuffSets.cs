@@ -5,6 +5,9 @@ using CalamityMod.Buffs.Cooldowns;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.Summon.Whips;
+using CalamityMod.DataStructures;
+using CalamityMod.Items.Accessories;
 using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -33,7 +36,7 @@ namespace CalamityMod.Systems.Collections
                 BuffType<BoundingBuff>(), BuffType<CalciumBuff>(), BuffType<CeaselessHunger>(), BuffType<GravityNormalizerBuff>(), BuffType<Omniscience>(), BuffType<PhotosynthesisBuff>(),
                 BuffType<ShadowBuff>(), BuffType<Soaring>(), BuffType<SulphurskinBuff>(), BuffType<WeaponImbueBrimstone>(), BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>(),
                 BuffType<Zen>(), BuffType<Zerg>(), BuffType<BloodyMaryBuff>(), BuffType<CaribbeanRumBuff>(), BuffType<CinnamonRollBuff>(), BuffType<EverclearBuff>(), BuffType<EvergreenGinBuff>(),
-                BuffType<CirrusVodkaBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(), BuffType<MoscowMuleBuff>(),
+                BuffType<PurpleHazeBuff>(), BuffType<FireballBuff>(), BuffType<GrapeBeerBuff>(), BuffType<MargaritaBuff>(), BuffType<MoonshineBuff>(), BuffType<MoscowMuleBuff>(),
                 BuffType<RedWineBuff>(), BuffType<RumBuff>(), BuffType<ScrewdriverBuff>(), BuffType<StarBeamRyeBuff>(), BuffType<TequilaBuff>(), BuffType<TequilaSunriseBuff>(),
                 BuffType<Trippy>(), BuffType<VodkaBuff>(), BuffType<WhiskeyBuff>(), BuffType<WhiteWineBuff>());
 
@@ -64,7 +67,7 @@ namespace CalamityMod.Systems.Collections
                 BuffType<WeakBrimstoneFlames>(), BuffType<BanishingFire>());
 
         /// <summary>
-        /// Is <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
+        /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
         /// This general-purpose set has several different uses, including reducing buff duration with Radiance, Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
@@ -78,6 +81,31 @@ namespace CalamityMod.Systems.Collections
                 BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),
                 BuffType<VulnerabilityHex>(), BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(),
                 BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>());
+
+        /// <summary>
+        /// If <see langword="true"/> for a buff type, then that buff is a whip tag buff on the player.<br/>
+        /// Used to prevent "whip stacking", the ability to grant the player multiple whip buff effects at once.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] IsSummonTagBuff = Factory.CreateBoolSet(BuffID.CoolWhipPlayerBuff, BuffID.ScytheWhipPlayerBuff, BuffID.SwordWhipPlayerBuff, BuffID.ThornWhipPlayerBuff, BuffType<ProfanedCrystalWhipBuff>());
+
+        /// <summary>
+        /// Associates a buff type with its <see cref="SummonTag"/> structure. If a buff type is not a key in this dictionary, then it has no associated <see cref="SummonTag"/>.<br/>
+        /// Used for several different effects, such as applying tag effects to NPCs, preventing "whip stacking" on NPCs, and drawing the tag effect icon below the NPC. 
+        /// </summary>
+        public static Dictionary<int, SummonTag> SummonTagDebuff = new Dictionary<int, SummonTag>
+        {
+            { BuffID.BlandWhipEnemyDebuff, SummonTag.LeatherWhip },
+            { BuffID.BoneWhipNPCDebuff, SummonTag.SpinalTap },
+            { BuffID.CoolWhipNPCDebuff, SummonTag.CoolWhip },
+            { BuffID.FlameWhipEnemyDebuff, SummonTag.Firecracker },
+            { BuffID.MaceWhipNPCDebuff, SummonTag.MorningStar },
+            { BuffID.RainbowWhipNPCDebuff, SummonTag.Kaleidoscope },
+            { BuffID.ScytheWhipEnemyDebuff, SummonTag.DarkHarvest },
+            { BuffID.SwordWhipNPCDebuff, SummonTag.Durendal },
+            { BuffID.ThornWhipNPCDebuff, SummonTag.Snapthorn },
+            { BuffType<ProfanedCrystalWhipDebuff>(), ProfanedSoulCrystal.SummonTag }
+        };
 
         /// <summary>
         /// Associates a buff type with its alcohol poison level. Used for the Alcohol Poisoning mechanic.<br/>
@@ -97,6 +125,7 @@ namespace CalamityMod.Systems.Collections
             { BuffType<MoonshineBuff>(), 1 },
             { BuffType<MoscowMuleBuff>(), 1 },
             { BuffType<OldFashionedBuff>(), 1 },
+            { BuffType<PurpleHazeBuff>(), 1 },
             { BuffType<RedWineBuff>(), 1 },
             { BuffType<RumBuff>(), 1 },
             { BuffType<ScrewdriverBuff>(), 1 },

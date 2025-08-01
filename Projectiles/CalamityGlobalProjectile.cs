@@ -4162,18 +4162,15 @@ namespace CalamityMod.Projectiles
 
             // Implementation of shared static iframes.
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
-            if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
-                return;
-
-            // Get the set of shared static iframe projectile types.
-            // If it's empty, then do nothing.
-            IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
-            if (sharedWithProjectiles.Count <= 0)
+            if (!projectile.usesIDStaticNPCImmunity || CalamityProjectileSets.SharedIDStaticIFrames[projectile.type] == -1)
                 return;
 
             // Apply the appropriate shared static iframes to all projectile types with which it is shared.
-            foreach (int projType in sharedWithProjectiles)
-                Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            for (int proj = 0; proj < CalamityProjectileSets.SharedIDStaticIFrames.Length; proj++)
+            {
+                if (CalamityProjectileSets.SharedIDStaticIFrames[proj] == CalamityProjectileSets.SharedIDStaticIFrames[projectile.type])
+                    Projectile.perIDStaticNPCImmunity[proj][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            }
         }
         #endregion
 

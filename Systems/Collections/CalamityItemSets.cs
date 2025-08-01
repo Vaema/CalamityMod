@@ -80,7 +80,7 @@ namespace CalamityMod.Systems.Collections
         /// Primarily used for limited-use spiky balls and weapons which shoot short-distance projectiles.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateBoolSet(ItemType<SkyStabber>(), ItemType<GodsParanoia>(), ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateBoolSet(ItemType<GodsParanoia>(), ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>
@@ -90,8 +90,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] MagicGun = Factory.CreateBoolSet(ItemID.BeeGun, ItemID.BubbleGun, ItemID.ChargedBlasterCannon, ItemID.HeatRay, ItemID.LaserMachinegun, ItemID.LaserRifle,
                 ItemID.LeafBlower, ItemID.RainbowGun, ItemID.SpaceGun, ItemID.WaspGun, ItemID.ZapinatorGray, ItemID.ZapinatorOrange, ItemType<AbyssShocker>(), ItemType<AcidGun>(),
                 ItemType<AethersWhisper>(), ItemType<AetherfluxCannon>(), ItemType<ApoctosisArray>(), ItemType<Cryophobia>(), ItemType<Effervescence>(), ItemType<EidolicWail>(),
-                ItemType<GatlingLaser>(), ItemType<GaussPistol>(), ItemType<Genesis>(), ItemType<IonBlaster>(), ItemType<NanoPurge>(), ItemType<Omicron>(), ItemType<PlasmaCaster>(),
-                ItemType<PlasmaRifle>(), ItemType<PulsePistol>(), ItemType<PurgeGuzzler>(), ItemType<RainbowPartyCannon>(), ItemType<SHPC>(), ItemType<TeslaCannon>(),
-                ItemType<TheSwarmer>(), ItemType<Volterion>(), ItemType<Wingman>());
+                ItemType<Genesis>(), ItemType<IonBlaster>(), ItemType<NanoPurge>(), ItemType<Omicron>(), ItemType<PlasmaCaster>(), ItemType<PlasmaRifle>(), ItemType<PulsePistol>(),
+                ItemType<PurgeGuzzler>(), ItemType<RainbowPartyCannon>(), ItemType<SHPC>(), ItemType<TeslaCannon>(), ItemType<TheSwarmer>(), ItemType<Volterion>(), ItemType<Vulcan>(), ItemType<Wingman>());
     }
 }

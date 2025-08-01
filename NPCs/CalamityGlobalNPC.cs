@@ -5741,7 +5741,7 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (SummonTagDebuffDict.TryGet(type, out SummonTag tag))
+                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
                     {
                         tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
                     }
@@ -5795,7 +5795,7 @@ namespace CalamityMod.NPCs
                 if (npc.buffTime[i] >= 1)
                 {
                     int type = npc.buffType[i];
-                    if (SummonTagDebuffDict.TryGet(type, out SummonTag tag))
+                    if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
                     {
                         tag.TagOnHit(npc, projectile, hit, damagedone);
                     }
@@ -7116,7 +7116,7 @@ namespace CalamityMod.NPCs
                     {
                         if (npc.buffTime[i] > 0)
                         {
-                            if (SummonTagDebuffDict.TryGet(npc.buffType[i], out SummonTag tag))
+                            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(npc.buffType[i], out SummonTag tag))
                             {
                                 // Fetch the item and its frames
                                 var tex = TextureAssets.Item[tag.TagItem].Value;

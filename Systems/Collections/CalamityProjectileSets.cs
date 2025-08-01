@@ -1,9 +1,5 @@
 ﻿using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee.MaceFlails;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
@@ -72,5 +68,46 @@ namespace CalamityMod.Systems.Collections
                 ProjectileType<InfernadoRevenge>(), ProjectileType<OverlyDramaticDukeSummoner>(), ProjectileType<ProvidenceHolyRay>(), ProjectileType<OldDukeVortex>(),
                 ProjectileType<BrimstoneRay>(), ProjectileType<AresDeathBeamStart>(), ProjectileType<AresGaussNukeProjectileBoom>(), ProjectileType<AresLaserBeamStart>(),
                 ProjectileType<ArtemisSpinLaserbeam>(), ProjectileType<BirbAura>(), ProjectileType<ThanatosBeamStart>());
+
+        /// <summary>
+        /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>
+        /// Each "set" of projectile which shares immunity frames is registered to point to the same ID reference, usually the first projectile in the set. If a projectile with this reference hits an NPC, all other projectiles with that reference also have their ID-static immunity cooldown set for that NPC.
+        /// </summary>
+        public static int[] SharedIDStaticIFrames = Factory.CreateIntSet(-1,
+            // Vanilla bees
+            ProjectileID.Bee, ProjectileID.Bee,
+            ProjectileID.GiantBee, ProjectileID.Bee,
+            // Vilethorn
+            ProjectileID.VilethornBase, ProjectileID.VilethornBase,
+            ProjectileID.VilethornTip, ProjectileID.VilethornBase,
+            // Nettle Burst
+            ProjectileID.NettleBurstRight, ProjectileID.NettleBurstRight,
+            ProjectileID.NettleBurstLeft, ProjectileID.NettleBurstRight,
+            ProjectileID.NettleBurstEnd, ProjectileID.NettleBurstRight,
+            // Magical Harp notes
+            ProjectileID.QuarterNote, ProjectileID.QuarterNote,
+            ProjectileID.EighthNote, ProjectileID.QuarterNote,
+            ProjectileID.TiedEighthNote, ProjectileID.QuarterNote,
+            // North Pole
+            ProjectileID.NorthPoleWeapon, ProjectileID.NorthPoleWeapon,
+            ProjectileID.NorthPoleSpear, ProjectileID.NorthPoleWeapon,
+            ProjectileID.NorthPoleSnowflake, ProjectileID.NorthPoleWeapon,
+            // Spore gas clouds
+            ProjectileID.SporeTrap, ProjectileID.SporeTrap,
+            ProjectileID.SporeTrap2, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas2, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas3, ProjectileID.SporeTrap,
+            // Astral Staff
+            ProjectileType<AstralCrystal>(), ProjectileType<AstralCrystal>(),
+            ProjectileType<AstralCrystalInvisibleExplosion>(), ProjectileType<AstralCrystal>(),
+            // Keelhaul
+            ProjectileType<KeelhaulGeyserBottom>(), ProjectileType<KeelhaulGeyserBottom>(),
+            ProjectileType<KeelhaulGeyserTop>(), ProjectileType<KeelhaulGeyserBottom>(),
+            // Toxic clouds
+            ProjectileID.ToxicCloud, ProjectileID.ToxicCloud,
+            ProjectileID.ToxicCloud2, ProjectileID.ToxicCloud,
+            ProjectileID.ToxicCloud3, ProjectileID.ToxicCloud
+            );
     }
 }

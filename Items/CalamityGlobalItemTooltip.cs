@@ -423,7 +423,7 @@ namespace CalamityMod.Items
             string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
             Dictionary<int, SummonTag> TagByItem = new();
-            foreach (SummonTag tag1 in SummonTagDebuffDict.Dict.Values)
+            foreach (SummonTag tag1 in CalamityBuffSets.SummonTagDebuff.Values)
             {
                 if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
             }

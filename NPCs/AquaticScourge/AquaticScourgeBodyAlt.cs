@@ -205,7 +205,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     for (int a = 0; a < Main.npc.Length; a++)
                     {
                         int type = Main.npc[a].type;
-                        if (AquaticScourgeIDList.Includes(type))
+                        if (CalamityNPCTypeSets.AquaticScourge.Contains(type))
                             Main.npc[a].active = false;
                     }
                 }
