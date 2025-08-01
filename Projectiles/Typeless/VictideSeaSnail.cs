@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             if (!ModdedOwner.victideSnailSet)
             {
-                for (int d = 0; d < 45; d++)
+                for (int d = 0; d < 25; d++)
                 {
                     Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;
@@ -66,8 +66,7 @@ namespace CalamityMod.Projectiles.Typeless
             DustTimer++;
             if (DustTimer <= 3)
             {
-                int dustAmount = Main.rand.Next(40, 50);
-                for (int d = 0; d < dustAmount; d++)
+                for (int d = 0; d < 25; d++)
                 {
                     Dust dust = Dust.NewDustDirect(new Vector2(Projectile.position.X, Projectile.position.Y + 16f), Projectile.width, Projectile.height - 16, DustID.BubbleBurst_Purple, 0f, 0f, 0, default, 1f);
                     dust.velocity *= 2f;

@@ -3758,15 +3758,27 @@ namespace CalamityMod.CalPlayer
         public override void ArmorSetBonusActivated()
         {
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
-            if (victideBurrowSet && !Player.tongued && !Player.shimmering && !Player.HasCooldown(BubblyBurrow.ID))
+            if (victideBurrowSet)
             {
-                SoundEngine.PlaySound(SoundID.Item154, Player.Center);
-                if (Player.whoAmI == Main.myPlayer)
+                if (cooldowns.TryGetValue(BubblyBurrow.ID, out CooldownInstance cd))
                 {
-                    Player.AddCooldown(BubblyBurrow.ID, VictideHeadBurrow.BurrowCooldown + VictideHeadBurrow.BurrowDuration);
+                    // Return to normal if you have the ability active
+                    if (cd.timeLeft > VictideHeadBurrow.BurrowCooldown)
+                    {
+                        cd.timeLeft = VictideHeadBurrow.BurrowCooldown + 1;
+                        SyncCooldownDictionary(false);
+                    }
+                }
+                else if (!Player.tongued && !Player.shimmering)
+                {
+                    SoundEngine.PlaySound(SoundID.Item154, Player.Center);
+                    if (Player.whoAmI == Main.myPlayer)
+                    {
+                        Player.AddCooldown(BubblyBurrow.ID, VictideHeadBurrow.BurrowCooldown + VictideHeadBurrow.BurrowDuration);
 
-                    var source = Player.GetSource_Misc("1");
-                    Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<VictideSpirit>(), 0, 0f, Player.whoAmI);
+                        var source = Player.GetSource_Misc("1");
+                        Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<VictideSpirit>(), 0, 0f, Player.whoAmI);
+                    }
                 }
             }
             if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID) && !Player.tongued && Player.dashDelay == 0)
