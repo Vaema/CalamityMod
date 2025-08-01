@@ -84,7 +84,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.Center = Owner.oldPosition + Owner.Size * 0.5f - new Vector2(64 * Projectile.spriteDirection, 96f - Owner.gfxOffY); // Stays above and behindthe player.
             Projectile.velocity = Owner.velocity * 0f;
 
-
             var SiriusPos = Projectile.Center + Projectile.velocity;
             var SiriusScale = 0.075f;
             void SpawnStar(float SlotRequirement, Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
@@ -185,7 +184,7 @@ namespace CalamityMod.Projectiles.Summon
                             for (var i = 0; i < 2; i++)
                             {
                                 Vector2 velocity = Projectile.Center.DirectionTo(target.Center) * 10;
-                                float damageMod = 50;
+                                float damageMod = 20;
                                 var a = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusBeam>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
                                 if (Main.projectile.IndexInRange(a))
                                 {
@@ -193,7 +192,7 @@ namespace CalamityMod.Projectiles.Summon
                                     Main.projectile[a].penetrate = -1;
                                 }
                             }
-                        moddedOwner.StratusStarburst = 0;
+                        moddedOwner.StratusStarburst -= 50;
                         Projectile.ai[2] = 0;
                     }
                 }

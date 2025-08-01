@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -30,29 +31,35 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 60;
             Projectile.extraUpdates = 2;
-            Projectile.aiStyle = ProjAIStyleID.Sickle;
-            AIType = ProjectileID.DeathSickle;
+            Projectile.aiStyle = -1;
+            AIType = -1;
             Projectile.timeLeft = 240 * Projectile.MaxUpdates;
         }
 
         public override void AI()
         {
             Lighting.AddLight(Projectile.Center, 0f, 0f, 0.6f);
-            if (Projectile.soundDelay == 0)
+            if (Projectile.soundDelay == 0 && Projectile.velocity.Length() > 0.1f)
             {
-                Projectile.soundDelay = 30 + Main.rand.Next(50);
-                if (Main.rand.NextBool(10))
-                {
-                    SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
-                }
+                Projectile.soundDelay = 60;
+                SoundEngine.PlaySound(SoundID.Item9 with { Volume = 0.5f }, Projectile.position);
             }
+
+            Projectile.rotation += Projectile.direction * 0.15f;
+
+            if (Projectile.FinalExtraUpdate())
+            {
+                GeneralParticleHandler.SpawnParticle(new BloomParticle(Projectile.Center, Vector2.Zero, Color.SkyBlue, 0.45f, 0.45f, 2, false));
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Projectiles/Melee/CrescentMoonProj", false, 2, 1f, Color.White, Vector2.One, false));
+            }
+                
+            Projectile.velocity *= 0.95f;
             if (Projectile.timeLeft < 225 * Projectile.MaxUpdates)
                 CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
 

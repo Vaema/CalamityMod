@@ -45,23 +45,26 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.rotation = Projectile.velocity.ToRotation();
             var Owner = Main.player[Projectile.owner];
             var DrawCenter = Projectile.Center + Projectile.velocity;
-            var StarScale = 0.1f;
+            var StarScale = 0.2f;
             Projectile.scale = MathF.Min(Projectile.timeLeft/20f,MathF.Min((lifetime- Projectile.timeLeft)/ 20f, 1f));
             void SpawnStar(Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
             {
                 offset += new Vector2(35.666f,-53.166f); //this centers the constellation
                 offset.X *= Projectile.spriteDirection;
                 var star = new BloomParticle(DrawCenter + offset.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), StarScale * intensity, StarScale * intensity, 2, false);
-                var star2 = new CustomSpark(DrawCenter + offset.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * ((Owner.miscCounter + flashOffset) / 300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 8 * StarScale * intensity, Color.SkyBlue, Vector2.One);
+                var star2 = new CustomSpark(DrawCenter + offset.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * ((Owner.miscCounter + flashOffset) / 300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 4 * StarScale * intensity, Color.White, Vector2.One);
                 GeneralParticleHandler.SpawnParticle(star);
                 GeneralParticleHandler.SpawnParticle(star2);
             }
-            SpawnStar( new Vector2(0f, 0f), 0.75f, 0); //Center
-            SpawnStar( new Vector2(75, -60), 1.25f, 40); //Vega
-            SpawnStar( new Vector2(3, -102), 0.75f, 120); //Top
-            SpawnStar( new Vector2(-52, 207), 0.75f, 5); //Bottom R
-            SpawnStar( new Vector2(-144, 239), 0.75f, 10); //Bottom L
-            SpawnStar( new Vector2(-96, 35), 0.75f, 75); //Left
+            if (Projectile.FinalExtraUpdate())
+            {
+                SpawnStar(new Vector2(0f, 0f), 0.75f, 0); //Center
+                SpawnStar(new Vector2(75, -60), 1.25f, 40); //Vega
+                SpawnStar(new Vector2(3, -102), 0.75f, 120); //Top
+                SpawnStar(new Vector2(-52, 207), 0.75f, 5); //Bottom R
+                SpawnStar(new Vector2(-144, 239), 0.75f, 10); //Bottom L
+                SpawnStar(new Vector2(-96, 35), 0.75f, 75); //Left
+            }
             Projectile.position = Projectile.Center;
             Projectile.Size = new Vector2(225,375) * Projectile.scale;
             Projectile.Center = Projectile.position;

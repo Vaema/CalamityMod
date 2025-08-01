@@ -70,6 +70,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Graphics.Effects;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Projectiles.Melee.Shortswords;
 
 namespace CalamityMod.CalPlayer
 {
@@ -192,6 +193,10 @@ namespace CalamityMod.CalPlayer
         /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
         /// </summary>
         public int HasStratusItemCooldown = 0;
+        /// <summary>
+        /// Duration of Stratus Sphere's Starshield
+        /// </summary>
+        public int Starshield = 0;
 
         public List<StarburstEntity> StarburstEntities = new();
         #endregion
@@ -650,7 +655,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Energy Shields
-        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge;
+        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge || Starshield > 0;
         public bool freeDodgeFromShieldAbsorption = false;
         public bool drawnAnyShieldThisFrame = false;
 
@@ -2067,6 +2072,11 @@ namespace CalamityMod.CalPlayer
             {
                 StratusStarburst++;
                 StarburstSpawnFrameCounter--;
+            }
+            if (Starshield > 0)
+            {
+                Starshield--;
+                HasStratusItemCooldown = (int)MathHelper.Max(300,HasStratusItemCooldown);
             }
             if (HasStratusItemCooldown > 0)
                 HasStratusItemCooldown--;

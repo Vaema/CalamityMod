@@ -59,8 +59,8 @@ namespace CalamityMod.CalPlayer
                 AndromedaMechLayer.DrawTheStupidFuckingRobot(ref drawInfo);
 
             CalamityPlayer calamityPlayer = Player.Calamity();
-
-            if (StarburstEntities.Count > 0)
+            //Stratus Starburst visuals
+            if (StarburstEntities.Count > 0 && drawInfo.shadow == 0f)
             {
                 var tex = TextureAssets.Projectile[ModContent.ProjectileType<HalleysStarburst>()].Value;
                 foreach (StarburstEntity star in StarburstEntities)
@@ -69,14 +69,28 @@ namespace CalamityMod.CalPlayer
                     var value = star.value;
                     value -= star.MergeChildren.Count;
                     var ScaleMod = MathHelper.Lerp(0.6f,1f,value/10f);
-                    Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, tex.Frame(1,6,0,star.frame), color * 0.3f, 0, new Vector2(6,6.5f), star.scale * ScaleMod, SpriteEffects.None, 1);
+                    Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, tex.Frame(1,6,0,star.frame), color * 0.75f, 0, new Vector2(6,6.5f), star.scale * ScaleMod, SpriteEffects.None, 1);
                     foreach (var ministar in star.MergeChildren)
                     {
 
                         ScaleMod = MathHelper.Lerp(0.6f, 1f, ministar.value / 10f);
-                        Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, tex.Frame(1, 6, 0, ministar.frame), ministar.color * 0.3f, 0, new Vector2(6, 6.5f), ministar.scale * ScaleMod, SpriteEffects.None, 1);
+                        Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, tex.Frame(1, 6, 0, ministar.frame), ministar.color * 0.75f, 0, new Vector2(6, 6.5f), ministar.scale * ScaleMod, SpriteEffects.None, 1);
                     }
                 }
+            }
+            if (Starshield > 0 && drawInfo.shadow == 0)
+            {
+
+                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
+                var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
+                var opacity = 0.75f * MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f),(3600-Starshield)/30f);
+                float size = 64 + 32 * (StratusStarburst/(float)MaxStratusStarburst);
+
+                var matrix = Main.GameViewMatrix.TransformationMatrix;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, matrix, () =>
+                {
+                    Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, color * opacity, 0, tex.Size() * 0.5f, size / tex.Width, SpriteEffects.None, 1);
+                });
             }
             // Dust modifications while high.
             if (calamityPlayer.trippy)

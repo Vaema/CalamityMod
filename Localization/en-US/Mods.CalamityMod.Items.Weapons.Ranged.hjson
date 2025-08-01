@@ -556,7 +556,8 @@ HalleysInferno: {
 	Tooltip:
 		'''
 		Fires a burst of intensely concentrated lunar fire jets
-		Press <right> to zoom out
+		Generates Starbursts over time when hitting enemies
+		<Right> to rapid-fire Starbursts
 		Uses gel for ammo
 		50% chance to save ammo
 		'Halley arrived sooner than expected'

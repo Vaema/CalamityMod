@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,6 +43,11 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.shoot = ModContent.ProjectileType<StratusBlackHole>();
             Item.noUseGraphic = true;
         }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
@@ -58,12 +69,26 @@ namespace CalamityMod.Items.Weapons.Typeless
                     }
                 }
             var orderedholes = holes.OrderBy(x => x.timeLeft).ToList();
-            while (orderedholes.Count > 4)
+            while (orderedholes.Count >= 1)
             {
                 orderedholes.First().timeLeft = 30;
                 orderedholes.Remove(orderedholes.First());
             }
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            if (player.altFunctionUse == 2)
+            {
+                if (player.Calamity().Starshield > 45)
+                {
+                    player.Calamity().Starshield = 30;
+                }
+                else
+                    player.Calamity().Starshield = 3600;
+            }
+            else
+            {
+
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+                player.Calamity().Starshield = (int)MathHelper.Min(30,player.Calamity().Starshield);
+            }
             return false;
         }
 

@@ -1,90 +1,94 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class GalileoGladiusProj : BaseShortswordProjectile
+    public class GalileoGladiusProj : BaseSwordHoldoutProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<GalileoGladius>();
-        public override string Texture => "CalamityMod/Items/Weapons/Melee/GalileoGladius";
+        public Player Owner => Main.player[Projectile.owner];
+        public override int swingWidth => 200;
+        public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<GalileoGladius>()).Item;
+        public override string Texture => BaseItem.ModItem.Texture;
+        public override int AfterImageLength => 0;
+        public override int OffsetDistance { get; set; } = 90;
+        public override bool drawSwordTrail => false;
+        public override bool AlternateSwings => false;
 
-        public override void SetDefaults()
+        public override bool useMeleeSpeed => true;
+
+        public override int swingTime { get; set; } = 8;
+
+        public override SoundStyle? UseSound => SoundID.Item71 with { Volume = 0.5f };
+
+        public override void Defaults()
         {
-            Projectile.Size = new Vector2(24);
-            Projectile.friendly = true;
-            Projectile.penetrate = -1;
-            Projectile.tileCollide = false;
-            Projectile.scale = 1f;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.ownerHitCheck = true;
-            Projectile.timeLeft = 360;
-            Projectile.extraUpdates = 1;
-            Projectile.hide = true;
-            Projectile.ownerHitCheck = true;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8;
+            Projectile.extraUpdates = 3;
         }
 
-        public override Action<Projectile> EffectBeforePullback => (proj) =>
+        public override void Spawn(IEntitySource source)
         {
-            int moonDamage = (int)(Projectile.damage * 0.6f);
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 10f, ModContent.ProjectileType<GalileosMoon>(), moonDamage, Projectile.knockBack, Projectile.owner, 0f, 0f);
-        };
-
-        public override void SetVisualOffsets()
-        {
-            const int HalfSpriteWidth = 42 / 2;
-            const int HalfSpriteHeight = 46 / 2;
-
-            int HalfProjWidth = Projectile.width / 2;
-            int HalfProjHeight = Projectile.height / 2;
-
-            DrawOriginOffsetX = 0;
-            DrawOffsetX = -(HalfSpriteWidth - HalfProjWidth);
-            DrawOriginOffsetY = -(HalfSpriteHeight - HalfProjHeight);
+            angle = angle.RotatedByRandom(0.2f);
         }
 
-        public override void ExtraBehavior()
+        public override void AdditionalAI()
         {
-            if (Main.rand.NextBool(5))
+            OffsetDistance = (int)MathHelper.Lerp(15, 45, SwingCompletion);
+            //Spawn the large glow V
+            var sparkAngle = angle.RotatedBy(MathHelper.Pi);
+            int dir = MathF.Sign(sparkAngle.X);
+            var color = Color.LightSkyBlue;
+            if (Projectile.FinalExtraUpdate())
             {
-                int gladiusDust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (Main.rand.NextBool() ? 20 : 176), (float)(Main.player[Projectile.owner].direction * 2), 0f, 150, default, 1.3f);
-                Main.dust[gladiusDust].velocity *= 0.2f;
-                Main.dust[gladiusDust].noGravity = true;
+                for (float i = -1; i <= 1; i += 2f)
+                {
+                    Vector2 velocity = -sparkAngle.RotatedBy(i * -0.3f) * 10f;
+                    Vector2 position = Projectile.Center + new Vector2(MathHelper.Lerp(20, 100, SwingCompletion), i * 15).RotatedBy(sparkAngle.ToRotation());
+                    Particle spark = new CustomSpark(position, velocity, "CalamityMod/Particles/BloomCircle", false, 3, 0.3f, color, new Vector2(0.3f, 3f),noShrink:true);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                }
+                if (Projectile.FinalExtraUpdate())
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center + sparkAngle * MathHelper.Lerp(0, 60, SwingCompletion), sparkAngle, "CalamityMod/Particles/GlowBlade", false, 3, 0.04f, Color.SkyBlue, new Vector2(MathHelper.Lerp(0.5f, 1f, SwingCompletion), MathHelper.Lerp(0.1f, 1.5f, SwingCompletion)), shrinkSpeed: 0.2f));
             }
+            Lighting.AddLight(Main.player[Projectile.owner].Center, 0.96f, 0.91f, 1f);
+        }
+
+        public override float SwingFunction()
+        {
+            return 0; //Galileo stabs, not swings.
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
-            SpawnMeteor(Main.player[Projectile.owner]);
+            Owner.Calamity().StratusStarburst++;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        //This can be deleted once Gilded Proboscis is merged into the main branch.
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
-            SpawnMeteor(Main.player[Projectile.owner]);
+            var lineCollisionLength = 160;
+            var player = Main.player[Projectile.owner];
+            var armcenter = player.Center - new Vector2(5 * player.direction, 2);
+            var swordDir = armcenter.DirectionTo(Projectile.Center);
+            var collisionline = new Vector2(lineCollisionLength / 2f, 0).RotatedBy(swordDir.ToRotation()) * Projectile.scale;
+            bool c = Collision.CheckAABBvLineCollision(targetHitbox.Location.ToVector2(), targetHitbox.Size(), Projectile.Center, Projectile.Center + collisionline);
+            if (c && !float.IsNaN(collisionline.X) && !float.IsNaN(collisionline.Y))
+                return true;
+            return base.Colliding(projHitbox, targetHitbox);
         }
 
-        private void SpawnMeteor(Player player)
-        {
-            if (player.whoAmI == Main.myPlayer)
-            {
-                var source = player.GetSource_FromThis();
-                if (player.Calamity().galileoCooldown <= 0)
-                {
-                    int damage = player.GetWeaponDamage(player.ActiveItem()) * 2;
-                    CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 25f, ModContent.ProjectileType<GalileosPlanet>(), damage, 15f, player.whoAmI);
-                    player.Calamity().galileoCooldown = 15;
-                }
-            }
-        }
     }
 }

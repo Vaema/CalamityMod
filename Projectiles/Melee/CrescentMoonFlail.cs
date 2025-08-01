@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             player.heldProj = Projectile.whoAmI;
             player.itemAnimation = 5;
             player.itemTime = 5;
-            if (!player.channel && !hasFired)
+                if (!player.channel && !hasFired)
             {
                 Projectile.velocity = player.DirectionTo(player.Calamity().mouseWorld) * 25;
                 Projectile.Center = player.Center + Projectile.velocity * 5;
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (player.miscCounter % 13 == 0 && Projectile.FinalExtraUpdate())
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.Zero) * 5f, ModContent.ProjectileType<CrescentMoonProj>(), (int)(Projectile.damage * 0.1f), 0f, Projectile.owner, 0f, 0f);
-                if (player.miscCounter % 10 == 0 && Projectile.FinalExtraUpdate())
+                if (player.miscCounter % 20 == 0 && Projectile.FinalExtraUpdate())
                 {
                     player.Calamity().StratusStarburst++;
                 }
@@ -177,7 +177,10 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 player.direction = player.DirectionTo(Projectile.Center + Projectile.velocity).X.DirectionalSign();
             }
-
+            if (Projectile.FinalExtraUpdate() && burstStage != 0 && (Projectile.ai[0] <= 40 || !hasFired))
+            {
+                GeneralParticleHandler.SpawnParticle(new BloomParticle(Projectile.Center + Projectile.velocity, Vector2.Zero, Color.SkyBlue, 0.45f, 0.45f, 2, false));
+            }
             player.SetCompositeArmFront(true,Player.CompositeArmStretchAmount.Full,player.DirectionTo(Projectile.Center + Projectile.velocity).ToRotation() - MathHelper.PiOver2);
         }
 

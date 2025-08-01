@@ -41,10 +41,13 @@ namespace CalamityMod.Projectiles.Rogue
         public override void AI()
         {
             Projectile.rotation += Projectile.direction * 0.05f;
-            var star = new BloomParticle(Projectile.Center, Vector2.Zero, Color.SkyBlue*0.75f, 0.15f, 0.15f, 2, false);
-            var star2 = new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 1f, Color.SkyBlue, Vector2.One);
-            GeneralParticleHandler.SpawnParticle(star);
-            GeneralParticleHandler.SpawnParticle(star2);
+            if (Projectile.FinalExtraUpdate())
+            {
+                var star = new BloomParticle(Projectile.Center, Vector2.Zero, Color.SkyBlue, 0.2f, 0.25f, 2, false);
+                var star2 = new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 1f, Color.White, Vector2.One);
+                GeneralParticleHandler.SpawnParticle(star);
+                GeneralParticleHandler.SpawnParticle(star2);
+            }
             if (Projectile.ai[0] == 0f)
             {
                 if (Projectile.timeLeft < (lifetime - Projectile.ai[1]) && Projectile.localAI[0] >= 0)
@@ -92,16 +95,16 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.velocity *= 0.95f;
                 }
             }
-            if (Projectile.soundDelay == 0)
+            if (Projectile.soundDelay == 0 && Projectile.velocity.Length() > 0.1f)
             {
-                Projectile.soundDelay = 20 + Main.rand.Next(40);
-                if (Main.rand.NextBool(5))
-                {
-                    SoundEngine.PlaySound(SoundID.Item9, Projectile.position);
-                }
+                Projectile.soundDelay = 60;
+                SoundEngine.PlaySound(SoundID.Item9 with { Volume = 0.5f}, Projectile.position);
             }
         }
-
+        public override bool? CanHitNPC(NPC target)
+        {
+            return null;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);

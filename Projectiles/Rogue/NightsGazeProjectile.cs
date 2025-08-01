@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
             
             OnHitEffects();
             var owner = Main.player[Projectile.owner];
-            if (Projectile.Calamity().stealthStrike && owner.Calamity().AvaliableStarburst >= 15)
+            if (Projectile.ai[1] > 0)
             {
                 foreach (var item in Main.ActiveProjectiles)
                 {
@@ -61,7 +61,6 @@ namespace CalamityMod.Projectiles.Rogue
                         item.localNPCHitCooldown = 10;
                     }
                 }
-                owner.Calamity().StratusStarburst -= 15;
             }
         }
 
@@ -98,9 +97,13 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.Item62 with { Volume = SoundID.Item62.Volume * 0.6f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item68 with { Volume = SoundID.Item68.Volume * 0.2f }, Projectile.position);
             SoundEngine.PlaySound(SoundID.Item122 with { Volume = SoundID.Item122.Volume * 0.4f }, Projectile.position);
-            Main.player[Projectile.owner].Calamity().StratusStarburst++;
-            if (Main.player[Projectile.owner].Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                Main.player[Projectile.owner].Calamity().StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
+
+            for (var i = 0; i < (Projectile.ai[1] == 0 && Projectile.Calamity().stealthStrike ? 3 : 1); i++)
+            {
+                Main.player[Projectile.owner].Calamity().StratusStarburst++;
+                if (Main.player[Projectile.owner].Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                    Main.player[Projectile.owner].Calamity().StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
+            }
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
