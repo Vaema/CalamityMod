@@ -51,10 +51,10 @@ namespace CalamityMod.Systems
         // Makes the world automatically convert to Death if in Master, or out of Death if in Expert
         public override void PostUpdateWorld()
         {
-            if (Main.GameMode == GameModeID.Expert && GetCurrentDifficulty == DeathDifficulty.Instance)
-                ModeIndicatorUI.SwitchToDifficulty(RevengeanceDifficulty.Instance);
-            if (Main.GameMode == GameModeID.Master && GetCurrentDifficulty == RevengeanceDifficulty.Instance)
-                ModeIndicatorUI.SwitchToDifficulty(DeathDifficulty.Instance);
+            if (Main.GameMode == GameModeID.Expert && GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>())
+                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>());
+            if (Main.GameMode == GameModeID.Master && GetCurrentDifficulty == ModContent.GetInstance<RevengeanceDifficulty>())
+                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>());
         }
 
         public static DifficultyMode GetCurrentDifficulty
@@ -136,28 +136,35 @@ namespace CalamityMod.Systems
         }
     }
 
-    public abstract class DifficultyMode
+    public abstract class DifficultyMode : ModType
     {
+        protected override void Register()
+        {
+            // This is registered in DifficultyModeSystem.Load
+        }
         public abstract bool Enabled
         {
             get; set;
         }
 
+        protected Asset<Texture2D> _texture;
         public abstract Asset<Texture2D> Texture { get; }
+        protected Asset<Texture2D> _textureDisabled;
         public abstract Asset<Texture2D> TextureDisabled { get; }
+        protected SoundStyle? _activationSound;
+        public abstract SoundStyle ActivationSound{ get; }
+        internal int _difficultyTier;
+        public abstract float DifficultyScale{ get; }
+
+        public new abstract LocalizedText Name { get; }
+        public abstract Color ChatTextColor{ get; }
+        public abstract LocalizedText ShortDescription{ get; }
         public virtual LocalizedText ExpandedDescription => LocalizedText.Empty;
 
-        public float DifficultyScale;
-        public LocalizedText Name;
-        public LocalizedText ShortDescription;
-        public Color ChatTextColor;
+        public abstract LocalizedText FTWName{ get; }
+        public abstract Color FTWTextColor{ get; }
 
-        public LocalizedText FTWName;
-        public Color FTWTextColor;
 
-        public SoundStyle ActivationSound;
-
-        internal int _difficultyTier;
 
         /// <summary>
         /// Used to know which difficulties to toggle on when selecting a particular difficulty.
@@ -190,45 +197,23 @@ namespace CalamityMod.Systems
                 }
         }
 
-        private Asset<Texture2D> _texture;
-        public override Asset<Texture2D> Texture
-        {
-            get
-            {
-                if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic");
 
-                return _texture;
-            }
-        }
-        private Asset<Texture2D> _textureDisabled;
-        public override Asset<Texture2D> TextureDisabled
-        {
-            get
-            {
-                if (_textureDisabled == null)
-                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
 
-                return _textureDisabled;
-            }
-        }
+        public override SoundStyle ActivationSound => _activationSound ??= SoundID.MenuTick with { Volume = 1f };
 
-        public NoDifficulty()
-        {
-            DifficultyScale = 0;
-            Name = Language.GetText("UI.Normal");
-            ShortDescription = GetText("UI.ClassicInfo");
-            ChatTextColor = Color.White;
+        public override float DifficultyScale => 0;
 
-            FTWName = Language.GetText("UI.Expert");
-            FTWTextColor = new Color(255, 186, 117); // World display: Main.mcColor
+        public override LocalizedText Name => Language.GetText("UI.Normal");
 
-            ActivationSound = SoundID.MenuTick with { Volume = 1f };
+        public override Color ChatTextColor => Color.White;
 
-            Instance = this;
-        }
+        public override LocalizedText ShortDescription => GetText("UI.ClassicInfo");
 
-        public static NoDifficulty Instance { get; private set; } = null;
+        public override LocalizedText FTWName => Language.GetText("UI.Expert");
+
+        public override Color FTWTextColor => new Color(255, 186, 117); // World display: Main.mcColor
     }
 
     public class ExpertDifficulty : DifficultyMode
@@ -254,47 +239,24 @@ namespace CalamityMod.Systems
             }
         }
 
-        private Asset<Texture2D> _texture;
-        public override Asset<Texture2D> Texture
-        {
-            get
-            {
-                if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert");
 
-                return _texture;
-            }
-        }
-        private Asset<Texture2D> _textureDisabled;
-        public override Asset<Texture2D> TextureDisabled
-        {
-            get
-            {
-                if (_textureDisabled == null)
-                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
 
-                return _textureDisabled;
-            }
-        }
+        public override SoundStyle ActivationSound => _activationSound ??= SoundID.ForceRoarPitched;
+
+        public override float DifficultyScale => 0.1f;
+
+        public override LocalizedText Name => Language.GetText("UI.Expert");
+        public override Color ChatTextColor => new Color(255, 186, 117); // World display: Main.mcColor
+
+        public override LocalizedText ShortDescription => GetText("UI.ExpertShortInfo");
 
         public override LocalizedText ExpandedDescription => GetText("UI.ExpertExpandedInfo");
 
-        public ExpertDifficulty()
-        {
-            DifficultyScale = 0.1f;
-            Name = Language.GetText("UI.Expert");
-            ShortDescription = GetText("UI.ExpertShortInfo");
-            ChatTextColor = new Color(255, 186, 117); // World display: Main.mcColor
+        public override LocalizedText FTWName => Language.GetText("UI.Master");
 
-            FTWName = Language.GetText("UI.Master");
-            FTWTextColor = new Color(28, 255, 170); // World display: Main.hcColor
-
-            ActivationSound = SoundID.ForceRoarPitched;
-
-            Instance = this;
-        }
-
-        public static ExpertDifficulty Instance { get; private set; } = null;
+        public override Color FTWTextColor => new Color(28, 255, 170); // World display: Main.hcColor
     }
 
     public class MasterDifficulty : DifficultyMode
@@ -320,47 +282,26 @@ namespace CalamityMod.Systems
             }
         }
 
-        private Asset<Texture2D> _texture;
-        public override Asset<Texture2D> Texture
-        {
-            get
-            {
-                if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master");
+        
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
 
-                return _texture;
-            }
-        }
-        private Asset<Texture2D> _textureDisabled;
-        public override Asset<Texture2D> TextureDisabled
-        {
-            get
-            {
-                if (_textureDisabled == null)
-                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
+        public override SoundStyle ActivationSound => _activationSound ??= SoundID.NPCDeath10;
 
-                return _textureDisabled;
-            }
-        }
+        public override float DifficultyScale => 0.25f;
+
+        public override LocalizedText Name => Language.GetText("UI.Master");
+
+        public override Color ChatTextColor => new Color(28, 255, 170); // World display: Main.hcColor
+
+        public override LocalizedText ShortDescription => GetText("UI.MasterShortInfo");
 
         public override LocalizedText ExpandedDescription => GetText("UI.MasterExpandedInfo");
 
-        public MasterDifficulty()
-        {
-            DifficultyScale = 0.25f;
-            Name = Language.GetText("UI.Master");
-            ShortDescription = GetText("UI.MasterShortInfo");
-            ChatTextColor = new Color(28, 255, 170); // World display: Main.hcColor
+        public override LocalizedText FTWName => Language.GetText("UI.Legendary");
 
-            FTWName = Language.GetText("UI.Legendary");
-            FTWTextColor = Main.legendaryModeColor;
+        public override Color FTWTextColor => Main.legendaryModeColor;
 
-            ActivationSound = SoundID.NPCDeath10;
-
-            Instance = this;
-        }
-
-        public static MasterDifficulty Instance { get; private set; } = null;
     }
 
     public class RevengeanceDifficulty : DifficultyMode
@@ -380,28 +321,19 @@ namespace CalamityMod.Systems
             }
         }
 
-        private Asset<Texture2D> _texture;
-        public override Asset<Texture2D> Texture
-        {
-            get
-            {
-                if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev");
 
-                return _texture;
-            }
-        }
-        private Asset<Texture2D> _textureDisabled;
-        public override Asset<Texture2D> TextureDisabled
-        {
-            get
-            {
-                if (_textureDisabled == null)
-                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
 
-                return _textureDisabled;
-            }
-        }
+        public override SoundStyle ActivationSound => _activationSound ??= SoundID.Item119;
+
+        public override float DifficultyScale => 0.25f;
+
+        public override LocalizedText Name => GetText("UI.Revengeance");
+
+        public override Color ChatTextColor => new Color(211, 42, 42);
+
+        public override LocalizedText ShortDescription => GetText("UI.RevengeanceShortInfo");
 
         public override LocalizedText ExpandedDescription
         {
@@ -413,22 +345,9 @@ namespace CalamityMod.Systems
             }
         }
 
-        public RevengeanceDifficulty()
-        {
-            DifficultyScale = 0.25f;
-            Name = GetText("UI.Revengeance");
-            ShortDescription = GetText("UI.RevengeanceShortInfo");
-            ChatTextColor = new Color(211, 42, 42);
+        public override LocalizedText FTWName => GetText("UI.Death");
 
-            FTWName = GetText("UI.Death");
-            FTWTextColor = new Color(192, 64, 219);
-
-            ActivationSound = SoundID.Item119;
-
-            Instance = this;
-        }
-
-        public static RevengeanceDifficulty Instance { get; private set; } = null;
+        public override Color FTWTextColor => new Color(192, 64, 219);
     }
 
     public class DeathDifficulty : DifficultyMode
@@ -460,45 +379,26 @@ namespace CalamityMod.Systems
             }
         }
 
-        private Asset<Texture2D> _texture;
-        public override Asset<Texture2D> Texture
-        {
-            get
-            {
-                if (_texture == null)
-                    _texture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death");
+        public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death");
 
-                return _texture;
-            }
-        }
-        private Asset<Texture2D> _textureDisabled;
-        public override Asset<Texture2D> TextureDisabled
-        {
-            get
-            {
-                if (_textureDisabled == null)
-                    _textureDisabled = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
+        public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
 
-                return _textureDisabled;
-            }
-        }
+        public override SoundStyle ActivationSound => _activationSound ??= DemonshadeHelm.ActivationSound;
+
+        public override float DifficultyScale => 0.5f;
+
+        public override LocalizedText Name => GetText("UI.Death");
+
+        public override Color ChatTextColor => new Color(192, 64, 219);
+
+        public override LocalizedText ShortDescription => GetText("UI.DeathShortInfo");
 
         public override LocalizedText ExpandedDescription => GetText("UI.DeathExpandedInfo");
 
-        public DeathDifficulty()
-        {
-            DifficultyScale = 0.5f;
-            Name = GetText("UI.Death");
-            ShortDescription = GetText("UI.DeathShortInfo");
-            ChatTextColor = new Color(192, 64, 219);
 
-            FTWName = GetText("UI.Malice");
-            FTWTextColor = new Color(240, 128, 128);
+        public override LocalizedText FTWName => GetText("UI.Malice");
 
-            ActivationSound = DemonshadeHelm.ActivationSound;
-
-            Instance = this;
-        }
+        public override Color FTWTextColor => new Color(240, 128, 128);
 
         public override int[] FavoredDifficultyAtTier(int tier)
         {
@@ -508,7 +408,7 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i].Name == Language.GetText("UI.Master") || tierList[i].Name == GetText("UI.Revengeance"))
+                if (tierList[i] is MasterDifficulty || tierList[i] is RevengeanceDifficulty)
                     difficulties.Add(i);
             }
 
@@ -517,6 +417,5 @@ namespace CalamityMod.Systems
 
             return difficulties.ToArray();
         }
-        public static DeathDifficulty Instance { get; private set; } = null;
     }
 }
