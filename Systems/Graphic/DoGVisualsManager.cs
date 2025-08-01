@@ -91,29 +91,30 @@ namespace CalamityMod.Systems.Graphic
                 if (SkyManager.Instance["Ambience"].IsActive())
                     SkyManager.Instance["Ambience"].Deactivate();
 
-                // Randomly flicker between different values to create a natural lightning effect in the background of the 
-                // Distortion rift's clouds.
-                if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
+                if (CalamityClientConfig.Instance.FancyBackgroundVisuals)
                 {
-                    BackgroundLightningTimer = Main.rand.NextBool(10) ? Main.rand.Next(30, 45) : Main.rand.Next(5, 20);
-                    BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
-                }
+                    // Randomly flicker between different values to create a natural lightning effect in the background of the 
+                    // Distortion rift's clouds.
+                    if (Main.rand.NextBool(200) && DoGSky.SkyIntensity > 0f && BackgroundLightningTimer <= 0f)
+                    {
+                        BackgroundLightningTimer = Main.rand.NextBool(10) ? Main.rand.Next(30, 45) : Main.rand.Next(5, 20);
+                        BackgroundLightningMax = Main.rand.NextFloat(0.7f, 0.9f);
+                    }
 
-                if (BackgroundLightningTimer > 0f)
-                {
-                    float minFill = BackgroundLightningMax * 0.5f;
-                    BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
-                    BackgroundLightningTimer--;
-                }
-                else
-                {
-                    if (BackgroundLightningTimer < 0f)
-                        BackgroundLightningTimer = 0f;
-                    BackgroundLightningFill = MathHelper.Lerp(BackgroundLightningFill, 0f, 0.05f);
+                    if (BackgroundLightningTimer > 0f)
+                    {
+                        float minFill = BackgroundLightningMax * 0.5f;
+                        BackgroundLightningFill = Main.rand.NextFloat(minFill, BackgroundLightningMax);
+                        BackgroundLightningTimer--;
+                    }
+                    else
+                    {
+                        if (BackgroundLightningTimer < 0f)
+                            BackgroundLightningTimer = 0f;
+                        BackgroundLightningFill = MathHelper.Lerp(BackgroundLightningFill, 0f, 0.05f);
+                    }
                 }
             }
-
-            
         }
 
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
@@ -128,15 +129,19 @@ namespace CalamityMod.Systems.Graphic
             if (FillProgress > 0)
             {
                 Color colorToUse = DoGSky.DoGSkyColor;
+                float tileBrightness = CalamityClientConfig.Instance.FancyBackgroundVisuals ? 35f : 190f;
+
                 backgroundColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, Color.White.R * 0.035f, FillProgress);
                 backgroundColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, Color.White.G * 0.035f, FillProgress);
                 backgroundColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, Color.White.B * 0.035f, FillProgress);
                 backgroundColor = new(backgroundColor.ToVector3() + colorToUse.ToVector3() * 0.025f * FillProgress);
 
-                tileColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, 35f, FillProgress);
-                tileColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, 35f, FillProgress);
-                tileColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, 35f, FillProgress);
-                tileColor = new(tileColor.ToVector3() + colorToUse.ToVector3() * 0.075f * FillProgress);
+                tileColor.R = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.R, tileBrightness, FillProgress);
+                tileColor.G = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.G, tileBrightness, FillProgress);
+                tileColor.B = (byte)MathHelper.Lerp(Main.ColorOfTheSkies.B, tileBrightness, FillProgress);
+
+                float tileColorAdditive = CalamityClientConfig.Instance.FancyBackgroundVisuals ? 0.075f : 0.4f;
+                tileColor = new(tileColor.ToVector3() + colorToUse.ToVector3() * tileColorAdditive * FillProgress);
             }
         }
 

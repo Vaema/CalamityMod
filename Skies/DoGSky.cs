@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Dusts;
 using CalamityMod.Effects;
 using CalamityMod.Events;
 using CalamityMod.Graphics;
@@ -232,7 +233,7 @@ namespace CalamityMod.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (Main.gameMenu)
+            if (Main.gameMenu || !CalamityClientConfig.Instance.FancyBackgroundVisuals)
                 return;
 
             spriteBatch.End();
@@ -455,14 +456,6 @@ namespace CalamityMod.Skies
                     goalSkyColor = DoGLightBlue;
                 if (DoG.isInLaserWallState || DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
                     goalSkyColor = DoGTwlight;
-
-                //if (DoG.isInPostWallState || DoG.postTeleportTimer > 0 || DoG.teleportTimer > 0 || DoG.NPC.localAI[2] < 180 && DoG.NPC.localAI[2] > 60)
-                //{
-                //    if (DoG.Phase2Started)
-                //        goalSkyColor = Color.Black;
-                //    else
-                //        goalSkyColor = new Color(117, 21, 161);
-                //}
 
                 DoGSkyColor = Color.Lerp(DoGSkyColor, goalSkyColor, 0.1f);
             }
