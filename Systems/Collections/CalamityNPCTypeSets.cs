@@ -61,7 +61,7 @@ namespace CalamityMod.Systems.Collections
 
         public static List<int> Ravager = [ NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>(), NPCType<RavagerHead>() ];
 
-        public static List<int> SkeletronPrime = [ NPCID.SkeletronPrime, NPCType<SkeletronPrime2>(), NPCID.PrimeCannon, NPCID.PrimeLaser, NPCID.PrimeSaw, NPCID.PrimeVice ];
+        public static List<int> SkeletronPrime = [ NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeLaser, NPCID.PrimeSaw, NPCID.PrimeVice ];
 
         public static List<int> SlimeGod = [ NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<SlimeGodCore>() ];
 

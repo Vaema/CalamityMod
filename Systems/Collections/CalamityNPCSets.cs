@@ -96,18 +96,18 @@ namespace CalamityMod.Systems.Collections
                 NPCType<BrimstoneHeart>(), NPCType<SoulSeeker>(), NPCType<SoulSeekerSupreme>(), NPCType<Cataclysm>(), NPCType<SupremeCataclysm>(), NPCType<Catastrophe>(),
                 NPCType<SupremeCatastrophe>(), NPCType<SepulcherHead>(), NPCType<SepulcherBody>(), NPCType<SepulcherTail>(), NPCType<SepulcherArm>(), NPCType<SepulcherBodyEnergyBall>(),
                 NPCType<PrimordialWyrmBody>(), NPCType<PrimordialWyrmBodyAlt>(), NPCType<PrimordialWyrmHead>(), NPCType<PrimordialWyrmTail>(), NPCType<AquaticAberration>(),
-                NPCType<AnahitasIceShield>(), NPCType<CryogenShield>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<Bumblefuck2>(), NPCType<AureusSpawn>(),
+                NPCType<AnahitasIceShield>(), NPCType<CryogenShield>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<DraconicSwarmer>(), NPCType<AureusSpawn>(),
                 NPCType<Brimling>(), NPCType<CrabShroom>(), NPCType<CosmicGuardianBody>(), NPCType<CosmicGuardianTail>(), NPCType<CosmicGuardianHead>(), NPCType<DankCreeper>(),
                 NPCType<HiveBlob>(), NPCType<HiveBlob2>(), NPCType<DarkHeart>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceTail>(),
                 NPCType<DesertNuisanceBodyYoung>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceTailYoung>(), NPCType<PolterPhantom>(), NPCType<PhantomFuckYou>(),
-                NPCType<BloodlettingServant>(), NPCType<KingSlimeJewelEmerald>(), NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(), NPCType<PlanterasFreeTentacle>(),
-                NPCType<SkeletronPrime2>(), NPCType<PlagueHomingMissile>(), NPCType<PlagueMine>(), NPCType<ProfanedRocks>(), NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnOffense>(),
-                NPCType<ProvSpawnHealer>(), NPCType<RockPillar>(), NPCType<FlamePillar>(), NPCType<CosmicMine>(), NPCType<CosmicLantern>(), NPCType<ProfanedGuardianDefender>(),
-                NPCType<ProfanedGuardianHealer>(), NPCType<CorruptSlimeSpawn>(), NPCType<CorruptSlimeSpawn2>(), NPCType<CrimsonSlimeSpawn>(), NPCType<CrimsonSlimeSpawn2>(),
-                NPCType<PerforatorHeadLarge>(), NPCType<PerforatorBodyLarge>(), NPCType<PerforatorTailLarge>(), NPCType<PerforatorHeadMedium>(), NPCType<PerforatorBodyMedium>(),
-                NPCType<PerforatorTailMedium>(), NPCType<PerforatorHeadSmall>(), NPCType<PerforatorBodySmall>(), NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(),
-                NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<SlimeGodCore>(), NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(),
-                NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(), NPCType<RavagerLegRight>(), NPCType<RavagerHead>());
+                NPCType<KingSlimeJewelEmerald>(), NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
+                NPCType<PlagueMine>(), NPCType<ProfanedRocks>(), NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnOffense>(), NPCType<ProvSpawnHealer>(), NPCType<RockPillar>(),
+                NPCType<FlamePillar>(), NPCType<CosmicMine>(), NPCType<CosmicLantern>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<CorruptSlimeSpawn>(),
+                NPCType<CorruptSlimeSpawn2>(), NPCType<CrimsonSlimeSpawn>(), NPCType<CrimsonSlimeSpawn2>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorBodyLarge>(),
+                NPCType<PerforatorTailLarge>(), NPCType<PerforatorHeadMedium>(), NPCType<PerforatorBodyMedium>(), NPCType<PerforatorTailMedium>(), NPCType<PerforatorHeadSmall>(),
+                NPCType<PerforatorBodySmall>(), NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(),
+                NPCType<SplitCrimulanPaladin>(), NPCType<SlimeGodCore>(), NPCType<RavagerBody>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(),
+                NPCType<RavagerLegRight>(), NPCType<RavagerHead>());
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will have its contact damage set to 0.<br/>
@@ -202,16 +202,16 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(),
-                NPCType<KingSlimeJewelEmerald>(), NPCID.EyeofCthulhu, NPCType<BloodlettingServant>(), NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail,
-                NPCID.BrainofCthulhu, NPCID.Creeper, NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye,
-                NPCID.PirateShipCannon, NPCID.QueenSlimeBoss, NPCID.Probe, NPCID.Retinazer, NPCID.Spazmatism, NPCType<Foveanator>(), NPCID.SkeletronPrime, NPCType<SkeletronPrime2>(),
-                NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.Plantera, NPCID.PlanterasTentacle, NPCType<PlanterasFreeTentacle>(), NPCID.Everscream,
-                NPCID.SantaNK1, NPCID.IceQueen, NPCID.MourningWood, NPCID.Pumpking, NPCID.Mothron, NPCID.Golem, NPCID.GolemHead, NPCID.GolemHeadFree, NPCID.GolemFistRight,
-                NPCID.GolemFistLeft, NPCID.MartianSaucerCore, NPCID.MartianSaucerCannon, NPCID.MartianSaucerTurret, NPCID.DukeFishron, NPCID.Sharkron, NPCID.Sharkron2, NPCID.HallowBoss,
-                NPCID.CultistBoss, NPCID.CultistDragonHead, NPCID.CultistDragonBody1, NPCID.CultistDragonBody2, NPCID.CultistDragonBody3, NPCID.CultistDragonBody4, NPCID.CultistDragonTail,
-                NPCID.AncientCultistSquidhead, NPCID.MoonLordHead, NPCID.MoonLordHand, NPCID.MoonLordCore, NPCID.MoonLordFreeEye, NPCID.DD2WyvernT1, NPCID.DD2WyvernT2, NPCID.DD2WyvernT3,
-                NPCID.DD2DarkMageT1, NPCID.DD2DarkMageT3, NPCID.DD2SkeletonT1, NPCID.DD2SkeletonT3, NPCID.DD2WitherBeastT2, NPCID.DD2WitherBeastT3, NPCID.DD2DrakinT2, NPCID.DD2DrakinT3,
-                NPCID.DD2KoboldWalkerT2, NPCID.DD2KoboldWalkerT3, NPCID.DD2KoboldFlyerT2, NPCID.DD2KoboldFlyerT3, NPCID.DD2OgreT2, NPCID.DD2OgreT3, NPCID.DD2Betsy,
+                NPCType<KingSlimeJewelEmerald>(), NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
+                NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye, NPCID.PirateShipCannon, NPCID.QueenSlimeBoss,
+                NPCID.Probe, NPCID.Retinazer, NPCID.Spazmatism, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.Plantera,
+                NPCID.PlanterasTentacle, NPCType<PlanterasFreeTentacle>(), NPCID.Everscream, NPCID.SantaNK1, NPCID.IceQueen, NPCID.MourningWood, NPCID.Pumpking, NPCID.Mothron,
+                NPCID.Golem, NPCID.GolemHead, NPCID.GolemHeadFree, NPCID.GolemFistRight, NPCID.GolemFistLeft, NPCID.MartianSaucerCore, NPCID.MartianSaucerCannon, NPCID.MartianSaucerTurret,
+                NPCID.DukeFishron, NPCID.Sharkron, NPCID.Sharkron2, NPCID.HallowBoss, NPCID.CultistBoss, NPCID.CultistDragonHead, NPCID.CultistDragonBody1, NPCID.CultistDragonBody2,
+                NPCID.CultistDragonBody3, NPCID.CultistDragonBody4, NPCID.CultistDragonTail, NPCID.AncientCultistSquidhead, NPCID.MoonLordHead, NPCID.MoonLordHand, NPCID.MoonLordCore,
+                NPCID.MoonLordFreeEye, NPCID.DD2WyvernT1, NPCID.DD2WyvernT2, NPCID.DD2WyvernT3, NPCID.DD2DarkMageT1, NPCID.DD2DarkMageT3, NPCID.DD2SkeletonT1, NPCID.DD2SkeletonT3,
+                NPCID.DD2WitherBeastT2, NPCID.DD2WitherBeastT3, NPCID.DD2DrakinT2, NPCID.DD2DrakinT3, NPCID.DD2KoboldWalkerT2, NPCID.DD2KoboldWalkerT3, NPCID.DD2KoboldFlyerT2,
+                NPCID.DD2KoboldFlyerT3, NPCID.DD2OgreT2, NPCID.DD2OgreT3, NPCID.DD2Betsy,
                 NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceTail>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceBodyYoung>(),
                 NPCType<DesertNuisanceTailYoung>(), NPCType<GiantClam>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorHeadMedium>(), NPCType<PerforatorHeadSmall>(),
                 NPCType<PerforatorBodyLarge>(), NPCType<PerforatorBodyMedium>(), NPCType<PerforatorBodySmall>(), NPCType<PerforatorTailLarge>(), NPCType<PerforatorTailMedium>(),
@@ -219,7 +219,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<CloudElemental>(), NPCType<CryogenShield>(), NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>(),
                 NPCType<CragmawMire>(), NPCType<Cataclysm>(), NPCType<Catastrophe>(), NPCType<SoulSeeker>(), NPCType<GreatSandShark>(), NPCType<AnahitasIceShield>(), NPCType<AureusSpawn>(),
                 NPCType<PlaguebringerMiniboss>(), NPCType<PlagueHomingMissile>(), NPCType<PlagueMine>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(),
-                NPCType<RavagerLegRight>(), NPCType<RockPillar>(), NPCType<RavagerHead>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<Bumblefuck2>(),
+                NPCType<RavagerLegRight>(), NPCType<RockPillar>(), NPCType<RavagerHead>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<DraconicSwarmer>(),
                 NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnHealer>(), NPCType<ProvSpawnOffense>(), NPCType<BobbitWormHead>(), NPCType<Mauler>(), NPCType<ColossalSquid>(), NPCType<ReaperShark>(),
                 NPCType<EidolonWyrmHead>(), NPCType<NuclearTerror>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<SupremeCataclysm>(), NPCType<SupremeCatastrophe>(), NPCType<SoulSeekerSupreme>());
 
@@ -246,7 +246,6 @@ namespace CalamityMod.Systems.Collections
             { NPCType<KingSlimeJewelEmerald>(), 24000 },
             { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
             { NPCID.ServantofCthulhu, 6000 },
-            { NPCType<BloodlettingServant>(), 12000 },
             { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
             { NPCID.EaterofWorldsBody, 10000 },
             { NPCID.EaterofWorldsTail, 10000 },
@@ -275,13 +274,11 @@ namespace CalamityMod.Systems.Collections
             { NPCID.QueenSlimeMinionPurple, 5000 },
             { NPCID.Spazmatism, 150000 }, // 30 seconds
             { NPCID.Retinazer, 125000 },
-            { NPCType<Foveanator>(), 137500 },
             { NPCID.TheDestroyer, 600000 }, // 30 seconds + immunity timer at start
             { NPCID.TheDestroyerBody, 600000 },
             { NPCID.TheDestroyerTail, 600000 },
             { NPCID.Probe, 10000 },
             { NPCID.SkeletronPrime, 160000 }, // 30 seconds
-            { NPCType<SkeletronPrime2>(), 160000 },
             { NPCID.PrimeVice, 54000 },
             { NPCID.PrimeCannon, 45000 },
             { NPCID.PrimeSaw, 45000 },
@@ -379,7 +376,7 @@ namespace CalamityMod.Systems.Collections
             { NPCType<AstrumDeusHead>(), 28 },
             { NPCID.MoonLordCore, 29 },
             { NPCType<ProfanedGuardianCommander>(), 30 },
-            { NPCType<Bumblefuck>(), 31 },
+            { NPCType<Dragonfolly>(), 31 },
             { NPCType<Providence>(), 32 },
             { NPCType<CeaselessVoid>(), 33 },
             { NPCType<StormWeaverHead>(), 34 },
