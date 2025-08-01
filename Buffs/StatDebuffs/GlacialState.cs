@@ -22,7 +22,7 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             npc.Calamity().glacialState = true;
             if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().gState;
+                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             npc.DelBuff(buffIndex);
             buffIndex--;
         }

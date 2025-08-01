@@ -784,7 +784,6 @@ namespace CalamityMod.NPCs
             temporalSadness = false;
             eutrophication = false;
             webbed = false;
-            slowed = false;
             vaporfied = false;
             electrified = false;
             pearlAura = false;
@@ -2774,7 +2773,11 @@ namespace CalamityMod.NPCs
             modifiers.FinalDamage *= finalMultiplier;
         }
 
-        private float DefaultDRMath(NPC npc, float DR) //FIX THIS LATER DOZE
+        //TODO:
+        //This will need to be adjusted to use DebuffData in the future.
+        //However, we still need to decide what to actually do with these due to the general flattening of DR amounts and removal from most enemies
+        //This means that this will be handled in the future
+        private float DefaultDRMath(NPC npc, float DR)
         {
             float calcDR = DR;
             if (markedForDeath)

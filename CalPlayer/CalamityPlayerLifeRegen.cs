@@ -116,7 +116,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(brimstoneFlames, abaddon ? 15 : 30, purity);
             ApplyDoTDebuff(plague, alchFlask ? 15 : 30, purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
-            ApplyDoTDebuff(cragsLava, 30);
+            ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
             ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
