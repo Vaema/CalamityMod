@@ -23,6 +23,7 @@ namespace CalamityMod.Systems
     public class DifficultyModeSystem : ModSystem
     {
         internal static bool _hasCheckedItOutYet = false; //Simple variable to add a cool effect to the mode selector 
+        internal static int _newGameModeID = GameModeID.Normal;
 
         public static List<DifficultyMode> Difficulties = new List<DifficultyMode>(); //Difficulty modes ordered by ascending difficulty
         public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
@@ -220,6 +221,7 @@ namespace CalamityMod.Systems
         public abstract Asset<Texture2D> TextureDisabled { get; }
         protected SoundStyle? _activationSound;
         public abstract SoundStyle ActivationSound{ get; }
+        public abstract int BackBoneGameModeID { get; }
         internal int _difficultyTier;
         public abstract float DifficultyScale{ get; }
 
@@ -230,8 +232,30 @@ namespace CalamityMod.Systems
 
         public abstract LocalizedText FTWName{ get; }
         public abstract Color FTWTextColor{ get; }
+        private static readonly Dictionary<int, (float, float)> compatitableValueRanges = new()
+                {
+                    { GameModeID.Normal, (0.33f, 0.66f ) },
+                    { GameModeID.Expert, (0.66f, 1f) },
+                    { GameModeID.Master, (1f, 1f) }
+                };
 
-
+        protected static float CalculateJourneySliderValue(int targetGameModeID)
+        {
+            CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+            var oldValue = (float)DifficultyModeSystem.journeySliderCacheField.GetValue(power);
+            if (compatitableValueRanges.ContainsKey(targetGameModeID))
+            {
+                var (low, high) = compatitableValueRanges[targetGameModeID];
+                if (oldValue >= low && oldValue < high) return oldValue;
+                else return low;
+            }
+            else
+            {
+                // I have to throw an unhandled exception here to make you alerted to bugs while developing
+                // If this is tested and working, turn it into a silent warning before release
+                throw new ArgumentException("CalculateJournetSliderValue(): targetGameModeID must be in GameModeID.Normal, Expert, Master");
+            }
+        }
 
         /// <summary>
         /// Used to know which difficulties to toggle on when selecting a particular difficulty.
@@ -257,7 +281,7 @@ namespace CalamityMod.Systems
                         CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
                         if (power.GetIsUnlocked())
                         {
-                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.33f : 0.66f);
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
                             DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
                         }
                     }
@@ -269,6 +293,8 @@ namespace CalamityMod.Systems
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.MenuTick with { Volume = 1f };
+
+        public override int BackBoneGameModeID => GameModeID.Normal;
 
         public override float DifficultyScale => 0;
 
@@ -299,7 +325,7 @@ namespace CalamityMod.Systems
                     CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
                     if (power.GetIsUnlocked())
                     {
-                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 0.66f : 0.33f);
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
                         DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
                     }
                 }
@@ -311,6 +337,8 @@ namespace CalamityMod.Systems
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Expert_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.ForceRoarPitched;
+
+        public override int BackBoneGameModeID => GameModeID.Expert;
 
         public override float DifficultyScale => 0.1f;
 
@@ -342,7 +370,7 @@ namespace CalamityMod.Systems
                     CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
                     if (power.GetIsUnlocked())
                     {
-                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
                         DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
                     }
                 }
@@ -354,6 +382,8 @@ namespace CalamityMod.Systems
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.NPCDeath10;
+
+        public override int BackBoneGameModeID => GameModeID.Master;
 
         public override float DifficultyScale => 0.25f;
 
@@ -393,6 +423,8 @@ namespace CalamityMod.Systems
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Rev_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.Item119;
+
+        public override int BackBoneGameModeID => GameModeID.Expert;
 
         public override float DifficultyScale => 0.25f;
 
@@ -435,7 +467,7 @@ namespace CalamityMod.Systems
                         CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
                         if (power.GetIsUnlocked())
                         {
-                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, value == true ? 1f : 0.66f);
+                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
                             DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
                         }
                     }
@@ -451,6 +483,8 @@ namespace CalamityMod.Systems
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Death_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= DemonshadeHelm.ActivationSound;
+
+        public override int BackBoneGameModeID => GameModeID.Master;
 
         public override float DifficultyScale => 0.5f;
 
