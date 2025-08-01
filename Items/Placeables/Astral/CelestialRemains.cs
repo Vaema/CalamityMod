@@ -108,32 +108,32 @@ namespace CalamityMod.Items.Placeables.Astral
                 resultType = ItemID.Amber;
                 resultStack = Main.rand.Next(1, 21);
             }
-            else if (val < 81.78f)
+            else if (val < 81.78f && Main.hardMode)
             {
                 resultType = ItemID.PalladiumOre;
                 resultStack = Main.rand.Next(1, 17);
             }
-            else if (val < 83.03f)
+            else if (val < 83.03f && Main.hardMode)
             {
                 resultType = ItemID.CobaltOre;
                 resultStack = Main.rand.Next(1, 17);
             }
-            else if (val < 85.03f)
+            else if (val < 85.03f && Main.hardMode)
             {
                 resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? !NPC.downedMechBossAny ? ItemID.CobaltOre : ItemID.MythrilOre : ItemID.MythrilOre;
                 resultStack = Main.rand.Next(1, 17);
             }
-            else if (val < 87.03f)
+            else if (val < 87.03f && Main.hardMode)
             {
                 resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? !NPC.downedMechBossAny ? ItemID.PalladiumOre : ItemID.OrichalcumOre : ItemID.OrichalcumOre;
                 resultStack = Main.rand.Next(1, 17);
             }
-            else if (val < 88.78f)
+            else if (val < 88.78f && Main.hardMode)
             {
                 resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? !NPC.downedMechBossAny ? ItemID.CobaltOre : !twoMechsDowned ? ItemID.MythrilOre : ItemID.AdamantiteOre : ItemID.AdamantiteOre;
                 resultStack = Main.rand.Next(1, 17);
             }
-            else if (val < 89.53f)
+            else if (val < 89.53f && Main.hardMode)
             {
                 resultType = CalamityServerConfig.Instance.EarlyHardmodeProgressionRework ? !NPC.downedMechBossAny ? ItemID.PalladiumOre : !twoMechsDowned ? ItemID.OrichalcumOre : ItemID.TitaniumOre : ItemID.TitaniumOre;
                 resultStack = Main.rand.Next(1, 17);

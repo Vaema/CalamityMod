@@ -1,5 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles;
 using Terraria;
@@ -15,5 +16,7 @@ namespace CalamityMod
         public static CalamityGlobalItem Calamity(this Item item) => item.GetGlobalItem<CalamityGlobalItem>();
         public static CalamityGlobalProjectile Calamity(this Projectile proj) => proj.GetGlobalProjectile<CalamityGlobalProjectile>();
         public static Item ActiveItem(this Player player) => Main.mouseItem.IsAir ? player.HeldItem : Main.mouseItem;
+        public static TransformationPlayer Transformation(this Player player) => player.GetModPlayer<TransformationPlayer>();
+
     }
 }

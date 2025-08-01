@@ -23,18 +23,23 @@ namespace CalamityMod.NPCs.HiveMind
             NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
+        public static int VileClotDamage = 8; // 32
+
+        // Legendary Mode exclusive
+        public static int CursedFlameDamage = 15; // 60
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
             NPC.aiStyle = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 25;
             NPC.height = 25;
 
             NPC.lifeMax = 50;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1300;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
 
             NPC.knockBackResist = 0.9f;
@@ -110,7 +115,7 @@ namespace CalamityMod.NPCs.HiveMind
             float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
             float acceleration = 0.8f;
-            float distanceFromMind = Main.getGoodWorld ? 256f : 128f;
+            float distanceFromMind = CalamityWorld.LegendaryMode ? 256f : 128f;
 
             float hiveMindX = Main.npc[hiveMind].Center.X;
             float hiveMindY = Main.npc[hiveMind].Center.Y;
@@ -183,7 +188,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
@@ -193,8 +198,8 @@ namespace CalamityMod.NPCs.HiveMind
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
                         playerY *= playerDist;
-                        int type = (CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
-                        int damage = type == ProjectileID.CursedFlameHostile ? 30 : NPC.GetProjectileDamage(type);
+                        int type = (CalamityWorld.LegendaryMode && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
+                        int damage = type == ProjectileID.CursedFlameHostile ? CursedFlameDamage : VileClotDamage;
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)
                         {

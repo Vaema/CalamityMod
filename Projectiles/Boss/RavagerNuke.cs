@@ -23,7 +23,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 44;
             Projectile.height = 44;
             Projectile.hostile = true;
@@ -36,8 +35,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool revenge = CalamityWorld.revenge || bossRush;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
 
             if (Projectile.timeLeft < 180)
                 Projectile.tileCollide = true;
@@ -53,8 +51,8 @@ namespace CalamityMod.Projectiles.Boss
 
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) + MathHelper.PiOver2;
 
-            float inertia = bossRush ? 70f : revenge ? 90f : 110f;
-            float scaleFactor12 = bossRush ? 20f : revenge ? 16f : 12f;
+            float inertia = revenge ? 90f : 110f;
+            float scaleFactor12 = revenge ? 16f : 12f;
 
             if (Projectile.alpha > 0)
                 Projectile.alpha -= 10;

@@ -28,7 +28,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 9999999;
             NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath2;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
             NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;

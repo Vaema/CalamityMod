@@ -39,16 +39,16 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 12; // 24
             NPC.width = 88;
             NPC.height = 88;
 
             NPC.defense = 5;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.defense += 27;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax = 4800;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -64,18 +64,14 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position) => false;
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.ai[3] > 0f)
             {
@@ -170,28 +166,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
             NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * segmentOffset;
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
-
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHead.SegmentVelocity_ZenithSeed :
-                Main.getGoodWorld ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
-                death ? DesertNuisanceHead.SegmentVelocity_Death :
-                DesertNuisanceHead.SegmentVelocity_Expert;
-            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (death)
-                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CheckActive() => false;

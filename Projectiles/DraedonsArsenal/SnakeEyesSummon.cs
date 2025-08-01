@@ -42,6 +42,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -236,8 +237,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         #endregion
 
         public override void OnSpawn(IEntitySource source) => DoVFXPulse();
-
-        public override bool? CanDamage() => false;
 
         public override bool PreDraw(ref Color lightColor)
         {

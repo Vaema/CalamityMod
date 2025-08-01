@@ -33,21 +33,20 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.width = 54;
             Projectile.height = 44;
             Projectile.timeLeft = 150;
-            Projectile.localNPCHitCooldown = 20;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
+            Projectile.penetrate = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.penetrate = -1;
-            Projectile.extraUpdates = 0;
+            Projectile.localNPCHitCooldown = 20;
         }
         public override void AI()
         {
             if (time == 0)
             {
-                if (IsHatNote)
-                    Projectile.penetrate = 1;
                 if (Projectile.ai[2] == 5)
-                        Projectile.extraUpdates = 1;
+                {
+                    Projectile.penetrate = 3;
+                }
             }
             Projectile.scale = 1.6f * Utils.GetLerpValue(-5, 20, time, true);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;

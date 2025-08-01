@@ -18,7 +18,6 @@ namespace CalamityMod.Projectiles.Magic
         public override Texture2D LaserMiddleTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayMid", AssetRequestMode.ImmediateLoad).Value;
         public override Texture2D LaserEndTexture => ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Lasers/UltimaRayEnd", AssetRequestMode.ImmediateLoad).Value;
 
-        public ref float ShardCooldown => ref Projectile.ai[1];
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public override void SetDefaults()
         {
@@ -28,7 +27,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.tileCollide = false;
             Projectile.timeLeft = (int)Lifetime;
         }
@@ -42,11 +41,11 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < starPoints; i++)
                 {
                     float angle = MathHelper.TwoPi * i / starPoints;
-                    for (int j = 0; j < 12; j++)
+                    for (int j = 0; j < 6; j++)
                     {
-                        float starSpeed = MathHelper.Lerp(1f, 7f, j / 12f);
-                        Color dustColor = Color.Lerp(Color.White, Color.YellowGreen, j / 12f);
-                        float dustScale = MathHelper.Lerp(1.6f, 0.85f, j / 12f);
+                        float starSpeed = MathHelper.Lerp(1f, 7f, j / 6f);
+                        Color dustColor = Color.Lerp(Color.White, Color.YellowGreen, j / 6f);
+                        float dustScale = MathHelper.Lerp(1.6f, 0.85f, j / 6f);
 
                         Dust terraMagic = Dust.NewDustPerfect(Projectile.Center, 107);
                         terraMagic.velocity = angle.ToRotationVector2() * starSpeed;
@@ -56,7 +55,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                 }
 
-                int ovalPoints = 42;
+                int ovalPoints = 30;
                 for (int i = 0; i < ovalPoints; i++)
                 {
                     float angle = MathHelper.TwoPi * i / ovalPoints;
@@ -66,9 +65,6 @@ namespace CalamityMod.Projectiles.Magic
                     terraMagic.noGravity = true;
                 }
             }
-
-            if (ShardCooldown > 0f)
-                ShardCooldown--;
         }
 
         public override void DetermineScale() => Projectile.scale = Projectile.timeLeft / Lifetime * MaxScale;
@@ -89,18 +85,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (ShardCooldown > 0f)
-                return;
-
-            // The "Center" of the laser is actually the start of it in this context.
-            // Collision is done separately. This might have a slight offset due to collision
-            // boxes, but that should be negligible.
-            float lengthFromStart = Projectile.Distance(target.Center);
-
-            int totalShards = (int)MathHelper.Lerp(1, 3, MathHelper.Clamp(lengthFromStart / MaxLaserLength * 1.5f, 0f, 1f));
-            int shardType = ModContent.ProjectileType<PhotosyntheticShard>();
-            int shardDamage = (int)(Projectile.damage * 0.5);
-            for (int i = 0; i < totalShards; i++)
+            for (int i = 0; i < 2; i++)
             {
                 int tries = 0;
                 Vector2 spawnOffset;
@@ -111,11 +96,8 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 while (Collision.SolidCollision((target.Center + spawnOffset).ToTileCoordinates().ToVector2(), 4, 4) && tries < 10);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + spawnOffset, Main.rand.NextVector2CircularEdge(6f, 6f), shardType, shardDamage, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center + spawnOffset, Main.rand.NextVector2CircularEdge(6f, 6f), ModContent.ProjectileType<PhotosyntheticShard>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
             }
-
-            ShardCooldown = 3f;
-            Projectile.netUpdate = true;
         }
     }
 }

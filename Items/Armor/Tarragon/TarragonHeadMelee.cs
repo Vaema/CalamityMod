@@ -39,8 +39,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraMelee = true;
             player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
             player.aggro += 800;
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey()) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
         }
 
         public override void UpdateEquip(Player player)

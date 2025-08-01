@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Summon
                 modifiers.FinalDamage *= YharonsKindleStaff.ReboundRamDamageFactor;
         }
 
-        public override bool? CanDamage() => Projectile.localAI[0] > 1f;
+        public override bool MinionContactDamage() => Projectile.localAI[0] > 1f;
 
         public override bool PreDraw(ref Color lightColor)
         {

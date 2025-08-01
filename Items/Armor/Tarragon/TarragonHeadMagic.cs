@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public override void UpdateEquip(Player player)
         {
-            player.manaCost *= 0.85f;
+            player.manaCost -= 0.15f;
             player.GetDamage<MagicDamageClass>() += 0.15f;
             player.GetCritChance<MagicDamageClass>() += 10;
             player.endurance += 0.1f;

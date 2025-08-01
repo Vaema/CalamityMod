@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.hostile = true;
@@ -39,7 +38,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity *= Projectile.ai[0];
                 }
 
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                 {
                     if (Projectile.velocity.Length() >= Projectile.ai[0])
                     {
@@ -96,18 +95,6 @@ namespace CalamityMod.Projectiles.Boss
                 Main.dust[phantomDust2].velocity *= 5f;
                 phantomDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.RedTorch, 0f, 0f, 100, default, 1f);
                 Main.dust[phantomDust2].velocity *= 2f;
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            if (Projectile.velocity.Length() >= Projectile.ai[0])
-            {
-                target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
             }
         }
     }

@@ -42,9 +42,8 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.width = 66;
             NPC.height = 66;
             NPC.defense = 24;
-            NPC.DR_NERD(0.2f);
             NPC.lifeMax = 8750;
-            NPC.value = Item.buyPrice(0, 1, 50, 0);
+            NPC.value = Item.buyPrice(gold: 1, silver: 50);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -61,10 +60,6 @@ namespace CalamityMod.NPCs.PlagueEnemies
             {
                 NPC.scale = 2f;
             }
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

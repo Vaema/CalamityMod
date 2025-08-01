@@ -63,7 +63,7 @@ namespace CalamityMod.UI
             float paintingFrameScale = painting.scale;
             Vector2 paintingFramePosition = painting.framePosition;
 
-            bool hideUI = Main.keyState.IsKeyDown(Keys.LeftShift);
+            bool hideUI = Main.keyState.PressingShift();
 
             Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvas2023Tile>()].Value;
             if (p.CurrentlyViewedCanvasType == 1)

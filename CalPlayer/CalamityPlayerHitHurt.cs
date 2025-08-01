@@ -17,6 +17,7 @@ using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
+using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
@@ -31,6 +32,7 @@ using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -485,7 +487,7 @@ namespace CalamityMod.CalPlayer
                     damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Withered").ToNetworkText(Player.name));
                 }
             }
-            if (profanedCrystalBuffs && !profanedCrystalHide)
+            if (profanedCrystalBuffs && Player.Transformation().Type == ModContent.ItemType<ProfanedSoulCrystal>())
             {
                 damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.ProfanedSoulCrystal").ToNetworkText(Player.name));
             }
@@ -634,11 +636,6 @@ namespace CalamityMod.CalPlayer
                 if (proj.penetrate > 1 || proj.penetrate == -1)
                     modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
             }
-
-            // Calamity buffs Inferno Fork by 20%. This is multiplicative because it's supposed to be a buff to the weapon's base damage.
-            // However, because the weapon is coded like spaghetti, you have to multiply the explosion's damage too.
-            if (proj.type == ProjectileID.InfernoFriendlyBlast)
-                modifiers.SourceDamage *= 1.2f;
 
             if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
                 target.Calamity().scionsCurioEffected = true;
@@ -885,7 +882,7 @@ namespace CalamityMod.CalPlayer
                     contactDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
 
                 // Contact damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                // In GFB, as defense damage is uncapped, DR damage is also uncapped.
+                // In FTW, as defense damage is uncapped, DR damage is also uncapped.
                 int currentDefense = Player.GetCurrentDefense(false);
                 if (totalDefenseDamage > 0 && currentDefense > 0)
                 {
@@ -987,30 +984,23 @@ namespace CalamityMod.CalPlayer
             // Reduce damage from vanilla traps
 
             // Explosives
-            // 350 in normal, 450 in expert
+            // 350 damage
             if (proj.type == ProjectileID.Explosives)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.225f : 0.35f);
+                modifiers.SourceDamage *= 0.7f;
 
             // Rolling Cacti
-            // 45 in normal, 65 in expert for cactus
-            // 30 in normal, 36 in expert for spikes
+            // 42 in normal, 84 in expert for cactus
+            // 36 in normal, 72 in expert for spikes
             else if (proj.type == ProjectileID.RollingCactus || proj.type == ProjectileID.RollingCactusSpike)
-                modifiers.SourceDamage *= (Main.expertMode ? 0.3f : 0.5f);
+                modifiers.SourceDamage *= 0.6f;
 
-            // Normal Boulders and Temple traps
-            if (Main.expertMode)
+            // Boulders
+            if (Main.expertMode && !areThereAnyDamnBosses)
             {
-                // 140 in normal, 182 in expert, 273 in master
-                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder)
-                    modifiers.SourceDamage *= 0.65f;
-
-                // 80 in normal, 100 in expert, 150 in master
-                else if (proj.type == ProjectileID.SpikyBallTrap || proj.type == ProjectileID.FlamethrowerTrap || proj.type == ProjectileID.FlamesTrap || proj.type == ProjectileID.PoisonDartTrap)
-                    modifiers.SourceDamage *= 0.625f;
-
-                // 120 in normal, 144 in expert, 216 in master
-                else if (proj.type == ProjectileID.SpearTrap)
-                    modifiers.SourceDamage *= 0.6f;
+                // 140 in normal, 210 in expert, 315 in master for boulder
+                // 104 in normal, 156 in expert, 234 in master for mini boulder
+                if (proj.type == ProjectileID.Boulder || proj.type == ProjectileID.MiniBoulder || proj.type == ProjectileID.BouncyBoulder || proj.type == ProjectileID.LifeCrystalBoulder)
+                    modifiers.SourceDamage *= 0.75f;
             }
 
             bool isFallingBlock = (proj.type == ProjectileID.SandBallFalling) || (proj.type == ProjectileID.SiltBall) || (proj.type == ProjectileID.AshBallFalling) ||
@@ -1027,7 +1017,7 @@ namespace CalamityMod.CalPlayer
             if (Player.Calamity().trapProtection && isReducedTrap)
                 modifiers.SourceDamage *= 0.35f;
 
-            // Reduce damage dealt by rainbow trails depending on how faded they are.
+            // Reduce damage dealt by rainbow trails
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
             {
                 // Find the oldPos of the projectile that is intersecting the player hitbox.
@@ -1042,11 +1032,10 @@ namespace CalamityMod.CalPlayer
                         hitbox.X = (int)trailHitbox.X;
                         hitbox.Y = (int)trailHitbox.Y;
 
-                        // Adjust damage based on what part of the trail intersected the player hitbox.
                         if (hitbox.Intersects(Player.Hitbox))
                         {
                             if (k > startOfDamageFalloff)
-                                modifiers.SourceDamage *= MathHelper.Lerp(0.4f, 1f, 1f - (k - startOfDamageFalloff) / (float)(trailLength - startOfDamageFalloff));
+                                modifiers.SourceDamage *= EmpressofLightAI.EverlastingRainbowTrailDamageMult;
 
                             break;
                         }
@@ -1312,7 +1301,7 @@ namespace CalamityMod.CalPlayer
                 if (Main.npc[proj.Calamity().ParentNPCIndex].active)
                 {
                     if (sulphurSet)
-                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
+                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
                     if (ilSpark)
                         Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
@@ -1375,89 +1364,9 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.AddBuff(BuffID.BrokenArmor, 600);
                 }
-                else if (proj.type == ProjectileID.DeathLaser || proj.type == ProjectileID.RocketSkeleton || proj.type == ProjectileID.BombSkeletronPrime)
-                {
-                    Player.AddBuff(BuffID.OnFire, 180);
-                }
-                else if (proj.type == ProjectileID.Skull)
-                {
-                    Player.AddBuff(BuffID.Weak, 180);
-                }
-                else if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
-                {
-                    // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
-                    Player.AddBuff(BuffID.CursedInferno, 60);
-                }
                 else if (proj.type == ProjectileID.DesertDjinnCurse)
                 {
                     Player.AddBuff(BuffID.Cursed, 180);
-                }
-                else if (proj.type == ProjectileID.Stinger || proj.type == ProjectileID.QueenBeeStinger)
-                {
-                    // 66.6% chance of Poison for 5 seconds, 2 guaranteed seconds of Poison otherwise (vanilla also has a 33.3% chance of Poison for 10 seconds)
-                    if (Main.rand.Next(3) > 0)
-                        Player.AddBuff(BuffID.Poisoned, 300);
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
-                else if (proj.type == ProjectileID.PoisonSeedPlantera)
-                {
-                    // 75% chance of Poison for 3 to 5 seconds, guaranteed Poison for 2 seconds (vanilla also has a 50% chance of Poison for 3 to 7 seconds)
-                    if (Main.rand.Next(4) > 0)
-                        Player.AddBuff(BuffID.Poisoned, Main.rand.Next(180, 301));
-                    else
-                        Player.AddBuff(BuffID.Poisoned, 120);
-                }
-                else if (proj.type == ProjectileID.ThornBall)
-                {
-                    Player.AddBuff(BuffID.Poisoned, 420);
-                }
-                else if (proj.type == ProjectileID.CultistBossFireBall)
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
-                }
-                else if (proj.type == ProjectileID.CultistBossIceMist)
-                {
-                    if (!Player.frozen)
-                        Player.AddBuff(BuffID.Frozen, 60);
-
-                    Player.AddBuff(BuffID.Chilled, 180);
-                }
-                else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
-                {
-                    Player.AddBuff(BuffID.Electrified, 180);
-                }
-                else if (proj.type == ProjectileID.AncientDoomProjectile)
-                {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 120);
-                }
-                else if (proj.type == ProjectileID.CultistBossFireBallClone)
-                {
-                    Player.AddBuff(ModContent.BuffType<Shadowflame>(), 180);
-                }
-                else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
-                }
-                else if (proj.type == ProjectileID.PhantasmalSphere)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 210);
-                }
-                else if (proj.type == ProjectileID.PhantasmalDeathray)
-                {
-                    Player.AddBuff(ModContent.BuffType<Nightwither>(), 300);
-                }
-                else if ((proj.type == ProjectileID.FairyQueenLance || proj.type == ProjectileID.HallowBossRainbowStreak || proj.type == ProjectileID.HallowBossSplitShotCore) && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 120);
-                }
-                else if (proj.type == ProjectileID.HallowBossLastingRainbow && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 210);
-                }
-                else if (proj.type == ProjectileID.FairyQueenSunDance && NPC.ShouldEmpressBeEnraged())
-                {
-                    Player.AddBuff(ModContent.BuffType<Daybroken>(), 300);
                 }
                 else if (proj.type == ProjectileID.BloodNautilusShot)
                 {
@@ -1470,6 +1379,47 @@ namespace CalamityMod.CalPlayer
                 else if (proj.type == ProjectileID.RuneBlast && Main.zenithWorld)
                 {
                     Player.AddBuff(ModContent.BuffType<MiracleBlight>(), 600);
+                }
+
+                if (CalamityWorld.revenge)
+                {
+                    if (proj.type == ProjectileID.CursedFlameHostile || proj.type == ProjectileID.EyeFire)
+                    {
+                        // Guaranteed Cursed Inferno for 1 second (vanilla also has a 68.75% chance of Cursed Inferno for 2 to 3 seconds)
+                        Player.AddBuff(BuffID.CursedInferno, 60);
+                    }
+                    else if (proj.type == ProjectileID.ThornBall)
+                    {
+                        Player.AddBuff(BuffID.Venom, 120);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossFireBall)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
+                    {
+                        Player.AddBuff(BuffID.Chilled, 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
+                    {
+                        Player.AddBuff(BuffID.Electrified, 180);
+                    }
+                    else if (proj.type == ProjectileID.CultistBossFireBallClone)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Shadowflame>(), 240);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalBolt || proj.type == ProjectileID.PhantasmalEye)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 120);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalSphere)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 180);
+                    }
+                    else if (proj.type == ProjectileID.PhantasmalDeathray)
+                    {
+                        Player.AddBuff(ModContent.BuffType<Nightwither>(), 240);
+                    }
                 }
             }
 
@@ -1750,11 +1700,17 @@ namespace CalamityMod.CalPlayer
             // Handles energy shields and Boss Rush, in that order
             modifiers.ModifyHurtInfo += ModifyHurtInfo_Calamity;
 
-            // TODO -- At some point it'd be nice to have a "TransformationPlayer" that has all the transformation sfx and visuals so their priorities can be more easily managed.
             #region Custom Hurt Sounds
             if (hurtSoundTimer == 0)
             {
-                if (roverDrive && RoverDriveShieldDurability > 0)
+                if(Player.Transformation().Type != -1 && Player.Transformation().currentTransformation.HurtSound(Player) != null)
+                {
+                    var hurtSound = Player.Transformation().currentTransformation.HurtSound(Player).Value;
+                    modifiers.DisableSound();
+                    SoundEngine.PlaySound(hurtSound.sound, Player.Center);
+                    hurtSoundTimer = hurtSound.delay;
+                }
+                else if (roverDrive && RoverDriveShieldDurability > 0)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(RoverDrive.ShieldHurtSound, Player.Center);
@@ -1772,40 +1728,10 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(TheSponge.ShieldHurtSound, Player.Center);
                     hurtSoundTimer = 20;
                 }
-                else if (((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) && pSoulShieldDurability > 0)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(ProfanedGuardianDefender.ShieldDeathSound);
-                    hurtSoundTimer = 20;
-                }
-                else if ((profanedCrystal || profanedCrystalForce) && !profanedCrystalHide)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(Providence.HurtSound, Player.Center);
-                    hurtSoundTimer = 20;
-                }
-                else if ((abyssalDivingSuitPower || abyssalDivingSuitForce) && !abyssalDivingSuitHide)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center); //metal hit noise
-                    hurtSoundTimer = 10;
-                }
-                else if ((aquaticHeartPower || aquaticHeartForce) && !aquaticHeartHide)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.FemaleHit, Player.Center); //female hit noise
-                    hurtSoundTimer = 10;
-                }
                 else if (titanHeartSet)
                 {
                     modifiers.DisableSound();
                     SoundEngine.PlaySound(NPCs.Astral.Atlas.HurtSound, Player.Center);
-                    hurtSoundTimer = 10;
-                }
-                else if (Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive)
-                {
-                    modifiers.DisableSound();
-                    SoundEngine.PlaySound(SoundID.NPCHit4, Player.Center);
                     hurtSoundTimer = 10;
                 }
                 else if (Player.GetModPlayer<WulfrumArmorPlayer>().wulfrumSet && (Player.name.ToLower() == "wagstaff" || Player.name.ToLower() == "john wulfrum"))
@@ -2304,8 +2230,8 @@ namespace CalamityMod.CalPlayer
             if (RageEnabled)
                 rageCombatFrames = BalancingConstants.RageCombatDelayTime;
 
-            // Regenator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
-            if (regenator && false)
+            // Regenerator has been CANCLED on TWITTER.COM!!!! (Just keeping this here since it's a neat effect and I'll probably yoink it for something else later)
+            if (regenerator && false)
             {
                 // Projectile damage and count is based on source damage of the hit
                 float hitPower = (hurtInfo.SourceDamage / (Player.statLifeMax2 * 0.5f));
@@ -2622,13 +2548,13 @@ namespace CalamityMod.CalPlayer
                 if (!canTriggerHitEffects)
                     return;
 
-                if (aeroSet && hurtInfo.Damage > 25)
+                if (aeroSet && hurtInfo.Damage > AerospecBreastplate.SetBonusHurtDamageThreshold)
                 {
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                     var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, AerospecBreastplate.FeatherEntitySourceContext);
                     for (int n = 0; n < 4; n++)
                     {
-                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(30);
+                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(AerospecBreastplate.SetBonusFeatherDamage);
 
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);
                     }
@@ -2702,15 +2628,20 @@ namespace CalamityMod.CalPlayer
                 }
                 if (inkBomb && !abyssalMirror && !eclipseMirror)
                 {
-                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
-                    if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(Cooldowns.InkBomb.ID))
+                    if (Player.whoAmI == Main.myPlayer)
                     {
-                        Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
-                        rogueStealth += 0.5f;
+                        if (!Player.HasCooldown(Cooldowns.InkBomb.ID))
+                        {
+                            Player.AddCooldown(Cooldowns.InkBomb.ID, CalamityUtils.SecondsToFrames(20));
+                            rogueStealth += 0.5f;
+                            SoundEngine.PlaySound(SoundID.NPCDeath28 with { Volume = 2f }, Player.Center);
+                        }
+
+                        var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<Items.Accessories.InkBomb>()));
+                        SoundEngine.PlaySound(SoundID.Item1, Player.Center);
                         for (int i = 0; i < 3; i++)
                         {
-                            SoundEngine.PlaySound(SoundID.Item61, Player.Center);
-                            int ink = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-0f, -4f), ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
+                            int ink = Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 2f, ModContent.ProjectileType<InkBombProjectile>(), 0, 0, Player.whoAmI);
                             if (ink.WithinBounds(Main.maxProjectiles))
                                 Main.projectile[ink].DamageType = DamageClass.Generic;
                         }
@@ -2742,7 +2673,7 @@ namespace CalamityMod.CalPlayer
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (int i = 0; i < 16; i++)
+                            for (int i = 0; i < 10; i++)
                             {
                                 Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
                                 int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);

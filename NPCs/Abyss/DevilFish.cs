@@ -46,15 +46,14 @@ namespace CalamityMod.NPCs.Abyss
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 90;
             NPC.width = 136;
             NPC.height = 62;
             NPC.defense = 999999;
-            NPC.lifeMax = 500;
+            NPC.lifeMax = 800;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;
@@ -65,10 +64,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer3Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -109,7 +104,7 @@ namespace CalamityMod.NPCs.Abyss
             {
                 brokenMask = true;
                 NPC.HitSound = SoundID.NPCHit1;
-                NPC.defense = 15;
+                NPC.defense = 25;
                 if (!Main.dedServ)
                 {
                     for (int i = 1; i < 4; i++)

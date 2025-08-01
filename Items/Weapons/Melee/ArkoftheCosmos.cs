@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float MaxThrowReach = 760;
         public static float SnapDamageMultiplier = 1.2f; //Extra damage from making the scissors snap
 
-        public static float MaxCharge = 15f; // Maximum charge value AKA how much charge you get from a parry
+        public static float MaxCharge = 16f; // Maximum charge value AKA how much charge you get from a parry
         public static float chargeDamageMultiplier = 1.35f; //Extra damage from charge
         public static float chainDamageMultiplier = 0.1f;
         public static float SnapBoltsDamageMultiplier = 0.1f;
@@ -235,7 +235,7 @@ namespace CalamityMod.Items.Weapons.Melee
             var barBG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
             var barFG = Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
 
-            float barScale = 3f;
+            float barScale = 4f;
             Vector2 barOrigin = barBG.Size() * 0.5f;
             float yOffset = 50f;
             Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);

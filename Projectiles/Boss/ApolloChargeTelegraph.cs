@@ -37,13 +37,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
-            Projectile.timeLeft = bossRush ? 45 : death ? 60 : revenge ? 68 : expertMode ? 75 : 90;
-            if (Main.getGoodWorld)
+            Projectile.timeLeft = death ? 60 : revenge ? 68 : expertMode ? 75 : 90;
+            if (CalamityWorld.LegendaryMode)
                 Projectile.timeLeft /= 2;
         }
 
@@ -78,14 +77,13 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Determine opacity
-            float telegraphTotalTime = bossRush ? 45f : death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
-            if (Main.getGoodWorld)
+            float telegraphTotalTime = death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
+            if (CalamityWorld.LegendaryMode)
                 telegraphTotalTime *= 0.5f;
 
             Projectile.Opacity = Utils.GetLerpValue(0f, 6f, Projectile.timeLeft, true) * Utils.GetLerpValue(telegraphTotalTime, telegraphTotalTime - 6f, Projectile.timeLeft, true);

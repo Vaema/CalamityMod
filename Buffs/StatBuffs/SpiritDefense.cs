@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class SpiritDefense : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(SpiritGlyph.DefenseBoost, SpiritGlyph.DamageReductionBoost.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(SpiritGlyph.DefenseBoost);
 
         public override void SetStaticDefaults()
         {
@@ -20,7 +20,6 @@ namespace CalamityMod.Buffs.StatBuffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.statDefense += SpiritGlyph.DefenseBoost;
-            player.endurance += SpiritGlyph.DamageReductionBoost; // TODO -- is this applied too late to be affected by the DR softcap?
         }
     }
 }

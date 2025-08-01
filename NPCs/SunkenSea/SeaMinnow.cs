@@ -5,7 +5,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
+using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -420,7 +420,6 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.catchItem = (short)ModContent.ItemType<SeaMinnowItem>();
             NPC.rarity = 3;
-            NPC.value = 100000;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

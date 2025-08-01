@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Astral;
+﻿using CalamityMod.Items.Placeables.FurnitureMonolith;
 using CalamityMod.Tiles.Furniture.Monoliths;
 using Terraria;
 using Terraria.ID;

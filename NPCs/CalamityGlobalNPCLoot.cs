@@ -178,12 +178,6 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<PlasmaRod>(), 3, 2));
                     break;
 
-                // Skeleton Merchant
-                // Punch Card @ 100%
-                case NPCID.SkeletonMerchant:
-                    npcLoot.Add(ModContent.ItemType<PunchCard>());
-                    break;
-
                 // Skeleton Archer
                 // Magic Quiver @ 5% (2.5% in Vanilla)
                 // Marrow @ 2.5% (0.5% in Vanilla)
@@ -280,8 +274,16 @@ namespace CalamityMod.NPCs
 
                 // Dreamer Ghoul
                 // Trifold Map @ 1% Normal, 2% Expert+
+                // Light Shard @ 10%
                 case NPCID.DesertGhoulHallow:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
+                    npcLoot.ChangeDropRate(ItemID.LightShard, 1, 10);
+                    break;
+
+                // Crystal Thresher
+                // Light Shard @ 10%
+                case NPCID.SandsharkHallow:
+                    npcLoot.ChangeDropRate(ItemID.LightShard, 1, 10);
                     break;
 
                 // Sand Elemental
@@ -292,6 +294,15 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottle>(), 5, 3));
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottlewithBoobs>(), 10, 6));
                     npcLoot.Add(ItemID.DungeonDesertKey, 10);
+                    break;
+
+                // Tainted Ghoul, Vile Ghoul, Bone Biter, Flesh Reaver
+                // Dark Shard @ 10%
+                case NPCID.DesertGhoulCorruption:
+                case NPCID.DesertGhoulCrimson:
+                case NPCID.SandsharkCorrupt:
+                case NPCID.SandsharkCrimson:
+                    npcLoot.ChangeDropRate(ItemID.DarkShard, 1, 10);
                     break;
                 #endregion
 
@@ -684,11 +695,15 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Graveyard
-                // Alternate Blood Orb obtainment methods (10%)
+                // Alternate Blood Orb obtainment methods (20%)
                 case NPCID.MaggotZombie:
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 5);
+                    break;
+
+                // 100%, 3-6 each
                 case NPCID.TheBride:
                 case NPCID.TheGroom:
-                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 10);
+                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 3, 6);
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
@@ -1905,40 +1920,6 @@ namespace CalamityMod.NPCs
             if (BuffedDungeonEnemiesList.Includes(npc.type))
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
-
-            // Blanket remove all specific food item drops that have changed obtainment methods in Calamity
-            // This is type-indiscriminate and will also most probably hit modded NPCs too
-
-            // CIT 7NOV2024: Yeah it hits modded NPCs; in fact it removes GFB drops from Ravager and Deus
-            // Fixing this by making the code only run if the NPC is not a boss
-            if (!npc.boss)
-            {
-                int[] randomFoodItems = new int[]
-{
-                ItemID.ApplePie,
-                ItemID.BananaSplit,
-                ItemID.BBQRibs,
-                ItemID.Burger,
-                ItemID.MilkCarton,
-                ItemID.ChocolateChipCookie,
-                ItemID.CoffeeCup,
-                ItemID.CreamSoda,
-                ItemID.FriedEgg,
-                ItemID.Fries,
-                ItemID.Grapes,
-                ItemID.Hotdog,
-                ItemID.IceCream,
-                ItemID.Milkshake,
-                ItemID.Nachos,
-                ItemID.Pizza,
-                ItemID.PotatoChips,
-                ItemID.ShrimpPoBoy,
-                ItemID.Spaghetti,
-                ItemID.Steak
-};
-                foreach (int foodItemID in randomFoodItems)
-                    npcLoot.RemoveWhere((rule) => rule is ItemDropWithConditionRule foodRule && foodRule.itemId == foodItemID);
-            }
         }
         #endregion
 
@@ -2058,7 +2039,7 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.WallofFlesh:
-                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant, NPCID.BestiaryGirl }, Main.hardMode);
+                    SetNewShopVariable(new int[] { NPCID.Merchant, NPCID.ArmsDealer, NPCID.Dryad, NPCID.Painter, NPCID.WitchDoctor, NPCID.Stylist, NPCID.DyeTrader, NPCID.Demolitionist, NPCID.PartyGirl, NPCID.Clothier, NPCID.SkeletonMerchant }, Main.hardMode);
                     SetNewBossJustDowned(npc);
 
                     if (!Main.hardMode && !BossRushEvent.BossRushActive)

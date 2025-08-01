@@ -65,11 +65,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 88;
             NPC.height = 66;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.DeathSound = SoundID.NPCDeath27;
             NPC.knockBackResist = 0.15f;
@@ -80,10 +79,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

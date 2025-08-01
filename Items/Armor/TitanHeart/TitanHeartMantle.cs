@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.FurnitureMonolith;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,7 +12,6 @@ namespace CalamityMod.Items.Armor.TitanHeart
         public new string LocalizationCategory => "Items.Armor.Hardmode";
         public override void SetStaticDefaults()
         {
-
             if (Main.dedServ)
                 return;
 
@@ -28,7 +27,7 @@ namespace CalamityMod.Items.Armor.TitanHeart
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.defense = 17;
+            Item.defense = 14;
         }
 
         public override void UpdateEquip(Player player)

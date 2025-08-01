@@ -460,9 +460,11 @@ namespace CalamityMod
                 string entryName = "HiveMind";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<HiveMind>();
+                Func<bool> IsCorruption = () => !WorldGen.crimson || Main.drunkWorld;
                 List<int> collection = new List<int>() { ItemType<HiveMindRelic>(), ItemType<HiveMindTrophy>(), ItemType<HiveMindMask>(), ItemType<LoreHiveMind>(), ItemType<RottingEyeball>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedHiveMind, type, new Dictionary<string, object>()
                 {
+                    ["availability"] = IsCorruption,
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
                     ["spawnItems"] = ItemType<Teratoma>(),
@@ -476,9 +478,11 @@ namespace CalamityMod
                 string entryName = "Perforators";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<PerforatorHive>();
+                Func<bool> IsCrimson = () => WorldGen.crimson || Main.drunkWorld;
                 List<int> collection = new List<int>() { ItemType<PerforatorsRelic>(), ItemType<PerforatorTrophy>(), ItemType<PerforatorMask>(), ItemType<LorePerforators>(), ItemType<BloodyVein>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedPerforators, type, new Dictionary<string, object>()
                 {
+                    ["availability"] = IsCrimson,
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
@@ -741,7 +745,7 @@ namespace CalamityMod
             {
                 string entryName = "Dragonfolly";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-                int type = NPCType<Bumblefuck>();
+                int type = NPCType<Dragonfolly>();
                 List<int> collection = new List<int>() { ItemType<DragonfollyRelic>(), ItemType<DragonfollyTrophy>(), ItemType<BumblefuckMask>(), ItemType<LoreDragonfolly>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedDragonfolly, type, new Dictionary<string, object>()
                 {

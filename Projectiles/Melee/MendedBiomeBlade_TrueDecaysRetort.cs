@@ -30,9 +30,6 @@ namespace CalamityMod.Projectiles.Melee
 
         private Vector2 PowerLungeStart;
 
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Projectile.DamageType = DamageClass.Melee;
@@ -140,10 +137,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.GiveUniversalIFrames(TrueBiomeBlade.EvilAttunement_SlashIFrames);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => OnHitEffects(Main.player[Projectile.owner].moonLeech);
-
-        private void OnHitEffects(bool cannotLifesteal)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (ChargedUp)
                 return;
@@ -153,10 +147,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.myPlayer != Owner.whoAmI || CanBounce == 0f)
                 return;
 
-            if (!cannotLifesteal) //trolled
-            {
-                Owner.HealPlayer(TrueBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
-            }
+            Owner.DoLifestealDirect(target, TrueBiomeBlade.EvilAttunement_Lifesteal); //Idk if its too much or what but at the same time its close range as fuck
 
             // Bounce off
             float bounceStrength = LungeSpeed / 2f;

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Mycoroot : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MycelialClaws>();
+        }
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -17,8 +22,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.damage = 12;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useTime = 5;
-            Item.useAnimation = 5;
+            Item.useTime = 6;
+            Item.useAnimation = 6;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 1.5f;
             Item.UseSound = SoundID.Item1;
@@ -36,12 +41,9 @@ namespace CalamityMod.Items.Weapons.Rogue
             if (player.Calamity().StealthStrikeAvailable() && player.ownedProjectileCounts[ModContent.ProjectileType<ShroomerangSpore>()] < 20 && stealth.WithinBounds(Main.maxProjectiles))
             {
                 Main.projectile[stealth].Calamity().stealthStrike = true;
-                int projAmt = Main.rand.Next(7, 11);
-                for (int i = 0; i < projAmt; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    int spore = Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<ShroomerangSpore>(), (int)(damage * 0.5f), knockback, player.whoAmI);
-                    if (spore.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[spore].ai[1] = 1f;
+                    int spore = Projectile.NewProjectile(source, player.Center, velocity, ModContent.ProjectileType<ShroomerangSpore>(), damage, knockback, player.whoAmI, 0f, 1f);
                 }
                 foreach (Player other in Main.ActivePlayers)
                 {

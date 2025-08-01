@@ -51,9 +51,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 44;
             NPC.height = 44;
             NPC.defense = 4;
-            NPC.lifeMax = Main.zenithWorld ? 90 : 58;
+            NPC.lifeMax = Main.zenithWorld ? 200 : 100;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.HitSound = Hit;
@@ -64,10 +64,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = true;
             if (Main.zenithWorld)
                 NPC.scale = 1.5f;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

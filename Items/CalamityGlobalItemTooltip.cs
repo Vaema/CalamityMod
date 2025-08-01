@@ -6,6 +6,7 @@ using CalamityMod.Balancing;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Tools;
@@ -20,7 +21,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -188,7 +188,7 @@ namespace CalamityMod.Items
             // Original code lifted from Iban's extended armor tooltips.
             if (item.ModItem is IHoldShiftTooltipItem holdShiftItem)
             {
-                bool holdingShift = Main.keyState.IsKeyDown(Keys.LeftShift);
+                bool holdingShift = Main.keyState.PressingShift();
 
                 // If holding SHIFT, actually display the extended tooltip.
                 if (holdingShift && firstTooltipIndex != -1)
@@ -289,7 +289,7 @@ namespace CalamityMod.Items
         #region Rarity Coloration
         private static void ApplyRarityColor(Item item, TooltipLine nameLine)
         {
-            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>() || item.type == ModContent.ItemType<IridescentExcalibur>())
+            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>())
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             // Developer items
@@ -580,10 +580,6 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcheryPotion)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcheryPotion"));
 
-            // Buffed Ironskin Potion tooltip
-            if (item.type == ItemID.IronskinPotion)
-                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("IronskinPotion").Format(CalamityUtils.GetScalingDefense(-1)));
-
             // Nerfed Swiftness Potion tooltip
             if (item.type == ItemID.SwiftnessPotion)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
@@ -621,6 +617,10 @@ namespace CalamityMod.Items
             // "Buffed" Step Stool
             if (item.type == ItemID.PortableStool)
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
+
+            // Replace the double tap line if double tap dash is overridden
+            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeys().Count != 0)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
             #endregion
 
             // For boss summon item clarity
@@ -787,18 +787,11 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HandOfCreation)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
-            // Frozen Turtle Shell rebalance.
-            if (item.type == ItemID.FrozenTurtleShell)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
-            if (item.type == ItemID.FrozenShield)
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
             // Ale and Sake rebalance and Alcohol Poisoning.
             if (item.type == ItemID.Ale || item.type == ItemID.Sake)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AleSake"));
 
-            //Flame Waker Boots buff.
+            // Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));
 
@@ -902,7 +895,7 @@ namespace CalamityMod.Items
 
             // Magic Power Potion nerf
             if (item.type == ItemID.MagicPowerPotion)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicPowerPotion"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "10%"));
 
             // Featherfall Potion being stupid broken with Aero Stone
             if (item.type == ItemID.FeatherfallPotion)
@@ -934,10 +927,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("80", "60"));
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("15%", "9%"));
             }
-
-            // Worm Scarf only gives 14% DR instead of 17%
-            if (item.type == ItemID.WormScarf)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("17%", "14%"));
 
             // Feral Claws line melee speed and true melee damage changes
             if (item.type == ItemID.FeralClaws)
@@ -988,63 +977,15 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("Gi"));
             #endregion
 
-            // Pre-Hardmode ore armor tooltip edits
-            #region Pre-Hardmode Ore Armor
-            // Copper
-            if (item.type == ItemID.CopperHelmet)
-                AddTooltip("CopperHelmet");
-            if (item.type == ItemID.CopperChainmail)
-                AddTooltip("CopperChainmail");
-            if (item.type == ItemID.CopperGreaves)
-                AddTooltip("CopperGreaves");
-
-            // Tin
-            if (item.type == ItemID.TinHelmet)
-                AddTooltip("TinHelmet");
-            if (item.type == ItemID.TinChainmail)
-                AddTooltip("TinChainmail");
-            if (item.type == ItemID.TinGreaves)
-                AddTooltip("TinGreaves");
-
-            // Iron
-            if (item.type == ItemID.IronHelmet || item.type == ItemID.AncientIronHelmet || item.type == ItemID.IronChainmail || item.type == ItemID.IronGreaves)
-                AddTooltip("IronPieces");
-
-            // Lead
-            if (item.type == ItemID.LeadHelmet || item.type == ItemID.LeadChainmail || item.type == ItemID.LeadGreaves)
-                AddTooltip("LeadPieces");
-
-            // Silver
-            if (item.type == ItemID.SilverHelmet)
-                AddTooltip("SilverHelmet");
-            if (item.type == ItemID.SilverChainmail)
-                AddTooltip("SilverChainmail");
-            if (item.type == ItemID.SilverGreaves)
-                AddTooltip("SilverGreaves");
-
-            // Tungsten
-            if (item.type == ItemID.TungstenHelmet)
-                AddTooltip("TungstenHelmet");
-            if (item.type == ItemID.TungstenChainmail)
-                AddTooltip("TungstenChainmail");
-            if (item.type == ItemID.TungstenGreaves)
-                AddTooltip("TungstenGreaves");
-
-            // Gold
-            if (item.type == ItemID.GoldHelmet || item.type == ItemID.AncientGoldHelmet)
-                AddTooltip("GoldHelmet");
-            if (item.type == ItemID.GoldChainmail)
-                AddTooltip("GoldChainmail");
-            if (item.type == ItemID.GoldGreaves)
-                AddTooltip("GoldGreaves");
-
-            // Platinum
-            if (item.type == ItemID.PlatinumHelmet)
-                AddTooltip("PlatinumHelmet");
-            if (item.type == ItemID.PlatinumChainmail)
-                AddTooltip("PlatinumChainmail");
-            if (item.type == ItemID.PlatinumGreaves)
-                AddTooltip("PlatinumGreaves");
+            // Pre-Hardmode armor tooltip edits
+            #region Pre-Hardmode Armor
+            // Gladiator
+            if (item.type == ItemID.GladiatorHelmet)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
+            if (item.type == ItemID.GladiatorBreastplate)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
+            if (item.type == ItemID.GladiatorLeggings)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
 
             // Jungle
             if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
@@ -1073,7 +1014,7 @@ namespace CalamityMod.Items
             #endregion
 
             // Hardmode armor tooltip edits
-            #region Hardmode Ore Armor
+            #region Hardmode Armor
             // Cobalt
             if (item.type == ItemID.CobaltHat)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", $"{CobaltArmorSetChange.MaxManaBoost + 40}"));
@@ -1099,6 +1040,10 @@ namespace CalamityMod.Items
             // Titanium
             if (item.type == ItemID.TitaniumMask)
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("9%", "14%"));
+
+            // Shroomite
+            if (item.type == ItemID.ShroomiteBreastplate)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("13%", "8%"));
 
             // Solar Flare
             if (item.type == ItemID.SolarFlareHelmet)
@@ -1213,18 +1158,14 @@ namespace CalamityMod.Items
 
             EditTooltipByName("SetBonus", (line) => VanillaArmorChangeManager.ApplySetBonusTooltipChanges(item, ref line.Text));
 
-            // Gladiator
-            if (item.type == ItemID.GladiatorHelmet)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
-            if (item.type == ItemID.GladiatorBreastplate)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
-            if (item.type == ItemID.GladiatorLeggings)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
-
             // Forbidden (UNLESS you are wearing the Circlet, which is Summon/Rogue and does not get this line)
             if ((item.type == ItemID.AncientBattleArmorHat || item.type == ItemID.AncientBattleArmorShirt || item.type == ItemID.AncientBattleArmorPants)
                 && !Main.LocalPlayer.Calamity().forbiddenCirclet)
-                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN")));
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(CalamityUtils.GetArmorSetBonusKey()));
+
+            // Vortex (hotkey spoof)
+            if (item.type == ItemID.VortexHelmet || item.type == ItemID.VortexBreastplate || item.type == ItemID.VortexLeggings)
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Vortex").Format(CalamityUtils.GetArmorSetBonusKey()));
             #endregion
 
             // Provide the full stats of every vanilla yoyo
@@ -1297,7 +1238,7 @@ namespace CalamityMod.Items
                 sb.Append('\n');
                 sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (tMax * baseJumpSpeed).ToMph()));
                 sb.Append('\n');
-                if (Main.keyState.IsKeyDown(Keys.LeftShift))
+                if (Main.keyState.PressingShift())
                 {
                     sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), asc.ToMphps(), (asc + rise).ToMphps(), (rMax * baseJumpSpeed).ToMph(), (asc + fall).ToMphps()));
                     if (hover)
@@ -1556,20 +1497,16 @@ namespace CalamityMod.Items
             switch (item.prefix)
             {
                 case PrefixID.Hard:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("1", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.25f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.25f));
                     return;
                 case PrefixID.Guarding:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("2", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.5f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.5f));
                     return;
                 case PrefixID.Armored:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("3", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(0.75f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.75f));
                     return;
                 case PrefixID.Warding:
-                    EditTooltipByName("PrefixAccDefense",
-                        (line) => line.Text = line.Text.Replace("4", CalamityUtils.GetScalingDefense(item.prefix).ToString()) + DRString(1f));
+                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(1f));
                     return;
                 case PrefixID.Lucky:
                     EditTooltipByName("PrefixAccCritChance", (line) => line.Text += AddedTooltip("LuckyPrefix"));
@@ -1633,6 +1570,128 @@ namespace CalamityMod.Items
         #region Enchanted Rarity Text Drawing
         public override bool PreDrawTooltipLine(Item item, DrawableTooltipLine line, ref int yOffset)
         {
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingBlue>())
+            {
+                Color rarityColor = Color.White;
+                Vector2 basePosition = new Vector2(line.X, line.Y);
+
+                float rate = Main.GlobalTimeWrappedHourly * 6;
+                List<Color> eColors = new List<Color>()
+                {
+                    Color.DodgerBlue,
+                    Color.Cyan,
+                    Color.RoyalBlue
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                Vector2 backScale = line.BaseScale;
+                Color backColor = usedColor;
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
+
+                int draws = 20;
+                for (int i = 0; i < draws; i++)
+                {
+                    Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (3.5f);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                }
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Texture2D square = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
+
+                Vector2 drawPosition = basePosition;
+                Color drawColor = backColor;
+                Vector2 rotationPoint = texture.Size() * 0.5f;
+                int length = line.Text.Length;
+                for (int i = 0; i < 8; i++)
+                {
+                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
+                }
+                for (int i = 0; i < 10; i++)
+                {
+                    float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (0 + i * 0.8f) / MathHelper.Pi);
+                    float sine2 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (5) / MathHelper.Pi);
+                    float squareSine = (float)Math.Sin(i * 2.5f / MathHelper.Pi);
+                    float clockSine = (float)Math.Sin((float)Math.Pow(Utils.GetLerpValue(0, 110, ((int)(Main.GlobalTimeWrappedHourly * (60 + i * 2)) % 120)), 5));
+                    Vector2 weirdPos = Vector2.UnitX * 53 * i * (Utils.GetLerpValue(20, 0, i, true)) + Vector2.UnitY * -23 * squareSine * sine2 + new Vector2(5, 10);
+                    for (int t = 0; t < 3; t++)
+                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), 0, square.Size() * 0.5f, (1.2f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                    for (int t = 0; t < 3; t++)
+                        Main.EntitySpriteDraw(texture, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), 0, texture.Size() * 0.5f, (0.65f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                }
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+
+                // Draw the front text as usual.
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+                return false;
+            }
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<XyksBlessingOrange>())
+            {
+                Color rarityColor = Color.White;
+                Vector2 basePosition = new Vector2(line.X, line.Y);
+
+                float rate = Main.GlobalTimeWrappedHourly * 6;
+                List<Color> eColors = new List<Color>()
+                {
+                    new Color(248, 117, 52),
+                    Color.Gold,
+                    Color.Orange
+                };
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+                Vector2 backScale = line.BaseScale;
+                Color backColor = usedColor;
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
+
+                int draws = 20;
+                for (int i = 0; i < draws; i++)
+                {
+                    Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (3.5f);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                }
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/SquareRotated").Value;
+                Texture2D square = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSquareParticleThick").Value;
+
+                Vector2 drawPosition = basePosition;
+                Color drawColor = backColor;
+                Vector2 rotationPoint = texture.Size() * 0.5f;
+                int length = line.Text.Length;
+                for (int i = 0; i < 8; i++)
+                {
+                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 23 + Vector2.UnitX * (i % 2 == 0 ? -10 * i : 10 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.3f - 0.02f * i, 1 + 0.35f * i) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
+                }
+                for (int i = 0; i < 10; i++)
+                {
+                    float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * (0 + i * 0.8f) / MathHelper.Pi);
+                    float squareSine = (float)Math.Sin(i * 2.5f / MathHelper.Pi);
+                    float clockSine = (float)Math.Sin((float)Math.Pow(Utils.GetLerpValue(0, 110, ((int)(Main.GlobalTimeWrappedHourly * (60 + i * 2)) % 120)), 5));
+                    Vector2 weirdPos = Vector2.UnitX * 53 * i * (Utils.GetLerpValue(20, 0, i, true)) + Vector2.UnitY * 23 * squareSine + Vector2.UnitY * 5.5f * sine + new Vector2(5, 10);
+                    for (int t = 0; t < 3; t++)
+                        Main.EntitySpriteDraw(square, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), clockSine * MathHelper.PiOver2 + MathHelper.PiOver4, square.Size() * 0.5f, (1 - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                    for (int t = 0; t < 3; t++)
+                        Main.EntitySpriteDraw(texture2, basePosition + weirdPos, null, drawColor * (1 - 0.03f * i), clockSine * MathHelper.PiOver2, texture2.Size() * 0.5f, (0.6f - 0.07f * t) * new Vector2(1, 1) * (0.25f * ((float)Math.Pow(Utils.GetLerpValue(11, 0, i, true), 3) + 0.2f)), SpriteEffects.None);
+                }
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+
+                // Draw the front text as usual.
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+                return false;
+            }
             // Special enchantment line color.
             if (line.Name == "ItemName" && line.Mod == "Terraria" && item.IsEnchanted())
             {
@@ -1656,6 +1715,64 @@ namespace CalamityMod.Items
 
                 // Draw the front text as usual.
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+                return false;
+            }
+
+            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
+            {
+                Color rarityColor = Color.White;
+                Vector2 basePosition = new Vector2(line.X, line.Y);
+
+                float rate = Main.GlobalTimeWrappedHourly * 29;
+                List<Color> eColors = new List<Color>()
+                {
+                Color.PaleVioletRed,
+                Color.Coral,
+                Color.Khaki,
+                Color.PaleGreen,
+                Color.Turquoise,
+                Color.Violet
+                };
+
+                int colorIndex = (int)(rate / 2 % eColors.Count);
+                Color currentColor = eColors[colorIndex];
+                Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                Color usedColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+                
+
+                float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3 / MathHelper.Pi);
+                sine = (float)Math.Pow(MathHelper.Lerp(sine, 0, 0.35f), 5);
+                Vector2 backScale = line.BaseScale;
+                Color backColor = usedColor;
+                Vector2 shake = Main.rand.NextVector2Circular(15, 15) * sine;
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
+
+                int draws = 20;
+                for (int i = 0; i < draws; i++)
+                {
+                    shake = Main.rand.NextVector2Circular(15, 15) * sine;
+                    Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / 20f).ToRotationVector2() * (5 + 0.5f * sine);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake * 4 + backPosition, backColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                }
+                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+                Vector2 drawPosition = basePosition;
+                Color drawColor = backColor;
+                Vector2 rotationPoint = texture.Size() * 0.5f;
+                for (int i = 0; i < 6; i++)
+                {
+                    int length = line.Text.Length;
+                    Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 10 + Vector2.UnitX * (i % 2 == 0 ? -7 * i : 7 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(1 - 0.05f * i * (1 + 0.2f * -sine), 1 + 0.75f * i * (1 + 0.2f * sine) * 1f) * 0.3f * Main.rand.NextFloat(0.9f, 1f), SpriteEffects.None);
+                }
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+
+                // Draw the front text as usual.
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
                 return false;
             }

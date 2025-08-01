@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -86,6 +87,8 @@ namespace CalamityMod.Projectiles.Summon
             Lighting.AddLight(Projectile.Center, 0.3f, 0f, 0.5f);
             Projectile.ChargingMinionAI(1200f, 1500f, 2400f, 150f, 0, 25f, 20f, 9f, new Vector2(0f, -60f), 30f, 15f, true, true);
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool PreDraw(ref Color lightColor)
         {

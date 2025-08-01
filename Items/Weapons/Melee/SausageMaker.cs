@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
@@ -12,6 +13,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Spears[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VeinBurster>();
         }
 
         public override void SetDefaults()
@@ -36,15 +38,5 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

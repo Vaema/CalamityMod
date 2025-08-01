@@ -228,14 +228,6 @@ namespace CalamityMod.Projectiles.Boss
             return false;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
-        }
-
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;
     }
 }

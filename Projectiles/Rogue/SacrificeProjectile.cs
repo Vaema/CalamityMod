@@ -55,20 +55,8 @@ namespace CalamityMod.Projectiles.Rogue
                 // Heal the player and disappear when touching them.
                 if (Projectile.Hitbox.Intersects(Owner.Hitbox))
                 {
-                    if (!Owner.moonLeech && AbleToHealOwner)
-                    {
-                        int heal = Projectile.Calamity().stealthStrike ? 40 : 3;
-
-                        if (Main.LocalPlayer.lifeSteal <= 0f)
-                        {
-                            Projectile.Kill();
-                            return;
-                        }
-
-                        Main.LocalPlayer.lifeSteal -= heal;
-                        Owner.HealPlayer(heal);
-                    }
-
+                    if (AbleToHealOwner)
+                        Owner.DoLifestealDirect(null, Projectile.Calamity().stealthStrike ? 40 : 3, 0.4f);
                     Projectile.Kill();
                 }
             }

@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 200;
+            Item.damage = 54;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<AmphibiansGuitarHoldout>();
 

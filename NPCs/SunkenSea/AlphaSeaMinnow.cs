@@ -8,7 +8,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.DataStructures;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.Enums;
 using System.Collections.Generic;
 using Steamworks;
@@ -286,7 +285,6 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.rarity = 3;
             NPC.catchItem = ModContent.ItemType<AlphaSeaMinnowGoldItem>();
-            NPC.value = 100000;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)

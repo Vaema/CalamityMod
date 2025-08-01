@@ -8,6 +8,7 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.UI.States;
 using Terraria.ID;
+using Terraria.IO;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.ILEditing
@@ -33,28 +34,6 @@ namespace CalamityMod.ILEditing
             set;
         }
 
-        #region Replacement of Pharaoh Set in Pyramids
-        // Note: There is no need to replace the other Pharaoh piece, due to how the vanilla code works.
-        // The other Pharaoh vanity piece is added automatically if the mask is found in the chest.
-        private static void ReplacePharaohSetInPyramids(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the instruction which loads in the item ID of the Pharaoh's Mask.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(ItemID.PharaohsMask)))
-            {
-                LogFailure("Pharaoh Set Pyramid Replacement", "Could not locate the Pharaoh's Mask item ID.");
-                return;
-            }
-
-            // Replace the Pharaoh's Mask with the Amber Hook.
-            // THIS INT CAST IS MANDATORY. DO NOT REMOVE IT.
-            // In TML's DLL, despite item IDs being shorts (16 bits), the hardcoded 848 here is a 32-bit integer literal.
-            // As such, it must be replaced with a 32-bit integer literal or the branches of the switch will misalign and the IL edit fails.
-            cursor.Next.Operand = (int)ItemID.AmberHook;
-        }
-        #endregion Replacement of Pharaoh Set in Pyramids
-
         #region Fixing of Living Tree/Sulphurous Sea Interactions
         private static void BlockLivingTreesNearOcean(ILContext il)
         {
@@ -66,7 +45,7 @@ namespace CalamityMod.ILEditing
         #endregion Fixing of Living Tree/Sulphurous Sea Interactions
 
         #region Removal of Hardmode Ore Generation from Evil Altars
-        private static void PreventSmashAltarCode(Terraria.On_WorldGen.orig_SmashAltar orig, int i, int j)
+        private static void PreventSmashAltarCode(On_WorldGen.orig_SmashAltar orig, int i, int j)
         {
             if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework)
                 return;
@@ -135,10 +114,8 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Pop original value off.
+            // Pop original value off. Push '2' to the stack.
             c.Emit(OpCodes.Pop);
-
-            // Push '2' to the stack.
             c.Emit(OpCodes.Ldc_I4_2);
 
             // OBJECTIVE 2
@@ -181,13 +158,11 @@ namespace CalamityMod.ILEditing
 
             // Emit our new string "Mods.CalamityMod.UI.SmallWorldWarning".
             c.Emit(OpCodes.Ldstr, "Mods.CalamityMod.UI.SmallWorldWarning");
-
-
         }
         #endregion
 
         #region Clear temporary modded tiles
-        private static void ClearModdedTempTiles(Terraria.IO.On_WorldFile.orig_ClearTempTiles orig)
+        private static void ClearModdedTempTiles(On_WorldFile.orig_ClearTempTiles orig)
         {
             orig();
 

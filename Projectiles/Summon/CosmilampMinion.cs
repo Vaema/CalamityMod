@@ -148,8 +148,5 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             return false;
         }
-
-        // The lamps themselves do not do damage, but they do store damage for the sake of shooting projectiles.
-        public override bool? CanDamage() => false;
     }
 }

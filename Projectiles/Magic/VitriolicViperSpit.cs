@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             if (time > 3)
-                Projectile.Center += offset * direction;
+                Projectile.Center += offset * direction * Utils.GetLerpValue(3, 10, time, true);
 
             if (time > 3 && targetDist < 1400)
             {

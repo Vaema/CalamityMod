@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -23,6 +24,7 @@ namespace CalamityMod.Projectiles.Summon
 
         private static readonly int MinionType = ModContent.ProjectileType<AmphibiansGuitarMinion>();
 
+        public override void SetStaticDefaults() => ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 50;

@@ -1,36 +1,22 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.BaseItems;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class Popo : ModItem, ILocalizedModType
+    public class Popo : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public override void Load()
-        {
-            if (!Main.dedServ)
-            {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Popo_Head", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/PopoNoseless_Head", EquipType.Head, name: "PopoNoseless");
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Popo_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Popo_Legs", EquipType.Legs, this);
-            }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
-
-            int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-
-            int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-            ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-        }
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "Popo", null),
+            (EquipType.Head, "PopoNoseless", "PopoNoseless"),
+            (EquipType.Body, "Popo", null),
+            (EquipType.Legs, "Popo", null),
+            (EquipType.Face, null, null), //results in setting this equip slot to -1
+        ];
 
         public override void SetDefaults()
         {
@@ -42,20 +28,14 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.Calamity().devItem = true;
         }
 
-        public override void UpdateVanity(Player player)
+        public override bool CustomSetEquipType(Player player, EquipType type, Mod mod, string name)
         {
-            player.Calamity().snowmanHide = false;
-            player.Calamity().snowmanForce = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.snowman = true;
-            if (hideVisual)
+            if (type == EquipType.Head)
             {
-                modPlayer.snowmanHide = true;
+                player.head = EquipLoader.GetEquipSlot(Mod, player.Calamity().snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
+                return true;
             }
+            return false;
         }
     }
 }

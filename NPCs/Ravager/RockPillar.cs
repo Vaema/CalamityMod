@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.width = 60;
             NPC.height = 300;
             NPC.defense = 50;
@@ -36,10 +36,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -57,18 +53,25 @@ namespace CalamityMod.NPCs.Ravager
 
             if (NPC.alpha > 0)
             {
+                // Avoid cheap bullshit
+                NPC.damage = 0;
+
                 NPC.alpha -= 10;
                 if (NPC.alpha < 0)
                     NPC.alpha = 0;
+            }
+            else
+            {
+                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
+                    NPC.damage = (int)(NPC.defDamage * 1.5);
+                else
+                    NPC.damage = NPC.defDamage;
             }
 
             if (NPC.ai[0] == 0f)
             {
                 if (NPC.velocity.Y == 0f)
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     if (NPC.ai[1] == -1f)
                     {
                         SoundEngine.PlaySound(SoundID.Item62, NPC.Center);
@@ -92,14 +95,8 @@ namespace CalamityMod.NPCs.Ravager
                             Main.dust[rockDust2].velocity *= 2f;
                         }
 
-                        // Set damage
-                        if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                            NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
-                        else
-                            NPC.damage = NPC.defDamage;
-
                         NPC.noTileCollide = true;
-                        NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
+                        NPC.velocity.X = 12 * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0f;
@@ -108,12 +105,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
-                // Set damage
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
-
                 if (NPC.velocity.Y == 0f || Vector2.Distance(NPC.Center, Main.npc[CalamityGlobalNPC.scavenger].Center) > 2800f)
                 {
                     SoundEngine.PlaySound(SoundID.Item14, NPC.Center);
@@ -133,7 +124,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
-
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
         public override bool CheckActive() => false;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

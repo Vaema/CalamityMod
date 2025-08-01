@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Armor.Victide
         {
             player.endurance += 0.05f;
             player.GetCritChance<GenericDamageClass>() += 5;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            if (player.Calamity().countsAsAnyWet)
             {
                 player.statDefense += 5;
                 player.endurance += 0.1f;

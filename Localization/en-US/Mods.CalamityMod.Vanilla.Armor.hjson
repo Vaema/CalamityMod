@@ -28,7 +28,7 @@ SetBonus: {
 		Melee: 10% increased melee damage
 	}
 
-	Copper: Increases all damage by 2
+	Copper: Increases all damage by {0}
 	Crimson:
 		'''
 		Greatly increased natural life regen
@@ -39,7 +39,7 @@ SetBonus: {
 		'''
 		Multiplies all cold-based debuff damage by 1.25x
 		Cold enemies will deal reduced contact damage to the player
-		Provides immunity to the Chilled, Frozen, Frostburn and Glacial State debuffs
+		Provides immunity to the Chilled, Frozen, and Frostburn debuffs
 		'''
 	Rain:
 		'''
@@ -49,7 +49,7 @@ SetBonus: {
 		'''
 	Forbidden:
 		'''
-		{$LegacyTooltip.48} {$ArmorSetBonus.Forbidden}
+		{$LegacyTooltip.48} {0} to call an ancient storm to the cursor location
 		Minions no longer deal less damage while wielding magic weapons
 		'''
 	Frost:
@@ -60,27 +60,18 @@ SetBonus: {
 		'''
 	Gladiator:
 		'''
-		+3 defense
 		+60 maximum stealth
 		5% increased rogue damage and 10% increased velocity
 		'''
 	Gold:
 		'''
-		All enemies have a 2% chance to drop 1 gold; bosses killed drop 3 gold
-		You gain 1% critical strike chance for every 10 gold in your inventory, capped at 7%
+		All enemies have a {0}% chance to drop 1 extra gold
+		All bosses drop {1} extra gold
+		You gain {2}% critical strike chance for every gold in your inventory, capped at {3}%
 		'''
-	Iron:
-		'''
-		Increases damage reduction by 6%
-		+1 HP/s life regen
-		'''
+	Iron: Multiplies all player-inflicted knockback by {0}x
 	Jungle: 10% reduced mana costs
-	Lead:
-		'''
-		Increases damage reduction by 4%
-		+0.5 HP/s life regen
-		Grants immunity to knockback
-		'''
+	Lead: Grants immunity to knockback
 	Meteor: All magic guns cost 33% mana
 	Mining: Mining ore will sometimes have additional yield
 	Molten:
@@ -126,28 +117,20 @@ SetBonus: {
 		Grants +2 HP/s life regeneration after striking an enemy
 		This life regeneration bypasses negative life regeneration
 		'''
-	PlatinumChainmail: 3% increased critical strike chance
-	Platinum:
-		'''
-		Every 10 extra defense gives you 1% increased damage
-		The 20 defense from the Platinum Armor itself does not contribute to this effect
-		Bonus damage caps at 50 extra defense
-		'''
+	Platinum: Increases damage reduction by {0}%
 	Silver:
 		'''
-		+0.5 HP/s life regen
-		Two seconds after getting hit for 20 or more damage, you heal for 10
+		{0} seconds after getting hit for {1} or more damage, you heal for {2}
 		Getting hit again resets the timer, delaying the heal
 		'''
-	Tin: Increases armor penetration by 5
-	Tungsten:
-		'''
-		Increases your critical strike chance by 100% of the knockback of your held weapon
-		This effect caps at Insane knockback, which gives 10% increased critical strike chance
-		Increases all knockback by 33%, this counts for the above boost
-		Current bonus: {0}% critical strike chance from {1} knockback
-		'''
+	Tin: "{0}% increased critical strike chance"
+	Tungsten: Grappling hooks pull and retract {0}% faster
 	MagicHat: Increases maximum mana by 40
+	Vortex:
+		'''
+		{$LegacyTooltip.48} {0} to toggle stealth,
+		increasing ranged ability and reducing chance for enemies to target you but slowing movement speed
+		'''
 	Wizard: 4% increased magic critical strike chance
 	CrystalAssassin:
 		'''

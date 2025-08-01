@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,7 +20,11 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float LanternSummonCost = 2f;
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CosmicKunai>();
+        }
 
         public override void SetDefaults()
         {

@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
 
         public override void UpdateEquip(Player player)
         {
-            player.manaCost *= 0.83f;
+            player.manaCost -= 0.17f;
             player.GetDamage<MagicDamageClass>() += 0.2f;
             player.GetCritChance<MagicDamageClass>() += 10;
             player.statManaMax2 += 100;
