@@ -77,10 +77,10 @@ namespace CalamityMod.Systems.Collections
 
         /// <summary>
         /// If <see langword="true"/> for an item type, prevents this rogue weapon from triggering Venerated Locket's clone projectile effect when used.<br/>
-        /// Primarily used for limited-use spiky balls and weapons which shoot short-distance projectiles.<br/>
+        /// Primarily used for weapons which shoot short-distance projectiles.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateBoolSet(ItemType<GodsParanoia>(), ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>
