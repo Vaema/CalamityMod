@@ -62,9 +62,8 @@ namespace CalamityMod.Systems
                 {
                     case GameModeID.Normal:
                         {
-                            int currentDifficultyTier = GetCurrentDifficulty._difficultyTier;
                             // vanilla game mode in classic, but cal difficulty >= expert
-                            if (currentDifficultyTier > ModContent.GetInstance<NoDifficulty>()._difficultyTier)
+                            if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>() || GetCurrentDifficulty == ModContent.GetInstance<RevengeanceDifficulty>())
                             {
                                 ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<NoDifficulty>());
                             }
@@ -171,6 +170,45 @@ namespace CalamityMod.Systems
                 Difficulties[i]._difficultyTier = tierIndex;
             }
         }
+        private static readonly Dictionary<int, (float, float)> compatitableValueRanges = new()
+                {
+                    { GameModeID.Normal, (0.33f, 0.66f ) },
+                    { GameModeID.Expert, (0.66f, 1f) },
+                    { GameModeID.Master, (1f, 1f) }
+                };
+
+        public static void AlignJourneyDifficultySlider()
+        {
+            if(Main.GameMode != GameModeID.Creative)
+            {
+                // I have to throw an unhandled exception here to make you alerted to bugs while developing
+                // If this is tested and working, turn it into a silent warning before release
+                throw new ArgumentException("DifficultyModeSystemAlignJourneyDifficultySlider(): must be invoked in journey mode");
+            }
+            CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+            var oldValue = (float)journeySliderCacheField.GetValue(power);
+            if (compatitableValueRanges.ContainsKey(_newGameModeID))
+            {
+                var (low, high) = compatitableValueRanges[_newGameModeID];
+                float valueToSet;
+                if (oldValue >= low && oldValue < high)
+                {
+                    valueToSet = oldValue;
+                }
+                else
+                {
+                    valueToSet = low;
+                }
+                journeySliderCacheField.SetValue(power, valueToSet);
+                journeyDifficultyUpdateMethod.Invoke(power, null);
+            }
+            else
+            {
+                // I have to throw an unhandled exception here to make you alerted to bugs while developing
+                // If this is tested and working, turn it into a silent warning before release
+                throw new ArgumentException("DifficultyModeSystemAlignJourneyDifficultySlider(): _newGameModeID must be in GameModeID.Normal, Expert, Master");
+            }
+        }
 
         public override void SaveWorldData(TagCompound tag)
         {
@@ -232,30 +270,7 @@ namespace CalamityMod.Systems
 
         public abstract LocalizedText FTWName{ get; }
         public abstract Color FTWTextColor{ get; }
-        private static readonly Dictionary<int, (float, float)> compatitableValueRanges = new()
-                {
-                    { GameModeID.Normal, (0.33f, 0.66f ) },
-                    { GameModeID.Expert, (0.66f, 1f) },
-                    { GameModeID.Master, (1f, 1f) }
-                };
-
-        protected static float CalculateJourneySliderValue(int targetGameModeID)
-        {
-            CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-            var oldValue = (float)DifficultyModeSystem.journeySliderCacheField.GetValue(power);
-            if (compatitableValueRanges.ContainsKey(targetGameModeID))
-            {
-                var (low, high) = compatitableValueRanges[targetGameModeID];
-                if (oldValue >= low && oldValue < high) return oldValue;
-                else return low;
-            }
-            else
-            {
-                // I have to throw an unhandled exception here to make you alerted to bugs while developing
-                // If this is tested and working, turn it into a silent warning before release
-                throw new ArgumentException("CalculateJournetSliderValue(): targetGameModeID must be in GameModeID.Normal, Expert, Master");
-            }
-        }
+        
 
         /// <summary>
         /// Used to know which difficulties to toggle on when selecting a particular difficulty.
@@ -271,21 +286,16 @@ namespace CalamityMod.Systems
         {
             get => true;
             set
+            {
+                if (!Main.GameModeInfo.IsJourneyMode)
                 {
-                    if (!Main.GameModeInfo.IsJourneyMode)
-                    {
-                        Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
-                    }
-                    else
-                    {
-                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                        if (power.GetIsUnlocked())
-                        {
-                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
-                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
-                        }
-                    }
+                    Main.GameMode = value == true ? GameModeID.Normal : GameModeID.Expert;
                 }
+                else
+                {
+                    DifficultyModeSystem.AlignJourneyDifficultySlider();
+                }
+            }
         }
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Classic");
@@ -322,12 +332,7 @@ namespace CalamityMod.Systems
                 }
                 else
                 {
-                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                    if (power.GetIsUnlocked())
-                    {
-                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
-                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
-                    }
+                    DifficultyModeSystem.AlignJourneyDifficultySlider();
                 }
             }
         }
@@ -367,12 +372,7 @@ namespace CalamityMod.Systems
                 }
                 else
                 {
-                    CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                    if (power.GetIsUnlocked())
-                    {
-                        DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
-                        DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
-                    }
+                    DifficultyModeSystem.AlignJourneyDifficultySlider();
                 }
             }
         }
@@ -464,12 +464,7 @@ namespace CalamityMod.Systems
                     }
                     else
                     {
-                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                        if (power.GetIsUnlocked())
-                        {
-                            DifficultyModeSystem.journeySliderCacheField.SetValue(power, CalculateJourneySliderValue(DifficultyModeSystem._newGameModeID));
-                            DifficultyModeSystem.journeyDifficultyUpdateMethod.Invoke(power, null);
-                        }
+                        DifficultyModeSystem.AlignJourneyDifficultySlider();
                     }
                     CalamityWorld.death = value;
                 }
