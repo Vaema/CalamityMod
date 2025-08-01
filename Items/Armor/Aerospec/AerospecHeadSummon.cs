@@ -21,8 +21,8 @@ namespace CalamityMod.Items.Armor.Aerospec
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
 
         // Set Bonus
-        public static float SetBonusSummonDamageBoost = 0.11f;
         public static int SetBonusMinionSlotBoost = 1;
+        public static float SetBonusSummonDamageBoost = 0.11f;
         public static int ValkyrieDamage = 20;
 
         public override void SetDefaults()
@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusSummonDamageBoost.ToPercent(), SetBonusMinionSlotBoost)
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
             + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.valkyrie = true;

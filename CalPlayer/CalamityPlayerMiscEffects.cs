@@ -222,11 +222,6 @@ namespace CalamityMod.CalPlayer
             // Apply stealth damage to rogue.
             Player.GetDamage<RogueDamageClass>() += stealthDamage;
 
-            //Slow the player down after any other speed modifiers might have been applied.
-            //Todo - Move this back to the wulfrum set class whenever statmodifiers are implemented for stats other than damage
-            if (WulfrumHat.PowerModeEngaged(Player, out _))
-                Player.moveSpeed *= 0.8f;
-
             if ((XykVisualsBlue || XykVisualsOrange))
             {
                 bool Orange = XykVisualsOrange;
@@ -2583,7 +2578,7 @@ namespace CalamityMod.CalPlayer
             // Permafrost's Concoction bonuses/debuffs
             if (permafrostsConcoction)
             {
-                Player.manaCost *= 0.85f;
+                Player.manaCost -= 0.15f;
                 Player.statManaMax2 += 50;
             }
 
@@ -3515,7 +3510,7 @@ namespace CalamityMod.CalPlayer
             if (starBeamRye)
             {
                 Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost *= (1f - StarBeamRye.ManaCostReduction);
+                Player.manaCost -= StarBeamRye.ManaCostReduction;
                 Player.statManaMax2 += StarBeamRye.MaxManaBoost;
             }
 
@@ -3977,7 +3972,7 @@ namespace CalamityMod.CalPlayer
 
             if (eArtifact)
             {
-                Player.manaCost *= 0.75f;
+                Player.manaCost -= 0.25f;
                 Player.maxMinions++;
             }
 
@@ -4828,7 +4823,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
-                Player.statDefense -= (int)(Player.statDefense * 0.75);
+                Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }
         #endregion
 

@@ -49,7 +49,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = 0f;
             NPC.Opacity = 1f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;

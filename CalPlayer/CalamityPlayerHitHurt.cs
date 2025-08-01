@@ -17,6 +17,7 @@ using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
+using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
@@ -1300,7 +1301,7 @@ namespace CalamityMod.CalPlayer
                 if (Main.npc[proj.Calamity().ParentNPCIndex].active)
                 {
                     if (sulphurSet)
-                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, 60);
+                        Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
                     if (ilSpark)
                         Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   

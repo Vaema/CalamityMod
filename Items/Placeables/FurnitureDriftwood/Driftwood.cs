@@ -1,7 +1,7 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Placeables.SunkenSea
+namespace CalamityMod.Items.Placeables.FurnitureDriftwood
 {
     public class Driftwood : ModItem, ILocalizedModType
     {
@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             ItemID.Sets.ShimmerTransformToItem[Type] = ItemID.Wood;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Driftwood>());
+        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.FurnitureDriftwood.Driftwood>());
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
         {

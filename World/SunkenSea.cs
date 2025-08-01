@@ -19,25 +19,11 @@ namespace CalamityMod.World
     public class SunkenSea
     {
         /*
-        Dylandoe checklist:
+        checklist:
         
-        -Make ambient tiles naturally grow on sunken sea tiles/sands (only eutrophic sand is done)
-        -Add basalt slab block
-        -Add navystone brick wall  
         -Add the wall corals properly
         -Make sunken sea walls produce water
-        */
-
-        /*
-         ena todo
-
-        fix the fucking forest being shaved (done - HPU)
         cut a half oval out of the top of forest in anticipation of structure placement
-        change the type of noise both reefs and forest use (reefs more jagged, forest more flat) (done - HPU)
-        cut a curve out of the top of shores (the desert part) (done - HPU)
-        extend basalt to hell - DONE
-            convert normal terrain blocks below basalt into basalt (maybe??? - HPU)
-        BLOTCHES EVERYWHERE
          */
         public static void NormalForLoop(int fromInclusive, int toExclusive, int step, Action<int> action)
         {
@@ -358,37 +344,40 @@ namespace CalamityMod.World
                         if (!Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y + 1].HasTile && !Main.tile[X - 1, Y].HasTile && !Main.tile[X + 1, Y].HasTile)
                             WorldGen.KillTile(X, Y);
 
-                        // Timeless Shores ambiant tiles
-                        //if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
-                        //{
-                        //    //Driftwood Ambiance
-                        //    if (WorldGen.genRand.NextBool(150))
-                        //    {
-                        //        ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
-
-                        //        WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
-                        //    }
-                        //}
-                        //if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>())
-                        //{
-                        //    //Driftwood Ambiance
-                        //    if (WorldGen.genRand.NextBool(150))
-                        //    {
-                        //        ushort[] DriftwoodPiles = new ushort[] { (ushort)ModContent.TileType<DriftwoodAmbient1>(), (ushort)ModContent.TileType<DriftwoodAmbient2>(), (ushort)ModContent.TileType<DriftwoodAmbient3>(), (ushort)ModContent.TileType<DriftwoodAmbient4>(), (ushort)ModContent.TileType<DriftwoodAmbient5>(), (ushort)ModContent.TileType<DriftwoodAmbient6>() };
-
-                        //        WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DriftwoodPiles));
-                        //    }
-                        //}
                     }
 
                 }
 
 
-                // Slope tiles
+                // Slope tiles and Soil Spawn
                 for (int X = startPosX - biomeSize; X < startPosX + biomeSize; X += 1)
                 {
                     for (int Y = startPosY - 300; Y <= startPosY + 200; Y++)
+                    {
                         Tile.SmoothSlope(X, Y);
+
+                        if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
+                        {
+                            if (WorldGen.genRand.NextBool(25) && !Main.tile[X - 1, Y].HasTile)
+                            {
+                                ushort[] Soil = new ushort[] { (ushort)ModContent.TileType<AridSoil>() };
+
+                                ShapeData circle = new ShapeData();
+                                GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                                WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(3, 7)), Actions.Chain(new GenAction[]
+                                {
+                            blotchMod.Output(circle)
+                                }));
+
+                                WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                                {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<Dunesand>()),
+                            new Actions.ClearTile(), new Actions.PlaceTile(WorldGen.genRand.Next(Soil))
+                                }));
+
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1745,6 +1734,7 @@ namespace CalamityMod.World
                             new Actions.PlaceTile((ushort)ModContent.TileType<WhitePearlPile>()),
                         }));
                     }
+                    
                 }
             }
         }

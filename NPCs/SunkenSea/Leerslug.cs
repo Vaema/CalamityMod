@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 3;
             NPC.lifeMax = 200;
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 0, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;

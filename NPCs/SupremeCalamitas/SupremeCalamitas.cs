@@ -254,8 +254,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         }
 
         public static int DartDamage = 85; // 340
+        public static int SkullDamage = 90; // 360
         public static int HellblastDamage = 100; // 400
-        public static int SkullDamage = 100; // 400
         public static int FireblastDamage = 100; // 400
         public static int GigablastDamage = 110; // 440
 
@@ -267,7 +267,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.width = NPC.height = 44;
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
-            NPC.value = Item.buyPrice(3, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 3);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;

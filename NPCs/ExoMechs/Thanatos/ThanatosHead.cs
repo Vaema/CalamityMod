@@ -172,7 +172,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 270; // 540
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 164;
             NPC.height = 164;
@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

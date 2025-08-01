@@ -8,8 +8,9 @@ using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Tiles.Astral;
 
-namespace CalamityMod.Tiles.Astral
+namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class AstralMonolith : ModTile
     {

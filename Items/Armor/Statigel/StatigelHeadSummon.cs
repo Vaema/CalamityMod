@@ -20,8 +20,8 @@ namespace CalamityMod.Items.Armor.Statigel
         public static float SummonKBBoost = 1.5f;
 
         // Set Bonus
-        public static float SetBonusSummonDamageBoost = 0.18f;
         public static int SetBonusMinionSlotBoost = 1;
+        public static float SetBonusSummonDamageBoost = 0.18f;
         public static int SlimeDamage = 18;
 
         public override void SetDefaults()
@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusSummonDamageBoost.ToPercent(), SetBonusMinionSlotBoost)
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
             + "\n" + CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusHurtDamageThreshold, StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;

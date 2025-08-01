@@ -131,7 +131,7 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
             ApplyDoTDebuff(trueVHex, 50);
-            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 50) / (dynamoStemCells ? 2 : 1);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 200 : 50) / (dynamoStemCells ? 2 : 1);
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
             ApplyDoTDebuff(miracleBlight, 60);
             ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player

@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 15;
             NPC.damage = 16;
             NPC.knockBackResist = 0.45f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             Banner = NPCID.Zombie;
             BannerItem = ItemID.ZombieBanner;
             NPC.Calamity().VulnerableToHeat = true;

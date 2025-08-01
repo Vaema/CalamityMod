@@ -508,7 +508,7 @@ namespace CalamityMod.Systems
 
             for (int i = 0; i < tierList.Length; i++)
             {
-                if (tierList[i].Name == GetText("UI.Master") || tierList[i].Name == GetText("UI.Revengeance"))
+                if (tierList[i].Name == Language.GetText("UI.Master") || tierList[i].Name == GetText("UI.Revengeance"))
                     difficulties.Add(i);
             }
 

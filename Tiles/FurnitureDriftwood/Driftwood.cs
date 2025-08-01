@@ -5,7 +5,7 @@ using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Tiles.SunkenSea
+namespace CalamityMod.Tiles.FurnitureDriftwood
 {
     public class Driftwood : ModTile
     {
@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea
             AddMapEntry(new Color(136, 129, 154));
 
             // 02JUN2024: Ozzatron: Dunesand has no merge
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Dunesand>(), out tileAdjacency);
+            //TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Dunesand>(), out tileAdjacency);
             // 02JUN2024: Ozzatron: Shellstone has no merge tile sheet defined
             // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
 
