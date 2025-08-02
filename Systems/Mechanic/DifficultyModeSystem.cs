@@ -90,38 +90,34 @@ namespace CalamityMod.Systems
                 }
             }
 
-            switch (Main.GameMode)
+            if (Main.GameMode == GameModeID.Creative)
             {
-                case GameModeID.Creative:
+                CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                if (power.GetIsUnlocked())
+                {
+                    int effectiveVanillaDifficulty;
+                    var sliderValue = (float)journeySliderCacheField.GetValue(power);
+                    if (sliderValue == 1)
                     {
-                        CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                        if (power.GetIsUnlocked())
-                        {
-                            int effectiveVanillaDifficulty;
-                            var sliderValue = (float)journeySliderCacheField.GetValue(power);
-                            if(sliderValue == 1)
-                            {
-                                effectiveVanillaDifficulty = GameModeID.Master;
-                            }
-                            else if(sliderValue >= 0.66f)
-                            {
-                                effectiveVanillaDifficulty = GameModeID.Expert;
-                            }
-                            else
-                            {
-                                effectiveVanillaDifficulty = GameModeID.Normal;
-                            }
-                            HandleExternalGameModeChange(effectiveVanillaDifficulty);
-                        }
-                        break;
+                        effectiveVanillaDifficulty = GameModeID.Master;
                     }
-                default:
+                    else if (sliderValue >= 0.66f)
                     {
-                        HandleExternalGameModeChange(Main.GameMode);
-                        break;
+                        effectiveVanillaDifficulty = GameModeID.Expert;
                     }
+                    else
+                    {
+                        effectiveVanillaDifficulty = GameModeID.Normal;
+                    }
+                    HandleExternalGameModeChange(effectiveVanillaDifficulty);
+                }
+            }
+            else
+            {
+                HandleExternalGameModeChange(Main.GameMode);
             }
         }
+        
 
         public static DifficultyMode GetCurrentDifficulty
         {
