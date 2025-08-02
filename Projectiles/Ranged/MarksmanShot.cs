@@ -91,6 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile[] validCoins = Projectile.GetAvailableCoins();
                 Projectile struckCoin = null;
 
+                // Check for collisions with valid coins
                 for (int i = 0; i < validCoins.Length; ++i)
                 {
                     Projectile coin = validCoins[i];
@@ -104,12 +105,16 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                 }
 
+                // If a coin was struck, set up the potential multi-ricoshot.
                 if (struckCoin is not null)
                 {
+                    // Assemble an array of the remaining coins.
                     Projectile[] otherCoins = validCoins.Where((proj) => proj.whoAmI != struckCoin.whoAmI).ToArray();
                     RicoshotTarget nextCoin = Projectile.FindRicochetTarget(Projectile.Center, otherCoins, true);
-                    RicochetOffCoin(nextCoin, struckCoin); 
-
+                    RicochetOffCoin(nextCoin, struckCoin);
+                    // Ricochet off of this coin to the next target.
+                    // This coin (and potential further coins) may have already been recursively frozen.
+                    // As long as those coins have not yet been struck, they are valid targets.
                     // If the next target is another coin/clip, freeze it.
                     if (nextCoin.type == RicoshotTargetType.Coin)
                     {
@@ -144,7 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (NumRicochets == 0 && CalamityUtils.CanRicoshotCoinForceCrit(struckCoin))
                 cgp.forcedCrit = true;
 
-            // Apply bonus damage to the projectile based on the projectile type.
+            // Apply bonus damage to the projectile based on the projectile type. This is an additive multiplier between multiple coins/clips.
             float bonusDamageRatio = 0f;
             if (struckCoin.type == ModContent.ProjectileType<RicoshotCoin>())
             {
