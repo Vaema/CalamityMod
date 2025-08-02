@@ -44,22 +44,27 @@ namespace CalamityMod.Projectiles.Typeless
                 Projectile.localAI[0] = 1f;
                 Projectile.localAI[1] = 0f;
             }
+
+            // Anti-stuck auto reelback
+            if (Projectile.ai[0] == 0f && Projectile.localAI[1] == 0f && Projectile.velocity.Length() <= 0.2f)
+                Projectile.ai[0] = 1f;
         }
 
         // Anchor the bobber to the parent projectile, since the default is bound to the player
         // Yes. This method is obsolete. No, there is no other way and I won't make another IL edit to remedy this fact. - Iris
         public override void ModifyFishingLine(ref Vector2 lineOriginOffset, ref Color lineColor)
         {
-            Vector2 originalPos = Owner.MountedCenter + Vector2.UnitY * (Owner.gfxOffY - (Owner.gravDir == -1 ? 12f : 0f));
-
-            if (Parent.active)
-                lineOriginOffset = Parent.Center - originalPos + Vector2.UnitY * 12f;
-
-            // How this is a thing is beyond me
-            if (Owner.direction == -1)
-                lineOriginOffset += Vector2.UnitX * (Parent.Center.X < Owner.Center.X ? 48f : -54f);
-
             lineColor = Color.Cyan;
+            if (Parent.active)
+            {
+                Vector2 originalPos = Owner.MountedCenter + Vector2.UnitY * (Owner.gfxOffY - (Owner.gravDir == -1 ? 12f : 0f));
+                lineOriginOffset = Parent.Center - originalPos + Vector2.UnitY * 13f;
+
+                // How this is a thing is beyond me
+                lineOriginOffset.X -= 2f;
+                if (Owner.direction < 0)
+                    lineOriginOffset.X += (Owner.MountedCenter.X - Parent.Center.X) * 2f;
+            }
         }
 
         public override bool PreDrawExtras()

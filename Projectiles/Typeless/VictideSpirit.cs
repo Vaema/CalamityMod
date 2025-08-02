@@ -23,16 +23,12 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
 
-        public static Asset<Texture2D> AuraTexture;
         public static Asset<Texture2D> GlowTexture;
 
+        public ref float SubmergedTimer => ref Projectile.ai[0];
         public ref float DustCounter => ref Projectile.ai[1];
 
-        public override void Load()
-        {
-            AuraTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/StarTrail");
-            GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
-        }
+        public override void Load() => GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
         public override void SetStaticDefaults()
         {
@@ -53,6 +49,15 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.rotation = MathHelper.PiOver2;
             for (int i = 0; i < Projectile.oldPos.Length; i++)
                 Projectile.oldRot[i] = MathHelper.PiOver2;
+
+            for (int i = 0; i < 3; i++)
+            {
+                Color squareColor = Color.Lerp(Color.Cyan, Color.RoyalBlue, i * 0.5f) * 0.6f;
+                float squareScale = 0.6f + i * 0.2f;
+                float squareRot = (i % 2 == 0 ? MathHelper.PiOver4 : 0f);
+                Particle square = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/GlowSquareParticleThick", false, 18, squareScale, squareColor, Vector2.One, true, true, squareRot, true, glowOpacity: 0.5f, glowCenterScale: squareScale * 1.15f);
+                GeneralParticleHandler.SpawnParticle(square);
+            }
         }
 
         public override void AI()
@@ -186,17 +191,29 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             #region Visual and Sound Effects
+            if (Collision.DrownCollision(Projectile.Center - Vector2.One, 2, 2, Owner.gravDir))
+                SubmergedTimer++;
+            else
+                SubmergedTimer = 0f;
+
             Color BubblyBlue = new Color(97, 200, 255);
-            Lighting.AddLight(Projectile.Center, BubblyBlue.ToVector3() * Projectile.Opacity * 0.5f);
+            Vector2 headPosition = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * 8f;
+            Lighting.AddLight(headPosition, BubblyBlue.ToVector3() * Projectile.Opacity * (0.5f + 0.3f * Utils.GetLerpValue(0f, 60f, SubmergedTimer, true)));
+
+            if (SubmergedTimer == 1f)
+            {
+                Particle ring = new DirectionalPulseRing(headPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * 0.4f, BubblyBlue, new Vector2(0.5f, 1f), Projectile.rotation, 0.95f, 0f, 30);
+                GeneralParticleHandler.SpawnParticle(ring);
+            }
 
             float lifetimeRatio = Projectile.timeLeft / (float)VictideHeadBurrow.BurrowCooldown;
             if (Projectile.soundDelay <= 0)
             {
-                Projectile.soundDelay = Main.rand.Next(25, 41) + (int)(lifetimeRatio * 45);
+                Projectile.soundDelay = Main.rand.Next(20, 36) + (int)(lifetimeRatio * 20);
                 SoundEngine.PlaySound(Main.rand.NextBool() ? SoundID.ShimmerWeak1 : SoundID.ShimmerWeak2, Projectile.Center);
             }
 
-            if (Main.rand.NextBool(4) || Projectile.velocity.Length() > 0.25f)
+            if ((Main.rand.NextBool(4) || Projectile.velocity.Length() > 0.25f) && SubmergedTimer == 0f)
             {
                 Particle foam = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.7f, "CalamityMod/Particles/WaterFoam", false, 9, 0.25f, Color.DeepSkyBlue, Vector2.One, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi), shrinkSpeed: 1f);
                 GeneralParticleHandler.SpawnParticle(foam);
@@ -261,6 +278,17 @@ namespace CalamityMod.Projectiles.Typeless
             }
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
             PrimitiveRenderer.RenderTrail(spiritBodyPositions, new(SpiritWidthFunction, SpiritColorFunction, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 60);
+
+            // Glow pulses when the ability is about to run out
+            if (Projectile.timeLeft < 180)
+            {
+                Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
+                Texture2D glow = GlowTexture.Value;
+                Vector2 drawPos = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+                Color glowColor = new Color(255, 170, 204) * (0.2f * MathF.Sin(Projectile.timeLeft * MathHelper.Pi * 0.25f) + Utils.Remap(Projectile.timeLeft, 180f, 0f, 0.2f, 0.6f, true));
+                Main.EntitySpriteDraw(glow, drawPos, null, glowColor, Projectile.rotation, glow.Size() * 0.5f, new Vector2(0.6f, 0.5f), SpriteEffects.None);
+                Main.spriteBatch.ExitShaderRegion();
+            }
             return false;
         }
 
@@ -270,6 +298,16 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Owner.velocity *= 0.8f;
             Owner.fullRotation = 0f;
+
+            SoundEngine.PlaySound(SoundID.Drown, Projectile.Center);
+            for (int i = 0; i < 3; i++)
+            {
+                Color squareColor = Color.Lerp(Color.Cyan, new Color(255, 170, 204), i * 0.5f) * 0.6f;
+                float squareScale = 0.6f + i * 0.2f;
+                float squareRot = (i % 2 == 0 ? MathHelper.PiOver4 : 0f);
+                Particle square = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/GlowSquareParticleThick", false, 18, squareScale, squareColor, Vector2.One, true, true, squareRot, true, glowOpacity: 0.5f, glowCenterScale: squareScale * 1.15f);
+                GeneralParticleHandler.SpawnParticle(square);
+            }
         }
     }
 }

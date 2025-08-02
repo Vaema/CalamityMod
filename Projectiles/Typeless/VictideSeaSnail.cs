@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Teleport and reset everything if too far away (this range is deliberately very short)
-            if (Vector2.Distance(Projectile.Center, Owner.Center) > 160f)
+            if (Vector2.Distance(Projectile.Center, Owner.Center) > 240f)
             {
                 Projectile.Center = Owner.Center + Vector2.UnitY * (Owner.gfxOffY - 60f) * Owner.gravDir;
                 DustTimer = 0f;
