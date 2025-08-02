@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<M1GarandHoldout>();
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.noUseGraphic = true; // Took me longer than I'd like to admit to find this.
+            Item.noUseGraphic = true;
 
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;

@@ -36,7 +36,6 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYUpwards => 0f;
         public override float OffsetYDownwards => 0f;
 
-        // this pos needs tweaking
         public override Vector2 GunTipPosition => (Projectile.Center + new Vector2(1.5f, -2.5f)) + Vector2.UnitX.RotatedBy(Projectile.rotation) * Projectile.width * 0.425f;
         public override string Texture => "CalamityMod/Projectiles/Ranged/M1GarandHoldout";
 
@@ -237,6 +236,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
+        // Can damage when firing.
         public override bool? CanDamage() => muzzleFlashTimer > 0f;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(GunTipPosition + Vector2.UnitX.RotatedBy(Projectile.rotation) * MuzzleFlash.Width() * 0.5f, 64f, targetHitbox);
 
@@ -309,8 +309,8 @@ namespace CalamityMod.Projectiles.Ranged
                         stretchFactorY = 0f;
                     }
 
+                    // Draw without any additions
                     Color drawColor = Color.White;
-
                     int fadeDuration = 30;
                     int fadeStartFrame = PingAnimationDuration - fadeDuration;
 
@@ -325,6 +325,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float stretchScaleY = 1f + stretchFactorY;
                     float stretchScaleX = 1f - (stretchFactorY * 0.5f);
 
+                    // Calculate scale to display with all factors combined
                     Vector2 finalPingScale = new Vector2(basePingDrawScale * stretchScaleX, basePingDrawScale * stretchScaleY);
                     Main.EntitySpriteDraw(pingTexture, pingDrawPosition, null, drawColor, Owner.direction == 1 ? -0.25f : 0.25f, origin, finalPingScale, SpriteEffects.None, 0f);
                 }
@@ -339,6 +340,7 @@ namespace CalamityMod.Projectiles.Ranged
             return false;
         }
 
+        // Glowmask.
         public override void PostDraw(Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;

@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 60;
             ProjectileID.Sets.TrailingMode[Type] = 0;
-            Main.projFrames[Type] = 1; // Assuming a single frame for the clip.
+            Main.projFrames[Type] = 1;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
 
@@ -60,6 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.MaxUpdates = UpdateCount;
             Projectile.timeLeft = ClipLifetime;
+            // Draws very small otherwise
             Projectile.scale = 1.5f;
         }
 
@@ -104,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
             Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
             return base.OnTileCollide(oldVelocity);
         }
-
+        // Pretty much all from ricoshot coins from here.
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
