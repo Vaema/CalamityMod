@@ -112,6 +112,7 @@ namespace CalamityMod.CalPlayer
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
         public int hellbornShots = 0;
+        public int garandShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
         /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
@@ -3215,6 +3216,7 @@ namespace CalamityMod.CalPlayer
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
+            garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
             potionTimer = 0;
