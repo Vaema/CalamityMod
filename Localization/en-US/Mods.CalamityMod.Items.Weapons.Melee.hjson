@@ -305,9 +305,10 @@ CrescentMoon: {
 	DisplayName: Crescent Moon
 	Tooltip:
 		'''
-		Throws a lunar flail that releases homing moons at the apex of it's path
+		Throws a lunar flail that releases homing moons at the apex of its path
 		Holding <left> spins the flail around you, generating starbursts
 		With 20 Starbursts, hold <left> again after throwing the flail to cause it to explode
+		Instead of releasing moons, this explosion summons Scorpius to do immense damage
 		'''
 }
 

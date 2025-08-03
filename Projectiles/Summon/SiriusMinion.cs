@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
                 TimerForShooting++;
 
             // Makes the star oscillate.
-            Projectile.scale = MathHelper.Lerp(0.22f,0.24f, (1+MathF.Sin((Projectile.frameCounter* 0.01f))*0.5f));
+            Projectile.scale = MathHelper.Lerp(0.27f,0.29f, (1+MathF.Sin((Projectile.frameCounter* 0.01f))*0.5f));
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 31415)
                 Projectile.frameCounter = 0;
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.velocity = Owner.velocity * 0f;
 
             var SiriusPos = Projectile.Center + Projectile.velocity;
-            var SiriusScale = 0.075f;
+            var SiriusScale = 0.1f;
             void SpawnStar(float SlotRequirement, Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
             {
                 if (SlotRequirement > 0 && Projectile.minionSlots < SlotRequirement)
@@ -211,7 +211,7 @@ namespace CalamityMod.Projectiles.Summon
                 point1.X *= Projectile.spriteDirection;
                 point2.X *= Projectile.spriteDirection;
                 var color = Color.SkyBlue * 0.5f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
-                Utils.DrawLine(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color ,color, 1);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 1.5f);
             }
             ConnectStars(4,new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot
             ConnectStars(2,new Vector2(0f, 0f), new Vector2(-118f, 217f)); //Sirius - Bottom

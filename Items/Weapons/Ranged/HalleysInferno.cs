@@ -84,7 +84,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 if (player.Calamity().StratusStarburst > 0)
                 {
-                    Projectile.NewProjectile(source,position,velocity*1.5f, ModContent.ProjectileType<HalleysStarburst>(), damage,knockback,player.whoAmI);
+                    Projectile.NewProjectile(source,position + velocity*5,velocity*0.75f, ModContent.ProjectileType<HalleysStarburst>(), damage,knockback,player.whoAmI);
                     player.Calamity().StratusStarburst--;
                 }
                 return false;

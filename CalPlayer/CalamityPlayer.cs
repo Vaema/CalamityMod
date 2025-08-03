@@ -2063,8 +2063,8 @@ namespace CalamityMod.CalPlayer
             //Stratus Starburst amount management
             if (HalleyHitCooldown > 0)
             {
-                if (HalleyHitCooldown > 350)
-                    HalleyHitCooldown = 350;
+                if (HalleyHitCooldown > 650)
+                    HalleyHitCooldown = 650;
                 StarburstSpawnFrameCounter += MathF.Pow(HalleyHitCooldown* 0.01f, 0.5f) * 0.03f;
                 HalleyHitCooldown--;
             }

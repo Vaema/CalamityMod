@@ -53,9 +53,26 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Projectiles/Melee/CrescentMoonProj", false, 2, 1f, Color.White, Vector2.One, false));
             }
                 
-            Projectile.velocity *= 0.95f;
+            Projectile.velocity *= 0.965f;
             if (Projectile.timeLeft < 225 * Projectile.MaxUpdates)
-                CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f);
+                CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f,true)
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                int dustType = Utils.SelectRandom(Main.rand, new int[]
+                {
+                                109,
+                                111,
+                                132
+                });
+
+                int dust = Dust.NewDust(Projectile.Center, 0, 0, dustType);
+                Main.dust[dust].noGravity = true;
+                Main.dust[dust].velocity *= 2;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

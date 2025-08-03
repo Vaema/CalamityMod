@@ -104,23 +104,33 @@ namespace CalamityMod.Projectiles.Melee
                     } else
                     {
                         burstStage = 0;
-                        for (var i = 0; i < 6; i++)
-                        {
-                            int moonDamage = (int)(Projectile.damage * 0.1f);
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.TwoPi * (i / 6f + 0.5f)) * 20f, ModContent.ProjectileType<CrescentMoonProj>(), moonDamage, 0f, Projectile.owner, 0f, 0f);
-                        }
                         SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath);
+
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorpiusConstellation>(), (int)(Projectile.damage * 3), 0f, Projectile.owner, 0f, 0f);
                         Projectile.position = Projectile.Center;
                         Projectile.Size *= 7;
                         Projectile.Center = Projectile.position;
-                        Projectile.damage *= 5;
+                        Projectile.damage *= 3;
                         Projectile.Damage();
                         Projectile.damage = 0;
                         Projectile.position = Projectile.Center;
                         Projectile.Size *= 0.2f;
                         Projectile.Center = Projectile.position;
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0f, 0.25f, (int)(40 * 0.38f)));
-                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.DeepSkyBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0f, 0.2f, (int)(40 * 0.38f)));
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.SkyBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0f, 0.25f, 12));
+                        GeneralParticleHandler.SpawnParticle(new CustomPulse(Projectile.Center, Vector2.Zero, Color.DeepSkyBlue, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-15f, 15f), 0f, 0.2f, 12));
+                        for (int i = 0; i < 30; i++)
+                        {
+                            int dustType = Utils.SelectRandom(Main.rand, new int[]
+                            {
+                                109,
+                                111,
+                                132
+                            });
+
+                            int dust = Dust.NewDust(Projectile.Center, 0, 0, dustType);
+                            Main.dust[dust].noGravity = true;
+                            Main.dust[dust].velocity *= 7;
+                        }
                         player.Calamity().StratusStarburst -= 20;
                         if (starburst1 != null)
                             player.Calamity().StarburstEntities.Remove(starburst1);
@@ -147,7 +157,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (hasStarbits)
                 {
                     var rotation = Projectile.DirectionFrom(player.Center).ToRotation() - MathHelper.PiOver2;
-                    float distanceMod = MathHelper.Min(Projectile.ai[0] / 30f, 1);
+                    float distanceMod = MathHelper.SmoothStep(0,1,MathHelper.Min(Projectile.ai[0] / 30f, 1));
                     if (burstStage > 0)
                         distanceMod = (burstStage * 0.1f);
                     float playerLerpMod = MathHelper.Min(Projectile.ai[0] / 40f, 1);

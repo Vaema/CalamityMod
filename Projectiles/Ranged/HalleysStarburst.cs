@@ -27,17 +27,51 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.MaxUpdates = 2;
-            Projectile.timeLeft = 300 * Projectile.MaxUpdates;
+            Projectile.MaxUpdates = 4;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
             Projectile.frame = Main.rand.Next(0, 6);
             Projectile.scale = 0.75f;
+            Projectile.rotation += Main.rand.NextFloat(0, 3);
         }
 
         public override void AI()
         {
-            Projectile.frameCounter++;
+            if (drawColor == Color.Black)
+            {
+                switch (Main.rand.Next(1, 7))
+                {
+                    case 1:
+                        drawColor = Color.HotPink;
+                        break;
+                    case 2:
+                        drawColor = Color.Yellow;
+                        break;
+                    case 3:
+                        drawColor = Color.LimeGreen;
+                        break;
+                    case 4:
+                        drawColor = Color.SkyBlue;
+                        break;
+                    case 5:
+                        drawColor = Color.Lavender;
+                        break;
+                    case 6:
+
+                        drawColor = Color.White;
+                        break;
+                }
+            }
+            Projectile.rotation += Projectile.direction * 0.05f;
+            if (Projectile.FinalExtraUpdate())
+            {
+                var star = new BloomParticle(Projectile.Center, Vector2.Zero, drawColor, 0.2f, 0.25f, 2, false);
+                var star2 = new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 1f, Color.White, Vector2.One);
+                GeneralParticleHandler.SpawnParticle(star);
+                GeneralParticleHandler.SpawnParticle(star2);
+            }
+                Projectile.frameCounter++;
             if (Projectile.frameCounter > 5)
             {
                 Projectile.frame++;
@@ -73,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
             lightColor = drawColor;
-            return base.PreDraw(ref lightColor);
+            return false;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -92,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
                 dust.noGravity = true;
             }
-            Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 7;
+            Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 8;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
