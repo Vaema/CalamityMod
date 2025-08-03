@@ -18,10 +18,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Vanilla values
         public static int StingerDamage = 11; // 44; Also applies to GFB stinger replacements
 
-        // Death exclusive
-        public static int BeenadeDamage = 15; // 90
-        public static int BeenadeBeeDamage = 12; // 72
-
         public static bool BuffedQueenBeeAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();

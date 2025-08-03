@@ -20,9 +20,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int LaserDamage = 15; // 60 (modified to be always at maximum Expert damage and does not scale)
         public static int SickleDamage = 22; // 88
 
-        // Death exclusive
-        public static int FireballDamage = 18; // 108
-
         public static bool BuffedWallofFleshAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();

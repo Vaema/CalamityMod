@@ -22,9 +22,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static float SpinDamageMult = 1.3f; // 91
         public static int SkullDamage = 17; // 68; Also applies to crossbones
 
-        // Rev+ exclusive
-        public static int ShadowflameDamage = 20; // 80
-
         public static bool BuffedSkeletronAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();

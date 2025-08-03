@@ -517,7 +517,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set rotation and velocity
                         npc.rotation = hoverRotation;
 
-                        float chargeSpeed = (death ? 25f : 22f) + (death ? 8f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float chargeSpeed = (death ? 25f : 22f) + (death ? 3.25f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                         if (!spazAlive)
                             chargeSpeed += 2f;
                         if (CalamityWorld.LegendaryMode)
@@ -536,7 +536,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[3] % 3f == 0f)
                             chargeTime = spazAlive ? 90f : 60f;
                         if (death)
-                            chargeTime -= chargeTime * 0.25f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio);
+                            chargeTime -= chargeTime * 0.1f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio);
                         chargeTime -= chargeTime * (death ? 0.06f : 0f);
 
                         // Slow down
@@ -621,8 +621,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else if (npc.ai[1] == 4f)
                     {
                         float chargeLineUpDistance = spazAlive ? 600f : 500f;
-                        float chargeSpeed = (death ? 19.8f : 18f) + (death ? 6f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
-                        float chargeAcceleration = (death ? 0.495f : 0.45f) + (death ? 0.15f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float chargeSpeed = (death ? 19.8f : 18f) + (death ? 2.5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float chargeAcceleration = (death ? 0.495f : 0.45f) + (death ? 0.1f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
 
                         if (spazAlive)
                         {
@@ -1015,7 +1015,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Shadowflamethrower phase
                 if (npc.ai[1] == 0f)
                 {
-                    float maxVelocity = 7.1f + (death ? 2f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                    float maxVelocity = 7.1f + (death ? 0.8f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                     float acceleration = 0.118f + (death ? 0.02f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
 
                     float distanceFromTarget = 180f;
@@ -1117,7 +1117,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set rotation and velocity
                         npc.rotation = hoverRotation;
 
-                        float chargeSpeed = (death ? 22.8f : 18f) + (death ? 5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                        float chargeSpeed = (death ? 22.8f : 18f) + (death ? 1.5f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                         if (CalamityWorld.LegendaryMode)
                             chargeSpeed *= 1.2f;
 
@@ -1189,7 +1189,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         else if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             // Velocity
-                            float spazmatismPhase3ChargeSpeed = (death ? 23f : 20f) + (death ? 6f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
+                            float spazmatismPhase3ChargeSpeed = (death ? 23f : 20f) + (death ? 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0f);
                             if (npc.ai[2] == -1f || (!retAlive && npc.ai[3] == secondFastCharge))
                                 spazmatismPhase3ChargeSpeed *= 1.3f;
                             if (CalamityWorld.LegendaryMode)
