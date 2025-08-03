@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Typeless
             float lifetimeRatio = Projectile.timeLeft / (float)VictideHeadBurrow.BurrowCooldown;
             if (Projectile.soundDelay <= 0)
             {
-                Projectile.soundDelay = Main.rand.Next(20, 36) + (int)(lifetimeRatio * 20);
+                Projectile.soundDelay = Main.rand.Next(20, 36) + (int)(lifetimeRatio * 30);
                 SoundEngine.PlaySound(Main.rand.NextBool() ? SoundID.ShimmerWeak1 : SoundID.ShimmerWeak2, Projectile.Center);
             }
 

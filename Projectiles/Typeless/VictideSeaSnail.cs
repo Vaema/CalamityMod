@@ -74,6 +74,9 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
+            // Small amount of light
+            Lighting.AddLight(Projectile.Center, 0.5f, 0.25f, 0.5f);
+
             if (StandingStill)
             {
                 PlayerStandStillTimer++;

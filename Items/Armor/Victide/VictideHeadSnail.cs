@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
@@ -34,7 +35,8 @@ namespace CalamityMod.Items.Armor.Victide
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            Color AbilityBriefColor = Color.Lerp(new Color(97, 200, 255), new Color(255, 170, 204), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3());
             player.Calamity().victideSnailSet = true;
             if (player.whoAmI == Main.myPlayer)
             {

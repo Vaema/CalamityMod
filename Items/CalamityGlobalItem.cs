@@ -1530,6 +1530,10 @@ namespace CalamityMod.Items
             if (player.Calamity().reaverExplore)
                 grabRange += 246;
 
+            // Victide utility set provides a lesser boost of 102 (2.625 + 6.375 = 9 tiles)
+            if (player.Calamity().victideSnailSet)
+                grabRange += 102;
+
             // Nebula boosters have greater pickup range while using Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
                 grabRange *= 2;

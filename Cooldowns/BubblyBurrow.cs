@@ -24,8 +24,8 @@ namespace CalamityMod.Cooldowns
         public override string OutlineTexture => "CalamityMod/Cooldowns/BubblyBurrowOutline";
         public override string OverlayTexture => "CalamityMod/Cooldowns/BubblyBurrowOverlay";
         public override Color OutlineColor => new Color(158, 158, 255);
-        public override Color CooldownStartColor => PowerActive ? Color.Lerp(new Color(72, 125, 204), new Color(97, 200, 255), PowerPercent) : new Color(72, 125, 204);
-        public override Color CooldownEndColor => PowerActive ? Color.Lerp(new Color(72, 125, 204), new Color(97, 200, 255), PowerPercent) : new Color(97, 200, 255);
+        public override Color CooldownStartColor => PowerActive ? Color.Lerp(new Color(255, 170, 204), new Color(72, 125, 204), PowerPercent) : new Color(72, 125, 204);
+        public override Color CooldownEndColor => PowerActive ? Color.Lerp(new Color(255, 170, 204), new Color(97, 255, 255), PowerPercent) : new Color(97, 255, 255);
         public override SoundStyle? EndSound => SoundID.Item85;
 
         public override void OnCompleted()

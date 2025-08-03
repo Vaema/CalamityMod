@@ -3,6 +3,7 @@ using CalamityMod.Items;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -17,6 +18,8 @@ namespace CalamityMod.Projectiles.Typeless
         public Player Owner => Main.player[Projectile.owner];
         public ref float ParentProjectile => ref Projectile.ai[2];
         public Projectile Parent => Main.projectile[(int)ParentProjectile];
+
+        public int stuckTimer;
 
         public override void SetDefaults()
         {
@@ -39,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             // Automatic reeling
-            if (Projectile.ai[0] == 0f && Projectile.ai[1] < 0f && Main.rand.NextBool(60))
+            if (Projectile.ai[0] == 0f && Projectile.ai[1] < 0f && Main.rand.NextBool(40))
             {
                 Projectile.ai[0] = 1f;
                 Projectile.localAI[0] = 1f;
@@ -93,17 +96,41 @@ namespace CalamityMod.Projectiles.Typeless
                 // Line snapping behaviour
                 else if (!Owner.accFishingLine && Main.rand.NextBool(7))
                     Projectile.ai[0] = 2f;
-                // Don't give item to player if there aren't item IDs (usually enemies)
+                // Return back items
                 else if (Projectile.localAI[1] > 0f)
                 {
                     Projectile.ai[1] = Projectile.localAI[1];
                     Projectile.localAI[1] = 0f;
                 }
+                // Spawn enemies
+                else if (Projectile.localAI[1] < 0f)
+                {
+                    int spawnType = (int)(-Projectile.localAI[1]);
+                    Point spawnPos = new Point((int)Projectile.position.X, (int)Projectile.position.Y);
+                    if (spawnType == NPCID.BloodNautilus)
+                        spawnPos.Y += 64;
+
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                        NetMessage.SendData(MessageID.FishOutNPC, -1, -1, null, spawnPos.X / 16, spawnPos.Y / 16, spawnType);
+                    else
+                    {
+                        Projectile.ai[0] = 2f;
+                        NPC.NewNPC(new EntitySource_FishedOut(Owner), spawnPos.X, spawnPos.Y, spawnType);
+
+                        if (spawnType == NPCID.TownSlimeRed)
+                            NPC.unlockedSlimeRedSpawn = true;
+                        WorldGen.CheckAchievement_RealEstateAndTownSlimes();
+                    }
+                }
             }
 
             // Anti-stuck auto reelback
             if (Projectile.ai[0] == 0f && Projectile.localAI[1] == 0f && Projectile.velocity.Length() <= 0.2f)
-                Projectile.ai[0] = 1f;
+            {
+                stuckTimer++;
+                if (stuckTimer > 60)
+                    Projectile.ai[0] = 1f;
+            }
         }
 
         public static int GetBaitSlot(Player owner, int baitType)

@@ -270,9 +270,10 @@ VictideHeadSnail: {
 		'''
 	SetBonus:
 		'''
-		Summons a sea snail to fish alongside you
-		It automatically casts and reels as you are standing still and fishing
-		Fishing stats are inherited from its owner
+		Increases pickup range for items
+		[c/{0}:Helper Angler - Summons a sea snail to fish alongside you]
+		[c/A2D6FF:It automatically casts and reels as you are standing still and fishing]
+		[c/A2D6FF:Equipped fishing abilities and stats are inherited from its owner]
 		'''
 }
 
