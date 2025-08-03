@@ -714,7 +714,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Velocity, direction, and position
             bool shouldFireLasers = true;
-            float phase2LifeRatio = 0.5f;
+            float phase2LifeRatio = 0.4f;
             bool deathModeDetach = lifeRatio < phase2LifeRatio && death;
             bool canHit = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
             if (!deathModeDetach)
