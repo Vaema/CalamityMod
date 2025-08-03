@@ -17,6 +17,7 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.DesertProwler;
@@ -220,11 +221,6 @@ namespace CalamityMod.CalPlayer
 
             // Apply stealth damage to rogue.
             Player.GetDamage<RogueDamageClass>() += stealthDamage;
-
-            //Slow the player down after any other speed modifiers might have been applied.
-            //Todo - Move this back to the wulfrum set class whenever statmodifiers are implemented for stats other than damage
-            if (WulfrumHat.PowerModeEngaged(Player, out _))
-                Player.moveSpeed *= 0.8f;
 
             if ((XykVisualsBlue || XykVisualsOrange))
             {
@@ -510,8 +506,8 @@ namespace CalamityMod.CalPlayer
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int hasBuff = Player.buffType[l];
-                            if (Player.buffTime[l] > 360 && hasBuff == BuffID.ShadowDodge)
-                                Player.buffTime[l] = 360;
+                            if (Player.buffTime[l] > 600 && hasBuff == BuffID.ShadowDodge)
+                                Player.buffTime[l] = 600;
                         }
                     }
 
@@ -1293,7 +1289,7 @@ namespace CalamityMod.CalPlayer
                 if (!Player.wet)
                 {
                     if (aeroSet)
-                        Player.maxFallSpeed = 15f;
+                        Player.maxFallSpeed = AerospecBreastplate.SetBonusFallSpeed;
                     if (Player.PortalPhysicsEnabled)
                         Player.maxFallSpeed = 20f;
                 }
@@ -1806,7 +1802,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (dOfTheDeepDefenseBuffTimer > 0)
                 {
-                    int maxDefense = 15;
+                    int maxDefense = 10;
                     int givenDefense = (int)Utils.Remap(dOfTheDeepDefenseBuffTimer, 0, dOfTheDeepDefenseBuffMax * 0.5f, 0, maxDefense);
                     Player.statDefense += givenDefense;
                     dOfTheDeepDefenseBuffTimer--;
@@ -2518,7 +2514,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.isNearFairy())
                 {
                     Player.lifeRegen += 4;
-                    Player.statDefense += 10;
+                    Player.statDefense += 6;
                     Player.moveSpeed += 0.1f;
                 }
             }
@@ -2542,7 +2538,7 @@ namespace CalamityMod.CalPlayer
             if (affliction || afflicted)
             {
                 Player.endurance += 0.07f;
-                Player.statDefense += 13;
+                Player.statDefense += 9;
                 Player.GetDamage<GenericDamageClass>() += 0.1f;
             }
 
@@ -2582,7 +2578,7 @@ namespace CalamityMod.CalPlayer
             // Permafrost's Concoction bonuses/debuffs
             if (permafrostsConcoction)
             {
-                Player.manaCost *= 0.85f;
+                Player.manaCost -= 0.15f;
                 Player.statManaMax2 += 50;
             }
 
@@ -3155,7 +3151,7 @@ namespace CalamityMod.CalPlayer
                         aquaticBoost = aquaticBoostMax;
                 }
 
-                Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 50f);
+                Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 20f);
                 Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
             }
             else
@@ -3349,7 +3345,7 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<GenericDamageClass>() += 0.12f;
                 Player.GetKnockback<SummonDamageClass>() += 1.2f;
                 if (Main.eclipse || !Main.dayTime)
-                    Player.statDefense += Main.eclipse ? 10 : 20;
+                    Player.statDefense += Main.eclipse ? 8 : 16;
             }
 
             if (AbsorberRegen)
@@ -3396,7 +3392,7 @@ namespace CalamityMod.CalPlayer
 
                 if (tortShellPostHit > 0)
                 {
-                    Player.statDefense -= 8;
+                    Player.statDefense -= 6;
                     tortShellPostHit--;
                 }
                 else
@@ -3514,7 +3510,7 @@ namespace CalamityMod.CalPlayer
             if (starBeamRye)
             {
                 Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost *= (1f - StarBeamRye.ManaCostReduction);
+                Player.manaCost -= StarBeamRye.ManaCostReduction;
                 Player.statManaMax2 += StarBeamRye.MaxManaBoost;
             }
 
@@ -3755,7 +3751,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.statLife > (int)(Player.statLifeMax2 * 0.5))
                     Player.GetDamage<GenericDamageClass>() += 0.1f;
                 if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.statDefense += 20;
+                    Player.statDefense += 15;
             }
 
             if (vexation)
@@ -3976,7 +3972,7 @@ namespace CalamityMod.CalPlayer
 
             if (eArtifact)
             {
-                Player.manaCost *= 0.75f;
+                Player.manaCost -= 0.25f;
                 Player.maxMinions++;
             }
 
@@ -4382,7 +4378,7 @@ namespace CalamityMod.CalPlayer
                                 // Also gives acceleration, which is done in PostUpdateRunSpeeds
                                 break;
                             case BuffID.Ichor:
-                                Player.statDefense += 40; // +25 net defense
+                                Player.statDefense += 20; // +10 net defense
                                 break;
                             case BuffID.Bleeding:
                                 Player.bleed = false;
@@ -4400,7 +4396,7 @@ namespace CalamityMod.CalPlayer
                             case BuffID.Weak:
                                 Player.GetDamage<MeleeDamageClass>() += 0.051f; // Cancel melee damage nerf, add 10% all damage
                                 Player.GetDamage<GenericDamageClass>() += 0.1f;
-                                Player.statDefense += 14; // +10 net defense
+                                Player.statDefense += 10; // +6 net defense
                                 Player.moveSpeed += 0.25f; // +15% net move speed
                                 break;
                             case BuffID.Slow:
@@ -4409,7 +4405,7 @@ namespace CalamityMod.CalPlayer
                                 break;
                             case BuffID.Confused:
                                 Player.confused = false;
-                                Player.statDefense += 50;
+                                Player.statDefense += 15;
                                 break;
                             case BuffID.Cursed:
                                 Player.cursed = false;
@@ -4827,7 +4823,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
-                Player.statDefense -= (int)(Player.statDefense * 0.75);
+                Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }
         #endregion
 

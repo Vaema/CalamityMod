@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 30;
+            player.statLifeMax2 += 10;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.alwaysHoneyRegen = true;
             modPlayer.honeyTurboRegen = true;

@@ -155,6 +155,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DevourerSpawn");
         public static readonly SoundStyle AttackSound = new("CalamityMod/Sounds/Custom/DevourerAttack");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/OtherworldlyHit");
         public static readonly SoundStyle DeathAnimationSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeath");
         public static readonly SoundStyle DeathExplosionSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
         public static readonly SoundStyle DeathSegmentSound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak", 4);
@@ -192,10 +193,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             });
         }
 
+        public static int LaserWallDamage = 75; // 300
+        public static int FireballDamage = 60; // 240; Also applies to Legendary Mode Ichor Blob
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 104;
             NPC.height = 104;
@@ -206,7 +210,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1, gold: 50);
             NPC.Opacity = 0f;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -761,7 +765,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
                             int type = ModContent.ProjectileType<DoGFire>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = FireballDamage;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
@@ -783,7 +787,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                                 int numBlobs = 4;
                                 type = ModContent.ProjectileType<IchorBlob>();
-                                damage = 60;
 
                                 for (int i = 0; i < numBlobs; i++)
                                 {
@@ -818,7 +821,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             // Side walls
                             float targetPosY = player.position.Y;
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             int halfTotalDiagonalShots = totalDiagonalShots / 2;
                             Vector2 start = default;
                             Vector2 velocity = default;
@@ -1632,7 +1635,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             Vector2 start = default;
                             Vector2 velocity = default;
                             Vector2 aim = expertMode ? player.Center + player.velocity * 20f : Vector2.Zero;
@@ -2263,19 +2266,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.Distance(player.Center) > 2400f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                 NPC.life = Main.npc[(int)NPC.ai[0]].life;
         }
@@ -2322,7 +2312,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = FireballDamage;
                     float finalVelocity = 10f;
                     int totalSpreads = revenge ? 6 : 3;
                     float mult = revenge ? 1.5f : 3f;
@@ -2746,7 +2736,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 8;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(HitSound with { Pitch = HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {

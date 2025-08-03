@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Magic
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
                             Vector2 laserVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 20f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.25f), 3f, Projectile.owner, SoulColors[0]);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.35f), 3f, Projectile.owner, SoulColors[0]);
 
                             if (ConsumeSoul)
                             {

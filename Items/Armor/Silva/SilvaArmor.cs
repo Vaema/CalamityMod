@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Armor.Silva
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 80;
+            player.statLifeMax2 += 50;
             player.GetDamage<GenericDamageClass>() += 0.11f;
             player.GetCritChance<GenericDamageClass>() += 8;
         }

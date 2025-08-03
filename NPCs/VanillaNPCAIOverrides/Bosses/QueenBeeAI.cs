@@ -15,6 +15,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class QueenBeeAI
     {
+        // Vanilla values
+        public static int StingerDamage = 11; // 44; Also applies to GFB stinger replacements
+
+        // Death exclusive
+        public static int BeenadeDamage = 15; // 90
+        public static int BeenadeBeeDamage = 12; // 72
+
         public static bool BuffedQueenBeeAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -730,7 +737,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 stingerVelocity = new Vector2(stingerTargetX, stingerTargetY);
                         int type = Main.zenithWorld ? (phase3 ? ModContent.ProjectileType<PlagueStingerGoliathV2>() : ProjectileID.FlamingWood) : ProjectileID.QueenBeeStinger;
 
-                        int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation, stingerVelocity, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
+                        int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation, stingerVelocity, type, StingerDamage, 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
                         Main.projectile[projectile].timeLeft = 1200;
                         Main.projectile[projectile].extraUpdates = 1;
 
@@ -739,7 +746,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numExtraStingers = death ? (phase6 ? 4 : 2) : (phase6 ? 2 : 1);
                             for (int i = 0; i < numExtraStingers; i++)
                             {
-                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * MathHelper.Lerp(0.75f, 1f, i / (float)numExtraStingers), type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
+                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * MathHelper.Lerp(0.75f, 1f, i / (float)numExtraStingers), type, StingerDamage, 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
                                 Main.projectile[projectile].timeLeft = 1200;
                                 Main.projectile[projectile].extraUpdates = 1;
                             }
@@ -862,7 +869,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (i % 2f != 0f)
                                     perturbedSpeed *= 0.8f;
 
-                                int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, Main.player[npc.target].position.Y);
+                                int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, StingerDamage, 0f, Main.myPlayer, 0f, Main.player[npc.target].position.Y);
                                 Main.projectile[projectile].timeLeft = 1200;
                                 Main.projectile[projectile].extraUpdates = 1;
 

@@ -615,6 +615,7 @@ namespace CalamityMod.Systems.Collections
                 "Scribbles",
                 "Scrumlet",
                 "Seanツ",
+                "Sevenfold", // previously "Woah"
                 "Shadoku",
                 "SharZz",
                 "Shaun",
@@ -719,7 +720,6 @@ namespace CalamityMod.Systems.Collections
                 "William",
                 "WillyDilly",
                 "WinterTire",
-                "Woah",
                 "Wodernet",
                 "Wolfmaw",
                 "WrathOfOlympus",

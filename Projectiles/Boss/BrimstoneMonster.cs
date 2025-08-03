@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
 
         internal static readonly float CircularHitboxRadius = 170f;
         public static int MinimumDamagePerFrame = 4;
-        public static int MaximumDamagePerFrame = 16;
+        public static int MaximumDamagePerFrame = 14;
         public static float AdrenalineLossPerFrame = 0.04f;
         public static float SpeedToForceMaxDamage = 25f;
 

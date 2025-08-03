@@ -25,6 +25,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         private const int BoltShootGateValue_Death = 60;
         private const float RubyLightTelegraphDuration = 45f;
 
+        public static int JewelBoltDamage = 10; // 40
+
         private const int EmeraldChargePhaseGateValue = 120;
         private const int EmeraldChargeGateValue = 60;
         private const int EmeraldChargeGateValue_Death = 40;

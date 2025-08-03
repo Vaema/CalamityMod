@@ -149,7 +149,6 @@ namespace CalamityMod.Projectiles.Boss
                     Vector2 laserFirePosition = Main.npc[OwnerIndex].Center + beamDirection * distanceBetweenProjectiles;
                     int laserCount = (int)(LaserLength / distanceBetweenProjectiles);
                     int type = ModContent.ProjectileType<THanosSideLaser>();
-                    int damage = Projectile.GetProjectileDamage(Main.npc[OwnerIndex].type);
                     for (int i = 0; i < laserCount; i++)
                     {
                         int totalProjectiles = 2;
@@ -157,7 +156,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int j = 0; j < totalProjectiles; j++)
                         {
                             Vector2 projVelocity = (CalamityWorld.LegendaryMode) ? new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(-12, 12)) : Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, damage, 0f, Main.myPlayer, 0f, -1f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, -1f);
                         }
                         laserFirePosition += beamDirection * distanceBetweenProjectiles;
                     }
@@ -241,7 +240,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 240);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.defense = 22;
             NPC.lifeMax = 300;
             NPC.knockBackResist = 0.6f;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<AriesBanner>();

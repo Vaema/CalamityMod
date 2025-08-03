@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Polterghast
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.width = 90;
             NPC.height = 120;
             NPC.defense = 45;
@@ -185,12 +185,8 @@ namespace CalamityMod.NPCs.Polterghast
             else
                 NPC.rotation = NPC.velocity.ToRotation() + MathHelper.PiOver2;
 
-            int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
-
             if (!chargePhase)
             {
-                NPC.damage = reducedSetDamage;
-
                 // Set this here to avoid despawn issues
                 reachedChargingPoint = false;
 
@@ -306,23 +302,17 @@ namespace CalamityMod.NPCs.Polterghast
 
                     if (NPC.Calamity().newAI[1] == 0f)
                     {
-                        NPC.damage = NPC.defDamage;
-
                         NPC.velocity = Vector2.Normalize(rotationVector) * chargeVelocity;
                         NPC.Calamity().newAI[1] = 1f;
                     }
                     else
                     {
-                        NPC.damage = NPC.defDamage;
-
                         NPC.Calamity().newAI[2] += 1f;
 
                         // Slow down for a few frames
                         float totalChargeTime = chargeDistance * 4f / chargeVelocity;
                         float slowDownTime = chargeVelocity;
                         {
-                            NPC.damage = reducedSetDamage;
-
                             if (NPC.Calamity().newAI[2] >= totalChargeTime - slowDownTime)
                                 NPC.velocity *= 0.9f;
                         }
@@ -347,9 +337,6 @@ namespace CalamityMod.NPCs.Polterghast
                 }
                 else
                 {
-                    // Do not deal damage during movement to avoid cheap bullshit hits
-                    NPC.damage = 0;
-
                     // Random location choice
                     if (NPC.ai[0] == 0f)
                     {
@@ -539,7 +526,6 @@ namespace CalamityMod.NPCs.Polterghast
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

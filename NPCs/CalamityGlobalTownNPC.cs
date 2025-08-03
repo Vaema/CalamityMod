@@ -188,6 +188,7 @@ namespace CalamityMod.NPCs
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
             "Yarrim", // <@!290061123137306624> (borb9834)
+            "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
         };
         private static readonly string[] PrincessNames =
         {
@@ -203,6 +204,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] SantaClausNames =
         {
             "Jank", // <@!339950757472239616> (jankle_)
+            "Aoi Kurashiki", // <@!358411687885537291> (nothinpurrsonal)
         };
         private static readonly string[] SkeletonMerchantNames =
         {
@@ -245,8 +247,9 @@ namespace CalamityMod.NPCs
         private static readonly string[] TravelingMerchantNames =
         {
             "Stan Pines",
-            "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
+            "Postman Hiss", // <@!454638106122125312> (karinthefairy)
         };
         private static readonly string[] TruffleNames =
         {

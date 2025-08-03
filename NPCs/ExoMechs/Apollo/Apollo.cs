@@ -144,11 +144,15 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             }
         }
 
+        public static int FireballDamage = 85; // 340
+        public static int BoltDamage = 75; // 300
+        public static int RocketDamage = 100; // 400
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
             NPC.width = 204;
             NPC.height = 226;
             NPC.defense = 100;
@@ -158,7 +162,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
@@ -989,10 +993,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ApolloFireball>();
-                                    int damage = NPC.GetProjectileDamage(type);
                                     Vector2 plasmaVelocity = Vector2.Normalize(aimedVector) * projectileVelocity;
                                     Vector2 offset = Vector2.Normalize(plasmaVelocity) * 70f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, plasmaVelocity, type, damage, 0f, Main.myPlayer, Main.player[targetIndex].Center.X, Main.player[targetIndex].Center.Y);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, plasmaVelocity, type, FireballDamage, 0f, Main.myPlayer, Main.player[targetIndex].Center.X, Main.player[targetIndex].Center.Y);
                                 }
                             }
                         }
@@ -1053,10 +1056,9 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ModContent.ProjectileType<ApolloRocket>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 rocketVelocity = Vector2.Normalize(aimedVector) * projectileVelocity * 1.2f;
                             Vector2 offset = Vector2.Normalize(rocketVelocity) * 70f;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, rocketVelocity, type, damage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, rocketVelocity, type, RocketDamage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
                         }
                     }
 
@@ -1181,7 +1183,6 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                             int totalProjectiles = death ? 12 : 8;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = ModContent.ProjectileType<AresPlasmaBolt>();
-                            int damage = (int)(NPC.GetProjectileDamage(ModContent.ProjectileType<ApolloFireball>()) * 0.8);
                             float velocity = 0.5f;
                             double angleA = radians * 0.5;
                             double angleB = MathHelper.ToRadians(90f) - angleA;
@@ -1190,7 +1191,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, BoltDamage, 0f, Main.myPlayer);
                             }
                         }
 
@@ -1815,7 +1816,6 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

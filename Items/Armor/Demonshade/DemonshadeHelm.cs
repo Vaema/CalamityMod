@@ -47,8 +47,7 @@ namespace CalamityMod.Items.Armor.Demonshade
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey, (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey(), (1f + MultDamageBoost).Round(), (1D + MultDamageTakenBoost).Round());
             var modPlayer = player.Calamity();
             modPlayer.dsSetBonus = true;
             modPlayer.wearingRogueArmor = true;

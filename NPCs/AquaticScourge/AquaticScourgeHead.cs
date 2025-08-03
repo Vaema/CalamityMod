@@ -54,9 +54,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
+        public static int MistDamage = 25; // 100
+        public static int CloudDamage = 28; // 112; applies to both Sand and Toxic
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 90;
             NPC.height = 90;
@@ -68,7 +71,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 16, 0, 0);
+            NPC.value = Item.buyPrice(gold: 12);
             NPC.behindTiles = true;
             NPC.chaseable = false;
             NPC.noGravity = true;
@@ -145,6 +148,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     // Kiss my motherfucking ass you piece of shit game
                     NPC.timeLeft *= 20;
                     NPC.npcSlots = 16f;
+                    NPC.damage = NPC.defDamage;
                     CalamityGlobalNPC.BossKillTimes.TryGetValue(NPC.type, out int revKillTime);
                     calamityGlobalNPC.KillTime = revKillTime;
                     calamityGlobalNPC.newAI[0] = 1f;
@@ -227,8 +231,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                             float mistVelocity = death ? 10f : 8f;
                             Vector2 projectileVelocity = (NPC.Center + NPC.velocity * 10f - NPC.Center).SafeNormalize(Vector2.UnitY);
                             int type = ModContent.ProjectileType<SulphuricAcidMist>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity * 5f, projectileVelocity * mistVelocity, type, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity * 5f, projectileVelocity * mistVelocity, type, MistDamage, 0f, Main.myPlayer);
                             Main.projectile[proj].tileCollide = false;
                             Main.projectile[proj].timeLeft = getFuckedAI ? 240 : 600;
                         }
@@ -241,7 +244,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ModContent.ProjectileType<ToxicCloud>();
-                            int damage = NPC.GetProjectileDamage(type);
                             int totalProjectiles = (phase4 ? 6 : 9) + (getFuckedAI ? Main.rand.Next(-2, 3) : (int)((calamityGlobalNPC.newAI[3] - spiralGateValue) / toxicCloudBarfDivisor) * (phase4 ? 2 : 3));
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             float cloudVelocity = 1f + enrageScale;
@@ -249,7 +251,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, CloudDamage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -353,7 +355,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                                 totalProjectiles *= 2;
 
                             int type = ModContent.ProjectileType<SandPoisonCloud>();
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
                                 Vector2 velocity = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
@@ -364,7 +365,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                                 if (expertMode)
                                     velocity *= 1f + (maximumVelocityMult * (0.5f - lifeRatio));
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + velocity.SafeNormalize(Vector2.UnitY) * 5f, velocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + velocity.SafeNormalize(Vector2.UnitY) * 5f, velocity, type, CloudDamage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -409,7 +410,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 NPC.alpha = 0;
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 
@@ -570,20 +571,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 }
 
                 NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
-            }
-
-            // Calculate contact damage based on velocity
-            if (!nonHostile)
-            {
-                float minimalContactDamageVelocity = scourgeMaxSpeed * 0.25f;
-                float minimalDamageVelocity = scourgeMaxSpeed * 0.5f;
-                if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-                    NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-                }
             }
         }
 
@@ -756,7 +743,6 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

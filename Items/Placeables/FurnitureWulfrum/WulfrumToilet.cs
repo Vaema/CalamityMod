@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
         {
             CreateRecipe().
                 AddIngredient<WulfrumPlating>(6).
-                AddTile<WulfrumLabstation>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

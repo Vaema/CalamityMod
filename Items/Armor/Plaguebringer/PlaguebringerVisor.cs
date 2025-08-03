@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += 0.15f;
-            player.statLifeMax2 += 20;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

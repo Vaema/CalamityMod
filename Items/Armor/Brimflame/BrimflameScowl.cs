@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Armor.Brimflame
     public class BrimflameScowl : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
-        public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/AngelicAllianceActivation");
+        public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/BrimflameAbility");
 
         // TODO -- what the fuck is this? this is not how you implement a set bonus
         private bool frenzy = false;
@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Armor.Brimflame
             player.GetDamage<MagicDamageClass>() += 0.05f;
             player.GetCritChance<MagicDamageClass>() += 5;
             player.statManaMax2 += 80;
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
             player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.Frostburn] = true;
@@ -77,8 +77,7 @@ namespace CalamityMod.Items.Armor.Brimflame
             modPlayer.brimflameSet = true;
             player.GetDamage<MagicDamageClass>() += 0.15f;
             player.GetCritChance<MagicDamageClass>() += 15;
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey());
         }
 
         public override void AddRecipes()
