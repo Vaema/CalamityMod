@@ -44,6 +44,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            if (death)
+                aggressionLevel = 5;
             if (CalamityWorld.LegendaryMode)
                 aggressionLevel = 6;
 
@@ -184,7 +186,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 targetDistance = Main.player[npc.target].Center - npc.Center;
                     if (targetDistance.Length() > 20f)
                     {
-                        float velocity = death ? 9.5f : 9.25f;
+                        float velocity = 9.25f;
                         switch (aggressionLevel)
                         {
                             case 6:
@@ -264,7 +266,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 targetDistanceVulnerable = Main.player[npc.target].Center - npc.Center;
                     if (targetDistanceVulnerable.Length() > 20f)
                     {
-                        float velocity = death ? 9.5f : 9.25f;
+                        float velocity = 9.25f;
                         switch (aggressionLevel)
                         {
                             case 6:
@@ -739,8 +741,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (calamityGlobalNPC.newAI[1] == 0f)
                         {
                             calamityGlobalNPC.newAI[1] = 420f;
-                            if (death)
-                                calamityGlobalNPC.newAI[1] -= 60f;
 
                             switch (aggressionLevel)
                             {
@@ -907,7 +907,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         Vector2 boltDirection = Utils.Vector2FromElipse(npc.localAI[0].ToRotationVector2(), boltAndDeathrayVector * npc.localAI[1]);
 
-                        float velocity = death ? 6.75f : 6.25f;
+                        float velocity = 6.25f;
                         switch (aggressionLevel)
                         {
                             case 6:
@@ -1056,7 +1056,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         handMovementDirection.Normalize();
 
-                        float velocity = death ? 7.75f : 7.5f;
+                        float velocity = 7.5f;
                         switch (aggressionLevel)
                         {
                             case 6:
@@ -1139,7 +1139,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handAttackRotation = Utils.Vector2FromElipse(npc.localAI[0].ToRotationVector2(), handBehaviorVector * npc.localAI[1]);
                             Vector2 handAttackMovement = npc.Center + Vector2.Normalize(handAttackRotation) * handBehaviorVector.Length() * 0.4f + handAttackVector;
 
-                            float velocity = death ? 3.5f : 3f;
+                            float velocity = 3f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1191,7 +1191,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     sphereHandDirection += new Vector2(handFaceDirection * 100f, -50f);
                     Vector2 sphereHandDirectionMaxBound = new Vector2(400f * handFaceDirection, -60f);
 
-                    float velocityMultiplier = death ? 0.88f : 0.885f;
+                    float velocityMultiplier = 0.885f;
                     switch (aggressionLevel)
                     {
                         case 6:
@@ -1223,7 +1223,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 sphereHandTravelDist = sphereHandTravelVelocity;
                             sphereHandTravelDist.Normalize();
 
-                            float velocity = death ? 11f : 10f;
+                            float velocity = 10f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1298,7 +1298,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handSmoothMoveNormalize = handSmoothMovement;
                             handSmoothMoveNormalize.Normalize();
 
-                            float velocity = death ? 26.5f : 24f;
+                            float velocity = 24f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1351,7 +1351,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (float.IsNaN(sphereVelocity.X) || float.IsNaN(sphereVelocity.Y))
                                 sphereVelocity = Vector2.UnitY;
 
-                            float velocity = death ? 2.2f : 2f;
+                            float velocity = 2f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1393,7 +1393,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handPauseDirection = handPauseSmoothSpeed;
                             handPauseDirection.Normalize();
 
-                            float velocity = death ? 19.75f : 17.5f;
+                            float velocity = 17.5f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1430,7 +1430,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handReturnDirection = handReturnSmoothSpeed;
                             handReturnDirection.Normalize();
 
-                            float velocity = death ? 11f : 10f;
+                            float velocity = 10f;
                             switch (aggressionLevel)
                             {
                                 case 6:
@@ -1507,7 +1507,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         Vector2 boltShootDirection = Utils.Vector2FromElipse(npc.localAI[0].ToRotationVector2(), handBehaviorVector * npc.localAI[1]);
 
-                        float velocity = death ? 6.75f : 6.25f;
+                        float velocity = 6.25f;
                         switch (aggressionLevel)
                         {
                             case 6:
@@ -1700,7 +1700,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     npc.localAI[2] = MathHelper.Lerp(npc.localAI[2], 1f, 0.2f);
 
-                    float velocity = death ? 38f : 36f;
+                    float velocity = 36f;
                     Vector2 freeEyeCenter = npc.Center;
                     Vector2 freeEyeTargetCenter = Main.player[npc.target].Center;
                     Vector2 freeEyeTargetDistance = freeEyeTargetCenter - freeEyeCenter;
@@ -1772,7 +1772,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((secondAttackTimer == secondAttackPicker - 14f || secondAttackTimer == secondAttackPicker - 7f || secondAttackTimer == secondAttackPicker) && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         Vector2 freeEyeBoltDirection = Utils.Vector2FromElipse(npc.localAI[0].ToRotationVector2(), thirtyVector * npc.localAI[1]);
-                        float velocity = death ? 9f : 8f;
+                        float velocity = 8f;
                         Vector2 freeEyeBoltVel = Vector2.Normalize(v8) * velocity;
                         int type = ProjectileID.PhantasmalBolt;
                         int damage = npc.GetProjectileDamage(type);
@@ -1852,7 +1852,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (trueEyeSphereDirection.HasNaNs())
                                 trueEyeSphereDirection = Vector2.UnitY * -1f;
 
-                            float spreadVelocity = death ? 4.5f : 4f;
+                            float spreadVelocity = 4f;
                             trueEyeSphereDirection *= 4f;
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + freeEyeRotation.X, npc.Center.Y + freeEyeRotation.Y, trueEyeSphereDirection.X, trueEyeSphereDirection.Y, type, 0, 0f, Main.myPlayer, 30f, npc.whoAmI);
                             Main.projectile[proj].timeLeft = 1200;
@@ -1909,7 +1909,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (secondAttackTimer == 105f)
                                 npc.netUpdate = true;
 
-                            float velocity = death ? 13.25f : 12f;
+                            float velocity = 12f;
                             Vector2 trueEyeSphereVelocity = (npc.ai[2] - MathHelper.PiOver2).ToRotationVector2() * velocity;
                             npc.velocity = trueEyeSphereVelocity * 2f;
 
@@ -1993,7 +1993,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if ((secondAttackTimer - 15f - 30f) % 10f == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 trueEyeEyeDirection = npc.Center + Vector2.Normalize(trueEyeDirection) * thirtyVector.Length() * 0.4f;
-                            float velocity = death ? 6f : 5f;
+                            float velocity = 5f;
                             Vector2 trueEyeEyeSpeed = Vector2.Normalize(trueEyeDirection) * velocity;
                             float ai3 = (MathHelper.TwoPi * (float)Main.rand.NextDouble() - MathHelper.Pi) / 30f + 0.0174532924f * npc.ai[2];
                             int type = ProjectileID.PhantasmalEye;
