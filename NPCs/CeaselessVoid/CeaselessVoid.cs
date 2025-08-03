@@ -815,12 +815,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.soundDelay == 0 && NPC.life >= NPC.lifeMax * 0.05f)
             {
                 NPC.soundDelay = 8;
-                float pitchVar = 0;
-                if (Main.zenithWorld)
-                {
-                    pitchVar = Main.rand.Next(-60, 41) * 0.01f;
-                }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
+                float pitchVar = Main.zenithWorld ? 0.4f : 0;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { PitchVariance = pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)

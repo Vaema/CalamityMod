@@ -19,13 +19,9 @@ namespace CalamityMod.Sounds
         public static readonly SoundStyle LargeWeaponFireSound = new("CalamityMod/Sounds/Item/LargeWeaponFire");
         public static readonly SoundStyle LaserCannonSound = new("CalamityMod/Sounds/Item/LaserCannon") { Volume = 0.85f };
         public static readonly SoundStyle LightningSound = new("CalamityMod/Sounds/Custom/LightningStrike") { Volume = 1.6f }; // This is just the regular SoundID.Thunder sound, except its only the first variant
-        public static readonly SoundStyle LightningTelegraph = new("CalamityMod/Sounds/Custom/LightningTelegraph") { Volume = 0.7f }; // This is just the regular SoundID.Thunder sound, except its only the fifth variant
         public static readonly SoundStyle LouderPhantomPhoenix = new("CalamityMod/Sounds/Item/LouderPhantomPhoenix", 3);
-        public static readonly SoundStyle LouderSwingWoosh = new("CalamityMod/Sounds/Custom/LoudSwingWoosh");
 
         public static readonly SoundStyle MeatySlashSound = new("CalamityMod/Sounds/Custom/MeatySlash");
-
-        public static readonly SoundStyle OtherwordlyHitSound = new("CalamityMod/Sounds/NPCHit/OtherworldlyHit");
 
         public static readonly SoundStyle PlagueBoomSound = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom", 4);
         public static readonly SoundStyle PlasmaBlastSound = new("CalamityMod/Sounds/Item/PlasmaBlast");
