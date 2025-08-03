@@ -24,7 +24,6 @@ namespace CalamityMod.Sounds
         public static readonly SoundStyle MeatySlashSound = new("CalamityMod/Sounds/Custom/MeatySlash");
 
         public static readonly SoundStyle PlagueBoomSound = new("CalamityMod/Sounds/Custom/PlagueSounds/PlagueBoom", 4);
-        public static readonly SoundStyle PlasmaBlastSound = new("CalamityMod/Sounds/Item/PlasmaBlast");
         public static readonly SoundStyle PlasmaBoltSound = new("CalamityMod/Sounds/Item/PlasmaBolt") { Volume = 0.8f };
         public static readonly SoundStyle PlatingMine = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
 
