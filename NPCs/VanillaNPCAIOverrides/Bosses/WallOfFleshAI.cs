@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[leechSpawn].velocity.X = npc.direction * leechVelocity;
                     }
 
-                    if (death)
+                    if (phase2 || death)
                     {
                         // Get target vector
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * npc.velocity.Length();
@@ -123,25 +123,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, ProjectileID.DemonSickle, damage, 0f, Main.myPlayer, 0f, projectileVelocity.Length() * 3f);
                         Main.projectile[proj].timeLeft = 600;
                         Main.projectile[proj].tileCollide = false;
-
-                        if (lifeRatio < 0.5f && death)
-                        {
-                            float fireballSpeed = (npc.velocity.Length() + 3f) * 2f; 
-
-                            Vector2 predictiveFireballVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center + Main.player[npc.target].velocity * 60f, -Vector2.UnitY) * fireballSpeed;
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int type = ProjectileID.Fireball;
-                                int fireballDamage = npc.GetProjectileDamage(type); 
-
-                                Vector2 fireballSpawnPosition = npc.Center + predictiveFireballVelocity.SafeNormalize(Vector2.UnitY) * 50f;
-
-                                int newProj = Projectile.NewProjectile(npc.GetSource_FromAI(), fireballSpawnPosition, predictiveFireballVelocity, type, fireballDamage, 0f, Main.myPlayer);
-                                Main.projectile[newProj].timeLeft = 140;
-                                Main.projectile[newProj].scale *= 1.25f;
-                            }
-                        }
                     }
                 }
             }
