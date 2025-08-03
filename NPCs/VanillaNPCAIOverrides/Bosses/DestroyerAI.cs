@@ -203,7 +203,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float turnSpeed = death ? 0.18f : 0.15f;
 
             // Max velocity
-            float segmentVelocity = flyAtTarget ? (death ? 18f : 15f) : (death ? 26f : 20f);
+            float segmentVelocity = flyAtTarget ? 15f : 20f;
 
             // Increase velocity based on distance
             float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
