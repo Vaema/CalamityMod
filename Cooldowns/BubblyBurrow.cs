@@ -20,7 +20,7 @@ namespace CalamityMod.Cooldowns
         public static new string ID => "BubblyBurrow";
         public override bool ShouldDisplay => true;
         public override LocalizedText DisplayName => CalamityUtils.GetText("UI.Cooldowns.BubblyBurrow" + (PowerActive ? "Active" : "Cooldown"));
-        public override string Texture => "CalamityMod/Cooldowns/BubblyBurrow";
+        public override string Texture => PowerActive ? "CalamityMod/Cooldowns/BubblyBurrow" : "CalamityMod/Cooldowns/BubblyBurrowCooldown";
         public override string OutlineTexture => "CalamityMod/Cooldowns/BubblyBurrowOutline";
         public override string OverlayTexture => "CalamityMod/Cooldowns/BubblyBurrowOverlay";
         public override Color OutlineColor => new Color(158, 158, 255);

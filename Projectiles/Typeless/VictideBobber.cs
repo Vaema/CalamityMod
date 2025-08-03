@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
 using CalamityMod.Items;
+using CalamityMod.Items.SummonItems;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -37,17 +39,91 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             // Automatic reeling
-            if (Projectile.ai[1] < 0f)
+            if (Projectile.ai[0] == 0f && Projectile.ai[1] < 0f && Main.rand.NextBool(60))
             {
                 Projectile.ai[0] = 1f;
-                Projectile.ai[1] = Projectile.localAI[1];
                 Projectile.localAI[0] = 1f;
-                Projectile.localAI[1] = 0f;
+
+                // Consume bait as needed
+                int baitType = Owner.GetFishingConditions().BaitItemType;
+                int baitSlot = GetBaitSlot(Owner, baitType);
+                if (baitSlot != -1)
+                {
+                    Item currentBait = Owner.inventory[baitSlot];
+                    bool consume = false;
+
+                    if (baitType == ItemID.TruffleWorm)
+                        consume = true;
+                    else if (baitType == ItemID.GoldWorm)
+                        consume = Main.rand.NextBool(20);
+                    else
+                    {
+                        float chanceMult = MathF.Max(1f, 1f + currentBait.bait / 6f);
+                        if (Owner.accTackleBox)
+                            chanceMult += 1f;
+                        if (Main.rand.NextFloat() * chanceMult < 1f)
+                            consume = true;
+
+                        // Junk (or Quest fish) default to no bait consumption
+                        if (Projectile.localAI[1] > 0f)
+                        {
+                            Item dummyCatch = new Item();
+                            dummyCatch.SetDefaults((int)Projectile.localAI[1]);
+                            if (dummyCatch.rare < 0)
+                                consume = false;
+                        }
+                    }
+                    if (CombinedHooks.CanConsumeBait(Owner, currentBait).GetValueOrDefault(consume))
+                    {
+                        if (currentBait.type == ItemID.LadyBug || currentBait.type == ItemID.GoldLadyBug)
+                            NPC.LadyBugKilled(Owner.Center, currentBait.type == ItemID.GoldLadyBug);
+
+                        currentBait.stack--;
+                        if (currentBait.stack <= 0)
+                            currentBait.SetDefaults();
+                    }
+                }
+
+                // Summon Duke Fishron as this code otherwise only runs on player rod usage
+                if (baitType == ItemID.TruffleWorm)
+                {
+                    Projectile.ai[0] = 2f;
+                    CalamityUtils.SpawnBossUsingItem(Owner, NPCID.DukeFishron);
+                }
+                // Line snapping behaviour
+                else if (!Owner.accFishingLine && Main.rand.NextBool(7))
+                    Projectile.ai[0] = 2f;
+                // Don't give item to player if there aren't item IDs (usually enemies)
+                else if (Projectile.localAI[1] > 0f)
+                {
+                    Projectile.ai[1] = Projectile.localAI[1];
+                    Projectile.localAI[1] = 0f;
+                }
             }
 
             // Anti-stuck auto reelback
             if (Projectile.ai[0] == 0f && Projectile.localAI[1] == 0f && Projectile.velocity.Length() <= 0.2f)
                 Projectile.ai[0] = 1f;
+        }
+
+        public static int GetBaitSlot(Player owner, int baitType)
+        {
+            // Ignore Bloodworm as the Old Duke summon method already manually consumes it
+            if (baitType == ModContent.ItemType<BloodwormItem>())
+                return -1;
+
+            // Check ammo slots first
+            for (int i = 54; i < Main.InventorySlotsTotal; i++)
+            {
+                if (owner.inventory[i].type == baitType)
+                    return i;
+            }
+            for (int j = 0; j < 54; j++)
+            {
+                if (owner.inventory[j].type == baitType)
+                    return j;
+            }
+            return -1;
         }
 
         // Anchor the bobber to the parent projectile, since the default is bound to the player
