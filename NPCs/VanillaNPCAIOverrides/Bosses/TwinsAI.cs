@@ -460,7 +460,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if (npc.ai[1] == 1f)
                     {
-                        float maxVelocity = death ? 10.85f + 3f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 9.5f;
+                        float maxVelocity = death ? 10.85f + 1.75f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 9.5f;
                         float acceleration = death ? 0.295f + 0.075f * ((phase2LifeRatio - lifeRatio) / phase2LifeRatio) : 0.25f;
 
                         if (CalamityWorld.LegendaryMode)
