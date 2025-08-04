@@ -183,8 +183,8 @@ CinnamonRoll: {
 	DisplayName: Cinnamon Roll
 	Tooltip:
 		'''
-		{0}% increased maximum Mana
-		{1}% increased mana consumption
+		Greatly increased dash speed
+		Greatly reduced dash distance
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -235,6 +235,16 @@ GrapeBeer: {
 		Bullets, Arrows, Darts, and Rockets gain homing
 		If many are fired at the same time, this only applies to five of them
 		{0}% reduced critical strike damage
+		{$Common.AlcoholWarning}
+		'''
+}
+
+Manhattan: {
+	DisplayName: Manhattan
+	Tooltip:
+		'''
+		{0}% increased Cold debuff damage
+		{1}% decreased Water debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -314,8 +324,8 @@ Screwdriver: {
 	DisplayName: Screwdriver
 	Tooltip:
 		'''
-		{0}% increased Cold debuff damage
-		{1}% decreased Water debuff damage
+		Greatly increased tile and wall placement range and speed
+		Greatly reduceed damage dealt
 		{$Common.AlcoholWarning}
 		'''
 }

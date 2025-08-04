@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Alcohol
 {
-    public class ScrewdriverBuff : ModBuff
+    public class ManhattanBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -17,11 +17,8 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().screwdriver = true;
-            player.blockRange += 5;
-            player.tileSpeed += 1;
-            player.wallSpeed += 1;
-            player.GetDamage(DamageClass.Generic) *= 0.75f;
+            player.Calamity().ColdDebuffMultiplier += Manhattan.DebuffBoost;
+            player.Calamity().WaterDebuffMultiplier -= Manhattan.DebuffLoss;
         }
     }
 }

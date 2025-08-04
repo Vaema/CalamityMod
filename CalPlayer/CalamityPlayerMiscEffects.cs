@@ -475,6 +475,15 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+
+            if (cinnamonRoll)
+            {
+                if (dashStart)
+                    Player.velocity.X *= 3;
+                else if  (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.8f;
+            }
+
             if (Player.dashDelay == -1)
                 IsFirstDashFrame = false;
             else
@@ -3551,12 +3560,6 @@ namespace CalamityMod.CalPlayer
             {
                 Player.gravity *= CaribbeanRum.GravityMultiplier;
                 Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
-            }
-
-            if (cinnamonRoll)
-            {
-                Player.manaRegenDelayBonus += CinnamonRoll.ManaRegenDelayBonus;
-                Player.manaRegenBonus += CinnamonRoll.ManaRegenBonus;
             }
 
             if (starBeamRye)
