@@ -49,10 +49,9 @@ BrimflameCowl: {
 	SetBonus:
 		'''
 		{$CommonItemTooltip.PercentIncreasedMagicDamageCritChance}
-		{1} to trigger a brimflame frenzy effect
-		While under this effect, you get an additional {2}% increase to magic damage
-		However, this inflicts rapid life loss and disables mana regeneration and mana potions
-		This can be toggled off, however, brimflame frenzy has a {3} second cooldown
+		[c/{1}:Brimflame Frenzy - {2} for {3} {^3:second;seconds} of {$CommonItemTooltip.PercentIncreasedMagicDamage@4}]
+		[c/FF9173:However, this inflicts rapid life loss and disables mana regeneration and mana potions]
+		[c/FF9173:This effect can be toggled off and has a cooldown of {5} {^5:second;seconds}]
 		'''
 }
 

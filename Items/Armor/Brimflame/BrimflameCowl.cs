@@ -1,7 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -60,7 +62,8 @@ namespace CalamityMod.Items.Armor.Brimflame
             modPlayer.brimflameSet = true;
             player.GetDamage<MagicDamageClass>() += SetBonusMagicDamageBoost;
             player.GetCritChance<MagicDamageClass>() += SetBonusMagicCritBoost;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMagicDamageBoost.ToPercent(), CalamityUtils.GetArmorSetBonusKey(), FrenzyMagicDamageBoost.ToPercent(), FrenzyCooldown.FramesToSeconds());
+            Color AbilityBriefColor = Color.Lerp(new Color(250, 202, 140), new Color(227, 79, 79), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMagicDamageBoost.ToPercent(), AbilityBriefColor.Hex3(), CalamityUtils.GetArmorSetBonusKey(), FrenzyDuration.FramesToSeconds(), FrenzyMagicDamageBoost.ToPercent(), FrenzyCooldown.FramesToSeconds());
         }
 
         public override void AddRecipes()
