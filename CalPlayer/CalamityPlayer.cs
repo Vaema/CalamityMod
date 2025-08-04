@@ -3781,18 +3781,11 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID) && !Player.tongued && Player.dashDelay == 0)
+            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
             {
+                // Explosion and dash are handled in the VictideBarrier file
                 if (Player.whoAmI == Main.myPlayer)
-                {
                     Player.AddCooldown(WardingWave.ID, VictideHeadBarrier.BarrierCooldown);
-
-                    DeferredDashID = VictideBarrierDash.ID;
-                    Player.dash = 0;
-                    Player.pulley = false;
-                    Player.mount?.Dismount(Player);
-                    Player.RemoveAllGrapplingHooks();
-                }
             }
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {

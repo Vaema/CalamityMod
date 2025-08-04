@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Victide
         public static int BarrierCooldown = CalamityUtils.SecondsToFrames(8);
         public static int BarrierDefenseBoost = 10;
         public static int BarrierDefenseDamageRecovery = 2;
-        public static int BarrierExplosionDamage = 100;
+        public static int BarrierDamage = 50;
         public static float BarrierExplosionKB = 8f;
 
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), RunAccelerationMult.Round());
@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Armor.Victide
                 {
                     // Damage will be set once explosion goes off
                     var source = player.GetSource_ItemUse(Item);
-                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VictideBarrier>(), 0, BarrierExplosionKB, player.whoAmI);
+                    Projectile.NewProjectile(source, player.Center, Vector2.Zero, ModContent.ProjectileType<VictideBarrier>(), 0, 0f, player.whoAmI);
                 }
             }
         }

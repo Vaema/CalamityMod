@@ -1,6 +1,7 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
@@ -152,6 +153,8 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(white, ItemID.Coral, 3, 10, 0.2f);
             AddScavengerItem(white, ItemID.Starfish, 3, 10, 0.2f);
             AddScavengerItem(white, ItemID.Seashell, 3, 10, 0.2f);
+            AddScavengerItem(white, ModContent.ItemType<VictideCoralTurban>(), 1, 0.05f);
+            AddScavengerItem(white, ModContent.ItemType<VictideShellmet>(), 1, 0.05f);
             // Critters. Golds, Radiants, Pearlpods and any Basalt Gully/Timeless Shore critters are to be excluded
             AddScavengerItem(white, ModContent.ItemType<PrismaticGuppyPinkItem>(), 1, 0.02f);
             AddScavengerItem(white, ModContent.ItemType<PrismaticGuppyGreenItem>(), 1, 0.02f);
