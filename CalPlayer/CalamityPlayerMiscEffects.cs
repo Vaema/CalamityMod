@@ -290,12 +290,16 @@ namespace CalamityMod.CalPlayer
             {
                 if (dashStart)
                 {
-                    Player.velocity.X *= 3.5f;
+                    Player.velocity.X *= 2f;
                     lastDashWasTabi = true;
                 }
                 if (Player.dashDelay == -1)
                 {
-                    Player.velocity.X *= 0.9f;
+                    Player.velocity.X *= 0.95f;
+                    if (Player.timeSinceLastDashStarted > 12)
+                    {
+                        Player.velocity.X *= 0.75f;
+                    }
                 }
             }
             if ((devilsDevastationKillMode || exaltedKillMode) && !Player.mount.Active)
@@ -2133,13 +2137,6 @@ namespace CalamityMod.CalPlayer
                 vortexBoosterStealthDelay--;
                 if (vortexBoosterStealthDelay == 1 && Player.setVortex)
                     Player.vortexStealthActive = true;
-            }
-            if (statisPenaltyTimer > 0)
-                statisPenaltyTimer--;
-            if (statisPenaltyTimer == 0 && statisAnticheese > 0)
-            {
-                statisAnticheese--;
-                statisPenaltyTimer = statisTimerMax;
             }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
