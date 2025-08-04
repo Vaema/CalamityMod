@@ -2096,7 +2096,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     // Play a sound and add some screenshake with it if you're close enough too.
                     float shakeStrength = Phase2Started ? 14f : 8f;
                     CalamityUtils.AddScreenshakeAt(jawChompPosition, shakeStrength, 100f);
-                    SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = -0.45f }, jawChompPosition);
+                    SoundEngine.PlaySound(HitSound with { Pitch = -0.45f }, jawChompPosition);
                     ShouldSpawnChompVFX = false;
                     NPC.netUpdate = true;
                 }
