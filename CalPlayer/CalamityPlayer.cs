@@ -106,10 +106,6 @@ namespace CalamityMod.CalPlayer
         public static int chaosStateDuration = 900;
         /// <summary> Constant variable used for how long Chaos State is inflicted by Normality Relocator while a boss is alive. </summary>
         public static int chaosStateDuration_NR = 1200;
-        /// <summary> Used by Sky Stabber and Gods' Paranoia to delete spiky balls when using right-click. </summary>
-        public bool killSpikyBalls = false;
-        public float KameiTrailXScale = 0.1f;
-        public int KameiBladeUseDelay = 0;
         /// <summary> Stores the positions of the player within the previous 4 frames. Used for drawing trail effects. </summary>
         public Vector2[] OldPositions = new Vector2[4];
         public double contactDamageReduction = 0D;
@@ -304,9 +300,9 @@ namespace CalamityMod.CalPlayer
         public bool despoilerNerf = false;
         /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
-        /// <summary> Variable used to track the fuel of Pristine Fury right click </summary>
-        public int furyFuelMax = 1800;
+        /// <summary> Variables used to track the fuel of Pristine Fury right click </summary>
         public int furyFuel = 1800;
+        public const int FuryFuelMax = 1800;
         public float furyRefuelTimer = 0;
         /// <summary> Variable used to track if Auger can do a big slash </summary>
         public bool buffedAuger = false;
@@ -342,10 +338,10 @@ namespace CalamityMod.CalPlayer
         public int dragonRageHits = 0;
         /// <summary> Cooldown variable for Dragon Rage's fireball spawning to prevent spamming projectiles when hitting multiple enemies simultaneously. </summary>
         public int dragonRageCooldown = 0;
-        public float aquaticBoostMax = 10000f;
+        public const float AquaticBoostMax = 10000f;
         /// <summary>
         /// Counter variable which controls Aquatic Emblem's stat boosts while underwater.<br/>
-        /// This counter starts at <see cref="aquaticBoostMax"/>, and is decremented by 2 for every frame the player remains underwater, reaching maximum boosts when it hits 0.
+        /// This counter starts at <see cref="AquaticBoostMax"/>, and is decremented by 2 for every frame the player remains underwater, reaching maximum boosts when it hits 0.
         /// </summary>
         public float aquaticBoost = 0f;
         public int galileoCooldown = 0;
@@ -564,7 +560,6 @@ namespace CalamityMod.CalPlayer
             }
         }
         public bool adrenalineModeActive = false;
-        public bool AdrenalineTrail = false;
         /// <summary> The player's current Adrenaline level. Expressed as a percentage of maximum Adrenaline. </summary>
         public float adrenaline = 0f;
         public float adrenalineMax = 100f; // 0 to 100% by default
@@ -771,8 +766,6 @@ namespace CalamityMod.CalPlayer
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
         public bool ascendantTrail = false;
-        public bool frozenWingsCold = false;
-        public bool flameWingsHeat = false;
         /// <summary> Used to toggle dust spawned while swinging, through accessory visibility. </summary>
         public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
@@ -787,10 +780,6 @@ namespace CalamityMod.CalPlayer
         public bool eTalisman = false;
         public bool lastDashWasTabi = false;
         public bool statisNinjaBelt = false;
-        /// <summary> Used to keep track of how many dashes in the same direction you make to prevent dashing away from bosses forever at max efficency. </summary>
-        public int statisPenaltyTimer = 0;
-        public int statisAnticheese = 0;
-        public int statisTimerMax => (int)(Utils.Remap(statisAnticheese, 1, 6, 120, 50, true));
         public bool voidSashVisuals = true;
         public bool statisVoidSash = false;
         public bool nucleogenesis = false;
@@ -881,7 +870,6 @@ namespace CalamityMod.CalPlayer
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
         public bool bloodPact = false;
-        public bool bloodPactBoost = false;
         public bool bloodflareCore = false;
         public int bloodflareCoreRemainingHealOverTime = 0;
 
@@ -933,15 +921,14 @@ namespace CalamityMod.CalPlayer
         public bool spiritOrigin = false;
         public bool spiritOriginVanity = false;
         public int spiritOriginCritBoost = 0;
-/// <summary>
-/// The amount of bonus crit damage the player has.
-/// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
-/// </summary>
+        /// <summary>
+        /// The amount of bonus crit damage the player has.
+        /// At 0f, the player has regular crit damage. At 1f, the player has +100% crit damage.
+        /// </summary>
         public float critDamage = 0;
         public bool darkSunRing = false;
         public bool crawCarapace = false;
         public bool baroclaw = false;
-        public bool HasIncreasedDashFirstFrame = false;
         public bool IsFirstDashFrame = true;
         public int fallingBootVelCheckTimer = 0;
         public bool voidOfCalamity = false;
@@ -1188,8 +1175,8 @@ namespace CalamityMod.CalPlayer
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
         /// <summary> Constant variable representing the duration of Silva armor's revive, in frames. </summary>
-        public const int silvaReviveDuration = 300;
-        public int silvaCountdown = silvaReviveDuration;
+        public const int SilvaReviveDuration = 300;
+        public int silvaCountdown = SilvaReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
         public bool omegaBlueSet = false;
@@ -2221,8 +2208,6 @@ namespace CalamityMod.CalPlayer
             cryogenSoul = false;
             ascendantInsignia = false;
             ascendantTrail = false;
-            frozenWingsCold = false;
-            flameWingsHeat = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
@@ -2540,8 +2525,6 @@ namespace CalamityMod.CalPlayer
             bloodfinBoost = false;
             divineBless = false;
 
-            killSpikyBalls = false;
-
             vodka = false;
             redWine = false;
             grapeBeer = false;
@@ -2730,7 +2713,6 @@ namespace CalamityMod.CalPlayer
 
             rageModeActive = false;
             adrenalineModeActive = false;
-            AdrenalineTrail = false;
             RageDuration = BalancingConstants.DefaultRageDuration;
             RageDamageBoost = BalancingConstants.DefaultRageDamageBoost;
 
@@ -2891,11 +2873,9 @@ namespace CalamityMod.CalPlayer
             jetPackDirection = 0;
             andromedaCripple = 0;
             theBeeCooldown = 0;
-            killSpikyBalls = false;
             scuttlerCooldown = 0;
             rogueCrownCooldown = 0;
             wingProjectileCooldown = 0;
-            statisPenaltyTimer = -1;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
             ladHearts = 0;
@@ -3091,7 +3071,7 @@ namespace CalamityMod.CalPlayer
             silvaMage = false;
             silvaSummon = false;
             hasSilvaEffect = false;
-            silvaCountdown = silvaReviveDuration;
+            silvaCountdown = SilvaReviveDuration;
             auricSet = false;
             GemTechSet = false;
             CobaltSet = false;
@@ -3208,8 +3188,6 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 
-            KameiBladeUseDelay = 0;
-            AdrenalineTrail = false;
             ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;

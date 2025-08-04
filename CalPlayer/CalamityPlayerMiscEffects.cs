@@ -202,12 +202,12 @@ namespace CalamityMod.CalPlayer
                 rage = 0f;
             }
 
-            if (furyFuel < furyFuelMax && furyRefuelTimer >= 0)
+            if (furyFuel < FuryFuelMax && furyRefuelTimer >= 0)
             {
                 furyFuel += (int)furyRefuelTimer;
                 furyRefuelTimer = MathHelper.Lerp(furyRefuelTimer, 25, 0.01f);
-                if (furyFuel > furyFuelMax)
-                    furyFuel = furyFuelMax;
+                if (furyFuel > FuryFuelMax)
+                    furyFuel = FuryFuelMax;
             }
             else if (furyRefuelTimer < 0)
                 furyRefuelTimer++;
@@ -2029,8 +2029,6 @@ namespace CalamityMod.CalPlayer
                 phantomicHeartRegen--;
             if (phantomicBulwarkCooldown > 0)
                 phantomicBulwarkCooldown--;
-            if (KameiBladeUseDelay > 0)
-                KameiBladeUseDelay--;
             if (galileoCooldown > 0)
                 galileoCooldown--;
             if (gladiatorTimer > 0)
@@ -3147,17 +3145,17 @@ namespace CalamityMod.CalPlayer
                 else
                 {
                     aquaticBoost += 2f;
-                    if (aquaticBoost > aquaticBoostMax)
-                        aquaticBoost = aquaticBoostMax;
+                    if (aquaticBoost > AquaticBoostMax)
+                        aquaticBoost = AquaticBoostMax;
                     if (Player.mount.Active)
-                        aquaticBoost = aquaticBoostMax;
+                        aquaticBoost = AquaticBoostMax;
                 }
 
                 Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 20f);
                 Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
             }
             else
-                aquaticBoost = aquaticBoostMax;
+                aquaticBoost = AquaticBoostMax;
 
             if (Player.ActiveItem().type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
             {

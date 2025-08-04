@@ -294,10 +294,10 @@ namespace CalamityMod.CalPlayer
 
             if (silvaSet && silvaCountdown > 0)
             {
-                if (silvaCountdown == silvaReviveDuration && !hasSilvaEffect)
+                if (silvaCountdown == SilvaReviveDuration && !hasSilvaEffect)
                 {
                     SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), silvaReviveDuration);
+                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), SilvaReviveDuration);
                 }
 
                 hasSilvaEffect = true;
