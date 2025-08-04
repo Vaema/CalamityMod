@@ -24,6 +24,8 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.corrosiveSpine = true;
             player.moveSpeed += 0.05f;
+            modPlayer.WaterDebuffMultiplier += 0.25f;
+            modPlayer.SicknessDebuffMultiplier += 0.25f;
         }
     }
 }

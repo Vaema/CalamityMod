@@ -176,6 +176,13 @@ namespace CalamityMod.CalPlayer
         public float momentumCapacitorBoost = 0f;
 
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+
+        public StatModifier TypelessDebuffMultiplier = new();
+        public StatModifier HeatDebuffMultiplier = new();
+        public StatModifier ColdDebuffMultiplier = new();
+        public StatModifier SicknessDebuffMultiplier = new();
+        public StatModifier WaterDebuffMultiplier = new();
+        public StatModifier ElectricDebuffMultiplier = new();
         #endregion
 
         #region Speedrun Timer
@@ -1239,25 +1246,25 @@ namespace CalamityMod.CalPlayer
         public bool alcoholPoisoning = false;
         public bool shadowflame = false;
         public bool daybroken = false;
-        public bool wDeath = false;
+        public bool whisperingDeath = false;
         public bool dragonFire = false;
         public bool vermillionFlux = false;
         public bool auricRebuke = false;
         public bool staticDischarge = false;
         public bool miracleBlight = false;
-        public bool aCrunch = false;
+        public bool armorCrunch = false;
         public bool crumble = false;
         public bool irradiated = false;
-        public bool bFlames = false;
+        public bool brimstoneFlames = false;
         public bool weakBrimstoneFlames = false;
         public bool demonicFlames = false;
-        public bool gsInferno = false;
+        public bool godSlayerInferno = false;
         public bool astralInfection = false;
         /// <summary> Plague debuff. </summary>
-        public bool pFlames = false;
-        public bool hFlames = false;
-        public bool hInferno = false;
-        public bool bBlood = false;
+        public bool plague = false;
+        public bool holyFlames = false;
+        public bool holyInferno = false;
+        public bool burningBlood = false;
         public bool brainRot = false;
         public bool heavybleeding = false;
         public bool laceration = false;
@@ -1268,9 +1275,9 @@ namespace CalamityMod.CalPlayer
         public bool trueVHex = false;
         public bool DoGExtremeGravity = false;
         public bool warped = false;
-        public bool cDepth = false;
-        public bool rTide = false;
-        public bool hPressure = false;
+        public bool crushDepth = false;
+        public bool riptide = false;
+        public bool hadopelagicPressure = false;
         public bool fishAlert = false;
         public bool clamity = false;
         public bool NOU = false;
@@ -1280,9 +1287,9 @@ namespace CalamityMod.CalPlayer
         public bool voidfrost = false;
         public bool eutrophication = false;
         /// <summary> Frozen Lungs debuff. </summary>
-        public bool iCantBreathe = false;
+        public bool frozenLungs = false;
         /// <summary> Searing Lava debuff. </summary>
-        public bool cragsLava = false;
+        public bool searingLava = false;
         public bool vaporfied = false;
         public bool banishingFire = false;
         public bool wither = false;
@@ -2434,26 +2441,26 @@ namespace CalamityMod.CalPlayer
             alcoholPoisoning = false;
             shadowflame = false;
             daybroken = false;
-            wDeath = false;
+            whisperingDeath = false;
             dragonFire = false;
             vermillionFlux = false;
             auricRebuke = false;
             staticDischarge = false;
             miracleBlight = false;
-            aCrunch = false;
+            armorCrunch = false;
             crumble = false;
             irradiated = false;
-            bFlames = false;
+            brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
             demonicFlames = false;
-            gsInferno = false;
+            godSlayerInferno = false;
             astralInfection = false;
-            pFlames = false;
-            hFlames = false;
-            hInferno = false;
-            bBlood = false;
+            plague = false;
+            holyFlames = false;
+            holyInferno = false;
+            burningBlood = false;
             brainRot = false;
             heavybleeding = false;
             laceration = false;
@@ -2463,9 +2470,9 @@ namespace CalamityMod.CalPlayer
             trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
-            cDepth = false;
-            rTide = false;
-            hPressure = false;
+            crushDepth = false;
+            riptide = false;
+            hadopelagicPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;
@@ -2475,12 +2482,19 @@ namespace CalamityMod.CalPlayer
             nightwither = false;
             voidfrost = false;
             eutrophication = false;
-            iCantBreathe = false;
-            cragsLava = false;
+            frozenLungs = false;
+            searingLava = false;
             vaporfied = false;
             banishingFire = false;
             wither = false;
             ManaBurn = false;
+
+            TypelessDebuffMultiplier = new();
+            HeatDebuffMultiplier = new();
+            ColdDebuffMultiplier = new();
+            SicknessDebuffMultiplier = new();
+            WaterDebuffMultiplier = new();
+            ElectricDebuffMultiplier = new();
 
             trinketOfChiBuff = false;
             sandsWindBuff = false;
@@ -2886,26 +2900,26 @@ namespace CalamityMod.CalPlayer
             alcoholPoisoning = false;
             shadowflame = false;
             daybroken = false;
-            wDeath = false;
+            whisperingDeath = false;
             dragonFire = false;
             vermillionFlux = false;
             auricRebuke = false;
             staticDischarge = false;
             miracleBlight = false;
-            aCrunch = false;
+            armorCrunch = false;
             crumble = false;
             irradiated = false;
-            bFlames = false;
+            brimstoneFlames = false;
             witheredDebuff = false;
             absorberAffliction = false;
             weakBrimstoneFlames = false;
             demonicFlames = false;
-            gsInferno = false;
+            godSlayerInferno = false;
             astralInfection = false;
-            pFlames = false;
-            hFlames = false;
-            hInferno = false;
-            bBlood = false;
+            plague = false;
+            holyFlames = false;
+            holyInferno = false;
+            burningBlood = false;
             brainRot = false;
             heavybleeding = false;
             laceration = false;
@@ -2915,9 +2929,9 @@ namespace CalamityMod.CalPlayer
             trueVHex = false;
             DoGExtremeGravity = false;
             warped = false;
-            cDepth = false;
-            rTide = false;
-            hPressure = false;
+            crushDepth = false;
+            riptide = false;
+            hadopelagicPressure = false;
             fishAlert = false;
             clamity = false;
             NOU = false;
@@ -2927,13 +2941,19 @@ namespace CalamityMod.CalPlayer
             nightwither = false;
             voidfrost = false;
             eutrophication = false;
-            iCantBreathe = false;
-            cragsLava = false;
+            frozenLungs = false;
+            searingLava = false;
             vaporfied = false;
             banishingFire = false;
             wither = false;
             PurityHealSlowdownFrames = 0;
             ImmobilityDebuffImmunityTimer = 0;
+            TypelessDebuffMultiplier = new();
+            HeatDebuffMultiplier = new();
+            ColdDebuffMultiplier = new();
+            SicknessDebuffMultiplier = new();
+            WaterDebuffMultiplier = new();
+            ElectricDebuffMultiplier = new();
             #endregion
 
             #region Rogue
