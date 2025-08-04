@@ -2776,14 +2776,12 @@ namespace CalamityMod.CalPlayer
         public override void ModifyScreenPosition()
         {
             // CIT 08FEB2025: Photosensitivity config also disables screenshake
-            if (CalamityClientConfig.Instance.ScreenshakePower == 0 || CalamityClientConfig.Instance.Photosensitivity)
-                return;
+            bool allowScreenshake = CalamityClientConfig.Instance.ScreenshakePower > 0 && !CalamityClientConfig.Instance.Photosensitivity;
 
-            if (GeneralScreenShakePower > 0f)
-            {
+            if (GeneralScreenShakePower > 0f && allowScreenshake)
                 Main.screenPosition += Main.rand.NextVector2Circular(GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower, GeneralScreenShakePower * CalamityClientConfig.Instance.ScreenshakePower);
-                GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
-            }
+            
+            GeneralScreenShakePower = MathHelper.Clamp(GeneralScreenShakePower - 0.185f, 0f, 20f * CalamityClientConfig.Instance.ScreenshakePower);
         }
         #endregion
 
