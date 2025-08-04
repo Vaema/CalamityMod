@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -49,5 +50,12 @@ namespace CalamityMod.Buffs.DamageOverTime
             // Skip vanilla re-apply logic
             return true;
         }
+    }
+    public class ManaBurnIconItem : ModItem
+    {
+        private string BuffName = "ManaBurn";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

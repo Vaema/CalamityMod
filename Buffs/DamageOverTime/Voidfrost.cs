@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -81,5 +82,12 @@ namespace CalamityMod.Buffs.DamageOverTime
             dust.scale = Main.rand.NextFloat(1f, 0.3f);
             dust.alpha = 10;
         }
+    }
+    public class VoidfrostIconItem : ModItem
+    {
+        private string BuffName = "Voidfrost";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

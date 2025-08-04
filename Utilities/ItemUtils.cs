@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
+using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -284,6 +288,91 @@ namespace CalamityMod
 
             string finalKey = mhk.TooltipHotkeyString();
             tooltips.FindAndReplace("[KEY]", finalKey);
+        }
+
+        /// <summary>
+        /// Embeds and item icon and it's name
+        /// set the justItemIcon bool to true to get just the icon without the item name
+        /// </summary>
+        /// <param name="itemType"></param>
+        /// <param name="justItemIcon"></param>
+        /// <returns></returns>
+        public static string EmbedItem(int itemType, bool justItemIcon = false)
+        {
+                return justItemIcon ? $"[i:{itemType}]" : $"[i:{itemType}] {ContentSamples.ItemsByType[itemType].Name}";
+        }
+        public static Color FireDebuffColor => new(253, 107, 2);
+        public static Color SicknessDebuffColor => new(136, 198, 10);
+        public static Color WaterDebuffColor => new(105, 147, 255);
+        public static Color ColdDebuffColor => new(159, 230, 252);
+        public static Color ElectricDebuffColor => new(255, 245, 0);
+        public static Color BuffColor => new(255, 105, 237);
+        public static Color TypelessDebuffColor => new(230, 202, 250);
+        public static Color VulnHexDebuffColor => new(196, 35, 43);
+        public static Color MiracleBlightDebuffColor => Main.DiscoColor;
+        public static string EmbedDebuff(int debuff)
+        {
+            Color color = TypelessDebuffColor;
+            List<(Color, float)> debuffColorWeights = new();
+            if (debuff == ModContent.BuffType<VulnerabilityHex>() || debuff == ModContent.BuffType<TrueVulnerabilityHex>())
+            {
+                color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
+            }
+            else if (debuff == ModContent.BuffType<MiracleBlight>())
+            {
+                color = MiracleBlightDebuffColor;
+            }
+            else
+            {
+                if (BuffDatasets.DebuffDataset[debuff] is not null)
+                {
+                    debuffColorWeights.Add((SicknessDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+                    debuffColorWeights.Add((FireDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+                    debuffColorWeights.Add((WaterDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+                    debuffColorWeights.Add((ElectricDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+                    debuffColorWeights.Add((ColdDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+
+                    float totalWeight = 0;
+                    Vector4 colordata = new();
+                    foreach (var item in debuffColorWeights)
+                    {
+                        totalWeight += item.Item2;
+                        colordata += item.Item1.ToVector4() * item.Item2;
+                    }
+                    if (totalWeight < 1)
+                    {
+                        colordata += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
+                        totalWeight += (1 - totalWeight);
+                    }
+                    if (totalWeight != 0)
+                    {
+                        colordata /= totalWeight;
+                        color = new Color(colordata);
+
+                    }
+                }
+            }
+
+            var colorText = $"[c/{ColorToHex(color)}:";
+            var outText = EmbedItem(CalamityMod.Instance.Find<ModItem>(BuffID.Search.GetName(debuff).Replace("CalamityMod/", "") + "IconItem").Type);
+            if (true) //This is for when configs are updated to be able to disable item icons in tooltips 
+            {
+                outText = outText.Replace("]", "]" + colorText) + "]";
+            }
+            else
+            {
+                outText = colorText + outText + "]";
+            }
+            return outText;
+        }
+        /// <summary>
+        /// Converts a Color into a Hex string usable for tooltip/text coloring.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static string ColorToHex(Color color)
+        {
+            return $"{color.R.ToString("X2")}{color.G.ToString("X2")}{color.B.ToString("X2")}";
         }
 
         private const float WorldInsertionOffset = 15f;

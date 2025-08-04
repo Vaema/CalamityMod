@@ -3,6 +3,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -50,5 +51,12 @@ namespace CalamityMod.Buffs.StatDebuffs
                 dust.color = Main.rand.NextBool(3) ? Color.PaleGreen : Color.DarkSeaGreen;
             }
         }
+    }
+    public class AbsorberAfflictionIconItem : ModItem
+    {
+        private string BuffName = "AbsorberAffliction";
+        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }
