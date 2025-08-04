@@ -67,13 +67,18 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
+        public static int CrystalDamage = 55; // 220
+        public static int StarDamage = 55; // 220; HolyBurnOrb
+
+        public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 100; // 200
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 164;
             NPC.defense = 30;
@@ -89,10 +94,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -108,7 +109,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             });
         }
 
-        public float GetStarShootSlowDownGateValue() => BossRushEvent.BossRushActive ? 180f : CalamityWorld.death ? 210f : CalamityWorld.revenge ? 225f : Main.expertMode ? 240f : 270f;
+        public float GetStarShootSlowDownGateValue() => CalamityWorld.death ? 210f : CalamityWorld.revenge ? 225f : Main.expertMode ? 240f : 270f;
 
         public float GetStarShootGateValue() => GetStarShootSlowDownGateValue() + 60f;
 
@@ -164,10 +165,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Get the Guardian Commander's target
             Player player = Main.player[Main.npc[CalamityGlobalNPC.doughnutBoss].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -193,7 +193,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[2] >= 45f)
                 {
                     int type = ModContent.ProjectileType<HolyBurnOrb>();
-                    int damage = NPC.GetProjectileDamage(type);
                     int totalProjectiles = 10;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     float projectileVelocity = 8f;
@@ -201,7 +200,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2, type, 0, 0f, Main.myPlayer, 0f, damage);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity2, type, 0, 0f, Main.myPlayer, 0f, StarHeal);
                     }
                     NPC.ai[2] = 0f;
                 }
@@ -216,7 +215,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             bool useCrystalShards = AIState == (float)Phase.CrystalShards;
-            float velocity = useCrystalShards ? (bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
+            float velocity = useCrystalShards ? (death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
             if (CalamityWorld.LegendaryMode)
                 velocity *= 1.25f;
 
@@ -267,7 +266,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             {
                 // Increment timer
                 AITimer += 1f;
-                float crystalShootGateValue = bossRush ? 140f : death ? 180f : revenge ? 200f : expertMode ? 220f : 260f;
+                float crystalShootGateValue = death ? 180f : revenge ? 200f : expertMode ? 220f : 260f;
                 float crystalShootPhaseDuration = crystalShootGateValue + crystalShootGateValue * 0.25f;
 
                 // Generate dust that scales with how close the crystals are to firing
@@ -303,8 +302,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<ProvidenceCrystalShard>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        int totalProjectiles = bossRush ? 18 : death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
+                        int totalProjectiles = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
                         float speedX = -12f;
                         float speedAdjustment = Math.Abs(speedX * 2f / (totalProjectiles - 1));
                         float speedY = -4f;
@@ -320,7 +318,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                                 randomizedVelocity = revenge ? (new Vector2(randomFloatX, randomFloatY) * randomVelocityMult) : Vector2.Zero;
                             }
                             Vector2 projectileVelocity = new Vector2(speedX + speedAdjustment * i + distanceFromDestination.SafeNormalize(Vector2.Zero).X * Math.Abs(player.velocity.X), speedY) + randomizedVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer, x4);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, CrystalDamage, 0f, Main.myPlayer, x4);
                         }
                     }
                 }
@@ -343,7 +341,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 {
                     SoundEngine.PlaySound(SoundID.DD2_BetsyFireballImpact, shootFrom);
 
-                    int totalFlameProjectiles = bossRush ? 20 : 16;
+                    int totalFlameProjectiles = 16;
                     int totalRings = revenge ? 3 : 2;
                     int healingStarChance = revenge ? 8 : expertMode ? 6 : 4;
                     double radians = MathHelper.TwoPi / totalFlameProjectiles;
@@ -360,16 +358,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                             Vector2 vector2 = spinningPoint.RotatedBy(radians * j);
 
                             int type = ModContent.ProjectileType<HolyBurnOrb>();
-                            int dmgAmt = NPC.GetProjectileDamage(type);
                             if (Main.rand.NextBool(healingStarChance) && !death)
                             {
                                 type = ModContent.ProjectileType<HolyLight>();
-                                dmgAmt = NPC.GetProjectileDamageNoScaling(type);
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, vector2, type, 0, 0f, Main.myPlayer, 0f, dmgAmt);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, vector2, type, 0, 0f, Main.myPlayer, 0f, StarHeal);
                             }
                             else if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, vector2, type, dmgAmt, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, vector2, type, StarDamage, 0f, Main.myPlayer);
 
                             Color dustColor = Main.hslToRgb(Main.rgbToHsl(type == ModContent.ProjectileType<HolyBurnOrb>() ? Color.Orange : Color.Green).X, 1f, 0.5f);
                             dustColor.A = 255;
@@ -404,7 +400,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Move towards a location above the player
             if (distanceFromDestination.Length() > idealDistanceFromDestination)
             {
-                float inertia = bossRush ? 28f : death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
+                float inertia = death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
                 if (lifeRatio < 0.5f)
                     inertia *= 0.8f;
                 if (CalamityWorld.LegendaryMode)

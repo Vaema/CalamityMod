@@ -35,6 +35,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.idStaticNPCHitCooldown = 8;
             Projectile.DamageType = DamageClass.Summon;
         }
+        public override bool MinionContactDamage() => Projectile.ai[0] == 2f;
 
         public override void AI()
         {

@@ -107,10 +107,9 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             // Difficulty modes. Used during the firing of the perpendicular lasers.
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Spawn dust at the end of the beam.
             int dustType = (int)CalamityDusts.Brimstone;
@@ -146,11 +145,10 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 beamDirection = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                    float distanceBetweenProjectiles = bossRush ? 160f : death ? 256f : revenge ? 288f : 320f;
+                    float distanceBetweenProjectiles = death ? 256f : revenge ? 288f : 320f;
                     Vector2 laserFirePosition = Main.npc[OwnerIndex].Center + beamDirection * distanceBetweenProjectiles;
                     int laserCount = (int)(LaserLength / distanceBetweenProjectiles);
                     int type = ModContent.ProjectileType<THanosSideLaser>();
-                    int damage = Projectile.GetProjectileDamage(Main.npc[OwnerIndex].type);
                     for (int i = 0; i < laserCount; i++)
                     {
                         int totalProjectiles = 2;
@@ -158,7 +156,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int j = 0; j < totalProjectiles; j++)
                         {
                             Vector2 projVelocity = (CalamityWorld.LegendaryMode) ? new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(-12, 12)) : Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2) * 12f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, damage, 0f, Main.myPlayer, 0f, -1f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserFirePosition, projVelocity, type, ThanatosHead.LaserDamage, 0f, Main.myPlayer, 0f, -1f);
                         }
                         laserFirePosition += beamDirection * distanceBetweenProjectiles;
                     }
@@ -242,7 +240,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 240);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

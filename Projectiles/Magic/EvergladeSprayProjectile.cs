@@ -17,11 +17,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 4;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 6;
+            Projectile.penetrate = 3;
             Projectile.MaxUpdates = 3;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6 * Projectile.MaxUpdates; // 6 effective, 18 total
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()

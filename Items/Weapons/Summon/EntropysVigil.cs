@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -16,13 +18,14 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Oblivion>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 52;
             Item.height = 52;
-            Item.damage = 47;
+            Item.damage = 42;
             Item.DamageType = DamageClass.Summon;
             Item.shoot = ModContent.ProjectileType<Calamitamini>();
             Item.knockBack = 2f;

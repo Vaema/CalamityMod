@@ -81,10 +81,13 @@ namespace CalamityMod.NPCs.SlimeGod
             }
         }
 
+        public static int GlobDamage = 15; // 60
+        public static int PossessionDamageBoost = 10; // +20 flat contact damage
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.npcSlots = 10f;
             NPC.width = 96;
             NPC.height = 98;
@@ -98,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 12, 0, 0);
+            NPC.value = Item.buyPrice(gold: 8);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();
@@ -109,9 +112,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -199,13 +199,11 @@ namespace CalamityMod.NPCs.SlimeGod
             Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
 
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
-
             CalamityGlobalNPC.slimeGod = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // For animating the eye
             NPC.localAI[0] += 1f;
@@ -491,7 +489,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
             if (expertMode && aggressionLevel >= (int)AggressionLevel.FireProjectiles)
             {
-                float divisor = bossRush ? 50f : death ? 90f : revenge ? 120f : 150f;
+                float divisor = death ? 90f : revenge ? 120f : 150f;
                 divisor -= (aggressionLevel - 1) * 10f;
                 if (aggressionLevel == (int)AggressionLevel.DoEverythingMoreOften)
                     divisor *= 0.5f;
@@ -505,17 +503,15 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                         else
                         {
                             float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -533,8 +529,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 flySpeed += 3f;
             if (phase2)
                 flySpeed *= 1.1f;
-            if (bossRush)
-                flySpeed *= 1.2f;
             if (CalamityWorld.LegendaryMode)
                 flySpeed *= 1.3f;
 
@@ -713,7 +707,7 @@ namespace CalamityMod.NPCs.SlimeGod
             return minDist <= 40f * NPC.scale;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }

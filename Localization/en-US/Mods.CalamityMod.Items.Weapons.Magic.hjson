@@ -38,7 +38,8 @@ AnahitasArpeggio: {
 	TooltipNormal:
 		'''
 		Holding <left> casts up to 6 treble clefs that orbit the player
-		Releasing <left> causes the treble clefs to fade away, then converge at the cursor
+		Releasing <left> causes the treble clefs to converge at the cursor
+		After converging, treble clefs seek your cursor
 		'''
 	TooltipGFB:
 		'''
@@ -488,7 +489,8 @@ Keelhaul: {
 	DisplayName: Keelhaul
 	Tooltip:
 		'''
-		Summons a geyser upon hitting an enemy
+		Summons a lingering geyser upon hitting an enemy
+		Only one geyser can exist at a time
 		'Crumple 'em like paper'
 		'''
 }
@@ -784,7 +786,7 @@ SHPC: {
 		Orbs emit seeking souls and lingering pickup souls after collapse
 		Orbs have varying effects depending on Soul type used
 		{0}
-		Press Right Click to use the machine as a vacuum, pulling in lingering souls
+		Press <right> to use the machine as a vacuum, pulling in lingering souls
 		Once released, a torrent of soul lasers is discharged scaling with the number of souls pulled in
 		'''
 	// These are the soul effect descriptions, the number is the item ID of the soul

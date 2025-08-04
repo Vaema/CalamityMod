@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 0;
             ProjectileID.Sets.TrailCacheLength[Type] = 20;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
@@ -241,6 +242,5 @@ namespace CalamityMod.Projectiles.Summon
                              0);
             return false;
         }
-        public override bool? CanDamage() => false;
     }
 }

@@ -43,10 +43,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.dontCountMe = true;
             NPC.dontTakeDamage = true;
             NPC.chaseable = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)

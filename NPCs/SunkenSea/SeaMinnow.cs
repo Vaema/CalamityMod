@@ -420,7 +420,6 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.catchItem = (short)ModContent.ItemType<SeaMinnowItem>();
             NPC.rarity = 3;
-            NPC.value = 100000;
         }
 
         public override void HitEffect(NPC.HitInfo hit)

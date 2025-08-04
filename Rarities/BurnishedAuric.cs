@@ -118,13 +118,14 @@ namespace CalamityMod.Rarities
             Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
         }
 
-        public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
+        // TODO: Add a cooler alternative for reforge rarities
+        /*public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
         {
             -2 => ModContent.RarityType<PureGreen>(),
             -1 => ModContent.RarityType<CosmicPurple>(),
             1 => ModContent.RarityType<HotPink>(),
             2 => ModContent.RarityType<CalamityRed>(),
             _ => Type,
-        };
+        };*/
     }
 }

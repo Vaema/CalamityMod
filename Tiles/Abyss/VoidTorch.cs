@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
 {
+    [LegacyName("AbyssTorch")]
     public class VoidTorch : ModTile
     {
         public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.VoidTorch>(), true, true);

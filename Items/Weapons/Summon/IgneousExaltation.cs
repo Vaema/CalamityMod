@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,10 +11,32 @@ namespace CalamityMod.Items.Weapons.Summon
 {
     public class IgneousExaltation : ModItem, ILocalizedModType
     {
+        public static int ChargeDuration = 30;
+        public static int ChargeCooldown = 120;
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        private static Texture2D BladeOutline = null;
+        public static Texture2D GetBladeOutlineTex()
+        {
+            if (BladeOutline == null)
+            {
+                var texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/IgneousBlade").Value;
+                BladeOutline = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
+
+                var BaseArray = new Color[BladeOutline.Width * BladeOutline.Height];
+                var ColorArray = new Color[BladeOutline.Width * BladeOutline.Height];
+                texture.GetData(BaseArray);
+                for (var i = 0; i < BaseArray.Length; i++)
+                {
+                    ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
+                }
+                BladeOutline.SetData(ColorArray);
+            }
+            return BladeOutline;
+        }
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -34,54 +57,42 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
+
+        public override bool AltFunctionUse(Player player)
+        {
+            return player.ownedProjectileCounts[Item.shoot] > 0;
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float totalMinionSlots = 0f;
-            foreach (Projectile pro in Main.ActiveProjectiles)
+            if (player.altFunctionUse == 2)
             {
-                if (pro.minion && pro.owner == player.whoAmI)
+                foreach (Projectile pro in Main.ActiveProjectiles)
                 {
-                    totalMinionSlots += pro.minionSlots;
+                    if (pro.type == type && pro.owner == player.whoAmI && pro.ai[1] >= 0 && pro.ai[0] == 0)
+                    {
+                        pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.TransitionToLaunch;
+                        pro.netUpdate = true;
+                    }
                 }
             }
-            if (player.altFunctionUse != 2 && totalMinionSlots < player.maxMinions)
+            else
             {
-                position = player.ClampedMouseWorld();
-                int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
+
+                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
                 if (Main.projectile.IndexInRange(p))
+                {
                     Main.projectile[p].originalDamage = Item.damage;
-                int swordCount = 0;
+                }
+
+                int bladeIndex = 0;
                 foreach (Projectile pro in Main.ActiveProjectiles)
                 {
                     if (pro.type == type && pro.owner == player.whoAmI)
                     {
-                        if ((pro.ModProjectile as IgneousBlade).Firing)
-                            continue;
-                        swordCount++;
-                        for (int j = 0; j < 22; j++)
-                        {
-                            Dust dust = Dust.NewDustDirect(pro.position, pro.width, pro.height, DustID.Torch);
-                            dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool().ToDirectionInt();
-                            dust.noGravity = true;
-                        }
-                    }
-                }
-                float angleVariance = MathHelper.TwoPi / swordCount;
-                float angle = 0f;
-                foreach (Projectile pro in Main.ActiveProjectiles)
-                {
-                    if (pro.type == type && pro.owner == player.whoAmI && pro.localAI[1] == 0f)
-                    {
-                        if ((pro.ModProjectile as IgneousBlade).Firing)
-                            continue;
-                        pro.ai[0] = angle;
-                        angle += angleVariance;
-                        for (int j = 0; j < 22; j++)
-                        {
-                            Dust dust = Dust.NewDustDirect(pro.position, pro.width, pro.height, DustID.Torch);
-                            dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool().ToDirectionInt();
-                            dust.noGravity = true;
-                        }
+                        pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
+                        pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
+                        pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
+                        pro.netUpdate = true;
                     }
                 }
             }
@@ -91,6 +102,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<SeashineHilt>().
                 AddIngredient<UnholyCore>(10).
                 AddIngredient<EssenceofHavoc>(5).
                 AddTile(TileID.MythrilAnvil).

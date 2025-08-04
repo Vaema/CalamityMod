@@ -21,6 +21,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -108,8 +109,6 @@ namespace CalamityMod.Projectiles.Summon
             FlowerShootTimer = MathHelper.Clamp(FlowerShootTimer, 0f, 101f);
             Projectile.netUpdate = true;
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

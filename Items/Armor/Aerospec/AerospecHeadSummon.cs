@@ -5,6 +5,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Aerospec
@@ -14,6 +15,14 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float SummonDamageBoost = 0.1f;
+        public static float MoveSpeedBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 1;
+        public static float SetBonusSummonDamageBoost = 0.11f;
         public static int ValkyrieDamage = 20;
 
         public override void SetDefaults()
@@ -37,7 +46,8 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<AerospecBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
+            + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.valkyrie = true;
             modPlayer.aeroSet = true;
@@ -58,14 +68,14 @@ namespace CalamityMod.Items.Armor.Aerospec
                         Main.projectile[p].originalDamage = ValkyrieDamage;
                 }
             }
-            player.GetDamage<SummonDamageClass>() += 0.11f;
-            player.maxMinions++;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
+            player.maxMinions += SetBonusMinionSlotBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += 0.05f;
-            player.GetDamage<SummonDamageClass>() += 0.1f;
+            player.moveSpeed += MoveSpeedBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
         }
 
         public override void AddRecipes()

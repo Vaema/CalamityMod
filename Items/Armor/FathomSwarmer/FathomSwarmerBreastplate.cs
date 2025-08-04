@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += 0.1f;
-            player.endurance += 0.06f;
             player.maxMinions += 1;
             player.Calamity().fathomSwarmerBreastplate = true;
         }

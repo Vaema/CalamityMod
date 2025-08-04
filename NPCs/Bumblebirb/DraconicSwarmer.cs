@@ -24,10 +24,10 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void SetDefaults()
         {
+            NPC.damage = 100; // 200
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 120;
             NPC.height = 80;
             NPC.defense = 20;
@@ -41,10 +41,6 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -285,7 +281,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         Vector2 ai0 = NPC.Center - fireFrom;
                         float ai = Main.rand.Next(100);
                         Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), Dragonfolly.LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                     }
                 }
             }

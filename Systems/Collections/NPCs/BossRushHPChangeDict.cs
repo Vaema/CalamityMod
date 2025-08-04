@@ -32,11 +32,10 @@ namespace CalamityMod.Systems.Collections
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
-                { NPCType<BloodlettingServant>(), 12000 },
 
-                { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
-                { NPCID.EaterofWorldsBody, 10000 },
-                { NPCID.EaterofWorldsTail, 10000 },
+                { NPCID.EaterofWorldsHead, 15000 }, // 30 seconds + immunity timer at start
+                { NPCID.EaterofWorldsBody, 15000 },
+                { NPCID.EaterofWorldsTail, 15000 },
 
                 { NPCID.BrainofCthulhu, 100000 }, // 30 seconds with creepers
                 { NPCID.Creeper, 10000 },

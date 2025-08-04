@@ -25,7 +25,7 @@ namespace CalamityMod.Packets
             packet.Write(codeBreaker.InputtedCellCount);
             packet.Write(codeBreaker.InitialCellCountBeforeDecrypting);
             packet.Write(codeBreaker.HeldSchematicID);
-            packet.Write(codeBreaker.ContainsBloodSample);
+            packet.Write(codeBreaker.ContainsBloodyVein);
             packet.Send(toClient, ignoreClient);
         }
 
@@ -35,7 +35,7 @@ namespace CalamityMod.Packets
             int cellCount = packet.ReadInt32();
             int cellCountBeforeDecrypting = packet.ReadInt32();
             int schematicID = packet.ReadInt32();
-            bool containsBloodSample = packet.ReadBoolean();
+            bool containsBloodyVein = packet.ReadBoolean();
 
             // Verify to ensure that the tile entity is a valid one.
             if (codeBreaker is null)
@@ -44,7 +44,7 @@ namespace CalamityMod.Packets
             codeBreaker.InputtedCellCount = cellCount;
             codeBreaker.InitialCellCountBeforeDecrypting = cellCountBeforeDecrypting;
             codeBreaker.HeldSchematicID = schematicID;
-            codeBreaker.ContainsBloodSample = containsBloodSample;
+            codeBreaker.ContainsBloodyVein = containsBloodyVein;
         }
     }
 }

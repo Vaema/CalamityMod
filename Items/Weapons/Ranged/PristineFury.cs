@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override float UseTimeMultiplier(Player player) => player.altFunctionUse == 2 ? 0.5f : 1f;
         public override void HoldItem(Player player)
         {
-            int max = player.Calamity().furyFuelMax;
+            int max = CalamityPlayer.FuryFuelMax;
             if (player.Calamity().cooldowns.TryGetValue(FuryFuel.ID, out var cooldown))
             {
                 cooldown.timeLeft = max - player.Calamity().furyFuel;
