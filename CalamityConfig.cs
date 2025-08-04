@@ -28,24 +28,6 @@ namespace CalamityMod
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
-        internal static void SaveConfig()
-        {
-            // There is no current way to manually save a mod configuration file in tModLoader.
-            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
-            try
-            {
-                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-                if (saveMethodInfo is not null)
-                    saveMethodInfo.Invoke(null, [Instance]);
-                else
-                    CalamityMod.Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
-            }
-            catch
-            {
-                CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
-            }
-        }
-
         #region Graphics Changes
         [Header("Graphics")]
         

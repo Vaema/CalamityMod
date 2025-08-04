@@ -204,6 +204,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] SantaClausNames =
         {
             "Jank", // <@!339950757472239616> (jankle_)
+            "Aoi Kurashiki", // <@!358411687885537291> (nothinpurrsonal)
         };
         private static readonly string[] SkeletonMerchantNames =
         {

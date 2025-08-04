@@ -151,7 +151,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 240; // 480
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 204;
             NPC.height = 226;

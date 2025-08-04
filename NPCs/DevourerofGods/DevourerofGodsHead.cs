@@ -149,6 +149,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public static readonly SoundStyle AttackSound = new("CalamityMod/Sounds/Custom/DevourerAttack");
         public static readonly SoundStyle RiftOpenSound = new("CalamityMod/Sounds/Custom/DevourerRiftOpen");
         public static readonly SoundStyle RiftBuildingSound = new("CalamityMod/Sounds/Custom/DevourerRiftBuilding");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/OtherworldlyHit");
         public static readonly SoundStyle DeathAnimationSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeath");
         public static readonly SoundStyle DeathExplosionSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
         public static readonly SoundStyle DeathSegmentSound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak", 4);
@@ -2689,7 +2690,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 8;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(HitSound with { Pitch = HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {

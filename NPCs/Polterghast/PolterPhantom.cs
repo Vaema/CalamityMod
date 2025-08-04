@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Polterghast
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 168; // 336
+            NPC.damage = 180; // 360
             NPC.width = 90;
             NPC.height = 120;
             NPC.defense = 45;

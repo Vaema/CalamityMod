@@ -110,7 +110,7 @@ namespace CalamityMod.NPCs.Yharon
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 200; // 400
+            NPC.damage = 220; // 440
             NPC.npcSlots = 50f;
             NPC.width = 200;
             NPC.height = 200;
@@ -3052,14 +3052,6 @@ namespace CalamityMod.NPCs.Yharon
                     Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, VortexDamage, 0f, Main.myPlayer, 360, NPC.whoAmI);
                 }
             }
-        }
-        #endregion
-
-        #region On Hit Player
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
         #endregion
 

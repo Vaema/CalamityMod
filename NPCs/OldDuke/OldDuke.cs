@@ -2114,8 +2114,8 @@ namespace CalamityMod.NPCs.OldDuke
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), Phase == 2 ? 600 : Phase == 1 ? 480 : 360);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), Phase == 2 ? 300 : Phase == 1 ? 240 : 180);
                 if (Main.zenithWorld)
                 {
                     target.AddBuff(BuffID.Rabies, Main.rand.Next(180, 601));
