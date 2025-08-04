@@ -3754,14 +3754,13 @@ namespace CalamityMod.CalPlayer
                 {
                     if (brimflameFrenzy)
                     {
-                        brimflameFrenzy = false;
                         Player.ClearBuff(BuffType<BrimflameFrenzyBuff>());
+                        Player.AddCooldown(BrimflameFrenzy.ID, BrimflameCowl.FrenzyCooldown);
                     }
                     else
                     {
-                        brimflameFrenzy = true;
-                        Player.AddBuff(BuffType<BrimflameFrenzyBuff>(), 10 * 60, true);
-                        SoundEngine.PlaySound(BrimflameScowl.ActivationSound, Player.Center);
+                        Player.AddBuff(BuffType<BrimflameFrenzyBuff>(), BrimflameCowl.FrenzyDuration, true);
+                        SoundEngine.PlaySound(BrimflameCowl.ActivationSound, Player.Center);
                         for (int i = 0; i < 36; i++)
                         {
                             Dust brimDust = Dust.NewDustDirect(new Vector2(Player.position.X, Player.position.Y + 16f), Player.width, Player.height - 16, (int)CalamityDusts.Brimstone, 0f, 0f, 0, default, 1f);
