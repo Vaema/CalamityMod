@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.height = 20;
             Projectile.friendly = true;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 100;
+            Projectile.timeLeft = 480;
             Projectile.extraUpdates = 4;
             Projectile.ignoreWater = true;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -59,16 +59,14 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (Projectile.owner == Main.myPlayer)
             {
-                int numSplits = Main.rand.NextBool() ? 4 : 3;
-                int type = ModContent.ProjectileType<HypothermiaShard>();
                 int shardDamage = (int)(Projectile.damage * 0.5f);
                 float shardKB = Projectile.knockBack * 0.75f;
 
-                for (int i = 0; i < numSplits; ++i)
+                for (int i = 0; i < 4; ++i)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     int texID = Main.rand.Next(4);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, type, shardDamage, shardKB, Main.myPlayer, texID, 1f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HypothermiaShard>(), shardDamage, shardKB, Main.myPlayer, texID, 1f);
                 }
             }
         }
