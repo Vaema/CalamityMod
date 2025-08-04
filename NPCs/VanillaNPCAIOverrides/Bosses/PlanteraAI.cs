@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int ThornBallDamage = 27; // 108
 
         // Expert AI has uses a magic number which we have to correct for
-        public static int ContactDamageCorrection = 100;
+        public static int ContactDamageCorrection = Main.masterMode ? 150 : 100;
 
         // Rev+ exclusive
         public static int ThornBallSpikeDamage = 22; // 88
