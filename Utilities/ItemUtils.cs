@@ -327,10 +327,10 @@ namespace CalamityMod
                 if (BuffDatasets.DebuffDataset[debuff] is not null)
                 {
                     debuffColorWeights.Add((SicknessDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
-                    debuffColorWeights.Add((FireDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
-                    debuffColorWeights.Add((WaterDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
-                    debuffColorWeights.Add((ElectricDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
-                    debuffColorWeights.Add((ColdDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
+                    debuffColorWeights.Add((FireDebuffColor, BuffDatasets.DebuffDataset[debuff].HeatDebuffScaling));
+                    debuffColorWeights.Add((WaterDebuffColor, BuffDatasets.DebuffDataset[debuff].WaterDebuffScaling));
+                    debuffColorWeights.Add((ElectricDebuffColor, BuffDatasets.DebuffDataset[debuff].ElectricDebuffScaling));
+                    debuffColorWeights.Add((ColdDebuffColor, BuffDatasets.DebuffDataset[debuff].ColdDebuffScaling));
 
                     float totalWeight = 0;
                     Vector4 colordata = new();

@@ -26,6 +26,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -357,6 +358,19 @@ namespace CalamityMod.Items
                 {"[Daybroken]", ModContent.BuffType<Daybroken>()},
                 {"[Shadowflame]", ModContent.BuffType<Shadowflame>()},
                 {"[Potion Sickness]", BuffID.PotionSickness},
+                {"[Acid Venom]", BuffID.Venom},
+                {"[Betsy's Curse]", BuffID.BetsysCurse},
+                {"[Cursed Inferno]", BuffID.CursedInferno},
+                {"[Frostbite]", BuffID.Frostburn2},
+                {"[Frostburn]", BuffID.Frostburn},
+                {"[On Fire!]", BuffID.OnFire},
+                {"[Hellfire]", BuffID.OnFire3},
+                {"[Ichor]", BuffID.Ichor},
+                {"[Oiled]", BuffID.Oiled},
+                {"[Poisoned]", BuffID.Poisoned},
+                {"[Slimed]", BuffID.Slimed},
+                {"[Wet]", BuffID.Wet},
+                {"[Electrified]", BuffID.Electrified}
             };
             foreach (var debuff in debuffKeys)
             {
@@ -372,7 +386,7 @@ namespace CalamityMod.Items
                     if (CalamityUtils.GetTextValue("Buffs." + BuffID.Search.GetName(replacedDebuffs[i]) + ".ItemTooltip") == "")
                         continue;
                     foundDebuff = true;
-                    if (!Main.LocalPlayer.controlSmart)
+                    if (!PlayerInput.Triggers.Current.SmartCursor)
                     {
                         showTheTip = true;
                         break;
@@ -380,7 +394,11 @@ namespace CalamityMod.Items
                     tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + i, $"{CalamityUtils.EmbedDebuff(replacedDebuffs[i])}\n{CalamityUtils.GetTextValue("Buffs." + BuffID.Search.GetName(replacedDebuffs[i]).Replace("CalamityMod/", "") + ".ItemTooltip")}"));
                 }
                 if (showTheTip)
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltToExpand"))));
+                {
+                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
+                }
                 else if (foundDebuff)
                 {
                     foreach (var item1 in tooltips)

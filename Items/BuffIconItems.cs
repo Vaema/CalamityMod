@@ -14,7 +14,7 @@ namespace CalamityMod.Items
         public override LocalizedText DisplayName => Language.GetText($"BuffName.{BuffName}");
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
-    public class AcidVenomIconItem : ModItem
+    public class VenomIconItem : ModItem
     {
         private string BuffName = "Venom";
         public override string Texture => $"Terraria/Images/Buff_{BuffID.Venom}";
@@ -24,7 +24,7 @@ namespace CalamityMod.Items
     public class BetsysCurseIconItem : ModItem
     {
         private string BuffName = "BetsysCurse";
-        public override string Texture => $"Terraria/Images/Buff_{BuffID.BetsysCurse}";
+        public override string Texture => $"CalamityMod/ExtraTextures/VanillaBuffs/BetsysCurse";
         public override LocalizedText DisplayName => Language.GetText($"BuffName.{BuffName}");
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
@@ -36,14 +36,14 @@ namespace CalamityMod.Items
         public override LocalizedText DisplayName => Language.GetText($"BuffName.{BuffName}");
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
-    public class FrostbiteIconItem : ModItem
+    public class Frostburn2IconItem : ModItem
     {
         private string BuffName = "Frostburn2";
         public override string Texture => $"Terraria/Images/Buff_{BuffID.Frostburn2}";
         public override LocalizedText DisplayName => Language.GetText($"BuffName.{BuffName}");
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
-    public class FrostburnCurseIconItem : ModItem
+    public class FrostburnIconItem : ModItem
     {
         private string BuffName = "Frostburn";
         public override string Texture => $"Terraria/Images/Buff_{BuffID.Frostburn}";
@@ -58,7 +58,7 @@ namespace CalamityMod.Items
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 
-    public class HellfireIconItem : ModItem
+    public class OnFire3IconItem : ModItem
     {
         private string BuffName = "OnFire3";
         public override string Texture => $"Terraria/Images/Buff_{BuffID.OnFire3}";
@@ -75,7 +75,7 @@ namespace CalamityMod.Items
     public class OiledIconItem : ModItem
     {
         private string BuffName = "Oiled";
-        public override string Texture => $"Terraria/Images/Buff_{BuffID.Oiled}";
+        public override string Texture => $"CalamityMod/ExtraTextures/VanillaBuffs/Oiled";
         public override LocalizedText DisplayName => Language.GetText($"BuffName.{BuffName}");
         public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
