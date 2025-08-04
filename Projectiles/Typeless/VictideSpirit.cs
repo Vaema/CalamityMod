@@ -177,7 +177,13 @@ namespace CalamityMod.Projectiles.Typeless
                 Owner.immuneNoBlink = true;
                 Owner.immuneTime = 4;
                 for (int k = 0; k < Owner.hurtCooldowns.Length; k++)
+                {
+                    // Excluded explicitly-anti cheesed bosses
+                    if (k == ImmunityCooldownID.Bosses)
+                        continue;
+
                     Owner.hurtCooldowns[k] = Owner.immuneTime;
+                }
 
                 Owner.velocity = Projectile.velocity;
                 if (Owner.velocity.Y == 0f)

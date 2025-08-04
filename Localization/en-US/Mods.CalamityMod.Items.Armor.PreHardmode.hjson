@@ -257,7 +257,7 @@ VictideHeadBurrow: {
 		Allows quick travel in water
 		[c/{0}:Bubbly Burrow - {1} to transform into an agile water spirit for a short time]
 		[c/A2D6FF:The spirit can be controlled through movement keys and can traverse through tiles]
-		[c/A2D6FF:While in spirit form, you are impervious and unable to use items]
+		[c/A2D6FF:While in spirit form, you are impervious to most damage but unable to use items]
 		[c/A2D6FF:This effect lasts {2} {^2:second;seconds} and has a cooldown of {3} {^3:second;seconds}]
 		'''
 }
