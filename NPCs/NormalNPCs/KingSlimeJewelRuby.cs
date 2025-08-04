@@ -43,7 +43,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
+            NPC.damage = 24; // 72. Contact damage only occurs in the "Emerald" phase, which is Death exclusive.
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 10;
@@ -423,10 +423,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     SoundEngine.PlaySound(ShootSound, NPC.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, damage, 0f, Main.myPlayer);
-                    }
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), npcPos, projVector, type, JewelBoltDamage, 0f, Main.myPlayer);
 
                     NPC.netUpdate = true;
 
