@@ -21,4 +21,11 @@ namespace CalamityMod.Buffs.StatBuffs
             player.Calamity().rRage = true;
         }
     }
+    public class ReaverRageIconItem : ModItem
+    {
+        private string BuffName = "ReaverRage";
+        public override string Texture => $"CalamityMod/Buffs/StatBuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
+    }
 }

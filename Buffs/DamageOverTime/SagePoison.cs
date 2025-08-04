@@ -1,5 +1,6 @@
 ﻿using CalamityMod.DataStructures;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -29,5 +30,12 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             npc.Calamity().sagePoison = true;
         }
+    }
+    public class SagePoisonIconItem : ModItem
+    {
+        private string BuffName = "SagePoison";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

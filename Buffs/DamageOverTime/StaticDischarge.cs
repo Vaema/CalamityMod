@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -62,5 +63,12 @@ namespace CalamityMod.Buffs.DamageOverTime
                 dust.color = (Main.rand.NextBool(3) ? Color.Yellow : Color.LightSkyBlue);
             }
         }
+    }
+    public class StaticDischargeIconItem : ModItem
+    {
+        private string BuffName = "StaticDischarge";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

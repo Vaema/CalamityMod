@@ -1,5 +1,6 @@
 ﻿using CalamityMod.DataStructures;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -19,5 +20,12 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             npc.Calamity().markedForDeath = true;
         }
+    }
+    public class MarkedforDeathIconItem : ModItem
+    {
+        private string BuffName = "MarkedforDeath";
+        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }
