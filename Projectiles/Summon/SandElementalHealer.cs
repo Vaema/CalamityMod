@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Summon
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            if (!modPlayer.sandBoobWaifu && !modPlayer.allWaifus && !modPlayer.sandBoobWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.rareSandElemental && !modPlayer.allElementals && !modPlayer.rareSandElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -55,9 +55,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.dWaifu = false;
+                    modPlayer.rareSandEleBuff = false;
                 }
-                if (modPlayer.dWaifu)
+                if (modPlayer.rareSandEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.spriteDirection = -Projectile.direction;
             }
 
-            if (!modPlayer.sandBoobWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.rareSandElementalVanity && !modPlayer.allElementalsVanity)
             {
                 float lightScalar = (float)Main.rand.Next(90, 111) * 0.01f;
                 lightScalar *= Main.essScale;
@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.localAI[0] += 1f;
             }
-            if (Projectile.ai[0] == 0f && !modPlayer.sandBoobWaifuVanity && !modPlayer.allWaifusVanity)
+            if (Projectile.ai[0] == 0f && !modPlayer.rareSandElementalVanity && !modPlayer.allElementalsVanity)
             {
                 int healProj = ModContent.ProjectileType<CactusHealOrb>();
                 if (Projectile.ai[1] == 0f && Projectile.localAI[0] >= 120f)
@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.sandBoobWaifuVanity || modPlayer.allWaifusVanity)
+            if (modPlayer.rareSandElementalVanity || modPlayer.allElementalsVanity)
             {
                 return false;
             }

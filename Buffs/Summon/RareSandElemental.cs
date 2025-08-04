@@ -3,10 +3,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class SandyHealingWaifu : BaseSummonBuff
+    public class RareSandElemental : BaseSummonBuff
     {
         protected override int MinionProjectileType => ModContent.ProjectileType<SandElementalHealer>();
 
-        protected override ref bool MinionBool => ref BuffModdedOwner.dWaifu;
+        protected override ref bool MinionBool => ref BuffModdedOwner.rareSandEleBuff;
     }
 }

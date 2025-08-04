@@ -16,7 +16,7 @@ namespace CalamityMod.Buffs.Summon
         {
             CalamityPlayer modPlayer = player.Calamity();
 
-            if (!modPlayer.allWaifus)
+            if (!modPlayer.allElementals)
             {
                 player.DelBuff(buffIndex);
                 buffIndex--;

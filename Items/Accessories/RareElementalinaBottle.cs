@@ -9,7 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class WifeinaBottlewithBoobs : ModItem, ILocalizedModType
+    [LegacyName("WifeinaBottlewithBoobs")] // Yes, that was the actual name.
+    public class RareElementalinaBottle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
@@ -38,12 +39,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sandBoobWaifu = true;
+            modPlayer.rareSandElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<SandyHealingWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<RareSandElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<SandyHealingWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<RareSandElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalHealer>()] < 1)
                 {
@@ -59,12 +60,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sandBoobWaifuVanity = true;
+            modPlayer.rareSandElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<SandyHealingWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<RareSandElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<SandyHealingWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<RareSandElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalHealer>()] < 1)
                 {

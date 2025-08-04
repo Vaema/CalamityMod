@@ -972,16 +972,16 @@ namespace CalamityMod.CalPlayer
         public bool jellyChargedBattery = false;
         /// <summary> General cooldown for accessories which spawn projectiles on minion hits. </summary>
         public float summonProjCooldown;
-        public bool sandWaifu = false;
-        public bool sandWaifuVanity = false;
-        public bool sandBoobWaifu = false;
-        public bool sandBoobWaifuVanity = false;
-        public bool cloudWaifu = false;
-        public bool cloudWaifuVanity = false;
-        public bool brimstoneWaifu = false;
-        public bool brimstoneWaifuVanity = false;
-        public bool sirenWaifu = false;
-        public bool sirenWaifuVanity = false;
+        public bool sandElemental = false;
+        public bool sandElementalVanity = false;
+        public bool rareSandElemental = false;
+        public bool rareSandElementalVanity = false;
+        public bool cloudElemental = false;
+        public bool cloudElementalVanity = false;
+        public bool brimElemental = false;
+        public bool brimElementalVanity = false;
+        public bool waterElemental = false;
+        public bool waterElementalVanity = false;
         public bool fungalClump = false;
         public bool fungalClumpVanity = false;
         public bool howlsHeart = false;
@@ -1439,21 +1439,21 @@ namespace CalamityMod.CalPlayer
         /// <summary> Enchanted Conch. </summary>
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
-        public bool allWaifus = false;
+        public bool allElementals = false;
         /// <summary> Hearts of the Elements; however, the minions will not attack. </summary>
-        public bool allWaifusVanity = false;
+        public bool allElementalsVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
         public bool sCrystal = false;
         /// <summary> Elemental in a Bottle. </summary>
-        public bool sWaifu = false;
+        public bool sandEleBuff = false;
         /// <summary> Rare Elemental in a Bottle. </summary>
-        public bool dWaifu = false;
+        public bool rareSandEleBuff = false;
         /// <summary> Eye of the Storm. </summary>
-        public bool cWaifu = false;
+        public bool cloudEleBuff = false;
         /// <summary> Rose Stone. </summary>
-        public bool bWaifu = false;
+        public bool brimEleBuff = false;
         /// <summary> Pearl of Enthrallment. </summary>
-        public bool slWaifu = false;
+        public bool waterEleBuff = false;
         public bool fClump = false;
         /// <summary> Demonshade armor's Red Devil. </summary>
         public bool rDevil = false;
@@ -2583,11 +2583,11 @@ namespace CalamityMod.CalPlayer
             pGuy = false;
             cEnergy = false;
             pSoulGuardians = false;
-            sWaifu = false;
-            dWaifu = false;
-            cWaifu = false;
-            bWaifu = false;
-            slWaifu = false;
+            sandEleBuff = false;
+            rareSandEleBuff = false;
+            cloudEleBuff = false;
+            brimEleBuff = false;
+            waterEleBuff = false;
             fClump = false;
             rDevil = false;
             aValkyrie = false;
@@ -2601,18 +2601,18 @@ namespace CalamityMod.CalPlayer
             rOrb = false;
             dCrystal = false;
             MutatedTruffleBool = false;
-            sandWaifu = false;
-            sandWaifuVanity = false;
-            sandBoobWaifu = false;
-            sandBoobWaifuVanity = false;
-            cloudWaifu = false;
-            cloudWaifuVanity = false;
-            brimstoneWaifu = false;
-            brimstoneWaifuVanity = false;
-            sirenWaifu = false;
-            sirenWaifuVanity = false;
-            allWaifus = false;
-            allWaifusVanity = false;
+            sandElemental = false;
+            sandElementalVanity = false;
+            rareSandElemental = false;
+            rareSandElementalVanity = false;
+            cloudElemental = false;
+            cloudElementalVanity = false;
+            brimElemental = false;
+            brimElementalVanity = false;
+            waterElemental = false;
+            waterElementalVanity = false;
+            allElementals = false;
+            allElementalsVanity = false;
             fungalClump = false;
             fungalClumpVanity = false;
             howlsHeart = false;

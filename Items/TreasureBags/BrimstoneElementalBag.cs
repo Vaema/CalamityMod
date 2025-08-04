@@ -19,7 +19,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.TreasureBags
 {
-    public class BrimstoneWaifuBag : ModItem, ILocalizedModType
+    [LegacyName("BrimstoneWaifuBag")]
+    public class BrimstoneElementalBag : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.TreasureBags";
         public override void SetStaticDefaults()
@@ -80,7 +81,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.AddRevBagAccessories();
 
             // Vanity
-            itemLoot.Add(ModContent.ItemType<BrimstoneWaifuMask>(), 7);
+            itemLoot.Add(ModContent.ItemType<BrimstoneElementalMask>(), 7);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
             itemLoot.AddIf(() => CalamityWorld.revenge, ModContent.ItemType<CharredRelic>());
         }

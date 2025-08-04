@@ -720,6 +720,11 @@ ElementalGauntlet: {
 		'''
 }
 
+ElementalinaBottle: {
+	DisplayName: Elemental in a Bottle
+	Tooltip: Summons a sand elemental to fight for you
+}
+
 ElysianAegis: {
 	DisplayName: Elysian Aegis
 	Tooltip:
@@ -1460,6 +1465,15 @@ RampartofDeities: {
 		'''
 }
 
+RareElementalinaBottle: {
+	DisplayName: Rare Elemental in a Bottle
+	Tooltip:
+		'''
+		Summons a sand elemental to heal you
+		;D
+		'''
+}
+
 ReaperToothNecklace: {
 	DisplayName: Reaper Tooth Necklace
 	Tooltip:
@@ -2080,20 +2094,6 @@ WarbanneroftheRighteous: {
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
-		'''
-}
-
-WifeinaBottle: {
-	DisplayName: Elemental in a Bottle
-	Tooltip: Summons a sand elemental to fight for you
-}
-
-WifeinaBottlewithBoobs: {
-	DisplayName: Rare Elemental in a Bottle
-	Tooltip:
-		'''
-		Summons a sand elemental to heal you
-		;D
 		'''
 }
 
