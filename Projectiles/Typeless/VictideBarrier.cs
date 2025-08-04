@@ -160,6 +160,7 @@ namespace CalamityMod.Projectiles.Typeless
                     }
                 }
 
+                Lighting.AddLight(Owner.MountedCenter, Color.White.ToVector3() * 0.5f);
                 Projectile.Center = Owner.MountedCenter;
                 Projectile.timeLeft = (int)DashLifetime;
             }
@@ -187,23 +188,25 @@ namespace CalamityMod.Projectiles.Typeless
                 return false;
 
             Texture2D explosionTex = Explosion.Value;
+            Color barrierColor = Main.hslToRgb(0.6f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 2f), 1f, 0.5f);
 
             if (ExplodeTimer > 0f)
             {
                 Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
                 Vector2 explosionPos = Projectile.Center - Main.screenPosition;
-                Main.EntitySpriteDraw(explosionTex, explosionPos, null, Color.Cyan * Projectile.Opacity, Projectile.rotation, explosionTex.Size() * 0.5f, 0.02f * Projectile.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(explosionTex, explosionPos, null, barrierColor * Projectile.Opacity, Projectile.rotation, explosionTex.Size() * 0.5f, 0.02f * Projectile.scale, SpriteEffects.None);
                 Main.spriteBatch.ExitShaderRegion();
                 return false;
             }
 
             Vector2 drawPos = Owner.Center + Vector2.UnitY * Owner.gfxOffY - Main.screenPosition;
             Texture2D circleBase = TextureAssets.Projectile[Type].Value;
+            Color contrastingColor = Main.hslToRgb(0.6f + 0.1f * MathF.Cos(Main.GlobalTimeWrappedHourly * 2f), 1f, 0.5f);
 
             // Silly solution to making a clean circle over the player
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseOpacity(0.4f);
-            GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseColor(Main.hslToRgb(0.6f + 0.1f * MathF.Sin(Main.GlobalTimeWrappedHourly * 2f), 1f, 0.75f));
+            GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseOpacity(0.5f);
+            GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseColor(barrierColor);
             GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseSecondaryColor(Color.Transparent);
             GameShaders.Misc["CalamityMod:CircularAoETelegraph"].UseSaturation(0f);
             GameShaders.Misc["CalamityMod:CircularAoETelegraph"].Apply();
@@ -213,7 +216,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             // Give it additional texture
             Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-            Main.EntitySpriteDraw(explosionTex, drawPos, null, Color.Cyan * 0.3f, Projectile.rotation, explosionTex.Size() * 0.5f, 0.04f, SpriteEffects.None);
+            Main.EntitySpriteDraw(explosionTex, drawPos, null, contrastingColor * 0.3f, Projectile.rotation, explosionTex.Size() * 0.5f, 0.04f, SpriteEffects.None);
             Texture2D shineTex = Shine.Value;
             Main.EntitySpriteDraw(shineTex, drawPos, null, Color.HotPink * 0.5f, MathHelper.ToRadians(36f), shineTex.Size() * 0.5f, 0.45f, SpriteEffects.None);
             Main.EntitySpriteDraw(shineTex, drawPos, null, Color.Orange * 0.3f, MathHelper.ToRadians(216f), shineTex.Size() * 0.5f, 0.55f, SpriteEffects.None);
