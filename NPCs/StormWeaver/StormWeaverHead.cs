@@ -554,7 +554,8 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
                     {
                         Vector2 soundCenter = Main.player[NPC.target].Center;
-                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                        SoundStyle lightning = new("CalamityMod/Sounds/Custom/LightningTelegraph") { Volume = 0.7f };
+                        SoundEngine.PlaySound(lightning, soundCenter);
                     }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {

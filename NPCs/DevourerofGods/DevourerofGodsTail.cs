@@ -385,7 +385,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 NPC.soundDelay = 8;
                 float extrapitch = Main.zenithWorld ? 0.3f : 0f;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(DevourerofGodsHead.HitSound with { Pitch = DevourerofGodsHead.HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {
