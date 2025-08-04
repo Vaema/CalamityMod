@@ -117,11 +117,7 @@ namespace CalamityMod.Systems.Collections
                 NPCID.GolemHeadFree, NPCID.MoonLordFreeEye, NPCID.BloodSquid, NPCID.PlanterasHook, NPCID.Dandelion, NPCID.DD2DarkMageT1, NPCID.DD2DarkMageT3, NPCID.DD2OgreT2,
                 NPCID.DD2OgreT3, NPCID.DD2GoblinBomberT1, NPCID.DD2GoblinBomberT2, NPCID.DD2GoblinBomberT3, NPCID.DD2JavelinstT1, NPCID.DD2JavelinstT2, NPCID.DD2JavelinstT3,
                 NPCID.DD2KoboldWalkerT2, NPCID.DD2KoboldWalkerT3, NPCID.DD2DrakinT2, NPCID.DD2DrakinT3, NPCID.DD2KoboldFlyerT2, NPCID.DD2KoboldFlyerT3, NPCID.DD2WitherBeastT2,
-                NPCID.DD2WitherBeastT3, NPCID.DD2LightningBugT3, NPCID.MourningWood, NPCID.Pumpking, NPCID.Everscream, NPCID.IceQueen, NPCID.SantaNK1, NPCID.DevourerBody, NPCID.DevourerTail,
-                NPCID.DiggerBody, NPCID.DiggerTail, NPCID.TombCrawlerBody, NPCID.TombCrawlerTail, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail, NPCID.GiantWormBody, NPCID.GiantWormTail,
-                NPCID.LeechBody, NPCID.LeechTail, NPCID.StardustWormBody, NPCID.StardustWormTail, NPCID.SeekerBody, NPCID.SeekerTail, NPCID.BoneSerpentBody, NPCID.BoneSerpentTail,
-                NPCID.WyvernBody, NPCID.WyvernTail, NPCID.WyvernBody2, NPCID.WyvernBody3, NPCID.WyvernLegs, NPCID.CultistDragonBody1, NPCID.CultistDragonBody2, NPCID.CultistDragonBody3,
-                NPCID.CultistDragonBody4, NPCID.CultistDragonTail, NPCID.BloodEelBody, NPCID.BloodEelTail, NPCID.AncientDoom);
+                NPCID.DD2WitherBeastT3, NPCID.DD2LightningBugT3, NPCID.MourningWood, NPCID.Pumpking, NPCID.Everscream, NPCID.IceQueen, NPCID.SantaNK1, NPCID.AncientDoom);
 
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then that NPC will have its damage reduced by 25% if the world is in Hardmode.<br/>
