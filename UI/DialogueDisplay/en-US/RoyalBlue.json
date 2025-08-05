@@ -1,0 +1,179 @@
+{
+  "TextDelay": 3,
+  "BasePunctuationDelay": {
+    "Delay": 10,
+    "ForceSet": false,
+    "Locks": false
+  },
+  "PunctuationDelayCap": 30,
+  "PunctuationDelays": {
+    "!": {
+      "Delay": 20,
+      "ForceSet": true,
+      "Locks": true
+    },
+    "?": {
+      "Delay": 20,
+      "ForceSet": true,
+      "Locks": true
+    }
+  },
+
+  "Pages": [
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+
+      "TextDelay": 5,
+      "PunctuationDelays": {
+        "!": {
+          "Delay": 40,
+          "ForceSet": true,
+          "Locks": true
+        },
+        "?": {
+          "Delay": 40,
+          "ForceSet": true,
+          "Locks": true
+        }
+      },
+
+      "Lines": [
+        "[Wavy:'My Goddess... [Pause(2.5)]Are you sure of the course of action? [Pause(2.5)]]",
+        "[Wavy:We could all flee, [Pause(1)]we have the resources left for a full evacuation.']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'No matter to where we flee, the] [Wavy:[Shaking:[Scale(2):[Colors(FFD500):Godseeker]]]] [Wavy:and his troops will]",
+        "[Wavy:always be one step away. Even if we hid beneath the deepest of waters]",
+        "[Wavy:nothing will stop the wrath soon approaching.']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'Can't we erase any trail? Hide until his ultimate passing?]",
+        "[Wavy:Fake your death?!']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'...Oh, Amidias. I couldn't have wished for a better king.]",
+        "[Wavy:But the truth is...']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'Please, don't tell me you believe him.']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'...In his deathbed, [Colors(00FFD5):Vetrasyl] confessed to me.]",
+        "[Wavy:Of his weakness in the face of danger and shame of his escape.]",
+        "[Wavy:Despite his pleas to carry on his will,]",
+        "[Wavy:his sureness that he was entrusting the right woman,]",
+        "[Wavy:I knew that once I consumed his Soul, I would be a sinner.']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'...Otonilou, I will not...']"
+      ]
+    },
+
+    {
+      "BaseColor": "A75C1B",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'But none of you are.']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'I have bared my sin for longer than that man's wretched walk upon our planet,]",
+        "[Wavy:but my people were never sinners!]",
+        "[Wavy:None of you deserve this fate, to be erased from memory!]",
+        "[Wavy:And on this day, Amidias...']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'If I am a sinner,]",
+        "[Wavy:then my death shall wash away the sins of all who call themselves Ilmerans.]",
+        "[Wavy:I shall burn with our nation so that those who yet live may rise from its ashes,]",
+        "[Wavy:all free from the sin of your Gods!']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'My Goddess, I... I...']"
+      ]
+
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'Shed not a tear, Amidias.]",
+        "[Wavy:I know this is a tall order, but I wouldn't be giving it to you]",
+        "[Wavy:if I did not trust in your resolve. So heed me... When the time comes,]",
+        "[Wavy:guide our people. To a new home, where the sun shines even in the deepest of waters.']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'...It shall be done, my Goddess.]",
+        "[Wavy:I shall not perish, not until a future for our kind is secured.]",
+        "[Wavy:This, I promise.']"
+      ]
+    },
+
+    {
+      "BaseColor": "6383FF",
+      "Speaker": "Amidias",
+      "Lines": [
+        "[Wavy:'It was an honor to serve you, Otonilou.']"
+      ]
+    },
+
+    {
+      "BaseColor": "83ECEE",
+      "Speaker": "Otonilou",
+      "Lines": [
+        "[Wavy:'And it was an honor to have met you, my king.']"
+      ]
+    }
+  ]
+}

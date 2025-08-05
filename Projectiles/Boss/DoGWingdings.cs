@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Fonts;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using ReLogic.Graphics;
 using System;
 using System.IO;
@@ -15,17 +15,7 @@ namespace CalamityMod.Projectiles.Boss
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public static DynamicSpriteFont Wingdings = null;
-
         public string dialogue;
-
-        public override void SetStaticDefaults()
-        {
-            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                Wingdings = CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings", AssetRequestMode.ImmediateLoad).Value;
-            }
-        }
 
         public override void SetDefaults()
         {
@@ -100,10 +90,10 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Do not draw if the font isn't loaded or text is Cyrillic or Chinese
-            if (Wingdings == null || System.Environment.OSVersion.Platform != PlatformID.Win32NT || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+            if (FontAssetSystem.Fonts["Wingdings"] == null || System.Environment.OSVersion.Platform != PlatformID.Win32NT || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 return false;
             // Otherwise identical drawcode to CombatText
-            Vector2 stringSize = Wingdings.MeasureString(dialogue);
+            Vector2 stringSize = FontAssetSystem.Fonts["Wingdings"].MeasureString(dialogue);
             Vector2 origin = new Vector2(stringSize.X * 0.5f, stringSize.Y * 0.5f);
             Color cyan = Color.Cyan;
             float scale = Projectile.scale;
@@ -146,11 +136,11 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     float finalYPos = Projectile.position.Y - Main.screenPosition.Y;
                     finalYPos = (float)Main.screenHeight - finalYPos;
-                    Main.spriteBatch.DrawString(Wingdings, dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, finalYPos + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.DrawString(FontAssetSystem.Fonts["Wingdings"], dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, finalYPos + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
                 }
                 else
                 {
-                    Main.spriteBatch.DrawString(Wingdings, dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, Projectile.position.Y - Main.screenPosition.Y + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.DrawString(FontAssetSystem.Fonts["Wingdings"], dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, Projectile.position.Y - Main.screenPosition.Y + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
                 }
             }
             return false;
