@@ -85,11 +85,10 @@ namespace CalamityMod.Systems.Collections
                 { NPCType<PlanterasFreeTentacle>(), 5000 },
 
                 // Tier 3
-                { NPCID.Golem, 50000 }, // 30 seconds
-                { NPCID.GolemHead, 30000 },
-                { NPCID.GolemHeadFree, 30000 },
-                { NPCID.GolemFistLeft, 25000 },
-                { NPCID.GolemFistRight, 25000 },
+                { NPCID.Golem, 100000 }, // 30 seconds
+                { NPCID.GolemHead, 70000 },
+                { NPCID.GolemFistLeft, 30000 },
+                { NPCID.GolemFistRight, 30000 },
 
                 { NPCID.HallowBoss, 200000 }, // 30 seconds
 
