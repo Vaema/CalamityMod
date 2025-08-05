@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -20,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int OriginalUseTime = 34;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PlagueStaff>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Malevolence>();
         }
         public override void SetDefaults()
         {
