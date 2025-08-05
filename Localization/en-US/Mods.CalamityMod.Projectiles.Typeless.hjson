@@ -146,7 +146,8 @@ TransformerAura.DisplayName: Transformer Aura
 TransformerBlob.DisplayName: Transformer Shard
 UrsaSlash.DisplayName: Ursa Slash
 VerstaltiteBobber.DisplayName: Verstaltite Bobber
-VictideBobber.DisplayName: Victide Bobber
+VictideBarrier.DisplayName: Tidal Barrier
+VictideBobber.DisplayName: Snail Bobber
 VictideSeaSnail.DisplayName: Sea Snail
 VictideSpirit.DisplayName: Bubbly Spirit
 VoidFieldGenerator.DisplayName: Void Field Generator
@@ -164,4 +165,3 @@ XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 BatholithBangleProjectile.DisplayName: Batholith Bangle Projectile
 ScionsCurioMini.DisplayName: Scions Curio Mini
-VictideBarrier.DisplayName: Victide Barrier
