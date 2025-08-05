@@ -4602,7 +4602,7 @@ namespace CalamityMod.CalPlayer
         #region Modify Mana Cost
         public override void ModifyManaCost(Item item, ref float reduce, ref float mult)
         {
-            if (MagicGunIDList.Includes(item.type) && meteorSet)
+            if (CalamityItemSets.MagicGun[item.type] && meteorSet)
             {
                 mult *= 0.33f;
             }
@@ -4764,10 +4764,10 @@ namespace CalamityMod.CalPlayer
 
             if (veneratedLocket)
             {
-                var LocketSource = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<VeneratedLocket>()));
+                var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
-                    if (!VeneratedLocketBanList.Includes(item.type))
+                    if (!CalamityItemSets.DisablesVeneratedLocketEffect[item.type])
                     {
                         float veneratedCloneSpeed = item.shootSpeed;
                         Vector2 realPlayerPos = Player.RotatedRelativePoint(Player.MountedCenter, true);
@@ -5200,7 +5200,7 @@ namespace CalamityMod.CalPlayer
                 for (int i = 0; i < Player.MaxBuffs; i++)
                 {
                     int buff = Player.buffType[i];
-                    if (AlcoholsDict.TryGet(buff, out int level))
+                    if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                         Alcohol.Insert(0, new int[] { i, level });
                 }
 

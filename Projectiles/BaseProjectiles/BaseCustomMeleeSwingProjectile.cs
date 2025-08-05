@@ -275,10 +275,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         #endregion
 
         #region Overrides
-        public override void SetStaticDefaults()
-        {
-            ProjectileDestroyExceptionsList.List.Add(Projectile.type);
-        }
         /// <summary>
         /// DO NOT OVERRIDE IN MOST SITUATIONS
         /// use Defaults() instead.
@@ -302,8 +298,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
             Defaults();
-
-
         }
         /// <summary>
         /// DO NOT OVERRIDE IN MOST SITUATIONS

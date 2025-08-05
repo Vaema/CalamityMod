@@ -191,7 +191,7 @@ namespace CalamityMod.CalPlayer
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (AlcoholsDict.TryGet(buff, out var level))
+                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
             if (vodka)
@@ -331,11 +331,11 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = SicknessDebuffsList.Includes(buffID);
+                    bool shouldHalveDuration = CalamityBuffSets.IsSicknessDebuff[buffID];
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= FireDebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsFireDebuff[buffID];
                     if (purity)
-                        shouldHalveDuration |= DebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
 
                     if (shouldHalveDuration)
                         --Player.buffTime[l];
@@ -379,7 +379,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
+            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.IsFireDebuff[l]))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
@@ -402,7 +402,7 @@ namespace CalamityMod.CalPlayer
             if (purity)
             {
                 int intendedPurityDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     // Healing rate is normally 5 HP/s (+1 every 12 frames)
@@ -457,7 +457,7 @@ namespace CalamityMod.CalPlayer
                 // If the player has any debuffs, give the extra life regen and defense
                 // More defense is given for each additional debuff
                 int intendedJewelDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
@@ -484,7 +484,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
                 // If any debuff is detected, provide even more life regen and massively accelerate it
-                if (Player.buffType.Any(DebuffsList.List.Contains))
+                if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
                 {
                     Player.lifeRegen += 3;
                     if (Player.lifeRegenTime < 900)
@@ -651,7 +651,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int hasBuff = Player.buffType[l];
-                    lesserEffect = AlcoholsDict.TryGet(hasBuff, out var a);
+                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
                 }
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
