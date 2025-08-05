@@ -250,7 +250,7 @@ VictideHeadBurrow: {
 	Tooltip:
 		'''
 		{0}% increased movement speed and acceleration
-		Grants underwater breathing and slightly reduces breah loss in the abyss
+		Grants underwater breathing and slightly reduces breath loss in the abyss
 		'''
 	SetBonus:
 		'''
