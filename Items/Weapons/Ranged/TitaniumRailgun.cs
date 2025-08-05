@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
         }
 
-        public override Vector2? HoldoutOffset() => new Vector2(-5, 4);
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

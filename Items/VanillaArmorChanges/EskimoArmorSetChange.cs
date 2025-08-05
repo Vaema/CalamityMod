@@ -30,9 +30,9 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyArmorSetBonus(Player player)
         {
             player.Calamity().eskimoSet = true;
+            player.Calamity().ColdDebuffMultiplier += 0.25f;
 
             player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
         }
     }
 }

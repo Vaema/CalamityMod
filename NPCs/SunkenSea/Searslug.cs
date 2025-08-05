@@ -54,7 +54,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 0;
             NPC.lifeMax = 20;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -193,7 +192,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Wear protection!
             if (failed)
             {
-                player.AddBuff(BuffID.OnFire3, CalamityUtils.SecondsToFrames(5));
+                player.AddBuff(BuffID.OnFire, CalamityUtils.SecondsToFrames(5));
             }
         }
     }

@@ -224,13 +224,6 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.ForLoop = CalamityClientConfig.Instance.SunkenSeaMultiThreading switch
-                    {
-                        2 => SunkenSea.CSharpParallelFor,
-                        1 => SunkenSea.ReLogicParallelFor,
-                        _ => SunkenSea.NormalForLoop,
-                    };
-
                     // place each piece of the sunken sea based on the above positons
 
                     // messages intentionally in the "incorrect" order for the player's experience.

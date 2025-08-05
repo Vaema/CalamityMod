@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,12 +21,15 @@ namespace CalamityMod.Items.Weapons.Magic
         public static readonly SoundStyle CapSound = new("CalamityMod/Sounds/Item/HarpLV6");
         public static readonly SoundStyle EndSound = new("CalamityMod/Sounds/Item/HarpEnd");
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/Item/HarpNoteHit");
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Atlantis>();
+        }
         public override void SetDefaults()
         {
             Item.width = 56;
             Item.height = 50;
-            Item.damage = 127;
+            Item.damage = 65;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 7;
             Item.useTime = 22;
@@ -58,8 +63,8 @@ namespace CalamityMod.Items.Weapons.Magic
 
             if (nonReleasedMusicNotes >= musicNoteCap)
             {
-                Main.musicPitch = -0.5f;
-                SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
+                if (!Main.zenithWorld)
+                    SoundEngine.PlaySound(CapSound with { Volume = 0.8f }, player.Center);
                 return false;
             }
             else

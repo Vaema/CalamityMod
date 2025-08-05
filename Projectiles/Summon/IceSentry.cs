@@ -93,12 +93,10 @@ namespace CalamityMod.Projectiles.Summon
                         rememberTarget = Collision.CanHit(Projectile.Center, 0, 0, npc.position, npc.width, npc.height);
                         if (rememberTarget && Projectile.owner == Main.myPlayer)
                         {
-                            Vector2 speed = npc.Center - Projectile.Center;
-                            speed.Normalize();
-                            speed *= 8f;
+                            Vector2 iceSpeed = CalamityUtils.CalculatePredictiveAimToTarget(Projectile.Center, npc, 12f * (Utils.GetLerpValue(0f, 1000f, Vector2.Distance(Projectile.Center, npc.Center)) + 1));
                             if (Projectile.ai[1] >= 300f)
-                                speed = speed.RotatedBy(MathHelper.ToRadians(Main.rand.Next(-5, 6))) * 1.5f + npc.velocity / 2f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, speed + npc.velocity / 2f, ModContent.ProjectileType<IceSentryFrostBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                                iceSpeed = iceSpeed.RotatedByRandom(MathHelper.Pi * 0.025f);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, iceSpeed, ModContent.ProjectileType<IceSentryFrostBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                     }
                 }
@@ -132,7 +130,6 @@ namespace CalamityMod.Projectiles.Summon
 
                 if (possibleTarget > 0)
                 {
-                    //Main.NewText("new target acquired");
                     Projectile.ai[0] = possibleTarget;
                     Projectile.ai[1] = 0f;
                     Projectile.netUpdate = true;

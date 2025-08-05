@@ -73,7 +73,7 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.LifeFruit, 5).
+                AddIngredient(ItemID.LifeFruit).
                 AddIngredient<YharonSoulFragment>(5).
                 AddIngredient<AscendantSpiritEssence>().
                 AddTile<CosmicAnvil>().

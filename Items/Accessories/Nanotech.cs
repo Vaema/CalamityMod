@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Accessories
 {
     public class Nanotech : ModItem, ILocalizedModType
     {
+        //The stealth damage boost is handled in CalamityPlayer for some reason, maybe someone didn't want em to stack?
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {

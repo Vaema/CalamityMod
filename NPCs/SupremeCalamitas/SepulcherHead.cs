@@ -201,8 +201,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Vector2 segmentLocation = NPC.Center;
             float targetX = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.X + (Main.player[NPC.target].width / 2);
             float targetY = CalamityGlobalNPC.SCal < 0 ? 0 : Main.npc[CalamityGlobalNPC.SCal].position.Y + (Main.player[NPC.target].height / 2);
-            float sepMaxSpeed = BossRushEvent.BossRushActive ? 22.5f : 20f;
-            float sepAcceleration = (BossRushEvent.BossRushActive ? 0.2f : 0.175f) + (0.37f - AttackCooldown * 0.0015f);
+            float sepMaxSpeed = 20f;
+            float sepAcceleration = 0.175f + (0.37f - AttackCooldown * 0.0015f);
 
             float fasterMaxSpeed = sepMaxSpeed * 1.3f;
             float slowerMaxSpeed = sepMaxSpeed * 0.7f;
@@ -336,7 +336,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = (int)(NPC.GetProjectileDamage(type) * 0.5f);
                     int totalProjectiles = 30;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     float velocity = 1f;
@@ -345,7 +344,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, SupremeCalamitas.DartDamage, 0f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
                     }
                     NPC.netUpdate = true;
                 }

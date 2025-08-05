@@ -24,7 +24,6 @@ namespace CalamityMod.Systems.Collections
                 ItemType<Cryophobia>(),
                 ItemType<Effervescence>(),
                 ItemType<EidolicWail>(),
-                ItemType<GatlingLaser>(),
                 ItemType<Vulcan>(),
                 ItemType<Genesis>(),
                 ItemType<IonBlaster>(),

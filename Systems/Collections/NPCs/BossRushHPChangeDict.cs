@@ -32,11 +32,10 @@ namespace CalamityMod.Systems.Collections
 
                 { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
                 { NPCID.ServantofCthulhu, 6000 },
-                { NPCType<BloodlettingServant>(), 12000 },
 
-                { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
-                { NPCID.EaterofWorldsBody, 10000 },
-                { NPCID.EaterofWorldsTail, 10000 },
+                { NPCID.EaterofWorldsHead, 15000 }, // 30 seconds + immunity timer at start
+                { NPCID.EaterofWorldsBody, 15000 },
+                { NPCID.EaterofWorldsTail, 15000 },
 
                 { NPCID.BrainofCthulhu, 100000 }, // 30 seconds with creepers
                 { NPCID.Creeper, 10000 },
@@ -86,11 +85,10 @@ namespace CalamityMod.Systems.Collections
                 { NPCType<PlanterasFreeTentacle>(), 5000 },
 
                 // Tier 3
-                { NPCID.Golem, 50000 }, // 30 seconds
-                { NPCID.GolemHead, 30000 },
-                { NPCID.GolemHeadFree, 30000 },
-                { NPCID.GolemFistLeft, 25000 },
-                { NPCID.GolemFistRight, 25000 },
+                { NPCID.Golem, 100000 }, // 30 seconds
+                { NPCID.GolemHead, 70000 },
+                { NPCID.GolemFistLeft, 30000 },
+                { NPCID.GolemFistRight, 30000 },
 
                 { NPCID.HallowBoss, 200000 }, // 30 seconds
 

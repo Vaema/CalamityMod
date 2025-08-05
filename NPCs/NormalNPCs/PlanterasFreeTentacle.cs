@@ -28,11 +28,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
-            NPC.DR_NERD(0.1f);
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
@@ -45,10 +43,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -190,13 +184,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * balance);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 180);
+            NPC.damage = (int)(NPC.damage * 1.15f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

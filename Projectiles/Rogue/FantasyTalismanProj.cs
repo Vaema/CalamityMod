@@ -43,16 +43,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.StickyProjAI(4);
             if (Projectile.ai[0] == 1f)
             {
-                if (Projectile.timeLeft % 10 == 0)
+                if (Projectile.timeLeft % 40 == 0)
                 {
-                    if (Main.rand.NextBool(8))
+                    Projectile ghost = CalamityUtils.SpawnOrb(Projectile, (int)(Projectile.damage * 0.3f), ProjectileID.SpectreWrath, 1000f, 4f);
+                    if (ghost.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
-                        Projectile ghost = CalamityUtils.SpawnOrb(Projectile, (int)(Projectile.damage * 0.4f), ProjectileID.SpectreWrath, 1000f, 4f);
-                        if (ghost.whoAmI.WithinBounds(Main.maxProjectiles))
-                        {
-                            ghost.DamageType = RogueDamageClass.Instance;
-                            ghost.penetrate = 1;
-                        }
+                        ghost.DamageType = RogueDamageClass.Instance;
+                        ghost.penetrate = 1;
                     }
                 }
             }
@@ -64,7 +61,7 @@ namespace CalamityMod.Projectiles.Rogue
             return false;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(12);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => Projectile.ModifyHitNPCSticky(9);
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

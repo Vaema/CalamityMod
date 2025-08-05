@@ -18,12 +18,9 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().timeSlow < npc.buffTime[buffIndex])
-                npc.Calamity().timeSlow = npc.buffTime[buffIndex];
+            npc.Calamity().timeDistortion = true;
             if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().timeSlow;
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+                npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
     }
 }

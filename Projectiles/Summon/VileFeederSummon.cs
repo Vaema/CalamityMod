@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 3;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -146,24 +147,18 @@ namespace CalamityMod.Projectiles.Summon
                 if (Projectile.owner == Main.myPlayer)
                 {
                     if (eaterCooldown > 0)
-                        eaterCooldown -= Main.rand.Next(1, 3);
+                        eaterCooldown--;
 
                     if (eaterCooldown <= 0)
                     {
-                        int projNumber = Main.rand.Next(1, 3);
-                        for (int index2 = 0; index2 < projNumber; index2++)
-                        {
-                            float xVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                            float yVector = (float)Main.rand.Next(-35, 36) * 0.02f;
-                            xVector *= 10f;
-                            yVector *= 10f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, xVector, yVector, ModContent.ProjectileType<VileFeederProjectile>(), (int)(Projectile.damage * 1.25f), Projectile.knockBack, Projectile.owner);
-                        }
-                        eaterCooldown = 80;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(7f, 7f), ModContent.ProjectileType<VileFeederProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        eaterCooldown = Projectile.localNPCHitCooldown;
                     }
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

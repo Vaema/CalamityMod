@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         {
             CreateRecipe().
                 AddIngredient<AstralMonolith>(14).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

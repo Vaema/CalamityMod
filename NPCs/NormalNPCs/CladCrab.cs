@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 100;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 0.4f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit41 with { Pitch = 0.6f };
             NPC.DeathSound = SoundID.NPCDeath36 with { Pitch = -0.4f };
             Banner = NPC.type;
@@ -43,10 +43,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()

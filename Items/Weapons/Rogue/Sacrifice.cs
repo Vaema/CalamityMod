@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -11,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Sacrifice : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Violence>();
+        }
         public override void SetDefaults()
         {
             Item.width = Item.height = 68;

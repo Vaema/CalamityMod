@@ -60,7 +60,6 @@ namespace CalamityMod.NPCs.SlimeGod
         public static readonly SoundStyle ShotSound = new("CalamityMod/Sounds/Custom/SlimeGodShot", 2);
         public static readonly SoundStyle BigShotSound = new("CalamityMod/Sounds/Custom/SlimeGodBigShot", 2);
 
-        public static Asset<Texture2D> ZenithSeedEyeTexture;
         public static Asset<Texture2D> EyeTexture;
         public static Asset<Texture2D> OverlayTexture;
 
@@ -73,31 +72,22 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
-            NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
-            {
-                Scale = 0.5f,
-                PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SlimeGod_Bestiary",
-                PortraitPositionXOverride = 40,
-                PortraitPositionYOverride = 40
-            };
-            value.Position.X += 65;
-            value.Position.Y += 35;
-            NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
 
             if (!Main.dedServ)
             {
-                ZenithSeedEyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/SlimeGodEyes", AssetRequestMode.AsyncLoad);
                 EyeTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreEye", AssetRequestMode.AsyncLoad);
                 OverlayTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SlimeGod/ExtraTextures/SlimeGodCoreOverlay", AssetRequestMode.AsyncLoad);
             }
         }
 
+        public static int GlobDamage = 15; // 60
+        public static int PossessionDamageBoost = 10; // +20 flat contact damage
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 40; // 80
             NPC.npcSlots = 10f;
             NPC.width = 96;
             NPC.height = 98;
@@ -111,7 +101,7 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 12, 0, 0);
+            NPC.value = Item.buyPrice(gold: 8);
             NPC.Opacity = 0.8f;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<SlimeGodBossBar>();
@@ -122,9 +112,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -212,13 +199,11 @@ namespace CalamityMod.NPCs.SlimeGod
             Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
 
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
-
             CalamityGlobalNPC.slimeGod = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // For animating the eye
             NPC.localAI[0] += 1f;
@@ -504,7 +489,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
             if (expertMode && aggressionLevel >= (int)AggressionLevel.FireProjectiles)
             {
-                float divisor = bossRush ? 50f : death ? 90f : revenge ? 120f : 150f;
+                float divisor = death ? 90f : revenge ? 120f : 150f;
                 divisor -= (aggressionLevel - 1) * 10f;
                 if (aggressionLevel == (int)AggressionLevel.DoEverythingMoreOften)
                     divisor *= 0.5f;
@@ -518,17 +503,15 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             float projectileVelocity = 4f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableEbonianGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                         else
                         {
                             float projectileVelocity = 8f + (aggressionLevel - 1) * 2f;
                             int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
-                            int damage = NPC.GetProjectileDamage(type);
                             Vector2 velocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, GlobDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -546,8 +529,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 flySpeed += 3f;
             if (phase2)
                 flySpeed *= 1.1f;
-            if (bossRush)
-                flySpeed *= 1.2f;
             if (CalamityWorld.LegendaryMode)
                 flySpeed *= 1.3f;
 
@@ -636,10 +617,9 @@ namespace CalamityMod.NPCs.SlimeGod
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Texture2D eyeTexture = EyeTexture.Value;
             Texture2D overlayTexture = OverlayTexture.Value;
-            Texture2D pog = ZenithSeedEyeTexture.Value;
 
             // Used for animating the eye
-            if (NPC.localAI[0] % 6f == 0f)
+            if (NPC.localAI[0] % 6f == 0f && !NPC.IsABestiaryIconDummy)
             {
                 eyeFrameDrawn++;
                 if (eyeFrameX == 0)
@@ -703,9 +683,6 @@ namespace CalamityMod.NPCs.SlimeGod
             // Draw the overlay
             spriteBatch.Draw(overlayTexture, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
-            if (Main.zenithWorld)
-                spriteBatch.Draw(pog, NPC.Center - screenPos + new Vector2(0f, NPC.gfxOffY), NPC.frame, drawColorAlpha, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
-
             return false;
         }
 
@@ -730,7 +707,7 @@ namespace CalamityMod.NPCs.SlimeGod
             return minDist <= 40f * NPC.scale;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.HealingPotion;
         }

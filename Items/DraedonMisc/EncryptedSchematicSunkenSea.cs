@@ -61,7 +61,7 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip2" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
-                    int meleeItem = ModContent.ItemType<GaussDagger>();
+                    int meleeItem = ModContent.ItemType<Auger>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 1, meleeDisplay);

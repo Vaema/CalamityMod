@@ -22,18 +22,20 @@ namespace CalamityMod.NPCs.NormalNPCs
             Main.npcFrameCount[Type] = 5;
         }
 
+        public static int ShotDamage = 60; // 240
+
         public override void SetDefaults()
         {
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
-            NPC.damage = 100;
             NPC.width = 32;
             NPC.height = 80;
             NPC.scale *= 1.2f;
-            NPC.defense = 30;
-            NPC.lifeMax = 3750;
+            NPC.defense = 60;
+            NPC.lifeMax = 3500;
             NPC.knockBackResist = 0.1f;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 60, 0);
+            NPC.value = Item.buyPrice(silver: 60);
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.noGravity = true;
@@ -41,10 +43,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             Banner = ModContent.NPCType<PhantomSpirit>();
             BannerItem = ModContent.ItemType<PhantomSpiritBanner>();
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -87,11 +85,10 @@ namespace CalamityMod.NPCs.NormalNPCs
                 NPC.ai[2] = 0f;
                 float projSpeed = 10f;
                 int type = ModContent.ProjectileType<PhantomGhostShot>();
-                int damage = NPC.GetProjectileDamage(type);
                 targetDistance = projSpeed / targetDistance;
                 targetXDist *= targetDistance;
                 targetYDist *= targetDistance;
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), spiritPosition.X, spiritPosition.Y, targetXDist, targetYDist, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), spiritPosition.X, spiritPosition.Y, targetXDist, targetYDist, type, ShotDamage, 0f, Main.myPlayer, 0f, 0f);
             }
         }
 

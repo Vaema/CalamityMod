@@ -424,7 +424,7 @@ namespace CalamityMod.Projectiles.Summon
             return null;
         }
 
-        public override bool? CanDamage() => Projectile.ai[0] == 0f;
+        public override bool MinionContactDamage() => Projectile.ai[0] == 0f;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

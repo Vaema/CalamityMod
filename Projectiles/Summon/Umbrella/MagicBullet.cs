@@ -49,11 +49,11 @@ namespace CalamityMod.Projectiles.Summon.Umbrella
                 target.AddBuff(BuffID.BetsysCurse, 180);
             if (!target.ichor)
                 target.AddBuff(BuffID.Ichor, 180);
-            if (target.Calamity().marked <= 0)
+            if (target.Calamity().markedForDeath)
                 target.AddBuff(ModContent.BuffType<MarkedforDeath>(), 180);
-            if (target.Calamity().aCrunch <= 0)
+            if (target.Calamity().armorCrunch)
                 target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 180);
-            if (target.Calamity().wDeath <= 0)
+            if (target.Calamity().whisperingDeath)
                 target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
         }
 

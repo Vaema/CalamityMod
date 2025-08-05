@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,12 +10,18 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class SulphuricPoisoning : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 240,
+            SicknessDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
 
             // Acid Venom immunity is granted automatically if you are immune to Sulphuric Poisoning.
             BuffID.Sets.GrantImmunityWith[BuffID.Venom].Add(Type);
@@ -33,10 +40,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().sulphurPoison < npc.buffTime[buffIndex])
-                npc.Calamity().sulphurPoison = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().sulphurPoison = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

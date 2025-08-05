@@ -32,8 +32,13 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.ai[0]++;
             if (Projectile.ai[0] >= 20f)
             {
-                Projectile.velocity.Y += 0.35f;
-                Projectile.velocity.X *= 0.97f;
+                if (CalamityUtils.ClosestNPCAt(Projectile.Center, 280f) == null)
+                {
+                    Projectile.velocity.Y += 0.35f;
+                    Projectile.velocity.X *= 0.97f;
+                }
+                else
+                    CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 280f, 14f, 20f);
             }
             else
             {
@@ -42,9 +47,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Projectile.velocity.Y > 15f)
                 Projectile.velocity.Y = 15f;
-
-            if (Projectile.ai[0] >= 20f)
-                CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 280f, 14f, 20f);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

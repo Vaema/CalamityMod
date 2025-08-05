@@ -104,31 +104,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
                 NPC.alpha = HeadSegment.alpha;
 
-            /*AttackTimer += BossRushEvent.BossRushActive ? 1.5f : 1f;
-            float attackgate = !HeadSegment.Calamity().unbreakableDR && Main.zenithWorld ? 450f : 900f;
-            if (AttackTimer >= attackgate && NoStartAttack <= 0)
-            {
-                AttackTimer = 0f;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
-                    int totalProjectiles = 4;
-                    float radians = MathHelper.TwoPi / totalProjectiles;
-                    float velocity = 1f;
-                    float projectileVelocityToPass = 15f;
-
-                    Vector2 spinningPoint = Vector2.Normalize(new Vector2(-velocity, -velocity));
-                    for (int k = 0; k < totalProjectiles; k++)
-                    {
-                        Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
-                    }
-                    NPC.netUpdate = true;
-                }
-                SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound, NPC.Center);
-            }*/
-
             if (Main.npc.IndexInRange((int)NPC.ai[1]))
             {
                 Vector2 offsetToAheadSegment = AheadSegment.Center - NPC.Center;

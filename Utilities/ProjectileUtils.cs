@@ -845,7 +845,6 @@ namespace CalamityMod
 
         private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()
         {
-            TileID.DemonAltar,
             TileID.Cobalt,
             TileID.Mythril,
             TileID.Adamantite,
@@ -854,8 +853,7 @@ namespace CalamityMod
             TileID.Titanium,
             TileID.Chlorophyte,
             TileID.LihzahrdBrick,
-            TileID.LihzahrdAltar,
-            TileID.DesertFossil
+            TileID.LihzahrdAltar
         };
 
         public static void ExplodeTiles(this Projectile p, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
@@ -918,6 +916,13 @@ namespace CalamityMod
                 // Conditionally toss in Hellstone if it's not Hardmode yet.
                 if (!Main.hardMode)
                     blastImmuneTiles.Add(TileID.Hellstone);
+
+                // Also spikes in FTW
+                if (Main.getGoodWorld)
+                {
+                    blastImmuneTiles.Add(TileID.Spikes);
+                    blastImmuneTiles.Add(TileID.WoodenSpikes);
+                }
             }
 
             // If specified, add custom blast immune tiles.

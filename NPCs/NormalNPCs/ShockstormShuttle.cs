@@ -29,12 +29,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 64;
             NPC.height = 38;
             NPC.defense = 15;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 190;
+            NPC.lifeMax = 250;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.noGravity = true;
@@ -43,10 +42,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ShockstormShuttleBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (posDiff.Length() <= Radius)
             {
                 BuffedPlayer.Calamity().getSandCloakAccelBoost = true;
-                BuffedPlayer.statDefense += 10;
+                BuffedPlayer.statDefense += SandCloak.SandVeilDefenseBoost;
             }
             else
                 BuffedPlayer.Calamity().getSandCloakAccelBoost = false;
