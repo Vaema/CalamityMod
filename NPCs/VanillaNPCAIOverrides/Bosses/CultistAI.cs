@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int lightningDamage = isCultist ? LightningDamage : 0;
 
             int iceMistFireRate = phase2 ? 50 : 60;
-            float iceMistSpeed = (phase6 ? 12f : 10f) + (death ? (1f - lifeRatio) : 0f);
+            float iceMistSpeed = 8f + (death ? 2 : 1) * (1f - lifeRatio);
             int iceMistAmt = phase3 ? 2 : 1;
             int fireballFireRate = (phase5 ? 10 : 12) - (death ? 6 : 0);
             float fireballSpeed = ((phase7 ? 8f : phase6 ? 7f : 6f) + (death ? (1f - lifeRatio) : 0f)) * (isCultist ? 1f : 0.5f);
@@ -257,11 +257,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         // Move to target
                         case 0:
-                        case 2:
                         case 4:
                         case 6:
                         case 8:
-                        case 10:
                         case 12:
                         case 14:
                         case 16:
@@ -270,6 +268,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             phase = 0;
                             break;
 
+                        case 2:
+                        case 10:
+                            phase = 0;
+                            distanceAboveTarget *= death ? 1.5f : 2;
+                            predictionDistance *= death ? 1.5f : 2;
+                            break;
                         // Fireball
                         case 1:
                         case 15:
@@ -470,7 +474,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         Vector2 iceMistDirection = npc.Center + new Vector2(npc.direction * 30, 12f);
                         Vector2 iceMistVelocity = vec * iceMistSpeed;
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), iceMistDirection, iceMistVelocity, ProjectileID.CultistBossIceMist, iceMistDamage, 0f, Main.myPlayer, 0f, 1f);
+                        var icemist = Main.projectile[Projectile.NewProjectile(npc.GetSource_FromAI(), iceMistDirection, iceMistVelocity, ProjectileID.CultistBossIceMist, iceMistDamage, 0f, Main.myPlayer, 0f, 1f)];
+                        icemist.timeLeft = 120;
                     }
                 }
 
@@ -826,7 +831,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (playerDirection.HasNaNs())
                     playerDirection = new Vector2(npc.direction, 0f);
 
-                if ((npc.ai[1] >= 4f & isCultist) && (int)(npc.ai[1] - 4f) % ancientLightSpawnRate == 0)
+                if ((npc.ai[1] >= 4f & isCultist) && (int)(npc.ai[1] - 4f) % ancientLightSpawnRate == 0 && (int)(npc.ai[1] - 4f) / ancientLightSpawnRate <= (death ? 4 : 3))
                 {
                     if ((int)(npc.ai[1] - 4f) / ancientLightSpawnRate == 2)
                     {
@@ -858,26 +863,27 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (playerDirection.HasNaNs())
                             playerDirection = new Vector2(npc.direction, 0f);
 
-                        Vector2 ancientLightShootDirection = npc.Center + new Vector2(npc.direction * 30, 12f);
+                        Vector2 ancientLightShootDirection = npc.Center;
                         float scaleFactor = death ? 6f : 4f;
 
-                        float ancientLightSpread = MathHelper.ToRadians(15f);
+                        float ancientLightSpread = MathHelper.ToRadians(80f);
                         int ancientLightInc = 0;
-                        float totalAncientLights = 5f;
-                        while (ancientLightInc < totalAncientLights)
+                        float totalAncientLights = death ?  9 : 7;
+                        float adjustTotal = totalAncientLights - 1;
+                        for (var i = 0; i < totalAncientLights; i++)
                         {
-                            Vector2 ancientLightSpeed = playerDirection * scaleFactor;
-                            ancientLightSpeed = ancientLightSpeed.RotatedBy(ancientLightSpread * ancientLightInc - (MathHelper.Pi / totalAncientLights * 2f - ancientLightSpread) / 2f);
+                            var shotgunscalar = Math.Abs(i - (adjustTotal * 0.5f)) / (adjustTotal * 0.5f);
+                            float angleOffset = ancientLightSpread * (i / adjustTotal) - ancientLightSpread * 0.5f;
+                            Vector2 ancientLightSpeed = playerDirection.RotatedBy(angleOffset) * scaleFactor * (0.75f + 1.5f * shotgunscalar);
                             float ai = (Main.rand.NextFloat() - 0.5f) * 0.3f * MathHelper.TwoPi / 60f;
                             int ancientLightProj = NPC.NewNPC(npc.GetSource_FromAI(), (int)ancientLightShootDirection.X, (int)ancientLightShootDirection.Y + 7, NPCID.AncientLight, 0, 0f, ai, ancientLightSpeed.X, ancientLightSpeed.Y);
                             Main.npc[ancientLightProj].velocity = ancientLightSpeed;
-                            ancientLightInc++;
                         }
                     }
                 }
 
                 npc.ai[1] += 1f;
-                if (npc.ai[1] >= (4 + ancientLightSpawnRate * ancientLightAmt))
+                if (npc.ai[1] >= (30 + ancientLightSpawnRate * ancientLightAmt))
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
@@ -892,7 +898,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 npc.localAI[2] = 13f;
 
-                if ((npc.ai[1] >= 4f & isCultist) && (int)(npc.ai[1] - 4f) % 20f == 0f)
+                if ((npc.ai[1] >= 4f & isCultist) && (int)(npc.ai[1] - 4f) % 20f == 0f && npc.ai[1] <= 64)
                 {
                     List<int> list8 = new List<int>();
                     for (int k = 0; k < Main.maxNPCs; k++)
@@ -911,56 +917,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if (phase4)
-                        {
                             // Spawn circle of Ancient Dooms around target
-                            for (int i = 0; i < ancientDoomLimit; i++)
+                            for (int i = 0; i < ancientDoomLimit * (0.5f + 1-lifeRatio); i++)
                             {
                                 float ai2 = i * 120;
                                 NPC.NewNPC(npc.GetSource_FromAI(), (int)(player.Center.X + (float)(Math.Sin(i * 120) * 550)), (int)(player.Center.Y + (float)(Math.Cos(i * 120) * 550)),
                                     NPCID.AncientDoom, 0, npc.whoAmI, 0f, ai2, 0f, Main.maxPlayers);
                             }
-                        }
-                        else
-                        {
-                            // Spawn Ancient Dooms randomly around the target
-                            for (int i = 0; i < ancientDoomAmt; i++)
-                            {
-                                Point cultistCenterTileCoords = npc.Center.ToTileCoordinates();
-                                Point targetCenterTileCoords = Main.player[npc.target].Center.ToTileCoordinates();
-                                Vector2 targetDistanceDoom = Main.player[npc.target].Center - npc.Center;
 
-                                int randSpawnOffset = 20;
-                                int cultistCenterSpawnOffset = 3;
-                                int targetCenterSpawnOffset = 7;
-                                int tileCollisionRange = 2;
-                                int spawnAttempts = 0;
-                                bool doomSufficientlyFar = targetDistanceDoom.Length() > 2800f;
-                                while (!doomSufficientlyFar && spawnAttempts < 100)
-                                {
-                                    spawnAttempts++;
-                                    int ancientDoomSpawnX = Main.rand.Next(targetCenterTileCoords.X - randSpawnOffset, targetCenterTileCoords.X + randSpawnOffset + 1);
-                                    int ancientDoomSpawnY = Main.rand.Next(targetCenterTileCoords.Y - randSpawnOffset, targetCenterTileCoords.Y + randSpawnOffset + 1);
-                                    if ((ancientDoomSpawnY < targetCenterTileCoords.Y - targetCenterSpawnOffset || ancientDoomSpawnY > targetCenterTileCoords.Y + targetCenterSpawnOffset || ancientDoomSpawnX < targetCenterTileCoords.X - targetCenterSpawnOffset || ancientDoomSpawnX > targetCenterTileCoords.X + targetCenterSpawnOffset) && (ancientDoomSpawnY < cultistCenterTileCoords.Y - cultistCenterSpawnOffset || ancientDoomSpawnY > cultistCenterTileCoords.Y + cultistCenterSpawnOffset || ancientDoomSpawnX < cultistCenterTileCoords.X - cultistCenterSpawnOffset || ancientDoomSpawnX > cultistCenterTileCoords.X + cultistCenterSpawnOffset) && !Main.tile[ancientDoomSpawnX, ancientDoomSpawnY].HasUnactuatedTile)
-                                    {
-                                        bool notInsideTiles = true;
-                                        if (notInsideTiles && Collision.SolidTiles(ancientDoomSpawnX - tileCollisionRange, ancientDoomSpawnX + tileCollisionRange, ancientDoomSpawnY - tileCollisionRange, ancientDoomSpawnY + tileCollisionRange))
-                                            notInsideTiles = false;
-
-                                        if (notInsideTiles)
-                                        {
-                                            NPC.NewNPC(npc.GetSource_FromAI(), ancientDoomSpawnX * 16 + 8, ancientDoomSpawnY * 16 + 8, NPCID.AncientDoom, 0, npc.whoAmI);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
 
                 npc.ai[1] += 1f;
-                if (npc.ai[1] >= 64f)
+                if (npc.ai[1] >= 240f)
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
@@ -1091,7 +1060,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.damage = npc.defDamage = 0;
             float duration = 420f;
             float spawnAnimTime = 120f;
-            int rateOfChange = death ? 2 : 1;
+            int rateOfChange = 6;
             float splitProjVelocity = death ? 4.5f : 3f;
 
             // Percent life remaining for Cultist or Eidolon Wyrm
@@ -1108,12 +1077,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (target == Main.maxPlayers)
                     target = Main.npc[(int)npc.ai[0]].target;
 
-                if (phase2 || death)
-                    rateOfChange++;
-
-                if (phase4 || death)
-                    rateOfChange++;
-
                 if (Main.npc[(int)npc.ai[0]].type == ModContent.NPCType<PrimordialWyrmHead>())
                     npc.dontTakeDamage = true;
             }
@@ -1128,8 +1091,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.Center = npc.position;
             npc.alpha = (int)(255f - growthRate * 255f);
 
-            if (phase3)
-            {
                 if (npc.ai[3] == 0f)
                     npc.ai[3] = npc.ai[2];
 
@@ -1146,7 +1107,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.position.Y = Main.player[target].Center.Y - (int)(Math.Sin(rad) * dist) - npc.height / 2;
                 float spinVelocity = 8f * (1f - (npc.ai[1] / duration));
                 npc.ai[3] += spinVelocity;
-            }
 
             if (Main.rand.NextBool(6))
             {
@@ -1195,13 +1155,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 kill = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : death ? 5 : 4;
+                    int totalProjectiles = Main.getGoodWorld ? 7 : death ? 5 : 3;
+                    if (!phase3)
+                        totalProjectiles -= death ? 2 : 1;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     Vector2 spinningPoint = new Vector2(0f, -splitProjVelocity);
+                    var rotOffset = npc.DirectionTo(Main.player[target].Center).ToRotation();
                     for (int k = 0; k < totalProjectiles; k++)
                     {
-                        Vector2 doomProjRotate = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, doomProjRotate, type, damage, 0f, Main.myPlayer);
+                        Vector2 doomProjRotate = spinningPoint.RotatedBy(rotOffset + MathHelper.Pi*((k+1)/(float)(totalProjectiles+1)));
+                        var proj = Main.projectile[Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, doomProjRotate, type, damage, 0f, Main.myPlayer)];
+                        proj.tileCollide = false;
                     }
                 }
             }
