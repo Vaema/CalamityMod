@@ -1092,6 +1092,7 @@ namespace CalamityMod.CalPlayer
         /// <summary> Calamity's Frost armor set bonus; gives a combined 20% damage boost split between melee and ranged based on distance from the closest enemy. </summary>
         public bool frostSet = false;
         public bool victideBarrierSet = false;
+        public int victideBarrierHeal = 0;
         public bool victideBarrierHead = false;
         public bool victideBurrowSet = false;
         public bool victideBurrowHead = false;

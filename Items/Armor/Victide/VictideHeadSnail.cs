@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Armor.Victide
 
         public static int FishingPowerBoost = 5;
         public static int AggroReduction = 200;
-
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FishingPowerBoost);
 
         public override void SetDefaults()

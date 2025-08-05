@@ -2274,6 +2274,12 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
+                if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
+                {
+                    int healAmt = (int)(hurtInfo.Damage * VictideHeadBarrier.BarrierDamageAbsorptionPercent);
+                    victideBarrierHeal += healAmt;
+                }
+
                 if (daedalusAbsorb && Main.rand.NextBool(10))
                 {
                     int healAmt = (int)(hurtInfo.Damage / 2D);
@@ -2951,17 +2957,6 @@ namespace CalamityMod.CalPlayer
                 // Apply floor
                 if (defenseDamageTaken < defenseDamageFloor)
                     defenseDamageTaken = defenseDamageFloor;
-            }
-
-            // Victide Barrier interaction: absorbs defense damage and converts it to healing
-            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
-            {
-                int conversionAmount = (defenseDamageTaken >= VictideHeadBarrier.BarrierDefenseDamageRecovery ? VictideHeadBarrier.BarrierDefenseDamageRecovery : defenseDamageTaken);
-                if (conversionAmount > 0)
-                {
-                    defenseDamageTaken -= conversionAmount;
-                    Player.HealPlayer(conversionAmount);
-                }
             }
 
             // The amount of defense damage taken is now final. Apply it.

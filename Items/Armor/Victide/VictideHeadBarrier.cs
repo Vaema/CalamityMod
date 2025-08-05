@@ -19,13 +19,14 @@ namespace CalamityMod.Items.Armor.Victide
 
         public static int RegenBoost = 2;
         public static float RunAccelerationMult = 1.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), RunAccelerationMult.Round());
+
+        // Set Bonus
         public static int BarrierCooldown = CalamityUtils.SecondsToFrames(8);
-        public static int BarrierDefenseBoost = 10;
-        public static int BarrierDefenseDamageRecovery = 2;
+        public static int BarrierDefenseBoost = 8;
+        public static float BarrierDamageAbsorptionPercent = 0.1f;
         public static int BarrierDamage = 50;
         public static float BarrierExplosionKB = 8f;
-
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenBoost.ToRegenPerSecond(), RunAccelerationMult.Round());
 
         public override void SetDefaults()
         {
@@ -33,7 +34,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 9; // 18
+            Item.defense = 7; // 16
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();
@@ -41,7 +42,7 @@ namespace CalamityMod.Items.Armor.Victide
         public override void UpdateArmorSet(Player player)
         {
             Color AbilityBriefColor = Color.Lerp(new Color(97, 200, 255), new Color(255, 170, 204), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
-            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), BarrierDefenseBoost, BarrierDefenseDamageRecovery, CalamityUtils.GetArmorSetBonusKey(), BarrierCooldown.FramesToSeconds());
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), BarrierDefenseBoost, BarrierDamageAbsorptionPercent.ToPercent(), CalamityUtils.GetArmorSetBonusKey(), BarrierCooldown.FramesToSeconds());
             player.Calamity().victideBarrierSet = true;
 
             if (!player.HasCooldown(WardingWave.ID))

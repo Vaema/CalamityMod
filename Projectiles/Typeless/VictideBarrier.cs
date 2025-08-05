@@ -33,6 +33,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public ref float ExplodeTimer => ref Projectile.ai[0];
         public ref float DashTimer => ref Projectile.ai[1];
+        public ref float HealTimer => ref Projectile.ai[2];
         public Player Owner => Main.player[Projectile.owner];
 
         public static Asset<Texture2D> Shine;
@@ -139,9 +140,10 @@ namespace CalamityMod.Projectiles.Typeless
             else
             {
                 // If the barrier set isn't on, unceremoniously disappear
-                if (!Owner.Calamity().victideBarrierSet)
+                if (!Owner.Calamity().victideBarrierSet || Owner.dead || !Owner.active)
                 {
                     Projectile.Kill();
+                    Owner.Calamity().victideBarrierHeal = 0;
                     return;
                 }
                 // Set to dash if cooldown is detected and also create an explosion in its place
@@ -149,6 +151,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     DashTimer++;
                     Projectile.damage = (int)Owner.GetBestClassDamage().ApplyTo(VictideHeadBarrier.BarrierDamage);
+                    Owner.Calamity().victideBarrierHeal = 0;
                     if (Projectile.owner == Main.myPlayer)
                     {
                         // Set dash velocity
@@ -159,6 +162,18 @@ namespace CalamityMod.Projectiles.Typeless
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.MountedCenter, Vector2.Zero, Type, Projectile.damage, VictideHeadBarrier.BarrierExplosionKB, Projectile.owner, 1f);
                     }
                 }
+
+                if (Owner.Calamity().victideBarrierHeal > 0)
+                {
+                    HealTimer++;
+                    if (HealTimer % 10f == 9f)
+                    {
+                        Owner.Calamity().victideBarrierHeal--;
+                        Owner.HealPlayer(1);
+                    }
+                }
+                else
+                    HealTimer = 0f;
 
                 Lighting.AddLight(Owner.MountedCenter, Color.White.ToVector3() * 0.5f);
                 Projectile.Center = Owner.MountedCenter;
