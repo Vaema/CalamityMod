@@ -693,11 +693,8 @@ namespace CalamityMod.Items
             {
                 // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
                 modPlayer.bloomStone = false;
-                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
                 modPlayer.bloomStone = true;
-
-                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
-                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
             }
 
             // Staff/Axe of Regrowth growing Calamity grass
@@ -729,41 +726,6 @@ namespace CalamityMod.Items
         {
             if (player.Calamity().profanedCrystalBuffs && item.pick == 0 && item.axe == 0 && item.hammer == 0 && item.autoReuse && (item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<MagicDamageClass>() || item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<SummonMeleeSpeedDamageClass>()))
             {
-                return false;
-            }
-            if (player.ActiveItem().type == ModContent.ItemType<IgneousExaltation>())
-            {
-                bool hasBlades = false;
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
-                    {
-                        hasBlades = true;
-                        break;
-                    }
-                }
-                if (hasBlades)
-                {
-                    foreach (Projectile p in Main.ActiveProjectiles)
-                    {
-                        if (p.ModProjectile is IgneousBlade)
-                        {
-                            if (p.ModProjectile<IgneousBlade>().Firing)
-                                continue;
-                        }
-                        if (p.type == ModContent.ProjectileType<IgneousBlade>() && p.owner == player.whoAmI && p.localAI[1] == 0f)
-                        {
-                            p.rotation = MathHelper.PiOver2 + MathHelper.PiOver4;
-                            // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                            p.velocity = p.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 22f;
-                            p.rotation += p.velocity.ToRotation();
-                            p.ai[0] = 180f;
-                            p.ModProjectile<IgneousBlade>().Firing = true;
-                            p.tileCollide = true;
-                            p.netUpdate = true;
-                        }
-                    }
-                }
                 return false;
             }
             if (player.ActiveItem().type == ModContent.ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationBlackhole>()] == 0)
@@ -912,7 +874,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.Includes(item.type))
+            if (item.type == ItemID.MonkStaffT1 || CalamityItemSets.AutoreusableSpear[item.type])
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
@@ -1674,7 +1636,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (ItemsForcedInsideWorldList.Includes(item.type))
+            if (CalamityItemSets.ItemForcedInsideWorld[item.type])
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion

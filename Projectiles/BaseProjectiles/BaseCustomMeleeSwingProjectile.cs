@@ -161,10 +161,24 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Defaults to 0.5f
         /// </summary>
         public virtual float RotateInStartup { get; set; } = 0.5f;
+
+        /// <summary>
+        /// Speed at which the projectile should rotate to match the mouse angle during Cooldown.
+        /// Set to 0 to disable.
+        /// Defaults to 0.5f
+        /// </summary>
+        public virtual float RotateInCooldown { get; set; } = 0.5f;
+
         /// <summary>
         /// What sound to use when the sword begins the actual swing (after startup frames)
         /// </summary>
         public virtual SoundStyle? UseSound {get; set;} = null;
+        /// <summary>
+        /// The length (from the player) of the projectile's line collision.
+        /// This helps to prevent blindspots.
+        /// Defaults to 0
+        /// </summary>
+        public virtual float lineCollisionLength { get; set; } = 0;
 
         #endregion
 
@@ -174,6 +188,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Angle of the swing. By default, gets set to mouse angle. Can be set in Spawn(IEntitySource) for fixed angles.
         /// </summary>
         public Vector2 angle { get; set; } = Vector2.Zero;
+        /// <summary>
+        /// The projectile's center based on offset to the player the previous update
+        /// Can be used for effects that stay consistent in motion
+        /// </summary>
+        public Vector2 oldPlayerOffset { get; set; }
         /// <summary>
         /// Internal timer for the projectile's entire lifespan
         /// </summary>
@@ -256,10 +275,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         #endregion
 
         #region Overrides
-        public override void SetStaticDefaults()
-        {
-            ProjectileDestroyExceptionsList.List.Add(Projectile.type);
-        }
         /// <summary>
         /// DO NOT OVERRIDE IN MOST SITUATIONS
         /// use Defaults() instead.
@@ -283,8 +298,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 100;
             Defaults();
-
-
         }
         /// <summary>
         /// DO NOT OVERRIDE IN MOST SITUATIONS
@@ -354,7 +367,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             float adust = MathHelper.ToRadians(225);
             if (timer < StartupTime || timer > StartupTime + swingTime)
             {
-                angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
+                if (inStartup)
+                    angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
+                if (inCooldown)
+                    angle = Vector2.Lerp(angle, (player.Center - Main.MouseWorld).SafeNormalize(Vector2.One), RotateInCooldown);
                 if (angle.X < 0)
                 {
                     player.direction = 1;
@@ -389,7 +405,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
-
+            oldPlayerOffset = Projectile.Center - player.Center;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;
             if (timer > ExistsTime)
@@ -469,6 +485,21 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             hitbox.Width = (int)(Projectile.width * Projectile.scale);
             hitbox.Location = (center - new Vector2(hitbox.Width / 2, hitbox.Height / 2)).ToPoint();
 
+        }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            if (lineCollisionLength > 0)
+            {
+                var player = Main.player[Projectile.owner];
+                var armcenter = player.Center - new Vector2(5 * player.direction, 2);
+                var swordDir = armcenter.DirectionTo(Projectile.Center);
+                var collisionline = new Vector2(lineCollisionLength / 2f, 0).RotatedBy(swordDir.ToRotation())*Projectile.scale;
+                bool c = Collision.CheckAABBvLineCollision(targetHitbox.Location.ToVector2(), targetHitbox.Size(), Projectile.Center, Projectile.Center + collisionline);
+                if (c && !float.IsNaN(collisionline.X) && !float.IsNaN(collisionline.Y))
+                    return true;
+            }
+            return base.Colliding(projHitbox, targetHitbox);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

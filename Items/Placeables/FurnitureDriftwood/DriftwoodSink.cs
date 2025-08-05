@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureDriftwood
             CreateRecipe().
                 AddIngredient<Driftwood>(6).
                 AddIngredient(ItemID.WaterBucket).
-                AddTile(TileID.Sawmill).
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

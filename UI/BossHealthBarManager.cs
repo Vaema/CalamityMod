@@ -141,12 +141,11 @@ namespace CalamityMod.UI
             OneToMany[NPCID.PrimeCannon] = SkelePrime;
             OneToMany[NPCID.PrimeLaser] = SkelePrime;
 
-            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead, NPCID.GolemHeadFree };
+            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead };
             OneToMany[NPCID.Golem] = Golem;
             OneToMany[NPCID.GolemFistLeft] = Golem;
             OneToMany[NPCID.GolemFistRight] = Golem;
             OneToMany[NPCID.GolemHead] = Golem;
-            OneToMany[NPCID.GolemHeadFree] = Golem;
 
             int[] Saucer = new int[] { NPCID.MartianSaucerCore, NPCID.MartianSaucerTurret, NPCID.MartianSaucerCannon };
             OneToMany[NPCID.MartianSaucerCore] = Saucer;

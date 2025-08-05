@@ -27,11 +27,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             this.HideFromBestiary();
         }
 
-        public static int ToothDamage = 23; // 92
+        public static int ToothDamage = 25; // 100
 
         public override void SetDefaults()
         {
             NPC.damage = 52; // 104
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 20;
@@ -235,7 +236,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     for (int a = 0; a < Main.npc.Length; a++)
                     {
                         int type = Main.npc[a].type;
-                        if (AquaticScourgeIDList.Includes(type))
+                        if (CalamityNPCTypeSets.AquaticScourge.Contains(type))
                             Main.npc[a].active = false;
                     }
                 }
@@ -258,7 +259,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             }
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 

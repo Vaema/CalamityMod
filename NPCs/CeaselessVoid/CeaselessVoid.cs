@@ -73,7 +73,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.defense = 80;
             NPC.Calamity().DR = 0.5f;
             NPC.LifeMaxNERB(65000, 78000, 72000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -214,7 +214,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            float tileEnrageMult = (CalamityWorld.LegendaryMode && revenge) ? 1.5f : 1f;
+            float tileEnrageMult = CalamityWorld.MaliceMode ? 1.5f : 1f;
             NPC.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !BossRushEvent.BossRushActive;
 
             // Set AI variable to be used by Dark Energies
@@ -231,7 +231,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (!anyDarkEnergies)
             {
                 // This is here because it's used in multiple places
-                float suckDistance = (CalamityWorld.LegendaryMode && revenge) ? 2400f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+                float suckDistance = CalamityWorld.MaliceMode ? 2400f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
 
                 // Move closer to the target before trying to succ
                 if (movingDuringSuccPhase)
@@ -815,12 +815,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.soundDelay == 0 && NPC.life >= NPC.lifeMax * 0.05f)
             {
                 NPC.soundDelay = 8;
-                float pitchVar = 0;
-                if (Main.zenithWorld)
-                {
-                    pitchVar = Main.rand.Next(-60, 41) * 0.01f;
-                }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
+                float pitchVar = Main.zenithWorld ? 0.4f : 0;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { PitchVariance = pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)

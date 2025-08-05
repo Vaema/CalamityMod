@@ -36,7 +36,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 90;
             NPC.width = 136;
             NPC.height = 62;
@@ -44,7 +43,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 800;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.85f;

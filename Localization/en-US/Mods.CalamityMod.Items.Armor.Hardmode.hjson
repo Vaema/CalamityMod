@@ -2,21 +2,21 @@ AstralBreastplate: {
 	DisplayName: Astral Breastplate
 	Tooltip:
 		'''
-		7% increased damage
-		+80 max mana
+		{$CommonItemTooltip.IncreasesMaxManaBy}
+		{$CommonItemTooltip.PercentIncreasedDamage@1}
 		'''
 }
 
 AstralHelm: {
 	DisplayName: Astral Helm
-	Tooltip: 5% increased damage and 10% increased critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance}"
 	SetBonus:
 		'''
-		+3 max minions
-		10% increased damage and critical strike chance
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedDamageCritChance@1}
 		Detects nearby creatures, enemy projectiles, danger sources, and treasure
 		Whenever you crit an enemy, a barrage of stars will rain down
-		This effect has a 1 second cooldown before it can trigger again
+		This effect has a {2} {^2:second;seconds} cooldown before it can trigger again
 		'''
 }
 
@@ -24,8 +24,8 @@ AstralLeggings: {
 	DisplayName: Astral Leggings
 	Tooltip:
 		'''
-		5% increased damage
-		15% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedDamage}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -33,32 +33,31 @@ BrimflameBoots: {
 	DisplayName: Brimflame Boots
 	Tooltip:
 		'''
-		5% increased magic damage
-		5% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedMagicDamage}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
+		'''
+}
+
+BrimflameCowl: {
+	DisplayName: Brimflame Cowl
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamageCritChance@2}
+		Immunity to On Fire!, Brimstone Flames and Frostburn
+		'''
+	SetBonus:
+		'''
+		{$CommonItemTooltip.PercentIncreasedMagicDamageCritChance}
+		[c/{1}:Brimflame Frenzy - {2} for {3} {^3:second;seconds} of {$CommonItemTooltip.PercentIncreasedMagicDamage@4}]
+		[c/FF9173:However, this inflicts rapid life loss and disables mana regeneration and mana potions]
+		[c/FF9173:This effect can be toggled off and has a cooldown of {5} {^5:second;seconds}]
 		'''
 }
 
 BrimflameRobes: {
 	DisplayName: Brimflame Robes
-	Tooltip: 5% increased magic damage and critical strike chance
-}
-
-BrimflameScowl: {
-	DisplayName: Brimflame Cowl
-	Tooltip:
-		'''
-		5% increased magic damage and critical strike chance
-		Increases maximum mana by 80 and reduces mana usage by 10%
-		Immunity to On Fire!, Brimstone Flames and Frostburn
-		'''
-	SetBonus:
-		'''
-		Grants an additional 15% increased magic damage and critical strike chance
-		Press {0} to trigger a brimflame frenzy effect
-		While under this effect, you get an additional 40% increase to magic damage
-		However, this inflicts rapid life loss and disables mana regeneration and mana potions
-		This can be toggled off, however, brimflame frenzy has a 30 second cooldown
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMagicDamageCritChance}"
 }
 
 DaedalusBreastplate: {
@@ -189,7 +188,7 @@ ForbiddenCirclet: {
 	SetBonus:
 		'''
 		+40 maximum stealth
-		Press {0} to call an ancient storm to the cursor location
+		{0} to call an ancient storm to the cursor location
 		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
 		Rogue stealth strikes spawn homing eaters on enemy hits
 		Rogue and summon attacks will scale off of the stat with a higher boost
@@ -403,7 +402,7 @@ PlagueReaperMask: {
 		25% reduced ammo usage and 5% increased flight time
 		Enemies receive 10% more damage from ranged projectiles when afflicted by the Plague
 		Getting hit causes plague cinders to rain from above
-		Press {0} to blind yourself for 5 seconds but massively boost your ranged damage
+		{0} to blind yourself for 5 seconds but massively boost your ranged damage
 		This has a 25 second cooldown
 		'''
 }

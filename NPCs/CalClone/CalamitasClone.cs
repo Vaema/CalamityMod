@@ -61,9 +61,9 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
-        public static int DartDamage = 23; // 92
-        public static int HellblastDamage = 27; // 108
-        public static int HellfireballDamage = 27; // 108
+        public static int DartDamage = 22; // 88
+        public static int HellblastDamage = 25; // 100
+        public static int HellfireballDamage = 25; // 100
         public static int FireblastDamage = 35; // 140; Also applies to GFB Gigablasts
 
         public override void SetDefaults()
@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.MaliceMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 1f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.MaliceMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -594,7 +594,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 return;
             }
-            else if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            else if (CalamityWorld.MaliceMode)
             {
                 if (calamityGlobalNPC.newAI[3] < 900f)
                     calamityGlobalNPC.newAI[3] += 1f;
@@ -677,7 +677,7 @@ namespace CalamityMod.NPCs.CalClone
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                        bool shootPredictiveShot = CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool();
+                        bool shootPredictiveShot = CalamityWorld.MaliceMode && Main.rand.NextBool();
                         Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -1008,7 +1008,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
     }
 }

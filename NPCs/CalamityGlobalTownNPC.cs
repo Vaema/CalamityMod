@@ -204,6 +204,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] SantaClausNames =
         {
             "Jank", // <@!339950757472239616> (jankle_)
+            "Aoi Kurashiki", // <@!358411687885537291> (nothinpurrsonal)
         };
         private static readonly string[] SkeletonMerchantNames =
         {
@@ -248,6 +249,7 @@ namespace CalamityMod.NPCs
             "Stan Pines",
             "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
+            "Postman Hiss", // <@!454638106122125312> (karinthefairy)
         };
         private static readonly string[] TruffleNames =
         {
@@ -1080,10 +1082,8 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (BoundNPCIDList.Includes(npc.type))
-            {
+            if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
-            }
         }
 
         public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)

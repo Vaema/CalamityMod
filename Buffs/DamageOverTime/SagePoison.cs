@@ -1,10 +1,24 @@
-﻿using Terraria;
+﻿using CalamityMod.DataStructures;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
     public class SagePoison : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 50,
+            NPCLifeRegenMethod = SagePoisonPower
+        };
+        public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            // The dot ia multipliplied by this before being applied:
+            // (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f;
+            // See SageNeedle.cs for details
+            int baseSagePoisonDoTValue = (int)npc.Calamity().ActiveTypelessDebuffMultiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
+            npc.Calamity().ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
+        }
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
@@ -13,10 +27,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         }
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().sagePoisonTime < npc.buffTime[buffIndex])
-                npc.Calamity().sagePoisonTime = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().sagePoison = true;
         }
     }
 }

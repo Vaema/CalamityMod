@@ -26,7 +26,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 280;
             NPC.knockBackResist = 0.6f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

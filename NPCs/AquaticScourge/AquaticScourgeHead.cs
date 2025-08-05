@@ -54,13 +54,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
-        public static int MistDamage = 23; // 92
-        public static int SandCloudDamage = 28; // 112
-        public static int ToxicCloudDamage = 32; // 128
+        public static int MistDamage = 25; // 100
+        public static int CloudDamage = 28; // 112; applies to both Sand and Toxic
 
         public override void SetDefaults()
         {
-            NPC.damage = 80; // 160
+            NPC.damage = 90; // 180
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 90;
             NPC.height = 90;
@@ -252,7 +251,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, ToxicCloudDamage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, CloudDamage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -366,7 +365,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                                 if (expertMode)
                                     velocity *= 1f + (maximumVelocityMult * (0.5f - lifeRatio));
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + velocity.SafeNormalize(Vector2.UnitY) * 5f, velocity, type, SandCloudDamage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + velocity.SafeNormalize(Vector2.UnitY) * 5f, velocity, type, CloudDamage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -391,7 +390,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     for (int a = 0; a < Main.npc.Length; a++)
                     {
                         int type = Main.npc[a].type;
-                        if (AquaticScourgeIDList.Includes(type))
+                        if (CalamityNPCTypeSets.AquaticScourge.Contains(type))
                             Main.npc[a].active = false;
                     }
                 }
@@ -411,7 +410,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 NPC.alpha = 0;
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 

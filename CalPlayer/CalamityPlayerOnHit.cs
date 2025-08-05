@@ -8,7 +8,10 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -234,25 +237,12 @@ namespace CalamityMod.CalPlayer
 
             if (witheringWeaponEnchant)
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
-
-            cgn.IncreasedColdEffects_EskimoSet = eskimoSet;
-            cgn.IncreasedColdEffects_CryoStone = CryoStone;
-
-            cgn.IncreasedElectricityEffects_Unused = false;
-
-            cgn.IncreasedHeatEffects_Fireball = fireball;
-            cgn.IncreasedHeatEffects_CinnamonRoll = cinnamonRoll;
-            cgn.IncreasedHeatEffects_FireBoots = bootLevel;
-
-            cgn.IncreasedSicknessEffects_ToxicHeart = toxicHeart;
-
-            cgn.IncreasedWaterEffects_Amulet1 = sSpiritAmulet;
-            cgn.IncreasedWaterEffects_Amulet2 = dOfTheDeep;
-
-            cgn.IncreasedSicknessAndWaterEffects_EvergreenGin = evergreenGin;
-            cgn.IncreasedSicknessAndWaterEffects_CorrosiveSpine = corrosiveSpine;
-
-            cgn.IncreasedDebuffEffects_Amalgam = amalgam;
+            cgn.TypelessDebuffMultiplier = TypelessDebuffMultiplier;
+            cgn.HeatDebuffMultiplier = HeatDebuffMultiplier;
+            cgn.ColdDebuffMultiplier = ColdDebuffMultiplier;
+            cgn.SicknessDebuffMultiplier = SicknessDebuffMultiplier;
+            cgn.WaterDebuffMultiplier = WaterDebuffMultiplier;
+            cgn.ElectricDebuffMultiplier = ElectricDebuffMultiplier;
 
             switch (proj.type)
             {
@@ -415,7 +405,7 @@ namespace CalamityMod.CalPlayer
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
-                if (plaguebringerCarapace && FriendlyBeesList.Includes(proj.type))
+                if (plaguebringerCarapace && CalamityProjectileSets.IsFriendlyBeeProjectile[proj.type])
                     target.AddBuff(BuffType<Plague>(), 300);
 
                 // All projectiles fired from Soma Prime are marked using CalamityGlobalProjectile
@@ -630,7 +620,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (astralStarRain && crit && astralStarRainCooldown <= 0)
                 {
-                    astralStarRainCooldown = 60;
+                    astralStarRainCooldown = AstralHelm.StarRainCooldown;
                     for (int n = 0; n < 3; n++)
                     {
                         int projectileType = Utils.SelectRandom(Main.rand, new int[]
@@ -641,7 +631,7 @@ namespace CalamityMod.CalPlayer
                             ProjectileID.StarCannonStar
                         });
 
-                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
+                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(AstralHelm.StarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 12f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -700,7 +690,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (astralStarRain && crit && astralStarRainCooldown <= 0)
                 {
-                    astralStarRainCooldown = 60;
+                    astralStarRainCooldown = AstralHelm.StarRainCooldown;
                     for (int n = 0; n < 3; n++)
                     {
                         int projectileType = Utils.SelectRandom(Main.rand, new int[]
@@ -711,7 +701,7 @@ namespace CalamityMod.CalPlayer
                             ProjectileID.StarCannonStar
                         });
 
-                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(120);
+                        int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(AstralHelm.StarDamage);
 
                         Projectile star = CalamityUtils.ProjectileRain(source, position, 400f, 100f, 500f, 800f, 25f, projectileType, astralStarDamage, 5f, Player.whoAmI);
                         if (star.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -1293,7 +1283,7 @@ namespace CalamityMod.CalPlayer
             if (omegaBlueChestplate)
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
-                target.AddBuff(BuffID.Poisoned, 60);
+                target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
             if (ilSpark && Player.Calamity().countsAsAnyWet)
             {
                 int duration = 60;
@@ -1313,7 +1303,7 @@ namespace CalamityMod.CalPlayer
             }
             if (snowRuffianSet && ranged && crit)
             {
-                target.AddBuff(BuffID.Frostburn, 300, false);
+                target.AddBuff(BuffID.Frostburn, SnowRuffianMask.SetBonusFrostburnDuration, false);
             }
         }
         #endregion

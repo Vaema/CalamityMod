@@ -351,7 +351,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int buffType = target.buffType[l];
-                            if (target.buffTime[l] > 0 && AmalgamBuffList.Includes(buffType))
+                            if (target.buffTime[l] > 0 && CalamityBuffSets.BuffedByAmalgam[buffType])
                             {
                                 target.DelBuff(l);
                                 l--;

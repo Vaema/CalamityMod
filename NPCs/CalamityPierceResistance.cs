@@ -148,7 +148,7 @@ namespace CalamityMod.NPCs
         private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
         {
             // Thanatos segments do not trigger pierce resistance if they are closed
-            if (ThanatosIDList.Includes(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
+            if (CalamityNPCTypeSets.Thanatos.Contains(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
                 return;
 
             float damageReduction = projectile.Calamity().timesPierced * BalancingConstants.PierceResistHarshness;
