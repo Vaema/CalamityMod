@@ -5,6 +5,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Fonts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
@@ -2798,9 +2799,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
 
                 // Speak in Wingdings if the Punch Card is equipped
-                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && FontAssetSystem.Fonts["Wingdings"] != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 {
-                    Vector2 vector = DoGWingdings.Wingdings.MeasureString(Language.GetTextValue(text));
+                    Vector2 vector = FontAssetSystem.Fonts["Wingdings"].MeasureString(Language.GetTextValue(text));
                     // This is how normal combat text spawn positioning is handled
                     float positionX = (float)location.X + (float)location.Width * 0.5f - vector.X * 0.5f + Main.rand.Next(-(int)((double)location.Width * 0.5), (int)((double)location.Width * 0.5) + 1);
                     float positionY = (float)location.Y + (float)location.Height * 0.25f - vector.Y * 0.5f + Main.rand.Next(-(int)((double)location.Height * 0.5), (int)((double)location.Height * 0.5) + 1);

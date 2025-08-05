@@ -24,10 +24,10 @@ namespace CalamityMod.Fonts
 
         public override void OnModLoad()
         {
-            AddFont("Wingdings", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings", AssetRequestMode.ImmediateLoad).Value);
-            AddFont("CodebreakerDialog", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog", AssetRequestMode.ImmediateLoad).Value);
-            AddFont("Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value);
-            AddFont("Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value);
+            AddFont("Wingdings", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings", AssetRequestMode.ImmediateLoad).Value); //Intentionally does not have a fallback due to it already having null checks where it is utilized to prevent them from appearing
+            AddFont("CodebreakerDialog", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog", AssetRequestMode.ImmediateLoad).Value, FontAssets.MouseText.Value);
+            AddFont("Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value, FontAssets.CombatText[1].Value);
+            AddFont("Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value, FontAssets.CombatText[1].Value);
         }
 
         private static void AddFont(string key, DynamicSpriteFont font, DynamicSpriteFont fallback = null)
