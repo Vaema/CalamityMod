@@ -266,10 +266,6 @@ namespace CalamityMod.Projectiles
         /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
         public int TransformerTimer = 0;
 
-        // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
-        // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
-        public int lineColor = 0;
-
         /// <summary>
         /// There are several NPCs in Calamity which do not take damage from minions in certain circumstances.<br/>
         /// If true, this variable allows a projectile that deals summon damage to bypass this mechanic.
@@ -2783,7 +2779,7 @@ namespace CalamityMod.Projectiles
                             return false;
                         }
 
-                        float velocityLimit = (death ? 28f : 24f) / MathHelper.Clamp(lineColor * 0.75f, 1f, 3f);
+                        float velocityLimit = (death ? 28f : 24f) / MathHelper.Clamp(projectile.ai[2] * 0.75f, 1f, 3f);
                         if (projectile.velocity.Length() < velocityLimit)
                             projectile.velocity *= 1.01f;
                     }
@@ -3305,36 +3301,6 @@ namespace CalamityMod.Projectiles
                         projectile.velocity += yeetVec * 40f;
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1") with { Pitch = 0.4f });
                     }
-                }
-            }
-
-            if (projectile.type == ProjectileID.OrnamentFriendly && lineColor == 1) //spawned by Festive Wings
-            {
-                Vector2 center = projectile.Center;
-                float maxDistance = 460f;
-                bool homeIn = false;
-
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (n.CanBeChasedBy(projectile, false))
-                    {
-                        float extraDistance = (float)(n.width / 2) + (n.height / 2);
-
-                        bool canHit = Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1);
-
-                        if (Vector2.Distance(n.Center, projectile.Center) < (maxDistance + extraDistance) && canHit)
-                        {
-                            center = n.Center;
-                            homeIn = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (homeIn)
-                {
-                    Vector2 moveDirection = projectile.SafeDirectionTo(center, Vector2.UnitY);
-                    projectile.velocity = (projectile.velocity * 20f + moveDirection * 15f) / 21f;
                 }
             }
 
