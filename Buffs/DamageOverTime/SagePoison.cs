@@ -9,7 +9,6 @@ namespace CalamityMod.Buffs.DamageOverTime
         public static DebuffData debuffData = new DebuffData()
         {
             EnemyLostRegen = 50, //This is the base DoT before the scaling formula. Not used in the method, here for referece.
-            SicknessDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a sickness debuff
             NPCLifeRegenMethod = SagePoisonPower
         };
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
