@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 dashStrength += 8;
             if (inStartup)
             {
-                //Scale % offfset distance during startuop
+                //Scale % offset distance during startup
                 Projectile.scale = baseScale * MathHelper.Lerp(0.9f, 0.65f, MathF.Pow(StartupCompletion, 2f));
                 OffsetDistance = (int)MathHelper.Lerp(60f, 40f, MathF.Pow(StartupCompletion, 2f));
                 ref var vel = ref Main.player[Projectile.owner].velocity;
