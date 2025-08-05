@@ -4091,7 +4091,7 @@ namespace CalamityMod.Projectiles
                 case ProjectileID.DeerclopsIceSpike:
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
-                        float fadeInTime = 50f;
+                        float fadeInTime = 25f;
                         float fadeOutGateValue = death ? 90f : 65f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
