@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
             bool isMinion = Projectile.type == ModContent.ProjectileType<WaterElementalMinion>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.sirenWaifu && !modPlayer.allWaifus && !modPlayer.sirenWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.waterElemental && !modPlayer.allElementals && !modPlayer.waterElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -49,9 +49,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.slWaifu = false;
+                    modPlayer.waterEleBuff = false;
                 }
-                if (modPlayer.slWaifu)
+                if (modPlayer.waterEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 dust--;
             }
-            bool passive = modPlayer.sirenWaifuVanity || modPlayer.allWaifusVanity;
+            bool passive = modPlayer.waterElementalVanity || modPlayer.allElementalsVanity;
             if (!passive)
                 Lighting.AddLight(Projectile.Center, 0f, 0.25f, 1.5f);
 

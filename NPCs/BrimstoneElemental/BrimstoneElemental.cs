@@ -883,7 +883,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<BrimstoneWaifuBag>()));
+            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<BrimstoneElementalBag>()));
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -910,7 +910,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
 
                 // Vanity
-                normalOnly.Add(ModContent.ItemType<BrimstoneWaifuMask>(), 7);
+                normalOnly.Add(ModContent.ItemType<BrimstoneElementalMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
             }

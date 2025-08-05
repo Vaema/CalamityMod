@@ -9,7 +9,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class WifeinaBottle : ModItem, ILocalizedModType
+    [LegacyName("WifeinaBottle")]
+    public class ElementalinaBottle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public const int ElementalDamage = 45;
@@ -28,14 +29,14 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sandWaifu = true;
+            modPlayer.sandElemental = true;
             SpawnElemental(player);
         }
 
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sandWaifuVanity = true;
+            modPlayer.sandElementalVanity = true;
             SpawnElemental(player);
         }
 
@@ -43,9 +44,9 @@ namespace CalamityMod.Items.Accessories
         {
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<SandyWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<SandElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<SandyWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<SandElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<SandElementalMinion>()] < 1)
                 {

@@ -22,10 +22,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().crumble < npc.buffTime[buffIndex])
-                npc.Calamity().crumble = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().crumble = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

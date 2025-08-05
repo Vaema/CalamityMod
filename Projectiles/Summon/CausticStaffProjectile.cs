@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                 switch ((int)Projectile.ai[0])
                 {
                     case 0:
-                        if (target.Calamity().marked <= 0)
+                        if (target.Calamity().markedForDeath)
                             target.AddBuff(ModContent.BuffType<MarkedforDeath>(), duration);
                         break;
                     case 1:

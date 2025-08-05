@@ -15,7 +15,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().iCantBreathe = true;
+            player.Calamity().frozenLungs = true;
         }
     }
 }
