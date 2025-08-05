@@ -2,6 +2,7 @@
   "Pages": [
     {
       "BaseColor": "6383FF",
+      "BaseBorderColor": "020104",
       "Speaker": "Amidias",
 
       "PunctuationDelays": {
@@ -19,7 +20,7 @@
 
       "Lines": [
         "[Wavy:'Glub, glub, im a fish. Glub glub, im a fish]",
-        "[Wavy:Glub, glub, im a fish. Glub glub, im a fish']"
+        "[Wavy:[BorderColors(EEA5A9):Glub, glub, im a fish. Glub glub, im a fish']]"
       ]
     }
   ]

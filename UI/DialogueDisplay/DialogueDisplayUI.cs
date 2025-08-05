@@ -4,18 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CalamityMod.Projectiles.Boss;
+using CalamityMod.Fonts;
 using CalamityMod.UI.DialogueDisplay.DialogueEvents;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;
-using CalamityMod.UI.DraedonSummoning;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -135,20 +132,6 @@ namespace CalamityMod.UI.DialogueDisplay
             { "Otonilou", SoundID.NPCHit25 }
         };
 
-        //A more centralized spot for Fonts might be desired in the future
-        public static readonly Dictionary<string, DynamicSpriteFont> Fonts = new()
-        {
-            { "MouseText", FontAssets.MouseText.Value },
-            { "ItemStack", FontAssets.ItemStack.Value },
-            { "DeathText", FontAssets.DeathText.Value },
-            { "CombatText1", FontAssets.CombatText[0].Value },
-            { "CombatText2", FontAssets.CombatText[1].Value },
-            { "WingDings", DoGWingdings.Wingdings },
-            { "CodebreakerDialog", CodebreakerUI.DialogFont },
-            { "Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value },
-            { "Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value }
-        };
-
         /// <summary>
         /// How long this dialogue has existed
         /// </summary>
@@ -183,10 +166,12 @@ namespace CalamityMod.UI.DialogueDisplay
         private int TextTimer = 0;
         internal int textIndex = 0;
         internal int Uptime = 0;
-        internal string Font;
+        internal string FontKey;
 
         //Effects
         internal Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueColors = [];
+        internal Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueBorderColors = [];
+
         internal Dictionary<int, float> Pauses = [];
         internal Dictionary<int, List<(TextEffect Effect, float[] args)>> TextEffects = [];
         internal Dictionary<int, Vector2> UniqueScales = [];
@@ -194,6 +179,7 @@ namespace CalamityMod.UI.DialogueDisplay
 
         private DialogueCharacterData[] CharacterData;
         private Color BaseColor = Color.White;
+        private Color BaseBorderColor = Color.Black;
         internal bool Crawling = true;
         private int storedDelay = 0;
         private bool lockDelay = false;
@@ -205,7 +191,7 @@ namespace CalamityMod.UI.DialogueDisplay
             ScreenLocked = screenLocked;
             DialoguePage = textData;
             DisplayEffects = displayEffects;
-            Font = font;
+            FontKey = font;
             WrapWidth = wrapWidth;
         }
 
@@ -213,6 +199,7 @@ namespace CalamityMod.UI.DialogueDisplay
         {
             Text = "";
             UniqueColors = [];
+            UniqueBorderColors = [];
             Pauses = [];
             TextEffects = [];
             UniqueScales = [];
@@ -241,7 +228,7 @@ namespace CalamityMod.UI.DialogueDisplay
                 {
                     string line = lines[i];
                     int finalIndex = 0;
-                    float width = MeasureString(line, Fonts[Font]).X;
+                    float width = MeasureString(line, FontAssetSystem.Fonts[FontKey]).X;
                     Main.NewText(width);
                     if (width > WrapWidth)
                     {
@@ -251,7 +238,7 @@ namespace CalamityMod.UI.DialogueDisplay
                             finalIndex = line.LastIndexOf(' ');
                             yoinked = line.Substring(finalIndex) + yoinked;
                             line = line.Remove(finalIndex);
-                        } while (MeasureString(line, Fonts[Font]).X > WrapWidth);
+                        } while (MeasureString(line, FontAssetSystem.Fonts[FontKey]).X > WrapWidth);
 
                         lines[i] = line;
                         if (i >= lines.Count - 1)
@@ -277,6 +264,15 @@ namespace CalamityMod.UI.DialogueDisplay
 
             if (DialoguePage.BaseColor != null)
                 BaseColor = DialogueDisplaySystem.GetColorFromHex(DialoguePage.BaseColor);
+
+            if (DialoguePage.BaseBorderColor != null)
+                BaseBorderColor = DialogueDisplaySystem.GetColorFromHex(DialoguePage.BaseBorderColor);
+            else
+            {
+                DialoguePage.BorderDarkening = 0.33f;
+                BaseBorderColor = BaseColor * DialoguePage.BorderDarkening;
+                BaseBorderColor.A = 255;
+            }
 
             CharacterData = new DialogueCharacterData[Text.Length];
 
@@ -345,7 +341,7 @@ namespace CalamityMod.UI.DialogueDisplay
                             if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
                                 highestYscale = uniqueScale.Y;
                         }
-                        zero.Y += Fonts[Font].LineSpacing * highestYscale;
+                        zero.Y += FontAssetSystem.Fonts[FontKey].LineSpacing * highestYscale;
                         newLine = true;
                         continue;
                     case '\r':
@@ -367,26 +363,26 @@ namespace CalamityMod.UI.DialogueDisplay
                         if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
                             highestYscale = uniqueScale.Y;
                     }
-                    zero.Y += Fonts[Font].LineSpacing * highestYscale;
+                    zero.Y += FontAssetSystem.Fonts[FontKey].LineSpacing * highestYscale;
                     newLine = true;
                 }
 
                 //Sets the character's position within the full text
-                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
+                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
                 Vector3 kerning = spriteData.Kerning;
                 Rectangle padding = spriteData.Padding;
 
                 if (newLine)
                     kerning.X = Math.Max(kerning.X, 0f);
                 else
-                    zero.X += Fonts[Font].CharacterSpacing * scale.X;
+                    zero.X += FontAssetSystem.Fonts[FontKey].CharacterSpacing * scale.X;
 
                 zero.X += kerning.X * scale.X;
                 Vector2 position = zero + spriteData.Glyph.Size() * 0.5f;
                 position.X += padding.X * scale.X;
                 position.Y += padding.Y * scale.Y;
 
-                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * Fonts[Font].LineSpacing * 0.5f);
+                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * FontAssetSystem.Fonts[FontKey].LineSpacing * 0.5f);
 
                 zero.X += (kerning.Y + kerning.Z) * scale.X;
                 newLine = false;
@@ -452,13 +448,14 @@ namespace CalamityMod.UI.DialogueDisplay
 
                     }
                     if (fullLine[k] != ']')
-                        throw new Exception("[ was found without a ] preceeding it.");
+                        throw new Exception("[ was found without a ] after it.");
 
                     string effect = fullLine[j..k];
                     string ID = "";
                     string Text = "";
                     List<float> Params = [];
                     List<string> ColorParams = [];
+                    List<string> BorderColorParams = [];
                     string Param = "";
                     bool readingText = false;
                     bool readingParams = false;
@@ -490,6 +487,13 @@ namespace CalamityMod.UI.DialogueDisplay
                                         Params.Add(result);
                                     else
                                         ColorParams.Add(Param);
+                                }
+                                if (ID == "BorderColors")
+                                {
+                                    if (float.TryParse(Param, out float result))
+                                        Params.Add(result);
+                                    else
+                                        BorderColorParams.Add(Param);
                                 }
                                 else
                                 {
@@ -528,6 +532,14 @@ namespace CalamityMod.UI.DialogueDisplay
                                     storedLen += s.Length;
 
                                 UniqueColors.Add(index - storedLen, (Params.Count == 0 ? 0 : Params[0], [.. ColorParams]));
+                            }
+                            else if (ID == "BorderColors")
+                            {
+                                int storedLen = 0;
+                                foreach (string s in returnString)
+                                    storedLen += s.Length;
+
+                                UniqueBorderColors.Add(index - storedLen, (Params.Count == 0 ? 0 : Params[0], [.. BorderColorParams]));
                             }
                             else if (ID == "Scale")
                             {
@@ -690,7 +702,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                         storedDelay += data.Delay;
                                     break;
                                 case '-':
-                                    if (Text[textIndex + 1] == ' ')
+                                    if (textIndex == Text.Length - 1 || Text[textIndex + 1] == ' ')
                                     {
                                         if (data.ForceSet)
                                             storedDelay = data.Delay;
@@ -764,16 +776,28 @@ namespace CalamityMod.UI.DialogueDisplay
                     scale = result;
 
                 Color color;
-                if (UniqueColors.TryGetValue(i, out var value))
+                if (UniqueColors.TryGetValue(i, out var textColors))
                 {
-                    Color[] colors = new Color[value.hexcodes.Length];
+                    Color[] colors = new Color[textColors.hexcodes.Length];
                     for (int j = 0; j < colors.Length; j++)
-                        colors[j] = DialogueDisplaySystem.GetColorFromHex(value.hexcodes[j]);
+                        colors[j] = DialogueDisplaySystem.GetColorFromHex(textColors.hexcodes[j]);
 
-                    color = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly + (i * value.IndexOffset), colors);
+                    color = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly + (i * textColors.IndexOffset), colors);
                 }
                 else
                     color = BaseColor;
+
+                Color borderColor;
+                if (UniqueBorderColors.TryGetValue(i, out var borderColors))
+                {
+                    Color[] colors = new Color[borderColors.hexcodes.Length];
+                    for (int j = 0; j < colors.Length; j++)
+                        colors[j] = DialogueDisplaySystem.GetColorFromHex(borderColors.hexcodes[j]);
+
+                    borderColor = CalamityUtils.MulticolorLerp(Main.GlobalTimeWrappedHourly + (i * borderColors.IndexOffset), colors);
+                }
+                else
+                    borderColor = BaseBorderColor;
 
                 if (CharacterData[i].Timer < DisplayEffects.TimeToAppear)
                 {
@@ -810,12 +834,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         scale = Effect.ModifyScale(scale, CharacterData[i], args);
                     }
 
-                Color borderColor = color;
-                borderColor.R /= 3;
-                borderColor.G /= 3;
-                borderColor.B /= 3;
-
-                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
+                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
                 CharacterData[i].SetDrawInfo(drawPos, spriteData.Glyph, color * opacity, rotation, scale);
@@ -840,7 +859,7 @@ namespace CalamityMod.UI.DialogueDisplay
                 if (CharacterData == null)
                     Activate();
 
-                SpriteCharacterData spriteData = Fonts[Font].SpriteCharacters[c];
+                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
                 spriteBatch.Draw(spriteData.Texture, CharacterData[i].DrawPosition, spriteData.Glyph, CharacterData[i].DrawColor, CharacterData[i].Rotation, origin, CharacterData[i].Scale, SpriteEffects.None, 0);
@@ -1096,6 +1115,8 @@ namespace CalamityMod.UI.DialogueDisplay
         public string[] Lines { get; set; }
 
         public string BaseColor { get; set; } = null;
+        public string BaseBorderColor { get; set; } = null;
+        public float BorderDarkening { get; set; } = 0.33f;
         public string Speaker { get; set; } = null;
 
         public int TextScale { get; set; } = -1;
