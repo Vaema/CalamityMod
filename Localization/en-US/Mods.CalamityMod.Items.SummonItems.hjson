@@ -107,8 +107,7 @@ DecapoditaSprout: {
 	DisplayName: Decapodita Sprout
 	Tooltip:
 		'''
-		Summons Crabulon when used in the Mushroom biome
-		Enrages outside the Underground Mushroom biome
+		Summons Crabulon when used in the Underground Mushroom biome
 		{$Common.NotConsumable}
 		'Bristling with the spores of a unique, parasitic strain.'
 		'''
