@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Vanilla values
         public static int CloneFireballDamage = 18; // 72
         public static int FireballDamage = 20; // 80
-        public static int IceMistDamage = 25; // 100
+        public static int IceMistDamage = 1; // This attack never actually hits, so damage number is irrelevant
         public static int LightningDamage = 30; // 120
         public static int DoomDamage = 45; // 180 (Also fixes Master Mode scaling)
 
@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int lightningDamage = isCultist ? LightningDamage : 0;
 
             int iceMistFireRate = phase2 ? 50 : 60;
-            float iceMistSpeed = 8f + (death ? 2 : 1) * (1f - lifeRatio);
+            float iceMistSpeed = 12f + (death ? 4f : 2f) * (1f - lifeRatio);
             int iceMistAmt = phase3 ? 2 : 1;
             int fireballFireRate = (phase5 ? 10 : 12) - (death ? 6 : 0);
             float fireballSpeed = ((phase7 ? 8f : phase6 ? 7f : 6f) + (death ? (1f - lifeRatio) : 0f)) * (isCultist ? 1f : 0.5f);
@@ -271,8 +271,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         case 2:
                         case 10:
                             phase = 0;
-                            distanceAboveTarget *= death ? 1.5f : 2;
-                            predictionDistance *= death ? 1.5f : 2;
+                            distanceAboveTarget *= 1.5f;
+                            predictionDistance *= 1.5f;
                             break;
                         // Fireball
                         case 1:
@@ -475,7 +475,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 iceMistDirection = npc.Center + new Vector2(npc.direction * 30, 12f);
                         Vector2 iceMistVelocity = vec * iceMistSpeed;
                         var icemist = Main.projectile[Projectile.NewProjectile(npc.GetSource_FromAI(), iceMistDirection, iceMistVelocity, ProjectileID.CultistBossIceMist, iceMistDamage, 0f, Main.myPlayer, 0f, 1f)];
-                        icemist.timeLeft = 120;
+                        icemist.timeLeft = 240;
                     }
                 }
 
