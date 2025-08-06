@@ -7,10 +7,8 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 using System;
-using CalamityMod.Projectiles.Magic;
 
 namespace CalamityMod.Projectiles.Ranged
 {
