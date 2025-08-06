@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfMediumDeath");
 
         public static Asset<Texture2D> GlowTexture;
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -103,21 +102,6 @@ namespace CalamityMod.NPCs.Perforator
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if ((!Main.player[NPC.target].ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0 && !BossRushEvent.BossRushActive;
-            float enrageScale = 0f;
-            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
-                enrageScale += 1f;
-            if (biomeEnraged && !Main.player[NPC.target].ZoneCrimson)
-                enrageScale += 1f;
-
             // Total body segments
             float totalSegments = GetMediumPerforatorSegmentsCount();
 
@@ -132,9 +116,9 @@ namespace CalamityMod.NPCs.Perforator
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.125f : 0.085f) * enrageScale;
+                float velocityScale = death ? 0.125f : 0.085f;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.085f : 0.06f) * enrageScale;
+                float accelerationScale = death ? 0.085f : 0.06f;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 

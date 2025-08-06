@@ -33,7 +33,7 @@ BloodyWormFood: {
 	Tooltip:
 		'''
 		Summons the Perforator Hive when used in the Crimson
-		Enrages outside the Underground Crimson
+		Despawns outside the Crimson
 		{$Common.NotConsumable}
 		'Do not play with your food, they won't play with theirs.'
 		'''
@@ -285,7 +285,7 @@ Teratoma: {
 	Tooltip:
 		'''
 		Summons the Hive Mind when used in the Corruption
-		Enrages outside the Underground Corruption
+		Despawns outside the Corruption
 		{$Common.NotConsumable}
 		'An exquisitely hideous tumor for those diseased in the head.'
 		'''
