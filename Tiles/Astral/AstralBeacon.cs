@@ -70,12 +70,6 @@ namespace CalamityMod.Tiles.Astral
 
             bool usingStarcore = Main.LocalPlayer.HasItem(ModContent.ItemType<Starcore>());
 
-            if (Main.IsItDay())
-            {
-                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DeusAltarRejectNightText", FailColor);
-                return false;
-            }
-
             Vector2 ritualSpawnPosition = new Vector2(left + Width / 2, top).ToWorldCoordinates();
             ritualSpawnPosition += new Vector2(0f, -24f);
 
