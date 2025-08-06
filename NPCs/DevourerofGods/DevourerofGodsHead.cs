@@ -31,6 +31,7 @@ using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.World;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -198,6 +199,17 @@ namespace CalamityMod.NPCs.DevourerofGods
                 return false;
             }
         }
+        /// <summary>
+        /// This gets the player's center, adjusted for predictiveness on FTW
+        /// </summary>
+        /// <returns></returns>
+        Vector2 AdjustedPlayerCenter(float predictiveness = 0)
+        {
+            Player player = Main.player[NPC.target];
+            if (!(Main.getGoodWorld))
+                return player.Center;
+            return player.Center + player.velocity * predictiveness;
+        }
         public override void SetStaticDefaults()
         {
             NPCID.Sets.BossBestiaryPriority.Add(Type);
@@ -268,8 +280,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(-60, 0);
             else
                 NPC.velocity = new Vector2(60, 0);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
+            if (Main.getGoodWorld)
+                NPC.takenDamageMultiplier = 2;
         }
 
         public override void BossHeadSlot(ref int index)
@@ -421,9 +435,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
 
             // Variables
-            bool flyUpDuringLaserWalls = laserWallPhase == (int)LaserWallPhase.FireLaserWalls || (laserWallPhase == (int)LaserWallPhase.End && teleportTimer > 0);
-            bool flies = NPC.ai[3] == 0f || flyUpDuringLaserWalls;
-            Vector2 destination = flyUpDuringLaserWalls ? (player.Center - Vector2.UnitY * 480f) : player.Center;
+            bool flies = NPC.ai[3] == 0f;
+
+            if (Main.getGoodWorld)
+                flies = true;
+            Vector2 destination = AdjustedPlayerCenter(2);
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
@@ -472,20 +488,23 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (Vector2.Distance(destination, NPC.Center) < 320)
                 groundPhaseTurnSpeed *= 0.75f;
 
-            if (CalamityWorld.LegendaryMode)
-            {
-                segmentVelocity *= 1.1f;
-                speed *= 1.1f;
-                turnSpeed *= 1.1f;
-                homingSpeed *= 1.1f;
-                homingTurnSpeed *= 1.1f;
-                groundPhaseTurnSpeed *= 1.1f;
-            }
-
             // How long it takes before swapping phases
             int phaseLimit = 900;
             if (spawnedGuardians3)
                 phaseLimit -= 180;
+
+            if (Main.getGoodWorld)
+            {
+                homingSpeed += 64;
+                homingTurnSpeed *= NPC.Distance(destination) / 300f;
+                if (NPC.Distance(destination) > 800)
+                    homingTurnSpeed *= 3;
+                speed += 64;
+                if (NPC.ai[3] == 0)
+                    phaseLimit += 600;
+                else
+                    phaseLimit -= 600;
+            }
 
             // Continuously reset certain things.
             AttemptingToEnterPortal = false;
@@ -519,7 +538,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             float distanceFromTarget = Vector2.Distance(destination, NPC.Center);
             bool increaseSpeed = distanceFromTarget > CalamityGlobalNPC.CatchUpDistance200Tiles;
-            bool increaseSpeedMore = distanceFromTarget > CalamityGlobalNPC.CatchUpDistance350Tiles;
+            bool increaseSpeedMore = distanceFromTarget > CalamityGlobalNPC.CatchUpDistance350Tiles * 2;
 
             // Close DoG's HP bar during P2 transition and decrement the countdown.
             if (NPC.localAI[2] > 0f)
@@ -966,12 +985,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         speedCopy += Vector2.Distance(destination, NPC.Center) * 0.005f;
                         turnSpeedCopy += Vector2.Distance(destination, NPC.Center) * 0.00025f;
 
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
-                                speedCopy *= 2f;
-                        }
-
                         float fasterSpeedMult = speedCopy * 1.3f;
                         float slowerSpeedMult = speedCopy * 0.7f;
                         float npcSpeed = NPC.velocity.Length();
@@ -1001,7 +1014,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         targetX *= timeToReachTarget;
                         targetY *= timeToReachTarget;
 
-                        turnSpeedCopy *= NPC.Distance(player.Center) / ( death ? 800 : 1000f);
+                        turnSpeedCopy *= NPC.Distance(destination) / ( death ? 800 : 1000f);
                         if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f) || (NPC.velocity.Y > 0f && targetY > 0f) || (NPC.velocity.Y < 0f && targetY < 0f))
                         {
                             if (NPC.velocity.X < targetX)
@@ -1124,12 +1137,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         }
                         else if (increaseSpeed)
                             groundPhaseTurnSpeed *= 2f;
-
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
-                                segmentVelocity *= 2f;
-                        }
 
                         #region Digging AI
                         if (!flies)
@@ -1621,13 +1628,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         speedCopy += distanceFromTarget * 0.005f * (1f - lifeRatio);
                         turnSpeedCopy += distanceFromTarget * 0.0001f * (1f - lifeRatio);
                     }
-
-                    if (CalamityWorld.LegendaryMode)
-                    {
-                        if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
-                            speedCopy *= 2f;
-                    }
-
                     float fasterSpeedMult = speedCopy * 1.3f;
                     float slowerSpeedMult = speedCopy * 0.7f;
                     float npcSpeed = NPC.velocity.Length();
@@ -1658,7 +1658,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     targetX *= timeToReachTarget;
                     targetY *= timeToReachTarget;
 
-                    turnSpeedCopy *= NPC.Distance(player.Center) / (death ? 800 : 1000);
+                    turnSpeedCopy *= NPC.Distance(destination) / (death ? 800 : 1000);
                     if ((NPC.velocity.X > 0f && targetX > 0f) || (NPC.velocity.X < 0f && targetX < 0f) || (NPC.velocity.Y > 0f && targetY > 0f) || (NPC.velocity.Y < 0f && targetY < 0f))
                     {
                         if (NPC.velocity.X < targetX)
@@ -1772,12 +1772,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         groundPhaseTurnSpeed *= 4f;
                     else if (increaseSpeed)
                         groundPhaseTurnSpeed *= 2f;
-
-                    if (CalamityWorld.LegendaryMode)
-                    {
-                        if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
-                            segmentVelocity *= 2f;
-                    }
 
                     if (!flies)
                     {
@@ -2058,14 +2052,14 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             #endregion
 
             // There is no escape...
-            if (NPC.Distance(player.Center) > 2400f)
-                NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
+            if (NPC.Distance(destination) > 2400f)
+                NPC.velocity += (destination - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
             // Jaw movement.
             float targetRotationReset = ((Phase2Started || phase3) && isInPassiveState) ? MathHelper.ToRadians(10f) : 0f;
             float targetRotationOpenJaw = MathHelper.ToRadians(Phase2Started ? 32f : 22f);
             float targetRotationChompDown = MathHelper.ToRadians(Phase2Started ? -25f : -15f);
-            float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+            float dotProduct = Vector2.Dot(NPC.DirectionTo(destination), NPC.velocity.SafeNormalize(Vector2.Zero));
             bool rotatedTowardsPlayer = dotProduct > 0.8f;
 
             // Reset slowly at all times.
@@ -2127,12 +2121,12 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             Vector2 mouthPosition = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * (Phase2Started ? 28f : -16f);
 
             calamityGlobalNPC.newAI[0] += 1f;
-            if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f) || CalamityWorld.LegendaryMode))
+            if (NPC.Opacity >= 1f && (distanceFromTarget > (revenge ? 320f : 480f)))
             {
-                float dotProduct = Vector2.Dot(NPC.DirectionTo(player.Center), NPC.velocity.SafeNormalize(Vector2.Zero));
+                float dotProduct = Vector2.Dot(NPC.DirectionTo(AdjustedPlayerCenter()), NPC.velocity.SafeNormalize(Vector2.Zero));
                 if (dotProduct > 0.8f)
                 {
-                    if (calamityGlobalNPC.newAI[0] > (CalamityWorld.LegendaryMode ? 45f : 75f))
+                    if (calamityGlobalNPC.newAI[0] > 75f)
                     {
                         // Flame and cinder particles from the mouth.
                         for (int i = 0; i < 18; i++)
@@ -2162,7 +2156,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         JawRotation = MathHelper.ToRadians(22f);
 
                         float fireballSpeed = 8f;
-                        Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
+                        Vector2 fireballVelocity = Vector2.Normalize(AdjustedPlayerCenter() - NPC.Center) * (fireballSpeed + NPC.velocity.Length() * 0.5f);
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition, fireballVelocity, ModContent.ProjectileType<DoGFire>(), FireballDamage, 0f, Main.myPlayer, 2f);
@@ -2231,31 +2225,31 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 return;
             bool phase6 = NPC.life / (float)NPC.lifeMax < 0.25f;
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
-            {
-                float finalVelocity = death ? 12f : 10f;
-                int totalSpreads = revenge ? 6 : 3;
-                float mult = revenge ? 1.5f : 3f;
-                for (int i = 0; i < totalSpreads; i++)
+                if (Main.netMode != NetmodeID.MultiplayerClient && !(death && phase6 && NPC.ai[3] < 7)) // 4 dashes on Death phase 3 without fireballs
                 {
-                    if (!death && i % 3 == 2)
-                        continue;
-                    int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : 12;
-                    float radians = MathHelper.TwoPi / totalProjectiles;
-                    float newVelocity = finalVelocity - i * mult;
-                    float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
-                    double angleA = radians * 0.5;
-                    double angleB = MathHelper.ToRadians(90f) - angleA;
-                    float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
-                    Vector2 spinningPoint = i < 3 ? new Vector2(0f, -newVelocity) : new Vector2(-velocityX, -newVelocity);
-                    float finalVelocityReduction = (float)Math.Pow(1.25, i) - 1f;
-                    for (int k = 0; k < totalProjectiles; k++)
+                    float finalVelocity = death ? 12f : 10f;
+                    int totalSpreads = revenge ? 6 : 3;
+                    float mult = revenge ? 1.5f : 3f;
+                    for (int i = 0; i < totalSpreads; i++)
                     {
-                        Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), newPosition, vector255, ModContent.ProjectileType<DoGFire>(), FireballDamage, 0f, Main.myPlayer, velocityMult, finalVelocity - finalVelocityReduction);
+                        if (!death && i % 3 == 2)
+                            continue;
+                        int totalProjectiles = 12;
+                        float radians = MathHelper.TwoPi / totalProjectiles;
+                        float newVelocity = finalVelocity - i * mult;
+                        float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
+                        double angleA = radians * 0.5;
+                        double angleB = MathHelper.ToRadians(90f) - angleA;
+                        float velocityX = (float)(newVelocity * Math.Sin(angleA) / Math.Sin(angleB));
+                        Vector2 spinningPoint = i < 3 ? new Vector2(0f, -newVelocity) : new Vector2(-velocityX, -newVelocity);
+                        float finalVelocityReduction = (float)Math.Pow(1.25, i) - 1f;
+                        for (int k = 0; k < totalProjectiles; k++)
+                        {
+                            Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), newPosition, vector255, ModContent.ProjectileType<DoGFire>(), FireballDamage, 0f, Main.myPlayer, velocityMult, finalVelocity - finalVelocityReduction);
+                        }
                     }
                 }
-            }
 
             NPC.TargetClosest();
             NPC.position = newPosition;
@@ -2263,12 +2257,13 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             chargeVelocity *= (death) ? (!(phase6 && NPC.ai[3] < 7)) ? 2.5f : 3 : 2.25f;
             float maxChargeDistance = 1800f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
-            int phase6dashcount = death ? 5 : 3;
-            if (phase6 && NPC.ai[3] < 2 + phase6dashcount)
-            {
-                if (NPC.ai[3] < 3)
-                    NPC.ai[3] = 3;
-                NPC.ai[3]++;
+                int phase6dashcount = death ? 5 : 3;
+                if (phase6 && NPC.ai[3] < 2 + phase6dashcount)
+                {
+                    if (NPC.ai[3] < 3)
+                        NPC.ai[3] = 3;
+                    NPC.ai[3]++;
+                // On FTW the final 10% is infinite portal dashing
                 if (Main.getGoodWorld && NPC.life / (float)NPC.lifeMax < 0.10f)
                 {
                     NPC.ai[3] = 4;
@@ -2282,7 +2277,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
             NPC.Calamity().newAI[2] = 0;
             AwaitingPhase2Teleport = false;
             NPC.Opacity = 1f - (postTeleportTimer / 255f);
-            NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
+            NPC.velocity = Vector2.Normalize(AdjustedPlayerCenter(10) - NPC.Center) * chargeVelocity;
             NPC.ForceNetUpdate(false);
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
             foreach (NPC n in Main.ActiveNPCs)
