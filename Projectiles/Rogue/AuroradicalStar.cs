@@ -125,10 +125,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 meteorVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(pos, target, 20f, 3);
                 int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, meteorVel, ModContent.ProjectileType<LeonidCometBig>(), (int)(Projectile.damage * 1.25f), Projectile.knockBack, Projectile.owner);
                 if (comet.WithinBounds(Main.maxProjectiles))
-                {
                     Main.projectile[comet].DamageType = RogueDamageClass.Instance;
-                    Main.projectile[comet].Calamity().lineColor = Main.rand.Next(3);
-                }
             }
         }
 
