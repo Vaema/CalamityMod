@@ -229,13 +229,15 @@ namespace CalamityMod.UI.DialogueDisplay
                     string line = lines[i];
                     int finalIndex = 0;
                     float width = MeasureString(line, FontAssetSystem.Fonts[FontKey]).X;
-                    Main.NewText(width);
+
                     if (width > WrapWidth)
                     {
                         string yoinked = "";
                         do
                         {
                             finalIndex = line.LastIndexOf(' ');
+                            if (finalIndex < line.Length - 1)
+                                finalIndex++;
                             yoinked = line.Substring(finalIndex) + yoinked;
                             line = line.Remove(finalIndex);
                         } while (MeasureString(line, FontAssetSystem.Fonts[FontKey]).X > WrapWidth);
@@ -248,7 +250,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     }
                 }
             }
-            
+
             fullLength = 0;
             int[] lineLengths = new int[lines.Count];
             LineBreakIndexes.Clear();
@@ -269,7 +271,6 @@ namespace CalamityMod.UI.DialogueDisplay
                 BaseBorderColor = DialogueDisplaySystem.GetColorFromHex(DialoguePage.BaseBorderColor);
             else
             {
-                DialoguePage.BorderDarkening = 0.33f;
                 BaseBorderColor = BaseColor * DialoguePage.BorderDarkening;
                 BaseBorderColor.A = 255;
             }
@@ -348,7 +349,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         continue;
                 }
 
-                if(LineBreakIndexes.Contains(i))
+                if (LineBreakIndexes.Contains(i))
                 {
                     if (zero.X > textWidth)
                         textWidth = zero.X;
@@ -406,7 +407,7 @@ namespace CalamityMod.UI.DialogueDisplay
                     else
                         foreach (var c in CharacterData.Where(c => c.LineNumber == i))
                             c.TextPosition.X += dif;
-                }               
+                }
             }
 
             TextSize = new Vector2(textWidth + 8, textHeight + 12) + SizeOffsetFromStart;
@@ -595,7 +596,7 @@ namespace CalamityMod.UI.DialogueDisplay
             int num = 0;
             float num2 = 0f;
             bool newLine = true;
-            for(int i = 0; i < text.Length; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 char c = text[i];
                 Vector2 scale = Vector2.One;
@@ -679,14 +680,17 @@ namespace CalamityMod.UI.DialogueDisplay
                     {
                         if (!lockDelay)
                         {
-                            var data = DialoguePage.BasePunctuationDelay;
+                            PunctuationData data = new();
                             if (DialoguePage.BasePunctuationDelay != null)
                                 data = DialoguePage.BasePunctuationDelay;
 
-                            if (DialoguePage.PunctuationDelays != null && DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
-                                data = value;
-                            else if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
-                                data = value;
+                            if (DialoguePage.PunctuationDelays != null)
+                            {
+                                if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
+                                    data = value;
+                                else if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
+                                    data = value;
+                            }
 
                             switch (Text[textIndex])
                             {
@@ -732,7 +736,6 @@ namespace CalamityMod.UI.DialogueDisplay
                             string speaker = null;
                             if (DialoguePage.Speaker != null)
                                 speaker = DialoguePage.Speaker;
-
                             if (speaker != null)
                                 SoundEngine.PlaySound(DialogueSounds[speaker]);
                         }
@@ -1120,7 +1123,7 @@ namespace CalamityMod.UI.DialogueDisplay
         public string Speaker { get; set; } = null;
 
         public int TextScale { get; set; } = -1;
-        public Alignment AlignType { get; set; } = Alignment.None;
+        public Alignment AlignType { get; set; } = Alignment.Left;
 
 
         public int TextDelay { get; set; } = -1;
