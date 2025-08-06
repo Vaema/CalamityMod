@@ -14,7 +14,6 @@ AstralChunk: {
 	Tooltip:
 		'''
 		Summons Astrum Aureus when used in the Astral Infection
-		Enrages during the day while outside the Astral Infection
 		{$Common.NotConsumable}
 		'The Infection's fortress has found another target.'
 		'''
@@ -150,8 +149,7 @@ EyeofDesolation: {
 	// The GFB tag generates a new line below when placed at the end of a line
 	Tooltip:
 		'''
-		Summons the Calamitas Clone when used during nighttime[GFB]
-		Enrages during the day
+		Summons the Calamitas Clone[GFB]
 		{$Common.NotConsumable}
 		'She is here.'
 		'''
@@ -278,7 +276,6 @@ Starcore: {
 	Tooltip:
 		'''
 		Summons Astrum Deus at the Astral Beacon, but is not consumed
-		Enrages during the day
 		'May the stars guide your way'
 		'''
 }
