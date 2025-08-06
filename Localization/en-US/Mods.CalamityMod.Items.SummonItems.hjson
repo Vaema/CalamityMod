@@ -180,7 +180,7 @@ MarkofProvidence: {
 	SpawnVoid:
 		'''
 		Summons the Ceaseless Void
-		Enrages on the surface
+		Despawns on the surface
 		'''
 	SpawnSignus: Summons Signus, Envoy of the Devourer
 	SpawnWeaver: Summons the Storm Weaver
@@ -200,6 +200,7 @@ NecroplasmicBeacon: {
 	Tooltip:
 		'''
 		Summons Polterghast when used in the Dungeon
+		Despawns on the surface
 		{$Common.NotConsumable}
 		'The wails of the spirits disturbed something far more terrifying.'
 		'''
