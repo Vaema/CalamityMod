@@ -29,12 +29,6 @@ namespace CalamityMod.Items.Accessories
             // Ornate Shield ram dash
             player.Calamity().DashID = OrnateShieldDash.ID;
             player.dashType = 0;
-
-            // Cold debuff immunities (Do not fear, this accessory is post Cryogen!)
-            player.buffImmune[BuffID.Chilled] = true;
-            player.buffImmune[BuffID.Frozen] = true;
-            player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[BuffID.Frostburn2] = true;
         }
 
         public override void AddRecipes()

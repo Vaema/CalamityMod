@@ -41,11 +41,11 @@ namespace CalamityMod.Items.Accessories
             modPlayer.DashID = ElysianAegisDash.ID;
             player.dashType = 0;
 
-            // Vaguely inherited Ankh Shield effects I guess
+            // Vaguely inherited Obsidian Shield effects I guess
             player.noKnockback = true;
             player.fireWalk = true;
 
-            // Debuff immunities
+            // Immune to all major Fire debuffs before this point
             player.buffImmune[BuffID.OnFire] = true;
             player.buffImmune[BuffID.OnFire3] = true;
             player.buffImmune[BuffID.CursedInferno] = true;

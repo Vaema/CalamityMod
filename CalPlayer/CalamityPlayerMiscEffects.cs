@@ -272,7 +272,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // First Frame dash effects
-            bool dashStart = (Player.dashDelay == -1 && IsFirstDashFrame);
+            bool dashStart = (Player.dashDelay == -1 && ((!HasCustomDash && IsFirstDashFrame) || (HasCustomDash && UsedDash.DashTimeAdjustedForStartup == 1)));
             int dir = MathF.Sign(Player.velocity.X);
 
             if (dashStart)
@@ -383,7 +383,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.miscCounter % 3 == 2 && Player.dashDelay > 0) // Reduced dash cooldown by 33%
                     Player.dashDelay--;
 
-                if (Player.dashDelay == -1)
+                if (Player.dashDelay == -1 && !(HasCustomDash && UsedDash.DashTimeAdjustedForStartup < 1))
                     Player.velocity.X *= 0.9f;
             }
 

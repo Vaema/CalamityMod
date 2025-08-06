@@ -20,6 +20,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override bool IsOmnidirectional => false;
         public bool PostHit = false;
+        public override int dashStartup => 12;
         public override float CalculateDashSpeed(Player player) => 21.5f;
 
         public override void OnDashEffects(Player player)
@@ -27,8 +28,15 @@ namespace CalamityMod.CalPlayer.Dashes
             PostHit = false;
         }
 
+        public override void DashStartupEffects(Player player)
+        {
+            player.velocity *= 0.9f;
+        }
+
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
         {
+
+            if (DashTimeAdjustedForStartup <= 15)
             for (int d = 0; d < 4; d++)
             {
                 Dust hFlameDust = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), Main.rand.NextBool(8) ? 222 : 162, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.8f, 2.8f));
@@ -59,6 +67,8 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
         {
+            if (DashTimeAdjustedForStartup > 15)
+                return;
             if (!PostHit)
             {
                 player.Calamity().GeneralScreenShakePower = 3.5f;
