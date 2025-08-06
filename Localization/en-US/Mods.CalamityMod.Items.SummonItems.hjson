@@ -86,7 +86,6 @@ CryoKey: {
 	Tooltip:
 		'''
 		[SPAWN]
-		Enrages outside the tundra
 		{$Common.NotConsumable}
 		'A key for a glacial prison.'
 		'''
