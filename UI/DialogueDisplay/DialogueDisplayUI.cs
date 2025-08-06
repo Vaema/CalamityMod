@@ -706,6 +706,8 @@ namespace CalamityMod.UI.DialogueDisplay
                                         storedDelay += data.Delay;
                                     break;
                                 case '-':
+                                case '–':
+                                case '—':
                                     if (textIndex == Text.Length - 1 || Text[textIndex + 1] == ' ')
                                     {
                                         if (data.ForceSet)
