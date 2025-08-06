@@ -1,6 +1,5 @@
 ﻿using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -24,12 +23,5 @@ namespace CalamityMod.Buffs.StatDebuffs
         {
             npc.Calamity().whisperingDeath = true;
         }
-    }
-    public class WhisperingDeathIconItem : ModItem
-    {
-        private string BuffName = "WhisperingDeath";
-        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

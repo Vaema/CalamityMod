@@ -5,7 +5,6 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -122,12 +121,5 @@ namespace CalamityMod.Buffs.DamageOverTime
                 GeneralParticleHandler.SpawnParticle(blood);
             }
         }
-    }
-    public class ShredIconItem : ModItem
-    {
-        private string BuffName = "Shred";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }
