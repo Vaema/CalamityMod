@@ -1038,105 +1038,6 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            else if (projectile.type == ProjectileID.Sharknado)
-            {
-                int num535 = 10;
-                int num536 = 15;
-                float num537 = 1f;
-                int num538 = 150;
-                int num539 = 42;
-
-                if (projectile.velocity.X != 0f)
-                    projectile.direction = (projectile.spriteDirection = -Math.Sign(projectile.velocity.X));
-
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 2)
-                {
-                    projectile.frame++;
-                    projectile.frameCounter = 0;
-                }
-
-                if (projectile.frame >= 6)
-                    projectile.frame = 0;
-
-                if (projectile.localAI[0] == 0f && Main.myPlayer == projectile.owner)
-                {
-                    projectile.localAI[0] = 1f;
-                    projectile.position.X += projectile.width / 2;
-                    projectile.position.Y += projectile.height / 2;
-                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
-                    projectile.width = (int)((float)num538 * projectile.scale);
-                    projectile.height = (int)((float)num539 * projectile.scale);
-                    projectile.position.X -= projectile.width / 2;
-                    projectile.position.Y -= projectile.height / 2;
-                    projectile.netUpdate = true;
-                }
-
-                if (projectile.ai[1] != -1f)
-                {
-                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
-                    projectile.width = (int)((float)num538 * projectile.scale);
-                    projectile.height = (int)((float)num539 * projectile.scale);
-                }
-
-                int maxAlpha = 150;
-                int minAlpha = 60;
-                if (projectile.timeLeft > FishronSharknadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
-                {
-                    maxAlpha = 220;
-                    minAlpha = 180;
-                }
-
-                if (!Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
-                {
-                    projectile.alpha -= 30;
-                    if (projectile.alpha < minAlpha)
-                        projectile.alpha = minAlpha;
-                }
-                else
-                {
-                    projectile.alpha += 30;
-                    if (projectile.alpha > maxAlpha)
-                        projectile.alpha = maxAlpha;
-                }
-
-                if (projectile.ai[0] > 0f)
-                    projectile.ai[0]--;
-
-                if (projectile.ai[0] == 1f && projectile.ai[1] > 0f && projectile.owner == Main.myPlayer)
-                {
-                    projectile.netUpdate = true;
-                    Vector2 center4 = projectile.Center;
-                    center4.Y -= (float)num539 * projectile.scale / 2f;
-                    float num540 = ((float)(num535 + num536) - projectile.ai[1] + 1f) * num537 / (float)(num536 + num535);
-                    center4.Y -= (float)num539 * num540 / 2f;
-                    center4.Y += 2f;
-                    Projectile.NewProjectile(projectile.GetSource_FromAI(), center4, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 10f, projectile.ai[1] - 1f);
-                    int num541 = 4;
-
-                    if ((int)projectile.ai[1] % num541 == 0 && projectile.ai[1] != 0f)
-                    {
-                        int num542 = NPCID.Sharkron;
-                        int num543 = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center4.X, (int)center4.Y, num542);
-                        Main.npc[num543].velocity = projectile.velocity;
-                        Main.npc[num543].netUpdate = true;
-                    }
-                }
-
-                if (projectile.ai[0] <= 0f)
-                {
-                    float num544 = MathHelper.Pi / 30f;
-                    float num545 = (float)projectile.width / 5f;
-                    float num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
-                    projectile.position.X -= num546 * (float)(-projectile.direction);
-                    projectile.ai[0]--;
-                    num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
-                    projectile.position.X += num546 * (float)(-projectile.direction);
-                }
-
-                return false;
-            }
-
             // Larger cthulhunadoes
             else if (projectile.type == ProjectileID.Cthulunado)
             {
@@ -3212,6 +3113,18 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.velocity.Length() < AcceleratingBossLaserVelocityCap)
                     projectile.velocity *= 1.0025f;
+            }
+
+            // Sharknado is more translucent before dealing damage
+            if (projectile.type == ProjectileID.Sharknado)
+            {
+                if (projectile.timeLeft > FishronCthulhunadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
+                {
+                    if (projectile.alpha < 200)
+                        projectile.alpha = 200;
+                    if (projectile.alpha > 220)
+                        projectile.alpha = 220;
+                }
             }
 
             // Accelerate for 1.5 seconds to full velocity
