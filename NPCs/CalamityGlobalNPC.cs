@@ -4193,26 +4193,12 @@ namespace CalamityMod.NPCs
                     npc.damage = npc.ai[0] == 2f ? npc.defDamage : 0;
                     break;
 
-                case NPCID.DD2GoblinT1:
-                case NPCID.DD2GoblinT2:
-                case NPCID.DD2GoblinT3:
-                    npc.damage = (npc.ai[0] > 0f && npc.ai[0] < 24f) ? npc.defDamage : 0;
-                    break;
-
-                case NPCID.PumpkingBlade:
-                    npc.damage = (npc.ai[2] == 2f || npc.ai[2] == 5f) ? npc.defDamage : 0;
-                    break;
-
                 case NPCID.Mothron:
                     npc.damage = npc.ai[0] == 3.2f ? (int)Math.Round(npc.defDamage * 1.3) : npc.ai[0] == 2f ? (int)Math.Round(npc.defDamage * 0.5) : 0;
                     break;
 
                 case NPCID.MothronSpawn:
                     npc.damage = npc.ai[0] == 2.1f ? npc.defDamage : 0;
-                    break;
-
-                case NPCID.Flocko:
-                    npc.damage = npc.ai[0] > 0f ? npc.defDamage : 0;
                     break;
 
                 case NPCID.Mimic:
@@ -4233,30 +4219,9 @@ namespace CalamityMod.NPCs
 
                     break;
 
-                case NPCID.DeadlySphere:
-                    npc.damage = npc.ai[0] == 1f ? npc.defDamage : 0;
-                    break;
-
-                case NPCID.NebulaHeadcrab:
-                    npc.damage = npc.ai[0] == 5f ? npc.defDamage : 0;
-                    break;
-
                 case NPCID.MartianDrone:
                 case NPCID.SolarCorite:
                     npc.damage = (npc.ai[0] == 2f || npc.ai[0] == 3f) ? npc.defDamage : 0;
-                    break;
-
-                case NPCID.ArmedTorchZombie:
-                case NPCID.ArmedZombie:
-                case NPCID.ArmedZombieCenx:
-                case NPCID.ArmedZombieEskimo:
-                case NPCID.ArmedZombiePincussion:
-                case NPCID.ArmedZombieSlimed:
-                case NPCID.ArmedZombieSwamp:
-                case NPCID.ArmedZombieTwiggy:
-                case NPCID.Crawdad:
-                case NPCID.Crawdad2:
-                    npc.damage = npc.ai[2] == 0f ? 0 : (int)Math.Round(npc.defDamage * 1.4);
                     break;
 
                 case NPCID.GraniteFlyer:
@@ -4265,21 +4230,6 @@ namespace CalamityMod.NPCs
 
                 case NPCID.GraniteGolem:
                     npc.damage = npc.ai[2] < 0f ? 0 : npc.defDamage;
-                    break;
-
-                case NPCID.Squid:
-                case NPCID.BlueJellyfish:
-                case NPCID.GreenJellyfish:
-                case NPCID.PinkJellyfish:
-                case NPCID.BloodJelly:
-                case NPCID.FungoFish:
-                    float damagingVelocity = npc.type == NPCID.GreenJellyfish ? 3.6f : 2.8f;
-                    npc.damage = (npc.dontTakeDamage || npc.velocity.Length() > damagingVelocity) ? npc.defDamage : 0;
-                    break;
-
-                case NPCID.Herpling:
-                case NPCID.Derpling:
-                    npc.damage = (npc.velocity.Y == 0f || npc.velocity.Length() < 3f) ? 0 : npc.defDamage;
                     break;
 
                 case NPCID.BlueSlime:
