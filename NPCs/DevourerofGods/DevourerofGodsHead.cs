@@ -206,7 +206,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         Vector2 AdjustedPlayerCenter(float predictiveness = 0)
         {
             Player player = Main.player[NPC.target];
-            if (!(Main.getGoodWorld))
+            if (!(CalamityWorld.LegendaryMode))
                 return player.Center;
             return player.Center + player.velocity * predictiveness;
         }
@@ -282,7 +282,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = new Vector2(60, 0);
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.takenDamageMultiplier = 2;
         }
 
@@ -437,7 +437,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Variables
             bool flies = NPC.ai[3] == 0f;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 flies = true;
             Vector2 destination = AdjustedPlayerCenter(2);
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
@@ -493,7 +493,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (spawnedGuardians3)
                 phaseLimit -= 180;
 
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
             {
                 homingSpeed += 64;
                 homingTurnSpeed *= NPC.Distance(destination) / 300f;
@@ -2264,7 +2264,7 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                         NPC.ai[3] = 3;
                     NPC.ai[3]++;
                 // On FTW the final 10% is infinite portal dashing
-                if (Main.getGoodWorld && NPC.life / (float)NPC.lifeMax < 0.10f)
+                if (CalamityWorld.LegendaryMode && NPC.life / (float)NPC.lifeMax < 0.10f)
                 {
                     NPC.ai[3] = 4;
                     NPC.SimpleStrikeNPC(5000,1);
