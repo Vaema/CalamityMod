@@ -12,7 +12,7 @@ Oiled.ItemTooltip:
 	Only does damage when paired with another Heat debuff
 	'''
 Poisoned.ItemTooltip: Sickness - 6 DPS
-PotionSickness.ItemTooltip: "AAA"
+PotionSickness.ItemTooltip: ""
 Slimed.ItemTooltip: Enhances Heat debuff damage
 Wet.ItemTooltip: Enhances Electric debuff damage
 Electrified.ItemTooltip: Electric - 10.5 DPS. Deals 4x damage to moving targets
