@@ -152,7 +152,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.ai[2] += 1f;
                 if (NPC.ai[3] == 0f)
                 {
-                    if (NPC.ai[2] > ((CalamityWorld.LegendaryMode) ? 12f : 120f))
+                    if (NPC.ai[2] > (CalamityWorld.LegendaryMode ? 12f : 120f))
                     {
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 1f;

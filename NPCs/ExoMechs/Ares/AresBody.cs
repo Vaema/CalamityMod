@@ -889,7 +889,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     else
                     {
                         // Enrage if the target is more than the deathray length away
-                        if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode)) && EnragedState == (float)Enraged.No)
+                        if ((distanceFromTarget > DeathrayEnrageDistance || CalamityWorld.LegendaryMode) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
                             if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)

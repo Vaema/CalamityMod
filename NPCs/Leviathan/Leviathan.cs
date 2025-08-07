@@ -409,7 +409,7 @@ namespace CalamityMod.NPCs.Leviathan
 
                                 if (Main.zenithWorld)
                                 {
-                                    type = CalamityWorld.LegendaryMode ? ProjectileID.BouncyBoulder : ProjectileID.Boulder;
+                                    type = Main.rand.NextBool() ? ProjectileID.BouncyBoulder : ProjectileID.Boulder;
                                     leviCenter.Y -= 5; //Shoot a bit more up since boulders are affected by gravity
                                 }
 

@@ -487,8 +487,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 float chargeVelocityMult = 0.1f;
                 float maxChargeVelocity = enraged ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
                 if (CalamityWorld.LegendaryMode)
-                    maxChargeVelocity *= 1.15f;
-                if (CalamityWorld.LegendaryMode)
                     maxChargeVelocity *= 2f;
 
                 float inertia = death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;

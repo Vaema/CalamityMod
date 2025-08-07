@@ -25,7 +25,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.width = 30; //324
             NPC.height = 30; //216
             NPC.defense = 0;
-            NPC.lifeMax = CalamityWorld.LegendaryMode ? 10 : 1000;
+            NPC.lifeMax = Main.zenithWorld ? 10 : 1000;
             NPC.knockBackResist = 0f;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit1;
@@ -131,7 +131,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.MultiplayerClient && (!NPC.AnyNPCs(ModContent.NPCType<HiveMind>()) || CalamityWorld.LegendaryMode))
+                if (Main.netMode != NetmodeID.MultiplayerClient && (!NPC.AnyNPCs(ModContent.NPCType<HiveMind>()) || Main.zenithWorld))
                 {
                     Vector2 spawnAt = NPC.Bottom;
                     NPC.NewNPC(NPC.GetSource_Death(), (int)spawnAt.X, (int)spawnAt.Y, ModContent.NPCType<HiveMind>());

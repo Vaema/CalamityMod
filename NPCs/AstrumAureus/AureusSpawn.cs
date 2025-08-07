@@ -308,10 +308,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 36 : (3 + (int)((NPC.scale - 1f) * 3));
+                    int totalProjectiles = 3 + (int)((NPC.scale - 1f) * 3);
                     double radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<AstralLaser>();
-                    float velocity = CalamityWorld.LegendaryMode ? 10f : 6f;
+                    float velocity = 6f;
                     double angleA = radians * 0.5;
                     double angleB = MathHelper.ToRadians(90f) - angleA;
                     float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));

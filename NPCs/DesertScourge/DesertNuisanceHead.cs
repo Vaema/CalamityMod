@@ -295,12 +295,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
             }
 
-            if (CalamityWorld.LegendaryMode)
-            {
-                speed *= 1.5f;
-                turnSpeed *= 1.5f;
-            }
-
             Vector2 npcCenter = NPC.Center;
             float playerX = Main.player[NPC.target].Center.X;
             float targettingPosition = Main.player[NPC.target].Center.Y;

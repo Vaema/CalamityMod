@@ -572,9 +572,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 float totalInertiaAdjustmentDistance = maxInertiaDistance - minInertiaDistance;
                 float distanceFromInertiaAdjustmentCutoff = distanceFromFlyDestination - minInertiaDistance;
                 if (CalamityWorld.LegendaryMode)
-                    maxInertia *= 0.8f;
-                if (CalamityWorld.LegendaryMode)
-                    maxInertia *= Main.rand.NextFloat(0.2f, 1f);
+                    maxInertia *= Main.rand.NextFloat(0.16f, 0.8f);
 
                 float inertia = distanceFromFlyDestination >= maxInertiaDistance ? maxInertia :
                     distanceFromFlyDestination <= minInertiaDistance ? minInertia :

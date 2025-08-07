@@ -370,8 +370,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             float chargeVelocityMult = 0.25f;
             float maxChargeVelocity = death ? 28f : revenge ? 26f : expertMode ? 24f : 20f;
             if (CalamityWorld.LegendaryMode)
-                maxChargeVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode)
                 maxChargeVelocity *= 2f;
 
             float inertia = death ? 45f : revenge ? 47f : expertMode ? 50f : 55f;

@@ -191,8 +191,6 @@ namespace CalamityMod.NPCs.Leviathan
             if (!leviAlive)
                 bubbleVelocity += 2f * (1f - lifeRatio);
             if (CalamityWorld.LegendaryMode)
-                bubbleVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode)
                 bubbleVelocity *= 2f;
 
             // Phases

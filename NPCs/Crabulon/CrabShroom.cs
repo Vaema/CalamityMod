@@ -34,11 +34,9 @@ namespace CalamityMod.NPCs.Crabulon
             if (CalamityWorld.LegendaryMode)
                 NPC.scale = 2f;
 
-            NPC.lifeMax = CalamityWorld.LegendaryMode ? 180 : 15;
+            NPC.lifeMax = CalamityWorld.LegendaryMode ? 360 : 15;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 6000;
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 2;
             AIType = -1;
             NPC.knockBackResist = 0.5f;
             NPC.noGravity = true;

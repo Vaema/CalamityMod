@@ -539,8 +539,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                         if (calamityGlobalNPC.newAI[0] > 90f)
                             NPC.velocity *= 1.01f;
 
-                        // Spawn honey in legendary rev+
-                        if (CalamityWorld.LegendaryMode && calamityGlobalNPC.newAI[0] % 6f == 0f)
+                        // Spawn honey in the stupid seed
+                        if (Main.zenithWorld && calamityGlobalNPC.newAI[0] % 6f == 0f)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
