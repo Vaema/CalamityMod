@@ -28,6 +28,7 @@ using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
@@ -1144,7 +1145,6 @@ namespace CalamityMod.CalPlayer
         public bool titanHeartSet = false;
         public bool titanHeartMask = false;
         public bool titanHeartMantle = false;
-        public bool titanHeartBoots = false;
         public int titanCooldown = 0;
         public bool umbraphileSet = false;
         public bool reaverSpeed = false;
@@ -2382,7 +2382,6 @@ namespace CalamityMod.CalPlayer
             titanHeartSet = false;
             titanHeartMask = false;
             titanHeartMantle = false;
-            titanHeartBoots = false;
             umbraphileSet = false;
             plagueReaper = false;
             plaguebringerPatronSet = false;
@@ -3123,7 +3122,6 @@ namespace CalamityMod.CalPlayer
             titanHeartSet = false;
             titanHeartMask = false;
             titanHeartMantle = false;
-            titanHeartBoots = false;
             titanCooldown = 0;
             umbraphileSet = false;
             fathomSwarmer = false;
@@ -4575,20 +4573,11 @@ namespace CalamityMod.CalPlayer
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
 
-            if (titanHeartMask && rogue)
-                knockback += 0.05f;
-
             if (titanHeartMantle && rogue)
-                knockback += 0.05f;
-
-            if (titanHeartBoots && rogue)
-                knockback += 0.05f;
-
-            if (titanHeartSet && rogue)
-                knockback += 0.2f;
+                knockback += TitanHeartMantle.RogueKnockbackBoost;
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
-                knockback += 1f;
+                knockback *= TitanHeartMask.StealthStrikeKnockbackMult;
         }
         #endregion
 

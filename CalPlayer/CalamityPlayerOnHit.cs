@@ -12,6 +12,8 @@ using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.TitanHeart;
+using CalamityMod.Items.Armor.Umbraphile;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -1120,7 +1122,7 @@ namespace CalamityMod.CalPlayer
 
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
             {
-                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
+                int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(TitanHeartMask.ExplosionDamage);
 
                 Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<TitanHeartBoom>(), damage, proj.knockBack, proj.owner, 1f, 0f);
                 SoundEngine.PlaySound(SoundID.Item14, proj.Center);
@@ -1150,9 +1152,7 @@ namespace CalamityMod.CalPlayer
                 // Umbraphile cannot trigger off of itself. It is guaranteed on stealth strikes and 20% chance otherwise.
                 if (umbraphileSet && ((modProj.stealthStrike && modProj.stealthStrikeHitCount < 3) || Main.rand.NextBool(5)))
                 {
-                    // Umbraphile Rogue Blasts: 20%, softcap starts at 50 base damage
-                    int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.20, 50);
-
+                    int umbraBlastDamage = CalamityUtils.DamageSoftCap(proj.damage * UmbraphileHood.ExplosionDamageRatio, UmbraphileHood.ExplosionDamageSoftcap);
                     Projectile.NewProjectile(spawnSource, proj.Center, Vector2.Zero, ProjectileType<UmbraphileBoom>(), umbraBlastDamage, 0f, Player.whoAmI);
                 }
                 if (electricianGlove && modProj.stealthStrike && modProj.stealthStrikeHitCount < 3)
@@ -1233,7 +1233,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (titanHeartMask)
                 {
-                    target.AddBuff(BuffType<AstralInfectionDebuff>(), 120);
+                    target.AddBuff(BuffType<AstralInfectionDebuff>(), TitanHeartMask.OnHitDebuffDuration);
                 }
             }
             if (summon)
