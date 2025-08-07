@@ -90,7 +90,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<PrimordialWyrmBody>(), NPCType<PrimordialWyrmBodyAlt>(), NPCType<PrimordialWyrmHead>(), NPCType<PrimordialWyrmTail>(), NPCType<AquaticAberration>(),
                 NPCType<AnahitasIceShield>(), NPCType<CryogenShield>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<DraconicSwarmer>(), NPCType<AureusSpawn>(),
                 NPCType<Brimling>(), NPCType<CrabShroom>(), NPCType<CosmicGuardianBody>(), NPCType<CosmicGuardianTail>(), NPCType<CosmicGuardianHead>(), NPCType<DankCreeper>(),
-                NPCType<HiveBlob>(), NPCType<HiveBlob2>(), NPCType<DarkHeart>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceTail>(),
+                NPCType<HiveBlob>(), NPCType<DarkHeart>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceTail>(),
                 NPCType<DesertNuisanceBodyYoung>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceTailYoung>(), NPCType<PolterPhantom>(), NPCType<PhantomFuckYou>(),
                 NPCType<KingSlimeJewelEmerald>(), NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
                 NPCType<PlagueMine>(), NPCType<ProfanedRocks>(), NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnOffense>(), NPCType<ProvSpawnHealer>(), NPCType<RockPillar>(),

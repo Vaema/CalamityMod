@@ -535,7 +535,7 @@ namespace CalamityMod.NPCs.HiveMind
                             maxBlobs = 50;
 
                         for (int i = 0; i < maxBlobs; i++)
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>(), NPC.whoAmI);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<HiveBlob>(), NPC.whoAmI, ai2: Main.rand.Next(2));
                     }
                 }
 
@@ -580,7 +580,7 @@ namespace CalamityMod.NPCs.HiveMind
                                 int x = (int)(NPC.position.X + Main.rand.Next(NPC.width - 32));
                                 int y = (int)(NPC.position.Y + Main.rand.Next(NPC.height - 32));
 
-                                int type = Main.rand.NextBool() ? ModContent.NPCType<HiveBlob2>() : ModContent.NPCType<HiveBlob>();
+                                int type = ModContent.NPCType<HiveBlob>();
                                 if (NPC.CountNPCS(ModContent.NPCType<DankCreeper>()) < maxDankSpawns)
                                     type = ModContent.NPCType<DankCreeper>();
 
@@ -649,7 +649,7 @@ namespace CalamityMod.NPCs.HiveMind
                         for (int i = 0; i < Main.maxNPCs; i++)
                         {
                             NPC hiveBlob = Main.npc[i];
-                            if (hiveBlob.active && (hiveBlob.type == ModContent.NPCType<HiveBlob>() || hiveBlob.type == ModContent.NPCType<HiveBlob2>()))
+                            if (hiveBlob.active && hiveBlob.type == ModContent.NPCType<HiveBlob>())
                             {
                                 hiveBlob.position.X = NPC.position.X;
                                 hiveBlob.position.Y = NPC.position.Y;
