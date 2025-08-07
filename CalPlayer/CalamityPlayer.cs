@@ -4444,7 +4444,7 @@ namespace CalamityMod.CalPlayer
             if (!Player.mount.Active)
             {
                 float runAccMult = 1f +
-                    (lunicCorpsLegs ? 0.1f : 0f) +
+                    (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
@@ -4465,7 +4465,7 @@ namespace CalamityMod.CalPlayer
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
-                    (lunicCorpsLegs ? 0.1f : 0f) +
+                    (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +

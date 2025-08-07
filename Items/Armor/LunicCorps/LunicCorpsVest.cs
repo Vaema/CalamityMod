@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.LunicCorps
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Armor.LunicCorps
     public class LunicCorpsVest : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RangedDamageBoost = 0.15f;
+        public static int RangedCritBoost = 15; // NOTE: Tooltip shares this number with damage % as they're equal
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -22,8 +28,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.05f;
-            player.GetCritChance<RangedDamageClass>() += 15;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }
 
         public override void AddRecipes()
