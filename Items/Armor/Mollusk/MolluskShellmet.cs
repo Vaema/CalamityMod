@@ -7,6 +7,7 @@ using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Mollusk
@@ -15,6 +16,13 @@ namespace CalamityMod.Items.Armor.Mollusk
     public class MolluskShellmet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float DamageBoost = 0.05f;
+        public static int CritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
+
+        // Set Bonus
+        public static float SetBonusDR = 0.1f;
         public static int ShellfishDamage = 140;
 
         public override void SetDefaults()
@@ -29,8 +37,8 @@ namespace CalamityMod.Items.Armor.Mollusk
         public override void UpdateEquip(Player player)
         {
             player.ignoreWater = true;
-            player.GetDamage<GenericDamageClass>() += 0.05f;
-            player.GetCritChance<GenericDamageClass>() += 4;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
             player.Calamity().molluskHelmet = true;
         }
 
@@ -41,8 +49,8 @@ namespace CalamityMod.Items.Armor.Mollusk
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
-            player.endurance += 0.1f;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusDR.ToPercent());
+            player.endurance += SetBonusDR;
             player.maxMinions += 4; // These are allocated for the Shellfish minions; there is no net change in minion slots.
             if (player.whoAmI == Main.myPlayer)
             {

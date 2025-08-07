@@ -9,7 +9,7 @@ AstralBreastplate: {
 
 AstralHelm: {
 	DisplayName: Astral Helm
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance}"
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	SetBonus:
 		'''
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
@@ -335,7 +335,7 @@ MolluskShelleggings: {
 	DisplayName: Mollusk Shelleggings
 	Tooltip:
 		'''
-		6% increased damage and 4% increased critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		Your horizontal movement is slowed
 		'''
 }
@@ -344,14 +344,14 @@ MolluskShellmet: {
 	DisplayName: Mollusk Shellmet
 	Tooltip:
 		'''
-		5% increased damage and 4% increased critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		You can move freely through liquids
 		Your horizontal movement is slowed
 		'''
 	SetBonus:
 		'''
+		{0}% increased damage reduction
 		Two shellfishes aid you in combat
-		10% increased damage reduction
 		'''
 }
 
@@ -359,7 +359,7 @@ MolluskShellplate: {
 	DisplayName: Mollusk Shellplate
 	Tooltip:
 		'''
-		6% increased damage and 5% increased critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		Your horizontal movement is slowed
 		'''
 }
