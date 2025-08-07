@@ -1002,15 +1002,15 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 1.5% chance to drop any of the three Calamity martian drops
+                // 1% chance to drop any of the three Calamity martian drops
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 66);
-                    npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
-                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 100);
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 100);
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 100);
                     break;
 
                 // Martian Engineer
