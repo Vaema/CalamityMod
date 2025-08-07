@@ -326,6 +326,12 @@ namespace CalamityMod.Items
                     {
                         continue;
                     }
+
+                    var text = Language.GetTextValue(tooltipKey);
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        continue;
+                    }
                     
                     foundDebuff = true;
                     if (!PlayerInput.Triggers.Current.SmartCursor)
@@ -334,7 +340,7 @@ namespace CalamityMod.Items
                         break;
                     }
                     
-                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{Language.GetTextValue(tooltipKey)}"));
+                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
                 }
 
                 if (showTheTip)
