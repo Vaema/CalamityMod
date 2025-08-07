@@ -354,16 +354,6 @@ namespace CalamityMod
             return color;
         }
 
-        /// <summary>
-        /// Converts a Color into a Hex string usable for tooltip/text coloring.
-        /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
-        public static string ColorToHex(Color color)
-        {
-            return $"{color.R.ToString("X2")}{color.G.ToString("X2")}{color.B.ToString("X2")}";
-        }
-
         private const float WorldInsertionOffset = 15f;
         /// <summary>
         /// If the given item is outside the world, force it to be within the world boundaries.
