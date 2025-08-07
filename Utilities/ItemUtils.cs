@@ -290,17 +290,6 @@ namespace CalamityMod
             tooltips.FindAndReplace("[KEY]", finalKey);
         }
 
-        /// <summary>
-        /// Embeds and item icon and it's name
-        /// set the justItemIcon bool to true to get just the icon without the item name
-        /// </summary>
-        /// <param name="itemType"></param>
-        /// <param name="justItemIcon"></param>
-        /// <returns></returns>
-        public static string EmbedItem(int itemType, bool justItemIcon = false)
-        {
-                return justItemIcon ? $"[i:{itemType}]" : $"[i:{itemType}] {ContentSamples.ItemsByType[itemType].Name}";
-        }
         public static Color FireDebuffColor => new(253, 107, 2);
         public static Color SicknessDebuffColor => new(136, 198, 10);
         public static Color WaterDebuffColor => new(105, 147, 255);
@@ -310,61 +299,61 @@ namespace CalamityMod
         public static Color TypelessDebuffColor => new(230, 202, 250);
         public static Color VulnHexDebuffColor => new(196, 35, 43);
         public static Color MiracleBlightDebuffColor => Main.DiscoColor;
-        public static string EmbedDebuff(int debuff)
+
+        private static readonly Dictionary<int, List<(Color, float)>> debuffColorWeightsCache = [];
+
+        public static Color GetDebuffTooltipNameColor(int debuffId)
         {
-            Color color = TypelessDebuffColor;
-            List<(Color, float)> debuffColorWeights = new();
-            if (debuff == ModContent.BuffType<VulnerabilityHex>() || debuff == ModContent.BuffType<TrueVulnerabilityHex>())
+            var color = TypelessDebuffColor;
+            
+            if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
             {
                 color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
             }
-            else if (debuff == ModContent.BuffType<MiracleBlight>())
+            else if (debuffId == ModContent.BuffType<MiracleBlight>())
             {
                 color = MiracleBlightDebuffColor;
             }
-            else
+            else if (BuffDatasets.DebuffDataset[debuffId] is not null)
             {
-                if (BuffDatasets.DebuffDataset[debuff] is not null)
+                if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
                 {
-                    debuffColorWeights.Add((SicknessDebuffColor, BuffDatasets.DebuffDataset[debuff].SicknessDebuffScaling));
-                    debuffColorWeights.Add((FireDebuffColor, BuffDatasets.DebuffDataset[debuff].HeatDebuffScaling));
-                    debuffColorWeights.Add((WaterDebuffColor, BuffDatasets.DebuffDataset[debuff].WaterDebuffScaling));
-                    debuffColorWeights.Add((ElectricDebuffColor, BuffDatasets.DebuffDataset[debuff].ElectricDebuffScaling));
-                    debuffColorWeights.Add((ColdDebuffColor, BuffDatasets.DebuffDataset[debuff].ColdDebuffScaling));
+                    weights =
+                    [
+                        (SicknessDebuffColor, BuffDatasets.DebuffDataset[debuffId].SicknessDebuffScaling),
+                        (FireDebuffColor, BuffDatasets.DebuffDataset[debuffId].HeatDebuffScaling),
+                        (WaterDebuffColor, BuffDatasets.DebuffDataset[debuffId].WaterDebuffScaling),
+                        (ElectricDebuffColor, BuffDatasets.DebuffDataset[debuffId].ElectricDebuffScaling),
+                        (ColdDebuffColor, BuffDatasets.DebuffDataset[debuffId].ColdDebuffScaling),
+                    ];
+                }
 
-                    float totalWeight = 0;
-                    Vector4 colordata = new();
-                    foreach (var item in debuffColorWeights)
-                    {
-                        totalWeight += item.Item2;
-                        colordata += item.Item1.ToVector4() * item.Item2;
-                    }
-                    if (totalWeight < 1)
-                    {
-                        colordata += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
-                        totalWeight += (1 - totalWeight);
-                    }
-                    if (totalWeight != 0)
-                    {
-                        colordata /= totalWeight;
-                        color = new Color(colordata);
-
-                    }
+                float totalWeight = 0;
+                Vector4 normalColor = new();
+                
+                foreach (var item in weights)
+                {
+                    totalWeight += item.Item2;
+                    // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                    normalColor += item.Item1.ToVector4() * item.Item2;
+                }
+                
+                if (totalWeight < 1)
+                {
+                    normalColor += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
+                    totalWeight += (1 - totalWeight);
+                }
+                
+                if (totalWeight != 0)
+                {
+                    normalColor /= totalWeight;
+                    color = new Color(normalColor);
                 }
             }
 
-            var colorText = $"[c/{ColorToHex(color)}:";
-            var outText = EmbedItem(CalamityMod.Instance.Find<ModItem>(BuffID.Search.GetName(debuff).Replace("CalamityMod/", "") + "IconItem").Type);
-            if (true) //This is for when configs are updated to be able to disable item icons in tooltips 
-            {
-                outText = outText.Replace("]", "]" + colorText) + "]";
-            }
-            else
-            {
-                outText = colorText + outText + "]";
-            }
-            return outText;
+            return color;
         }
+
         /// <summary>
         /// Converts a Color into a Hex string usable for tooltip/text coloring.
         /// </summary>

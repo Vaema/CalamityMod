@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -100,12 +99,5 @@ namespace CalamityMod.Buffs.DamageOverTime
                 water.scale *= 0.2f;
             }
         }
-    }
-    public class CrushDepthIconItem : ModItem
-    {
-        private string BuffName = "CrushDepth";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

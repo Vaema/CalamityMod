@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -72,12 +71,5 @@ namespace CalamityMod.Buffs.DamageOverTime
                 bubble.type = Main.rand.NextBool(3) ? 412 : 411;
             }
         }
-    }
-    public class RiptideDebuffIconItem : ModItem
-    {
-        private string BuffName = "RiptideDebuff";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }
