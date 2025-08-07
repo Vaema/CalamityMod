@@ -149,9 +149,9 @@ FathomSwarmerBoots: {
 	DisplayName: Fathom Swarmer Greaves
 	Tooltip:
 		'''
-		8% increased summon damage
+		{$CommonItemTooltip.PercentIncreasedSummonDamage}
 		Grants the ability to swim
-		Movement speed increased by 40% while submerged in liquid
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1} while submerged in liquid
 		'''
 }
 
@@ -159,8 +159,8 @@ FathomSwarmerBreastplate: {
 	DisplayName: Fathom Swarmer Breastplate
 	Tooltip:
 		'''
-		Increases your max number of minions by 1
-		10% increased summon damage
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Reduces defense loss within the Abyss
 		'''
 }
@@ -169,27 +169,28 @@ FathomSwarmerVisage: {
 	DisplayName: Fathom Swarmer Visage
 	Tooltip:
 		'''
-		Increases your max number of minions by 1
-		8% increased summon damage
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Provides breathing and light underwater
 		'''
 	SetBonus:
 		'''
-		10% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Grants the ability to climb walls
-		20% increased summon damage, +10 defense and +2.5 HP/s life regen while underwater
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@2}, +{3} defense and +{4} HP/s life regen while underwater
 		Provides a moderate amount of light and moderately reduces breath loss in the abyss
 		'''
 }
 
 ForbiddenCirclet: {
 	DisplayName: Forbidden Circlet
-	Tooltip: 10% increased summon damage and 15% increased rogue velocity
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedSummonDamage} and {$Common.RogueVelocity@1}"
 	SetBonus:
 		'''
-		+40 maximum stealth
-		{0} to call an ancient storm to the cursor location
-		The ancient storm costs {1} mana and benefits from both summon and rogue bonuses
+		{$Common.RogueStealth}
+		{1} to call an ancient storm to the cursor location
+		The ancient storm costs {2} mana and benefits from both summon and rogue bonuses
 		Rogue stealth strikes spawn homing eaters on enemy hits
 		Rogue and summon attacks will scale off of the stat with a higher boost
 		Minions no longer deal less damage while wielding rogue weapons

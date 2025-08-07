@@ -8,6 +8,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
@@ -1105,18 +1106,16 @@ namespace CalamityMod.CalPlayer
 
             if (forbiddenCirclet && modProj.stealthStrike && forbiddenCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
             {
-                for (int index2 = 0; index2 < 6; index2++)
+                for (int index2 = 0; index2 < ForbiddenCirclet.EaterSpawnCount; index2++)
                 {
-                    float xVector = Main.rand.Next(-35, 36) * 0.02f;
-                    float yVector = Main.rand.Next(-35, 36) * 0.02f;
-                    xVector *= 10f;
-                    yVector *= 10f;
-                    int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(40);
+                    float xVector = Main.rand.NextFloat(-7f, 7f);
+                    float yVector = Main.rand.NextFloat(-7f, 7f);
+                    int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(ForbiddenCirclet.EaterDamage);
 
                     int eater = Projectile.NewProjectile(spawnSource, proj.Center.X, proj.Center.Y, xVector, yVector, ProjectileType<ForbiddenCircletEater>(), damage, proj.knockBack, proj.owner);
                     if (eater.WithinBounds(Main.maxProjectiles))
                         Main.projectile[eater].DamageType = DamageClass.Generic;
-                    forbiddenCooldown = 15;
+                    forbiddenCooldown = ForbiddenCirclet.EaterSpawnCooldown;
                 }
             }
 

@@ -3877,8 +3877,8 @@ namespace CalamityMod.CalPlayer
             }
             if (forbiddenCirclet && forbiddenCooldown <= 0)
             {
-                forbiddenCooldown = 45;
-                int stormMana = (int)(ForbiddenCirclet.manaCost * Player.manaCost);
+                forbiddenCooldown = ForbiddenCirclet.StormCooldown;
+                int stormMana = (int)(ForbiddenCirclet.StormManaCost * Player.manaCost);
                 if (Player.statMana < stormMana)
                 {
                     if (Player.manaFlower)
@@ -3894,9 +3894,9 @@ namespace CalamityMod.CalPlayer
 
                     // To compute Forbidden Circlet tornado damage, create a fake stat modifier on the spot which combines both classes.
                     StatModifier forbidden = Player.GetTotalDamage<SummonDamageClass>().CombineWith(Player.GetDamage<RogueDamageClass>());
-                    int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.tornadoBaseDmg);
+                    int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.StormDamage);
 
-                    float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.tornadoBaseKB);
+                    float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.StormKB);
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
