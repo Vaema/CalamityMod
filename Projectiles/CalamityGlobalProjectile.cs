@@ -3470,7 +3470,7 @@ namespace CalamityMod.Projectiles
                     showArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
                 }
                 if (brimstoneBullets)
                 {
