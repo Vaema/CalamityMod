@@ -333,7 +333,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (death)
                         {
                             int numGelProjectiles = 12;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 numGelProjectiles = 15;
 
                             float gelVelocity = death ? 20f : 16f;
@@ -345,7 +345,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 spinningpoint = new Vector2(gelVelocity, 0f);
 
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         spinningpoint *= Main.rand.NextFloat() + 0.5f;
 
                                     spinningpoint = spinningpoint.RotatedBy((float)(-j) * MathHelper.TwoPi / (float)numGelProjectiles, Vector2.Zero);
@@ -470,7 +470,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
 
                         float jumpVelocity = death ? 7f : 4.5f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             jumpVelocity = 12f;
 
                         if ((npc.direction == 1 && npc.velocity.X < jumpVelocity) || (npc.direction == -1 && npc.velocity.X > 0f - jumpVelocity))
@@ -516,7 +516,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (phase2)
                             slamDelay = 10;
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             slamDelay = 0;
 
                         if (npc.velocity.Y == 0f)
@@ -628,7 +628,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.velocity.Y += death ? 1.75f : 1.5f;
                             float slamVelocity = death ? 15.5f : 15f;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                             {
                                 npc.velocity.Y += 1f;
                                 slamVelocity = 15.99f;
@@ -733,8 +733,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numGelProjectiles = phase4 ? Main.rand.Next(9, 12) : phase2 ? Main.rand.Next(6, 9) : 12;
                             if (phase5)
                                 numGelProjectiles += 6;
-                            if (CalamityWorld.LegendaryMode)
-                                numGelProjectiles = 20;
+                            if (Main.getGoodWorld)
+                                numGelProjectiles = 15;
 
                             float projectileVelocity = death ? 12f : 10.5f;
                             int type = ProjectileID.QueenSlimeGelAttack;
@@ -745,7 +745,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float rotation = MathHelper.ToRadians(120);
                                 for (int i = 0; i < numGelProjectiles; i++)
                                 {
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         destination *= Main.rand.NextFloat() + 0.5f;
 
                                     Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numGelProjectiles - 1)));
@@ -759,7 +759,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 spinningpoint = new Vector2(projectileVelocity, 0f);
 
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         spinningpoint *= Main.rand.NextFloat() + 0.5f;
 
                                     spinningpoint = spinningpoint.RotatedBy((-j) * MathHelper.TwoPi / numGelProjectiles, Vector2.Zero);
@@ -871,7 +871,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.netUpdate = true;
             }
 
-            float slimeSpawnHealthGateValue = CalamityWorld.LegendaryMode ? 0.01f : phase3 ? 0.04f : phase2 ? 0.03f : 0.025f;
+            float slimeSpawnHealthGateValue = Main.zenithWorld ? 0.01f : phase3 ? 0.04f : phase2 ? 0.03f : 0.025f;
             if (death)
                 slimeSpawnHealthGateValue *= 0.5f;
 

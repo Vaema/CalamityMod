@@ -165,7 +165,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[1] == 0f || npc.ai[1] == 4f)
             {
                 // Start other phases; if arms are dead, start with spin phase
-                if (phase2 || CalamityWorld.LegendaryMode || allArmsDead)
+                if (phase2 || Main.getGoodWorld || allArmsDead)
                 {
                     // Start spin phase after 1.5 seconds
                     npc.ai[2] += phase3 ? 1.5f : 1f;
