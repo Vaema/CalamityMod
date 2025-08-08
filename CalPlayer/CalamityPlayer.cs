@@ -3914,7 +3914,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
                 Player.AddCooldown(PlagueBlackout.ID, 1800);
             }
-            if (forbiddenCirclet && forbiddenCooldown <= 0)
+            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {
                 forbiddenCooldown = ForbiddenCirclet.StormCooldown;
                 int stormMana = (int)(ForbiddenCirclet.StormManaCost * Player.manaCost);
@@ -3927,7 +3927,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_Misc("1");
+                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
@@ -3939,9 +3939,16 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
-                        if (mark.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[mark].DamageType = DamageClass.Generic;
+                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0 )
+                        {
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.owner != Player.whoAmI || item.type != ProjectileType<CircletTornado>())
+                                    continue;
+                                item.timeLeft = 60;
+                            }
+                        }
+                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
                     }
                 }
             }
@@ -5322,8 +5329,8 @@ namespace CalamityMod.CalPlayer
             bool hasNonWeaponFunction = isPickaxe || isAxe || isHammer || isPlaced || isChannelable;
             bool playerUsingWeapon = hasDamage && hasHitboxes && !hasNonWeaponFunction;
 
-            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
-            if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items. Forbidden Circlet does this for summon weapons
+            if ((it.IsAir || (!it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive) || (it.CountsAsClass<SummonDamageClass>() && forbiddenCirclet))
                 playerUsingWeapon = false;
 
             // Molten Amputator consumes stealth in a special way

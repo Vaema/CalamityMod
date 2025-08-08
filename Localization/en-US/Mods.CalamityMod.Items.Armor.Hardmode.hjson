@@ -184,8 +184,8 @@ ForbiddenCirclet: {
 		{$Common.RogueStealth}
 		{1} to call an ancient storm to the cursor location
 		The ancient storm costs {2} mana and benefits from both summon and rogue bonuses
-		Rogue stealth strikes spawn homing eaters on enemy hits
-		Rogue and summon attacks will scale off of the stat with a higher boost
+		Rogue stealth strikes will tag enemies, causing summons to spawn homing eaters on hit
+		Using summon weapons no longer reset your stealth
 		Minions no longer deal less damage while wielding rogue weapons
 		'''
 }
