@@ -14,6 +14,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Aerospec;
+using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
@@ -1453,7 +1454,7 @@ namespace CalamityMod.CalPlayer
                         int daedalusReflectIFrames = Player.ComputeReflectIFrames();
                         Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
 
-                        int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.DaedalusReflectCooldownMin, BalancingConstants.DaedalusReflectCooldownMax, cooldownDurationScalar);
+                        int cooldownDuration = (int)MathHelper.Lerp(DaedalusHeadMelee.ReflectCooldownMin, DaedalusHeadMelee.ReflectCooldownMax, cooldownDurationScalar);
                         Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                     }
                 }
@@ -2280,9 +2281,9 @@ namespace CalamityMod.CalPlayer
                     victideBarrierHeal += healAmt;
                 }
 
-                if (daedalusAbsorb && Main.rand.NextBool(10))
+                if (daedalusAbsorb && Main.rand.NextBool(DaedalusHeadMagic.AbsorptionChanceDenominator))
                 {
-                    int healAmt = (int)(hurtInfo.Damage / 2D);
+                    int healAmt = (int)(hurtInfo.Damage * DaedalusHeadMagic.DamageAbsorptionPercent);
                     Player.HealPlayer(healAmt);
                 }
 
@@ -2676,7 +2677,7 @@ namespace CalamityMod.CalPlayer
                         double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
-                        int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(60);
+                        int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DaedalusHeadRanged.ShardDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                         {

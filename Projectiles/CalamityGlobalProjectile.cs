@@ -13,6 +13,7 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -3302,10 +3303,9 @@ namespace CalamityMod.Projectiles
                         {
                             if (Main.player[projectile.owner].miscCounter % 30 == 0 && projectile.FinalExtraUpdate())
                             {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < 15)
+                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < DaedalusHeadRogue.ShardCountLimit)
                                 {
-                                    // Daedalus Rogue Crystals: 25%, soft cap starts at 120 base damage
-                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
+                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * DaedalusHeadRogue.ShardDamageRatio, DaedalusHeadRogue.ShardDamageSoftcap);
 
                                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                                     int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);

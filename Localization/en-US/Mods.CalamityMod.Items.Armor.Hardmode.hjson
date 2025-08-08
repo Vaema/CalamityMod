@@ -62,35 +62,29 @@ BrimflameRobes: {
 
 DaedalusBreastplate: {
 	DisplayName: Daedalus Breastplate
-	Tooltip: 3% increased damage and critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage}"
 }
 
 DaedalusHeadMagic: {
 	DisplayName: Daedalus Hood
 	Tooltip:
 		'''
-		13% increased magic damage and 7% increased magic critical strike chance
-		10% reduced mana usage and +60 max mana
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
-	SetBonus:
-		'''
-		5% increased magic damage
-		You have a 10% chance to absorb physical attacks and projectiles when hit
-		If you absorb an attack you are healed for 1/2 of that attack's damage
-		'''
+	SetBonus: You have a {0}% chance to heal back {1}% of taken damage
 }
 
 DaedalusHeadMelee: {
 	DisplayName: Daedalus Helm
 	Tooltip:
 		'''
-		15% increased melee damage
-		10% increased melee critical strike chance
+		{$CommonItemTooltip.PercentIncreasedMeleeDamageCritChance}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@1}
 		'''
 	SetBonus:
 		'''
-		10% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		You reflect projectiles back at enemies
 		Reflected projectiles deal 50% less damage to you
 		{$Common.ReflectInformation}
@@ -101,37 +95,37 @@ DaedalusHeadRanged: {
 	DisplayName: Daedalus Headgear
 	Tooltip:
 		'''
-		13% increased ranged damage and 7% increased ranged critical strike chance
-		Reduces ammo usage by 20%
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		20% chance to save ammo
 		'''
-	SetBonus:
-		'''
-		5% increased ranged damage
-		Getting hit causes you to emit a blast of crystal shards
-		'''
+	SetBonus: Getting hit causes you to emit a blast of crystal shards
 }
 
 DaedalusHeadRogue: {
 	DisplayName: Daedalus Facemask
 	Tooltip:
 		'''
-		13% increased rogue damage and 7% increased rogue critical strike chance
-		15% increased rogue velocity and 5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$Common.RogueVelocity@2} and {$CommonItemTooltip.PercentIncreasedMovementSpeed@3}
 		'''
 	SetBonus:
 		'''
-		5% increased rogue damage
-		+105 maximum stealth
+		{$Common.RogueStealth}
 		Rogue projectiles throw out crystal shards as they travel
 		'''
 }
 
 DaedalusHeadSummon: {
 	DisplayName: Daedalus Mask
-	Tooltip: 5% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		20% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		A daedalus crystal floats above you to protect you
 		'''
 }
@@ -140,8 +134,8 @@ DaedalusLeggings: {
 	DisplayName: Daedalus Leggings
 	Tooltip:
 		'''
-		3% increased critical strike chance
-		10% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
