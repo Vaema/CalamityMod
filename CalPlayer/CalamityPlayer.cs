@@ -6,6 +6,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -28,6 +29,7 @@ using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Dyes;
@@ -1086,8 +1088,12 @@ namespace CalamityMod.CalPlayer
         public bool necroSet = false;
         /// <summary> Calamity's Frost armor set bonus; gives a combined 20% damage boost split between melee and ranged based on distance from the closest enemy. </summary>
         public bool frostSet = false;
-        public bool victideSet = false;
-        public bool victideSummoner = false;
+        public bool victideBarrierSet = false;
+        public int victideBarrierHeal = 0;
+        public bool victideBarrierHead = false;
+        public bool victideBurrowSet = false;
+        public bool victideBurrowHead = false;
+        public bool victideSnailSet = false;
         public bool sulphurSet = false;
         public bool sulphurJump = false;
         public int sulphurBubbleCooldown = 0;
@@ -1144,7 +1150,6 @@ namespace CalamityMod.CalPlayer
         public bool titanHeartSet = false;
         public bool titanHeartMask = false;
         public bool titanHeartMantle = false;
-        public bool titanHeartBoots = false;
         public int titanCooldown = 0;
         public bool umbraphileSet = false;
         public bool reaverSpeed = false;
@@ -1678,6 +1683,7 @@ namespace CalamityMod.CalPlayer
         // This may seem like a scuffed setup, but a simple bool will have ordering issues when it comes to drawing.
         // Until ModSceneMetrics gets implemented, this works for now.
         public int BrimstoneLavaFountainCounter = 0;
+        public FireParticleSet ManaBurnFireDrawer = null;
         #endregion Draw Effects
 
         #region Draedon Summoning
@@ -2370,8 +2376,11 @@ namespace CalamityMod.CalPlayer
             necroSet = false;
             frostSet = false;
 
-            victideSet = false;
-            victideSummoner = false;
+            victideBarrierSet = false;
+            victideBarrierHead = false;
+            victideBurrowSet = false;
+            victideBurrowHead = false;
+            victideSnailSet = false;
 
             sulphurSet = false;
 
@@ -2382,7 +2391,6 @@ namespace CalamityMod.CalPlayer
             titanHeartSet = false;
             titanHeartMask = false;
             titanHeartMantle = false;
-            titanHeartBoots = false;
             umbraphileSet = false;
             plagueReaper = false;
             plaguebringerPatronSet = false;
@@ -3123,7 +3131,6 @@ namespace CalamityMod.CalPlayer
             titanHeartSet = false;
             titanHeartMask = false;
             titanHeartMantle = false;
-            titanHeartBoots = false;
             titanCooldown = 0;
             umbraphileSet = false;
             fathomSwarmer = false;
@@ -3155,7 +3162,10 @@ namespace CalamityMod.CalPlayer
             meteorSet = false;
             necroSet = false;
             frostSet = false;
-            victideSet = false;
+            victideBarrierSet = false;
+            victideBarrierHead = false;
+            victideBurrowSet = false;
+            victideBurrowHead = false;
             aeroSet = false;
             sulphurSet = false;
             statigelSet = false;
@@ -3744,6 +3754,35 @@ namespace CalamityMod.CalPlayer
         public override void ArmorSetBonusActivated()
         {
             // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
+            if (victideBurrowSet)
+            {
+                if (cooldowns.TryGetValue(BubblyBurrow.ID, out CooldownInstance cd))
+                {
+                    // Return to normal if you have the ability active
+                    if (cd.timeLeft > VictideHeadBurrow.BurrowCooldown)
+                    {
+                        cd.timeLeft = VictideHeadBurrow.BurrowCooldown + 1;
+                        SyncCooldownDictionary(false);
+                    }
+                }
+                else if (!Player.tongued && !Player.shimmering)
+                {
+                    SoundEngine.PlaySound(SoundID.Item154, Player.Center);
+                    if (Player.whoAmI == Main.myPlayer)
+                    {
+                        Player.AddCooldown(BubblyBurrow.ID, VictideHeadBurrow.BurrowCooldown + VictideHeadBurrow.BurrowDuration);
+
+                        var source = Player.GetSource_Misc("1");
+                        Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<VictideSpirit>(), 0, 0f, Player.whoAmI);
+                    }
+                }
+            }
+            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
+            {
+                // Explosion and dash are handled in the VictideBarrier file
+                if (Player.whoAmI == Main.myPlayer)
+                    Player.AddCooldown(WardingWave.ID, VictideHeadBarrier.BarrierCooldown);
+            }
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
                 if (Player.whoAmI == Main.myPlayer)
@@ -3877,10 +3916,10 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
                 Player.AddCooldown(PlagueBlackout.ID, 1800);
             }
-            if (forbiddenCirclet && forbiddenCooldown <= 0)
+            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {
-                forbiddenCooldown = 45;
-                int stormMana = (int)(ForbiddenCirclet.manaCost * Player.manaCost);
+                forbiddenCooldown = ForbiddenCirclet.StormCooldown;
+                int stormMana = (int)(ForbiddenCirclet.StormManaCost * Player.manaCost);
                 if (Player.statMana < stormMana)
                 {
                     if (Player.manaFlower)
@@ -3890,21 +3929,28 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_Misc("1");
+                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
                     // To compute Forbidden Circlet tornado damage, create a fake stat modifier on the spot which combines both classes.
                     StatModifier forbidden = Player.GetTotalDamage<SummonDamageClass>().CombineWith(Player.GetDamage<RogueDamageClass>());
-                    int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.tornadoBaseDmg);
+                    int damage = (int)forbidden.ApplyTo(ForbiddenCirclet.StormDamage);
 
-                    float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.tornadoBaseKB);
+                    float kBack = Player.GetTotalKnockback<SummonDamageClass>().ApplyTo(ForbiddenCirclet.StormKB);
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
-                        if (mark.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[mark].DamageType = DamageClass.Generic;
+                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0 )
+                        {
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.owner != Player.whoAmI || item.type != ProjectileType<CircletTornado>())
+                                    continue;
+                                item.timeLeft = 60;
+                            }
+                        }
+                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
                     }
                 }
             }
@@ -4265,6 +4311,12 @@ namespace CalamityMod.CalPlayer
             {
                 Player.ClearBuff(BuffID.WindPushed);
             }
+            if (Player.statMana < 0) 
+            {
+                Player.AddBuff(ModContent.BuffType<ManaBurn>(), 10);
+            } else if (Player.HasBuff(ModContent.BuffType<ManaBurn>())) {
+                Player.ClearBuff(ModContent.BuffType<ManaBurn>());
+            }
         }
         #endregion
 
@@ -4446,7 +4498,8 @@ namespace CalamityMod.CalPlayer
             if (!Player.mount.Active)
             {
                 float runAccMult = 1f +
-                    (lunicCorpsLegs ? 0.1f : 0f) +
+                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
+                    (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
@@ -4467,7 +4520,8 @@ namespace CalamityMod.CalPlayer
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
-                    (lunicCorpsLegs ? 0.1f : 0f) +
+                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
+                    (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? 0.5f : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
@@ -4496,6 +4550,12 @@ namespace CalamityMod.CalPlayer
                 // If the timer has hit zero, or you aren't using Momentum Capacitor, you get nothing.
                 else
                     momentumCapacitorBoost = 0f;
+
+                if (victideBarrierHead)
+                {
+                    Player.runAcceleration *= VictideHeadBarrier.RunAccelerationMult;
+                    Player.runSlowdown *= VictideHeadBarrier.RunAccelerationMult;
+                }
 
                 Player.runAcceleration *= runAccMult;
                 Player.maxRunSpeed *= runSpeedMult;
@@ -4575,20 +4635,11 @@ namespace CalamityMod.CalPlayer
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
 
-            if (titanHeartMask && rogue)
-                knockback += 0.05f;
-
             if (titanHeartMantle && rogue)
-                knockback += 0.05f;
-
-            if (titanHeartBoots && rogue)
-                knockback += 0.05f;
-
-            if (titanHeartSet && rogue)
-                knockback += 0.2f;
+                knockback += TitanHeartMantle.RogueKnockbackBoost;
 
             if (titanHeartSet && StealthStrikeAvailable() && rogue)
-                knockback += 1f;
+                knockback *= TitanHeartMask.StealthStrikeKnockbackMult;
         }
         #endregion
 
@@ -5286,8 +5337,8 @@ namespace CalamityMod.CalPlayer
             bool hasNonWeaponFunction = isPickaxe || isAxe || isHammer || isPlaced || isChannelable;
             bool playerUsingWeapon = hasDamage && hasHitboxes && !hasNonWeaponFunction;
 
-            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
-            if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items. Forbidden Circlet does this for summon weapons
+            if ((it.IsAir || (!it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive) || (it.CountsAsClass<SummonDamageClass>() && forbiddenCirclet))
                 playerUsingWeapon = false;
 
             // Molten Amputator consumes stealth in a special way

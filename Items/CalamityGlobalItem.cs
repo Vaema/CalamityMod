@@ -467,21 +467,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.victideSet)
-            {
-                if ((item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MagicDamageClass>() ||
-                    item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<SummonDamageClass>()) &&
-                    Main.rand.NextBool(10) && !item.channel)
-                {
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
-                        int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
-
-                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
-                    }
-                }
-            }
             if (modPlayer.prismaticRegalia)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)
@@ -669,6 +654,11 @@ namespace CalamityMod.Items
                 if (item.type != ModContent.ItemType<EvilSmasher>())
                     player.Calamity().evilSmasherBoost = 0;
             }
+
+            if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
+            {
+                player.manaRegenDelay = player.maxRegenDelay;
+            }
         }
 
         public override bool? UseItem(Item item, Player player)
@@ -718,7 +708,6 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-
             return base.UseItem(item, player);
         }
 
@@ -804,6 +793,10 @@ namespace CalamityMod.Items
 
             // Restrict behavior when reading Dreadon's Log.
             if (PopupGUIManager.AnyGUIsActive)
+                return false;
+
+            // Can't use anything while burrowing
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
                 return false;
 
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
@@ -1537,6 +1530,10 @@ namespace CalamityMod.Items
             // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
             if (player.Calamity().reaverExplore)
                 grabRange += 246;
+
+            // Victide utility set provides a lesser boost of 102 (2.625 + 6.375 = 9 tiles)
+            if (player.Calamity().victideSnailSet)
+                grabRange += 102;
 
             // Nebula boosters have greater pickup range while using Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])

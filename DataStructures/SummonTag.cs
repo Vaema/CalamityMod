@@ -113,6 +113,13 @@ namespace CalamityMod.DataStructures
             critChance += TagCritChance;
             modifiers.CritDamage += TagCritDamage;
         }
+
+        /// <summary>
+        /// Blank tag damage functionality
+        /// </summary>
+        public static void BlankTagModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
+        {
+        }
         /// <summary>
         /// Due to how Firecracker works, this allows it to work with crit accessories.
         /// </summary>

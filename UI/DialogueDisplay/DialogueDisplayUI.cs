@@ -227,6 +227,9 @@ namespace CalamityMod.UI.DialogueDisplay
                 for (int i = 0; i < lines.Count; i++)
                 {
                     string line = lines[i];
+                    if (line[^1] == ' ')
+                        line = line.Remove(line.Length - 1, 1);
+
                     int finalIndex = 0;
                     float width = MeasureString(line, FontAssetSystem.Fonts[FontKey]).X;
 
@@ -243,6 +246,9 @@ namespace CalamityMod.UI.DialogueDisplay
                         } while (MeasureString(line, FontAssetSystem.Fonts[FontKey]).X > WrapWidth);
 
                         lines[i] = line;
+                        if (yoinked[0] == ' ')
+                            yoinked = yoinked.Remove(0, 1);
+
                         if (i >= lines.Count - 1)
                             lines.Add(yoinked);
                         else

@@ -972,6 +972,14 @@ namespace CalamityMod.CalPlayer
 
         private void MiscEffects()
         {
+            //Mana Burn update
+            if (ManaBurnFireDrawer != null)
+            {
+                ManaBurnFireDrawer.LocalTimer = 0;
+                ManaBurnFireDrawer.RelativePower = MathHelper.Lerp(0.25f, 0.5f, -Player.statMana / (float)Player.statManaMax2);
+                ManaBurnFireDrawer.Update();
+            }
+
             // Update textures
             if (!Main.dedServ && Player.whoAmI == Main.myPlayer)
             {
@@ -3008,7 +3016,7 @@ namespace CalamityMod.CalPlayer
                         (Player.arcticDivingGear ? 5D : 0D) +
                         (aquaticEmblem ? 5D : 0D) +
                         (Player.accMerman ? 8D : 0D) +
-                        (victideSet ? 2D : 0D) +
+                        (victideBurrowHead ? 2D : 0D) +
                         ((aquaticHeart && NPC.downedBoss3) ? 8D : 0D) +
                         (abyssalDivingSuit ? 8D : 0D) +
                         externalBreathTickBoost;
@@ -4880,23 +4888,6 @@ namespace CalamityMod.CalPlayer
         #region Limits
         private void Limits()
         {
-            // TODO -- what is Forbidden Circlet actually supposed to do?
-            if (forbiddenCirclet)
-            {
-                ref StatModifier summon = ref Player.GetDamage<SummonDamageClass>();
-                ref StatModifier rogue = ref Player.GetDamage<RogueDamageClass>();
-                float boostToSummonFromRogue = 0f;
-                float boostToRogueFromSummon = 0f;
-
-                if (summon.Additive < rogue.Additive)
-                    boostToSummonFromRogue = rogue.Additive - summon.Additive;
-                if (rogue.Additive < summon.Additive)
-                    boostToRogueFromSummon = summon.Additive - rogue.Additive;
-
-                summon += boostToSummonFromRogue;
-                rogue += boostToRogueFromSummon;
-            }
-
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (Player.endurance > 0f)
                 Player.endurance = 1f - (1f / (1f + Player.endurance));

@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.HiveMind
                             type = ModContent.NPCType<DankCreeper>();
                             break;
                         case 4:
-                            type = ModContent.NPCType<HiveBlob2>();
+                            type = ModContent.NPCType<HiveBlob>();
                             break;
                         default:
                             break;
