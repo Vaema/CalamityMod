@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,10 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public static readonly SoundStyle Nanomachines = new("CalamityMod/Sounds/Item/NanoSwarm") { PitchVariance = 0.45f, Volume = 0.4f };
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheHive>();
-        }
         public override void SetDefaults()
         {
             Item.width = 76;
@@ -46,6 +43,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override Vector2? HoldoutOffset()
         {
             return new Vector2(-10, 0);
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<SparkSpreader>().
+                AddIngredient<InfectedArmorPlating>(5).
+                AddIngredient<PlagueCellCanister>(10).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

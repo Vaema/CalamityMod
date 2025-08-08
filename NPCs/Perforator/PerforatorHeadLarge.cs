@@ -26,8 +26,6 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
 
         public static Asset<Texture2D> GlowTexture;
-
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool TailSpawned = false;
 
         public override void SetStaticDefaults()
@@ -104,14 +102,12 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -132,23 +128,6 @@ namespace CalamityMod.NPCs.Perforator
 
             Player player = Main.player[NPC.target];
 
-            // Enrage
-            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
-            float enrageScale = 0f;
-            if (biomeEnraged && !player.ZoneCrimson)
-                enrageScale += 1f;
-            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
-                enrageScale += 1f;
-
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -157,9 +136,9 @@ namespace CalamityMod.NPCs.Perforator
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.1f : 0.07f) * enrageScale;
+                float velocityScale = death ? 0.1f : 0.07f;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.07f : 0.05f) * enrageScale;
+                float accelerationScale = death ? 0.07f : 0.05f;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 

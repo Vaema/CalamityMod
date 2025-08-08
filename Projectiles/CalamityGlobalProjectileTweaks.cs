@@ -199,7 +199,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.RocketFireworkRed, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.RocketFireworkYellow, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.SawtoothShark, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(6)) },
-                { ProjectileID.ShadowBeamHostile, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.SolarFlareDrill, standardDrillTweaks },
                 { ProjectileID.StardustDrill, standardDrillTweaks },

@@ -678,11 +678,8 @@ namespace CalamityMod.Items
             {
                 // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
                 modPlayer.bloomStone = false;
-                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
                 modPlayer.bloomStone = true;
-
-                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
-                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
             }
 
             // Staff/Axe of Regrowth growing Calamity grass
@@ -866,7 +863,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.Includes(item.type))
+            if (item.type == ItemID.MonkStaffT1 || CalamityItemSets.AutoreusableSpear[item.type])
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
@@ -1632,7 +1629,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (ItemsForcedInsideWorldList.Includes(item.type))
+            if (CalamityItemSets.ItemForcedInsideWorld[item.type])
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion

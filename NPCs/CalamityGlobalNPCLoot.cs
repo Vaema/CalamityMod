@@ -291,8 +291,8 @@ namespace CalamityMod.NPCs
                 // Rare Elemental in a Bottle @ 10% Normal, 16.67% Expert+
                 // Desert Key @ 10%
                 case NPCID.SandElemental:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottle>(), 5, 3));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<WifeinaBottlewithBoobs>(), 10, 6));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<ElementalinaBottle>(), 5, 3));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<RareElementalinaBottle>(), 10, 6));
                     npcLoot.Add(ItemID.DungeonDesertKey, 10);
                     break;
 
@@ -562,7 +562,12 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Jungle
-                //Moss hornets are after all of this switching since it no longer works if placed here
+                // Moss Hornet
+                // Needler @ 4% Normal, 6.67% Expert+
+                // This automatically covers all variations
+                case NPCID.MossHornet:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
+                    break;
 
                 // Moth
                 // Butterfly Dust @ 100% INSTEAD OF 50%
@@ -997,15 +1002,15 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 1.5% chance to drop any of the three Calamity martian drops
+                // 1% chance to drop any of the three Calamity martian drops
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 66);
-                    npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
-                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 100);
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 100);
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 100);
                     break;
 
                 // Martian Engineer
@@ -1902,22 +1907,16 @@ namespace CalamityMod.NPCs
                     break;
                     #endregion
             }
-            //If the enemy is part of a list (Hornets, Skeletons, etc,) place it here as in the section before it no longer works
+            //If the enemy is part of a list, place it here as in the section before it no longer works
             #region Enemy Lists
-
-            // All Moss Hornets
-            // Needler @ 4% Normal, 6.67% Expert+
-            if (MossHornetIDList.Includes(npc.type))
-                npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
-
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (SkeletonIDList.Includes(npc.type))
+            if (CalamityNPCTypeSets.Skeleton[npc.type])
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies
             // Ectoplasm @ 20%
-            if (BuffedDungeonEnemiesList.Includes(npc.type))
+            if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
         }
@@ -1951,7 +1950,7 @@ namespace CalamityMod.NPCs
         public override bool PreKill(NPC npc)
         {
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
-            if (CalamityWorld.revenge && (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper))
+            if (CalamityWorld.revenge && (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
 
             // Boss Rush pre-kill effects
