@@ -1051,14 +1051,14 @@ namespace CalamityMod.NPCs
                     manaBurnPeak *= 0.999f;
                 }
                 manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
-                int burnPerSecond = (int)MathF.Ceiling(manaBurn*0.5f);
+                int burnPerSecond = (int)MathF.Ceiling(manaBurn * 0.5f);
                 manaBurn -= burnPerSecond / 60f;
 
                 if (npc.lifeRegen > 0)
                     npc.lifeRegen = 0;
 
-                npc.lifeRegen -= burnPerSecond*2;
-                    damage += (int)(burnPerSecond * 0.5f);
+                npc.lifeRegen -= burnPerSecond * 2;
+                damage += (int)(burnPerSecond * 0.5f);
             }
             else
             {
@@ -2921,13 +2921,14 @@ namespace CalamityMod.NPCs
 
             if (VulnerabilityHexFireDrawer != null)
                 VulnerabilityHexFireDrawer.Update();
-            
-            if (ManaBurnFireDrawer != null) {
+
+            if (ManaBurnFireDrawer != null)
+            {
                 ManaBurnFireDrawer.LocalTimer = 0;
-                    float power = npc.height / 100f;
-                    if (power > 2.75f)
-                        power = 2.75f;
-                ManaBurnFireDrawer.RelativePower = power*MathHelper.Lerp(0.5f,1.5f, MathHelper.Clamp(manaBurn/manaBurnPeak,0,1))*playerManaBurnIntensity;
+                float power = npc.height / 100f;
+                if (power > 2.75f)
+                    power = 2.75f;
+                ManaBurnFireDrawer.RelativePower = power * MathHelper.Lerp(0.5f, 1.5f, MathHelper.Clamp(manaBurn / manaBurnPeak, 0, 1)) * playerManaBurnIntensity;
                 ManaBurnFireDrawer.Update();
             }
 

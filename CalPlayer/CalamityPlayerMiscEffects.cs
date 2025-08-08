@@ -973,12 +973,12 @@ namespace CalamityMod.CalPlayer
         private void MiscEffects()
         {
             //Mana Burn update
-            if (ManaBurnFireDrawer != null) {
+            if (ManaBurnFireDrawer != null)
+            {
                 ManaBurnFireDrawer.LocalTimer = 0;
-                ManaBurnFireDrawer.RelativePower = MathHelper.Lerp(0.25f,0.5f,-Player.statMana / (float)Player.statManaMax2);
+                ManaBurnFireDrawer.RelativePower = MathHelper.Lerp(0.25f, 0.5f, -Player.statMana / (float)Player.statManaMax2);
                 ManaBurnFireDrawer.Update();
             }
-                
 
             // Update textures
             if (!Main.dedServ && Player.whoAmI == Main.myPlayer)

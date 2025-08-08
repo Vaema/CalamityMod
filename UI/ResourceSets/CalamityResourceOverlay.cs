@@ -94,9 +94,6 @@ namespace CalamityMod.UI.ResourceSets
         // dozezoze - this method is where Chalice's bleed overlay is drawn. This can almost certainly be optimized, but it shouldn't cause problems.
         public override void PostDrawResourceDisplay(PlayerStatsSnapshot snapshot, IPlayerResourcesDisplaySet displaySet, bool drawingLife, Color textColor, bool drawText)
         {
-            if (!Systems.Collections.DebuffsList.Includes(ModContent.BuffType<Buffs.DamageOverTime.ManaBurn>()))
-                Systems.Collections.DebuffsList.List.Add(ModContent.BuffType<Buffs.DamageOverTime.ManaBurn>());
-
             var Player = Main.LocalPlayer;
             var CalPlayer = Player.Calamity();
 

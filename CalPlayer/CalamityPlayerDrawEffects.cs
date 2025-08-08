@@ -120,7 +120,7 @@ namespace CalamityMod.CalPlayer
                 calamityPlayer.trippyLevel = 1;
 
                 // Mana Burn VFX disabled when hih
-                 if (Player.statMana < 0)
+                if (Player.statMana < 0)
                 {
                     float compactness = Player.width * 0.6f;
                     if (compactness < 10f)
@@ -130,7 +130,7 @@ namespace CalamityMod.CalPlayer
                         power = 2.75f;
                     var color = Color.Blue;
                     if (ManaBurnFireDrawer is null || ManaBurnFireDrawer.LocalTimer >= ManaBurnFireDrawer.SetLifetime)
-                        ManaBurnFireDrawer = new FireParticleSet(60-(Player.statMana / 4), 1, color * 1.25f, color, compactness, power);
+                        ManaBurnFireDrawer = new FireParticleSet(60 - (Player.statMana / 4), 1, color * 1.25f, color, compactness, power);
                     else
                         ManaBurnFireDrawer.DrawSet(Player.Bottom - Vector2.UnitY * (12f - Player.gfxOffY));
                 }
