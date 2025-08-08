@@ -162,6 +162,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.GoldenShowerFriendly, Do(PiercingExact(2), DefaultIDStaticIFrames) },
                 { ProjectileID.GreenCounterweight, counterweightTweaks },
                 { ProjectileID.Hamdrax, standardDrillTweaks }, // Drax (never internally renamed since 1.1)
+                { ProjectileID.HellfireArrow, Do(ExtraUpdatesDelta(+2)) },
                 { ProjectileID.IceBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.IceSickle, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.IchorBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
