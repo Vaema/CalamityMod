@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon.Whips;
+using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Systems.Collections;
@@ -63,7 +64,7 @@ namespace CalamityMod.Items.Armor
             if (!Main.dedServ)
                 ArmorIDs.Head.Sets.DrawFullHair[Item.headSlot] = true;
             summonTag.TagItem = Type;
-            SummonTagDebuffDict.Add(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(),summonTag);
+            CalamityBuffSets.SummonTagDebuff.Add(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(),summonTag);
         }
 
         public override void SetDefaults()
@@ -117,18 +118,6 @@ namespace CalamityMod.Items.Armor
                 .AddIngredient(ItemID.AncientBattleArmorMaterial)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
-        }
-    }
-
-    public class ForbiddenStealthSummonTagBuff : ModBuff
-    {
-        public override string Texture => "CalamityMod/Buffs/Summon/Whips/SentinalLash";
-
-        public override void SetStaticDefaults()
-        {
-            BuffID.Sets.IsATagBuff[Type] = true;
-            Main.debuff[Type] = true;
-            Main.buffNoSave[Type] = true;
         }
     }
 }

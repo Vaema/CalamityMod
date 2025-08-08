@@ -1593,5 +1593,5 @@ PopoNoselessBuff: {
 
 ForbiddenStealthSummonTagBuff: {
 	DisplayName: Forbidden Stealth Summon Tag Buff
-	Description: Mods.CalamityMod.Buffs.ForbiddenStealthSummonTagBuff.Description
+	Description: If you're seeing this, something went horribly wrong
 }
