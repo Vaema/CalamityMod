@@ -125,7 +125,6 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(UseExact(6)) },
-                { ItemID.GoldCoin, Do(DamageExact(75)) }, // For Coin Gun
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
@@ -190,7 +189,6 @@ namespace CalamityMod.Items
                 { ItemID.OrichalcumHalberd, Do(AutoReuse, TrueMelee, DamageExact(128), ShootSpeedExact(6f)) },
                 { ItemID.OrichalcumRepeater, Do(DamageExact(48)) },
                 { ItemID.OrichalcumSword, Do(UseTurn, DamageExact(175)) },
-                { ItemID.PainterPaintballGun, Do(DamageExact(8)) },
                 { ItemID.PaladinsHammer, Do(DamageExact(95), ShootSpeedExact(28)) },
                 { ItemID.PalladiumPike, Do(AutoReuse, TrueMelee, DamageExact(120), ShootSpeedExact(5.4f)) },
                 { ItemID.PalladiumRepeater, Do(DamageExact(45)) },

@@ -222,7 +222,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.YellowCounterweight, counterweightTweaks },
                 #endregion
 
-                #region CATEGORY 3: True Melee and Point Blank support
+                #region CATEGORY 3: True Melee support
                 { ProjectileID.ChlorophyteJackhammer, trueMeleeNoSpeed },
                 { ProjectileID.CopperShortswordStab, trueMelee },
                 { ProjectileID.DarkLance, trueMelee },
