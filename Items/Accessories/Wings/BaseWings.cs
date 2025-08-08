@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -80,7 +79,7 @@ namespace CalamityMod.Items.Accessories.Wings
             sb.Append('\n');
             sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (MaxAscentSpeed * baseJumpSpeed).ToMph()));
             sb.Append('\n');
-            if (Main.keyState.IsKeyDown(Keys.LeftShift))
+            if (Main.keyState.PressingShift())
             {
                 sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), BaseAscent.ToMphps(),
                 (BaseAscent + BonusAscentWhileRising).ToMphps(), (RisingSpeedThreshold * baseJumpSpeed).ToMph(),

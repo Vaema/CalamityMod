@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.Reaver
             player.thorns += 0.33f;
             player.moveSpeed -= 0.3f;
             player.statDefense += 10;
-            player.lifeRegen += 3;
+            player.lifeRegen += 10;
             player.aggro += 600;
             modPlayer.reaverDefense = true;
             modPlayer.wearingRogueArmor = true;
@@ -54,7 +54,6 @@ namespace CalamityMod.Items.Armor.Reaver
         {
             player.GetDamage<GenericDamageClass>() -= 0.3f;
             player.endurance += 0.15f;
-            player.Calamity().reaverRegen = true;
             player.statLifeMax2 += 50;
         }
 

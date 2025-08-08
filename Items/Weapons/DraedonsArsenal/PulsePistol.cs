@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
-            Item.shootSpeed = 8.2f;
+            Item.shootSpeed = 8f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

@@ -25,9 +25,25 @@ namespace CalamityMod.Projectiles.Rogue
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
-        public static int Lifetime = 950;
+        public static int Lifetime = 1200;
         public float LifetimeCompletion => MathHelper.Clamp((Lifetime - Projectile.timeLeft) / (float)Lifetime, 0f, 1f);
         public float StealthEffectOpacity => MathHelper.Clamp(1 - LifetimeCompletion, 0f, 1f);
+
+        public float StuckEnemyID 
+        { 
+            get { return Projectile.ai[0]; } 
+            set { Projectile.ai[0] = value; }
+        }
+        public float StuckEnemyDistance
+        {
+            get { return Projectile.ai[1]; }
+            set { Projectile.ai[1] = value; }
+        }
+        public float StuckEnemyRotation
+        {
+            get { return Projectile.ai[2]; }
+            set { Projectile.ai[2] = value; }
+        }
 
         public override void SetDefaults()
         {
@@ -41,11 +57,42 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.extraUpdates = 5;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 1;
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
 
 
         public override void AI()
         {
+            if (StuckEnemyID > 0)
+            {
+                Projectile.tileCollide = false;
+                if (!Main.npc[(int)StuckEnemyID-1].active)
+                {
+                    Projectile.Kill();
+                    return;
+                }
+                Projectile.Center = Main.npc[(int)StuckEnemyID-1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;
+                return;
+            }
+            if (StuckEnemyID == -1)
+            {
+                var player = Main.player[Projectile.owner];
+                Projectile.velocity = Projectile.DirectionTo(player.Center) * 10f;
+                Projectile.rotation = Projectile.velocity.ToRotation() - MathHelper.PiOver2;
+                if (Main.rand.NextBool(3))
+                {
+                    Vector2 dustCenter = Projectile.Center + Main.rand.NextVector2Circular(4f, 4f);
+
+                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.1f), Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                    chust.noGravity = true;
+                }
+                if (Projectile.Distance(player.Center) < 16)
+                {
+                    player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.067f;
+                    Projectile.Kill();
+                }
+                return;
+            }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             Projectile.velocity *= 0.998f;
 
@@ -92,6 +139,10 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             SoundEngine.PlaySound(WulfrumKnife.TileHitSound, Projectile.Center);
+            Projectile.timeLeft = Lifetime;
+            StuckEnemyID = target.whoAmI+1;
+            StuckEnemyDistance = Projectile.Distance(target.Center);
+            StuckEnemyRotation = Projectile.DirectionFrom(target.Center).ToRotation();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -118,7 +169,7 @@ namespace CalamityMod.Projectiles.Rogue
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             float opacitey = StealthEffectOpacity;
 
-            if (Projectile.Calamity().stealthStrike)
+            if (Projectile.Calamity().stealthStrike && StuckEnemyID == 0)
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);

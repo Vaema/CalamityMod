@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         //Editable stats:
-        public const int BulletsPerShot = 4;
+        public const int BulletsPerShot = 3;
         public const float ShotSpread = 10f; //in degrees
         public const int TimeToSpawnHead = 3; //in seconds
         public const int MaximumHeadCount = 3;
@@ -96,7 +96,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             Vector2 shootDirection = velocity.SafeNormalize(Vector2.Zero);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BulletsPerShot; i++)
             {
                 int CurrentHeadCount = player.ownedProjectileCounts[HeadID];
                 //Exponentially louder the more heads, slightly

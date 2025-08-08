@@ -75,7 +75,6 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] ArmsDealerNames =
         {
-            "Drifter",
             "Finchi",
             "Heniek", // <@!363404700445442050> (kazurgundu)
             "Fire", // <@!354362326947856384> (ultimatefirewaster)
@@ -90,6 +89,7 @@ namespace CalamityMod.NPCs
         {
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
+            "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
         };
         private static readonly string[] CyborgNames =
         {
@@ -100,7 +100,6 @@ namespace CalamityMod.NPCs
         {
             "Tavish DeGroot", // <@!442447226992721930> (magicoal)
             "Fimmy", // <@!407348617079160832> (darkmega5)
-            "Dorira", // <@!215269032360804352> (crimsoncb)
             "John Helldiver", // <@!614126424751603714> (exellent.)
         };
         private static readonly string[] DryadNames =
@@ -110,6 +109,7 @@ namespace CalamityMod.NPCs
             "Jasmine", // <@!430532867479699456> (phantasmagoria.)
             "Cybil", // <@!486507232666845185> (Captain Doofus#????)
             "Ruth", // <@!1001307586068492388> (briny_coffee)
+            "Kanna", // <@!730203712898859018> (cosmoredeathwish)
         };
         private static readonly string[] DyeTraderNames = null;
         private static readonly string[] GoblinTinkererNames =
@@ -188,10 +188,10 @@ namespace CalamityMod.NPCs
             "Captain J. Crackers", // <@!233232602994049024> (qyuuno)
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
             "Yarrim", // <@!290061123137306624> (borb9834)
+            "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
         };
         private static readonly string[] PrincessNames =
         {
-            "Catalyst", // <@!156672312425316352> (xaqult)
             "Nyapano", // <@!120976656826368003> (nyapano)
             "Jade", // <@!187395834625785869> (verymasterninja)
             "Nyavi Aceso", // <@!270260920888852480> (navigator.)
@@ -204,6 +204,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] SantaClausNames =
         {
             "Jank", // <@!339950757472239616> (jankle_)
+            "Aoi Kurashiki", // <@!358411687885537291> (nothinpurrsonal)
         };
         private static readonly string[] SkeletonMerchantNames =
         {
@@ -221,6 +222,7 @@ namespace CalamityMod.NPCs
             "Linn", // <@!277983612383526913> (duckycolors)
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
+            "Cathlyn", // <@!156672312425316352> (xaqult)
         };
         private static readonly string[] StylistNames =
         {
@@ -245,13 +247,15 @@ namespace CalamityMod.NPCs
         private static readonly string[] TravelingMerchantNames =
         {
             "Stan Pines",
-            "Slap Battles", // <@!923504188615450654> (gravityglider.)
+            "Intergaze", // <@!923504188615450654> (intergaze)
             "Borgus", // <@!539127427482255376> (therealmeepman)
+            "Postman Hiss", // <@!454638106122125312> (karinthefairy)
         };
         private static readonly string[] TruffleNames =
         {
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
+            "Mad Lad", // <@!215269032360804352> (crimsoncb)
         };
         private static readonly string[] WitchDoctorNames =
         {
@@ -270,6 +274,7 @@ namespace CalamityMod.NPCs
             "Chris Tallballs", // <@!770211589076418571> (vysterx) (previously: bewearium)
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
+            "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
         };
         private static readonly string[] ZoologistNames =
         {
@@ -280,6 +285,19 @@ namespace CalamityMod.NPCs
             "Gwenhwyvar", // <@!291342874497515531> (diamondnife)
             "Daxie", // <@!465438861103988737> (daxie626)
         };
+        // Town Slimes
+        private static readonly string[] ClumsySlimeNames = null;
+        private static readonly string[] CoolSlimeNames = null;
+        private static readonly string[] DivaSlimeNames = null;
+        private static readonly string[] ElderSlimeNames = null;
+        private static readonly string[] MysticSlimeNames = null;
+        private static readonly string[] NerdySlimeNames =
+        {
+            "Big Blungus", // <@!272759434282008577> (schmoov)
+            "Rimuru Tempest", // <@!806463201398358036> (c0d3_404)
+        };
+        private static readonly string[] SquireSlimeNames = null;
+        private static readonly string[] SurlySlimeNames = null;
 
         // The following sets are for the 1.4 Town Pets: Town Dogs, Cats and Bunnies.
         // All three pet types come in numerous breeds. Each breed has its own name pool.
@@ -342,6 +360,8 @@ namespace CalamityMod.NPCs
         {
             "Felix", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Tardo", // <@!739343546867384391> (midnight295)
+            "Dali", // <@!460238880436781061> (darthlego)
+            "Kiba", // <@!852348657072340992> (jollydragonslayer)
         };
         private static readonly string[] TownCatRussianBlueNames = null;
         private static readonly string[] TownCatSilverNames =
@@ -359,6 +379,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownBunnyNames =
         {
             "Poco", // <@!1192261996146593872> (tostitomuncher33)
+            "Puffer", // <@!181103507711983616> (piky)
         };
         private static readonly string[] TownBunnyWhiteNames = null;
         private static readonly string[] TownBunnyAngoraNames = null;
@@ -595,6 +616,32 @@ namespace CalamityMod.NPCs
                     break;
                 case NPCID.BestiaryGirl: // Zoologist
                     AddNewNames(nameList, ZoologistNames);
+                    break;
+
+                // Town Slimes
+                case NPCID.TownSlimePurple: // Clumsy Slime
+                    AddNewNames(nameList, ClumsySlimeNames);
+                    break;
+                case NPCID.TownSlimeGreen: // Cool Slime
+                    AddNewNames(nameList, CoolSlimeNames);
+                    break;
+                case NPCID.TownSlimeRainbow: // Diva Slime
+                    AddNewNames(nameList, DivaSlimeNames);
+                    break;
+                case NPCID.TownSlimeOld: // Elder Slime
+                    AddNewNames(nameList, ElderSlimeNames);
+                    break;
+                case NPCID.TownSlimeYellow: // Mystic Slime
+                    AddNewNames(nameList, MysticSlimeNames);
+                    break;
+                case NPCID.TownSlimeBlue: // Nerdy Slime
+                    AddNewNames(nameList, NerdySlimeNames);
+                    break;
+                case NPCID.TownSlimeCopper: // Squire Slime
+                    AddNewNames(nameList, SquireSlimeNames);
+                    break;
+                case NPCID.TownSlimeRed: // Surly Slime
+                    AddNewNames(nameList, SurlySlimeNames);
                     break;
 
                 // This function doesn't work with Town Pets currently
@@ -1035,10 +1082,8 @@ namespace CalamityMod.NPCs
         public void BoundNPCSafety(Mod mod, NPC npc)
         {
             // Make Bound Town NPCs take no damage
-            if (BoundNPCIDList.Includes(npc.type))
-            {
+            if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
-            }
         }
 
         public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)
@@ -1106,10 +1151,10 @@ namespace CalamityMod.NPCs
             bool happy = Main.LocalPlayer.currentShoppingSettings.PriceAdjustment <= 0.9;
 
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
+            Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
             Condition roguePlayer = CalamityConditions.PlayerHasRogueArmor;
             Condition wingedPlayer = CalamityConditions.PlayerHasWings;
             Condition revengeance = CalamityConditions.InRevengeanceMode;
-            Condition drunk = CalamityConditions.PlayerAlcoholPoisoned;
             Condition downedPolterghast = CalamityConditions.DownedPolterghast;
             Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
 
@@ -1119,10 +1164,7 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
                 shop.Add(ItemID.Flare, hasFlareGunUpgrade)
                 .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
-                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()))
-                .AddWithCustomValue(ItemID.Burger, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.Hotdog, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CoffeeCup, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons);
+                .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()));
             }
 
             if (type == NPCID.DyeTrader)
@@ -1168,7 +1210,6 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
                 .Add(ItemType<RomajedaOrchid>())
-                .AddWithCustomValue(ItemID.Grapes, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
                 .Add(ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
                 .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
                 .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
@@ -1178,8 +1219,7 @@ namespace CalamityMod.NPCs
             if (type == NPCID.GoblinTinkerer)
             {
                 shop.Add(ItemType<StatMeter>())
-                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic))
-                .AddWithCustomValue(ItemID.Spaghetti, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron);
+                .Add(ItemID.Toolbox, Condition.NpcIsPresent(NPCID.Mechanic));
             }
 
             if (type == NPCID.Mechanic)
@@ -1236,15 +1276,12 @@ namespace CalamityMod.NPCs
                 .Add(ItemType<AbyssFountainItem>())
                 .Add(ItemType<AstralFountainItem>())
                 .Add(ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.FriedEgg, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
+                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem);
             }
 
             if (type == NPCID.PartyGirl)
             {
-                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons)
-                .AddWithCustomValue(ItemID.Pizza, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.DownedSkeletron)
-                .AddWithCustomValue(ItemID.CreamSoda, Item.buyPrice(gold: 2, silver: 50), Condition.HappyEnoughToSellPylons);
+                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.Princess)
@@ -1256,7 +1293,6 @@ namespace CalamityMod.NPCs
                 musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
                 shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
-                .AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), Condition.InHallow)
                 .Add(ItemType<LanternCenter>())
                 .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
                 .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
@@ -1273,19 +1309,38 @@ namespace CalamityMod.NPCs
                 .AddWithCustomValue(ItemType<CrawCarapace>(), Item.buyPrice(gold: 12));
             }
 
-            if (type == NPCID.Golfer)
-            {
-                shop.AddWithCustomValue(ItemID.PotatoChips, Item.buyPrice(gold: 1), Condition.HappyEnoughToSellPylons);
-            }
 
             if (type == NPCID.BestiaryGirl)
             {
-                shop.AddWithCustomValue(ItemID.Steak, Item.buyPrice(gold: 5), Condition.HappyEnoughToSellPylons, Condition.Hardmode);
+                shop.AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), bestiaryProgressLacewing);
             }
 
             if (type == NPCID.Truffle)
             {
                 shop.Add(ItemType<OddMushroom>());
+            }
+        }
+
+        public override void ModifyActiveShop(NPC npc, string shopName, Item[] items)
+        {
+            // TODO: Uses a hardcoded string since dedicated names are currently hardcoded strings
+            // Will need to be changed if dedicated names are localized in the future
+            if (npc.type == NPCID.SkeletonMerchant && npc.GivenName == "Sans Undertale")
+            {
+                int index = 0;
+                for (int i = 0; i < Chest.maxItems; i++)
+                {
+                    if (items[i] == null)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                var punch = new Item(ItemType<PunchCard>())
+                {
+                    shopCustomPrice = Item.buyPrice(gold: 10)
+                };
+                items[index] = punch;
             }
         }
         #endregion

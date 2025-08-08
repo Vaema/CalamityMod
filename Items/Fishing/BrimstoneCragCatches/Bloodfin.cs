@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         public static int RegenTimeBoost = 10;
 
         public static int DebuffedRegenBoost = 10; // Does not stack with above
-        public static int DebuffedRegenTimeFloor = 1800;
+        public static int DebuffedRegenTimeFloor = 900;
 
         public static double ExtraRegenHealthThreshold = 0.75D;
         public static int FramesForExtraRegen = 30;

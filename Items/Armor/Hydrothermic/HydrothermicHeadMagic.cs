@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaMage = true;
             player.GetDamage<MagicDamageClass>() += 0.05f;
-            player.manaCost *= 0.85f;
+            player.manaCost -= 0.15f;
         }
 
         public override void UpdateEquip(Player player)

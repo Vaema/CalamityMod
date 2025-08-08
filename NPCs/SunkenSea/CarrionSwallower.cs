@@ -43,10 +43,6 @@ namespace CalamityMod.NPCs.SunkenSea
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<CarrionSwallowerBanner>();
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SendExtraAI(BinaryWriter writer)

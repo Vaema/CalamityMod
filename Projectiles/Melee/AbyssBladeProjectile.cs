@@ -159,6 +159,7 @@ namespace CalamityMod.Projectiles.Melee
                         GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.DodgerBlue, Color.MediumBlue, Main.rand.NextFloat(2.5f, 2.9f) - i * 0.55f, 14, Main.rand.NextFloat(-0.01f, 0.01f), 2.5f);
                         GeneralParticleHandler.SpawnParticle(sparker);
                     }
+                    Projectile.ResetLocalNPCHitImmunity();
                     Projectile.penetrate = 1;
                     Projectile.damage = (int)(startDamage * 2); // Launched blade deals 200% damage
                     Time = 0;

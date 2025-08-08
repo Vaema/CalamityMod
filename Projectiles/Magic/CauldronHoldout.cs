@@ -75,11 +75,7 @@ namespace CalamityMod.Projectiles.Magic
                             int projType = ModContent.ProjectileType<CauldronProj>();
                             int projDamage = Projectile.damage;
                             float speedscale = 18f;
-                            Vector2 shotSpeed = Vector2.Normalize(Projectile.velocity) * speedscale;
-                            if (float.IsNaN(shotSpeed.X) || float.IsNaN(shotSpeed.Y))
-                            {
-                                shotSpeed = -Vector2.UnitY;
-                            }
+                            Vector2 shotSpeed = Projectile.velocity.SafeNormalize(-Vector2.UnitY) * speedscale;
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shotSpeed, projType, projDamage, Projectile.knockBack, player.whoAmI);
 
                             for (int i = 0; i < 6; i++)

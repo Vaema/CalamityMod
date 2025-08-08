@@ -11,8 +11,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int RegenBoost = 2;
-        public static int DefenseBoost = 6;
-        public static float DamageReductionBoost = 0.03f;
+        public static int DefenseBoost = 4;
         public static float SummonDamageBoost = 0.1f;
 
         public override void SetDefaults()

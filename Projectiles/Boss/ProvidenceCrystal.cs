@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.width = 160;
             Projectile.height = 160;
             Projectile.ignoreWater = true;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 1500 : CalamityWorld.death ? 2100 : 3600;
+            Projectile.timeLeft = CalamityWorld.death ? 2100 : 3600;
             Projectile.alpha = 255;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;

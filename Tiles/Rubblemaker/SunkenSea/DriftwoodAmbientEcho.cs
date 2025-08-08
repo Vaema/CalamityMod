@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.SunkenSea;
+﻿using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Terraria.GameContent;
 using Terraria.ModLoader;

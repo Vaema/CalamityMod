@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.toxicHeart = true;
             modPlayer.toxicHeartVisuals = !hideVisual;
+            modPlayer.SicknessDebuffMultiplier += 0.5f;
         }
     }
 }

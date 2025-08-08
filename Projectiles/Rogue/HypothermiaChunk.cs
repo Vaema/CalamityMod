@@ -82,7 +82,6 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
-            target.AddBuff(ModContent.BuffType<GlacialState>(), 150);
         }
 
         public override bool PreDraw(ref Color lightColor)

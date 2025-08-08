@@ -282,7 +282,7 @@ ClockworkBow: {
 	DisplayName: Clockwork Bow
 	Tooltip:
 		'''
-		Hold left click to load up to six precision bolts
+		Hold <left> to load up to six precision bolts
 		The more precision bolts are loaded, the harder they hit
 		'''
 }
@@ -453,9 +453,11 @@ FirestormCannon: {
 	DisplayName: Firestorm Cannon
 	Tooltip:
 		'''
-		Releases a constant stream of weaponized flares
-		Press <right> to fire a condensed spread of flares
+		Fires a rapid barrage of flares that builds up a searing heat in the weapon
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'What could go wrong?'
 		'''
 }
 
@@ -557,7 +559,7 @@ HalleysInferno: {
 		Press <right> to zoom out
 		Uses gel for ammo
 		50% chance to save ammo
-		'Halley came sooner than expected'
+		'Halley arrived sooner than expected'
 		'''
 }
 
@@ -936,7 +938,7 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
-		Right click to give the little girl some attention
+		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
 }
@@ -1154,8 +1156,13 @@ SpectralstormCannon: {
 	DisplayName: Spectralstorm Cannon
 	Tooltip:
 		'''
-		Fires a storm of lost souls and flares
+		Fires a barrage of spectral flares that builds up a searing heat in the weapon
+		While cooling down, heat-seeking phantoms are continuously released
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		However, triggering overheat releases a powerful burst of souls and resets heat
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'Ectoplasmic blast rated visor mandatory'
 		'''
 }
 

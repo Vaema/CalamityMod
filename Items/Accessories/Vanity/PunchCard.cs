@@ -1,38 +1,20 @@
-﻿using CalamityMod.UI;
+﻿using CalamityMod.Items.BaseItems;
+using CalamityMod.UI;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class PunchCard : ModItem, ILocalizedModType
+    public class PunchCard : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public override void Load()
-        {
-            if (!Main.dedServ)
-            {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shayy_Head", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shayy_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Shayy_Legs", EquipType.Legs, this);
-            }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
-
-            int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
-            ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
-
-            int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
-            ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-
-            int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-            ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-        }
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "Shayy", null),
+            (EquipType.Body, "Shayy", null),
+            (EquipType.Legs, "Shayy", null),
+        ];
 
         public override void SetDefaults()
         {
@@ -52,19 +34,6 @@ namespace CalamityMod.Items.Accessories.Vanity
             if (Main.myPlayer == player.whoAmI)
                 PopupGUIManager.FlipActivityOfGUIWithType(typeof(PunchCardGUI));
             return true;
-        }
-
-        public override void UpdateVanity(Player player)
-        {
-            player.Calamity().punchCard = true;
-        }
-
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            if (!hideVisual)
-            {
-                player.Calamity().punchCard = true;
-            }
         }
     }
 }

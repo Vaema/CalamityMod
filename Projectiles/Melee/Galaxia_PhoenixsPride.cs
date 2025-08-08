@@ -263,8 +263,7 @@ namespace CalamityMod.Projectiles.Melee
             if (CurrentState == 1f && Main.myPlayer == Projectile.owner && !AnyProjectiles(ProjectileType<PhoenixsPrideFirewall>()))
             {
                 Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<PhoenixsPrideFirewall>(), Projectile.damage, 0f, Projectile.owner, target.whoAmI);
-                if (proj.ModProjectile is PhoenixsPrideFirewall fire)
-                    fire.Scale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
+                (proj.ModProjectile as PhoenixsPrideFirewall).Scale = MathHelper.Clamp(target.width / 100f, 0.3f, 1.25f);
             }
         }
 

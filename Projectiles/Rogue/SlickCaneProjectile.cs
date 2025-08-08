@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Player player = Main.player[Projectile.owner];
             //Dont drop money from Dummies, WoF eyes and worm segments to make grinding money a bit harder and not give money from Dummies since that was apparently happening
-            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !NeedsDebuffIconDisplayList.Includes(target.type))
+            if (Projectile.owner == Main.myPlayer && target.IsAnEnemy(false) && !target.dontCountMe && !CalamityNPCSets.ForceDrawDebuffDisplay[target.type])
             {
                 float moneyValueToDrop = target.value / Main.rand.NextFloat(15f, 35f);
                 // Maximum of 50 silver, not counting steath strikes

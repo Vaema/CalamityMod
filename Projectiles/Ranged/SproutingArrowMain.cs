@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
                         float blastSize = 45;
                         float minMultiplier = 0.4f;
                         int hitsToMinMult = 4;
-                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 1.25f), 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                        Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage, 0, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                         blast.DamageType = DamageClass.Ranged;
                         blast.ArmorPenetration = 8;
 
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(sparker);
                 Projectile split1 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel1 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
                 Projectile split2 = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, vel2 * Main.rand.NextFloat(0.95f, 1.05f), ModContent.ProjectileType<SproutingArrowSplit>(), Projectile.damage * 2, 0f, Projectile.owner, 0f, hitDirect ? 1f : 0f);
-                if (Projectile.Calamity().conditionalHomingRange > 0f) // Allows the split arrows to home when using Arterial Assault as well
+                if (Projectile.Calamity().conditionalHomingRange > 0f) // Allows the split arrows to home if the main arrow homes
                 {
                     split1.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;
                     split2.Calamity().conditionalHomingRange = Projectile.Calamity().conditionalHomingRange;

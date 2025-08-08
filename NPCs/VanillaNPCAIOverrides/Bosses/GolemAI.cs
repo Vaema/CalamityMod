@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +13,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class GolemAI
     {
+        // Rev+ exclusive
+        public static int FireballDamage = 24; // 96 (modified to be always at maximum Expert damage and does not scale)
+        public static int LaserDamage = 29; // 116 (modified to be always at maximum Expert damage and does not scale)
+        public static int InfernoBoltDamage = 35; // 140
+
         public static bool BuffedGolemAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -22,8 +29,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < 0.75f;
             bool phase3 = lifeRatio < 0.5f;
             bool phase4 = lifeRatio < 0.25f;
@@ -32,13 +38,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.localAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 npc.localAI[0] = 1f;
-                int numFists = death ? 2 : 1;
-                for (int i = 0; i < numFists; i++)
-                {
-                    float fistPunchTimeOffset = i * 30f;
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0, 0f, fistPunchTimeOffset);
-                    NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0, 0f, fistPunchTimeOffset);
-                }
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 84, (int)npc.Center.Y - 9, NPCID.GolemFistLeft, 0);
+                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X + 78, (int)npc.Center.Y - 9, NPCID.GolemFistRight, 0);
                 NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X - 3, (int)npc.Center.Y - 57, NPCID.GolemHead);
             }
 
@@ -51,8 +52,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
             if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
             {
@@ -63,15 +64,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || Main.getGoodWorld;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || Main.getGoodWorld;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && (enrage || turboEnrage);
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && (enrage || turboEnrage);
 
             bool reduceFallSpeed = npc.velocity.Y > 0f && Collision.SolidCollision(npc.position + Vector2.UnitY * 1.1f * npc.velocity.Y, npc.width, npc.height);
 
@@ -91,14 +92,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool rightFistAlive = NPC.AnyNPCs(NPCID.GolemFistRight);
             npc.dontTakeDamage = (headAlive || leftFistAlive || rightFistAlive) && !CalamityWorld.LegendaryMode;
 
-            // Phase 2, check for free head
-            bool freeHeadAlive = NPC.AnyNPCs(NPCID.GolemHeadFree);
-
             // Distance required for despawning
             int despawnDistance = turboEnrage ? 7500 : enrage ? 6000 : 4500;
 
             // Deactivate torches
-            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld && npc.velocity.Y > 0f)
+            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && npc.velocity.Y > 0f)
             {
                 for (int j = (int)(npc.position.X / 16f); (float)j < (npc.position.X + (float)npc.width) / 16f; j++)
                 {
@@ -115,7 +113,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Spawn arm dust
-            if (!Main.getGoodWorld)
+            if (!CalamityWorld.LegendaryMode)
             {
                 if (!leftFistAlive)
                 {
@@ -177,50 +175,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Avoid cheap bullshit
                     npc.damage = 0;
 
-                    // Laser fire when head is dead
-                    if (Main.netMode != NetmodeID.MultiplayerClient && (!headAlive || turboEnrage || CalamityWorld.LegendaryMode) && npc.ai[2] == 0f)
-                    {
-                        npc.localAI[1] += 1f;
-
-                        float divisor = 15f -
-                            (phase2 ? 4f : 0f) -
-                            (phase3 ? 3f : 0f) -
-                            (phase4 ? 2f : 0f);
-
-                        if (enrage)
-                            divisor = 5f;
-
-                        if (turboEnrage && Main.getGoodWorld)
-                            divisor = 2f;
-
-                        Vector2 projectileFirePos = new Vector2(npc.Center.X, npc.Center.Y - 60f);
-                        if (npc.localAI[1] % divisor == 0f && (Vector2.Distance(Main.player[npc.target].Center, projectileFirePos) > 160f || !freeHeadAlive))
-                        {
-                            float laserSpeed = turboEnrage ? 16f : enrage ? 12f : 6f;
-                            float laserTargetXDist = Main.player[npc.target].Center.X - projectileFirePos.X;
-                            float laserTargetYDist = Main.player[npc.target].Center.Y - projectileFirePos.Y;
-                            float laserTargetDistance = (float)Math.Sqrt(laserTargetXDist * laserTargetXDist + laserTargetYDist * laserTargetYDist);
-
-                            laserTargetDistance = laserSpeed / laserTargetDistance;
-                            laserTargetXDist *= laserTargetDistance;
-                            laserTargetYDist *= laserTargetDistance;
-
-                            Vector2 laserVelocity = new Vector2(laserTargetXDist, laserTargetYDist);
-                            int type = ProjectileID.EyeBeam;
-                            int damage = npc.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[bodyLaser].timeLeft = enrage ? 720 : 360;
-                                if (turboEnrage && Main.getGoodWorld)
-                                    Main.projectile[bodyLaser].extraUpdates += 1;
-                            }
-                        }
-
-                        if (npc.localAI[1] >= 15f)
-                            npc.localAI[1] = 0f;
-                    }
-
                     // Delay before jumping
                     if (npc.ai[2] == 0f)
                     {
@@ -230,8 +184,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[1] > 0f)
                     {
-                        npc.ai[1] += (death ? 2f : 1f);
-                        if (Main.getGoodWorld)
+                        npc.ai[1] += death ? 1.5f : 1f;
+                        if (CalamityWorld.LegendaryMode)
                             npc.ai[1] += 100f;
 
                         if (enrage || death)
@@ -244,11 +198,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 npc.ai[1] += 6f;
                             if (!rightFistAlive)
                                 npc.ai[1] += 6f;
-                            if (!headAlive)
-                                npc.ai[1] += 6f;
                         }
                     }
-                    if (npc.ai[1] >= 300f)
+                    bool canJump = (!headAlive || Main.npc[NPC.FindFirstNPC(NPCID.GolemHead)].ai[0] <= 1f) && (!NPC.AnyNPCs(NPCID.GolemHeadFree) || Main.npc[NPC.FindFirstNPC(NPCID.GolemHeadFree)].ai[0] != 3);
+                    if (npc.ai[1] >= 300f && canJump)
                     {
                         npc.ai[1] = -20f;
                         npc.frameCounter = 0D;
@@ -262,164 +215,30 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         // Set damage
                         npc.damage = npc.defDamage;
 
-                        if (death)
+                        if (npc.ai[3] == 0f)
+                            npc.ai[3] = (death ? !leftFistAlive && !rightFistAlive : !headAlive) ? Main.rand.Next(1, 2+1) : 1f;
+
+                        switch ((int)npc.ai[3])
                         {
-                            float straightUpJumpHeight = 640f;
-                            if (npc.ai[3] == 0f)
-                                npc.ai[3] = (!headAlive && npc.Bottom.Y - straightUpJumpHeight > Main.player[npc.target].Top.Y) ? Main.rand.Next(3) + 1f : (!leftFistAlive && !rightFistAlive) ? Main.rand.Next(2) + 1f : 1f;
+                            default:
+                            case 0:
+                            case 1:
+                                NormalJump(canJump);
+                                break;
 
-                            switch ((int)npc.ai[3])
-                            {
-                                default:
-                                case 0:
-                                case 1:
-                                    NormalJump();
-                                    break;
-
-                                // Jump directly above the target's head and slam down
-                                case 2:
-
-                                    npc.noTileCollide = true;
-
-                                    npc.ai[2] += 1f;
-                                    float jumpVelocity = 26f;
-                                    if (enrage)
-                                        jumpVelocity *= 1.25f;
-                                    if (turboEnrage)
-                                        jumpVelocity *= 1.25f;
-
-                                    float minJumpTime = 15f;
-                                    float maxJumpTime = 45f;
-                                    if ((npc.ai[2] >= minJumpTime && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= jumpVelocity) || npc.ai[2] >= maxJumpTime)
-                                    {
-                                        npc.ai[0] = 1f;
-                                        npc.ai[1] = 0f;
-                                        npc.ai[2] = 1f;
-                                        npc.velocity.Y = -3f;
-                                        npc.netUpdate = true;
-                                    }
-
-                                    Vector2 center = npc.Center;
-                                    if (!Main.player[npc.target].dead && Main.player[npc.target].active && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= despawnDistance)
-                                        center = Main.player[npc.target].Center;
-
-                                    center.Y -= 480f;
-                                    if (npc.velocity.Y == 0f)
-                                    {
-                                        npc.velocity = center - npc.Center;
-                                        npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
-                                        npc.velocity *= jumpVelocity;
-
-                                        float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
-                                        float speedMult = 1f;
-
-                                        float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
-                                        if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
-                                            speedMult += distanceBelowTarget * multiplier;
-
-                                        float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
-                                        if (speedMult > speedMultLimit)
-                                            speedMult = speedMultLimit;
-
-                                        if (Main.player[npc.target].position.Y < npc.Bottom.Y)
-                                            npc.velocity.Y *= speedMult;
-                                    }
-                                    else
-                                        npc.velocity.Y *= 0.95f;
-
-                                    break;
-
-                                // Jump straight up and create a wall of lasers on both sides
-                                case 3:
-
-                                    npc.velocity.Y = (((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.1f : -12.1f) + (enrage ? -4f : 0f);
-
-                                    npc.noTileCollide = true;
-
-                                    npc.ai[0] = 1f;
-                                    npc.ai[1] = 0f;
-                                    npc.ai[2] = 2f;
-
-                                    float jumpDuration = (float)Math.Floor(straightUpJumpHeight / Math.Abs(npc.velocity.Y));
-                                    npc.ai[3] = jumpDuration;
-
-                                    npc.netUpdate = true;
-
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            if (npc.ai[3] == 0f)
-                                npc.ai[3] = !headAlive ? Main.rand.Next(2) + 1f : 1f;
-
-                            switch ((int)npc.ai[3])
-                            {
-                                default:
-                                case 0:
-                                case 1:
-                                    NormalJump();
-                                    break;
-
-                                // Jump directly above the target's head and slam down
-                                case 2:
-
-                                    npc.noTileCollide = true;
-
-                                    npc.ai[2] += 1f;
-                                    float jumpVelocity = 21f;
-                                    if (enrage)
-                                        jumpVelocity *= 1.25f;
-                                    if (turboEnrage)
-                                        jumpVelocity *= 1.25f;
-
-                                    float minJumpTime = 15f;
-                                    float maxJumpTime = 45f;
-                                    if ((npc.ai[2] >= minJumpTime && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= jumpVelocity) || npc.ai[2] >= maxJumpTime)
-                                    {
-                                        npc.ai[0] = 1f;
-                                        npc.ai[1] = 0f;
-                                        npc.ai[2] = 1f;
-                                        npc.velocity.Y = -3f;
-                                        npc.netUpdate = true;
-                                    }
-
-                                    Vector2 center = npc.Center;
-                                    if (!Main.player[npc.target].dead && Main.player[npc.target].active && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= despawnDistance)
-                                        center = Main.player[npc.target].Center;
-
-                                    center.Y -= 480f;
-                                    if (npc.velocity.Y == 0f)
-                                    {
-                                        npc.velocity = center - npc.Center;
-                                        npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
-                                        npc.velocity *= jumpVelocity;
-
-                                        float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
-                                        float speedMult = 1f;
-
-                                        float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
-                                        if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
-                                            speedMult += distanceBelowTarget * multiplier;
-
-                                        float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
-                                        if (speedMult > speedMultLimit)
-                                            speedMult = speedMultLimit;
-
-                                        if (Main.player[npc.target].position.Y < npc.Bottom.Y)
-                                            npc.velocity.Y *= speedMult;
-                                    }
-                                    else
-                                        npc.velocity.Y *= 0.95f;
-
-                                    break;
-                            }
+                            // Jump directly above the target's head and slam down
+                            case 2:
+                                SlamJump(canJump);
+                                break;
                         }
 
-                        void NormalJump()
+                        void NormalJump(bool jump)
                         {
-                            float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                            float velocityX = (death ? 9f : 6f) + velocityBoost;
+                            if (!jump)
+                                return;
+
+                            float velocityBoost = (death ? 5f : 3.8f) * (1f - (lifeRatio / 2));
+                            float velocityX = (death ? 6f : 4f) + velocityBoost;
                             if (enrage)
                                 velocityX *= 1.5f;
 
@@ -432,7 +251,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
                             float speedMult = 1f;
 
-                            float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
+                            float multiplier = turboEnrage ? 0.00275f : enrage ? 0.0025f : 0.00175f;
                             if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
                                 speedMult += distanceBelowTarget * multiplier;
 
@@ -441,7 +260,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 speedMult = speedMultLimit;
 
                             if (Main.player[npc.target].position.Y < npc.Bottom.Y)
-                                npc.velocity.Y = ((((!freeHeadAlive && !headAlive) || turboEnrage || CalamityWorld.LegendaryMode) ? -15.1f : -12.1f) + (enrage ? -4f : 0f)) * speedMult;
+                                npc.velocity.Y = (((turboEnrage || CalamityWorld.LegendaryMode) ? -15.5f : -11.75f) + (enrage ? -4f : 0f)) * speedMult;
                             else
                                 npc.velocity.Y = 1f;
 
@@ -452,6 +271,60 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.netUpdate = true;
                             npc.SyncExtraAI();
+                        }
+
+                        void SlamJump(bool jump)
+                        {
+                            npc.noTileCollide = true;
+
+                            npc.ai[2] += 1f;
+                            float jumpVelocity = death ? 26f : 21f;
+                            if (enrage)
+                                jumpVelocity *= 1.25f;
+                            if (turboEnrage)
+                                jumpVelocity *= 1.25f;
+
+                            float minJumpTime = 15f;
+                            float maxJumpTime = 45f;
+                            if ((npc.ai[2] >= minJumpTime && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= jumpVelocity) || npc.ai[2] >= maxJumpTime || !jump)
+                            {
+                                npc.ai[0] = 1f;
+                                npc.ai[1] = 0f;
+                                npc.ai[2] = 1f;
+                                npc.velocity.Y = -3f;
+                                npc.netUpdate = true;
+                            }
+
+                            if (!jump)
+                                return;
+
+                            Vector2 center = npc.Center;
+                            if (!Main.player[npc.target].dead && Main.player[npc.target].active && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) <= despawnDistance)
+                                center = Main.player[npc.target].Center;
+
+                            center.Y -= 480f;
+                            if (npc.velocity.Y == 0f)
+                            {
+                                npc.velocity = center - npc.Center;
+                                npc.velocity = npc.velocity.SafeNormalize(Vector2.Zero);
+                                npc.velocity *= jumpVelocity;
+
+                                float distanceBelowTarget = npc.position.Y - (Main.player[npc.target].position.Y + 80f);
+                                float speedMult = 1f;
+
+                                float multiplier = turboEnrage ? 0.0025f : enrage ? 0.002f : 0.0015f;
+                                if (distanceBelowTarget > 0f && ((!leftFistAlive && !rightFistAlive) || turboEnrage || CalamityWorld.LegendaryMode))
+                                    speedMult += distanceBelowTarget * multiplier;
+
+                                float speedMultLimit = turboEnrage ? 3.25f : enrage ? 3f : 2.5f;
+                                if (speedMult > speedMultLimit)
+                                    speedMult = speedMultLimit;
+
+                                if (Main.player[npc.target].position.Y < npc.Bottom.Y)
+                                    npc.velocity.Y *= speedMult;
+                            }
+                            else
+                                npc.velocity.Y *= 0.95f;
                         }
                     }
                 }
@@ -518,29 +391,29 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Main.dust[fiery2].velocity.X *= 2f;
                         }
 
-                        float projectileVelocity = death ? 11.25f : 7.5f;
+                        float projectileVelocity = death ? 7.5f : 4.75f;
                         if (enrage)
                             projectileVelocity *= 1.5f;
                         if (turboEnrage)
                             projectileVelocity *= 1.25f;
 
                         int type = ProjectileID.Fireball;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = FireballDamage;
                         Vector2 destination = new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center;
                         destination.Normalize();
                         destination *= projectileVelocity;
                         int totalFireballsPerSide = 3;
-                        int totalIterations = (turboEnrage && Main.getGoodWorld) ? 11 : death ? 25 : 35;
+                        int totalIterations = (turboEnrage && CalamityWorld.LegendaryMode) ? 11 : death ? 40 : 60;
                         float rotation = MathHelper.ToRadians(90);
                         for (int i = 0; i < totalIterations; i++)
                         {
-                            // Spawn projectiles 0, 1, 2, 22, 23, and 24 (in non-master)
+                            // Spawn projectiles 0, 1, 2, 22, 23, and 24
                             if (i < totalFireballsPerSide || i >= totalIterations - totalFireballsPerSide)
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(totalIterations - 1)));
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + Vector2.UnitY * (npc.height / 2 * 0.8f) * npc.scale + Vector2.Normalize(perturbedSpeed) * (npc.width / 3) * npc.scale, perturbedSpeed, type, damage, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = enrage ? 480 : 240;
-                                if (turboEnrage && Main.getGoodWorld)
+                                Main.projectile[proj].timeLeft = enrage ? 480 : 150; // The difference is meant to be this stark.
+                                if (turboEnrage && CalamityWorld.LegendaryMode)
                                     Main.projectile[proj].extraUpdates += 1;
                             }
                         }
@@ -554,97 +427,55 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = npc.defDamage;
 
                     // Velocity when falling
-                    if (npc.ai[2] == 2f)
+                    if ((npc.position.X < Main.player[npc.target].position.X && npc.position.X + npc.width > Main.player[npc.target].position.X + Main.player[npc.target].width) || npc.ai[2] == 1f)
                     {
-                        // Do not collide with tiles while doing this crazy shit
-                        npc.noTileCollide = true;
+                        npc.velocity.X *= npc.ai[2] == 1f ? 0.5f : 0.8f;
 
-                        float laserShootGateValue = death ? 6f : 9f;
-                        if (npc.ai[3] % laserShootGateValue == 0f)
+                        if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
                         {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Vector2 fireFrom = new Vector2(npc.Center.X, npc.Center.Y - 60f);
-                                int projectileAmt = 2;
-                                int type = ProjectileID.EyeBeam;
-                                int damage = npc.GetProjectileDamage(type);
-                                Vector2 laserVelocity = Vector2.UnitY * npc.velocity.Y * (turboEnrage ? 2f : enrage ? 1f : 0.5f);
-                                for (int i = 0; i < projectileAmt; i++)
-                                {
-                                    int totalProjectiles = 2;
-                                    float radians = MathHelper.TwoPi / totalProjectiles;
-                                    for (int j = 0; j < totalProjectiles; j++)
-                                    {
-                                        Vector2 projVelocity = laserVelocity.RotatedBy(radians * j + MathHelper.PiOver2);
-                                        int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer);
-                                        Main.projectile[bodyLaser].timeLeft = enrage ? 720 : 360;
-                                        if (turboEnrage && Main.getGoodWorld)
-                                            Main.projectile[bodyLaser].extraUpdates += 1;
-                                    }
-                                }
-                            }
-                        }
+                            float fallSpeedBoost = death ? 0.9f * (1f - (lifeRatio / 2)) : 0.75f * (1f - (lifeRatio / 2));
+                            float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
+                            if (enrage)
+                                fallSpeed *= 2f;
 
-                        npc.ai[3] -= 1f;
-                        if (npc.ai[3] <= 0f)
-                        {
-                            npc.ai[2] = 0f;
-                            npc.ai[3] = 0f;
-                            npc.ForceNetUpdate();
+                            npc.velocity.Y += fallSpeed;
                         }
                     }
                     else
                     {
-                        if ((npc.position.X < Main.player[npc.target].position.X && npc.position.X + npc.width > Main.player[npc.target].position.X + Main.player[npc.target].width) || npc.ai[2] == 1f)
-                        {
-                            npc.velocity.X *= npc.ai[2] == 1f ? 0.5f : 0.8f;
+                        float velocityChangeBoost = death ? 0.16f * (1f - (lifeRatio / 2)) : 0.12f * (1f - (lifeRatio / 2));
+                        float velocityXChange = (death ? 0.285f : 0.2f) + velocityChangeBoost;
+                        if (npc.direction < 0)
+                            npc.velocity.X -= velocityXChange;
+                        else if (npc.direction > 0)
+                            npc.velocity.X += velocityXChange;
 
-                            if (npc.Bottom.Y < Main.player[npc.target].position.Y || npc.ai[2] == 1f)
-                            {
-                                float fallSpeedBoost = death ? 1.2f * (1f - lifeRatio) : 0.8f * (1f - lifeRatio);
-                                float fallSpeed = (death ? 0.3f : 0.2f) + fallSpeedBoost;
-                                if (enrage)
-                                    fallSpeed *= 2f;
+                        float velocityBoost = death ? 5.75f * (1f - (lifeRatio / 2)) : 4f * (1f - (lifeRatio / 2));
+                        float velocityXCap = (death ? 6f : 4f) + velocityBoost;
+                        if (enrage)
+                            velocityXCap *= 3f;
 
-                                npc.velocity.Y += fallSpeed;
-                            }
-                        }
-                        else
-                        {
-                            float velocityChangeBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
-                            float velocityXChange = (death ? 0.3f : 0.2f) + velocityChangeBoost;
-                            if (npc.direction < 0)
-                                npc.velocity.X -= velocityXChange;
-                            else if (npc.direction > 0)
-                                npc.velocity.X += velocityXChange;
+                        float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
+                        int directionRelativeToTarget = playerLocation < 0 ? 1 : -1;
+                        bool slowDown = directionRelativeToTarget != calamityGlobalNPC.newAI[1];
 
-                            float velocityBoost = death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                            float velocityXCap = (death ? 9f : 6f) + velocityBoost;
-                            if (enrage)
-                                velocityXCap *= 3f;
+                        if (slowDown)
+                            velocityXCap *= (enrage ? 0.2f : 0.5f);
 
-                            float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                            int directionRelativeToTarget = playerLocation < 0 ? 1 : -1;
-                            bool slowDown = directionRelativeToTarget != calamityGlobalNPC.newAI[1];
-
-                            if (slowDown)
-                                velocityXCap *= (enrage ? 0.2f : 0.5f);
-
-                            if (npc.velocity.X < -velocityXCap)
-                                npc.velocity.X = -velocityXCap;
-                            if (npc.velocity.X > velocityXCap)
-                                npc.velocity.X = velocityXCap;
-                        }
-
-                        CustomGravity(npc.ai[2] == 1f);
+                        if (npc.velocity.X < -velocityXCap)
+                            npc.velocity.X = -velocityXCap;
+                        if (npc.velocity.X > velocityXCap)
+                            npc.velocity.X = velocityXCap;
                     }
+
+                    CustomGravity(npc.ai[2] == 1f);
                 }
             }
 
             void CustomGravity(bool isSlamming)
             {
-                float gravity = turboEnrage ? (Main.getGoodWorld ? 1.15f : 0.85f) : enrage ? 0.75f : (!leftFistAlive && !rightFistAlive) ? 0.45f : 0.3f;
-                float maxFallSpeed = reduceFallSpeed ? 12f : turboEnrage ? (Main.getGoodWorld ? 40f : 30f) : enrage ? 25f : (!leftFistAlive && !rightFistAlive) ? 15f : 10f;
+                float gravity = turboEnrage ? (CalamityWorld.LegendaryMode ? 1.15f : 0.85f) : enrage ? 0.75f : (!leftFistAlive && !rightFistAlive) ? 0.45f : 0.3f;
+                float maxFallSpeed = reduceFallSpeed ? 12f : turboEnrage ? (CalamityWorld.LegendaryMode ? 40f : 30f) : enrage ? 25f : (!leftFistAlive && !rightFistAlive) ? 15f : 10f;
                 if (isSlamming && !reduceFallSpeed)
                 {
                     gravity *= 4f;
@@ -699,14 +530,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             NPC golem = Main.npc[NPC.golemBoss];
             Player player = Main.player[npc.target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Enrage if the target isn't inside the temple
-            // Turbo enrage if target isn't inside the temple and it's Boss Rush or For the Worthy
-            bool enrage = true;
+            // Turbo enrage if target isn't inside the temple and it's For the Worthy
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (player.Center.Y > Main.worldSurface * 16.0)
+            if (player.Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)player.Center.X / 16;
                 int targetTilePosY = (int)player.Center.Y / 16;
@@ -715,15 +545,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || Main.getGoodWorld;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || Main.getGoodWorld;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
-            float aggression = turboEnrage ? (Main.getGoodWorld ? 4f : 3f) : enrage ? 2f : death ? 1.7f : 1f;
+            float aggression = turboEnrage ? (CalamityWorld.LegendaryMode ? 4f : 3f) : enrage ? 2f : death ? 1.7f : 1f;
 
             Vector2 fistCenter = golem.Center + golem.velocity + new Vector2(0f, -9f * npc.scale);
             fistCenter.X += (float)((npc.type == NPCID.GolemFistLeft) ? -84 : 78) * npc.scale;
@@ -805,7 +635,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Dust dust = Dust.NewDustPerfect(npc.Center + largeRandDustRecoil + largeRandDustRadius + smallRandDustRadius, 228, largeRandDustRecoil);
                         dust.fadeIn = 1.5f;
                         dust.scale = 0.5f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             dust.noLight = true;
 
                         dust.noGravity = true;
@@ -846,7 +676,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Set damage
                 npc.damage = npc.defDamage;
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
+                if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
                 {
                     for (int j = (int)(npc.position.X / 16f) - 1; (float)j < (npc.position.X + (float)npc.width) / 16f + 1f; j++)
                     {
@@ -891,54 +721,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 float maxPunchDistance = 700f;
-                int explosionLimit = 2;
                 if (death)
                 {
                     if (npc.life < npc.lifeMax / 2)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                     if (npc.life < npc.lifeMax / 4)
-                    {
                         maxPunchDistance += MathHelper.Lerp(-175f, 75f, Main.rand.NextFloat());
-                        explosionLimit++;
-                    }
                 }
 
                 if (distanceFromRestPosition > maxPunchDistance || npc.collideX || npc.collideY)
                 {
                     // Avoid cheap bullshit
                     npc.damage = 0;
-
                     npc.noTileCollide = true;
                     npc.ai[0] = 0f;
-
-                    if (death)
-                    {
-                        int type = ProjectileID.InfernoHostileBlast;
-                        bool shootExplosion = true;
-                        int numExplosions = 0;
-                        for (int i = 0; i < Main.maxProjectiles; i++)
-                        {
-                            if (Main.projectile[i].active && Main.projectile[i].type == type)
-                            {
-                                numExplosions++;
-                                if (numExplosions >= explosionLimit)
-                                {
-                                    shootExplosion = false;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (shootExplosion)
-                        {
-                            int damage = npc.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 0f, 0f, 1f);
-                        }
-                    }
                 }
             }
             else
@@ -1019,8 +815,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Count body parts
             bool leftFistAlive = NPC.AnyNPCs(NPCID.GolemFistLeft);
@@ -1029,11 +824,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Stay in position on top of body
             npc.Center = Main.npc[NPC.golemBoss].Center - new Vector2(3f, 57f) * npc.scale;
+            npc.velocity = Main.npc[NPC.golemBoss].velocity;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1042,12 +838,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || Main.getGoodWorld;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || Main.getGoodWorld;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
             // Alpha
@@ -1086,7 +882,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     headFireballTargetY *= headFireballTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
                     int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(headFireballTargetX, headFireballTargetY);
@@ -1115,10 +911,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else
                     npc.localAI[1] = 0f;
 
+                // Timer for special laser attack
+                npc.ai[3]++;
+                if (npc.ai[3] >= 600f && Main.npc[NPC.golemBoss].velocity.Y == 0f && MathF.Abs(Main.npc[NPC.golemBoss].velocity.X) < 0.5f)
+                {
+                    npc.ai[0] = 2f;
+                    npc.ai[1] = 0f;
+                    npc.ai[2] = 0f;
+                    npc.ai[3] = 0f;
+                    npc.localAI[1] = (Main.player[npc.target].Center.X > npc.Center.X).ToDirectionInt();
+                    npc.netUpdate = true;
+                }
+
                 // Fireballs
                 npc.ai[1] += 1f;
-                float openMouthGateValue = 20f - (death ? 15f * (1f - lifeRatio) : 10f * (1f - lifeRatio));
-                float shootFireballGateValue = 120f - (death ? 90f * (1f - lifeRatio) : 60f * (1f - lifeRatio));
+                float openMouthGateValue = 20f - (death ? 15f * (1f - (lifeRatio / 2)) : 10f * (1f - (lifeRatio / 2)));
+                float shootFireballGateValue = 120f - (death ? 75f * (1f - (lifeRatio / 2)) : 50f * (1f - (lifeRatio / 2)));
                 if (npc.ai[1] < openMouthGateValue || npc.ai[1] > shootFireballGateValue - openMouthGateValue)
                     npc.localAI[0] = 1f;
                 else
@@ -1138,21 +946,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     fireballFistsDedTargetY *= fireballFistsDedTargetDist;
 
                     int type = ProjectileID.Fireball;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = FireballDamage;
 
-                    int fireballAmount = death ? 3 : 1;
+                    int fireballAmount = death ? 2 : 1;
                     Vector2 fireballVelocity = new Vector2(fireballFistsDedTargetX, fireballFistsDedTargetY);
                     for (int i = 0; i < fireballAmount; i++)
                     {
                         int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos, fireballVelocity * (1f / (i + 1)), type, damage, 0f, Main.myPlayer);
-                        Main.projectile[proj].timeLeft = 450;
+                        Main.projectile[proj].timeLeft = 225;
                     }
 
                     npc.netUpdate = true;
                 }
 
                 // Lasers
-                float shootBoost2 = death ? 5f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
+                float shootBoost2 = death ? 4.5f * (1f - (lifeRatio / 2)) : 2.75f * (1f - (lifeRatio / 2));
                 npc.ai[2] += 1f + shootBoost2;
                 if (enrage)
                     npc.ai[2] += 4f;
@@ -1162,7 +970,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] = 0f;
 
                     int projType = ProjectileID.EyeBeam;
-                    int dmg = npc.GetProjectileDamage(projType);
+                    int dmg = LaserDamage;
 
                     if (npc.localAI[1] == 0f)
                     {
@@ -1188,7 +996,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 int bodyLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, projType, dmg, 0f, Main.myPlayer);
                                 Main.projectile[bodyLaser].timeLeft = enrage ? 600 : 300;
-                                if (turboEnrage && Main.getGoodWorld)
+                                if (turboEnrage && CalamityWorld.LegendaryMode)
                                     Main.projectile[bodyLaser].extraUpdates += 1;
 
                                 npc.netUpdate = true;
@@ -1217,7 +1025,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileFirePos + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, projType, dmg, 0f, Main.myPlayer);
                             Main.projectile[extraLasers].timeLeft = enrage ? 600 : 300;
-                            if (turboEnrage && Main.getGoodWorld)
+                            if (turboEnrage && CalamityWorld.LegendaryMode)
                                 Main.projectile[extraLasers].extraUpdates += 1;
 
                             npc.netUpdate = true;
@@ -1226,13 +1034,63 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
+            // Special laser spread attack
+            else if (npc.ai[0] == 2f || npc.ai[0] == 3f)
+            {
+                int telegraphTime = 60;
+                int endTime = 120;
+                Vector2 spawnLocation = new Vector2(npc.Center.X + (30f * npc.scale * npc.localAI[1]), npc.Center.Y - 22f * npc.scale);
+                if (npc.ai[1] == 1f)
+                {
+                    SparkleParticle eyeTele = new(spawnLocation, Vector2.Zero, Color.Yellow, Color.White, 1.25f * npc.scale, telegraphTime, MathHelper.Pi * 0.02f, needed: true);
+                    GeneralParticleHandler.SpawnParticle(eyeTele);
+                }
+
+                npc.ai[1]++;
+                if (npc.ai[1] >= telegraphTime && npc.ai[1] < endTime && npc.ai[1] % 2f == 0f)
+                {
+                    // Manually plays the sound at a slower rate (the sound from the lasers is disabled by setting ai[1])
+                    if (npc.ai[1] % 10f == 0f)
+                        SoundEngine.PlaySound(SoundID.Item33, spawnLocation);
+
+                    float laserFireAngle = MathHelper.ToRadians((npc.ai[1] - telegraphTime + 20) * (death ? 2.45f : 2f));
+                    Vector2 laserVelocity = Vector2.UnitY.RotatedBy(laserFireAngle * -npc.localAI[1]) * (death ? 15f : 12f);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        int extraLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, LaserDamage, 0f, Main.myPlayer, 0f, 1f);
+                        Main.projectile[extraLasers].timeLeft = enrage ? 600 : 300;
+                        if (turboEnrage && CalamityWorld.LegendaryMode)
+                            Main.projectile[extraLasers].extraUpdates += 1;
+
+                        npc.netUpdate = true;
+                    }
+                }
+
+                // Do another attack in the opposite direction in Death Mode
+                if (death && npc.ai[0] == 2f && npc.ai[1] >= endTime)
+                {
+                    npc.ai[0] = 3f;
+                    npc.ai[1] = 0f;
+                    npc.localAI[1] = -npc.localAI[1];
+                    npc.netUpdate = true;
+                }
+
+                if (npc.ai[1] >= endTime + 30)
+                {
+                    npc.ai[0] = 1f;
+                    npc.ai[1] = 0f;
+                    npc.netUpdate = true;
+                }
+            }
+
             // Laser fire if arms are dead
             if ((!leftFistAlive && !rightFistAlive) || death || CalamityWorld.LegendaryMode)
             {
-                npc.ai[0] = 1f;
-                return false;
+                if (npc.ai[0] <= 1f)
+                    npc.ai[0] = 1f;
             }
-            npc.ai[0] = 0f;
+            else
+                npc.ai[0] = 0f;
 
             return false;
         }
@@ -1253,10 +1111,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Die if body is gone
             if (NPC.golemBoss < 0)
             {
-                calamityGlobalNPC.DR = 0.25f;
-                calamityGlobalNPC.unbreakableDR = false;
-                calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = false;
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     npc.StrikeInstantKill();
 
@@ -1264,20 +1118,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Percent life remaining
-            float lifeRatio = npc.life / (float)npc.lifeMax;
             float golemLifeRatio = Main.npc[NPC.golemBoss].life / (float)Main.npc[NPC.golemBoss].lifeMax;
+            float PosDelay = 270f;
 
             // Phases
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool phase2 = lifeRatio < 0.7f || golemLifeRatio < 0.85f || death;
-            bool phase3 = lifeRatio < 0.55f || golemLifeRatio < 0.7f || death;
-            bool phase4 = lifeRatio < 0.4f || golemLifeRatio < 0.55f || death;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool phase2 = golemLifeRatio < 0.66f;
+            bool phase3 = golemLifeRatio < 0.33f;
 
             // Enrage if the target isn't inside the temple
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             bool turboEnrage = false;
-            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0)
+            if (Main.player[npc.target].Center.Y > Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive)
             {
                 int targetTilePosX = (int)Main.player[npc.target].Center.X / 16;
                 int targetTilePosY = (int)Main.player[npc.target].Center.Y / 16;
@@ -1286,95 +1138,77 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (tile.WallType == WallID.LihzahrdBrickUnsafe)
                     enrage = false;
                 else
-                    turboEnrage = bossRush || Main.getGoodWorld;
+                    turboEnrage = CalamityWorld.LegendaryMode;
             }
             else
-                turboEnrage = bossRush || Main.getGoodWorld;
+                turboEnrage = CalamityWorld.LegendaryMode;
 
-            if (bossRush || Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 enrage = true;
 
-            if (turboEnrage)
-            {
-                calamityGlobalNPC.DR = 0.9999f;
-                calamityGlobalNPC.unbreakableDR = true;
-                calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = true;
-            }
-
             // Float through tiles or not
-            bool canPassThroughTiles = false;
-            if (!Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) || phase3 || turboEnrage)
+            npc.noTileCollide = !Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].Center, 1, 1) || phase2 || turboEnrage;
+
+            // Immediately trigger the laser spread attack at phase transition thresholds
+            if (phase2 && npc.ai[0] == 0f || phase3 && npc.ai[0] == 1f)
             {
-                npc.noTileCollide = true;
-                canPassThroughTiles = true;
+                npc.ai[0] = 3f;
+                npc.ai[1] = 0f;
+                npc.ai[2] = 0f;
+                npc.ai[3] = PosDelay;
+                calamityGlobalNPC.newAI[3] = 0;
+                npc.netUpdate = true;
+                npc.SyncExtraAI();
             }
-            else
-                npc.noTileCollide = false;
 
             // Move to new location
+            float maxDistanceDiagonal = 360f;
+            float maxDistanceStraight = 480f;
             if (npc.ai[3] <= 0f)
             {
-                npc.ai[3] = 400f;
-
-                float maxDistance = 400f;
-
-                // Four corners around target
-                if (phase3 || turboEnrage)
+                npc.ai[3] = PosDelay;
+                calamityGlobalNPC.newAI[3] += phase2 ? 1 : 0;
+                if (calamityGlobalNPC.newAI[3] >= 7)
                 {
-                    if (calamityGlobalNPC.newAI[1] == -maxDistance)
+                    calamityGlobalNPC.newAI[3] = 0;
+                    npc.ai[0] = 3f;
+                    npc.ai[1] = 0f;
+                    npc.ai[3] = PosDelay;
+                }
+
+                // Four positions around target
+                if (!(phase3 || turboEnrage))
+                {
+                    if (phase2)
                     {
-                        switch ((int)calamityGlobalNPC.newAI[0])
+                        // 0 is top left, then goes counter-clockwise
+                        switch ((int)(calamityGlobalNPC.newAI[3] % 4))
                         {
                             case 0:
-                            case 400:
-                                calamityGlobalNPC.newAI[0] = -maxDistance;
+                                calamityGlobalNPC.newAI[0] = -maxDistanceDiagonal;
+                                calamityGlobalNPC.newAI[1] = -maxDistanceDiagonal;
                                 break;
-                            case -400:
-                                calamityGlobalNPC.newAI[1] = maxDistance;
+                            case 1:
+                                calamityGlobalNPC.newAI[0] = -maxDistanceDiagonal;
+                                calamityGlobalNPC.newAI[1] = maxDistanceDiagonal;
                                 break;
-                            default:
+                            case 2:
+                                calamityGlobalNPC.newAI[0] = maxDistanceDiagonal;
+                                calamityGlobalNPC.newAI[1] = maxDistanceDiagonal;
+                                break;
+                            case 3:
+                                calamityGlobalNPC.newAI[0] = maxDistanceDiagonal;
+                                calamityGlobalNPC.newAI[1] = -maxDistanceDiagonal;
                                 break;
                         }
                     }
+
+                    // Above target
                     else
                     {
-                        switch ((int)calamityGlobalNPC.newAI[0])
-                        {
-                            case 0:
-                            case -400:
-                                calamityGlobalNPC.newAI[0] = maxDistance;
-                                break;
-                            case 400:
-                                calamityGlobalNPC.newAI[1] = -maxDistance;
-                                break;
-                            default:
-                                break;
-                        }
+                        calamityGlobalNPC.newAI[0] = Main.rand.NextFloat(-150f, 150f);
+                        calamityGlobalNPC.newAI[1] = -maxDistanceStraight * 0.85f;
                     }
-                }
-
-                // Above target
-                else if (phase2)
-                {
-                    switch ((int)calamityGlobalNPC.newAI[0])
-                    {
-                        case 0:
-                            calamityGlobalNPC.newAI[0] = maxDistance;
-                            break;
-                        case 400:
-                            calamityGlobalNPC.newAI[0] = -maxDistance;
-                            break;
-                        case -400:
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    calamityGlobalNPC.newAI[0] = 0f;
-                    calamityGlobalNPC.newAI[1] = -maxDistance;
                 }
 
                 npc.netSpam = 5;
@@ -1382,10 +1216,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ForceNetUpdate();
             }
 
-            npc.ai[3] -= 1f +
-                (turboEnrage ? 1f : phase2 ? 0.5f : 0f) +
-                (turboEnrage ? 1f : phase3 ? 0.5f : 0f) +
-                (turboEnrage ? 2f : phase4 ? 1f : 0f);
+            float positioningInc = enrage ? 6f : phase3 ? 2.5f : phase2 ? 1.8f : 1f;
+            npc.ai[3] -= positioningInc;
+
+            // Move in a circle around the player in final phase
+            if (phase3 || turboEnrage)
+            {
+                float spinSpeedMult = enrage ? 2.5f : death ? 1.35f : 1.2f;
+                calamityGlobalNPC.newAI[0] = maxDistanceStraight * MathF.Sin(MathHelper.ToRadians(npc.ai[2] * spinSpeedMult));
+                calamityGlobalNPC.newAI[1] = maxDistanceStraight * MathF.Cos(MathHelper.ToRadians(npc.ai[2] * spinSpeedMult));
+            }
+            // Always move above the player during laser spread attack
+            if (npc.ai[0] == 3f)
+            {
+                calamityGlobalNPC.newAI[0] = 0f;
+                calamityGlobalNPC.newAI[1] = -maxDistanceStraight * 0.8f;
+            }
 
             float offsetX = calamityGlobalNPC.newAI[0];
             float offsetY = calamityGlobalNPC.newAI[1];
@@ -1393,141 +1239,115 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Velocity and acceleration
             float velocity = (turboEnrage ? 15f : 10f) +
-                (turboEnrage ? 7.5f : phase2 ? 5f : 0f) +
-                (turboEnrage ? 7.5f : phase3 ? 5f : 0f);
+                (turboEnrage ? 7.5f : phase2 ? 10f : 0f) +
+                (turboEnrage ? 7.5f : phase3 ? 15f : 0f);
 
             if (enrage)
                 velocity = (phase3 || turboEnrage) ? 35f : 25f;
 
-            float acceleration = phase3 ? 0f : turboEnrage ? 6f : enrage ? 4.8f : phase2 ? 1.2f : 0.8f;
+            float acceleration = npc.ai[0] == 3f ? 1.5f : phase2 ? 0f : turboEnrage ? 5f : enrage ? 3f : 0.3f;
 
             // How far Golem's Head is from where it's supposed to be
             Vector2 distanceFromDestination = destination - npc.Center;
-
             // Whether Golem can fire projectiles
-            bool canFireProjectiles = distanceFromDestination.Length() < 120f || enrage;
+            bool canFireProjectiles = (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 160f && npc.ai[0] != 3f) || enrage;
 
-            CalamityUtils.SmoothMovement(npc, 80f, distanceFromDestination, velocity, acceleration, !phase3);
+            // Ensure the free head stays still during the attack
+            if (npc.ai[0] == 3f && npc.ai[1] >= 60f)
+                npc.velocity = Vector2.Zero;
+            else
+                CalamityUtils.SmoothMovement(npc, 80f, distanceFromDestination, velocity, acceleration, !phase2 || npc.ai[0] == 3f);
 
-            if (death && calamityGlobalNPC.newAI[2] < 120f)
+            // Laser spread attack, followed by lingering flame bolts
+            if (npc.ai[0] == 3f)
             {
-                calamityGlobalNPC.newAI[2] += 1f;
+                int telegraphTime = 60;
+                int laserEndTime = 120;
+                int fireballStartTime = 160;
 
-                if (calamityGlobalNPC.newAI[2] % 15f == 0f)
+                npc.ai[1]++;
+                // Grrrrr stop incrementing the damn timer
+                npc.ai[3] = PosDelay;
+                // Laser spread
+                if (npc.ai[1] >= telegraphTime && npc.ai[1] < laserEndTime && npc.ai[1] % 2f == 0f)
                 {
+                    // Manually plays the sound at a slower rate (the sound from the lasers is disabled by setting ai[1])
+                    if (npc.ai[1] % 10f == 0f)
+                        SoundEngine.PlaySound(SoundID.Item33, npc.Center);
+
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        Vector2 spawnLocation = new Vector2(npc.Center.X + 14f * npc.scale * i, npc.Center.Y - 20f * npc.scale);
+                        float laserFireAngle = MathHelper.ToRadians((npc.ai[1] - telegraphTime + 20) * (death ? 2.1f : 2f));
+                        Vector2 laserVelocity = -Vector2.UnitY.RotatedBy(laserFireAngle * i) * (death ? 15f : 12f);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            int spreadLasers = Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, ProjectileID.EyeBeam, LaserDamage, 0f, Main.myPlayer, 0f, 1f);
+                            Main.projectile[spreadLasers].timeLeft = enrage ? 600 : 300;
+                            if (turboEnrage && CalamityWorld.LegendaryMode)
+                                Main.projectile[spreadLasers].extraUpdates += 1;
+
+                            npc.netUpdate = true;
+                        }
+                    }
+                }
+                // Sets the mouth to be open for the upcoming flame bolts
+                if (npc.ai[1] > laserEndTime)
+                    npc.localAI[0] = 1f;
+
+                // Flame bolts
+                if (npc.ai[1] >= fireballStartTime && npc.ai[1] % 30 == 10f)
+                {
+                    Vector2 spawnLocation = npc.Center + Vector2.UnitY * 20f * npc.scale;
+                    Vector2 fireBoltVelocity = Utils.DirectionTo(spawnLocation, Main.player[npc.target].Center) * (enrage ? 30f : death ? 16f : 12f);
+
+                    int type = ModContent.ProjectileType<GolemInfernoBolt>();
+                    int damage = InfernoBoltDamage;
+                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnLocation, fireBoltVelocity, type, damage, 0f, Main.myPlayer, Main.player[npc.target].Center.X, Main.player[npc.target].Center.Y);
+                }
+
+                // Death fires 2 bolts, Rev fires just 1
+                if (npc.ai[1] >= fireballStartTime + (death ? 40 : 10))
+                {
+                    npc.ai[0] = phase3 ? 2f : 1f;
+                    npc.ai[1] = 0f;
+                    if (phase3)
+                        calamityGlobalNPC.newAI[2] = Main.rand.Next(120); // Used as a random start point for phase 3 circling
+                    npc.ai[2] = calamityGlobalNPC.newAI[2];
+                    npc.localAI[0] = 0f;
+                    // Needs to be done to properly put it in the top left corner afterwards in phase 2
+                    calamityGlobalNPC.newAI[0] = -maxDistanceDiagonal;
                     npc.netUpdate = true;
                     npc.SyncExtraAI();
                 }
-
-                return false;
-            }
-
-            // Fireballs
-            if (canFireProjectiles)
-                npc.ai[1] += 1f;
-
-            float combinedLifeRatio = (lifeRatio + golemLifeRatio) * 0.5f;
-            float openMouthGateValue = 20f - (death ? 15f * (1f - combinedLifeRatio) : 10f * (1f - combinedLifeRatio));
-            float shootFireballGateValue = 240f - (death ? 180f * (1f - combinedLifeRatio) : 120f * (1f - combinedLifeRatio));
-            if (npc.ai[1] < openMouthGateValue || npc.ai[1] > shootFireballGateValue - openMouthGateValue)
-                npc.localAI[0] = 1f;
-            else
-                npc.localAI[0] = 0f;
-
-            if (canPassThroughTiles && !phase3)
-                npc.ai[1] = openMouthGateValue;
-
-            if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[1] >= shootFireballGateValue)
-            {
-                npc.ai[1] = 0f;
-
-                Vector2 freeHeadCenter = new Vector2(npc.Center.X, npc.Center.Y + 20f * npc.scale);
-                float freeHeadSpeed = turboEnrage ? 24f : enrage ? 18f : 6f;
-                if (death)
-                    freeHeadSpeed *= 1.25f;
-
-                float freeHeadTargetX = Main.player[npc.target].Center.X - freeHeadCenter.X;
-                float freeHeadTargetY = Main.player[npc.target].Center.Y - freeHeadCenter.Y;
-                float freeHeadTargetDist = (float)Math.Sqrt(freeHeadTargetX * freeHeadTargetX + freeHeadTargetY * freeHeadTargetY);
-
-                freeHeadTargetDist = freeHeadSpeed / freeHeadTargetDist;
-                freeHeadTargetX *= freeHeadTargetDist;
-                freeHeadTargetY *= freeHeadTargetDist;
-
-                int projectileType = (phase3 || death) ? ProjectileID.InfernoHostileBolt : ProjectileID.Fireball;
-                int damage = npc.GetProjectileDamage(projectileType);
-                float ai0 = projectileType == ProjectileID.InfernoHostileBolt ? Main.player[npc.target].Center.X : 0f;
-                float ai1 = projectileType == ProjectileID.InfernoHostileBolt ? Main.player[npc.target].Center.Y : 0f;
-                float ai2 = projectileType == ProjectileID.InfernoHostileBolt ? 1f : 0f;
-                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), freeHeadCenter.X, freeHeadCenter.Y, freeHeadTargetX, freeHeadTargetY, projectileType, damage, 0f, Main.myPlayer, ai0, ai1, ai2);
-                if (projectileType == ProjectileID.InfernoHostileBolt)
-                {
-                    Main.projectile[proj].timeLeft = 300;
-                    Main.projectile[proj].netUpdate = true;
-                }
-                else
-                    Main.projectile[proj].timeLeft = 450;
-
-                npc.netUpdate = true;
             }
 
             // Lasers
-            if (canFireProjectiles)
-                npc.ai[2] += 1f;
+            npc.ai[2] += 1f;
 
-            float laserGateValue = 300f - (death ? 240f * (1f - combinedLifeRatio) : 180f * (1f - combinedLifeRatio));
-            if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] >= laserGateValue)
+            int laserGateValue = (int)(PosDelay / positioningInc);
+            if (canFireProjectiles && Main.netMode != NetmodeID.MultiplayerClient && ((npc.ai[2] - calamityGlobalNPC.newAI[2]) % (laserGateValue / 2) == 0f))
             {
-                npc.ai[2] = 0f;
-
                 int numLasers = 2;
-                bool leftLaserIsFast = Main.rand.NextBool();
                 for (int i = 0; i < numLasers; i++)
                 {
                     Vector2 freeHeadProjSpawn = new Vector2(npc.Center.X, npc.Center.Y - 20f * npc.scale);
-                    if (i == 0)
-                        freeHeadProjSpawn.X -= 14f * npc.scale;
-                    else if (i == 1)
-                        freeHeadProjSpawn.X += 14f * npc.scale;
+                    freeHeadProjSpawn.X += 14f * npc.scale * (i == 1).ToDirectionInt();
 
-                    float freeHeadProjSpeed = 5f + (death ? 5f * (1f - combinedLifeRatio) : 3f * (1f - combinedLifeRatio));
-                    if (death)
-                    {
-                        if (i == 0)
-                        {
-                            if (leftLaserIsFast)
-                                freeHeadProjSpeed *= 1.25f;
-                            else
-                                freeHeadProjSpeed *= 0.75f;
-                        }
-                        else
-                        {
-                            if (!leftLaserIsFast)
-                                freeHeadProjSpeed *= 1.25f;
-                            else
-                                freeHeadProjSpeed *= 0.75f;
-                        }
-                    }
+                    float freeHeadProjSpeed = 7f + (5f * (1f - golemLifeRatio));
+                    Vector2 laserVelocity = Main.player[npc.target].Center - freeHeadProjSpawn;
+                    laserVelocity = laserVelocity.SafeNormalize(Vector2.UnitY) * freeHeadProjSpeed;
 
-                    float freeHeadProjTargetX = Main.player[npc.target].Center.X - freeHeadProjSpawn.X;
-                    float freeHeadProjTargetY = Main.player[npc.target].Center.Y - freeHeadProjSpawn.Y;
-                    float freeHeadProjTargetDist = (float)Math.Sqrt(freeHeadProjTargetX * freeHeadProjTargetX + freeHeadProjTargetY * freeHeadProjTargetY);
-
-                    freeHeadProjTargetDist = freeHeadProjSpeed / freeHeadProjTargetDist;
-                    freeHeadProjTargetX *= freeHeadProjTargetDist;
-                    freeHeadProjTargetY *= freeHeadProjTargetDist;
-
-                    Vector2 laserVelocity = new Vector2(freeHeadProjTargetX, freeHeadProjTargetY);
                     int type = ProjectileID.EyeBeam;
-                    int damage = npc.GetProjectileDamage(type);
+                    int damage = LaserDamage;
                     int freeHeadLaser = Projectile.NewProjectile(npc.GetSource_FromAI(), freeHeadProjSpawn + laserVelocity.SafeNormalize(Vector2.UnitY) * 40f, laserVelocity, type, damage, 0f, Main.myPlayer);
                     Main.projectile[freeHeadLaser].timeLeft = enrage ? 600 : 300;
-                    if (turboEnrage && Main.getGoodWorld)
+                    if (turboEnrage && CalamityWorld.LegendaryMode)
                         Main.projectile[freeHeadLaser].extraUpdates += 1;
                 }
             }
 
-            if (!Main.getGoodWorld)
+            if (!CalamityWorld.LegendaryMode)
             {
                 npc.position += npc.netOffset;
                 int randDustOffset = Main.rand.Next(2) * 2 - 1;

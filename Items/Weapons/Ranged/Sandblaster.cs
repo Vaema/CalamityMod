@@ -16,10 +16,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 26;
-            Item.damage = 80;
+            Item.damage = 70;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 15;
-            Item.useAnimation = 15;
+            Item.useTime = Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -32,10 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Sand;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
         public override bool CanConsumeAmmo(Item ammo, Player player)
         {

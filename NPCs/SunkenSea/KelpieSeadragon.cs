@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.lifeMax = 150;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
@@ -80,9 +80,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -202,7 +199,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             {
                                 Vector2 spawnPos = new Vector2(NPC.Center.X + NPC.direction * 18, NPC.position.Y + 22);
                                 Vector2 projSpeed = spawnPos.DirectionTo(currentTarget.Center).SafeNormalize(Vector2.Zero) * 6;
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), NPC.damage, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, projSpeed, ModContent.ProjectileType<HorsPoisonBlast>(), 10, 0f);
                             }
                         }
                         // Squash and stretch

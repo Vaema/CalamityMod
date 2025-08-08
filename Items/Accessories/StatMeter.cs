@@ -223,7 +223,6 @@ namespace CalamityMod.Items.Accessories
             // Detailed Abyss stats only render if the player is in the Abyss.
             string stats4 = "\n" + (!modPlayer.ZoneAbyss ? this.GetLocalizedValue("AbyssStatsHidden") : this.GetLocalization("AbyssStats").Format(
                 player.GetCurrentAbyssLightLevel(),
-                TwoPlaces(modPlayer.abyssBreathLossStat),
                 TwoPlaces(modPlayer.abyssBreathLossRateStat),
                 modPlayer.abyssLifeLostAtZeroBreathStat,
                 modPlayer.abyssDefenseLossStat));

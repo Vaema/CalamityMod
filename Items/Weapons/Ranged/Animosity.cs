@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
@@ -23,20 +25,20 @@ namespace CalamityMod.Items.Weapons.Ranged
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<LashesofChaos>();
+        }
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 46;
+            Item.damage = 39;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 70;
-            Item.height = 18;
             Item.scale = 0.85f;
-            Item.useTime = 30;
+            Item.useTime = Item.useAnimation = 33;
             Item.reuseDelay = 10;
-            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -52,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void UpdateInventory(Player player)
         {
-            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun full of hate, returns Animosity otherwise
+            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun Full of Hate, returns Animosity otherwise
             if (Main.zenithWorld)
                 Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
         }
@@ -172,7 +174,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (!Main.dedServ)
             {
                 string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
-                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
+                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type, 0.75f);
             }
             return false;
         }

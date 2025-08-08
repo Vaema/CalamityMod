@@ -14,27 +14,30 @@ namespace CalamityMod.NPCs.HiveMind
 {
     public class HiveBlob : ModNPC
     {
-        private const float ShootGateValue = 240f;
+        private const float NormalShootGate = 240f;
+        private const float FastShootGate = 180f;
         private const float TelegraphDuration = 120f;
-        private const float ShowTelegraphValue = ShootGateValue - TelegraphDuration;
+        private bool FastVariant => NPC.ai[2] > 0f;
 
-        public override void SetStaticDefaults()
-        {
-            NPCID.Sets.NeedsExpertScaling[Type] = true;
-        }
+        public override void SetStaticDefaults() => NPCID.Sets.NeedsExpertScaling[Type] = true;
+
+        public static int VileClotDamage = 8; // 32
+
+        // Legendary Mode exclusive
+        public static int CursedFlameDamage = 15; // 60
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 0.1f;
             NPC.aiStyle = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 25;
             NPC.height = 25;
 
             NPC.lifeMax = 50;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1300;
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
 
             NPC.knockBackResist = 0.9f;
@@ -107,10 +110,11 @@ namespace CalamityMod.NPCs.HiveMind
                 }
             }
 
-            float hiveMindVelocity = Main.npc[hiveMind].velocity.Length();
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
             float acceleration = 0.8f;
-            float distanceFromMind = Main.getGoodWorld ? 256f : 128f;
+            float distanceFromMind = FastVariant ? 96f : 128f;
+            if (CalamityWorld.LegendaryMode)
+                distanceFromMind *= 2;
 
             float hiveMindX = Main.npc[hiveMind].Center.X;
             float hiveMindY = Main.npc[hiveMind].Center.Y;
@@ -161,14 +165,14 @@ namespace CalamityMod.NPCs.HiveMind
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
+                float shootGateValue = FastVariant ? FastShootGate : NormalShootGate;
                 if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
-                    NPC.localAI[1] = ShootGateValue * 0.5f;
+                    NPC.localAI[1] = shootGateValue * 0.5f;
 
-                float shootGateValue = ShootGateValue;
                 if (NPC.localAI[1] < shootGateValue)
                 {
                     NPC.localAI[1] += 1f;
-                    if (NPC.localAI[1] < ShowTelegraphValue)
+                    if (NPC.localAI[1] < shootGateValue - TelegraphDuration)
                         NPC.localAI[1] += Main.rand.Next(2);
                     if (death)
                         NPC.localAI[1] += 1f;
@@ -183,7 +187,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
-                        if (Main.getGoodWorld)
+                        if (CalamityWorld.LegendaryMode)
                             projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
@@ -193,8 +197,8 @@ namespace CalamityMod.NPCs.HiveMind
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
                         playerY *= playerDist;
-                        int type = (CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
-                        int damage = type == ProjectileID.CursedFlameHostile ? 30 : NPC.GetProjectileDamage(type);
+                        int type = (CalamityWorld.LegendaryMode && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
+                        int damage = type == ProjectileID.CursedFlameHostile ? CursedFlameDamage : VileClotDamage;
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)
                         {
@@ -224,8 +228,9 @@ namespace CalamityMod.NPCs.HiveMind
             vector2 += vector * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             Color color = NPC.GetAlpha(drawColor);
 
-            if (NPC.localAI[1] > ShowTelegraphValue)
-                color = Color.Lerp(color, Color.LimeGreen * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - ShowTelegraphValue) / TelegraphDuration, 0f, 1f));
+            float shootGateValue = FastVariant ? FastShootGate : NormalShootGate;
+            if (NPC.localAI[1] > shootGateValue - TelegraphDuration)
+                color = Color.Lerp(color, Color.LimeGreen * NPC.Opacity, MathHelper.Clamp((NPC.localAI[1] - (shootGateValue - TelegraphDuration)) / TelegraphDuration, 0f, 1f));
 
             spriteBatch.Draw(texture, vector2, NPC.frame, color, NPC.rotation, vector, NPC.scale, spriteEffects, 0f);
 
@@ -250,6 +255,16 @@ namespace CalamityMod.NPCs.HiveMind
             {
                 for (int k = 0; k < 10; k++)
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
+            }
+
+            if (Main.netMode != NetmodeID.MultiplayerClient && FastVariant && Main.zenithWorld)
+            {
+                // Spawn even more blobs on death
+                for (int i = 1; i < 3; i++)
+                {
+                    Vector2 spawnAt = NPC.Center + new Vector2(0f, NPC.height / 2f);
+                    NPC.NewNPC(NPC.GetSource_FromThis(), (int)spawnAt.X, (int)spawnAt.Y, ModContent.NPCType<HiveBlob>());
+                }
             }
         }
     }

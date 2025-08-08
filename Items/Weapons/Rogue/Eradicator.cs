@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,7 +13,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class Eradicator : RogueWeapon
     {
         public static float Speed = 10.5f;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Excelsus>();
+        }
         public override void SetDefaults()
         {
             Item.width = 62;

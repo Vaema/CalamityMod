@@ -147,7 +147,7 @@ namespace CalamityMod.Projectiles.Ranged
                 //Calculation for damage and co
                 Owner.PickAmmo(heldItem, out _, out float itemVelocity, out int itemDamage, out float itemKB, out _);
                 int type = ModContent.ProjectileType<HydrasBlood>();
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < Hydra.BulletsPerShot - 1; i++)
                 {
                     Vector2 spreadDirection = shootDirection.RotatedByRandom(MathHelper.ToRadians(Hydra.ShotSpread / 2f));
                     float spreadVelocity = itemVelocity * Main.rand.NextFloat(1f, 1.4f);

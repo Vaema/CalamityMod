@@ -1,7 +1,10 @@
-﻿using Terraria;
+﻿using CalamityMod.NPCs;
+using Terraria;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistExceptionAttribute(true)]
     public class KeelhaulGeyserTop : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -19,14 +22,21 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 180;
-            Projectile.alpha = 90;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
+            Projectile.timeLeft = 900;
+            Projectile.alpha = 255;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 10;
         }
 
         public override void AI()
         {
+            if (Projectile.alpha > 90)
+            {
+                Projectile.alpha -= 10;
+                if (Projectile.alpha < 90)
+                    Projectile.alpha = 90;
+            }
+
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 6)
             {

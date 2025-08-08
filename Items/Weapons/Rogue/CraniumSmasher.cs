@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class CraniumSmasher : RogueWeapon
     {
         private bool throwExplosive = false;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<UltimusCleaver>();
+        }
         public override void SetDefaults()
         {
             Item.width = 50;

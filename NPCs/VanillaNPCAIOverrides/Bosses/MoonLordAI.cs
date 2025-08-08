@@ -17,12 +17,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         public static readonly SoundStyle DeathrayChargeSound = new("CalamityMod/Sounds/Custom/MoonLordLaserCharge");
 
+        // Vanilla values
+        public static int BoltDamage = 30; // 120
+        public static int EyeDamage = 30; // 120
+        public static int SphereDamage = 40; // 160
+        public static int DeathrayDamage = 75; // 300
+
+        public static int TrueEyeBoltDamage = 35; // 140
+        public static int TrueEyeEyeDamage = 35; // 140
+        public static int TrueEyeDeathrayDamage = 50; // 200
+        public static int TrueEyeSphereDamage = 55; // 220
+
+        // Vanilla values (GFB)
+        public static int MoonBoulderDamage = 70; // 280
+
         public static bool BuffedMoonLordAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             int aggressionLevel = 4;
             if (npc.type == NPCID.MoonLordCore || npc.type == NPCID.MoonLordHand || npc.type == NPCID.MoonLordHead)
@@ -45,10 +58,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (bossRush)
-                aggressionLevel = 5;
-
-            if (Main.getGoodWorld)
+            if (CalamityWorld.LegendaryMode)
                 aggressionLevel = 6;
 
             if (npc.type == NPCID.MoonLordCore)
@@ -773,7 +783,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (attackTimer == 180f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int projectileType = ProjectileID.PhantasmalDeathray;
-                            int damage = npc.GetProjectileDamage(projectileType);
 
                             npc.TargetClosest(false);
                             Vector2 deathrayRotationSpeed = Main.player[npc.target].Center - npc.Center;
@@ -784,7 +793,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 deathrayRotationDirection = 1f;
 
                             deathrayRotationSpeed = deathrayRotationSpeed.RotatedBy(-(double)deathrayRotationDirection * MathHelper.TwoPi / 6f);
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, deathrayRotationSpeed.X, deathrayRotationSpeed.Y, projectileType, damage, 0f, Main.myPlayer, deathrayRotationDirection * MathHelper.TwoPi / calamityGlobalNPC.newAI[1], npc.whoAmI);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, deathrayRotationSpeed.X, deathrayRotationSpeed.Y, projectileType, DeathrayDamage, 0f, Main.myPlayer, deathrayRotationDirection * MathHelper.TwoPi / calamityGlobalNPC.newAI[1], npc.whoAmI);
                             npc.ai[2] = (deathrayRotationSpeed.ToRotation() + MathHelper.Pi + MathHelper.TwoPi) * deathrayRotationDirection;
                             npc.netUpdate = true;
                         }
@@ -811,7 +820,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] < 0f)
                         {
                             npc.localAI[1] = 0f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld && Main.remixWorld)
+                            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && Main.remixWorld)
                             {
                                 for (int k = 0; k < 30; k++)
                                 {
@@ -933,8 +942,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         Vector2 boltVelocity = Vector2.Normalize(v4) * velocity;
                         int type = ProjectileID.PhantasmalBolt;
-                        int damage = npc.GetProjectileDamage(type);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + boltDirection.X, npc.Center.Y + boltDirection.Y, boltVelocity.X, boltVelocity.Y, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + boltDirection.X, npc.Center.Y + boltDirection.Y, boltVelocity.X, boltVelocity.Y, type, BoltDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
 
@@ -1166,10 +1174,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handAttackDirection = Vector2.Normalize(handAttackRotation) * velocity;
                             float ai = (MathHelper.TwoPi * (float)Main.rand.NextDouble() - MathHelper.Pi) / 30f + 0.0174532924f * handFaceDirection;
                             int type = ProjectileID.PhantasmalEye;
-                            int damage = npc.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, damage, 0f, Main.myPlayer, 0f, ai);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, EyeDamage, 0f, Main.myPlayer, 0f, ai, aggressionLevel);
                             Main.projectile[proj].timeLeft = 1200;
-                            Main.projectile[proj].Calamity().lineColor = bossRush ? 1 : aggressionLevel;
                         }
                     }
                     else
@@ -1291,8 +1297,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             sphereFireDirection.Y += (finalSphereHandSpeed - 4.5f) * 1f;
                             sphereFireDirection *= 1.2f;
                             int type = ProjectileID.PhantasmalSphere;
-                            int damage = npc.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, sphereFireDirection.X, sphereFireDirection.Y, type, damage, 1f, Main.myPlayer, 0f, npc.whoAmI);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, sphereFireDirection.X, sphereFireDirection.Y, type, SphereDamage, 1f, Main.myPlayer, 0f, npc.whoAmI);
                             Main.projectile[proj].timeLeft = 1200;
                         }
 
@@ -1533,8 +1538,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         Vector2 boltShootSpeed = Vector2.Normalize(v) * velocity;
                         int type = ProjectileID.PhantasmalBolt;
-                        int damage = npc.GetProjectileDamage(type);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + boltShootDirection.X, npc.Center.Y + boltShootDirection.Y, boltShootSpeed.X, boltShootSpeed.Y, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + boltShootDirection.X, npc.Center.Y + boltShootDirection.Y, boltShootSpeed.X, boltShootSpeed.Y, type, BoltDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
 
@@ -1779,14 +1783,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float velocity = death ? 9f : 8f;
                         Vector2 freeEyeBoltVel = Vector2.Normalize(v8) * velocity;
                         int type = ProjectileID.PhantasmalBolt;
-                        int damage = npc.GetProjectileDamage(type);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + freeEyeBoltDirection.X, npc.Center.Y + freeEyeBoltDirection.Y, freeEyeBoltVel.X, freeEyeBoltVel.Y, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + freeEyeBoltDirection.X, npc.Center.Y + freeEyeBoltDirection.Y, freeEyeBoltVel.X, freeEyeBoltVel.Y, type, TrueEyeBoltDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
                 else if (npc.ai[0] == 2f || npc.ai[0] == 4f)
                 {
                     int type = ProjectileID.PhantasmalSphere;
-                    int damage = npc.GetProjectileDamage(type);
 
                     if (secondAttackTimer < 15f)
                     {
@@ -1866,7 +1868,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 for (int k = 0; k < 3; k++)
                                 {
                                     if (!WorldGen.SolidTile((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f)))
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, (float)Main.rand.Next(-1599, 1600) * 0.01f, (float)Main.rand.Next(-1599, 1) * 0.01f, ProjectileID.MoonBoulder, 70, 10f);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, (float)Main.rand.Next(-1599, 1600) * 0.01f, (float)Main.rand.Next(-1599, 1) * 0.01f, ProjectileID.MoonBoulder, MoonBoulderDamage, 10f);
                                 }
                             }
                         }
@@ -1922,7 +1924,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (trueEyeSphereProj.type == type && trueEyeSphereProj.ai[1] == npc.whoAmI && trueEyeSphereProj.ai[0] != -1f)
                                 {
                                     trueEyeSphereProj.ai[0] = -1f;
-                                    trueEyeSphereProj.damage = damage;
+                                    trueEyeSphereProj.damage = TrueEyeSphereDamage;
                                     trueEyeSphereProj.velocity = trueEyeSphereVelocity;
                                     trueEyeSphereProj.netUpdate = true;
                                 }
@@ -2001,8 +2003,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 trueEyeEyeSpeed = Vector2.Normalize(trueEyeDirection) * velocity;
                             float ai3 = (MathHelper.TwoPi * (float)Main.rand.NextDouble() - MathHelper.Pi) / 30f + 0.0174532924f * npc.ai[2];
                             int type = ProjectileID.PhantasmalEye;
-                            int damage = npc.GetProjectileDamage(type);
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), trueEyeEyeDirection, trueEyeEyeSpeed, type, damage, 0f, Main.myPlayer, 0f, ai3);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), trueEyeEyeDirection, trueEyeEyeSpeed, type, TrueEyeEyeDamage, 0f, Main.myPlayer, 0f, ai3);
                             Main.projectile[proj].timeLeft = 1200;
                         }
                     }
@@ -2074,8 +2075,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                                 deathrayTargetDist = deathrayTargetDist.RotatedBy(-(double)deathraySweepDirection * MathHelper.TwoPi / 6f);
                                 int type = ProjectileID.PhantasmalDeathray;
-                                int damage = npc.GetProjectileDamage(type);
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, deathrayTargetDist.X, deathrayTargetDist.Y, type, damage, 0f, Main.myPlayer, deathraySweepDirection * MathHelper.TwoPi / calamityGlobalNPC.newAI[1], npc.whoAmI);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X, npc.Center.Y, deathrayTargetDist.X, deathrayTargetDist.Y, type, TrueEyeDeathrayDamage, 0f, Main.myPlayer, deathraySweepDirection * MathHelper.TwoPi / calamityGlobalNPC.newAI[1], npc.whoAmI);
                                 npc.ai[2] = (deathrayTargetDist.ToRotation() + MathHelper.Pi + MathHelper.TwoPi) * deathraySweepDirection;
                                 npc.netUpdate = true;
                             }

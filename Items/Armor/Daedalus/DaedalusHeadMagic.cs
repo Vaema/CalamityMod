@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateEquip(Player player)
         {
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
             player.GetDamage<MagicDamageClass>() += 0.13f;
             player.GetCritChance<MagicDamageClass>() += 7;
             player.statManaMax2 += 60;

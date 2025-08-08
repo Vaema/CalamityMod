@@ -1,0 +1,113 @@
+﻿using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Summon;
+using CalamityMod.Projectiles.Typeless;
+using ReLogic.Reflection;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
+
+namespace CalamityMod.Systems.Collections
+{
+    [ReinitializeDuringResizeArrays]
+    public static class CalamityProjectileSets
+    {
+        public static SetFactory Factory = new SetFactory(ProjectileLoader.ProjectileCount, "CalamityMod/ProjectileID", Search);
+        public static IdDictionary Search = IdDictionary.Create<ProjectileID, int>();
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that minion will completely ignore Calamity's summon damage penalty mechanic with no exceptions.<br/>
+        /// Unused by Calamity itself, and is only used for external mods to add to through mod calls.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] MinionWhichIgnoresSummonerNerf = Factory.CreateBoolSet();
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile is spawned by a post-Plantera Dungeon enemy.<br/>
+        /// This increases the projectile's damage by a flat 30 if Moon Lord has been defeated.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] IsBuffedDungeonProjectile = Factory.CreateBoolSet(ProjectileID.PaladinsHammerHostile, ProjectileID.ShadowBeamHostile, ProjectileID.InfernoHostileBolt,
+                ProjectileID.InfernoHostileBlast, ProjectileID.LostSoulHostile, ProjectileID.SniperBullet, ProjectileID.RocketSkeleton, ProjectileID.BulletDeadeye, ProjectileID.Shadowflames);
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile is spawned by a Solar Eclipse, Pumpkin Moon, or Frost Moon enemy.<br/>
+        /// This increases the projectile's damage by a flat 15 during those events if Devourer of Gods has been defeated.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] IsBuffedEventProjectile = Factory.CreateBoolSet(ProjectileID.FlamingWood, ProjectileID.GreekFire1, ProjectileID.GreekFire2, ProjectileID.GreekFire3,
+                ProjectileID.FlamingScythe, ProjectileID.FlamingArrow, ProjectileID.PineNeedleHostile, ProjectileID.OrnamentHostile, ProjectileID.OrnamentHostileShrapnel,
+                ProjectileID.FrostWave, ProjectileID.FrostShard, ProjectileID.Missile, ProjectileID.Present, ProjectileID.Spike, ProjectileID.BulletDeadeye, ProjectileID.EyeLaser,
+                ProjectileID.Nail, ProjectileID.DrManFlyFlask);
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile is considered a friendly bee.<br/>
+        /// Used to allow the projectile to inflict Plague while wearing the Plaguebringer Carapace.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] IsFriendlyBeeProjectile = Factory.CreateBoolSet(ProjectileID.GiantBee, ProjectileID.Bee, ProjectileID.Wasp, ProjectileType<PlaguenadeBee>(),
+                ProjectileType<PlaguePrincess>(), ProjectileType<BabyPlaguebringer>(), ProjectileType<PlagueBeeSmall>());
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile is a bomb or other explosive which is not a weapon.<br/>
+        /// Used to provide early-game worm bosses a resistance to their explosive damage.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ResistedExplosiveProjectile = Factory.CreateBoolSet(ProjectileID.Grenade, ProjectileID.StickyGrenade, ProjectileID.BouncyGrenade, ProjectileID.Bomb,
+                ProjectileID.StickyBomb, ProjectileID.BouncyBomb, ProjectileID.Dynamite, ProjectileID.StickyDynamite, ProjectileID.BouncyDynamite, ProjectileID.Explosives,
+                ProjectileID.ExplosiveBunny, ProjectileID.PartyGirlGrenade, ProjectileID.BombFish, ProjectileID.ScarabBomb, ProjectileID.TNTBarrel, ProjectileType<AeroExplosive>());
+
+        /// <summary>
+        /// If <see langword="true"/> for a projectile type, then that projectile will never be reflected by armor or accessory effects.<br/>
+        /// Set this for persistent projectiles such as deathrays to avoid major screwing of their behavior.<br/>
+        /// Only needs to be set for hostile projectiles, as these effects already have a check to ensure they never trigger in PvP.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ShouldNotBeReflected = Factory.CreateBoolSet(ProjectileID.SaucerDeathray, ProjectileID.PhantasmalDeathray, ProjectileType<BrimstoneMonster>(),
+                ProjectileType<InfernadoRevenge>(), ProjectileType<OverlyDramaticDukeSummoner>(), ProjectileType<ProvidenceHolyRay>(), ProjectileType<OldDukeVortex>(),
+                ProjectileType<BrimstoneRay>(), ProjectileType<AresDeathBeamStart>(), ProjectileType<AresGaussNukeProjectileBoom>(), ProjectileType<AresLaserBeamStart>(),
+                ProjectileType<ArtemisSpinLaserbeam>(), ProjectileType<BirbAura>(), ProjectileType<ThanatosBeamStart>());
+
+        /// <summary>
+        /// Determines what other projectiles this projectile will share ID-static immunity frames with. Defaults to -1, which means that it does not share immunity frames.<br/>
+        /// Each "set" of projectile which shares immunity frames is registered to point to the same ID reference, usually the first projectile in the set. If a projectile with this reference hits an NPC, all other projectiles with that reference also have their ID-static immunity cooldown set for that NPC.
+        /// </summary>
+        public static int[] SharedIDStaticIFrames = Factory.CreateIntSet(-1,
+            // Vanilla bees
+            ProjectileID.Bee, ProjectileID.Bee,
+            ProjectileID.GiantBee, ProjectileID.Bee,
+            // Vilethorn
+            ProjectileID.VilethornBase, ProjectileID.VilethornBase,
+            ProjectileID.VilethornTip, ProjectileID.VilethornBase,
+            // Nettle Burst
+            ProjectileID.NettleBurstRight, ProjectileID.NettleBurstRight,
+            ProjectileID.NettleBurstLeft, ProjectileID.NettleBurstRight,
+            ProjectileID.NettleBurstEnd, ProjectileID.NettleBurstRight,
+            // Magical Harp notes
+            ProjectileID.QuarterNote, ProjectileID.QuarterNote,
+            ProjectileID.EighthNote, ProjectileID.QuarterNote,
+            ProjectileID.TiedEighthNote, ProjectileID.QuarterNote,
+            // North Pole
+            ProjectileID.NorthPoleWeapon, ProjectileID.NorthPoleWeapon,
+            ProjectileID.NorthPoleSpear, ProjectileID.NorthPoleWeapon,
+            ProjectileID.NorthPoleSnowflake, ProjectileID.NorthPoleWeapon,
+            // Spore gas clouds
+            ProjectileID.SporeTrap, ProjectileID.SporeTrap,
+            ProjectileID.SporeTrap2, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas2, ProjectileID.SporeTrap,
+            ProjectileID.SporeGas3, ProjectileID.SporeTrap,
+            // Astral Staff
+            ProjectileType<AstralCrystal>(), ProjectileType<AstralCrystal>(),
+            ProjectileType<AstralCrystalInvisibleExplosion>(), ProjectileType<AstralCrystal>(),
+            // Keelhaul
+            ProjectileType<KeelhaulGeyserBottom>(), ProjectileType<KeelhaulGeyserBottom>(),
+            ProjectileType<KeelhaulGeyserTop>(), ProjectileType<KeelhaulGeyserBottom>(),
+            // Toxic clouds
+            ProjectileID.ToxicCloud, ProjectileID.ToxicCloud,
+            ProjectileID.ToxicCloud2, ProjectileID.ToxicCloud,
+            ProjectileID.ToxicCloud3, ProjectileID.ToxicCloud
+            );
+    }
+}

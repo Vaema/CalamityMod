@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.GemTech
@@ -94,7 +93,7 @@ namespace CalamityMod.Items.Armor.GemTech
                     tooltips[setBonusIndex].Text = CalamityUtils.GetTextValueFromModItem<GemTechHeadgear>("AbilityBrief");
                     tooltips[setBonusIndex].OverrideColor = Color.Lerp(Color.White, Main.DiscoColor, 0.3f);
 
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
                         TooltipLine briefDescription = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<GemTechHeadgear>("AbilityDescription"));
                         briefDescription.OverrideColor = Color.Lerp(Color.White, Main.DiscoColor, 0.5f);

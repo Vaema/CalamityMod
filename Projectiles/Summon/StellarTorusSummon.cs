@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 12000;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
@@ -272,7 +273,5 @@ namespace CalamityMod.Projectiles.Summon
 
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

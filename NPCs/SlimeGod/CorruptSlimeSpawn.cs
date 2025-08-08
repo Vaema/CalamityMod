@@ -20,17 +20,20 @@ namespace CalamityMod.NPCs.SlimeGod
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
         }
 
+        // GFB exclusive
+        public static int ShaderainDamage = 12; // 48
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Bat;
-            NPC.GetNPCDamage();
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale = 2f;
 
             NPC.defense = 6;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 360 : 180;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : CalamityWorld.LegendaryMode ? 360 : 180;
             NPC.knockBackResist = 0.7f;
             AnimationType = NPCID.Slimer;
             NPC.lavaImmune = false;
@@ -40,10 +43,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -84,8 +83,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (Main.zenithWorld && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, ShaderainDamage, 0f, Main.myPlayer);
             }
         }
 

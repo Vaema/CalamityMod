@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.FathomSwarmer
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
     public class FathomSwarmerBoots : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float SummonDamageBoost = 0.08f;
+        public static float SubmergedMoveSpeedBoost = 0.4f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent(), SubmergedMoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -21,18 +27,15 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.08f;
-            if (Collision.DrownCollision(player.position, player.width, player.height, player.gravDir))
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+            if (player.Calamity().countsAsAnyWet)
             {
-                player.moveSpeed += 0.4f;
+                player.moveSpeed += SubmergedMoveSpeedBoost;
             }
             player.ignoreWater = true;
             if (player.wingTime <= 0) //ignore flippers while the player can fly
                 player.accFlipper = true;
         }
-
-
-
 
         public override void AddRecipes()
         {

@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Reduce damage of projectiles if more than the cap are active
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!Projectile.CountsAsClass<ThrowingDamageClass>())
+            if (Projectile.DamageType == DamageClass.Generic)
             {
                 int cap = 10;
                 float capDamageFactor = 0.05f;

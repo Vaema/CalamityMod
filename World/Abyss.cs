@@ -73,7 +73,7 @@ namespace CalamityMod.World
                     if (tile.HasTile)
                     {
                         bool vanillaTile = tile.TileType < TileID.Count;
-                        bool validModdedTile = tile.TileType != ModContent.TileType<SulphurousSandstone>() && AbyssValidTileReplacementList.Includes(tile.TileType);
+                        bool validModdedTile = tile.TileType != ModContent.TileType<SulphurousSandstone>() && CalamityTileSets.CanBeReplacedByAbyssGeneration[tile.TileType];
                         canConvert = vanillaTile || validModdedTile;
                     }
 
@@ -1119,6 +1119,7 @@ namespace CalamityMod.World
             if (ChestIndex != -1)
             {
                 Main.chest[ChestIndex].item[0].SetDefaults(itemChoice);
+                Main.chest[ChestIndex].item[0].Prefix(-1);
 
                 Main.chest[ChestIndex].item[1].SetDefaults(WorldGen.genRand.Next(Potions1));
                 Main.chest[ChestIndex].item[1].stack = WorldGen.genRand.Next(1, 3);

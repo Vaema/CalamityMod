@@ -131,12 +131,12 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Projectile.velocity.X = Main.rand.NextBool() ? -tornadoSpeed : tornadoSpeed;
 
-                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                if (CalamityWorld.LegendaryMode)
                     Projectile.velocity.X *= 1.5f;
             }
 
             if (Projectile.timeLeft == 600)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Yharon>());
+                Projectile.damage = Yharon.TornadoDamage;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft <= 600;
@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.timeLeft <= 600)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
     }
 }

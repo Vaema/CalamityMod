@@ -149,12 +149,11 @@ namespace CalamityMod.Projectiles.Boss
                 return null;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
-            float detachDistance = bossRush ? 1600f : death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
+            float detachDistance = death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type != Projectile.type || p.ai[0] != Identity + 1f || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)

@@ -164,7 +164,7 @@ namespace CalamityMod.Events
                     ModContent.NPCType<DesertNuisanceBody>(), ModContent.NPCType<DesertNuisanceTail>(), ModContent.NPCType<DesertNuisanceHeadYoung>(),
                     ModContent.NPCType<DesertNuisanceBodyYoung>(), ModContent.NPCType<DesertNuisanceTailYoung>() }),
 
-                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu, ModContent.NPCType<BloodlettingServant>() }),
+                new Boss(NPCID.EyeofCthulhu, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.ServantofCthulhu }),
 
                 new Boss(ModContent.NPCType<Crabulon>(), TimeChangeContext.Day, type =>
                 {
@@ -178,7 +178,7 @@ namespace CalamityMod.Events
 
                 new Boss(NPCID.BrainofCthulhu, permittedNPCs: NPCID.Creeper),
 
-                new Boss(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>(), ModContent.NPCType<HiveBlob2>() }),
+                new Boss(ModContent.NPCType<HiveMind>(), permittedNPCs: new int[] { ModContent.NPCType<DankCreeper>(), ModContent.NPCType<DarkHeart>(), ModContent.NPCType<HiveBlob>() }),
 
                 new Boss(ModContent.NPCType<PerforatorHive>(), permittedNPCs: new int[] { ModContent.NPCType<PerforatorHeadLarge>(), ModContent.NPCType<PerforatorBodyLarge>(), ModContent.NPCType<PerforatorTailLarge>(),
                     ModContent.NPCType<PerforatorHeadMedium>(), ModContent.NPCType<PerforatorBodyMedium>(), ModContent.NPCType<PerforatorTailMedium>(), ModContent.NPCType<PerforatorHeadSmall>(),
@@ -213,8 +213,7 @@ namespace CalamityMod.Events
                 {
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Spazmatism);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, NPCID.Retinazer);
-                    NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, ModContent.NPCType<Foveanator>());
-                }, permittedNPCs: new int[] { NPCID.Retinazer, ModContent.NPCType<Foveanator>() }),
+                }, permittedNPCs: new int[] { NPCID.Retinazer }),
 
                 new Boss(ModContent.NPCType<AquaticScourgeHead>(), TimeChangeContext.Day, permittedNPCs: new int[] { ModContent.NPCType<AquaticScourgeBody>(), ModContent.NPCType<AquaticScourgeBodyAlt>(), ModContent.NPCType<AquaticScourgeTail>() }),
 
@@ -222,7 +221,7 @@ namespace CalamityMod.Events
 
                 new Boss(ModContent.NPCType<BrimstoneElemental>(), TimeChangeContext.Day, permittedNPCs: ModContent.NPCType<Brimling>()),
 
-                new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<SkeletronPrime2>(), NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser, NPCID.Probe }),
+                new Boss(NPCID.SkeletronPrime, TimeChangeContext.Night, permittedNPCs: new int[] { NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeVice, NPCID.PrimeLaser }),
 
                 new Boss(ModContent.NPCType<CalamitasClone>(), TimeChangeContext.Night, permittedNPCs: new int[] { ModContent.NPCType<Cataclysm>(), ModContent.NPCType<Catastrophe>(),
                     ModContent.NPCType<SoulSeeker>() }),

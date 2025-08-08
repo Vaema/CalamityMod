@@ -41,14 +41,14 @@ namespace CalamityMod.Projectiles.Summon
             // A slightly-smoothened curve that's a little less potent than a linear curve.
             // Has the potential to eventually surpass a linear curve, but this is infeasible, only happening
             // at around 344 allocated slots.
-            float averageDamageMultiplier = (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f;
+            float averageDamageMultiplier = (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f;
 
-            // 1 slot provides  25 DoT.
-            // 2 slots provide  48 DoT.
-            // 3 slots provide 70 DoT.
-            // 4 slots provide 92 DoT.
-            // 5 slots provide 114 DoT.
-            int sagePoisonDamage = (int)(50 * averageDamageMultiplier);
+            // 1 slot provides 25 DoT.
+            // 2 slots provide 50 DoT.
+            // 3 slots provide 76 DoT.
+            // [...]
+            // 9 slots provide 240 DoT.
+            int sagePoisonDamage = (int)(SagePoison.debuffData.EnemyLostRegen * averageDamageMultiplier);
             target.AddBuff(ModContent.BuffType<SagePoison>(), 300);
             target.Calamity().sagePoisonDamage = sagePoisonDamage;
         }

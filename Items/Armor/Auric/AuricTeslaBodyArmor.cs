@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Auric
         public override void UpdateEquip(Player player)
         {
             var modPlayer = player.Calamity();
-            player.statLifeMax2 += 100;
+            player.statLifeMax2 += 50;
             player.GetDamage<GenericDamageClass>() += 0.08f;
             player.GetCritChance<GenericDamageClass>() += 5;
         }

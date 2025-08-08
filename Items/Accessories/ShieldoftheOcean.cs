@@ -73,8 +73,10 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 // Inflict Riptide on empowered parries.
+                //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+                //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
                 if (empowered)
-                    npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
+                    npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), CalamityUtils.SecondsToFrames(15));
 
                 // If the NPC can be moved, violently shove them away. Make them susceptible to fall damage on empowered parries.
                 // Otherwise, simply deal a large amount of damage to them if empowered.
