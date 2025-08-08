@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
-            float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
+            float scale = Main.getGoodWorld ? 0.6f : 1f;
             NPC.aiAction = 0;
 
             // Get a target
@@ -126,7 +126,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
             if (lifeRatio <= 0.5f && Main.netMode != NetmodeID.MultiplayerClient && expertMode)
             {
-                if (CalamityWorld.LegendaryMode)
+                if (Main.zenithWorld)
                 {
                     int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                     for (int i = 0; i < 30; i++)
@@ -308,7 +308,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int numProjectiles = CalamityWorld.LegendaryMode ? 12 : death ? 6 : 4;
+                                int numProjectiles = Main.getGoodWorld ? 12 : death ? 6 : 4;
                                 float projectileVelocity = death ? 8f : 6f;
                                 int type = ModContent.ProjectileType<UnstableEbonianGlob>();
                                 Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y + 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
@@ -321,7 +321,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                 Vector2 dustSpawnOffset = dustSpawnBox * 0.5f;
                                 for (int i = 0; i < numProjectiles; i++)
                                 {
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         destination *= Main.rand.NextFloat() + 0.5f;
 
                                     Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProjectiles - 1)));
@@ -486,13 +486,13 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Charge variables
                 float chargeVelocityMult = 0.1f;
                 float maxChargeVelocity = enraged ? 12f : death ? 10f : revenge ? 9f : expertMode ? 8f : 6f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     maxChargeVelocity *= 2f;
 
                 float inertia = death ? 110f : revenge ? 114f : expertMode ? 120f : 130f;
                 if (lifeRatio < 0.75f)
                     inertia *= 0.8f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.8f;
 
                 // Start charge

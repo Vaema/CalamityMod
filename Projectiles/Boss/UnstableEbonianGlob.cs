@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.timeLeft = CalamityWorld.death ? 600 : CalamityWorld.revenge ? 540 : Main.expertMode ? 480 : 300;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
