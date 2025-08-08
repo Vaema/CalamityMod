@@ -6,6 +6,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -1682,6 +1683,7 @@ namespace CalamityMod.CalPlayer
         // This may seem like a scuffed setup, but a simple bool will have ordering issues when it comes to drawing.
         // Until ModSceneMetrics gets implemented, this works for now.
         public int BrimstoneLavaFountainCounter = 0;
+        public FireParticleSet ManaBurnFireDrawer = null;
         #endregion Draw Effects
 
         #region Draedon Summoning
@@ -4308,6 +4310,12 @@ namespace CalamityMod.CalPlayer
             if (Player.ZoneDesert && (ZoneAstral || areThereAnyDamnBosses) && Player.HasBuff(BuffID.WindPushed))
             {
                 Player.ClearBuff(BuffID.WindPushed);
+            }
+            if (Player.statMana < 0) 
+            {
+                Player.AddBuff(ModContent.BuffType<ManaBurn>(), 10);
+            } else if (Player.HasBuff(ModContent.BuffType<ManaBurn>())) {
+                Player.ClearBuff(ModContent.BuffType<ManaBurn>());
             }
         }
         #endregion

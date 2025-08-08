@@ -336,6 +336,8 @@ namespace CalamityMod.CalPlayer
                 Player.AddBuff(ModContent.BuffType<Encased>(), CalamityUtils.SecondsToFrames(3f));
 
                 Player.statLife = Player.statLifeMax2 * 3 / 10;
+                if (Player.statMana < 0)
+                    Player.statMana = 0;
 
                 SoundEngine.PlaySound(SoundID.Item92, Player.Center);
 
