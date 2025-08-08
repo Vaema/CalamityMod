@@ -1,3 +1,4 @@
+DashKey: Press {0} while facing a direction
 DodgeInfo:
 	'''
 	Grants the ability to dodge attacks
@@ -14,7 +15,7 @@ AddedTooltip: {
 		Enrages outside the Ocean
 		'''
 	SlimeGun: Slimed enemies take more damage from fire-based debuffs
-	FleshKnucklesLine: Max life increased by 45
+	FleshKnucklesLine: Max life increased by 25
 	RodofDiscord: Teleportation is disabled while Chaos State is active
 	Pwnhammer:
 		'''
@@ -46,7 +47,7 @@ AddedTooltip: {
 	FairyBoots:
 		'''
 		Fairies can spawn at any time on the surface and spawn far more frequently
-		Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed
+		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
 		Fairies are immune to damage and will no longer flee
 		'''
 	MoonStone: Reduces the damage of the Nightwither debuff
@@ -59,29 +60,6 @@ AddedTooltip: {
 	YoyoGlove: Secondary yoyos will do 50% less damage
 	DefensePrefix: +{0}% damage reduction
 	LuckyPrefix: +0.05 luck
-	/*
-	Armor
-	*/
-	CopperHelmet: 5% increased damage
-	CopperChainmail: 3% increased critical strike chance
-	CopperGreaves: 5% increased movement speed
-	TinHelmet: 3% increased critical strike chance
-	TinChainmail: +0.5 HP/s life regen
-	TinGreaves: 5% increased movement speed
-	IronPieces: Increases damage reduction by 3%
-	LeadPieces: Increases damage reduction by 2%
-	SilverHelmet: 5% increased critical strike chance
-	SilverChainmail: +1 HP/s life regen
-	SilverGreaves: 8% increased movement speed
-	TungstenHelmet: 7% increased damage
-	TungstenChainmail: +0.5 HP/s life regen
-	TungstenGreaves: 8% increased movement speed
-	GoldHelmet: 5% increased damage
-	GoldChainmail: Increases damage reduction by 5%
-	GoldGreaves: 10% increased movement speed
-	PlatinumHelmet: 6% increased damage
-	PlatinumChainmail: 3% increased critical strike chance
-	PlatinumGreaves: 10% increased movement speed
 	CrimsonBreastplate: +1 HP/s life regen
 	CrimsonOtherPieces: +0.5 HP/s life regen
 	Picksaw: Can mine Scoria Ore located in the Abyss
@@ -99,7 +77,7 @@ EditedTooltip: {
 	BloodySpine:
 		'''
 		Summons the Brain of Cthulhu when used in the Crimson
-		Enrages outside the Underground Crimson
+		Despawns outside the Crimson
 		'''
 	ClothierVoodooDoll:
 		'''
@@ -118,31 +96,19 @@ EditedTooltip: {
 		Summons the Golem when used at the Lihzahrd Altar
 		Enrages outside the Jungle Temple
 		'''
-	MechanicalEye:
-		'''
-		Summons The Twins when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalEye: Summons The Twins when used during nighttime
 	MechanicalSkull:
 		'''
 		Summons Skeletron Prime when used during nighttime
 		Enrages during the day
 		'''
-	MechanicalWorm:
-		'''
-		Summons The Destroyer when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalWorm: Summons The Destroyer when used during nighttime
 	QueenSlimeCrystal: Summons Queen Slime when used in the Hallow
-	SuspiciousLookingEye:
-		'''
-		Summons the Eye of Cthulhu when used during nighttime
-		Enrages during the day
-		'''
+	SuspiciousLookingEye: Summons the Eye of Cthulhu when used during nighttime
 	WormFood:
 		'''
 		Summons the Eater of Worlds when used in the Corruption
-		Enrages outside the Underground Corruption
+		Despawns outside the Corruption
 		'''
 	MasterExclusive: Master or Revengeance
 	// Sparkle Slime Balloon
@@ -170,7 +136,6 @@ EditedTooltip: {
 	// Arcane Crystal
 	AegisCrystal: Permanently boosts natural life regeneration
 	ArcheryPotion: 20% increased arrow speed and 5% increased arrow damage
-	IronskinPotion: Increase defense by {0}
 	// Aerial Bane
 	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
 	AleSake:
@@ -198,13 +163,12 @@ EditedTooltip: {
 	// Soaring Insignia
 	EmpressFlightBooster1: Increases wing flight time by 33%
 	EmpressFlightBooster2: Increases movement and jump speed by 10% and acceleration by 1.25x
-	RifleScope1: Increase view range for guns (Right click to zoom out)
+	RifleScope1: Increase view range for guns (<right> to zoom out)
 	RifleScope2: The scope effect can be toggled with visibility
 	SniperScope: 12% increased ranged critical strike chance
 	MagicQuiver: Increases arrow damage by 5% and greatly increases arrow speed
 	MoltenQuiver1: Increases arrow damage by 7% and greatly increases arrow speed
 	MoltenQuiver2: Lights wooden arrows ablaze and all arrows inflict Hellfire
-	MagicPowerPotion: 10% increased magic damage
 	MagicHat: 6% increased magic critical strike chance
 	PowerGlove: 10% increased melee speed, does not stack with downgrades
 	BerserkerGlove: 10% increased true melee damage
@@ -284,8 +248,8 @@ EditedTooltip: {
 		Provides 32% increased jump speed and increased fall speed
 		Provides a gravitational boost jump, which recharges whenever gravity is flipped
 		Slightly improves wingless air movement speed
-		Press UP to change gravity
-		Press DOWN to fall faster
+		Press {$Key.UP} to change gravity
+		Press {$Key.DOWN} to fall faster
 		'''
 }
 

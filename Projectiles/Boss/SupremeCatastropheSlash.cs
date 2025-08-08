@@ -26,8 +26,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
-
             // These never naturally use rotations, so this shouldn't be an issue.
             Projectile.width = 100;
             Projectile.height = 60;
@@ -46,10 +44,9 @@ namespace CalamityMod.Projectiles.Boss
             Time++;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Decide frames.
             Projectile.frameCounter++;

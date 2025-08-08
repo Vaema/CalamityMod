@@ -23,7 +23,11 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual) => player.Calamity().CryoStone = true;
+        public override void UpdateAccessory(Player player, bool hideVisual)
+        {
+            player.Calamity().CryoStone = true;
+            player.Calamity().ColdDebuffMultiplier += 0.5f;
+        }
 
         public override void UpdateVanity(Player player) => player.Calamity().CryoStoneVanity = true;
     }

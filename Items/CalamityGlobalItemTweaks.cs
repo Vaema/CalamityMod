@@ -83,6 +83,7 @@ namespace CalamityMod.Items
                 { ItemID.CobaltRepeater, Do(PointBlank, UseExact(18)) },
                 { ItemID.CobaltSword, Do(UseTurn, DamageExact(60), UseExact(9)) },
                 { ItemID.Code2, Do(AutoReuse, DamageExact(43)) },
+                { ItemID.CoinGun, Do(UseExact(12)) },
                 { ItemID.CorruptYoyo, Do(AutoReuse, DamageExact(20)) }, // Malaise
                 { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
                 { ItemID.CrystalBullet, Do(DamageExact(6)) },
@@ -100,7 +101,8 @@ namespace CalamityMod.Items
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
                 { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
-                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(82), ShootSpeedExact(15f)) },
+                { ItemID.DeadlySphereStaff, Do(AutoReuse, UseExact(20), DamageExact(50)) },
+                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(PointBlank, DamageExact(12), AutoReuse) },
                 { ItemID.DemonScythe, Do(AutoReuse, DamageExact(28)) },
                 { ItemID.DyeTradersScimitar, Do(AutoReuse, UseTurn, DamageExact(24)) }, // Exotic Scimitar
@@ -111,7 +113,7 @@ namespace CalamityMod.Items
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
-                { ItemID.Excalibur, Do(TrueMelee, DamageExact(220), UseExact(24)) },
+                { ItemID.Excalibur, Do(TrueMelee, DamageExact(205), UseExact(24)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) },
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
@@ -124,14 +126,13 @@ namespace CalamityMod.Items
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
                 { ItemID.FrostStaff, Do(DamageExact(160), UseExact(37), ShootSpeedExact(20f)) }, // has 1 extra update
                 { ItemID.Gatligator, Do(PointBlank, UseExact(6)) },
-                { ItemID.GoldCoin, Do(DamageExact(75)) }, // For Coin Gun
                 { ItemID.GoldShortsword, Do(AutoReuse, TrueMelee, DamageExact(17)) },
                 { ItemID.GolemFist, Do(DamageExact(150)) },
                 { ItemID.Gradient, Do(AutoReuse, DamageExact(39)) },
                 { ItemID.GreenPhaseblade, phaseblade },
                 { ItemID.GreenPhasesaber, phasesaber },
-                { ItemID.GrenadeLauncher, Do(DamageExact(112)) },
-                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, DamageExact(144), ShootSpeedExact(7f)) },
+                { ItemID.GrenadeLauncher, Do(DamageExact(105)) },
+                { ItemID.Gungnir, Do(AutoReuse, TrueMelee, DamageExact(132), ShootSpeedExact(7f)) },
                 { ItemID.HallowedRepeater, Do(PointBlank, UseExact(12)) },
                 { ItemID.Handgun, Do(PointBlank, UseExact(20)) },
                 { ItemID.HellwingBow, Do(PointBlank, DamageExact(16)) },
@@ -145,22 +146,22 @@ namespace CalamityMod.Items
                 { ItemID.IchorArrow, Do(DamageExact(13)) },
                 { ItemID.IchorBullet, Do(DamageExact(11)) },
                 { ItemID.ImpStaff, Do(AutoReuse, UseExact(30), DamageExact(25)) },
-                { ItemID.InfernoFork, Do(DamageExact(99), ShootSpeedExact(11)) },
+                { ItemID.InfernoFork, Do(DamageExact(83), ShootSpeedExact(11)) },
                 { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(80), UseExact(25)) },
                 { ItemID.IronShortsword, Do(AutoReuse, TrueMelee, DamageExact(10)) },
                 { ItemID.Keybrand, Do(UseTurn) },
-                { ItemID.Kraken, Do(AutoReuse, DamageExact(85)) },
+                { ItemID.Kraken, Do(AutoReuse, DamageExact(65)) },
                 { ItemID.KOCannon, Do(DamageRatio(2.65f)) }, // Uses ratios due to remix seed
                 { ItemID.LaserMachinegun, Do(DamageExact(49)) },
                 { ItemID.LaserRifle, Do(DamageExact(46), UseExact(10), ManaExact(4)) },
                 { ItemID.LastPrism, Do(DamageExact(57), ManaExact(10)) },
                 { ItemID.LeadShortsword, Do(AutoReuse, TrueMelee, DamageExact(11)) },
-                { ItemID.LightDisc, Do(DamageExact(98), ShootSpeedExact(18)) },
+                { ItemID.LeafBlower, Do(DamageExact(61)) },
+                { ItemID.LightDisc, Do(DamageExact(80), ShootSpeedExact(18)) },
                 { ItemID.LunarFlareBook, Do(DamageExact(120)) },
                 { ItemID.MagicalHarp, Do(DamageExact(50), ShootSpeedExact(12f)) },
                 { ItemID.MagicDagger, Do(DamageRatio(1.8f), UseRatio(1.88f), ShootSpeedExact(30)) }, // Uses ratios due to remix seed
                 { ItemID.MagicMissile, Do(DamageExact(23), ManaExact(10), UseAnimationExact(20), UseTimeExact(10)) },
-                { ItemID.MagnetSphere, Do(DamageExact(52)) },
                 { ItemID.Marrow, Do(PointBlank, DamageExact(69)) },
                 { ItemID.MedusaHead, Do(ManaExact(6), DamageExact(48)) },
                 { ItemID.Meowmere, Do(UseMeleeSpeed, DamageExact(240)) },
@@ -180,7 +181,8 @@ namespace CalamityMod.Items
                 { ItemID.MythrilHalberd, Do(AutoReuse, TrueMelee, DamageExact(65), UseExact(8), ShootSpeedExact(15f)) },
                 { ItemID.MythrilRepeater, Do(PointBlank, UseExact(16)) },
                 { ItemID.MythrilSword, Do(UseTurn, DamageExact(70), UseExact(8)) },
-                { ItemID.NettleBurst, Do(ManaExact(10), DamageExact(70)) },
+                { ItemID.NailGun, Do(DamageExact(77)) },
+                { ItemID.NettleBurst, Do(ManaExact(10), DamageExact(65)) },
                 { ItemID.NightsEdge, Do(TrueMelee, DamageExact(45)) },
                 { ItemID.NorthPole, Do(AutoReuse, UseMeleeSpeed) },
                 { ItemID.OrangePhaseblade, phaseblade },
@@ -189,7 +191,7 @@ namespace CalamityMod.Items
                 { ItemID.OrichalcumRepeater, Do(PointBlank, DamageExact(48)) },
                 { ItemID.OrichalcumSword, Do(UseTurn, DamageExact(175)) },
                 { ItemID.PainterPaintballGun, Do(PointBlank, DamageExact(8)) },
-                { ItemID.PaladinsHammer, Do(DamageExact(100), ShootSpeedExact(23)) },
+                { ItemID.PaladinsHammer, Do(DamageExact(95), ShootSpeedExact(28)) },
                 { ItemID.PalladiumPike, Do(AutoReuse, TrueMelee, DamageExact(120), ShootSpeedExact(5.4f)) },
                 { ItemID.PalladiumRepeater, Do(PointBlank, DamageExact(45)) },
                 { ItemID.PalladiumSword, Do(UseTurn, DamageExact(150)) },
@@ -198,18 +200,16 @@ namespace CalamityMod.Items
                 { ItemID.PewMaticHorn, Do(DamageExact(25), ShootSpeedExact(15)) },
                 { ItemID.Phantasm, Do(PointBlank, DamageExact(48)) },
                 { ItemID.PhoenixBlaster, Do(AutoReuse, PointBlank, UseExact(20)) },
-                { ItemID.PiranhaGun, Do(DamageExact(48)) },
                 { ItemID.PlatinumBow, Do(PointBlank, DamageExact(12)) },
-                { ItemID.PlatinumCoin, Do(DamageExact(150)) }, // For Coin Gun
                 { ItemID.PlatinumShortsword, Do(AutoReuse, TrueMelee, DamageExact(18)) },
                 { ItemID.PoisonStaff, Do(DamageExact(57)) },
                 { ItemID.PossessedHatchet, Do(DamageExact(135)) },
-                { ItemID.PrincessWeapon, Do(DamageExact(90)) }, // Resonance Scepter
+                { ItemID.PrincessWeapon, Do(DamageExact(80)) }, // Resonance Scepter
                 { ItemID.PsychoKnife, Do(UseTurn, UseExact(11), DamageExact(200)) },
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
                 { ItemID.PurplePhaseblade, phaseblade },
                 { ItemID.PurplePhasesaber, phasesaber },
-                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(70)) },
+                { ItemID.PygmyStaff, Do(AutoReuse, UseExact(20), DamageExact(63)) },
                 { ItemID.QuadBarrelShotgun, Do(PointBlank, DamageExact(11)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
                 { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13), KnockbackExact(8f)) },
@@ -221,10 +221,11 @@ namespace CalamityMod.Items
                 { ItemID.RedPhasesaber, phasesaber },
                 { ItemID.RedRyder, Do(PointBlank, DamageExact(24)) },
                 { ItemID.RedsYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
-                { ItemID.RocketLauncher, Do(DamageExact(70)) },
+                { ItemID.RocketLauncher, Do(DamageExact(60), ShootSpeedExact(9)) },
                 { ItemID.Sandgun, Do(PointBlank, DamageExact(22), UseExact(20)) },
                 { ItemID.SapphireStaff, Do(DamageExact(25)) },
-                { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(75), ShootSpeedDelta(+4f)) },
+                { ItemID.ScourgeoftheCorruptor, Do(DamageExact(63)) },
+                { ItemID.Seedler, Do(UseMeleeSpeed, DamageExact(45), ShootSpeedExact(16)) },
                 { ItemID.ShadowbeamStaff, Do(DamageExact(100)) },
                 { ItemID.ShadowFlameBow, Do(PointBlank, DamageExact(55)) },
                 { ItemID.ShadowFlameHexDoll, Do(DamageExact(40), ShootSpeedExact(30)) },
@@ -237,12 +238,12 @@ namespace CalamityMod.Items
                 { ItemID.SkyFracture, Do(DamageExact(54), ShootSpeedExact(30f)) },
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
                 { ItemID.Smolstar, Do(DamageExact(9), AutoReuse, UseExact(25)) }, // Blade Staff
-                { ItemID.SniperRifle, Do(PointBlank, DamageExact(215)) },
+                { ItemID.SniperRifle, Do(PointBlank, DamageExact(200), UseExact(40)) },
                 { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
                 { ItemID.SpaceGun, Do(DamageExact(23)) },
                 { ItemID.Spear, Do(AutoReuse, TrueMelee, DamageExact(14)) },
-                { ItemID.SpectreStaff, Do(DamageExact(78)) },
+                { ItemID.SpectreStaff, Do(DamageExact(72)) },
                 { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
                 { ItemID.StaffofEarth, Do(DamageExact(150)) },
                 { ItemID.StarCannon, Do(DamageExact(25), UseExact(15)) },
@@ -250,16 +251,17 @@ namespace CalamityMod.Items
                 { ItemID.StormTigerStaff, Do(AutoReuse, DamageExact(49), UseExact(20)) }, // Desert Tiger Staff
                 { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, DamageExact(21)) }, // Stylish Scissors
                 { ItemID.Stynger, Do(DamageExact(75)) },
+                { ItemID.SuperStarCannon, Do(DamageExact(55)) },
                 { ItemID.Swordfish, Do(AutoReuse, TrueMelee, DamageExact(24)) },
-                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(41)) },
+                { ItemID.TacticalShotgun, Do(PointBlank, DamageExact(34)) },
                 { ItemID.TaxCollectorsStickOfDoom, Do(AutoReuse, UseTurn, UseRatio(0.8f), DamageExact(70)) }, // Classy Cane
                 { ItemID.TendonBow, Do(PointBlank, DamageExact(17), AutoReuse) },
-                { ItemID.TerraBlade, Do(DamageExact(92)) },
+                { ItemID.TerraBlade, Do(DamageExact(95)) },
                 { ItemID.Terragrim, Do(TrueMeleeNoSpeed, DamageExact(13)) },
                 // Vanilla damage 190. After fixing iframes so yoyo and shots can hit simultaneously,
                 // Terrarian is extremely overpowered and requires a heavy nerf.
                 { ItemID.Terrarian, Do(AutoReuse, DamageExact(90)) },
-                { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(90)) },
+                { ItemID.TheEyeOfCthulhu, Do(AutoReuse, DamageExact(80)) },
                 { ItemID.TheMeatball, Do(DamageExact(24)) },
                 { ItemID.TheRottedFork, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.TheUndertaker, Do(PointBlank, AutoReuse, DamageExact(15)) },
@@ -269,6 +271,7 @@ namespace CalamityMod.Items
                 { ItemID.TitaniumSword, Do(UseTurn, DamageExact(192)) },
                 { ItemID.TitaniumTrident, Do(AutoReuse, TrueMelee, DamageExact(144), ShootSpeedExact(6.5f)) },
                 { ItemID.TopazStaff, Do(ManaExact(2)) },
+                { ItemID.ToxicFlask, Do(DamageExact(62), UseExact(33), ManaExact(20)) },
                 { ItemID.Toxikarp, Do(UseExact(9)) },
                 { ItemID.Trident, Do(AutoReuse, TrueMelee, DamageExact(20)) },
                 { ItemID.Trimarang, Do(DamageExact(24)) },
@@ -282,9 +285,8 @@ namespace CalamityMod.Items
                 { ItemID.Uzi, Do(PointBlank, UseExact(8)) },
                 { ItemID.VampireKnives, Do(DamageExact(38)) },
                 { ItemID.ValkyrieYoyo, Do(AutoReuse, DamageExact(48)) }, // Red's Throw and Valkyrie Yoyo have the same stats
-                { ItemID.VenomStaff, Do(DamageExact(55)) },
-                { ItemID.VenusMagnum, Do(PointBlank, DamageExact(65)) },
-                { ItemID.WaspGun, Do(UseExact(11), DamageExact(58)) },
+                { ItemID.VenomStaff, Do(UseExact(27)) },
+                { ItemID.WaspGun, Do(DamageExact(44)) },
                 { ItemID.WaterBolt, Do(DamageExact(23)) },
                 { ItemID.WhitePhaseblade, phaseblade },
                 { ItemID.WhitePhasesaber, phasesaber },
@@ -297,35 +299,13 @@ namespace CalamityMod.Items
                 #endregion
 
                 #region CATEGORY 2: Defense Balancing
-                { ItemID.AncientHallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.AncientHallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.AnkhShield, Do(DefenseDelta(+4)) }, // 8 total
-                { ItemID.CobaltShield, Do(DefenseDelta(+3)) }, // 4 total
-                { ItemID.EoCShield, Do(DefenseDelta(+1)) }, // Shield of Cthulhu
-                { ItemID.FrozenShield, Do(DefenseDelta(+4)) }, // 10 total (plus the Frozen Turtle Shell DR effect)
-                { ItemID.FrozenTurtleShell, Do(DefenseExact(6)) },
-                { ItemID.HallowedGreaves, Do(DefenseDelta(+2)) },
-                { ItemID.HallowedPlateMail, Do(DefenseDelta(+3)) },
-                { ItemID.HeroShield, Do(DefenseDelta(+5)) }, // 15 total (plus increased max life)
-                { ItemID.LavaSkull, Do(DefenseExact(4)) }, // Magma Skull
-                { ItemID.MoltenCharm, Do(DefenseExact(4)) }, //Magma Charm
-                { ItemID.MoltenSkullRose, Do(DefenseExact(8)) },
-                { ItemID.ObsidianShield, Do(DefenseDelta(+4)) }, // 6 total
-                { ItemID.ObsidianSkull, Do(DefenseDelta(+1)) }, // 2 total
-                { ItemID.ObsidianSkullRose, Do(DefenseExact(4)) },
-                { ItemID.OrichalcumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.OrichalcumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.OrichalcumLeggings, Do(DefenseDelta(+4)) },
-                { ItemID.OrichalcumMask, Do(DefenseDelta(+3)) },
-                { ItemID.PaladinsShield, Do(DefenseDelta(+2)) }, // 8 total
-                { ItemID.PalladiumBreastplate, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumHeadgear, Do(DefenseDelta(+2)) },
-                { ItemID.PalladiumHelmet, Do(DefenseDelta(+3)) },
-                { ItemID.PalladiumMask, Do(DefenseDelta(+1)) },
-                { ItemID.PalladiumLeggings, Do(DefenseDelta(+3)) },
-                { ItemID.Shackle, Do(DefenseDelta(+2)) }, // 3 total
-                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) },
+                { ItemID.LavaSkull, Do(DefenseExact(3)) }, // Magma Skull
+                { ItemID.MoltenCharm, Do(DefenseExact(3)) }, //Magma Charm
+                { ItemID.MoltenSkullRose, Do(DefenseExact(4)) },
+                { ItemID.ObsidianSkull, Do(DefenseExact(2)) },
+                { ItemID.ObsidianSkullRose, Do(DefenseExact(3)) },
+                { ItemID.Shackle, Do(DefenseExact(3)) },
+                { ItemID.SquireAltHead, Do(DefenseDelta(-2)) }, // Valhalla Knight set
                 { ItemID.SquireAltPants, Do(DefenseDelta(-3)) },
                 { ItemID.SquireAltShirt, Do(DefenseDelta(-3)) },
                 { ItemID.SquireGreatHelm, Do(DefenseDelta(-1)) },
@@ -477,6 +457,7 @@ namespace CalamityMod.Items
                 { ItemID.StakeLauncher, pointBlank },
                 { ItemID.TinBow, pointBlank },
                 { ItemID.TungstenBow, pointBlank },
+                { ItemID.VenusMagnum, pointBlank },
                 { ItemID.VortexBeater, pointBlank },
                 { ItemID.WoodenBow, pointBlank },
                 #endregion
@@ -499,7 +480,6 @@ namespace CalamityMod.Items
                 { ItemID.DD2LightningAuraT1Popper, autoReuse }, // Lightning Aura Tier 1
                 { ItemID.DD2LightningAuraT2Popper, Do(AutoReuse, UseExact(25)) }, // Lightning Aura Tier 2
                 { ItemID.DD2LightningAuraT3Popper, Do(AutoReuse, UseExact(20)) }, // Lightning Aura Tier 3
-                { ItemID.DeadlySphereStaff, Do(AutoReuse, UseExact(20)) },
                 { ItemID.FireWhip, autoReuse }, // Firecracker
                 { ItemID.FlinxStaff, Do(AutoReuse, UseExact(35)) },
                 { ItemID.MaceWhip, autoReuse }, // Morning Star
@@ -1379,15 +1359,14 @@ namespace CalamityMod.Items
             var shimmerTransmute = ItemID.Sets.ShimmerTransformToItem;
 
             // Note: Making Luminite Ore -> Astral Ore makes Deus almost completely skippable with no (recipe-related) downsides.
-
+            // Adding Cryonic Ore to the shimmer chain has the same issue.
             shimmerTransmute[ModContent.ItemType<AuricOre>()] = ModContent.ItemType<UelibloomOre>();
             shimmerTransmute[ModContent.ItemType<UelibloomOre>()] = ModContent.ItemType<ExodiumCluster>();
             shimmerTransmute[ModContent.ItemType<ExodiumCluster>()] = ItemID.LunarOre;
             shimmerTransmute[ModContent.ItemType<AstralOre>()] = ModContent.ItemType<ScoriaOre>();
             shimmerTransmute[ModContent.ItemType<ScoriaOre>()] = ModContent.ItemType<PerennialOre>();
             shimmerTransmute[ModContent.ItemType<PerennialOre>()] = shimmerTransmute[ItemID.LunarOre];
-            shimmerTransmute[ModContent.ItemType<HallowedOre>()] = ModContent.ItemType<CryonicOre>();
-            shimmerTransmute[ModContent.ItemType<CryonicOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
+            shimmerTransmute[ModContent.ItemType<HallowedOre>()] = shimmerTransmute[ItemID.ChlorophyteOre];
             shimmerTransmute[ModContent.ItemType<AerialiteOre>()] = shimmerTransmute[ItemID.CobaltOre];
 
             //shimmerTransmute[ItemID.LunarOre] = ModContent.ItemType<AstralOre>();

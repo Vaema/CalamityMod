@@ -99,11 +99,19 @@ namespace CalamityMod.NPCs.Yharon
             }
         }
 
+        public static int FlareDamage = 72; // 288; FlareBomb, FlareDust, FlareDust2
+        public static int FireballDamage = 72; // 288
+        public static int TornadoDamage = 90; // 360; Flarenado, Infernado, Infernado2
+        public static int BordernadoDamage = 125; // 500; SkyFlareRevenge
+
+        // GFB exclusive
+        public static int VortexDamage = 90; // 360
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 220; // 440
             NPC.npcSlots = 50f;
-            NPC.GetNPCDamage();
             NPC.width = 200;
             NPC.height = 200;
             NPC.defense = 90;
@@ -111,7 +119,7 @@ namespace CalamityMod.NPCs.Yharon
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(2, 50, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 2, gold: 50);
             NPC.boss = true;
             NPC.DR_NERD(normalDR);
 
@@ -123,9 +131,6 @@ namespace CalamityMod.NPCs.Yharon
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -201,12 +206,9 @@ namespace CalamityMod.NPCs.Yharon
                 CalamityWorld.StopRain();
 
             // Variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
-
-            float pie = (float)Math.PI;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             CalamityGlobalNPC.yharon = NPC.whoAmI;
             CalamityGlobalNPC.yharonP2 = -1;
@@ -216,7 +218,7 @@ namespace CalamityMod.NPCs.Yharon
             // Start phase 2 or not
             if (startSecondAI)
             {
-                Yharon_AI2(expertMode, revenge, death, bossRush, pie, lifeRatio, calamityGlobalNPC, setDamage);
+                Yharon_AI2(expertMode, revenge, death, lifeRatio, calamityGlobalNPC, setDamage);
                 return;
             }
 
@@ -255,7 +257,7 @@ namespace CalamityMod.NPCs.Yharon
             float reduceSpeedChargeDistance = 540f;
             int chargeTime = expertMode ? 40 : 45;
             float chargeSpeed = expertMode ? 28f : 26f;
-            float fastChargeVelocityMultiplier = bossRush ? 2f : 1.5f;
+            float fastChargeVelocityMultiplier = 1.5f;
             bool playFastChargeRoarSound = NPC.localAI[1] == fastChargeTelegraphTime * 0.5f;
             bool doFastCharge = NPC.localAI[1] > fastChargeTelegraphTime;
 
@@ -274,8 +276,8 @@ namespace CalamityMod.NPCs.Yharon
 
             if (revenge)
             {
-                int chargeTimeDecrease = bossRush ? 6 : death ? 4 : 2;
-                float velocityMult = bossRush ? 1.15f : death ? 1.1f : 1.05f;
+                int chargeTimeDecrease = death ? 4 : 2;
+                float velocityMult = death ? 1.1f : 1.05f;
                 phaseSwitchTimer -= chargeTimeDecrease;
                 acceleration *= velocityMult;
                 velocity *= velocityMult;
@@ -284,17 +286,17 @@ namespace CalamityMod.NPCs.Yharon
             }
 
             float reduceSpeedFlareBombDistance = 570f;
-            int flareBombPhaseTimer = bossRush ? 30 : death ? 40 : 60;
+            int flareBombPhaseTimer = death ? 40 : 60;
             int flareBombSpawnDivisor = flareBombPhaseTimer / 20;
-            float flareBombPhaseAcceleration = bossRush ? 1f : death ? 0.92f : 0.8f;
-            float flareBombPhaseVelocity = bossRush ? 16f : death ? 14f : 12f;
+            float flareBombPhaseAcceleration = death ? 0.92f : 0.8f;
+            float flareBombPhaseVelocity = death ? 14f : 12f;
 
             int fireTornadoPhaseTimer = 90;
 
             int newPhaseTimer = 180;
 
-            int flareDustPhaseTimer = bossRush ? 160 : death ? 200 : 240;
-            int flareDustPhaseTimer2 = bossRush ? 80 : death ? 100 : 120;
+            int flareDustPhaseTimer = death ? 200 : 240;
+            int flareDustPhaseTimer2 = death ? 100 : 120;
 
             float spinTime = flareDustPhaseTimer / 2;
 
@@ -369,12 +371,12 @@ namespace CalamityMod.NPCs.Yharon
                 enraged = false;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f));
+                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f));
                     safeBox.Y = (int)Main.topWorld;
-                    safeBox.Width = Main.zenithWorld ? 3000 : CalamityWorld.LegendaryMode ? 2000 : bossRush ? 4000 : revenge ? 6000 : 7000;
+                    safeBox.Width = Main.zenithWorld ? 3000 : CalamityWorld.LegendaryMode ? 2000 : revenge ? 6000 : 7000;
                     safeBox.Height = Main.maxTilesY * 16;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : bossRush ? 2000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
                 }
 
                 // Force Yharon to send a sync packet so that the arena gets sent immediately
@@ -410,17 +412,17 @@ namespace CalamityMod.NPCs.Yharon
             {
                 if (phase3Change)
                 {
-                    calamityGlobalNPC.DR = phase4Check ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                    calamityGlobalNPC.DR = phase4Check ? 0.7f : normalDR;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4Check;
                 }
                 else if (phase2Change)
                 {
-                    calamityGlobalNPC.DR = phase3Check ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                    calamityGlobalNPC.DR = phase3Check ? 0.7f : normalDR;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3Check;
                 }
                 else if (phase1Change)
                 {
-                    calamityGlobalNPC.DR = phase2Check ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                    calamityGlobalNPC.DR = phase2Check ? 0.7f : normalDR;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2Check;
                 }
             }
@@ -443,7 +445,7 @@ namespace CalamityMod.NPCs.Yharon
             // Rotation
             float npcRotation = (float)Math.Atan2(player.Center.Y - NPC.Center.Y, player.Center.X - NPC.Center.X);
             if (NPC.spriteDirection == 1)
-                npcRotation += pie;
+                npcRotation += MathHelper.Pi;
             if (npcRotation < 0f)
                 npcRotation += MathHelper.TwoPi;
             if (npcRotation > MathHelper.TwoPi)
@@ -551,7 +553,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -560,12 +562,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (phaseSwitchFaceDirection != 0)
                 {
                     if (NPC.ai[2] == 0f && phaseSwitchFaceDirection != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = phaseSwitchFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -612,7 +614,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = phaseSwitchFaceDirection;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -659,7 +661,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = phaseSwitchFaceDirection;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -676,7 +678,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -716,8 +718,7 @@ namespace CalamityMod.NPCs.Yharon
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<FlareBomb>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.target, 1f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, FlareDamage, 0f, Main.myPlayer, NPC.target, 1f);
                     }
                 }
 
@@ -727,7 +728,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.direction = playerFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -803,7 +804,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -832,7 +833,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -841,12 +842,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (playerFaceDirectionFurtherPhases != 0)
                 {
                     if (NPC.ai[2] == 0f && playerFaceDirectionFurtherPhases != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = playerFaceDirectionFurtherPhases;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -896,7 +897,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -923,7 +924,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = flareDustPhaseTimer + teleportPhaseTimer - 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -989,7 +990,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = playerFaceDirectionFurtherPhases;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -1007,7 +1008,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1026,7 +1027,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1060,7 +1061,7 @@ namespace CalamityMod.NPCs.Yharon
                     {
                         int ringReduction = (int)MathHelper.Lerp(0f, 14f, NPC.ai[2] / flareDustPhaseTimer);
                         int totalProjectiles = 38 - ringReduction; // 36 for first ring, 22 for last ring
-                        DoFlareDustBulletHell(0, flareDustSpawnDivisor, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, 0f, 0f, false);
+                        DoFlareDustBulletHell(0, flareDustSpawnDivisor, FlareDamage, totalProjectiles, 0f, 0f, false);
                     }
                 }
 
@@ -1131,7 +1132,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1163,10 +1164,9 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float finalVelocity = 12f;
                         float projectileAcceleration = 1.1f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, damage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
                     }
                 }
 
@@ -1199,7 +1199,7 @@ namespace CalamityMod.NPCs.Yharon
                 Vector2 distanceFromDestination = destination - NPC.Center;
                 Vector2 desiredVelocity = Vector2.Normalize(distanceFromDestination - NPC.velocity) * velocity;
 
-                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                     NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                 else
                     NPC.velocity *= 0.98f;
@@ -1208,12 +1208,12 @@ namespace CalamityMod.NPCs.Yharon
                 if (playerFaceDirectionFurtherPhases != 0)
                 {
                     if (NPC.ai[2] == 0f && playerFaceDirectionFurtherPhases != NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.direction = playerFaceDirectionFurtherPhases;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -1266,7 +1266,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1293,7 +1293,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = flareDustPhaseTimer + teleportPhaseTimer - 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -1359,7 +1359,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.direction = playerFaceDirectionFurtherPhases;
 
                                 if (NPC.spriteDirection == 1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.spriteDirection = -NPC.direction;
                             }
@@ -1377,7 +1377,7 @@ namespace CalamityMod.NPCs.Yharon
                             NPC.direction = playerFaceDirectionFurtherPhases;
 
                             if (NPC.spriteDirection == 1)
-                                NPC.rotation += pie;
+                                NPC.rotation += MathHelper.Pi;
 
                             NPC.spriteDirection = -NPC.direction;
                         }
@@ -1403,7 +1403,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1436,7 +1436,7 @@ namespace CalamityMod.NPCs.Yharon
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        DoFlareDustBulletHell(1, flareDustPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), 8, 13f, 3.6f, false);
+                        DoFlareDustBulletHell(1, flareDustPhaseTimer, FlareDamage, 8, 13f, 3.6f, false);
                     }
                 }
 
@@ -1510,7 +1510,7 @@ namespace CalamityMod.NPCs.Yharon
                 // Set damage
                 NPC.damage = setDamage;
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[2] += 1f;
                 if (NPC.ai[2] >= chargeTime)
@@ -1542,10 +1542,9 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float finalVelocity = 15f;
                         float projectileAcceleration = 1.11f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, damage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer, finalVelocity, projectileAcceleration);
                     }
                 }
 
@@ -1589,8 +1588,7 @@ namespace CalamityMod.NPCs.Yharon
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<FlareBomb>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, damage, 0f, Main.myPlayer, NPC.target, 1f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fromMouth, Vector2.Zero, type, FlareDamage, 0f, Main.myPlayer, NPC.target, 1f);
                     }
                 }
 
@@ -1600,7 +1598,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.direction = playerFaceDirection;
 
                     if (NPC.spriteDirection != -NPC.direction)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.spriteDirection = -NPC.direction;
                 }
@@ -1619,7 +1617,7 @@ namespace CalamityMod.NPCs.Yharon
         }
 
         #region AI2
-        public void Yharon_AI2(bool expertMode, bool revenge, bool death, bool bossRush, float pie, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
+        public void Yharon_AI2(bool expertMode, bool revenge, bool death, float lifeRatio, CalamityGlobalNPC calamityGlobalNPC, int contactDamage)
         {
             CalamityGlobalNPC.yharonP2 = NPC.whoAmI;
 
@@ -1730,21 +1728,21 @@ namespace CalamityMod.NPCs.Yharon
                 {
                     case 1:
 
-                        calamityGlobalNPC.DR = phase2 ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                        calamityGlobalNPC.DR = phase2 ? 0.7f : normalDR;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2;
 
                         break;
 
                     case 2:
 
-                        calamityGlobalNPC.DR = phase3 ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                        calamityGlobalNPC.DR = phase3 ? 0.7f : normalDR;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3;
 
                         break;
 
                     case 3:
 
-                        calamityGlobalNPC.DR = phase4 ? (bossRush ? 0.99f : 0.7f) : normalDR;
+                        calamityGlobalNPC.DR = phase4 ? 0.7f : normalDR;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4;
 
                         break;
@@ -1752,20 +1750,20 @@ namespace CalamityMod.NPCs.Yharon
 
                 if (NPC.ai[0] == 9f)
                 {
-                    calamityGlobalNPC.DR = bossRush ? 0.99f : 0.7f;
+                    calamityGlobalNPC.DR = 0.7f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = true;
                 }
             }
 
             float reduceSpeedChargeDistance = 500f;
             float reduceSpeedFireballSpitChargeDistance = 800f;
-            float phaseSwitchTimer = bossRush ? 28f : expertMode ? 30f : 32f;
+            float phaseSwitchTimer = expertMode ? 30f : 32f;
             float acceleration = expertMode ? 0.92f : 0.9f;
             float velocity = expertMode ? 14.5f : 14f;
             float chargeTime = expertMode ? 32f : 35f;
             float chargeSpeed = expertMode ? 32f : 30f;
 
-            float fastChargeVelocityMultiplier = bossRush ? 2f : 1.5f;
+            float fastChargeVelocityMultiplier = 1.5f;
             fastChargeTelegraphTime = protectionBoost ? 60 : (100 - secondPhasePhase * 10);
             bool playFastChargeRoarSound = NPC.localAI[1] == fastChargeTelegraphTime * 0.5f;
             bool doFastChargeTelegraph = NPC.localAI[1] <= fastChargeTelegraphTime;
@@ -1782,7 +1780,7 @@ namespace CalamityMod.NPCs.Yharon
             float splittingFireballBreathYVelocityTimer = 40f;
             float splittingFireballBreathPhaseTimer = splittingFireballBreathTimer + splittingFireballBreathTimer2 + splittingFireballBreathYVelocityTimer;
 
-            int spinPhaseTimer = secondPhasePhase == 4 ? (bossRush ? 80 : death ? 100 : 120) : (bossRush ? 120 : death ? 150 : 180);
+            int spinPhaseTimer = secondPhasePhase == 4 ? (death ? 100 : 120) : (death ? 150 : 180);
             int flareDustSpawnDivisor = spinPhaseTimer / 10;
             int flareDustSpawnDivisor2 = spinPhaseTimer / 15 + (secondPhasePhase == 4 ? spinPhaseTimer / 60 : 0);
 
@@ -1797,16 +1795,16 @@ namespace CalamityMod.NPCs.Yharon
                 chargeSpeed *= reducedMovementMultiplier;
             }
 
-            float flareSpawnDecelerationTimer = bossRush ? 60f : death ? 75f : 90f;
+            float flareSpawnDecelerationTimer = death ? 75f : 90f;
             int flareSpawnPhaseTimerReduction = revenge ? (int)(flareSpawnDecelerationTimer * (ai2GateValue - lifeRatio)) : 0;
-            float flareSpawnPhaseTimer = (bossRush ? 120f : death ? 150f : 180f) - flareSpawnPhaseTimerReduction;
+            float flareSpawnPhaseTimer = (death ? 150f : 180f) - flareSpawnPhaseTimerReduction;
 
             float teleportPhaseTimer = 45f;
 
             if (revenge)
             {
-                float chargeTimeDecrease = bossRush ? 6f : death ? 4f : 2f;
-                float velocityMult = bossRush ? 1.15f : death ? 1.1f : 1.05f;
+                float chargeTimeDecrease = death ? 4f : 2f;
+                float velocityMult = death ? 1.1f : 1.05f;
                 acceleration *= velocityMult;
                 velocity *= velocityMult;
                 chargeTime -= chargeTimeDecrease;
@@ -1843,7 +1841,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 if (!targetDead)
                 {
-                    if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance)
+                    if (Vector2.Distance(NPC.Center, destination) > reduceSpeedChargeDistance && NPC.localAI[1] <= fastChargeTelegraphTime * 0.5f)
                         NPC.SimpleFlyMovement(desiredVelocity, acceleration);
                     else
                         NPC.velocity *= 0.98f;
@@ -2002,7 +2000,7 @@ namespace CalamityMod.NPCs.Yharon
                         float amount = 0.04f;
 
                         if (NPC.spriteDirection == -1)
-                            newRotation += pie;
+                            newRotation += MathHelper.Pi;
 
                         if (amount != 0f)
                             NPC.rotation = NPC.rotation.AngleTowards(newRotation, amount);
@@ -2028,7 +2026,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.Center = center;
 
                                 int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                                int damage = Main.zenithWorld ? NPC.GetProjectileDamage(type) : 0;
+                                int damage = Main.zenithWorld ? VortexDamage : 0;
                                 float bulletHellVortexDuration = spinPhaseTimer + 15f;
                                 int extraTime = Main.zenithWorld ? 300 : 0;
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, bulletHellVortexDuration + extraTime, NPC.whoAmI);
@@ -2059,7 +2057,7 @@ namespace CalamityMod.NPCs.Yharon
                         float amount = 0.04f;
 
                         if (NPC.spriteDirection == -1)
-                            newRotation += pie;
+                            newRotation += MathHelper.Pi;
 
                         if (amount != 0f)
                             NPC.rotation = NPC.rotation.AngleTowards(newRotation, amount);
@@ -2136,7 +2134,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.rotation = vector.ToRotation();
 
                                 if (NPC.spriteDirection == -1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.velocity = vector * chargeSpeed;
 
@@ -2168,7 +2166,7 @@ namespace CalamityMod.NPCs.Yharon
                                 NPC.rotation = vector.ToRotation();
 
                                 if (NPC.spriteDirection == -1)
-                                    NPC.rotation += pie;
+                                    NPC.rotation += MathHelper.Pi;
 
                                 NPC.velocity = vector * chargeSpeed * fastChargeVelocityMultiplier;
 
@@ -2187,7 +2185,7 @@ namespace CalamityMod.NPCs.Yharon
                 if (NPC.ai[1] == 1f)
                     SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                ChargeDust(7, pie);
+                ChargeDust(7);
 
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] >= chargeTime)
@@ -2235,7 +2233,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.rotation = vector.ToRotation();
 
                     if (NPC.spriteDirection == -1)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.velocity = vector * fireballBreathPhaseVelocity;
 
@@ -2244,6 +2242,9 @@ namespace CalamityMod.NPCs.Yharon
 
                 if (NPC.ai[1] >= fireballBreathTimer)
                 {
+                    // Set damage once charge starts
+                    NPC.damage = setDamage;
+
                     if (NPC.ai[1] % (expertMode ? 6f : 8f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         float xOffset = 30f;
@@ -2251,8 +2252,7 @@ namespace CalamityMod.NPCs.Yharon
                         Vector2 projectileVelocity = NPC.velocity;
                         projectileVelocity.Normalize();
                         int type = ModContent.ProjectileType<FlareDust2>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer);
                     }
 
                     if (Math.Abs(targetData.Center.X - NPC.Center.X) > 700f && Math.Abs(NPC.velocity.X) < chargeSpeed)
@@ -2299,7 +2299,7 @@ namespace CalamityMod.NPCs.Yharon
                     NPC.rotation = yharonFireballMoveDirection.ToRotation();
 
                     if (NPC.spriteDirection == -1)
-                        NPC.rotation += pie;
+                        NPC.rotation += MathHelper.Pi;
 
                     NPC.velocity = yharonFireballMoveDirection * splittingFireballBreathPhaseVelocity;
                     SoundEngine.PlaySound(FireSound, NPC.Center);
@@ -2314,9 +2314,8 @@ namespace CalamityMod.NPCs.Yharon
                     int yharonFireballTimer = (int)(NPC.ai[1] - splittingFireballBreathTimer + 1f);
 
                     int type = ModContent.ProjectileType<YharonFireball>();
-                    int damage = NPC.GetProjectileDamage(type);
                     if (yharonFireballTimer <= splittingFireballBreathTimer2 && yharonFireballTimer % splittingFireballBreathDivisor == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, NPC.velocity, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), position, NPC.velocity, type, FireballDamage, 0f, Main.myPlayer, 0f, 0f);
                 }
 
                 if (NPC.ai[1] > splittingFireballBreathPhaseTimer - splittingFireballBreathYVelocityTimer)
@@ -2360,13 +2359,13 @@ namespace CalamityMod.NPCs.Yharon
                             float radialOffset = secondPhasePhase == 4 ? 2.8f : 3.2f;
                             if (NPC.localAI[3] == 0f)
                             {
-                                DoFlareDustBulletHell(1, spinPhaseTimer, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, projectileVelocity, radialOffset, true);
+                                DoFlareDustBulletHell(1, spinPhaseTimer, FlareDamage, totalProjectiles, projectileVelocity, radialOffset, true);
                             }
                             else
                             {
                                 int ringReduction = (int)MathHelper.Lerp(0f, 12f, NPC.ai[1] / spinPhaseTimer);
                                 int totalProjectiles2 = 38 - ringReduction; // 36 for first ring, 24 for last ring
-                                DoFlareDustBulletHell(0, flareDustSpawnDivisor2, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles2, 0f, 0f, true);
+                                DoFlareDustBulletHell(0, flareDustSpawnDivisor2, FlareDamage, totalProjectiles2, 0f, 0f, true);
                             }
                         }
                     }
@@ -2376,7 +2375,7 @@ namespace CalamityMod.NPCs.Yharon
                         {
                             int ringReduction = (int)MathHelper.Lerp(0f, 12f, NPC.ai[1] / spinPhaseTimer);
                             int totalProjectiles = 38 - ringReduction; // 36 for first ring, 24 for last ring
-                            DoFlareDustBulletHell(0, flareDustSpawnDivisor, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareDust>()), totalProjectiles, 0f, 0f, true);
+                            DoFlareDustBulletHell(0, flareDustSpawnDivisor, FlareDamage, totalProjectiles, 0f, 0f, true);
                         }
                     }
 
@@ -2441,7 +2440,7 @@ namespace CalamityMod.NPCs.Yharon
                         {
                             SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                            DoFireRing(expertMode ? 300 : 180, NPC.GetProjectileDamage(ModContent.ProjectileType<FlareBomb>()), NPC.target, 1f);
+                            DoFireRing(expertMode ? 300 : 180, FlareDamage, NPC.target, 1f);
                         }
                     }
 
@@ -2471,7 +2470,7 @@ namespace CalamityMod.NPCs.Yharon
                 if (NPC.ai[1] == 1f)
                     SoundEngine.PlaySound(ShortRoarSound, NPC.Center);
 
-                ChargeDust(14, pie);
+                ChargeDust(14);
 
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] >= chargeTime)
@@ -2536,7 +2535,7 @@ namespace CalamityMod.NPCs.Yharon
                 NPC.rotation = vector.ToRotation();
 
                 if (NPC.spriteDirection == -1)
-                    NPC.rotation += pie;
+                    NPC.rotation += MathHelper.Pi;
 
                 if (NPC.ai[2] == 120f)
                 {
@@ -2595,10 +2594,10 @@ namespace CalamityMod.NPCs.Yharon
 
                 case 4:
                     rotationSpeed = 0.01f;
-                    facingAngle = pie;
+                    facingAngle = MathHelper.Pi;
 
                     if (NPC.spriteDirection == 1)
-                        facingAngle += pie;
+                        facingAngle += MathHelper.Pi;
 
                     break;
                 case 6:
@@ -2606,13 +2605,13 @@ namespace CalamityMod.NPCs.Yharon
                     facingAngle = 0f;
 
                     if (NPC.spriteDirection == -1)
-                        facingAngle -= pie;
+                        facingAngle -= MathHelper.Pi;
 
                     break;
             }
 
             if (NPC.spriteDirection == -1)
-                facingAngle += pie;
+                facingAngle += MathHelper.Pi;
 
             if (rotationSpeed != 0f)
                 NPC.rotation = NPC.rotation.AngleTowards(facingAngle, rotationSpeed);
@@ -2620,13 +2619,13 @@ namespace CalamityMod.NPCs.Yharon
         #endregion
 
         #region Charge Dust
-        private void ChargeDust(int dustAmt, float pie)
+        private void ChargeDust(int dustAmt)
         {
             for (int i = 0; i < dustAmt; i++)
             {
                 Vector2 dustRotate = Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f;
-                dustRotate = dustRotate.RotatedBy((i - (dustAmt / 2 - 1)) * (double)pie / (float)dustAmt) + NPC.Center;
-                Vector2 dustVel = ((float)(Main.rand.NextDouble() * pie) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
+                dustRotate = dustRotate.RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.Pi / (float)dustAmt) + NPC.Center;
+                Vector2 dustVel = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                 int chargeDust = Dust.NewDust(dustRotate + dustVel, 0, 0, DustID.CopperCoin, dustVel.X * 2f, dustVel.Y * 2f, 100, default, 1.4f);
                 Main.dust[chargeDust].noGravity = true;
                 Main.dust[chargeDust].noLight = true;
@@ -3015,7 +3014,7 @@ namespace CalamityMod.NPCs.Yharon
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedYharon, ModContent.ItemType<LoreYharon>(), desc: DropHelper.FirstKillText);
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }
@@ -3050,18 +3049,9 @@ namespace CalamityMod.NPCs.Yharon
                 for (int i = 0; i < 4; i++)
                 {
                     int type = ModContent.ProjectileType<YharonBulletHellVortex>();
-                    int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 360, NPC.whoAmI);
+                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, VortexDamage, 0f, Main.myPlayer, 360, NPC.whoAmI);
                 }
             }
-        }
-        #endregion
-
-        #region On Hit Player
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
         #endregion
 
@@ -3081,7 +3071,6 @@ namespace CalamityMod.NPCs.Yharon
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
         #endregion
 
@@ -3110,7 +3099,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 bool doTelegraphFlightAnimation = NPC.localAI[1] < fastChargeTelegraphTime * 0.5f || NPC.localAI[1] > fastChargeTelegraphTime - (fastChargeTelegraphTime / 6f);
                 bool doTelegraphRoarAnimation = NPC.localAI[1] > fastChargeTelegraphTime - fastChargeTelegraphTime * 0.4f && NPC.localAI[1] < fastChargeTelegraphTime - fastChargeTelegraphTime * 0.2f;
-                bool phase4 = startSecondAI && lifeRatio <= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.165f : 0.11f) && (CalamityWorld.revenge || BossRushEvent.BossRushActive);
+                bool phase4 = startSecondAI && lifeRatio <= ((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.2f : 0.15f) && (CalamityWorld.revenge || BossRushEvent.BossRushActive);
                 if (doTelegraphFlightAnimation)
                 {
                     NPC.frameCounter += phase4 ? 2D : 1D;

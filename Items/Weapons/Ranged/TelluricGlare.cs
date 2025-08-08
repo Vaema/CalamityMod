@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(3, 5));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PurgeGuzzler>();
         }
         public override void SetDefaults()
         {

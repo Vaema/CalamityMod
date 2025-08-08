@@ -160,7 +160,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 collideWithTiles = false;
                 SoundStyle sound2 = new("CalamityMod/Sounds/Item/ImmolatorPreExplode");
                 SoundEngine.PlaySound(sound2 with { Volume = 0.3f, Pitch = 0.5f }, Projectile.Center);
-                SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                SoundEngine.PlaySound(HolofibreImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
                 SoundStyle sound = new("CalamityMod/Sounds/Item/ImmolatorPreExplode");
                 SoundEngine.PlaySound(sound with { Volume = 0.3f, Pitch = 0.5f }, Projectile.Center);
-                SoundEngine.PlaySound(HolofiberImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
+                SoundEngine.PlaySound(HolofibreImmolator.PlasmaSound with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.3f, -0.4f) }, Projectile.Center);
             }
         }
         public override void OnKill(int timeLeft)

@@ -6,6 +6,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class ManaBurn : ModBuff
     {
+        //as of now, this doesn't use the custom debuff system due to the debuff being a front for the actual effects in the Chaos Stone rework
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;

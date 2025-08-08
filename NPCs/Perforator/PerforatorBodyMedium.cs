@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 14; // 28
             NPC.npcSlots = 5f;
             NPC.width = 40;
             NPC.height = 40;
@@ -58,9 +58,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -72,16 +70,11 @@ namespace CalamityMod.NPCs.Perforator
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             NPC.realLife = -1;
 
@@ -114,8 +107,7 @@ namespace CalamityMod.NPCs.Perforator
                     {
                         spawnedBlob = true;
                         int type = ModContent.ProjectileType<IchorBlob>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     NPC.life = 0;
@@ -130,8 +122,7 @@ namespace CalamityMod.NPCs.Perforator
                     {
                         spawnedBlob = true;
                         int type = ModContent.ProjectileType<IchorBlob>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     NPC.type = ModContent.NPCType<PerforatorHeadMedium>();
@@ -151,8 +142,7 @@ namespace CalamityMod.NPCs.Perforator
                     if (death && !spawnedBlob)
                     {
                         int type = ModContent.ProjectileType<IchorBlob>();
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, damage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Main.rand.NextVector2CircularEdge(3f, 3f), type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer, 0f, NPC.Center.Y);
                     }
 
                     int whoAmI2 = NPC.whoAmI;
@@ -205,22 +195,6 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.velocity = Vector2.Zero;
                 NPC.position.X += targetX;
                 NPC.position.Y += targetY;
-            }
-
-            // Calculate contact damage based on velocity
-            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
-            float maxChaseSpeed = 16f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.4f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.8f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
 
             if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
@@ -286,15 +260,14 @@ namespace CalamityMod.NPCs.Perforator
             if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
             {
                 int type = ModContent.ProjectileType<IchorBlob>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.UnitY, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.UnitY, type, PerforatorHive.IchorBlobDamage, 0f, Main.myPlayer);
 
                 for (int i = -1; i < 2; i++) //releases 3 Ichor Shots
                 {
                     int type2 = ModContent.ProjectileType<IchorShot>();
                     Vector2 baseVelocity = Vector2.UnitY * Main.rand.NextFloat(-12.5f, -5f);
                     int spread = Main.rand.Next(16, 36);
-                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread * i)), type2, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, baseVelocity.RotatedBy(MathHelper.ToRadians(spread * i)), type2, PerforatorHive.IchorShotDamage, 0f, Main.myPlayer);
                 }
             }
         }
@@ -323,8 +296,7 @@ namespace CalamityMod.NPCs.Perforator
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 120);
-                target.AddBuff(BuffID.Ichor, 120);
+                target.AddBuff(BuffID.Ichor, 240);
             }
         }
     }

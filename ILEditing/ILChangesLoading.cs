@@ -65,7 +65,6 @@ namespace CalamityMod.ILEditing
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
-            On_NPC.ShouldEmpressBeEnraged += AllowEmpressToEnrageInBossRush;
             IL_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
@@ -75,8 +74,9 @@ namespace CalamityMod.ILEditing
             IL_Player.Hurt_PlayerDeathReason_int_int_refHurtInfo_bool_bool_int_bool_float_float_float += DodgeMechanicAdjustments;
             On_Player.PutHallowedArmorSetBonusOnCooldown += AddHolyProtectionCooldown;
             IL_Player.DashMovement += FixAllDashMechanics;
-            On_Player.DashMovement += VortexBoosterKeepsVortexStealthWhenDashing;
+            On_Player.DashMovement += DashMovementEdits;
             On_Player.DoCommonDashHandle += ApplyDashKeybind;
+            On_Player.KeyDoubleTap += DisableDoubleTapOnConfig;
             IL_Player.GiveImmuneTimeForCollisionAttack += MakeShieldSlamIFramesConsistent;
             IL_Player.Update_NPCCollision += NerfShieldOfCthulhuBonkSafety;
             On_WorldGen.OpenDoor += OpenDoor_LabDoorOverride;
@@ -174,7 +174,6 @@ namespace CalamityMod.ILEditing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
             // World generation
-            IL_WorldGen.Pyramid += ReplacePharaohSetInPyramids;
             IL_WorldGen.GrowLivingTree += BlockLivingTreesNearOcean;
             On_WorldGen.SmashAltar += PreventSmashAltarCode;
             IL_WorldGen.hardUpdateWorld += AdjustChlorophyteSpawnRate;
@@ -198,6 +197,8 @@ namespace CalamityMod.ILEditing
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
             On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
+            IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
+            On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;

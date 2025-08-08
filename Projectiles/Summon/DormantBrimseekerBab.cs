@@ -26,12 +26,10 @@ namespace CalamityMod.Projectiles.Summon
         }
         public override void SetStaticDefaults()
         {
-
             Main.projFrames[Type] = 8;
-
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 7;
             ProjectileID.Sets.TrailingMode[Type] = 2;
-
             ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
@@ -153,6 +151,9 @@ namespace CalamityMod.Projectiles.Summon
             }
             Lighting.AddLight(Projectile.Center, Color.Red.ToVector3());
         }
+
+        public override bool MinionContactDamage() => true;
+
         public override void PostDraw(Color lightColor)
         {
             if ((Projectile.ai[0] > 0f && Projectile.ai[0] <= MaxChargeTime && Projectile.velocity.Length() >= 8f) || SeekingTarget)

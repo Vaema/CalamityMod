@@ -106,7 +106,6 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             target.AddBuff(BuffID.Frostburn, 120, true);
-            target.AddBuff(BuffID.Chilled, 60, true);
         }
     }
 }

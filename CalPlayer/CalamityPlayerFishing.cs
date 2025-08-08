@@ -169,6 +169,8 @@ namespace CalamityMod.CalPlayer
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
+                itemDrop = -1;
+                return;
             }
 
             // Ignore catches if it's junk
@@ -370,7 +372,7 @@ namespace CalamityMod.CalPlayer
                 if (ZoneAbyss || ZoneSulphur)
                     canSulphurFish = true;
 
-                Item item = Player.ActiveItem();
+                Item item = Player.HeldItem;
                 if (!canSulphurFish || item.fishingPole <= 0 || item.holdStyle != 1)
                     fishingLevel = -1;
 

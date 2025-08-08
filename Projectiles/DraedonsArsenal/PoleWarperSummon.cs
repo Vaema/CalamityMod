@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 0;
@@ -172,6 +173,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool PreDraw(ref Color lightColor)
         {

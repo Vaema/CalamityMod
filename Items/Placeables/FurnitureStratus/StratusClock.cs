@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
                 AddIngredient<StratusBricks>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile(TileID.Sawmill).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
         }
     }

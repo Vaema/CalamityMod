@@ -31,6 +31,14 @@ namespace CalamityMod
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key), textColor.Value);
         }
 
+        public static void DisplayFormattedText(string key, Color textColor, params object[] args)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Main.NewText(Language.GetOrRegister(key).Format(args), textColor);
+            else if (Main.dedServ || Main.netMode == NetmodeID.MultiplayerClient)
+                ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key, args), textColor);
+        }
+
         public static int IngredientIndex(this Recipe r, int itemID)
         {
             for (int i = 0; i < r.requiredItem.Count; ++i)

@@ -28,7 +28,7 @@ namespace CalamityMod.NPCs.Crabulon
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
+            NPC.damage = 18; // 36
             NPC.width = 14;
             NPC.height = 14;
             if (CalamityWorld.LegendaryMode)
@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.Crabulon
 
             NPC.lifeMax = CalamityWorld.LegendaryMode ? 180 : 15;
             if (BossRushEvent.BossRushActive)
-                NPC.lifeMax = 8000;
+                NPC.lifeMax = 6000;
             if (CalamityWorld.LegendaryMode)
                 NPC.lifeMax *= 2;
             AIType = -1;
@@ -48,10 +48,6 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -70,7 +66,7 @@ namespace CalamityMod.NPCs.Crabulon
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float xVelocityLimit = BossRushEvent.BossRushActive ? 12f : death ? 8f : revenge ? 6f : 5f;
+            float xVelocityLimit = death ? 8f : revenge ? 6f : 5f;
             float yVelocityLimit = CalamityWorld.LegendaryMode ? 0.25f : death ? 0.75f : revenge ? 0.9f : 1f;
 
             // Get a target

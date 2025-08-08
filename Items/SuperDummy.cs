@@ -59,7 +59,7 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            else if (player.whoAmI == Main.myPlayer)
+            else if (player.whoAmI == Main.myPlayer && NPC.CountNPCS(ModContent.NPCType<SuperDummyNPC>()) < 50)
             {
                 int x = (int)Main.MouseWorld.X - 9;
                 int y = (int)Main.MouseWorld.Y - 20;

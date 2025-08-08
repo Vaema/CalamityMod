@@ -50,11 +50,6 @@ namespace CalamityMod.Projectiles.Melee
                 }
             }
 
-            if (Projectile.timeLeft < MaxTime - 5)
-            {
-                Projectile.tileCollide = true;
-            }
-
             if (Timer / MaxTime > 0.25f)
             {
                 Projectile.velocity *= 0.95f;

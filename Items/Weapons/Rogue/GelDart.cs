@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             CreateRecipe().
                 AddIngredient<PurifiedGel>(18).
                 AddIngredient<BlightedGel>(18).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

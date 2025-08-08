@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureEutrophic;
+﻿using CalamityMod.Items.Placeables.FurnitureNavystone;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;

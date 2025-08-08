@@ -87,7 +87,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
                 NPC.catchItem = ItemID.GoldCoin;
-                NPC.value = 10000;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);

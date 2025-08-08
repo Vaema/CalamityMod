@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Armor.Reaver
             modPlayer.wearingRogueArmor = true;
             player.findTreasure = true;
             player.aggro -= 200;
-            if (player.IsUnderwater())
+            if (player.Calamity().countsAsAnyWet)
                 player.gills = true;
 
             if (player.whoAmI == Main.myPlayer)

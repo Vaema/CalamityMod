@@ -21,10 +21,13 @@ namespace CalamityMod.NPCs.Ravager
             NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
+        public static int NukeDamage = 35; // 140
+        public static int PostProviNukeBuff = 25; // +100 = 240
+
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 40;
@@ -49,10 +52,6 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -95,12 +94,11 @@ namespace CalamityMod.NPCs.Ravager
 
                 NPC.ai[1] = 0f;
                 int type = ModContent.ProjectileType<RavagerNuke>();
-                int damage = NPC.GetProjectileDamage(type);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Vector2 shootFromVector = new Vector2(NPC.Center.X, NPC.Center.Y - 20f);
                     Vector2 velocity = new Vector2(0f, -15f);
-                    int nuke = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFromVector, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, NPC.target, 0f);
+                    int nuke = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFromVector, velocity, type, NukeDamage + (provy ? PostProviNukeBuff : 0), 0f, Main.myPlayer, NPC.target, 0f);
                     Main.projectile[nuke].velocity.Y = -15f;
                 }
             }

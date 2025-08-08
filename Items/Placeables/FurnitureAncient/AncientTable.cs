@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         {
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(8).
-                AddTile<AncientAltar>().
+                AddTile<AshenAltar>().
                 Register();
         }
     }

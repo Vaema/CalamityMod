@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
             CreateRecipe().
                 AddIngredient<PolishedMarniteBlock>(4).
                 AddIngredient(ItemID.Torch, 4).
-                AddTile(TileID.WorkBenches).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

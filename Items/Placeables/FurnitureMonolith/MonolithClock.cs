@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
                 AddIngredient<AstralMonolith>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

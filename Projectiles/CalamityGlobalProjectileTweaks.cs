@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.TerrarianBeam, Do(LocalIFrames(-1)) }, // Terrarian yoyo orbs
 
                 // original: INF lifetime | 360px range | 16.5px/f top speed | 0 extra updates
-                { ProjectileID.TheEyeOfCthulhu, RebalanceYoyo(-1f, 480f, 36f, 1) }, // the yoyo, of course
+                { ProjectileID.TheEyeOfCthulhu, RebalanceYoyo(-1f, 480f, 36f, 1, 12) }, // the yoyo, of course
 
                 // original: INF lifetime | 370px range | 16px/f top speed | 0 extra updates
                 { ProjectileID.ValkyrieYoyo, RebalanceYoyo(-1f, 480f, 42f, 2, 12) },
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.BlueMoon, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Bullet, Do(PointBlank, ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.BulletHighVelocity, Do(PointBlank, LocalIFrames(-1)) },
-                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(5), ScaleExact(1.5f)) },
+                { ProjectileID.ButchersChainsaw, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(7), ScaleExact(1.5f)) },
                 { ProjectileID.ChlorophyteChainsaw, standardChainsawTweaks },
                 { ProjectileID.ChlorophyteDrill, standardDrillTweaks },
                 { ProjectileID.ChlorophyteOrb, Do(NoPiercing) },
@@ -142,6 +142,7 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.ClusterSnowmanRocketII, Do(LocalIFrames(15)) },
                 { ProjectileID.DangerousSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
+                { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
                 { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -152,7 +153,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Flames, Do(IDStaticIFrames(5)) }, // Flamethrower AND Elf Melter flames
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
-                { ProjectileID.FlowerPow, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FrostBoltStaff, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FruitcakeChakram, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -199,7 +199,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.RocketFireworkRed, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.RocketFireworkYellow, Do(TimeLeftDelta(+45)) },
                 { ProjectileID.SawtoothShark, Do(TrueMeleeNoSpeed, ArmorPenetrationDelta(+15), LocalIFrames(6)) },
-                { ProjectileID.ShadowBeamHostile, Do(ExtraUpdatesExact(1)) },
                 { ProjectileID.Shroomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.SolarFlareDrill, standardDrillTweaks },
                 { ProjectileID.StardustDrill, standardDrillTweaks },
@@ -293,40 +292,18 @@ namespace CalamityMod.Projectiles
                 #endregion
 
                 #region CATEGORY 5: Defense Damage support
-                { ProjectileID.BombSkeletronPrime, defenseDamage },
-                { ProjectileID.CannonballHostile, defenseDamage },
                 { ProjectileID.Cthulunado, defenseDamage }, // Duke Fishron's larger Sharknados
-                { ProjectileID.CultistBossFireBall, defenseDamage },
-                { ProjectileID.CultistBossFireBallClone, defenseDamage },
-                { ProjectileID.CultistBossIceMist, defenseDamage },
-                { ProjectileID.CultistBossLightningOrbArc, defenseDamage },
-                { ProjectileID.DD2BetsyFireball, defenseDamage },
                 { ProjectileID.DD2BetsyFlameBreath, defenseDamage },
                 { ProjectileID.DeerclopsIceSpike, defenseDamage },
-                { ProjectileID.DeerclopsRangedProjectile, defenseDamage }, // Deerclops shadow hands
-                { ProjectileID.DemonSickle, defenseDamage },
-                { ProjectileID.FairyQueenLance, defenseDamage }, // Empress of Light's lance walls
                 { ProjectileID.FairyQueenSunDance, defenseDamage }, // Empress of Light's Sun Dance
                 { ProjectileID.FlamingScythe, defenseDamage }, // Pumpking orange spinning scythes
-                { ProjectileID.FrostWave, defenseDamage }, // Ice Queen frost waves
-                { ProjectileID.HallowBossLastingRainbow, defenseDamage }, // Empress of Light's lingering rainbow trail hitboxes
                 { ProjectileID.InfernoHostileBlast, defenseDamage }, // Diabolist inferno fork explosions
-                { ProjectileID.JavelinHostile, defenseDamage },
                 { ProjectileID.PaladinsHammerHostile, defenseDamage },
                 { ProjectileID.PhantasmalDeathray, defenseDamage },
                 { ProjectileID.PhantasmalSphere, defenseDamage },
-                { ProjectileID.Present, defenseDamage }, // Falling present bombs in Frost Moon
-                { ProjectileID.RocketSkeleton, defenseDamage }, // Skeleton Commando rockets
-                { ProjectileID.RockGolemRock, defenseDamage },
-                { ProjectileID.RuneBlast, defenseDamage }, // Rune Wizard shots
                 { ProjectileID.SaucerDeathray, defenseDamage },
-                { ProjectileID.SaucerMissile, defenseDamage },
                 { ProjectileID.Sharknado, defenseDamage },
-                { ProjectileID.Skull, defenseDamage }, // Skeletron Expert+ skulls
-                { ProjectileID.SniperBullet, defenseDamage }, // Skeleton Sniper bullets
-                { ProjectileID.Spike, defenseDamage }, // Santank spike balls
                 { ProjectileID.ThornBall, Do(Main.zenithWorld ? IgnoreWater : DontIgnoreWater, DefenseDamage) }, // Plantera bouncing thorn balls
-                { ProjectileID.UnholyTridentHostile, defenseDamage },
                 #endregion
 
                 #region CATEGORY 6: ID-Static Immunity Frame changes

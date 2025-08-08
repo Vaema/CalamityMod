@@ -44,22 +44,11 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (shoot)
                 {
-                    Vector2 vel = new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
-                    Vector2 pos = Projectile.Center - vel;
-                    vel.X += Main.rand.Next(-50, 51);
-                    vel.Normalize();
-                    vel *= 30f;
-                    int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostyFlareProj>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
+                    Vector2 vel = Utils.DirectionTo(pos, Projectile.Center) * 30f;
+                    vel.X += Main.rand.NextFloat(-4f, 4f);
+                    int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
                     Main.projectile[flare].alpha = 150;
-                }
-                if (Projectile.timeLeft % 10 == 0)
-                {
-                    int snowflake = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Projectile.velocity.X * 0f, Projectile.velocity.Y * 0f, ProjectileID.NorthPoleSnowflake, (int)(Projectile.damage * 0.25), Projectile.knockBack, Projectile.owner, 0f, Main.rand.Next(3));
-                    if (snowflake.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[snowflake].DamageType = RogueDamageClass.Instance;
-                        Main.projectile[snowflake].timeLeft = 300;
-                    }
                 }
 
                 int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
@@ -77,12 +66,10 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (shoot)
                     {
-                        Vector2 vel = new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
-                        Vector2 pos = Main.npc[id].Center - vel;
-                        vel.X += Main.rand.Next(-50, 51);
-                        vel.Normalize();
-                        vel *= 30f;
-                        int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostyFlareProj>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 751));
+                        Vector2 vel = CalamityUtils.CalculatePredictiveAimToTarget(pos, Main.npc[id], 30f);
+                        vel.X += Main.rand.NextFloat(-4f, 4f);
+                        int flare = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostyFlareProj>(), (int)(Projectile.damage * 0.6f), Projectile.knockBack, Projectile.owner, ai2: 1f);
                         Main.projectile[flare].alpha = 150;
                     }
                 }
