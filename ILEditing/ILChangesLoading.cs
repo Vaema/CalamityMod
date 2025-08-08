@@ -66,6 +66,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
             IL_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
+            On_NPC.NPCLoot += PreventDiabolistLootLogic;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
             // Mechanics / features
