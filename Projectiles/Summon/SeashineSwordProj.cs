@@ -316,6 +316,6 @@ namespace CalamityMod.Projectiles.Summon
             float _ = float.NaN;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, tipPosition, 30 * Projectile.scale, ref _);
         }
-        public override bool? CanDamage() => (isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0) ? null : false;
+        public override bool? CanDamage() => isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0;
     }
 }

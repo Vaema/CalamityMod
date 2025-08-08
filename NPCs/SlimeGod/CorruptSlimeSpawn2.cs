@@ -23,14 +23,14 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 20; // 40
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (CalamityWorld.LegendaryMode)
                 NPC.scale = 2f;
 
             NPC.defense = 4;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 5000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 180 : 90;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 5000 : CalamityWorld.LegendaryMode ? 180 : 90;
             NPC.knockBackResist = 0.9f;
             AnimationType = NPCID.CorruptSlime;
             NPC.lavaImmune = false;
@@ -40,10 +40,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -85,14 +81,13 @@ namespace CalamityMod.NPCs.SlimeGod
                     double deltaAngleBoom = spreadBoom / 8f;
                     double offsetAngleBoom;
                     int iBoom;
-                    int damageBoom = 30;
                     for (iBoom = 0; iBoom < 5; iBoom++)
                     {
                         int projectileType = ModContent.ProjectileType<UnstableEbonianGlob>();
                         offsetAngleBoom = startAngleBoom + deltaAngleBoom * (iBoom + iBoom * iBoom) / 2f + 32f * iBoom;
                         float velocityfactor = 0.3f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * velocityfactor), (float)(Math.Cos(offsetAngleBoom) * velocityfactor), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * velocityfactor), (float)(-Math.Cos(offsetAngleBoom) * velocityfactor), projectileType, damageBoom, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), valueBoom.X, valueBoom.Y, (float)(Math.Sin(offsetAngleBoom) * velocityfactor), (float)(Math.Cos(offsetAngleBoom) * velocityfactor), projectileType, SlimeGodCore.GlobDamage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), valueBoom.X, valueBoom.Y, (float)(-Math.Sin(offsetAngleBoom) * velocityfactor), (float)(-Math.Cos(offsetAngleBoom) * velocityfactor), projectileType, SlimeGodCore.GlobDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
             }

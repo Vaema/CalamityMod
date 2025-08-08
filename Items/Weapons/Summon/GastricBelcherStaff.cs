@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,11 +12,15 @@ namespace CalamityMod.Items.Weapons.Summon
     public class GastricBelcherStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Whitewater>();
+        }
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 60;
+            Item.damage = 50;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 20;
             Item.useStyle = ItemUseStyleID.Swing;

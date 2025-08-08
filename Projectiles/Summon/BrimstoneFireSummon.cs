@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 50;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 9;
+            Projectile.idStaticNPCHitCooldown = 12;
             Projectile.DamageType = DamageClass.Summon;
         }
 

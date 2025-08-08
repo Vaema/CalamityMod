@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Abyss;
+﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 46;
             Item.height = 46;
-            Item.damage = 60;
+            Item.damage = 48;
             Item.DamageType = DamageClass.Melee;
             Item.useTurn = true;
             Item.useAnimation = 27;

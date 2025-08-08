@@ -37,8 +37,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
 
         public override void UpdateArmorSet(Player player)
         {
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey());
             var modPlayer = player.Calamity();
             modPlayer.plagueReaper = true;
             player.ammoCost75 = true;

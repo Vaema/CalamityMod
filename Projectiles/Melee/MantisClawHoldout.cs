@@ -1,21 +1,14 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ID;
-using CalamityMod.Items.BaseItems;
-using Terraria.ModLoader;
+﻿using System;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using CalamityMod.Balancing;
+using Terraria;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
-using System;
-using CalamityMod.Particles;
-using Terraria.DataStructures;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Primitives;
-using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -23,7 +16,7 @@ namespace CalamityMod.Projectiles.Melee
     {
         bool AnimationCooldown = false;
 
-        float JetDamageMultiplier => 7.5f;
+        float JetDamageMultiplier => 6.5f;
         int SlashSpeed => 6;
 
         int BlastChargeUses => 3;
@@ -37,6 +30,12 @@ namespace CalamityMod.Projectiles.Melee
         public float BubbleSize = 0f;
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/MantisClaws";
+
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Projectile.DamageType = DamageClass.Melee;
+        }
         public override void ResetStyle()
         {
             if (AnimationCooldown)
@@ -71,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 
-                    Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * JetDamageMultiplier), 7, Owner.whoAmI);
+                    Owner.DirectionTo(Owner.Calamity().mouseWorld) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * JetDamageMultiplier), 7, Owner.whoAmI, 0f, 40f);
 
                 for (int i = 0; i < 9; i++)
                 {
@@ -129,7 +128,7 @@ namespace CalamityMod.Projectiles.Melee
                         Owner.Calamity().mouseWorldListener = true;
 
                         // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                        Projectile slash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 4f, Owner.whoAmI);
+                        Projectile slash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center, Owner.DirectionTo(Owner.Calamity().mouseWorld) * 6f, ModContent.ProjectileType<MantisClawSlash>(), Projectile.damage, 2f, Owner.whoAmI);
                         slash.rotation = Owner.AngleTo(Owner.Calamity().mouseWorld) + MathHelper.ToRadians(Main.rand.NextFloat(-25, 25));
                     }
 

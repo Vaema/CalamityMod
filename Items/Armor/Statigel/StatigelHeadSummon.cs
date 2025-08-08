@@ -16,6 +16,12 @@ namespace CalamityMod.Items.Armor.Statigel
     public class StatigelHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float SummonKBBoost = 1.5f;
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 1;
+        public static float SetBonusSummonDamageBoost = 0.18f;
         public static int SlimeDamage = 18;
 
         public override void SetDefaults()
@@ -34,15 +40,16 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<StatigelArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
+            + "\n" + CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusHurtDamageThreshold, StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             modPlayer.slimeGod = true;
             player.GetJumpState<StatigelJump>().Enable();
-            Player.jumpHeight += 5;
-            player.jumpSpeedBoost += 0.6f;
-            player.GetDamage<SummonDamageClass>() += 0.18f;
-            player.maxMinions++;
+            Player.jumpHeight += (int)(StatigelArmor.SetBonusJumpHeightPercentBoost * 15);
+            player.jumpSpeedBoost += StatigelArmor.SetBonusJumpSpeedBoost;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
+            player.maxMinions += SetBonusMinionSlotBoost;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
@@ -64,17 +71,14 @@ namespace CalamityMod.Items.Armor.Statigel
             }
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetKnockback<SummonDamageClass>() += 1.5f;
-        }
+        public override void UpdateEquip(Player player) => player.GetKnockback<SummonDamageClass>() += SummonKBBoost;
 
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient<PurifiedGel>(5).
                 AddIngredient<BlightedGel>(5).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<StatigelHeadRogue>()).
                 Register();
         }

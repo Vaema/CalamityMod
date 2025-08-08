@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
             player.GetDamage<GenericDamageClass>() += 0.08f;
             player.GetCritChance<GenericDamageClass>() += 4;
         }

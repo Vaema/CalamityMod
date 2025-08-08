@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 40;
+            player.statLifeMax2 += 25;
             player.GetDamage<GenericDamageClass>() += 0.1f;
             player.GetCritChance<GenericDamageClass>() += 5;
         }

@@ -13,9 +13,20 @@ namespace CalamityMod.Items.Armor
     public class ForbiddenCirclet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
-        public const int manaCost = 60;
-        public const int tornadoBaseDmg = 60;
-        public const float tornadoBaseKB = 1f;
+
+        public static float SummonDamageBoost = 0.1f;
+        public static float RogueVelocityBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent(), RogueVelocityBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusRogueStealth = 0.4f;
+        public static int StormManaCost = 60;
+        public static int StormCooldown = 45;
+        public static int StormDamage = 60;
+        public static float StormKB = 1f;
+        public static int EaterSpawnCount = 6;
+        public static int EaterSpawnCooldown = 15;
+        public static int EaterDamage = 40;
 
         public static SummonTag summonTag = new SummonTag()
         {
@@ -66,10 +77,7 @@ namespace CalamityMod.Items.Armor
             Item.Calamity().donorItem = true;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ItemID.AncientBattleArmorShirt && legs.type == ItemID.AncientBattleArmorPants;
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemID.AncientBattleArmorShirt && legs.type == ItemID.AncientBattleArmorPants;
 
         public override void ArmorSetShadows(Player player)
         {
@@ -79,13 +87,11 @@ namespace CalamityMod.Items.Armor
 
         public override void UpdateArmorSet(Player player)
         {
-            int stormMana = (int)(manaCost * player.manaCost);
-            string hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(FormatHotkeyWithVanillaSupport(hotkey), stormMana);
+            int stormMana = (int)(StormManaCost * player.manaCost);
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), CalamityUtils.GetArmorSetBonusKey(), stormMana);
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.forbiddenCirclet = true;
-            modPlayer.rogueStealthMax += 1f;
-            player.GetDamage<RogueDamageClass>() += 0.1f;
+            modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
         }
 
@@ -99,9 +105,8 @@ namespace CalamityMod.Items.Armor
         }
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.1f;
-            player.GetDamage<RogueDamageClass>() += 0.1f;
-            player.Calamity().rogueVelocity += 0.15f;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+            player.Calamity().rogueVelocity += RogueVelocityBoost;
         }
 
         public override void AddRecipes()

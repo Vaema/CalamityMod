@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Armor.Auric
                     {
                         Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipGodslayerColor };
                         var LocalizedText = CalamityUtils.GetTextFromModItem(Type, $"SetBonus{setBonusTooltipNumber}");
-                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString(), GodslayerArmorDash.GodslayerCooldown) : setBonusTooltipNumber == 2 ? LocalizedText.Format(CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString()) : LocalizedText.Format());
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString(), GodslayerArmorDash.GodslayerCooldown) : setBonusTooltipNumber == 2 ? LocalizedText.Format(CalamityUtils.GetArmorSetBonusKey()) : LocalizedText.Format());
                         line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
                     }
                 }

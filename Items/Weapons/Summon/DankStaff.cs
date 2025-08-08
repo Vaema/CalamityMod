@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +13,10 @@ namespace CalamityMod.Items.Weapons.Summon
     public class DankStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<RotBall>();
+        }
         public override void SetDefaults()
         {
             Item.width = 58;
@@ -42,16 +48,6 @@ namespace CalamityMod.Items.Weapons.Summon
                     Main.projectile[p].originalDamage = Item.damage;
             }
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 4).
-                AddIngredient<RottenMatter>(12).
-                AddIngredient(ItemID.RottenChunk, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

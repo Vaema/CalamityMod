@@ -105,7 +105,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => new List<string>()
         {
-            // Patron names
+            // Dedicated names
             "Xplizzy", // <@!98826096237109248> (whitegiraffe)
             "Freakish", // <@!750363283520749598> (freak5650)
             "Calder", // <@!601897959176798228> (hardlightcaster)
@@ -116,6 +116,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Jackie", // <@!353241811717718016> (jackalchan)
             "Ishmael", // <@!840416568000381046> (vanillaoyster)
             "Ariallis", // <@!518231218806980609> (ariallis)
+            "Shade", // <@!613133259563466755> (shade__storm)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),

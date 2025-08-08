@@ -8,6 +8,7 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -18,7 +19,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
-using Terraria.GameContent.Personalities;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Graphics.Effects;
@@ -154,7 +155,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Prevention of Slime Rain Spawns When Near Bosses
-        private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
+        private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
             if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
@@ -307,13 +308,15 @@ namespace CalamityMod.ILEditing
                 LogFailure("Prevent Fossil Shattering", "Could not locate the Desert Fossil Tile ID variable.");
                 return;
             }
+
+            // Remove this value and replace it with a large number that will never be a valid tile ID.
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, TileID.PixelBox); // Change to Pixel Box because it cannot be obtained in-game without cheating.
+            cursor.Emit(OpCodes.Ldc_I4, 40000);
         }
         #endregion
 
         #region Remove Hellforge Pickaxe Requirement
-        private static int RemoveHellforgePickaxeRequirement(Terraria.On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
+        private static int RemoveHellforgePickaxeRequirement(On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
         {
             if (tileTarget.TileType == TileID.Hellforge)
                 pickPower = 65;
@@ -331,9 +334,58 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
-        // TODO -- Finish this
-        #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
+        #region Allow Victide Bobber to Exist
+        private static void WhitelistVictideBobber(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Find the label which skips the "flag = true" that kills the projectile
+            ILLabel flagStorage = null;
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchBeq(out flagStorage)))
+            {
+                LogFailure("Allow Victide Bobber to Exist", "Failed to properly navigate label to direct to");
+                return;
+            }
+
+            // Properly perform the skip if the projectile type is the Victide Bobber
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Projectile).GetField("type"));
+            cursor.Emit(OpCodes.Ldc_I4, ModContent.ProjectileType<VictideBobber>());
+            cursor.Emit(OpCodes.Beq_S, flagStorage);
+        }
+        #endregion
+
+        #region Prevent Victide Bobber from Jammming
+        private static bool PreventVictideBobberFromJamming(On_Player.orig_ItemCheck_CheckFishingBobbers orig, Player self, bool canUse)
+        {
+            // Run through the original stuff
+            canUse = orig(self, canUse);
+
+            int bobberCount = 0;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.active && proj.owner == self.whoAmI && proj.bobber)
+                {
+                    bobberCount++;
+                    if (proj.type == ModContent.ProjectileType<VictideBobber>())
+                    {
+                        // Go back to casting if there's nothing loaded
+                        if (proj.ai[1] == 0f)
+                            proj.ai[0] = 0f;
+
+                        // Allow you to still use the fishing rod
+                        canUse = true;
+                    }
+                }
+            }
+
+            // Unless.. you have a bobber already that's NOT Victide, then back to disabling
+            if (canUse && bobberCount > 1)
+                canUse = false;
+
+            return canUse;
+        }
+        #endregion
 
         #region Prevent UFO Mount from Dismounting in Water
         private static void PreventUFODismountInWater(ILContext il)
@@ -367,7 +419,7 @@ namespace CalamityMod.ILEditing
         #endregion Prevent UFO Mount from Dismounting in Water
 
         #region Color Blighted Gel
-        private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
+        private static void ColorBlightedGel(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
             orig(npc, itemIndex);
 
@@ -393,7 +445,7 @@ namespace CalamityMod.ILEditing
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
-        private static void ImproveAnglerRewards(Terraria.On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
+        private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
             orig(self, angler, questItemType);
 
@@ -1082,7 +1134,7 @@ namespace CalamityMod.ILEditing
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("magmaStone"))) // Flag for if Magma Stone is equipped. Fire Gauntlet also uses this.
             {
-                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the magma stone variable.");
+                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the Magma Stone variable.");
                 return;
             }
             // Load the player itself onto the stack so that it becomes an argument for the following delegate.
@@ -1127,7 +1179,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
-            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            // The only requirements for summoning Golem with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
@@ -1180,7 +1232,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            // Branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
             cursor.Prev.OpCode = OpCodes.Nop;
 
             // After that we pop NPC.damage and 0 from stack
@@ -1224,7 +1276,7 @@ namespace CalamityMod.ILEditing
         }*/
         #endregion
 
-        #region Allow disabling gravity swap visual && allow gravity keybind
+        #region Allow Disabling Gravity Swap Visual and Allow Gravity Keybind
         private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
         {
             var cplay = Player.Calamity();

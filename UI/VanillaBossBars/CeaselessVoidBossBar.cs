@@ -40,7 +40,7 @@ namespace CalamityMod.UI.VanillaBossBars
 
             // Determine the shield health
             // Amount of Dark Energies expected from each phase/difficulty
-            int ExpectedBallsCounter = ((lifePercent <= 0.1f ? 3 : lifePercent <= 0.4f ? 2 : lifePercent <= 0.7f ? 1 : 0) + (CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 4 : 3)) * (Main.getGoodWorld ? 6 : 3) + 2;
+            int ExpectedBallsCounter = ((lifePercent <= 0.1f ? 3 : lifePercent <= 0.4f ? 2 : lifePercent <= 0.7f ? 1 : 0) + (CalamityWorld.death ? 6 : CalamityWorld.revenge ? 5 : Main.expertMode ? 4 : 3)) * (CalamityWorld.LegendaryMode ? 6 : 3) + 2;
             // The Dark Energies will instantly all die at a certain point of their total max health
             float RatioToCombust = 0.2f;
             if (NPC.AnyNPCs(NPCType<DarkEnergy>()))

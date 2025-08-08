@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,6 +18,7 @@ namespace CalamityMod.Buffs.Alcohol
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().cinnamonRoll = true;
+            player.Calamity().HeatDebuffMultiplier += 0.5f;
         }
     }
 }

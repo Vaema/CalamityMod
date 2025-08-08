@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,6 +11,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class ScourgeoftheDesert : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SaharaSlicers>();
+        }
+
         public override void SetDefaults()
         {
             Item.width = 112;
