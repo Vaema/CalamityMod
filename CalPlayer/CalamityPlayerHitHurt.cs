@@ -957,6 +957,21 @@ namespace CalamityMod.CalPlayer
 
                         return;
                     }
+                    else if (daedalusReflect)
+                    {
+                        proj.hostile = false;
+                        proj.friendly = true;
+                        proj.velocity *= -1f;
+                        proj.penetrate = 1;
+
+                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
+                        modifiers.Cancel();
+
+                        int cooldownDuration = (int)MathHelper.Lerp(DaedalusHeadMelee.ReflectCooldownMin, DaedalusHeadMelee.ReflectCooldownMax, cooldownDurationScalar);
+                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
+                    }
                 }
             }
 
@@ -1054,13 +1069,6 @@ namespace CalamityMod.CalPlayer
             {
                 if (proj.type == projTypeJustHitBy)
                     projectileDamageReduction += 0.25;
-            }
-
-            if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
-            {
-                // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
-                if (daedalusReflect && !disableAllDodges && !evolution && !Player.HasCooldown(GlobalDodge.ID))
-                    projectileDamageReduction += 0.5;
             }
 
             if (trinketOfChiBuff)
@@ -1425,40 +1433,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
-            if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0 && !hurtInfo.PvP)
-            {
-                double dodgeDamageGateValuePercent = 0.05;
-                int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
-
-                // Reflects count as dodges. They share the timer and can be disabled by global dodge disabling effects.
-                if (!disableAllDodges && !Player.HasCooldown(GlobalDodge.ID) && proj.damage >= dodgeDamageGateValue)
-                {
-                    double maxCooldownDurationDamagePercent = 0.5;
-                    int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-
-                    // Just in case...
-                    if (maxCooldownDurationDamageValue <= 0)
-                        maxCooldownDurationDamageValue = 1;
-
-                    float cooldownDurationScalar = MathHelper.Clamp((proj.damage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
-
-                    if (daedalusReflect && !evolution)
-                    {
-                        proj.hostile = false;
-                        proj.friendly = true;
-                        proj.velocity *= -1f;
-                        proj.penetrate = 1;
-
-                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
-                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
-
-                        int cooldownDuration = (int)MathHelper.Lerp(DaedalusHeadMelee.ReflectCooldownMin, DaedalusHeadMelee.ReflectCooldownMax, cooldownDurationScalar);
-                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
-                    }
-                }
-            }
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
             {
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -2669,21 +2643,18 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (daedalusShard) // Daedalus Ranged helm
                 {
-                    var source = Player.GetSource_Misc("22");
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item27, Player.Center);
-                        float spread = 45f * 0.0174f;
-                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
-                        double offsetAngle;
-                        int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DaedalusHeadRanged.ShardDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
+                            var source = Player.GetSource_Misc("22");
+                            float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+                            int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DaedalusHeadRanged.ShardDamage);
                             for (int i = 0; i < 10; i++)
                             {
-                                Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                                Vector2 circleVel = ((MathHelper.TwoPi * i / 10f) + offset).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
                                 int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);
                                 if (shard.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[shard].DamageType = DamageClass.Generic;

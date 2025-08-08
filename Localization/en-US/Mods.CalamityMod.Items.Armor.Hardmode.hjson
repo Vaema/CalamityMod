@@ -85,8 +85,7 @@ DaedalusHeadMelee: {
 	SetBonus:
 		'''
 		{$Common.AggroBoost}
-		You reflect projectiles back at enemies
-		Reflected projectiles deal 50% less damage to you
+		You reflect projectiles back at enemies, negating their damage
 		{$Common.ReflectInformation}
 		'''
 }
