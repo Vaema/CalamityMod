@@ -18,6 +18,7 @@ using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
@@ -2271,6 +2272,12 @@ namespace CalamityMod.CalPlayer
                         while (Collision.SolidCollision(spawnPosition - spawnPositionOffset, 48, 24) && tries < 100);
                         CalamityNetcode.NewNPC_ClientSide(spawnPosition, ModContent.NPCType<DemonPortal>(), Player);
                     }
+                }
+
+                if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
+                {
+                    int healAmt = (int)(hurtInfo.Damage * VictideHeadBarrier.BarrierDamageAbsorptionPercent);
+                    victideBarrierHeal += healAmt;
                 }
 
                 if (daedalusAbsorb && Main.rand.NextBool(10))

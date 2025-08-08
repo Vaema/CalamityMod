@@ -195,6 +195,8 @@ namespace CalamityMod.ILEditing
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
             On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
+            IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
+            On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
             IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
