@@ -3943,14 +3943,40 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0)
                         {
-                            foreach (var item in Main.ActiveProjectiles)
+                            foreach (var proj in Main.ActiveProjectiles)
                             {
-                                if (item.owner != Player.whoAmI || item.type != ProjectileType<CircletTornado>())
+                                if (proj.owner != Player.whoAmI || proj.type != ProjectileType<CircletTornado>())
                                     continue;
-                                item.timeLeft = 60;
+                                proj.ai[0] = CircletTornado.Lifetime - CircletTornado.Fadetime + proj.ai[0] % 60f;
+                                proj.netUpdate = true;
                             }
                         }
-                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
+                        Vector2 tornadoPos = Player.ClampedMouseWorld();
+                        Projectile.NewProjectile(source, tornadoPos, Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
+
+                        Vector2 diff = tornadoPos - Player.Center;
+                        float distance = diff.Length();
+                        if (distance > 0f)
+                        {
+                            for (float i = 0f; i < distance; i += 15f)
+                            {
+                                Vector2 dustPos = Player.Center + diff * i / distance;
+                                Dust trail = Dust.NewDustDirect(dustPos, 0, 0, DustID.Sandnado);
+                                trail.position = dustPos;
+                                trail.fadeIn = 0.5f;
+                                trail.scale = 0.7f;
+                                trail.velocity *= 0.4f;
+                                trail.noLight = true;
+                            }
+                        }
+                        for (int j = 0; j < 30; j++)
+                        {
+                            Dust cloud = Dust.NewDustDirect(tornadoPos, 0, 0, DustID.Sandnado);
+                            cloud.position = tornadoPos;
+                            cloud.fadeIn = 1f;
+                            cloud.scale = 0.3f;
+                            cloud.noLight = true;
+                        }
                     }
                 }
             }
