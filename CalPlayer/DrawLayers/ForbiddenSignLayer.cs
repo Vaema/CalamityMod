@@ -12,7 +12,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
 {
     public class ForbiddenSignLayer : PlayerDrawLayer
     {
-        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.Skin);
+        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.ForbiddenSetRing);
 
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
