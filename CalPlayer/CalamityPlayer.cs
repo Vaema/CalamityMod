@@ -1128,7 +1128,6 @@ namespace CalamityMod.CalPlayer
         public bool godSlayerDashHotKeyPressed = false;
         public bool SpeedBlasterDashStarted = false;
         public bool ataxiaBolt = false;
-        public bool ataxiaFire = false;
         public bool ataxiaVolley = false;
         public bool ataxiaBlaze = false;
         public bool hydrothermalSmoke = false;
@@ -2140,7 +2139,6 @@ namespace CalamityMod.CalPlayer
 
             ataxiaBolt = false;
             ataxiaGeyser = false;
-            ataxiaFire = false;
             ataxiaVolley = false;
             ataxiaBlaze = false;
             ataxiaMage = false;
@@ -3148,7 +3146,6 @@ namespace CalamityMod.CalPlayer
             ataxiaMage = false;
             ataxiaBolt = false;
             ataxiaGeyser = false;
-            ataxiaFire = false;
             ataxiaVolley = false;
             ataxiaBlaze = false;
             hydrothermalSmoke = false;

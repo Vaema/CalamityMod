@@ -2237,12 +2237,12 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (Player.miscCounter % 20 == 0)
+            if (Player.miscCounter % HydrothermicHeadRanged.FlareCooldown == 0)
                 canFireAtaxiaRangedProjectile = true;
+            if (Player.miscCounter % HydrothermicHeadRogue.VolleyCooldown == 0)
+                canFireAtaxiaRogueProjectile = true;
             if (Player.miscCounter % 100 == 0)
                 canFireBloodflareMageProjectile = true;
-            if (Player.miscCounter % 120 == 0)
-                canFireAtaxiaRogueProjectile = true;
             if (Player.miscCounter % 150 == 0)
             {
                 canFireGodSlayerRangedProjectile = true;
@@ -3819,7 +3819,7 @@ namespace CalamityMod.CalPlayer
 
             if (ataxiaBlaze)
             {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
+                if (Player.statLife <= (int)(Player.statLifeMax2 * HydrothermicArmor.InfernoHealthThreshold))
                     Player.AddBuff(BuffID.Inferno, 2);
             }
 
@@ -3977,20 +3977,18 @@ namespace CalamityMod.CalPlayer
             // Inferno potion boost
             if (ataxiaBlaze && Player.inferno)
             {
-                const int FramesPerHit = 30;
-
                 // Constantly increment the timer every frame.
-                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % FramesPerHit;
+                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % HydrothermicArmor.InfernoHitRate;
 
                 // Only run this code for the client which is wearing the armor.
                 // Brimstone flames is applied every single frame, but direct damage is only dealt twice per second.
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(50);
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(HydrothermicArmor.InfernoDamage);
 
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                     var source = Player.GetSource_FromThis(HydrothermicArmor.InfernoPotionEntitySourceContext);
-                    float range = 300f;
+                    float range = HydrothermicArmor.InfernoRange;
 
                     foreach (NPC npc in Main.ActiveNPCs)
                     {

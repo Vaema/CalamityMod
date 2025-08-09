@@ -8,6 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -427,7 +428,7 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        int ataxiaFlareDamage = (int)(damage * 0.25f);
+                        int ataxiaFlareDamage = (int)(damage * HydrothermicHeadRanged.FlareDamageRatio);
                         Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
                     }
                 }
@@ -452,9 +453,7 @@ namespace CalamityMod.Items
                 {
                     modPlayer.canFireAtaxiaRogueProjectile = false;
                     int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
-
-                    // Hydrothermic Rogue Flares: 6 x (50 + 15%), soft cap starts at 90 base damage
-                    int flareDamage = CalamityUtils.DamageSoftCap(50 + damage * 0.15, 90);
+                    int flareDamage = CalamityUtils.DamageSoftCap(HydrothermicHeadRogue.VolleyDamage + damage * HydrothermicHeadRogue.VolleyDamageRatio, HydrothermicHeadRogue.VolleyDamageSoftcap);
 
                     if (player.whoAmI == Main.myPlayer)
                     {

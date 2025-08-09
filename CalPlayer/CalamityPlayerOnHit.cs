@@ -11,6 +11,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
+using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -653,12 +654,10 @@ namespace CalamityMod.CalPlayer
             {
                 if (npcCheck)
                 {
-                    if (ataxiaGeyser && Player.ownedProjectileCounts[ProjectileType<ChaoticGeyser>()] < 3)
+                    if (ataxiaGeyser && Player.ownedProjectileCounts[ProjectileType<ChaoticGeyser>()] < HydrothermicHeadMelee.GeyserCountLimit)
                     {
-                        // Ataxia True Melee Geysers: 15%, softcap starts at 300 base damage
-                        int geyserDamage = CalamityUtils.DamageSoftCap(damage * 0.15, 45);
-
-                        Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI, 0f, 0f);
+                        int geyserDamage = CalamityUtils.DamageSoftCap(damage * HydrothermicHeadMelee.GeyserDamageRatio, HydrothermicHeadMelee.GeyserDamageSoftcap);
+                        Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI);
                     }
 
                     if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
@@ -837,10 +836,10 @@ namespace CalamityMod.CalPlayer
             var source = proj.GetSource_FromThis();
             if (ataxiaMage && ataxiaDmg <= 0)
             {
-                int orbDamage = (int)(proj.damage * 0.6f);
+                int orbDamage = (int)(proj.damage * HydrothermicHeadMagic.OrbDamageRatio);
 
                 CalamityUtils.SpawnOrb(proj, orbDamage, ProjectileType<HydrothermicSphere>(), 800f, 20f);
-                int cooldown = (int)(orbDamage * 0.5);
+                int cooldown = (int)(orbDamage * HydrothermicHeadMagic.OrbDamageCooldownMult);
                 ataxiaDmg += cooldown;
             }
             if (tarraMage && crit)
@@ -1175,10 +1174,6 @@ namespace CalamityMod.CalPlayer
                 {
                     CalamityUtils.Inflict246DebuffsNPC(target, BuffType<ElementalMix>());
                 }
-                if (ataxiaFire)
-                {
-                    CalamityUtils.Inflict246DebuffsNPC(target, BuffID.OnFire3, 4f);
-                }
             }
             if ((melee || rogue || whip) && !noFlask)
             {
@@ -1350,8 +1345,8 @@ namespace CalamityMod.CalPlayer
 
                     if (ataxiaMage)
                     {
-                        double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), 1.25f);
+                        double healMult = HydrothermicHeadMagic.OrbHealingRatio - proj.numHits * HydrothermicHeadMagic.OrbHealingRatioLossPerPierce;
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), HydrothermicHeadMagic.OrbHealingCooldownMult);
                     }
                 }
             }

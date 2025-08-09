@@ -192,10 +192,14 @@ ForbiddenCirclet: {
 
 HydrothermicArmor: {
 	DisplayName: Hydrothermic Armor
-	Tooltip: 8% increased damage and 4% increased critical strike chance
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedDamage}
+		Grants immunity to fire and lava
+		'''
 	CommonSetBonus:
 		'''
-		Inferno effect when below 50% life
+		Inferno effect when below {0}% life
 		You emit a blazing explosion when you are hit
 		'''
 }
@@ -204,28 +208,22 @@ HydrothermicHeadMagic: {
 	DisplayName: Hydrothermic Mask
 	Tooltip:
 		'''
-		12% increased magic damage, +100 max mana, and 10% increased magic critical strike chance
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
-	SetBonus:
-		'''
-		5% increased magic damage and 15% reduced mana usage
-		Magic attacks summon damaging and healing flare orbs on hit
-		'''
+	SetBonus: Magic attacks summon damaging and healing flare orbs on hit
 }
 
 HydrothermicHeadMelee: {
 	DisplayName: Hydrothermic Helm
 	Tooltip:
 		'''
-		17% increased melee damage and 10% increased melee critical strike chance
-		Melee attacks and melee projectiles inflict on fire
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage} and {$CommonItemTooltip.PercentIncreasedMeleeCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
 		'''
 	SetBonus:
 		'''
-		15% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		Melee attacks and projectiles cause chaos flames to erupt on enemy hits
 		'''
 }
@@ -234,29 +232,22 @@ HydrothermicHeadRanged: {
 	DisplayName: Hydrothermic Headgear
 	Tooltip:
 		'''
-		12% increased ranged damage and 10% increased ranged critical strike chance
-		Reduces ammo usage by 25%
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		25% chance to save ammo
 		'''
-	SetBonus:
-		'''
-		5% increased ranged damage
-		You fire a homing chaos flare when using ranged weapons every 0.33 seconds
-		'''
+	SetBonus: You fire a homing chaos flare when using ranged weapons every 0.33 seconds
 }
 
 HydrothermicHeadRogue: {
 	DisplayName: Hydrothermic Hood
 	Tooltip:
 		'''
-		12% increased rogue damage and 10% increased rogue critical strike chance
-		5% increased movement speed
-		Grants immunity to fire and lava
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		5% increased rogue damage
-		+110 maximum stealth
+		{$Common.RogueStealth}
 		Rogue weapons unleash a volley of homing chaos flames around the player every 2 seconds
 		'''
 }
@@ -265,12 +256,13 @@ HydrothermicHeadSummon: {
 	DisplayName: Hydrothermic Helmet
 	Tooltip:
 		'''
-		5% increased summon damage and increased minion knockback
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		'''
 	SetBonus:
 		'''
-		40% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Summons a hydrothermic vent to protect you
 		'''
 }
@@ -279,8 +271,8 @@ HydrothermicSubligar: {
 	DisplayName: Hydrothermic Subligar
 	Tooltip:
 		'''
-		5% increased critical strike chance
-		10% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
