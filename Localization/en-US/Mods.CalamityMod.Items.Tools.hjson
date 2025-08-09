@@ -83,7 +83,6 @@ Cosmolight: {
 		A magical artifact, rekindled by exposure to raw cosmic energy
 		<left> to fast forward time
 		<right> to freeze time
-		This does not work while a boss is alive
 		'''
 }
 
@@ -260,7 +259,7 @@ Bakidon: {
 	Tooltip:
 		'''
 		A magical artifact, whose flame died out long ago
-		Using it freezes the passage of time
-		This does not work while a boss is alive
+		Using it freezes the passage of time temporarily
+		This does not work during celestial anomalies
 		'''
 }

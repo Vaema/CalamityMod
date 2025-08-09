@@ -1,5 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Creative;
 using Terraria.GameContent.NetModules;
@@ -13,6 +15,9 @@ namespace CalamityMod.Items.Tools.ClimateChange
     public class Bakidon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Tools";
+
+        public static int FreezeTime => CalamityUtils.MinutesToFrames(10);
+        public static float RechargeMultiplier => 1;
 
         public override void SetDefaults()
         {
@@ -34,14 +39,38 @@ namespace CalamityMod.Items.Tools.ClimateChange
 
         public override bool? UseItem(Player player)
         {
+            player.Calamity().WeakTimeFreezeInUse = !player.Calamity().WeakTimeFreezeInUse;
             if (Main.netMode != NetmodeID.Server && player == Main.LocalPlayer)
             {
                 var power = CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>();
                 NetPacket packet = NetCreativePowersModule.PreparePacket(power.PowerId, 1);
-                packet.Writer.Write(!power.Enabled);
+                packet.Writer.Write(player.Calamity().WeakTimeFreezeInUse);
                 NetManager.Instance.SendToServerOrLoopback(packet);
             }
             return true;
+        }
+
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            var cplayer = Main.LocalPlayer.Calamity();
+            float fill =  1 - cplayer.WeakTimeFreezeUseTimer / (float)(FreezeTime / RechargeMultiplier);
+            if (fill >= 1)
+                return;
+
+            float barScale = 1.1f;
+
+            var barBG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarBack").Value;
+            var barFG = ModContent.Request<Texture2D>("CalamityMod/UI/MiscTextures/GenericBarFront").Value;
+
+            Vector2 barOrigin = barBG.Size() * 0.5f;
+            float yOffset = 7.5f;
+            Vector2 drawPos = position + Vector2.UnitY * scale * (frame.Height - yOffset);
+            Rectangle frameCrop = new Rectangle(0, 0, (int)((fill) * barFG.Width), barFG.Height);
+            Color colorBG = Color.DarkViolet * 0.5f;
+            Color colorFG = Color.Lerp(Color.Orange, Color.Green, fill);
+
+            spriteBatch.Draw(barBG, drawPos, null, colorBG, 0f, barOrigin, scale * barScale, 0f, 0f);
+            spriteBatch.Draw(barFG, drawPos, frameCrop, colorFG, 0f, barOrigin, scale * barScale, 0f, 0f);
         }
 
         public override void AddRecipes()

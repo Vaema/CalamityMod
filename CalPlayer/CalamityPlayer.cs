@@ -40,6 +40,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -68,12 +69,16 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Creative;
+using Terraria.GameContent.NetModules;
 using Terraria.GameInput;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Graphics.Effects;
+using Terraria.Net;
+using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.CalPlayer
@@ -391,6 +396,9 @@ namespace CalamityMod.CalPlayer
         public bool canFireGodSlayerRangedProjectile = false;
         public bool canFireBloodflareMageProjectile = false;
         public bool canFireBloodflareRangedProjectile = false;
+
+        public float WeakTimeFreezeUseTimer = 0;
+        public bool WeakTimeFreezeInUse = false;
         #endregion
 
         #region Sound
@@ -4508,6 +4516,47 @@ namespace CalamityMod.CalPlayer
 
         #endregion
 
+        public override void PostUpdate()
+        {
+            #region Managing time control
+            if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
+            {
+                var power = CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>();
+                double dayrate = CreativePowerManager.Instance.GetPower<CreativePowers.ModifyTimeRate>().TargetTimeRate;
+                if (CurrentFrameFlags.SleepingPlayersCount == CurrentFrameFlags.ActivePlayersCount && CurrentFrameFlags.SleepingPlayersCount > 0)
+                    dayrate *= 5;
+                if (Main.IsFastForwardingTime())
+                    dayrate = 60;
+                double tileUpdate = 1;
+                double eventUpdate = 1;
+                SystemLoader.ModifyTimeRate(ref dayrate, ref tileUpdate, ref eventUpdate);
+                if (WeakTimeFreezeInUse)
+                {
+                    if (!power.Enabled)
+                        WeakTimeFreezeInUse = false;
+                    else
+                    {
+                        if (WeakTimeFreezeUseTimer >= Bakidon.FreezeTime / Bakidon.RechargeMultiplier || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon || Main.snowMoon)
+                        {
+
+                            NetPacket packet = NetCreativePowersModule.PreparePacket(power.PowerId, 1);
+                            packet.Writer.Write(false);
+                            NetManager.Instance.SendToServerOrLoopback(packet);
+                            WeakTimeFreezeInUse = false;
+                        }
+                        WeakTimeFreezeUseTimer += 1 * (float)dayrate;
+                    }
+                }
+                else
+                {
+                    if (WeakTimeFreezeUseTimer > 0)
+                        WeakTimeFreezeUseTimer -= 1 * (float)dayrate;
+                    else
+                        WeakTimeFreezeUseTimer = 0;
+                }
+            }
+            #endregion
+        }
         public override void PostUpdateRunSpeeds()
         {
             #region SpeedBoosts
@@ -4597,7 +4646,7 @@ namespace CalamityMod.CalPlayer
                     ModDashMovement();
             }
             #endregion
-            
+
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
         }
         #endregion
