@@ -409,7 +409,7 @@ namespace CalamityMod.CalPlayer
 
             if (forbiddenCirclet && globalProj.stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(), 600);
+                target.AddBuff(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.TagDuration);
             }
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
