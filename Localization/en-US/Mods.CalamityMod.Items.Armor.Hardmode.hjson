@@ -235,7 +235,7 @@ HydrothermicHeadRanged: {
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
 		25% chance to save ammo
 		'''
-	SetBonus: You fire a homing chaos flare when using ranged weapons every 0.33 seconds
+	SetBonus: You fire a homing chaos flare when using ranged weapons every {0} seconds
 }
 
 HydrothermicHeadRogue: {
@@ -248,7 +248,7 @@ HydrothermicHeadRogue: {
 	SetBonus:
 		'''
 		{$Common.RogueStealth}
-		Rogue weapons unleash a volley of homing chaos flames around the player every 2 seconds
+		Rogue weapons unleash a volley of homing chaos flames around the player every {1} seconds
 		'''
 }
 
