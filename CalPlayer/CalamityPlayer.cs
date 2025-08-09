@@ -3941,7 +3941,7 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0 )
+                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0)
                         {
                             foreach (var item in Main.ActiveProjectiles)
                             {
