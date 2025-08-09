@@ -3875,11 +3875,12 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(600);
+                    int baseDmg = auricSet ? 500 : 380;
+                    int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDmg);
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
+                        Main.projectile[p].originalDamage = baseDmg;
                 }
             }
 
