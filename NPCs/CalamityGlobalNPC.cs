@@ -5602,7 +5602,7 @@ namespace CalamityMod.NPCs
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int slimeAmt = CalamityWorld.LegendaryMode ? Main.rand.Next(6) + 10 : Main.rand.Next(2) + 2; // 2 to 3 extra
+                                int slimeAmt = Main.rand.Next(2) + 2; // 2 to 3 extra
                                 for (int s = 0; s < slimeAmt; s++)
                                 {
                                     int slime = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)(npc.position.Y + npc.height), NPCID.BlueSlime, 0, 0f, 0f, 0f, 0f, 255);
@@ -5610,8 +5610,8 @@ namespace CalamityMod.NPCs
                                     npc2.SetDefaults(NPCID.BabySlime);
                                     npc2.velocity.X = npc.velocity.X * 2f;
                                     npc2.velocity.Y = npc.velocity.Y;
-                                    npc2.velocity.X += Main.rand.Next(-20, 20) * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f) + s * npc.direction * (CalamityWorld.LegendaryMode ? 0.5f : 0.3f);
-                                    npc2.velocity.Y -= Main.rand.Next(0, 10) * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f) + s;
+                                    npc2.velocity.X += Main.rand.Next(-20, 20) * 0.1f + s * npc.direction * 0.3f;
+                                    npc2.velocity.Y -= Main.rand.Next(10) * 0.1f + s;
                                     npc2.ai[0] = -1000 * Main.rand.Next(3);
 
                                     if (Main.dedServ && slime < Main.maxNPCs)
