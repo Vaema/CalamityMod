@@ -292,7 +292,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.MaliceMode)
+            if (Main.zenithWorld)
                 chargeVelocity *= 1.25f;
 
             if (exhausted)
@@ -464,7 +464,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.MaliceMode)
+            if (Main.zenithWorld)
                 chargeTime *= 2;
 
             // Set variables for spawn effects
@@ -762,7 +762,7 @@ namespace CalamityMod.NPCs.OldDuke
             else if (NPC.ai[0] == 1f)
             {
                 // The dumbest thing to ever exist
-                if (CalamityWorld.MaliceMode && NPC.ai[2] % 10f == 0f)
+                if (Main.zenithWorld && NPC.ai[2] % 10f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1122,7 +1122,7 @@ namespace CalamityMod.NPCs.OldDuke
             else if (NPC.ai[0] == 6f)
             {
                 // The dumbest thing to ever exist
-                if (CalamityWorld.MaliceMode && NPC.ai[2] % 8f == 0f)
+                if (Main.zenithWorld && NPC.ai[2] % 8f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1500,7 +1500,7 @@ namespace CalamityMod.NPCs.OldDuke
             else if (NPC.ai[0] == 11f)
             {
                 // The dumbest thing to ever exist
-                if (CalamityWorld.MaliceMode && NPC.ai[2] % 6f == 0f)
+                if (Main.zenithWorld && NPC.ai[2] % 6f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);

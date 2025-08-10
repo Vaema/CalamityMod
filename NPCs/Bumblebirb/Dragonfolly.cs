@@ -337,7 +337,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             }
 
             // Max spawn amount
-            int maxBirbs = CalamityWorld.MaliceMode ? 12 : revenge ? 3 : 2;
+            int maxBirbs = Main.zenithWorld ? 12 : revenge ? 3 : 2;
 
             // Variable for charging
             float chargeDistance = 600f;
@@ -648,7 +648,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                 float velocity = 8f + (enrageScale - 1f) * 2f;
                 float follyQuickFlySpeed = velocity + NPC.ai[2] + follyQuickFlyTargetDirection.Length() / 120f;
-                if (CalamityWorld.MaliceMode)
+                if (Main.getGoodWorld)
                     follyQuickFlySpeed *= 2f;
 
                 float follyQuickFlyVelMult = 20f;
@@ -657,7 +657,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.velocity = (NPC.velocity * (follyQuickFlyVelMult - 1f) + follyQuickFlyTargetDirection) / follyQuickFlyVelMult;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= (CalamityWorld.MaliceMode ? 90f : 180f))
+                if (NPC.ai[1] >= (Main.getGoodWorld ? 90f : 180f))
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 0f;
@@ -855,7 +855,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool gfbSpawnFlag = CalamityWorld.MaliceMode && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
+                        bool gfbSpawnFlag = Main.zenithWorld && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
                         bool spawnFlag = NPC.CountNPCS(ModContent.NPCType<DraconicSwarmer>()) < maxBirbs && (NPC.ai[1] == 140f || (revenge && NPC.ai[1] == 155f) || NPC.ai[1] == 170f || gfbSpawnFlag);
                         if (spawnFlag)
                         {

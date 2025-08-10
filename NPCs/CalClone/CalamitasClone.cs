@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
 
-                        if (CalamityWorld.MaliceMode)
+                        if (Main.zenithWorld)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 1f;
 
-                        if (CalamityWorld.MaliceMode)
+                        if (Main.zenithWorld)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -585,7 +585,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 return;
             }
-            else if (CalamityWorld.MaliceMode)
+            else if (Main.zenithWorld)
             {
                 if (calamityGlobalNPC.newAI[3] < 900f)
                     calamityGlobalNPC.newAI[3] += 1f;
@@ -667,8 +667,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                        bool shootPredictiveShot = CalamityWorld.MaliceMode && Main.rand.NextBool();
-                        Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
+                        Vector2 predictionVector = Main.getGoodWorld ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
                         int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);

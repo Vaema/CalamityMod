@@ -510,8 +510,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 5f, projectileVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         Main.projectile[proj].timeLeft = 240;
-                        if (CalamityWorld.MaliceMode)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
 
                     if (NPC.ai[1] % divisor2 == divisor2 - 1f)
@@ -544,9 +542,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj2 = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.MaliceMode)
-                                    Main.projectile[proj2].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -608,8 +604,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
                             Main.projectile[proj].timeLeft = 300;
                             Main.projectile[proj].tileCollide = false;
-                            if (CalamityWorld.MaliceMode)
-                                Main.projectile[proj].extraUpdates += 1;
                         }
                     }
 
@@ -637,9 +631,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                            if (CalamityWorld.MaliceMode)
-                                Main.projectile[proj].extraUpdates += 1;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                         }
 
                         if (death)
@@ -648,9 +640,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.MaliceMode)
-                                    Main.projectile[proj].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }

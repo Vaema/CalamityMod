@@ -211,13 +211,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            float maliceBuffMult = CalamityWorld.MaliceMode ? 1.5f : 1f;
-
-            // Set AI variable to be used by Dark Energies
-            NPC.ai[1] = maliceBuffMult;
-
             // Increase projectile fire rate based on number of nearby active tiles
-            float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((maliceBuffMult - 1f) / 0.5f));
+            float projectileFireRateMultiplier = Main.getGoodWorld ? 0.5f : 1.5f;
 
             // Decides whether Ceaseless moves closer to its target or not
             float distanceRequiredToMove = Main.getGoodWorld ? 300f : 720f;
@@ -227,7 +222,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (!anyDarkEnergies)
             {
                 // This is here because it's used in multiple places
-                float suckDistance = CalamityWorld.MaliceMode ? 2400f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+                float suckDistance = death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
 
                 // Move closer to the target before trying to succ
                 if (movingDuringSuccPhase)
@@ -527,8 +522,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // Basic movement towards a location
             void Movement(bool succ)
             {
-                float velocity = ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * maliceBuffMult;
-                float acceleration = (death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * maliceBuffMult;
+                float velocity = ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f));
+                float acceleration = (death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f);
 
                 // Increase speed dramatically in succ phase
                 if (succ)
