@@ -146,7 +146,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
             // Flight timer
-            float aiSwitchTimer = doubleWormPhase ? (CalamityWorld.LegendaryMode ? 600f : 1200f) : (CalamityWorld.LegendaryMode ? 900f : 1800f);
+            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
 
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
@@ -304,7 +304,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            float cyanThreshold = CalamityWorld.LegendaryMode ? 300f : 600f;
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
             // Tail is always the first segment to visually transition
             float transitionStart = cyanThreshold * 0.75f;
             float transitionEnd = cyanThreshold * 0.8f;

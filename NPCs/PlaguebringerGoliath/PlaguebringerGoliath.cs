@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             float challengeAmt = (1f - lifeRatio) * 100f;
             float nukeBarrageChallengeAmt = (0.5f - lifeRatio) * 200f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 challengeAmt *= 1.5f;
                 nukeBarrageChallengeAmt *= 1.5f;
@@ -207,7 +207,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             // Missile countdown
             if (halfLife && MissileCountdown == 0)
-                MissileCountdown = CalamityWorld.LegendaryMode ? 300 : 600;
+                MissileCountdown = Main.getGoodWorld ? 300 : 600;
             if (MissileCountdown > 1)
                 MissileCountdown--;
 
@@ -248,7 +248,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (enrageScale > 1.5f)
                 enrageScale = 1.5f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 enrageScale += 0.5f;
 
             bool diagonalDash = (revenge && phase2);
@@ -798,7 +798,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 NPC.direction = playerLocation < 0 ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                if (NPC.ai[2] > (CalamityWorld.LegendaryMode ? 3f : 5f))
+                if (NPC.ai[2] > 5f)
                 {
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;

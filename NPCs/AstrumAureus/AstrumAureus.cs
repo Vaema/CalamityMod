@@ -113,10 +113,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale *= 0.8f;
+            if (Main.getGoodWorld)
+                NPC.scale = 0.7f;
             if (Main.zenithWorld)
-                NPC.scale *= 1.5f;
+                NPC.scale = 1.5f;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -206,7 +206,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 walkingVelocity += 1.5f * (1f - lifeRatio);
             if (revenge)
                 walkingVelocity += Math.Abs(NPC.Center.X - player.Center.X) * 0.0025f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 walkingVelocity *= 1.15f;
 
             float walkingProjectileVelocity = walkingVelocity * 0.8f;
@@ -635,7 +635,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         float velocity = CalamityWorld.MaliceMode ? 27f : 20f;
                         if (expertMode)
                             velocity += death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             velocity *= 1.15f;
 
                         NPC.velocity = (new Vector2(player.Center.X, player.Center.Y - 500f) - NPC.Center).SafeNormalize(Vector2.Zero) * velocity;
@@ -1050,7 +1050,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                 if (calamityGlobalNPC.newAI[1] > 0f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1] + 1f;
 
-                if (CalamityWorld.LegendaryMode && !reduceFallSpeed)
+                if (Main.getGoodWorld && !reduceFallSpeed)
                 {
                     gravity *= 1.15f;
                     maxFallSpeed *= 1.15f;

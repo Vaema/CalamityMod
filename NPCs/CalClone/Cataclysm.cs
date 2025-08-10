@@ -221,7 +221,7 @@ namespace CalamityMod.NPCs.CalClone
                 float calCloneBroProjAttackMaxSpeed = 5f;
                 float calCloneBroProjAttackAccel = 0.1f;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     calCloneBroProjAttackMaxSpeed *= 1.15f;
                     calCloneBroProjAttackAccel *= 1.15f;
@@ -342,7 +342,7 @@ namespace CalamityMod.NPCs.CalClone
                         calCloneBroChargeSpeed += 2f;
                     if (revenge)
                         calCloneBroChargeSpeed += 2f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         calCloneBroChargeSpeed *= 1.25f;
 
                     Vector2 calCloneBroChargeCenter = NPC.Center;

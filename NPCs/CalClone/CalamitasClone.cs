@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.CalClone
                 baseVelocity += 1.5f * (1f - lifeRatio);
                 baseAcceleration += 0.03f * (1f - lifeRatio);
             }
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 baseVelocity *= 1.15f;
                 baseAcceleration *= 1.15f;
@@ -447,7 +447,7 @@ namespace CalamityMod.NPCs.CalClone
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
-                            float gigaBlastFrequency = CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f;
+                            float gigaBlastFrequency = Main.getGoodWorld ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {
@@ -773,7 +773,7 @@ namespace CalamityMod.NPCs.CalClone
                     if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
                     {
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                        Vector2 fireballVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
+                        Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
                     }
                 }

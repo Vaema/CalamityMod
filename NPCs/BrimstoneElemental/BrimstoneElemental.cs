@@ -460,7 +460,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     NPC.chaseable = true;
                     NPC.ai[3] += 1f;
                     NPC.alpha = 0;
-                    if (NPC.ai[3] >= 2f || phase2 || CalamityWorld.LegendaryMode)
+                    if (NPC.ai[3] >= 2f || phase2 || Main.getGoodWorld)
                     {
                         NPC.ai[0] = -1f;
                         NPC.ai[1] = 0f;
@@ -531,7 +531,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
                         int spread = death ? 90 : 45;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             numProj *= 3;
                             spread *= 2;
@@ -570,7 +570,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
                 NPC.chaseable = false;
                 NPC.localAI[0] += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     NPC.localAI[0] += 2f;
                 if (expertMode)
                     NPC.localAI[0] += 1f - lifeRatio;
@@ -738,7 +738,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             int damage = RayDamage;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -779,7 +779,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -801,7 +801,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, NPC.localAI[0], NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
-                                if (CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, -NPC.localAI[0], -NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
 
                                 if (Main.zenithWorld)
