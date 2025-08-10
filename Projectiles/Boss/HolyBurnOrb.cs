@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.timeLeft = 160;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 if (Projectile.velocity.Length() < 12f && Projectile.ai[1] == 0f)
                 {

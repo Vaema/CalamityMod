@@ -173,7 +173,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             if (NPC.localAI[2] > 0f)
                 enrageScale += 1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 enrageScale += 0.5f;
 
             if (enrageScale > 3f)
@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                         bool spawnRight = player.velocity.X > 0f;
                                         for (int i = 0; i < totalProjectiles; i++)
                                         {
-                                            if (CalamityWorld.LegendaryMode)
+                                            if (Main.getGoodWorld)
                                             {
                                                 if (i >= (int)(totalProjectiles * 0.125) && i <= (int)(totalProjectiles * 0.375))
                                                 {
@@ -533,13 +533,13 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     {
                                         int totalProjectiles = phase2 ? 40 : 48;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             totalProjectiles *= 2;
 
                                         float radians = MathHelper.TwoPi / totalProjectiles;
                                         int distance = phase2 ? 1200 : 1320;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             distance *= 2;
 
                                         bool spawnRight = player.velocity.X > 0f;

@@ -119,7 +119,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 if (NPC.Opacity > 1f)
                     NPC.Opacity = 1f;
 
-                NPC.scale = MathHelper.Lerp(0.05f, CalamityWorld.LegendaryMode ? 0.5f : 1f, NPC.Opacity);
+                NPC.scale = MathHelper.Lerp(0.05f, Main.getGoodWorld ? 0.5f : 1f, NPC.Opacity);
             }
             else
             {

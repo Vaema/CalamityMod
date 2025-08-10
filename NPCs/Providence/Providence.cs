@@ -273,7 +273,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.25f;
         }
 
@@ -854,7 +854,7 @@ namespace CalamityMod.NPCs.Providence
                             velocity = 30f;
                     }
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         velocity *= 1.2f;
                         acceleration *= 1.2f;
@@ -870,12 +870,12 @@ namespace CalamityMod.NPCs.Providence
 
                         float moveUpThreshold = player.position.Y - (NPC.position.Y + NPC.height);
                         if (moveUpThreshold < (laserPhaseSlow ? 150f : 200f)) // 150
-                            NPC.velocity.Y -= CalamityWorld.LegendaryMode ? 0.4f : 0.2f;
+                            NPC.velocity.Y -= Main.getGoodWorld ? 0.4f : 0.2f;
                         if (moveUpThreshold > (laserPhaseSlow ? 200f : 250f)) // 200
-                            NPC.velocity.Y += CalamityWorld.LegendaryMode ? 0.4f : 0.2f;
+                            NPC.velocity.Y += Main.getGoodWorld ? 0.4f : 0.2f;
 
                         float speedCap = laserPhaseSlow ? 2f : 6f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             speedCap *= 1.5f;
 
                         if (NPC.velocity.Y > speedCap)
@@ -1524,7 +1524,7 @@ namespace CalamityMod.NPCs.Providence
                                 {
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
 
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -vector2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer);
                                 }
                             }
@@ -1551,7 +1551,7 @@ namespace CalamityMod.NPCs.Providence
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom, -velocity2, projectileType, SpearDamage.CalculateProvidenceDamage(), 0f, Main.myPlayer, 1f, 0f);
                         }
                     }

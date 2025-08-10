@@ -3097,7 +3097,7 @@ namespace CalamityMod.CalPlayer
                 abyssDeath = false;
 
                 // Signus headcrab darkness
-                if (CalamityWorld.LegendaryMode)
+                if (Main.zenithWorld)
                 {
                     if (CalamityGlobalNPC.signus != -1)
                     {

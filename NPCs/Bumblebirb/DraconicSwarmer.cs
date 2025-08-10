@@ -123,8 +123,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerIdleTargetDist.Normalize();
                     swarmerIdleTargetDist *= swarmerIdleSpeed;
                     NPC.velocity = (NPC.velocity * 29f + swarmerIdleTargetDist) / 30f;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
                 }
                 else if (NPC.velocity.Length() > 2f)
                     NPC.velocity *= 0.95f;
@@ -171,8 +169,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerChargeTargetDist.Normalize();
                     swarmerChargeTargetDist *= swarmerChargeSpeed;
                     NPC.velocity = (NPC.velocity * (swarmerChargeVelMult - 1f) + swarmerChargeTargetDist) / swarmerChargeVelMult;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
 
                     NPC.ForceNetUpdate();
 
@@ -199,8 +195,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerDecelerateTargetDist.Normalize();
                     swarmerDecelerateTargetDist *= swarmerDecelerateSpeed;
                     NPC.velocity = (NPC.velocity * (swarmerDecelerateVelMult - 1f) + swarmerDecelerateTargetDist) / swarmerDecelerateVelMult;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
 
                     if (NPC.velocity.X < 0f)
                         NPC.direction = -1;
@@ -216,9 +210,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                         NPC.damage = NPC.defDamage;
 
                         NPC.velocity = swarmerDecelerateTargetDist;
-                        if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                            NPC.velocity *= 1.15f;
-
                         if (NPC.velocity.X < 0f)
                             NPC.direction = -1;
                         else
