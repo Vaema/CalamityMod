@@ -253,7 +253,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         }
 
         public float GetSlowdownAreaEdgeRadius(bool lastMechAlive) =>
-            (CalamityWorld.death ? 600f : CalamityWorld.revenge ? 700f : Main.expertMode ? 800f : 1000f) * (lastMechAlive ? 0.75f : 1f) * (Main.zenithWorld && !exoMechdusa ? 2 : CalamityWorld.LegendaryMode ? 0.5f : 1f);
+            (CalamityWorld.death ? 600f : CalamityWorld.revenge ? 700f : Main.expertMode ? 800f : 1000f) * (lastMechAlive ? 0.75f : 1f) * (Main.zenithWorld && !exoMechdusa ? 2 : Main.getGoodWorld ? 0.75f : 1f);
 
         public int CheckForOtherMechs(ref int targetIndex, out bool exoPrimeAlive, out bool exoTwinsAlive)
         {
@@ -526,7 +526,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             else
                 baseVelocity *= increaseSpeedMult;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 baseVelocity *= 1.15f;
 
             float turnDegrees = baseVelocity * 0.1f * (shouldGetBuffedByBerserkPhase ? 1.25f : 1.1f);

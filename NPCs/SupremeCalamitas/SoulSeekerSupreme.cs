@@ -206,7 +206,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 
-            float distanceFromSCal = CalamityWorld.LegendaryMode ? 300f : 225f;
+            float distanceFromSCal = Main.getGoodWorld ? 300f : 225f;
             NPC.position = SCal.Center - MathHelper.ToRadians(RotationalDegreeOffset).ToRotationVector2() * distanceFromSCal - NPC.Size * 0.5f;
             NPC.velocity = Vector2.Zero;
             RotationalDegreeOffset += 0.5f;
