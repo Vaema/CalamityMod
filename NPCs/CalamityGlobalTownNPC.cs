@@ -1152,10 +1152,10 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Merchant)
             {
-                shop.AddWithCustomValue(ItemID.Bottle, Item.buyPrice(copper: 20))
-                .AddWithCustomValue(ItemID.WormholePotion, Item.buyPrice(silver: 5), Condition.HappyEnoughToSellPylons);
-                shop.Add(ItemID.Flare, hasFlareGunUpgrade)
-                .Add(ItemID.BlueFlare, hasFlareGunUpgrade)
+                shop.InsertBefore(ItemID.LesserHealingPotion, ItemID.Bottle)
+                .InsertAfter(ItemID.ManaPotion, ItemID.WormholePotion, Condition.HappyEnoughToSellPylons)
+                .InsertAfter(ItemID.Flare, ItemID.Flare, hasFlareGunUpgrade)
+                .InsertAfter(ItemID.BlueFlare, ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()));
             }
 
@@ -1198,13 +1198,16 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Dryad)
             {
-                shop.AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
+                shop.InsertAfter(ItemID.AshGrassSeeds, ItemType<CinderBlossomSeeds>(), Condition.DownedSkeletron)
+                // Vanilla sells these in Hardmode, we just make them available at all times
+                // Fun fact: Corrupt and Crimson Seeds are sold twice, in different positions!
+                // This position is placed over the Graveyard one, and not the Blood Moon one (which is what happens if you insert after Corrupt Seeds). Totally awesome shop database. - Iris
+                .InsertAfter(ItemID.GrassWall, ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .InsertAfter(ItemID.GrassWall, ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode)
+                .InsertAfter(ItemID.HallowedGrassEcho, ItemType<AstralGrassSeeds>(), Condition.NotBloodMoon, Condition.Hardmode)
+                .AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
                 .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
-                .Add<RomajedaOrchid>()
-                .Add<CinderBlossomSeeds>(Condition.DownedSkeletron)
-                .Add(ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
-                .Add(ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode) // Vanilla sells these in Hardmode, we just make them available at all times
-                .Add<AstralGrassSeeds>(Condition.NotBloodMoon, Condition.Hardmode);
+                .Add<RomajedaOrchid>();
             }
 
             if (type == NPCID.GoblinTinkerer)
@@ -1237,9 +1240,9 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Steampunker)
             {
-                shop.Add<AstralSolution>(Condition.NotRemixWorld)
-                .Add(ItemID.PurpleSolution, Condition.InGraveyard, Condition.CrimsonWorld, Condition.NotRemixWorld)
-                .Add(ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld)
+                shop.InsertAfter(ItemID.BlueSolution, ItemType<AstralSolution>(), Condition.NotRemixWorld)
+                .InsertAfter(ItemID.PurpleSolution, ItemID.PurpleSolution, Condition.InGraveyard, Condition.CrimsonWorld, Condition.NotRemixWorld)
+                .InsertAfter(ItemID.RedSolution, ItemID.RedSolution, Condition.InGraveyard, Condition.CorruptWorld, Condition.NotRemixWorld)
                 .Add<LucisHairstyle>()
                 .Add<LucisMilitaryUniform>()
                 .Add<LucisBoots>()
@@ -1262,11 +1265,11 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.WitchDoctor)
             {
-                shop.Add<SunkenSeaFountain>()
-                .Add<SulphurousFountainItem>()
-                .Add<AbyssFountainItem>()
-                .Add<AstralFountainItem>()
-                .Add<BrimstoneLavaFountainItem>()
+                shop.InsertAfter(ItemID.OasisFountain, ItemType<SunkenSeaFountain>())
+                .InsertAfter(ItemID.OasisFountain, ItemType<SulphurousFountainItem>())
+                .InsertAfter(ItemID.OasisFountain, ItemType<AbyssFountainItem>())
+                .InsertAfter(ItemID.OasisFountain, ItemType<AstralFountainItem>())
+                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>())
                 .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem);
             }
 
@@ -1283,18 +1286,18 @@ namespace CalamityMod.NPCs
                 musicMod.TryFind("Interlude3MusicBox", out ModItem interlude3Box);
                 musicMod.TryFind("DevourerofGodsEulogyMusicBox", out ModItem eulogyBox);
 
-                shop.AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
-                .Add<LanternCenter>()
-                .AddWithCustomValue(interlude1Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedCalamitasClone)
-                .AddWithCustomValue(interlude2Box.Type, Item.buyPrice(gold: 10), Condition.DownedMoonLord)
-                .AddWithCustomValue(interlude3Box.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedYharon)
-                .AddWithCustomValue(eulogyBox.Type, Item.buyPrice(gold: 10), CalamityConditions.DownedDevourerOfGods);
+                shop.InsertAfter(ItemID.MusicBoxCredits, interlude1Box.Type, CalamityConditions.DownedCalamitasClone)
+                .InsertAfter(ItemID.MusicBoxCredits, interlude2Box.Type, Condition.DownedMoonLord)
+                .InsertAfter(ItemID.MusicBoxCredits, interlude3Box.Type, CalamityConditions.DownedYharon)
+                .InsertAfter(ItemID.MusicBoxCredits, eulogyBox.Type, CalamityConditions.DownedDevourerOfGods)
+                .AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
+                .Add<LanternCenter>();
             }
 
             if (type == NPCID.SkeletonMerchant)
             {
-                shop.AddWithCustomValue<CalciumPotion>(Item.buyPrice(silver: 25))
-                .Add(ItemID.MilkCarton)
+                shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>())
+                .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
                 .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 12))
                 .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 12));
@@ -1326,11 +1329,7 @@ namespace CalamityMod.NPCs
                         break;
                     }
                 }
-                var punch = new Item(ItemType<PunchCard>())
-                {
-                    shopCustomPrice = Item.buyPrice(gold: 10)
-                };
-                items[index] = punch;
+                items[index] = new Item(ItemType<PunchCard>());
             }
         }
         #endregion
