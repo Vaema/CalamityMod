@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 32;
             Item.height = 34;
-            Item.value = Item.buyPrice(platinum: 40); // Sold by Bandit
+            Item.value = Item.buyPrice(platinum: 15); // Sold by Bandit
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
         }

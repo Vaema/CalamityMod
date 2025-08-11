@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<CinquedeaProj>();
             Item.shootSpeed = 10f;
-            Item.value = Item.buyPrice(gold: 9); // Sold by Bandit
+            Item.value = Item.buyPrice(gold: 10); // Sold by Bandit
             Item.DamageType = RogueDamageClass.Instance;
         }
 

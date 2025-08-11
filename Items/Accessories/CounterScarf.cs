@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 30;
             Item.height = 38;
-            Item.value = Item.buyPrice(gold: 10); // Sold by Clothier
+            Item.value = Item.buyPrice(gold: 20); // Sold by Clothier
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }

@@ -202,8 +202,8 @@ namespace CalamityMod.NPCs.TownNPCs
                 .Add<AmidiasTrident>()
                 .Add<EnchantedConch>()
                 .Add<PolypLauncher>()
-                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
-                .AddWithCustomValue<BloodwormItem>(Item.buyPrice(gold: 40), CalamityConditions.DownedOldDuke)
+                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 25), Condition.Hardmode)
+                .AddWithCustomValue<BloodwormItem>(Item.buyPrice(platinum: 1), CalamityConditions.DownedOldDuke)
                 .Register();
         }
 

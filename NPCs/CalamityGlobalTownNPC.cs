@@ -1175,11 +1175,11 @@ namespace CalamityMod.NPCs
             if (type == NPCID.ArmsDealer)
             {
                 shop.Add<P90>(Condition.Hardmode)
-                .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 20), Condition.DownedQueenBee)
-                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 45), Condition.DownedPlantera)
-                .AddWithCustomValue(ItemID.TacticalShotgun, Item.buyPrice(gold: 60), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.SniperRifle, Item.buyPrice(gold: 60), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.RifleScope, Item.buyPrice(gold: 60), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
+                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera)
+                .AddWithCustomValue(ItemID.TacticalShotgun, Item.buyPrice(platinum: 1), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.SniperRifle, Item.buyPrice(platinum: 1), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.RifleScope, Item.buyPrice(platinum: 1), Condition.DownedGolem);
             }
 
             if (type == NPCID.Stylist)
@@ -1193,7 +1193,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Cyborg)
             {
-                shop.AddWithCustomValue(ItemID.RocketLauncher, Item.buyPrice(gold: 25), Condition.DownedGolem)
+                shop.AddWithCustomValue(ItemID.RocketLauncher, Item.buyPrice(platinum: 1), Condition.DownedGolem)
                 .Add<MartianDistressRemote>(Condition.DownedGolem)
                 .Add<LionHeart>(CalamityConditions.DownedPolterghast);
             }
@@ -1207,8 +1207,8 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.GrassWall, ItemID.CorruptSeeds, Condition.CrimsonWorld, Condition.InGraveyard, Condition.PreHardmode)
                 .InsertAfter(ItemID.GrassWall, ItemID.CrimsonSeeds, Condition.CorruptWorld, Condition.InGraveyard, Condition.PreHardmode)
                 .InsertAfter(ItemID.HallowedGrassEcho, ItemType<AstralGrassSeeds>(), Condition.NotBloodMoon, Condition.Hardmode)
-                .AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 2))
-                .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 10))
+                .AddWithCustomValue(ItemID.JungleRose, Item.buyPrice(gold: 3))
+                .AddWithCustomValue(ItemID.NaturesGift, Item.buyPrice(gold: 15))
                 .Add<RomajedaOrchid>();
             }
 
@@ -1220,14 +1220,14 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Mechanic)
             {
-                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 4), Condition.HappyEnoughToSellPylons)
-                .AddWithCustomValue(ItemID.CombatWrench, Item.buyPrice(gold: 10));
+                shop.AddWithCustomValue(ItemID.BuilderPotion, Item.buyPrice(gold: 2), Condition.HappyEnoughToSellPylons)
+                .AddWithCustomValue(ItemID.CombatWrench, Item.buyPrice(gold: 15));
             }
 
             if (type == NPCID.Clothier)
             {
                 shop.Add<CounterScarf>()
-                .AddWithCustomValue(ItemID.GoldenKey, Item.buyPrice(gold: 5), Condition.Hardmode)
+                .AddWithCustomValue(ItemID.GoldenKey, Item.buyPrice(gold: 15), Condition.Hardmode)
                 .Add<GodSlayerHornedHelm>(CalamityConditions.DownedDevourerOfGods)
                 .Add<GodSlayerVisage>(CalamityConditions.DownedDevourerOfGods)
                 .Add<SilvaHelm>(CalamityConditions.DownedDevourerOfGods)
@@ -1254,11 +1254,11 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Wizard)
             {
                 shop.Add<HowlsHeart>()
-                .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 5))
-                .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(gold: 25), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(gold: 25), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
+                .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(platinum: 1), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
+                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(platinum: 1), Condition.DownedGolem)
                 .Add<ResilientCandle>()
                 .Add<SpitefulCandle>()
                 .Add<VigorousCandle>()
@@ -1272,12 +1272,12 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.OasisFountain, ItemType<AbyssFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AstralFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 10), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 25), Condition.DownedGolem);
             }
 
             if (type == NPCID.PartyGirl)
             {
-                shop.AddWithCustomValue(ItemID.GenderChangePotion, Item.buyPrice(silver: 25), Condition.HappyEnoughToSellPylons);
+                shop.Add(ItemID.GenderChangePotion, Condition.HappyEnoughToSellPylons);
             }
 
             if (type == NPCID.Princess)
@@ -1292,7 +1292,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.MusicBoxCredits, interlude2Box.Type, Condition.DownedMoonLord)
                 .InsertAfter(ItemID.MusicBoxCredits, interlude3Box.Type, CalamityConditions.DownedYharon)
                 .InsertAfter(ItemID.MusicBoxCredits, eulogyBox.Type, CalamityConditions.DownedDevourerOfGods)
-                .AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(gold: 50), Condition.Hardmode)
+                .AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(platinum: 1), Condition.Hardmode)
                 .Add<LanternCenter>();
             }
 
@@ -1302,13 +1302,13 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton)
                 .InsertAfter(ItemID.SpelunkerFlare, ItemID.SpelunkerFlare, spelunkerGlowCondition, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
-                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 12))
-                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 12));
+                .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 15))
+                .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 15));
             }
 
             if (type == NPCID.BestiaryGirl)
             {
-                shop.AddWithCustomValue(ItemID.EmpressButterfly, Item.buyPrice(gold: 15), bestiaryProgressLacewing);
+                shop.Add(ItemID.EmpressButterfly, bestiaryProgressLacewing);
             }
 
             if (type == NPCID.Truffle)

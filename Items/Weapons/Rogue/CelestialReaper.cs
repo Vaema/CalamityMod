@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CelestialReaper : RogueWeapon
     {
-
         public override void SetDefaults()
         {
             Item.width = 66;
@@ -24,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(platinum: 2); // Sold by Bandit
+            Item.value = Item.buyPrice(platinum: 3); // Sold by Bandit
             Item.shoot = ModContent.ProjectileType<CelestialReaperProjectile>();
             Item.shootSpeed = 20f;
             Item.DamageType = RogueDamageClass.Instance;

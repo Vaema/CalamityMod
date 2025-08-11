@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = Item.buyPrice(gold: 25); // Sold by Arms Dealer
+            Item.value = Item.buyPrice(gold: 35); // Sold by Arms Dealer
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item11 with { Volume = 0.6f };
             Item.autoReuse = true;
