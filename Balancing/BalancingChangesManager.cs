@@ -387,9 +387,6 @@ namespace CalamityMod.Balancing
             // 35% resist to Prismatic Breaker's deathray.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<PrismaticRay>()))));
 
-            // 30% resist to Sirius.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<SiriusExplosion>()))));
-
             // 30% resist to Dragon Scales and The Wand's tornadoes.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<InfernadoFriendly>(), ProjectileType<DragonScalesInfernado>()))));
 
