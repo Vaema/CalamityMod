@@ -27,6 +27,7 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -1147,6 +1148,7 @@ namespace CalamityMod.NPCs
         {
             int type = shop.NpcType;
 
+            Condition spelunkerGlowCondition = new(Language.GetText("Conditions.NightDayFullMoon"), () => !Main.dayTime || Main.GetMoonPhase() == MoonPhase.Full); // Identical to the one in NPCShopDatabase
             Condition hasFlareGunUpgrade = new(CalamityUtils.GetText("Condition.HasFlareGun"), () => (Main.LocalPlayer.HasItem(ItemType<FirestormCannon>()) || Main.LocalPlayer.HasItem(ItemType<SpectralstormCannon>())) && !Main.LocalPlayer.HasItem(ItemID.FlareGun));
             Condition bestiaryProgressLacewing = new(CalamityUtils.GetText("Condition.LacewingBestiary"), () => Main.GetBestiaryProgressReport().CompletionPercent >= 0.4f);
 
@@ -1298,6 +1300,7 @@ namespace CalamityMod.NPCs
             {
                 shop.InsertAfter(ItemID.HealingPotion, ItemType<CalciumPotion>())
                 .InsertAfter(ItemID.HealingPotion, ItemID.MilkCarton)
+                .InsertAfter(ItemID.SpelunkerFlare, ItemID.SpelunkerFlare, spelunkerGlowCondition, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.Marrow, Item.buyPrice(gold: 25), Condition.Hardmode)
                 .AddWithCustomValue<GiantShell>(Item.buyPrice(gold: 12))
                 .AddWithCustomValue<CrawCarapace>(Item.buyPrice(gold: 12));
