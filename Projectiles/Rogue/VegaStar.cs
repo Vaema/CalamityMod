@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class NightsGazeStar : ModProjectile, ILocalizedModType
+    public class VegaStar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
         public static int lifetime = 300;

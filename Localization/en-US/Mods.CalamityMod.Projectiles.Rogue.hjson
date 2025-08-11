@@ -183,9 +183,9 @@ NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
 NiceCock.DisplayName: Kitchen Fire
-NightsGazeProjectile.DisplayName: Night's Gaze
-NightsGazeSpark.DisplayName: Night's Gaze Spark
-NightsGazeStar.DisplayName: Night's Gaze Star
+VegaProjectile.DisplayName: Night's Gaze
+VegaSpark.DisplayName: Night's Gaze Spark
+VegaStar.DisplayName: Night's Gaze Star
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
 PanSpark.DisplayName: Pan Spark
@@ -324,3 +324,4 @@ WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
 LyraConstellation.DisplayName: Lyra Constellation
+ScorpiusConstellation.DisplayName: Scorpius Constellation

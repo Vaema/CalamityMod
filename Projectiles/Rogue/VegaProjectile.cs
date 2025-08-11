@@ -10,10 +10,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
-    public class NightsGazeProjectile : ModProjectile, ILocalizedModType
+    public class VegaProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/NightsGaze";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/Vega";
 
         public override void SetStaticDefaults()
         {
@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 foreach (var item in Main.ActiveProjectiles)
                 {
-                    if (item.type == ModContent.ProjectileType<NightsGazeStar>() && item.owner == Projectile.owner)
+                    if (item.type == ModContent.ProjectileType<VegaStar>() && item.owner == Projectile.owner)
                     {
                         item.ai[2] = target.whoAmI + 1;
                         item.timeLeft = Math.Max(300,item.timeLeft);
@@ -76,8 +76,8 @@ namespace CalamityMod.Projectiles.Rogue
             float spread = 20f;
             int projectileDamage = SplitProjDamage;
             float kb = 5f;
-            int sparkID = ModContent.ProjectileType<NightsGazeSpark>();
-            int starID = ModContent.ProjectileType<NightsGazeStar>();
+            int sparkID = ModContent.ProjectileType<VegaSpark>();
+            int starID = ModContent.ProjectileType<VegaStar>();
             if (Projectile.Calamity().stealthStrike)
                 for (int i = 0; i < 1; i++)
                 {
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void PostDraw(Color lightColor)
         {
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/NightsGazeGlow").Value;
+            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/VegaGlow").Value;
             Vector2 origin = new Vector2(texture.Width / 2f, texture.Height / 2f);
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
         }

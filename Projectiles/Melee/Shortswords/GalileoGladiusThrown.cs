@@ -177,7 +177,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                     for (int i = 0; i < 3; i++)
                     {
                         float moveDuration = Main.rand.Next(5, 15);
-                        var proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Owner.velocity.RotatedByRandom(0.4f) * -Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<NightsGazeStar>(), Projectile.originalDamage, Projectile.knockBack, Projectile.owner, 0f, moveDuration);
+                        var proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Owner.velocity.RotatedByRandom(0.4f) * -Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<VegaStar>(), Projectile.originalDamage, Projectile.knockBack, Projectile.owner, 0f, moveDuration);
                         if (Main.projectile.IndexInRange(proj))
                         {
                             Main.projectile[proj].DamageType = DamageClass.Melee;
@@ -235,11 +235,12 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             float intensity = MathHelper.Min(32, point1.Distance(point2) * 0.1f);
             float size = intensity/32f;
             intensity *= intensitymult;
+            var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
             for (var i = 1; i < offsets.Count; i++)
             {
                 var p1 = Vector2.Lerp(point1, point2, i / (float)(offsets.Count-1)) + new Vector2(0, intensity).RotatedBy(point1.DirectionTo(point2).ToRotation()) * MathF.Sin(Projectile.ai[2] * 0.01f * offsets[i].Item2 + offsets[i].Item1);
                 var p2 = Vector2.Lerp(point1, point2, (i - 1) / (float)(offsets.Count - 1)) + new Vector2(0, intensity).RotatedBy(point1.DirectionTo(point2).ToRotation()) * MathF.Sin(Projectile.ai[2] * 0.01f * offsets[i-1].Item2 + offsets[i-1].Item1);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, p1, p2, Color.SkyBlue * 0.5f, 2 * size);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, p1, p2, color, 2 * size);
             }
             return base.PreDraw(ref lightColor);
         }

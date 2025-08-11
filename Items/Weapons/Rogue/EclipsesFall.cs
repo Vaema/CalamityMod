@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<NightsGaze>().
+                AddIngredient<Vega>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddIngredient<SolarVeil>(12).

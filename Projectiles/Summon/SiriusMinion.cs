@@ -210,7 +210,7 @@ namespace CalamityMod.Projectiles.Summon
                     return;
                 point1.X *= Projectile.spriteDirection;
                 point2.X *= Projectile.spriteDirection;
-                var color = Color.SkyBlue * 0.5f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
+                var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 1.5f);
             }
             ConnectStars(4,new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot

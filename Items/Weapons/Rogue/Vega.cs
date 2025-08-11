@@ -11,7 +11,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class NightsGaze : RogueWeapon, IHoldShiftTooltipItem
+    [LegacyName("NightsGaze")]
+    public class Vega : RogueWeapon, IHoldShiftTooltipItem
     {
         public static int StarburstCost = 20;
         public override void SetDefaults()
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.maxStack = 1;
-            Item.shoot = ModContent.ProjectileType<NightsGazeProjectile>();
+            Item.shoot = ModContent.ProjectileType<VegaProjectile>();
             Item.shootSpeed = 30f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
@@ -59,14 +60,20 @@ namespace CalamityMod.Items.Weapons.Rogue
                 player.Calamity().StratusStarburst -= StarburstCost;
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI,0,1);
                 if (p.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[p].Calamity().stealthStrike = true;
+                    Main.projectile[p].extraUpdates += 1;
+                }
                 return false;
             }
             if (player.Calamity().StealthStrikeAvailable())
             {
                 int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
                 if (p.WithinBounds(Main.maxProjectiles))
+                {
                     Main.projectile[p].Calamity().stealthStrike = true;
+                    Main.projectile[p].extraUpdates += 1;
+                }
                 return false;
             }
             return true;
@@ -74,7 +81,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/NightsGazeGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/VegaGlow").Value);
         }
 
         public override void AddRecipes()

@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Melee
                 point2 += new Vector2(5, 49.25f);
                 point1.X *= Projectile.spriteDirection;
                 point2.X *= Projectile.spriteDirection;
-                var color = Color.SkyBlue * 0.5f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
+                var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale, SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale, color * Projectile.Opacity, 3);
             }
             //Order is back of tail to front. Last four are the head

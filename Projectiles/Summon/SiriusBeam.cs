@@ -95,9 +95,9 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
-            if (Projectile.ai[0] == 1) //Only spawns the on-hit for the quazar
+            if (Projectile.ai[0] == 1) //Only does all the on-hit for the quazar
             {
+                target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
                 float x4 = Main.rgbToHsl(new Color(103, 203, Main.DiscoB)).X;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SiriusExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, x4, Projectile.whoAmI);
             }

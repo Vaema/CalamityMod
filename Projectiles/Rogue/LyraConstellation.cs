@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Rogue
                 point2 += new Vector2(35.666f, -53.166f);
                 point1.X *= Projectile.spriteDirection;
                 point2.X *= Projectile.spriteDirection;
-                var color = Color.SkyBlue * 0.5f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
+                var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 3);
             }
             ConnectStars( new Vector2(0f, 0f), new Vector2(75, -60)); //Center - Vega

@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
                 
             Projectile.velocity *= 0.965f;
             if (Projectile.timeLeft < 225 * Projectile.MaxUpdates)
-                CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f,true)
+                CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f, true);
         }
 
         public override void OnKill(int timeLeft)
@@ -82,7 +82,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
         }
     }
 }
