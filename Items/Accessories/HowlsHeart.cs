@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 26;
             Item.accessory = true;
 
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 36); // Sold by Wizard
             Item.rare = ItemRarityID.LightRed;
             Item.Calamity().donorItem = true;
         }

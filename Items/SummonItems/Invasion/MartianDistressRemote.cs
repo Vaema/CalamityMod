@@ -23,6 +23,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
             Item.width = 26;
             Item.height = 52;
             Item.maxStack = 1;
+            Item.value = Item.buyPrice(gold: 50); // Sold by Cyborg
             Item.rare = ItemRarityID.Yellow;
             Item.useAnimation = 10;
             Item.useTime = 10;

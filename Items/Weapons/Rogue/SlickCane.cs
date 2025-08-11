@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 6f;
             Item.UseSound = SoundID.DD2_GhastlyGlaivePierce;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 40); // Sold by Bandit
             Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<SlickCaneProjectile>();
             Item.shootSpeed = 16f;

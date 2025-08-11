@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 9); // Sold by Bandit
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item1;
 
