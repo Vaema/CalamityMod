@@ -49,18 +49,15 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             // Tools and Utility Items
             tin.Add(ItemID.TinHammer);
             tin.OnFailedConditions(new CommonDrop(ItemID.CopperHammer, 1));
-            itemLoot.Add(ItemID.Bomb, 1, 10, 10);
             itemLoot.Add(ItemID.Rope, 1, 50, 50);
 
             // Potions
             LeadingConditionRule multiplayer = itemLoot.DefineConditionalDropSet(() => Main.netMode == NetmodeID.MultiplayerClient);
-            itemLoot.Add(ItemID.MiningPotion, 1, 3, 3);
             itemLoot.Add(ItemID.RecallPotion, 1, 3, 3);
             multiplayer.Add(ItemID.WormholePotion, 1, 3, 3);
 
             // Tiles
             itemLoot.Add(ItemID.Torch, 1, 25, 25);
-            itemLoot.Add(ItemID.Chest, 1, 3, 3);
 
             // Calamity title theme music box (if music mod is enabled)
             Mod musicMod = ExternalMods.musicMod;
