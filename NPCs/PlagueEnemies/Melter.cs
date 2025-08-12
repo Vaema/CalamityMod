@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.defense = 20;
             NPC.lifeMax = 800;
             NPC.knockBackResist = 0.3f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<MelterBanner>();

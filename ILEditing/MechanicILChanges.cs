@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
@@ -312,6 +313,20 @@ namespace CalamityMod.ILEditing
                 self.dashTime = 0;
             }
         }
+
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
+        {
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
+
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
+        }
         #endregion
 
         #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
@@ -599,7 +614,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -647,31 +662,32 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 

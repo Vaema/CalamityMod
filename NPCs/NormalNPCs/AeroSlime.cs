@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 75;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Slimer;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

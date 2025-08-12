@@ -203,14 +203,14 @@ namespace CalamityMod.UI.ModeIndicator
             if (MouseScreenArea.Intersects(MainClickArea))
             {
                 //Display the first non-none difficulty by default
-                string modeToDisplay = Difficulties[1].Name.ToString();
-                bool anyActiveMode = false;
+                string modeToDisplay = Main.getGoodWorld ? Difficulties[0].FTWName.ToString() : Difficulties[1].Name.ToString();
+                bool anyActiveMode = Main.getGoodWorld ? true : false;
 
                 for (int i = 1; i < Difficulties.Count; i++)
                 {
                     if (GetCurrentDifficulty == Difficulties[i])
                     {
-                        modeToDisplay = Difficulties[i].Name.ToString();
+                        modeToDisplay = Main.getGoodWorld ? Difficulties[i].FTWName.ToString() : Difficulties[i].Name.ToString();
                         anyActiveMode = true;
                     }
                 }
@@ -367,9 +367,9 @@ namespace CalamityMod.UI.ModeIndicator
         #region Difficulty toggling
         public static string GetDifficultyText(DifficultyMode mode)
         {
-            LocalizedText preface = mode.Name;
+            LocalizedText preface = Main.getGoodWorld ? mode.FTWName : mode.Name;
             if (mode == GetCurrentDifficulty)
-                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(mode.Name.ToString());
+                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(Main.getGoodWorld ? mode.FTWName.ToString() : mode.Name.ToString());
 
             string text = "\n" + mode.ShortDescription.ToString();
 
@@ -395,10 +395,13 @@ namespace CalamityMod.UI.ModeIndicator
                 return;
 
             // This has to be put before difficulties change as to not disrupt GetCurrentDifficulty
-            DisplayFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, GetCurrentDifficulty.ChatTextColor.Hex3(), GetCurrentDifficulty.Name, mode.ChatTextColor.Hex3(), mode.Name);
+            DisplayFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, Main.getGoodWorld ? GetCurrentDifficulty.FTWTextColor.Hex3() : GetCurrentDifficulty.ChatTextColor.Hex3(), Main.getGoodWorld ? GetCurrentDifficulty.FTWName : GetCurrentDifficulty.Name
+            , Main.getGoodWorld ? mode.FTWTextColor.Hex3() :mode.ChatTextColor.Hex3(), Main.getGoodWorld ? mode.FTWName :mode.Name);
 
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
             // But would be super useful so other mods can let their own difficulties go there.
+
+            DifficultyModeSystem._newGameModeID = mode.BackBoneGameModeID;
 
             // Disable difficulties.
             for (int i = 0; i < Difficulties.Count; i++)
@@ -439,8 +442,11 @@ namespace CalamityMod.UI.ModeIndicator
             SoundEngine.PlaySound(mode.ActivationSound);
             CalamityNetcode.SyncCalamityWorldDifficulties(Main.myPlayer);
 
-            menuOpen = false;
-            menuOpenTransitionTime = MenuAnimLength;
+            if (menuOpen)
+            {
+                menuOpen = false;
+                menuOpenTransitionTime = MenuAnimLength;
+            }
         }
 
         #endregion

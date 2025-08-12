@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 18;
             NPC.lifeMax = NPC.downedMoonlord ? 3000 : 300;
             NPC.knockBackResist = 0.3f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit2;
             NPC.DeathSound = SoundID.NPCDeath2;
             Banner = NPC.type;

@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.knockBackResist = 0.25f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 0, 60);
+            NPC.value = Item.buyPrice(copper: 60);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = SoundID.NPCDeath54;
             NPC.chaseable = false;

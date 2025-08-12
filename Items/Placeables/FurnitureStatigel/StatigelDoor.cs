@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
         {
             CreateRecipe().
                 AddIngredient<StatigelBlock>(6).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

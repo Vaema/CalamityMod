@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.AcidRain
 
             NPC.knockBackResist = 0f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

@@ -55,7 +55,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.timeLeft = NPC.activeTime * 30;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;

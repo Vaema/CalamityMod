@@ -31,7 +31,6 @@ namespace CalamityMod.NPCs.Abyss
         public override void SetDefaults()
         {
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             NPC.damage = 150;
             NPC.width = 80;
@@ -41,7 +40,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;

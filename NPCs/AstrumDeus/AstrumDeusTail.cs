@@ -100,13 +100,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
-                enrageScale += 1.5f;
-            }
-
             // Deus cannot hit for 3 seconds or while invulnerable
             bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
             if (doNotDealDamage)
@@ -174,12 +167,10 @@ namespace CalamityMod.NPCs.AstrumDeus
             // Become gradually more pissed as more worms are killed
             int gfbMaxWormCount = 10;
             int gfbWormCount = 0;
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
             if (gfbWormCount > gfbMaxWormCount)
                 gfbWormCount = gfbMaxWormCount;
-            if (gfbWormCount > 0)
-                enrageScale += (gfbMaxWormCount - gfbWormCount) * 0.111f;
 
             // Copy dontTakeDamage and Opacity from head
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[2]].dontTakeDamage;
@@ -241,7 +232,8 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             float segmentVelocityBoost = 5f * (1f - lifeRatio);
             segmentVelocity += segmentVelocityBoost;
-            segmentVelocity += 4f * enrageScale;
+            if (gfbWormCount > 0)
+                segmentVelocity += (gfbMaxWormCount - gfbWormCount) * 0.444f;
 
             if (revenge)
             {
@@ -406,7 +398,7 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 120);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)

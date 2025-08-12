@@ -423,7 +423,7 @@ namespace CalamityMod.Items
             string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
             Dictionary<int, SummonTag> TagByItem = new();
-            foreach (SummonTag tag1 in SummonTagDebuffDict.Dict.Values)
+            foreach (SummonTag tag1 in CalamityBuffSets.SummonTagDebuff.Values)
             {
                 if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
             }
@@ -617,6 +617,10 @@ namespace CalamityMod.Items
             // "Buffed" Step Stool
             if (item.type == ItemID.PortableStool)
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
+
+            // Replace the double tap line if double tap dash is overridden
+            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeys().Count != 0)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
             #endregion
 
             // For boss summon item clarity
@@ -783,18 +787,11 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HandOfCreation)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
-            // Frozen Turtle Shell rebalance.
-            if (item.type == ItemID.FrozenTurtleShell)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
-            if (item.type == ItemID.FrozenShield)
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
             // Ale and Sake rebalance and Alcohol Poisoning.
             if (item.type == ItemID.Ale || item.type == ItemID.Sake)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AleSake"));
 
-            //Flame Waker Boots buff.
+            // Flame Waker Boots buff.
             if (item.type == ItemID.FlameWakerBoots)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));
 
@@ -898,7 +895,7 @@ namespace CalamityMod.Items
 
             // Magic Power Potion nerf
             if (item.type == ItemID.MagicPowerPotion)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicPowerPotion"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "10%"));
 
             // Featherfall Potion being stupid broken with Aero Stone
             if (item.type == ItemID.FeatherfallPotion)
@@ -982,6 +979,14 @@ namespace CalamityMod.Items
 
             // Pre-Hardmode armor tooltip edits
             #region Pre-Hardmode Armor
+            // Gladiator
+            if (item.type == ItemID.GladiatorHelmet)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
+            if (item.type == ItemID.GladiatorBreastplate)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
+            if (item.type == ItemID.GladiatorLeggings)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
+
             // Jungle
             if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
             {
@@ -1153,18 +1158,14 @@ namespace CalamityMod.Items
 
             EditTooltipByName("SetBonus", (line) => VanillaArmorChangeManager.ApplySetBonusTooltipChanges(item, ref line.Text));
 
-            // Gladiator
-            if (item.type == ItemID.GladiatorHelmet)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
-            if (item.type == ItemID.GladiatorBreastplate)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
-            if (item.type == ItemID.GladiatorLeggings)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" +CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
-
             // Forbidden (UNLESS you are wearing the Circlet, which is Summon/Rogue and does not get this line)
             if ((item.type == ItemID.AncientBattleArmorHat || item.type == ItemID.AncientBattleArmorShirt || item.type == ItemID.AncientBattleArmorPants)
                 && !Main.LocalPlayer.Calamity().forbiddenCirclet)
-                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN")));
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Forbidden").Format(CalamityUtils.GetArmorSetBonusKey()));
+
+            // Vortex (hotkey spoof)
+            if (item.type == ItemID.VortexHelmet || item.type == ItemID.VortexBreastplate || item.type == ItemID.VortexLeggings)
+                EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Vortex").Format(CalamityUtils.GetArmorSetBonusKey()));
             #endregion
 
             // Provide the full stats of every vanilla yoyo

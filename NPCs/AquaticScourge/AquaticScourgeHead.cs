@@ -390,7 +390,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     for (int a = 0; a < Main.npc.Length; a++)
                     {
                         int type = Main.npc[a].type;
-                        if (AquaticScourgeIDList.Includes(type))
+                        if (CalamityNPCTypeSets.AquaticScourge.Contains(type))
                             Main.npc[a].active = false;
                     }
                 }
@@ -410,7 +410,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 NPC.alpha = 0;
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 

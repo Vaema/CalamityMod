@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.defense = 10;
             NPC.lifeMax = Main.hardMode ? 300 : 100;
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath15;
             NPC.behindTiles = true;

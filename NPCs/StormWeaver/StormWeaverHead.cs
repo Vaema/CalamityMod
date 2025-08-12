@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.height = 74;
             NPC.lifeMax = 825000;
             NPC.LifeMaxNERB(NPC.lifeMax, NPC.lifeMax, 500000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
 
             // Phase one settings
             CalamityGlobalNPC global = NPC.Calamity();
@@ -554,7 +554,8 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
                     {
                         Vector2 soundCenter = Main.player[NPC.target].Center;
-                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                        SoundStyle lightning = new("CalamityMod/Sounds/Custom/LightningTelegraph") { Volume = 0.7f };
+                        SoundEngine.PlaySound(lightning, soundCenter);
                     }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {
@@ -871,7 +872,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 480 : 240;
+            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 360 : 240;
             if (hurtInfo.Damage > 0)
                 target.AddBuff(BuffID.Electrified, buffDuration);
         }

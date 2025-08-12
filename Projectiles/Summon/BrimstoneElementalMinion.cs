@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
             bool isActive = Projectile.type == ModContent.ProjectileType<BrimstoneElementalMinion>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.brimstoneWaifu && !modPlayer.allWaifus && !modPlayer.brimstoneWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.brimElemental && !modPlayer.allElementals && !modPlayer.brimElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -52,9 +52,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.bWaifu = false;
+                    modPlayer.brimEleBuff = false;
                 }
-                if (modPlayer.bWaifu)
+                if (modPlayer.brimEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Summon
                     Main.dust[brimDust].scale *= 1.15f;
                 }
             }
-            bool passive = modPlayer.brimstoneWaifuVanity || modPlayer.allWaifusVanity;
+            bool passive = modPlayer.brimElementalVanity || modPlayer.allElementalsVanity;
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 9)
             {
@@ -210,7 +210,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.brimstoneWaifuVanity || modPlayer.allWaifusVanity)
+            if (modPlayer.brimElementalVanity || modPlayer.allElementalsVanity)
             {
                 return false;
             }

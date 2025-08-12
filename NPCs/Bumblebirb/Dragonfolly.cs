@@ -61,7 +61,7 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override string BossHeadTexture => "CalamityMod/NPCs/Bumblebirb/Birb_Head_Boss";
 
         public static int FeatherDamage = 42; // 168
-        public static int LightningDamage = 75; // 300
+        public static int LightningDamage = 65; // 260
 
         public override void SetDefaults()
         {
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
@@ -337,7 +337,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             }
 
             // Max spawn amount
-            int maxBirbs = (CalamityWorld.LegendaryMode && revenge) ? 12 : revenge ? 3 : 2;
+            int maxBirbs = CalamityWorld.MaliceMode ? 12 : revenge ? 3 : 2;
 
             // Variable for charging
             float chargeDistance = 600f;
@@ -648,7 +648,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                 float velocity = 8f + (enrageScale - 1f) * 2f;
                 float follyQuickFlySpeed = velocity + NPC.ai[2] + follyQuickFlyTargetDirection.Length() / 120f;
-                if (CalamityWorld.LegendaryMode && revenge)
+                if (CalamityWorld.MaliceMode)
                     follyQuickFlySpeed *= 2f;
 
                 float follyQuickFlyVelMult = 20f;
@@ -657,7 +657,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.velocity = (NPC.velocity * (follyQuickFlyVelMult - 1f) + follyQuickFlyTargetDirection) / follyQuickFlyVelMult;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= ((CalamityWorld.LegendaryMode && revenge) ? 90f : 180f))
+                if (NPC.ai[1] >= (CalamityWorld.MaliceMode ? 90f : 180f))
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 0f;
@@ -855,7 +855,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool gfbSpawnFlag = CalamityWorld.LegendaryMode && revenge && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
+                        bool gfbSpawnFlag = CalamityWorld.MaliceMode && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
                         bool spawnFlag = NPC.CountNPCS(ModContent.NPCType<DraconicSwarmer>()) < maxBirbs && (NPC.ai[1] == 140f || (revenge && NPC.ai[1] == 155f) || NPC.ai[1] == 170f || gfbSpawnFlag);
                         if (spawnFlag)
                         {

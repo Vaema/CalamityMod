@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.lifeMax = 360;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.75f;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<HadarianBanner>();
             if (DownedBossSystem.downedAstrumAureus)

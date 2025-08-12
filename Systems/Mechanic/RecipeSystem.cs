@@ -11,6 +11,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;

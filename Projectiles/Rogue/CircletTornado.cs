@@ -12,165 +12,121 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public override string Texture => "CalamityMod/Projectiles/TornadoProj";
 
+        public static float Lifetime = 900f;
+        public static float Fadetime = 120f;
+
+        public ref float Time => ref Projectile.ai[0];
+
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = Projectile.height = 10;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.minion = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 1200;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 30;
         }
 
         public override void AI()
         {
-            //only 1 tornado can exist at a time
-            Projectile.localAI[1] += 1f;
-            if (Projectile.localAI[1] >= 10f)
-            {
-                Projectile.localAI[1] = 0f;
-                int projCount = 0;
-                int oldestTornado = 0;
-                float tornadoAge = 0f;
-                int projType = Projectile.type;
-                for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
-                {
-                    Projectile proj = Main.projectile[projIndex];
-                    if (proj.active && proj.owner == Projectile.owner && proj.type == projType && proj.ai[0] < 900f)
-                    {
-                        projCount++;
-                        if (proj.ai[0] > tornadoAge)
-                        {
-                            oldestTornado = projIndex;
-                            tornadoAge = proj.ai[0];
-                        }
-                    }
-                }
-                if (projCount > 1)
-                {
-                    Main.projectile[oldestTornado].netUpdate = true;
-                    Main.projectile[oldestTornado].ai[0] = 36000f;
-                    return;
-                }
-            }
-
-            float lifeSpan = 900f;
             if (Projectile.soundDelay == 0)
             {
                 Projectile.soundDelay = -1;
-                SoundEngine.PlaySound(SoundID.Item122, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.Item82, Projectile.Center);
             }
-            Projectile.ai[0] += 1f;
-            if (Projectile.ai[0] >= lifeSpan)
-            {
+
+            Time++;
+            if (Time >= Lifetime)
                 Projectile.Kill();
-            }
-            if (Projectile.localAI[0] >= 30f)
+            if (Projectile.numHits >= 30)
             {
                 Projectile.damage = 0;
-                if (Projectile.ai[0] < lifeSpan - 120f)
+                if (Time < Lifetime - Fadetime)
                 {
-                    float aiDecrement = Projectile.ai[0] % 60f;
-                    Projectile.ai[0] = lifeSpan - 120f + aiDecrement;
+                    Time = Lifetime - Fadetime + Time % 60f;
                     Projectile.netUpdate = true;
                 }
             }
-            Point point8 = Projectile.Center.ToTileCoordinates();
-            int sizeMod;
-            int sizeMod2;
-            Collision.ExpandVertically(point8.X, point8.Y, out sizeMod, out sizeMod2, 15, 15);
-            sizeMod++;
-            sizeMod2--;
-            Vector2 sizeModVector = new Vector2((float)point8.X, (float)sizeMod) * 16f + new Vector2(8f);
-            Vector2 sizeModVector2 = new Vector2((float)point8.X, (float)sizeMod2) * 16f + new Vector2(8f);
-            Vector2 centering = Vector2.Lerp(sizeModVector, sizeModVector2, 0.5f);
-            Vector2 sizeModPos = new Vector2(0f, sizeModVector2.Y - sizeModVector.Y);
-            sizeModPos.X = sizeModPos.Y * 0.2f;
-            Projectile.width = (int)(sizeModPos.X * 0.65f);
-            Projectile.height = (int)sizeModPos.Y;
-            Projectile.Center = centering;
+
+            GetVerticallyExpandedPos(out Vector2 newTop, out Vector2 newBottom, out Vector2 newCenter, out Vector2 newSize);
+            Projectile.width = (int)(newSize.X * 0.65f);
+            Projectile.height = (int)newSize.Y;
+            Projectile.Center = newCenter;
             if (Projectile.owner == Main.myPlayer)
             {
                 bool breakFlag = false;
                 Vector2 playerCenter = Main.player[Projectile.owner].Center;
-                Vector2 top = Main.player[Projectile.owner].Top;
+                Vector2 playerTop = Main.player[Projectile.owner].Top;
                 for (float i = 0f; i < 1f; i += 0.05f)
                 {
-                    Vector2 position2 = Vector2.Lerp(sizeModVector, sizeModVector2, i);
-                    if (Collision.CanHitLine(position2, 0, 0, playerCenter, 0, 0) || Collision.CanHitLine(position2, 0, 0, top, 0, 0))
+                    Vector2 collisionPos = Vector2.Lerp(newTop, newBottom, i);
+                    if (Collision.CanHitLine(collisionPos, 0, 0, playerCenter, 0, 0) || Collision.CanHitLine(collisionPos, 0, 0, playerTop, 0, 0))
                     {
                         breakFlag = true;
                         break;
                     }
                 }
-                if (!breakFlag && Projectile.ai[0] < lifeSpan - 120f)
+                if (!breakFlag && Time < Lifetime - Fadetime)
                 {
-                    float aiDecrement2 = Projectile.ai[0] % 60f;
-                    Projectile.ai[0] = lifeSpan - 120f + aiDecrement2;
+                    Time = Lifetime - Fadetime + Time % 60f;
                     Projectile.netUpdate = true;
                 }
             }
-            if (Projectile.ai[0] < lifeSpan - 120f)
+            if (Time < Lifetime - Fadetime)
             {
-                return;
+                float randFactor = Main.rand.NextFloat();
+                Vector2 randomOffset = new Vector2(MathHelper.Lerp(0.1f, 1f, Main.rand.NextFloat()) * MathHelper.Lerp(-2.2f, -0.6f, randFactor), MathHelper.Lerp(-0.5f, 0.9f, randFactor));
+                Vector2 fixedOffset = new Vector2(6f, 10f);
+                Vector2 dustPos = newCenter + newSize * randomOffset * 0.5f + fixedOffset;
+                Dust sand = Dust.NewDustDirect(dustPos, 0, 0, DustID.Sandnado);
+                sand.position = dustPos;
+                sand.customData = newCenter + fixedOffset;
+                sand.fadeIn = 1f;
+                sand.scale = 0.3f;
+                if (randomOffset.X > -1.2f)
+                    sand.velocity.X = 1f + Main.rand.NextFloat();
+                sand.velocity.Y = Main.rand.NextFloat() * -0.5f - 1f;
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            float aiTracker = Projectile.ai[0];
-            float trackerClamp = MathHelper.Clamp(aiTracker / 30f, 0f, 1f);
-            if (aiTracker > 540f)
-            {
-                trackerClamp = MathHelper.Lerp(1f, 0f, (aiTracker - 540f) / 60f);
-            }
-            Point centerPoint = Projectile.Center.ToTileCoordinates();
-            int sizeModding;
-            int sizeModding2;
-            Collision.ExpandVertically(centerPoint.X, centerPoint.Y, out sizeModding, out sizeModding2, 15, 15);
-            sizeModding++;
-            sizeModding2--;
-            float vectorMult = 0.2f;
-            Vector2 sizeModdingVector = new Vector2((float)centerPoint.X, (float)sizeModding) * 16f + new Vector2(8f);
-            Vector2 sizeModdingVector2 = new Vector2((float)centerPoint.X, (float)sizeModding2) * 16f + new Vector2(8f);
-            Vector2.Lerp(sizeModdingVector, sizeModdingVector2, 0.5f);
-            Vector2 sizeModdingPos = new Vector2(0f, sizeModdingVector2.Y - sizeModdingVector.Y);
-            sizeModdingPos.X = sizeModdingPos.Y * vectorMult;
-            new Vector2(sizeModdingVector.X - sizeModdingPos.X / 2f, sizeModdingVector.Y);
-            Texture2D texture2D23 = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Rectangle drawRectangle = texture2D23.Frame(1, 1, 0, 0);
-            Vector2 smallRect = drawRectangle.Size() / 2f;
-            float aiTrackMult = -0.06283186f * aiTracker;
-            Vector2 spinningpoint = Vector2.UnitY.RotatedBy((double)(aiTracker * 0.1f), default);
+            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            GetVerticallyExpandedPos(out Vector2 newTop, out Vector2 newBottom, out Vector2 newCenter, out Vector2 newSize);
+
+            float TextureFadetime = Lifetime - 60f;
+            Color fullColor = new Color(212, 192, 100);
+            float colorMult = (Time > TextureFadetime ? MathHelper.Lerp(1f, 0f, (Time - TextureFadetime) / 60f) : MathHelper.Clamp(Time / 30f, 0f, 1f));
+            float timedRotation = Time * MathHelper.Pi * -0.02f;
+
             float incrementStorage = 0f;
             float increment = 5.1f;
-            Color sandYellow = new Color(225, 225, 100);
-            for (float k = (float)(int)sizeModdingVector2.Y; k > (float)(int)sizeModdingVector.Y; k -= increment)
+            for (float k = newBottom.Y; k > newTop.Y; k -= increment)
             {
                 incrementStorage += increment;
-                float colorChanger = incrementStorage / sizeModdingPos.Y;
-                float incStorageMult = incrementStorage * 6.28318548f / -20f;
-                float lowerColorChanger = colorChanger - 0.15f;
-                Vector2 spinArea = spinningpoint.RotatedBy((double)incStorageMult, default);
-                Vector2 colorChangeVector = new Vector2(0f, colorChanger + 1f);
-                colorChangeVector.X = colorChangeVector.Y * vectorMult;
-                Color newSandYellow = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, sandYellow, colorChanger * 2f);
-                if (colorChanger > 0.5f)
-                {
-                    newSandYellow = Microsoft.Xna.Framework.Color.Lerp(Microsoft.Xna.Framework.Color.Transparent, sandYellow, 2f - colorChanger * 2f);
-                }
-                newSandYellow.A = (byte)((float)newSandYellow.A * 0.5f);
-                newSandYellow *= trackerClamp;
-                spinArea *= colorChangeVector * 100f;
-                spinArea.Y = 0f;
-                spinArea.X = 0f;
-                spinArea += new Vector2(sizeModdingVector2.X, k) - Main.screenPosition;
-                Main.spriteBatch.Draw(texture2D23, spinArea, new Microsoft.Xna.Framework.Rectangle?(drawRectangle), newSandYellow, aiTrackMult + incStorageMult, smallRect, 1f + lowerColorChanger, SpriteEffects.None, 0);
+                float segmentHeight = incrementStorage / newSize.Y;
+                float addedRotation = incrementStorage * MathHelper.Pi * -0.1f;
+                float addedScale = segmentHeight - 0.15f;
+                Color drawColor =  Color.Lerp(Color.Transparent, fullColor, (segmentHeight > 0.5f ? 2f - segmentHeight * 2f : segmentHeight * 2f));
+                drawColor.A = (byte)((float)drawColor.A * 0.5f);
+
+                Vector2 drawPos = new Vector2(newBottom.X, k) - Main.screenPosition;
+                Main.spriteBatch.Draw(tex, drawPos, null, drawColor * colorMult, timedRotation + addedRotation, tex.Size() * 0.5f, 1f + addedScale, SpriteEffects.None, 0);
             }
             return false;
+        }
+
+        public void GetVerticallyExpandedPos(out Vector2 newTop, out Vector2 newBottom, out Vector2 newCenter, out Vector2 newSize)
+        {
+            Point center = Projectile.Center.ToTileCoordinates();
+            Collision.ExpandVertically(center.X, center.Y, out int topY, out int bottomY, 15, 15);
+            newTop = new Vector2(center.X, topY + 1) * 16f + new Vector2(8f);
+            newBottom = new Vector2(center.X, bottomY - 1) * 16f + new Vector2(8f);
+            newCenter = Vector2.Lerp(newTop, newBottom, 0.5f);
+            newSize = new Vector2(0f, newBottom.Y - newTop.Y);
+            newSize.X = newSize.Y * 0.2f;
         }
     }
 }

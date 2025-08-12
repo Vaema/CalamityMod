@@ -151,7 +151,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 240; // 480
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 204;
             NPC.height = 226;
@@ -162,7 +162,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;

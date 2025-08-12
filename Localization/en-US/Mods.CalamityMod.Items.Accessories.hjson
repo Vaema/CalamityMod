@@ -288,7 +288,7 @@ BatholithBangle: {
 	Tooltip:
 		'''
 		Magic enemy hits create a powerful granite flash that always critically strikes
-		This effect has a 10 second cooldown, but is halved if the flash kills an enemy
+		This effect has a 10 second cooldown
 		Visual and audio effects are reduced if visibility is disabled
 		[c/0189D7:'The solid granite radiates energy throughout your body']
 		'''
@@ -361,8 +361,8 @@ BloomStone: {
 		'''
 		Healing Potions are 50% more effective, but provide their healing over time
 		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
-		Touching a flower makes it burst into pollen which gives a temporary 6% damage reduction boost
-		The damage reduction boost increases to 12% while receiving healing over time
+		Touching a flower makes it burst into pollen which gives a temporary boost to potion healing over time
+		Potion healing slows drastically when at full health
 		'One of the ancient relics'
 		'''
 }
@@ -414,10 +414,13 @@ ChaosStone: {
 	DisplayName: Chaos Stone
 	Tooltip:
 		'''
-		Mana Sickness from drinking mana potions is replaced by Mana Burn
-		Mana Burn deals damage over time relative to the intensity of the debuff
-		This debuff does not reduce your magic damage
-		'One of the ancient relics'
+		Disables automatic potion consumption
+		Items that consume mana can be used even without the required mana amount
+		Mana usage can overflow into negative mana, causing you to receive [Mana Burn]
+		The lower your mana, the more intense the manafire burns
+		Attacks while you have [Mana Burn] inflict [Mana Burn] on enemies
+		Every 50 negative mana increases [Mana Burn] by 1% of the attack's damage
+		Negative Mana is capped at your maximum mana amount
 		'''
 }
 
@@ -718,6 +721,11 @@ ElementalGauntlet: {
 		Enables auto swing for melee weapons and increases their size
 		Does not stack with downgrades
 		'''
+}
+
+ElementalinaBottle: {
+	DisplayName: Elemental in a Bottle
+	Tooltip: Summons a sand elemental to fight for you
 }
 
 ElysianAegis: {
@@ -1391,7 +1399,7 @@ ProtolithBangle: {
 	Tooltip:
 		'''
 		Ranged enemy hits create a marble flash that always critically strikes and can hit multiple enemies
-		This effect has a 7 second cooldown, but is halved if the flash kills the first enemy it hits
+		This effect has a 7 second cooldown
 		Visual and audio effects are reduced if visibility is disabled
 		[c/C5B965:'The cold marble against your wrist puts your mind at ease']
 		'''
@@ -1455,8 +1463,17 @@ RampartofDeities: {
 		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
 		Being struck for over 200 damage grants 30 additional invincibility frames
 		Grants immunity to knockback
-		Puts a shell around the owner when below 50% life that reduces damage taken
+		Puts a shell around the owner when below 50% life that reduces damage by 25%
 		Absorbs 25% of damage done to players on your team when above 25% life
+		'''
+}
+
+RareElementalinaBottle: {
+	DisplayName: Rare Elemental in a Bottle
+	Tooltip:
+		'''
+		Summons a sand elemental to heal you
+		;D
 		'''
 }
 
@@ -1737,11 +1754,10 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		Provides a high-speed dash that scales with your movement speed
+		Provides a high-speed dash
 		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
 		Grants the ability to swim, climb walls, and dodge attacks
-		Consecutive dashes in the same direction reduce dash speed
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -1750,12 +1766,11 @@ StatisVoidSash: {
 	DisplayName: Statis' Void Sash
 	Tooltip:
 		'''
-		Provides a high-speed dash that scales with your movement speed
+		Provides a high-speed dash
 		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
 		Grants the ability to swim, climb walls, and dodge attacks
 		Visual effects are reduced if visibility is disabled
-		Consecutive dashes in the same direction reduce dash speed
 		'''
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
@@ -2082,20 +2097,6 @@ WarbanneroftheRighteous: {
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
-		'''
-}
-
-WifeinaBottle: {
-	DisplayName: Elemental in a Bottle
-	Tooltip: Summons a sand elemental to fight for you
-}
-
-WifeinaBottlewithBoobs: {
-	DisplayName: Rare Elemental in a Bottle
-	Tooltip:
-		'''
-		Summons a sand elemental to heal you
-		;D
 		'''
 }
 

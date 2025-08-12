@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Armor.Fearmonger
         {
             player.statManaMax2 += 60;
             player.GetDamage<SummonDamageClass>() += 0.1f;
-            player.manaCost *= 0.9f;
+            player.manaCost -= 0.1f;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs)

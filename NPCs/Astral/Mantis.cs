@@ -38,7 +38,6 @@ namespace CalamityMod.NPCs.Astral
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 55;
             NPC.width = 60;
             NPC.height = 58;
@@ -46,7 +45,7 @@ namespace CalamityMod.NPCs.Astral
             NPC.defense = 22;
             NPC.lifeMax = 400;
             NPC.knockBackResist = 0.2f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<MantisBanner>();

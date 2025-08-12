@@ -78,9 +78,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (CalamityWorld.LegendaryMode)
             {
-                iceMistFireRate = 30;
+                iceMistFireRate = 40;
                 iceMistSpeed = 15f;
-                fireballFireRate = 6;
+                fireballFireRate = 8;
                 fireballSpeed *= 1.25f;
                 lightningOrbPhaseTime = 60;
                 ancientLightSpawnRate = 10;
@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Enrage
-            if (!Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height) || CalamityWorld.LegendaryMode)
+            if (!Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 if (calamityGlobalNPC.newAI[0] >= 120f)

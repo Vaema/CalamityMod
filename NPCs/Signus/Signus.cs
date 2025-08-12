@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.Signus
             NPC.height = 130;
             NPC.defense = 60;
             NPC.LifeMaxNERB(320000, 375000, 380000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -239,9 +239,6 @@ namespace CalamityMod.NPCs.Signus
 
             if (NPC.ai[0] <= 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.rotation = NPC.velocity.X * 0.04f;
                 float playerLocation = vectorCenter.X - player.Center.X;
                 NPC.direction = playerLocation < 0f ? 1 : -1;
@@ -290,9 +287,6 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 0f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     NPC.localAI[1] += 1f;
@@ -347,7 +341,7 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage for some time while fading away
                 NPC.damage = 0;
 
                 Vector2 position = new Vector2(NPC.ai[1] * 16f - (NPC.width / 2), NPC.ai[2] * 16f - (NPC.height / 2));
@@ -383,12 +377,11 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.alpha -= 50;
                 if (NPC.alpha <= lifeToAlpha)
                 {
+                    // Restore contact damage once returned to proper opacity
+                    NPC.damage = NPC.defDamage;
                     if (Main.netMode != NetmodeID.MultiplayerClient && revenge)
                     {
                         SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
@@ -467,9 +460,6 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.rotation = NPC.velocity.X * 0.04f;
                 float playerLocation = vectorCenter.X - player.Center.X;
                 NPC.direction = playerLocation < 0f ? 1 : -1;
@@ -632,9 +622,6 @@ namespace CalamityMod.NPCs.Signus
 
                 if (calamityGlobalNPC.newAI[0] == 0f) // Line up the charge
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     float velocity = revenge ? 16f : expertMode ? 15f : 14f;
                     if (expertMode)
                         velocity += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
@@ -670,17 +657,11 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 1f) // Pause before charge
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     NPC.velocity *= 0.8f;
 
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= 5f)
                     {
-                        // Set damage
-                        NPC.damage = NPC.defDamage;
-
                         calamityGlobalNPC.newAI[0] = 2f;
 
                         NPC.netUpdate = true;
@@ -697,9 +678,6 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 2f) // Charging
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         bool buffed = false;
@@ -749,9 +727,6 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 3f) // Slow down after charging and reset
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     if (stealthTimer >= maxStealth)
                     {
                         stealthTimer = 0;

@@ -340,9 +340,8 @@ namespace CalamityMod
             Vector2 spawnPosition = new Vector2(x, y);
             Vector2 velocity = targetPos - spawnPosition;
             velocity.X += Main.rand.NextFloat(-xVariance, xVariance);
-            float speed = projSpeed;
             float targetDist = velocity.Length();
-            targetDist = speed / targetDist;
+            targetDist = projSpeed / targetDist;
             velocity.X *= targetDist;
             velocity.Y *= targetDist;
             return Projectile.NewProjectileDirect(source, spawnPosition, velocity, projType, damage, knockback, owner);

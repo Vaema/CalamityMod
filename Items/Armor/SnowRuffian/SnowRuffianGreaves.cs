@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.SnowRuffian
@@ -8,6 +9,10 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     public class SnowRuffianGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static int RangedCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -17,10 +22,7 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.defense = 4; //12
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.moveSpeed += 0.1f;
-        }
+        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
 
         public override void AddRecipes()
         {

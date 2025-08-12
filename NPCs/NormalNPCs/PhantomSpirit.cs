@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.DungeonSpirit;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.noGravity = true;

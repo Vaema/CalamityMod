@@ -103,12 +103,12 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public static float Phase2ContactDamageMult = 1.2f; // 288
-        public static float Phase3ContactDamageMult = 1.4f; // 336
-        public static int BlueShotDamage = 60; // 240
-        public static int BlueBlastDamage = 66; // 264
-        public static int RedShotDamage = 66; // 264
-        public static int RedBlastDamage = 72; // 288
+        public static float Phase2ContactDamageMult = 1.25f; // 300
+        public static float Phase3ContactDamageMult = 1.5f; // 360
+        public static int BlueShotDamage = 65; // 260
+        public static int BlueBlastDamage = 70; // 280
+        public static int RedShotDamage = 70; // 280
+        public static int RedBlastDamage = 75; // 300
 
         public override void SetDefaults()
         {
@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(1, 50, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.boss = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

@@ -66,14 +66,6 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 80);
-        }
-
         public override Color? GetAlpha(Color lightColor)
         {
             return new Color(100, 250, 250, Projectile.alpha);

@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.lifeMax = 600;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.alpha = 60;
             NPC.lavaImmune = false;
             NPC.noGravity = false;

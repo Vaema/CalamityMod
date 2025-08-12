@@ -48,14 +48,11 @@ namespace CalamityMod.NPCs.Perforator
         private const int Width = 110; 
         private const int Height = 100;
 
-
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool smallSpawned = false;
         private bool mediumSpawned = false;
         private bool largeSpawned = false;
         private int wormsAlive = 0;
 
-        private float squash;
         private float addedStretch;
         private int squashTimer = 0; // Tracks current progress in scaling animation
         private const int squashInterval = 24;
@@ -122,7 +119,6 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(wormsAlive);
             writer.Write(smallSpawned);
             writer.Write(mediumSpawned);
@@ -133,7 +129,6 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             wormsAlive = reader.ReadInt32();
             smallSpawned = reader.ReadBoolean();
             mediumSpawned = reader.ReadBoolean();
@@ -174,34 +169,11 @@ namespace CalamityMod.NPCs.Perforator
             bool spawnMedium = CalamityWorld.LegendaryMode ? lifeRatio < 0.60f : lifeRatio < 0.50f;
             bool spawnLarge = CalamityWorld.LegendaryMode ? lifeRatio < 0.45f : lifeRatio < 0.25f;
 
-            // Enrage
-            if ((!player.ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
-            float enrageScale = 0f;
-            if (biomeEnraged && !player.ZoneCrimson)
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-                enrageScale += 1f;
-            }
-            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-                enrageScale += 1f;
-            }
-
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || !(player.ZoneCrimson || BossRushEvent.BossRushActive))
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || !(player.ZoneCrimson || BossRushEvent.BossRushActive))
                 {
                     NPC.rotation = NPC.velocity.X * 0.04f;
 
@@ -489,9 +461,6 @@ namespace CalamityMod.NPCs.Perforator
                 }
             }
 
-            // Movement velocities, increased while enraged
-            float velocityEnrageIncrease = enrageScale;
-
             // When firing blobs, float above the target and don't call any other projectile firing or movement code
             if (floatAboveToFireBlobs)
             {
@@ -499,9 +468,9 @@ namespace CalamityMod.NPCs.Perforator
                 NPC.damage = 0;
 
                 if (revenge)
-                    Movement(player, 9f + velocityEnrageIncrease, 0.3f, 450f);
+                    Movement(player, 9f, 0.3f, 450f);
                 else
-                    Movement(player, 6f + velocityEnrageIncrease, 0.2f, 450f);
+                    Movement(player, 6f, 0.2f, 450f);
 
                 return;
             }
@@ -575,13 +544,13 @@ namespace CalamityMod.NPCs.Perforator
                         NPC.damage = NPC.defDamage;
 
                         if (largeSpawned || death)
-                            Movement(player, 13f + velocityEnrageIncrease, death ? 0.115f : 0.1f, 20f);
+                            Movement(player, 13f, death ? 0.115f : 0.1f, 20f);
                         else if (mediumSpawned)
-                            Movement(player, 12f + velocityEnrageIncrease, death ? 0.11f : 0.095f, 30f);
+                            Movement(player, 12f, death ? 0.11f : 0.095f, 30f);
                         else if (smallSpawned)
-                            Movement(player, 11f + velocityEnrageIncrease, death ? 0.105f : 0.09f, 40f);
+                            Movement(player, 11f, death ? 0.105f : 0.09f, 40f);
                         else
-                            Movement(player, 10f + velocityEnrageIncrease, death ? 0.1f : 0.085f, 50f);
+                            Movement(player, 10f, death ? 0.1f : 0.085f, 50f);
 
                         break;
 
@@ -590,7 +559,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 350f);
+                        Movement(player, 8f, 0.2f, 350f);
 
                         break;
 
@@ -599,7 +568,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 275f);
+                        Movement(player, 8f, 0.2f, 275f);
 
                         break;
 
@@ -608,7 +577,7 @@ namespace CalamityMod.NPCs.Perforator
                         // Avoid cheap bullshit
                         NPC.damage = 0;
 
-                        Movement(player, 8f + velocityEnrageIncrease, 0.2f, 200f);
+                        Movement(player, 8f, 0.2f, 200f);
 
                         break;
                 }
@@ -618,7 +587,7 @@ namespace CalamityMod.NPCs.Perforator
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                Movement(player, 6f + velocityEnrageIncrease, 0.15f, 350f);
+                Movement(player, 6f, 0.15f, 350f);
             }
         }
 

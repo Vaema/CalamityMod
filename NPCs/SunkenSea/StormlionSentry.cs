@@ -76,6 +76,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.damage = 15;
             NPC.defense = 3;
             NPC.knockBackResist = 0f;
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = Effects.StormlionEffects.Hit;
             NPC.DeathSound = Effects.StormlionEffects.Killed;
             NPC.noGravity = true;

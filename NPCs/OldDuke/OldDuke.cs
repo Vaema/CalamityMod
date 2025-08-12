@@ -94,6 +94,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void SetDefaults()
         {
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 140; // 280
             NPC.alpha = 255;
             NPC.width = 150;
@@ -109,7 +110,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.npcSlots = 15f;
             NPC.HitSound = SoundID.NPCHit14;
             NPC.DeathSound = SoundID.NPCDeath20;
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1, gold: 50);
             NPC.boss = true;
             NPC.netAlways = true;
             NPC.timeLeft = NPC.activeTime * 30;
@@ -217,8 +218,6 @@ namespace CalamityMod.NPCs.OldDuke
             Phase = phase3 ? 2 : phase2 ? 1 : 0;
             NuclearOverlayVisual = (Phase == 2 && NPC.Calamity().newAI[1] != 1) ? MathHelper.Lerp(NuclearOverlayVisual, 0.2f, 0.2f) : MathHelper.Lerp(NuclearOverlayVisual, 0f, 0.1f);
 
-            NPC.Calamity().canBreakPlayerDefense = true;
-
             bool charging = NPC.ai[3] < 10f;
             if (calamityGlobalNPC.newAI[0] >= exhaustionGateValue)
                 calamityGlobalNPC.newAI[1] = 1f;
@@ -234,17 +233,17 @@ namespace CalamityMod.NPCs.OldDuke
                 CalamityWorld.StartRain();
 
             // Adjust stats
-            int setDamage = NPC.defDamage;
+            NPC.damage = NPC.defDamage;
             calamityGlobalNPC.DR = exhausted ? 0f : 0.5f;
             NPC.defense = exhausted ? 0 : NPC.defDefense;
             if (phase3AI)
             {
-                setDamage = (int)Math.Round(setDamage * Phase3ContactDamageMult);
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase3ContactDamageMult);
                 NPC.defense = exhausted ? 0 : NPC.defDefense - 40;
             }
             else if (phase2AI)
             {
-                setDamage = (int)Math.Round(setDamage * Phase2ContactDamageMult);
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase2ContactDamageMult);
                 NPC.defense = exhausted ? 0 : NPC.defDefense - 20;
             }
 
@@ -293,7 +292,7 @@ namespace CalamityMod.NPCs.OldDuke
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 chargeVelocity *= 1.25f;
 
             if (exhausted)
@@ -361,7 +360,8 @@ namespace CalamityMod.NPCs.OldDuke
 
             if (exhausted)
             {
-                NPC.Calamity().canBreakPlayerDefense = false;
+                // Disable contact damage while tired
+                NPC.damage = 0;
 
                 // Play exhausted sound
                 if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
@@ -445,12 +445,12 @@ namespace CalamityMod.NPCs.OldDuke
                 chargeVelocity += 8f;
                 toothBallSpinPhaseDivisor = 24;
                 toothBallSpinToothBallVelocity = 15f;
-                setDamage *= 2;
+                NPC.damage *= 2;
                 NPC.defense = NPC.defDefense * 3;
             }
 
             // The dumbest thing to ever exist
-            if (CalamityWorld.LegendaryMode && revenge)
+            if (CalamityWorld.MaliceMode)
                 chargeTime *= 2;
 
             // Set variables for spawn effects
@@ -567,7 +567,7 @@ namespace CalamityMod.NPCs.OldDuke
             {
                 NPC.alpha = (int)MathHelper.Lerp(NPC.alpha, 0, 0.2f);
 
-                // Avoid cheap bullshit
+                // Disable contact damage while spawning
                 NPC.damage = 0;
 
                 // Velocity
@@ -637,9 +637,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Phase 1
             else if (NPC.ai[0] == 0f && !player.dead)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 if (NPC.ai[1] == 0f)
                     NPC.ai[1] = 500 * Math.Sign((NPC.Center - player.Center).X);
@@ -750,11 +747,8 @@ namespace CalamityMod.NPCs.OldDuke
             // Charge
             else if (NPC.ai[0] == 1f)
             {
-                // Set damage
-                NPC.damage = setDamage;
-
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 10f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 10f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -818,9 +812,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Tooth Ball belch
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 if (NPC.ai[1] == 0f)
                     NPC.ai[1] = 500 * Math.Sign((NPC.Center - player.Center).X);
@@ -904,9 +895,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Call sharks from the sides of the screen
             else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 NPC.velocity *= 0.98f;
                 NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
@@ -951,9 +939,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Transition to phase 2 and call sharks from below
             else if (NPC.ai[0] == 4f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 NPC.velocity *= 0.98f;
                 NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
@@ -1000,9 +985,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Phase 2
             else if (NPC.ai[0] == 5f && !player.dead)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 if (NPC.ai[1] == 0f)
                     NPC.ai[1] = 500 * Math.Sign((NPC.Center - player.Center).X);
@@ -1125,11 +1107,8 @@ namespace CalamityMod.NPCs.OldDuke
             // Charge
             else if (NPC.ai[0] == 6f)
             {
-                // Set damage
-                NPC.damage = setDamage;
-
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 8f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 8f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1185,9 +1164,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Tooth Ball and Vortex spin
             else if (NPC.ai[0] == 7f)
             {
-                // Set damage
-                NPC.damage = 0;
-
                 // Play sounds and spawn Tooth Balls and a Vortex
                 if (NPC.ai[2] == 0f)
                 {
@@ -1268,9 +1244,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Vomit a huge amount of gore into the sky and call sharks from the sides of the screen
             else if (NPC.ai[0] == 8f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 NPC.velocity *= 0.98f;
                 NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
@@ -1332,9 +1305,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Transition to phase 3 and summon sharks from above
             else if (NPC.ai[0] == 9f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 NPC.velocity *= 0.98f;
                 NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
@@ -1381,9 +1351,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Phase 3
             else if (NPC.ai[0] == 10f && !player.dead)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Alpha
                 NPC.alpha -= 25;
                 if (NPC.alpha < 0)
@@ -1518,11 +1485,8 @@ namespace CalamityMod.NPCs.OldDuke
             // Charge
             else if (NPC.ai[0] == 11f)
             {
-                // Set damage
-                NPC.damage = setDamage;
-
                 // The dumbest thing to ever exist
-                if (CalamityWorld.LegendaryMode && revenge && NPC.ai[2] % 6f == 0f)
+                if (CalamityWorld.MaliceMode && NPC.ai[2] % 6f == 0f)
                 {
                     // Rotation and direction
                     int dir = Math.Sign(player.Center.X - NPC.Center.X);
@@ -1578,7 +1542,7 @@ namespace CalamityMod.NPCs.OldDuke
             // Pause before teleport
             else if (NPC.ai[0] == 12f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage during the teleporting phase
                 NPC.damage = 0;
 
                 // Alpha
@@ -1643,9 +1607,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Vomit a huge amount of gore into the sky and call sharks from the sides of the screen
             else if (NPC.ai[0] == 13f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 // Velocity
                 NPC.velocity *= 0.98f;
                 NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
@@ -1713,9 +1674,6 @@ namespace CalamityMod.NPCs.OldDuke
             // Tooth Ball and Vortex spin
             else if (NPC.ai[0] == 14f)
             {
-                // Set damage
-                NPC.damage = 0;
-
                 // Play sounds and spawn Tooth Balls and a Vortex
                 if (NPC.ai[2] == 0f)
                 {
@@ -2156,8 +2114,8 @@ namespace CalamityMod.NPCs.OldDuke
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 480);
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), Phase == 2 ? 600 : Phase == 1 ? 480 : 360);
+                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), Phase == 2 ? 300 : Phase == 1 ? 240 : 180);
                 if (Main.zenithWorld)
                 {
                     target.AddBuff(BuffID.Rabies, Main.rand.Next(180, 601));

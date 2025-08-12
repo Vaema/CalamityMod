@@ -33,15 +33,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool charging = npc.ai[3] < 10f;
 
             // Adjust stats
-            int setDamage = npc.defDamage;
+            npc.damage = npc.defDamage;
             if (phase3AI)
             {
-                setDamage = (int)Math.Round(setDamage * Phase3ContactDamageMult);
+                npc.damage = (int)Math.Round(npc.defDamage * Phase3ContactDamageMult);
                 npc.defense = 0;
             }
             else if (phase2AI)
             {
-                setDamage = (int)Math.Round(setDamage * Phase2ContactDamageMult);
+                npc.damage = (int)Math.Round(npc.defDamage * Phase2ContactDamageMult);
                 npc.defense = (int)Math.Round(npc.defDefense * 0.8);
             }
             else
@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 bubbleSpinPhaseDivisor = 1;
                 bubbleSpinBubbleVelocity = 15f;
 
-                setDamage *= 2;
+                npc.damage *= 2;
                 npc.defense = npc.defDefense * 3;
             }
 
@@ -259,7 +259,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Spawn effects
             if (npc.ai[0] == -1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage while spawning
                 npc.damage = 0;
 
                 // Velocity
@@ -317,9 +317,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phase 1
             else if (npc.ai[0] == 0f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 if (npc.ai[1] == 0f)
                     npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
@@ -435,9 +432,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Charge
             else if (npc.ai[0] == 1f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
                 npc.velocity *= 1.01f;
 
@@ -468,9 +462,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Bubble belch
             else if (npc.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 if (npc.ai[1] == 0f)
                     npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
@@ -516,9 +507,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Sharknado spawn
             else if (npc.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 npc.velocity *= 0.98f;
                 npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
@@ -555,9 +543,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Transition to phase 2
             else if (npc.ai[0] == 4f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 npc.velocity *= 0.98f;
                 npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
@@ -580,9 +565,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phase 2
             else if (npc.ai[0] == 5f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 if (npc.ai[1] == 0f)
                     npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
@@ -705,9 +687,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Charge
             else if (npc.ai[0] == 6f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
                 npc.velocity *= 1.01f;
 
@@ -738,9 +717,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Bubble spin
             else if (npc.ai[0] == 7f)
             {
-                // Set damage
-                npc.damage = 0;
-
                 // Play sounds and spawn bubbles
                 if (npc.ai[2] == 0f)
                     SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
@@ -783,9 +759,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Spawn cthulhunado
             else if (npc.ai[0] == 8f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
                 npc.velocity *= 0.98f;
                 npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
@@ -810,9 +783,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Transition to phase 3
             else if (npc.ai[0] == 9f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Alpha adjustments
                 if (npc.ai[2] < phaseTransitionTimer - 90)
                 {
@@ -855,9 +825,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Phase 3
             else if (npc.ai[0] == 10f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Alpha
                 if (npc.alpha < 255)
                 {
@@ -989,9 +956,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Charge
             else if (npc.ai[0] == 11f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
                 npc.velocity *= 1.01f;
 
@@ -1045,7 +1009,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Pause before teleport
             else if (npc.ai[0] == 12f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage during the teleporting phase
                 npc.damage = 0;
 
                 // Alpha

@@ -76,7 +76,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
             }
 
             Rectangle mouseHitbox = new Rectangle((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 8, 8);
@@ -139,7 +139,7 @@ namespace CalamityMod.UI
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
         }

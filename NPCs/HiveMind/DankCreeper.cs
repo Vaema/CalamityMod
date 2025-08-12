@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
+            NPC.knockBackResist = 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;

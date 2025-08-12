@@ -20,6 +20,7 @@ namespace CalamityMod.Projectiles.Ranged
             AIType = ProjectileID.MiniSharkron;
             Projectile.friendly = true;
             Projectile.alpha = 255;
+            Projectile.arrow = true;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;

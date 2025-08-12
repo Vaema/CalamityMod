@@ -240,7 +240,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 240);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
         public override bool CanHitPlayer(Player target) => OwnerIsValid && Projectile.scale >= 0.5f;

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Astral;
+﻿using CalamityMod.Items.Placeables.FurnitureMonolith;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureSilva
                 AddIngredient<SilvaCrystal>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile<SilvaBasin>().
+                AddTile(TileID.GlassKiln).
                 Register();
         }
     }

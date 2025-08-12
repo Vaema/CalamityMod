@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
+using CalamityMod.Enums;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
@@ -25,24 +26,6 @@ namespace CalamityMod
         {
             RipperMeterShake = Utils.Clamp(RipperMeterShake, MinMeterShake, MaxMeterShake);
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
-        }
-
-        internal static void SaveConfig()
-        {
-            // There is no current way to manually save a mod configuration file in tModLoader.
-            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
-            try
-            {
-                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-                if (saveMethodInfo is not null)
-                    saveMethodInfo.Invoke(null, [Instance]);
-                else
-                    CalamityMod.Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
-            }
-            catch
-            {
-                CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
-            }
         }
 
         #region Graphics Changes
@@ -287,8 +270,10 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [DrawTicks]
+        [DefaultValue(SetBonusDoubleTapOptions.Auto)]
+        public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

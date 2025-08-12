@@ -70,7 +70,7 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.lifeMax = 180;
             }
 
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.lavaImmune = false;

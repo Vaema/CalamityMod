@@ -57,7 +57,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 5;
             NPC.lifeMax = 25;
             NPC.knockBackResist = 0.15f;
-            NPC.value = Item.buyPrice(0, 0, 0, 75);
+            NPC.value = Item.buyPrice(copper: 75);
             NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;

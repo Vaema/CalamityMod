@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.Crags
             NPC.lifeMax = 140;
             NPC.knockBackResist = 0.75f;
             AnimationType = NPCID.DemonEye;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             if (DownedBossSystem.downedProvidence)

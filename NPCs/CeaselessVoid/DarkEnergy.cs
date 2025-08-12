@@ -279,7 +279,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (Main.zenithWorld)
             {
                 if (hurtInfo.Damage > 0)
-                    target.AddBuff(BuffID.Obstructed, 30, true);
+                    target.AddBuff(BuffID.Blackout, 30, true);
             }
         }
 

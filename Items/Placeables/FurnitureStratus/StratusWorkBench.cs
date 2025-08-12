@@ -18,6 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
         {
             CreateRecipe().
                 AddIngredient<StratusBricks>(10).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
         }
     }

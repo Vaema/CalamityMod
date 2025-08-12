@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.MaliceMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 1f;
 
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+                        if (CalamityWorld.MaliceMode)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -291,13 +291,6 @@ namespace CalamityMod.NPCs.CalClone
 
             // Target variable
             Player player = Main.player[NPC.target];
-
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-                enrageScale += 2f;
-            }
 
             // Rotation
             Vector2 npcCenter = new Vector2(NPC.Center.X, NPC.position.Y + NPC.height - 59f);
@@ -376,8 +369,6 @@ namespace CalamityMod.NPCs.CalClone
             // How fast Cal Clone moves to the destination
             float baseVelocity = (expertMode ? 10f : 8.5f) * (NPC.ai[1] == 4f ? 1.4f : 1f);
             float baseAcceleration = (expertMode ? 0.18f : 0.155f) * (NPC.ai[1] == 4f ? 1.4f : 1f);
-            baseVelocity += 4f * enrageScale;
-            baseAcceleration += 0.1f * enrageScale;
             if (revenge)
             {
                 baseVelocity += 1.5f * (1f - lifeRatio);
@@ -456,7 +447,7 @@ namespace CalamityMod.NPCs.CalClone
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
-                            float gigaBlastFrequency = (CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f) - enrageScale * 15f;
+                            float gigaBlastFrequency = CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {
@@ -477,7 +468,7 @@ namespace CalamityMod.NPCs.CalClone
                     }
 
                     NPC.ai[0] += 1f;
-                    float hellblastGateValue = (expertMode ? 12f : 16f) - enrageScale;
+                    float hellblastGateValue = expertMode ? 12f : 16f;
                     if (NPC.ai[0] >= hellblastGateValue)
                     {
                         NPC.ai[0] = 0f;
@@ -594,7 +585,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 return;
             }
-            else if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            else if (CalamityWorld.MaliceMode)
             {
                 if (calamityGlobalNPC.newAI[3] < 900f)
                     calamityGlobalNPC.newAI[3] += 1f;
@@ -602,7 +593,7 @@ namespace CalamityMod.NPCs.CalClone
                     calamityGlobalNPC.newAI[3] = 0f;
 
                 NPC.ai[0] += 1f;
-                float hellblastGateValue = 30f - enrageScale;
+                float hellblastGateValue = 30f;
                 if (NPC.ai[0] >= hellblastGateValue)
                 {
                     NPC.ai[0] = 0f;
@@ -675,9 +666,8 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
-                        projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                        bool shootPredictiveShot = CalamityWorld.LegendaryMode && CalamityWorld.revenge && Main.rand.NextBool();
+                        bool shootPredictiveShot = CalamityWorld.MaliceMode && Main.rand.NextBool();
                         Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -706,7 +696,6 @@ namespace CalamityMod.NPCs.CalClone
                         NPC.localAI[1] = 0f;
 
                         float projectileVelocity = expertMode ? 12.5f : 11f;
-                        projectileVelocity += 3f * enrageScale;
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
                         int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
@@ -750,7 +739,6 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.rotation = rotation;
 
                 float chargeVelocity = phase4 ? 30f : death ? 28f : 25f;
-                chargeVelocity += 5f * enrageScale;
 
                 Vector2 vector = Vector2.Normalize(player.Center - NPC.Center);
                 NPC.velocity = vector * chargeVelocity;

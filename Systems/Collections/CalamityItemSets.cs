@@ -1,0 +1,96 @@
+﻿using System;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Vanity;
+using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.Items.LoreItems;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Furniture.Trophies;
+using CalamityMod.Items.Tools;
+using CalamityMod.Items.TreasureBags;
+using CalamityMod.Items.Weapons.DraedonsArsenal;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
+using ReLogic.Reflection;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
+
+namespace CalamityMod.Systems.Collections
+{
+    [ReinitializeDuringResizeArrays]
+    public static class CalamityItemSets
+    {
+        public static SetFactory Factory = new SetFactory(ItemLoader.ItemCount, "CalamityMod/ItemID", Search);
+        public static IdDictionary Search = IdDictionary.Create<ItemID, int>();
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, allows the item to always be used as long as only one of its <see cref="Item.shoot"/> projectile exists.<br/>
+        /// Used to give specific vanilla spears pseudo-autoswing.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] AutoreusableSpear = Factory.CreateBoolSet(ItemID.AdamantiteGlaive, ItemID.ChlorophytePartisan, ItemID.CobaltNaginata, ItemID.DarkLance, ItemID.MonkStaffT2,
+                ItemID.Gungnir, ItemID.MushroomSpear, ItemID.MythrilHalberd, ItemID.NorthPole, ItemID.ObsidianSwordfish, ItemID.OrichalcumHalberd, ItemID.PalladiumPike, ItemID.Spear,
+                ItemID.Swordfish, ItemID.TheRottedFork, ItemID.TitaniumTrident, ItemID.Trident, ItemID.ThunderSpear);
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, prevents an item from removing Calamity's summon damage penalty mechanic despite having tool power.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] WeaponWithToolPowerAffectedBySummonPenalty = Factory.CreateBoolSet(ItemID.ButchersChainsaw, ItemID.LucyTheAxe, ItemID.Rockfish,
+                ItemType<AxeofPurity>(), ItemType<HydraulicVoltCrasher>(), ItemType<InfernaCutter>(), ItemType<PhotonRipper>(), ItemType<Respiteblock>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, manually disables Calamity's summon damage penalty mechanic while that item type is held.<br/>
+        /// Unused by Calamity itself, and is only used for external mods to add to through mod calls.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ItemWhichDisablesSummonerNerf = Factory.CreateBoolSet();
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, holding the item sets <see cref="Player.accFishingLine"/> to true, preventing fishing lines from breaking.<br/>
+        /// Should only be set on fishing poles.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] FishingPoleThatNeverBreaks = Factory.CreateBoolSet(ItemID.GoldenFishingRod, ItemType<EarlyBloomRod>(), ItemType<TheDevourerofCods>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, forces a dropped item of this type to remain within the bounds of the world if it is spawned outside of it.<br/>
+        /// Set this for items which are dropped by enemies or bosses which spawn on the edges of the world.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] ItemForcedInsideWorld = Factory.CreateBoolSet(ItemID.HotlineFishingHook, ItemID.BottomlessBucket, ItemID.SuperAbsorbantSponge, ItemID.FishingPotion,
+                ItemID.SonarPotion, ItemID.CratePotion, ItemID.AnglerTackleBag, ItemID.HighTestFishingLine, ItemID.TackleBox, ItemID.AnglerEarring, ItemID.FishermansGuide, ItemID.WeatherRadio,
+                ItemID.Sextant, ItemID.AnglerHat, ItemID.AnglerVest, ItemID.AnglerPants, ItemID.GoldenBugNet, ItemID.FishronWings, ItemID.Flairon, ItemID.Tsunami, ItemID.BubbleGun,
+                ItemID.RazorbladeTyphoon, ItemID.TempestStaff, ItemID.FishronBossBag, ItemID.Coral, ItemID.Seashell, ItemID.Starfish, ItemID.SoulofSight, ItemID.GreaterHealingPotion,
+                ItemID.SuperHealingPotion, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
+                ItemType<InsidiousImpaler>(), ItemType<SepticSkewer>(), ItemType<FetidEmesis>(), ItemType<VitriolicViper>(), ItemType<CadaverousCarrion>(), ItemType<ToxicantTwister>(),
+                ItemType<OldDukeScales>(), ItemType<Greentide>(), ItemType<Leviatitan>(), ItemType<Atlantis>(), ItemType<AnahitasArpeggio>(), ItemType<Whitewater>(), ItemType<LeviathanTeeth>(),
+                ItemType<GastricBelcherStaff>(), ItemType<PearlofEnthrallment>(), ItemType<AquaticScourgeBag>(), ItemType<OldDukeBag>(), ItemType<LeviathanBag>(), ItemType<OldDukeMask>(),
+                ItemType<LeviathanMask>(), ItemType<AquaticScourgeMask>(), ItemType<OldDukeTrophy>(), ItemType<LeviathanTrophy>(), ItemType<AquaticScourgeTrophy>(), ItemType<LoreAquaticScourge>(),
+                ItemType<LoreLeviathanAnahita>(), ItemType<LoreSulphurSea>(), ItemType<LoreAbyss>(), ItemType<LoreOldDuke>(), ItemType<PearlShard>(), ItemType<AeroStone>(), ItemType<TheCommunity>(),
+                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, prevents this rogue weapon from triggering Venerated Locket's clone projectile effect when used.<br/>
+        /// Primarily used for weapons which shoot short-distance projectiles.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] DisablesVeneratedLocketEffect = Factory.CreateBoolSet(ItemType<SlickCane>(), ItemType<Mycoroot>(), ItemType<CosmicKunai>());
+
+        /// <summary>
+        /// If <see langword="true"/> for an item type, this item is considered to be a magic gun.<br/>
+        /// Used for applying Calamity's reworked Meteor armor set bonus.<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] MagicGun = Factory.CreateBoolSet(ItemID.BeeGun, ItemID.BubbleGun, ItemID.ChargedBlasterCannon, ItemID.HeatRay, ItemID.LaserMachinegun, ItemID.LaserRifle,
+                ItemID.LeafBlower, ItemID.RainbowGun, ItemID.SpaceGun, ItemID.WaspGun, ItemID.ZapinatorGray, ItemID.ZapinatorOrange, ItemType<AbyssShocker>(), ItemType<AcidGun>(),
+                ItemType<AethersWhisper>(), ItemType<AetherfluxCannon>(), ItemType<ApoctosisArray>(), ItemType<Cryophobia>(), ItemType<Effervescence>(), ItemType<EidolicWail>(),
+                ItemType<Genesis>(), ItemType<IonBlaster>(), ItemType<NanoPurge>(), ItemType<Omicron>(), ItemType<PlasmaCaster>(), ItemType<PlasmaRifle>(), ItemType<PulsePistol>(),
+                ItemType<PurgeGuzzler>(), ItemType<RainbowPartyCannon>(), ItemType<SHPC>(), ItemType<TeslaCannon>(), ItemType<TheSwarmer>(), ItemType<Volterion>(), ItemType<Vulcan>(), ItemType<Wingman>());
+    }
+}
