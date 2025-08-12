@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 28;
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(copper: 40);
-            Item.rare = ItemRarityID.Blue;
+            Item.rare = ItemRarityID.Green;
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)
