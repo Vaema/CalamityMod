@@ -1748,11 +1748,11 @@ namespace CalamityMod.Items
         private static readonly int Rarity0BuyPrice = Item.buyPrice(0, 0, 50, 0);
         private static readonly int Rarity1BuyPrice = Item.buyPrice(0, 1, 0, 0);
         private static readonly int Rarity2BuyPrice = Item.buyPrice(0, 2, 0, 0);
-        private static readonly int Rarity3BuyPrice = Item.buyPrice(0, 4, 0, 0);
-        private static readonly int Rarity4BuyPrice = Item.buyPrice(0, 12, 0, 0);
-        private static readonly int Rarity5BuyPrice = Item.buyPrice(0, 24, 0, 0);
-        private static readonly int Rarity6BuyPrice = Item.buyPrice(0, 36, 0, 0);
-        private static readonly int Rarity7BuyPrice = Item.buyPrice(0, 48, 0, 0);
+        private static readonly int Rarity3BuyPrice = Item.buyPrice(0, 5, 0, 0);
+        private static readonly int Rarity4BuyPrice = Item.buyPrice(0, 10, 0, 0);
+        private static readonly int Rarity5BuyPrice = Item.buyPrice(0, 20, 0, 0);
+        private static readonly int Rarity6BuyPrice = Item.buyPrice(0, 35, 0, 0);
+        private static readonly int Rarity7BuyPrice = Item.buyPrice(0, 45, 0, 0);
         private static readonly int Rarity8BuyPrice = Item.buyPrice(0, 60, 0, 0);
         private static readonly int Rarity9BuyPrice = Item.buyPrice(0, 80, 0, 0);
         private static readonly int Rarity10BuyPrice = Item.buyPrice(1, 0, 0, 0); // Highest raw rarity used by vanilla items (ML drops)
