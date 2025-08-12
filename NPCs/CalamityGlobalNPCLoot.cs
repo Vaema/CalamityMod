@@ -734,14 +734,11 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 6, 12);
                     break;
 
-                // Wandering Eye Fish
-                // Bouncing Eyeball @ 10% Normal, 16.66% Expert+
+                // Wandering Eye Fish, Zombie Merman
+                // Bouncing Eyeball @ 12.5%
                 case NPCID.EyeballFlyingFish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BouncingEyeball>(), 10, 6));
-                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
-                    break;
-
                 case NPCID.ZombieMerman:
+                    npcLoot.Add(ModContent.ItemType<BouncingEyeball>(), 8);
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
