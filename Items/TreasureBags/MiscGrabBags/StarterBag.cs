@@ -55,7 +55,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
             // Potions
             LeadingConditionRule multiplayer = itemLoot.DefineConditionalDropSet(() => Main.netMode == NetmodeID.MultiplayerClient);
             itemLoot.Add(ItemID.MiningPotion, 1, 3, 3);
-            itemLoot.Add(ItemID.SpelunkerPotion, 1, 3, 3);
             itemLoot.Add(ItemID.RecallPotion, 1, 3, 3);
             multiplayer.Add(ItemID.WormholePotion, 1, 3, 3);
 
