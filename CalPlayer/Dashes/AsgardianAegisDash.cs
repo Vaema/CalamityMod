@@ -22,8 +22,6 @@ namespace CalamityMod.CalPlayer.Dashes
         public int Time = 0;
         public bool PostHit = false;
 
-        public override int dashStartup => 12;
-
         public override float CalculateDashSpeed(Player player) => 23.3f;
 
         public override void OnDashEffects(Player player)

@@ -23,8 +23,6 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override bool IsOmnidirectional => false;
 
-        public override int dashStartup => 12;
-
         public override float CalculateDashSpeed(Player player) => 16.9f;
 
         public override void DashStartupEffects(Player player)
@@ -38,7 +36,7 @@ namespace CalamityMod.CalPlayer.Dashes
             // Dash at a faster speed than the default value.
             dashSpeed = 12.5f;
             // Spawn fire dust around the player's body.
-            if (DashTimeAdjustedForStartup > 12)
+            if (DashTimeAdjustedForStartup > 14)
                 return;
                 for (int d = 0; d < 3; d++)
                 {
@@ -58,7 +56,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
         {
-            if (DashTimeAdjustedForStartup > 12)
+            if (DashTimeAdjustedForStartup > 14)
                 return;
             // Define hit context variables.
             int hitDirection = player.direction;
