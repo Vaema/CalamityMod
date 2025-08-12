@@ -105,8 +105,8 @@ namespace CalamityMod
         {
             IList<Projectile> coins = new List<Projectile>();
 
-            // Search for all nearby coins.
-            // Coins do not necessarily have to be owned by the same player as the searching projectile!
+            // Search for all nearby coins/clips.
+            // Coins/clips do not necessarily have to be owned by the same player as the searching projectile!
             int coinID = ModContent.ProjectileType<RicoshotCoin>();
             int clipID = ModContent.ProjectileType<M1GarandEmptyClip>();
 
@@ -160,7 +160,7 @@ namespace CalamityMod
             foreach (Projectile coin in availableCoins)
             {
                 // Determine the max ricochet distance based on the target type
-                float maxDistance = coin.type == ModContent.ProjectileType<M1GarandEmptyClip>() ? M1GarandEmptyClip.MaxIntraClipRicoshotDistance : RicoshotCoin.MaxIntraCoinRicoshotDistance; // New line
+                float maxDistance = coin.type == ModContent.ProjectileType<M1GarandEmptyClip>() ? M1GarandEmptyClip.MaxIntraClipRicoshotDistance : RicoshotCoin.MaxIntraCoinRicoshotDistance; // New line. Use different distance based on proj type.
                 if (coin.Distance(startPos) > maxDistance)
                     continue;
 
