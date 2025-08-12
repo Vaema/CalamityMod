@@ -164,6 +164,7 @@ namespace CalamityMod
                 if (coin.Distance(startPos) > maxDistance)
                     continue;
 
+                // Skip coins which are already frozen (part of an ongoing ricoshot), unless considering them
                 if (!considerFrozenCoins && coin.ai[1] > 0f)
                     continue;
 
