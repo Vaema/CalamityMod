@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
-            float scale = Main.getGoodWorld ? 0.6f : 1f;
+            float scale = Main.getGoodWorld ? 0.8f : 1f;
             NPC.aiAction = 0;
 
             // Get a target
