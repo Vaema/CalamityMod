@@ -215,6 +215,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 stabbedNPC = target;
                 NPCOffset = Projectile.Center - target.Center;
             }
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
         }
 
         List<(float, float)> offsets = new()

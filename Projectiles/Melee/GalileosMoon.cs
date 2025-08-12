@@ -56,10 +56,5 @@ namespace CalamityMod.Projectiles.Melee
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
-        }
     }
 }

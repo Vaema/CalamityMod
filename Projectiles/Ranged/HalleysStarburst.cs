@@ -112,10 +112,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
-            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
-            //Both Elf Melter and Flamethrower in vanilla do 20 seconds of their debuff. This is done to match.
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), CalamityUtils.SecondsToFrames(20));
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 30);
             SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
 
             // Dust emission on hit

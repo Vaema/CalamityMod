@@ -97,6 +97,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (Projectile.ai[0] == 1) //Only does all the on-hit for the quazar
             {
+                //Due to Sirius's high Starburst consumption, it inflicts long amounts of Voidfrost on hit
                 target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
                 float x4 = Main.rgbToHsl(new Color(103, 203, Main.DiscoB)).X;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SiriusExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, x4, Projectile.whoAmI);

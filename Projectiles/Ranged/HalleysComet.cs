@@ -77,10 +77,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
-            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
-            //Both Elf Melter and Flamethrower in vanilla do 20 seconds of their debuff. This is done to match.
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), CalamityUtils.SecondsToFrames(20));
+            //Doze - Originally I gave this long Voidfrost infiction due to flamethrowers in vanilla being long debuff infliction items
+            //This has been undone as Voidfrost is now inflicted more sparingly but is more powerful. On-tier it's exclusively used by Stratus items consuming Starbursts
             SoundEngine.PlaySound(HalleysInferno.Hit, Projectile.Center);
 
             // Dust emission on hit

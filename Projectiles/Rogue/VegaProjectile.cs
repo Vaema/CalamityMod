@@ -42,9 +42,7 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), Projectile.timeLeft);
-            
+        {   
             OnHitEffects();
             var owner = Main.player[Projectile.owner];
             if (Projectile.ai[1] > 0)
@@ -66,7 +64,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), Projectile.timeLeft);
             OnHitEffects();
         }
 

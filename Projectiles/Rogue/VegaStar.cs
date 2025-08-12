@@ -101,13 +101,6 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.Item9 with { Volume = 0.5f}, Projectile.position);
             }
         }
-        public override bool? CanHitNPC(NPC target)
-        {
-            return null;
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

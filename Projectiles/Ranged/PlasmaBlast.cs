@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         }
 
         public override void OnKill(int timeLeft)

@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
 
             //Ensures only two shards spawn on enemy hits. If you're wondering why this is needed, turn this off and fight Storm Weaver
             if (SpawnShards)

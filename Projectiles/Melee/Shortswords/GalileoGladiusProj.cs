@@ -96,7 +96,6 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
             Owner.Calamity().StratusStarburst++;
         }
 

@@ -45,10 +45,6 @@ namespace CalamityMod.Projectiles.Rogue
             GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center,Projectile.velocity* 0.001f,false,10,1,new Color(69,69,200)));
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             Collision.HitTiles(Projectile.position + Projectile.velocity, Projectile.velocity, Projectile.width, Projectile.height);
