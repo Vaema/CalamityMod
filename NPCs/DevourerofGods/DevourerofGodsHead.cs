@@ -263,7 +263,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.width = 104;
             NPC.height = 104;
             NPC.defense = 50;
-            NPC.LifeMaxNERB(750000, 900000, 1500000);
+            NPC.LifeMaxNERB(760000, 910000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -284,6 +284,10 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.scale *= 1.5f;
             if (CalamityWorld.LegendaryMode)
                 NPC.takenDamageMultiplier = 2;
+
+
+            NPC.Calamity().VulnerableToElectricity = true;
+            NPC.Calamity().VulnerableToSickness = false;
         }
 
         public override void BossHeadSlot(ref int index)

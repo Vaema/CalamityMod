@@ -278,7 +278,6 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), sulphur },
                 { ModContent.NPCType<SulphurousSharkron>(), sulphur },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsBody>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsTail>(), immuneToEverything },
 
