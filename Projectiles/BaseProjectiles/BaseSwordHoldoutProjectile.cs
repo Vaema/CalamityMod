@@ -14,6 +14,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
 using System;
+using System.IO;
+using CalamityMod.Projectiles.Summon;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -353,6 +355,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             baseScale = Projectile.scale;
             ExistsTime = swingTime + StartupTime + CooldownTime;
             Projectile.timeLeft = ExistsTime * 2;
+            Projectile.netUpdate = true;
         }
 
         /// <summary>
@@ -509,6 +512,32 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override bool? CanDamage()
         {
             return inSwing;
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(angle);
+            writer.Write(swingTime);
+            writer.Write(StartupTime);
+            writer.Write(CooldownTime);
+            writer.Write(timer);
+            writer.Write(swingTimer);
+            writer.Write(ExistsTime);
+            writer.Write(baseScale);
+            writer.Write(Projectile.scale);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            angle = reader.ReadVector2();
+            swingTime = reader.Read();
+            StartupTime = reader.Read();
+            CooldownTime = reader.Read();
+            timer = reader.Read();
+            swingTimer = reader.Read();
+            ExistsTime = reader.Read();
+            baseScale = reader.ReadSingle();
+            Projectile.scale = reader.ReadSingle();
         }
         #endregion
 
