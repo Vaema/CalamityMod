@@ -20,11 +20,11 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Boss";
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0];
-        public ref float laserType => ref Projectile.ai[2];
+        public ref float laserType => ref Projectile.ai[1];
         public bool canDamage => doneAttack && laserFX >= 1f;
         public bool doneAttack = false;
         public int attackTime = 30;
-        public float laserLength => 3000;
+        public float laserLength => laserType == 0 ? 2000 : 1000;
         public float laserFX = 0;
         public float storedTime = 0;
         public Color drawColor = Color.Magenta;
@@ -57,9 +57,6 @@ namespace CalamityMod.Projectiles.Typeless
             sine = (float)Math.Sin(time * 4f / MathHelper.Pi);
             if (time == 0)
             {
-                laserType = 1;
-                if (CalamityWorld.LegendaryMode)
-                    Projectile.scale = 6;
                 laserRot = Projectile.velocity.ToRotation();
 
                 beamStart = targetPos + Vector2.UnitX.RotatedBy(laserRot) * laserLength;
@@ -68,7 +65,15 @@ namespace CalamityMod.Projectiles.Typeless
                 //Projectile.Center += Main.rand.NextVector2CircularEdge(400, 400);
                 // Some default values for if the projectile spawns without them set
                 if (attackSpeed == 0)
+                {
                     attackSpeed = 3f;
+                }
+                //Negative speed causes instant attack with the set speed
+                if (attackSpeed < 0)
+                {
+                    attackSpeed = -attackSpeed;
+                    time = attackTime;
+                }
                 Projectile.velocity = Vector2.Zero;
                 laserFX = 1f;
                 Projectile.ForceNetUpdate();
@@ -132,22 +137,32 @@ namespace CalamityMod.Projectiles.Typeless
                 return false;
             Texture2D beam = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineThick").Value;
             Texture2D bBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick").Value;
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Texture2D angleBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
             float opacity = (doneAttack ? 0.65f : 0.35f) * (float)Math.Pow(Math.Min(laserFX, 1), 2);
             Color beamColor = drawColor with { A = 0 };
 
             if (CalamityClientConfig.Instance.Photosensitivity)
                 opacity = 0.2f;
-             for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
-                    {
-                        bool black = (t > 0);
-                        Texture2D usedTex = (black ? bBeam : beam);
-
-                        float beamThickness = 0.03f * (black ? (0.8f - 0.15f * t) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
-                        float rot = beamStart.DirectionTo(targetPos).ToRotation() + (MathHelper.PiOver2);
-                        Main.EntitySpriteDraw(usedTex, beamStart - Main.screenPosition, null, (black ? Color.Black * opacity : beamColor * opacity) * (black ? (0.2f + 0.15f * t) : 1), rot, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness, laserLength / 975) * Projectile.scale, SpriteEffects.None);
-                    }
-            //Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Color.Red with { A = 0 }, 0, bloom.Size() / 2, 0.3f, SpriteEffects.None);
+            if (laserType == 0)
+            {
+                for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
+                {
+                    bool black = (t > 0);
+                    Texture2D usedTex = (black ? bBeam : beam);
+                    float beamThickness = 0.03f * (black ? (0.8f - 0.15f * t) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
+                    float rot = beamStart.DirectionTo(targetPos).ToRotation() + (MathHelper.PiOver2);
+                    Main.EntitySpriteDraw(usedTex, beamStart - Main.screenPosition, null, (black ? beamColor * opacity : beamColor * opacity) * (black ? (0.2f + 0.15f * t) : 1), rot, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * (usedTex == beam ? 1 : 0.8277f)), SpriteEffects.None);
+                }
+            }
+            else
+            {
+                for (int t = 0; t < (!doneAttack ? 1 : 4 * Projectile.scale); t++)
+                {
+                    bool inFront = t > 0;
+                    float beamThickness = 16/1960f * Projectile.scale * (inFront ? t/4f : 1) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
+                    Main.EntitySpriteDraw(angleBeam, beamStart - Main.screenPosition, null, beamColor * (1 - t * 0.3f) * opacity * (inFront ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(angleBeam.Width / 2, angleBeam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * 0.8277f), SpriteEffects.None);
+                }
+            }
             return false;
         }
     }
