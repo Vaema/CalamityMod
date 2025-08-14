@@ -23,32 +23,32 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 140;
             Item.height = 42;
-            Item.damage = 7777;
+            Item.damage = 5678;
+            Item.DamageType = DamageClass.Ranged;
+            Item.crit = 16;
+            Item.useTime = Item.useAnimation = 70;
             Item.knockBack = 15f;
             Item.shootSpeed = 30f;
+
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useAnimation = 70;
-            Item.useTime = 70;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType<NorfleetCannon>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.DamageType = DamageClass.Ranged;
             Item.channel = true;
             Item.autoReuse = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-
         // Makes the rotation of the mouse around the player sync in multiplayer.
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Funny punishment for trying to cheeese with Norfleet
-            bool cheater = (player.Calamity().NorfleetCounter >= 3 && player.Calamity().NorfleetCounter < 1000);
+            bool cheater = player.Calamity().NorfleetCounter >= 3 && player.Calamity().NorfleetCounter < 1000;
             if (player.Calamity().NorfleetCounter >= 1000)
                 loadedShots = 1;
 
@@ -66,11 +66,8 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             player.Calamity().NorfleetCounter++;
             loadedShots--;
-
             if (loadedShots <= 0)
-            {
                 loadedShots = 3;
-            }
             return false;
         }
     }

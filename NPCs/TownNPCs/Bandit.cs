@@ -105,7 +105,7 @@ namespace CalamityMod.NPCs.TownNPCs
 
         public override List<string> SetNPCNameList() => new List<string>()
         {
-            // Patron names
+            // Dedicated names
             "Xplizzy", // <@!98826096237109248> (whitegiraffe)
             "Freakish", // <@!750363283520749598> (freak5650)
             "Calder", // <@!601897959176798228> (hardlightcaster)
@@ -116,6 +116,7 @@ namespace CalamityMod.NPCs.TownNPCs
             "Jackie", // <@!353241811717718016> (jackalchan)
             "Ishmael", // <@!840416568000381046> (vanillaoyster)
             "Ariallis", // <@!518231218806980609> (ariallis)
+            "Shade", // <@!613133259563466755> (shade__storm)
 
             // Original names
             this.GetLocalizedValue("Name.Laura"),
@@ -297,26 +298,23 @@ namespace CalamityMod.NPCs.TownNPCs
         }
         public override void AddShops()
         {
-            Condition downedCalclone = CalamityConditions.DownedCalamitasClone;
-            Condition downedDoG = CalamityConditions.DownedDevourerOfGods;
-            Condition downedYharon = CalamityConditions.DownedYharon;
 
             NPCShop shop = new(Type);
-            shop.AddWithCustomValue(ModContent.ItemType<Cinquedea>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<Glaive>(), Item.buyPrice(gold: 9))
-                .AddWithCustomValue(ModContent.ItemType<SlickCane>(), Item.buyPrice(gold: 40))
-                .AddWithCustomValue(ModContent.ItemType<OldDie>(), Item.buyPrice(gold: 40))
+            shop.Add<Cinquedea>()
+                .Add<Glaive>()
+                .Add<SlickCane>()
+                .Add<OldDie>()
                 .Add(ItemID.TigerClimbingGear)
-                .Add(ModContent.ItemType<ThiefsDime>(), Condition.DownedPirates)
-                .AddWithCustomValue(ModContent.ItemType<MomentumCapacitor>(), Item.buyPrice(gold: 60), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<DeepWounder>(), downedCalclone)
-                .Add(ModContent.ItemType<GloveOfPrecision>(), Condition.DownedPlantera)
-                .Add(ModContent.ItemType<GloveOfRecklessness>(), Condition.DownedPlantera)
-                .AddWithCustomValue(ModContent.ItemType<EtherealExtorter>(), Item.buyPrice(1), Condition.DownedGolem)
-                .AddWithCustomValue(ModContent.ItemType<CelestialReaper>(), Item.buyPrice(2), Condition.DownedMoonLord)
-                .AddWithCustomValue(ModContent.ItemType<VeneratedLocket>(), Item.buyPrice(25), downedDoG)
-                .AddWithCustomValue(ModContent.ItemType<DragonScales>(), Item.buyPrice(40), downedYharon)
-                .Add(ModContent.ItemType<BearsEye>()) //:BearWatchingYou:
+                .Add<ThiefsDime>(Condition.DownedPirates)
+                .Add<MomentumCapacitor>(Condition.DownedMechBossAll)
+                .Add<DeepWounder>(CalamityConditions.DownedCalamitasClone)
+                .Add<GloveOfPrecision>(Condition.DownedPlantera)
+                .Add<GloveOfRecklessness>(Condition.DownedPlantera)
+                .Add<EtherealExtorter>(Condition.DownedGolem)
+                .Add<CelestialReaper>(Condition.DownedMoonLord)
+                .Add<VeneratedLocket>(CalamityConditions.DownedDevourerOfGods)
+                .Add<DragonScales>(CalamityConditions.DownedYharon)
+                .Add<BearsEye>() //:BearWatchingYou:
                 .Register();
         }
 

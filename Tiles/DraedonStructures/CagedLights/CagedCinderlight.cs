@@ -21,6 +21,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<CagedCinderlightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 6;
@@ -92,9 +93,5 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             }
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedCinderlightItem>());
-        }
     }
 }

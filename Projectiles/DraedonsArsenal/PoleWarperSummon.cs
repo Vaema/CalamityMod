@@ -12,7 +12,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
     {
         public new string LocalizationCategory => "Projectiles.Misc";
         public float AngularOffset = 0f;
-        public const float MaximumRepulsionSpeed = 13f;
+        public const float MaximumRepulsionSpeed = 11f;
+        public const float ChargeTime = 45f;
         public float Time
         {
             get => Projectile.ai[0];
@@ -25,6 +26,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 0;
@@ -43,7 +45,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Projectile.minion = true;
             Projectile.tileCollide = false;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 12;
+            Projectile.localNPCHitCooldown = 20;
             Projectile.DamageType = DamageClass.Summon;
         }
 
@@ -56,7 +58,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.localAI[0] = 1f;
             }
             GrantBuffs(player);
-            NPC potentialTarget = Projectile.Center.MinionHoming(1400f, player);
+            NPC potentialTarget = Projectile.Center.MinionHoming(2000f, player);
 
             // Teleport near the target if very far away from them.
             if (!Projectile.WithinRange(player.Center, 4200f))
@@ -72,7 +74,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             else
             {
                 NPCMovement(potentialTarget);
-                if (Time % 60f < 35f)
+                if (Time % ChargeTime < 35f)
                 {
                     RepelMovement();
                 }
@@ -130,22 +132,22 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     }
                 }
             }
-            if (Time % 60f < 20f)
+            if (Time % ChargeTime < 20f)
             {
                 float offsetAngle = AngularOffset * 0.5f + (!North).ToInt() * MathHelper.Pi;
                 Vector2 destination = npc.Center + Vector2.UnitY.RotatedBy(offsetAngle) * 180f;
                 Projectile.velocity = (Projectile.velocity * 4f + Projectile.SafeDirectionTo(destination) * 10f) / 5f;
-                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 25f;
+                Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30f;
                 Projectile.rotation = Projectile.AngleTo(npc.Center) + MathHelper.PiOver2;
             }
-            else if (Time % 60f < 35f)
+            else if (Time % ChargeTime < 35f)
             {
                 Projectile.velocity *= 0.96f;
                 Projectile.rotation += 0.05f;
             }
-            else if (Time % 60f == 35f)
+            else if (Time % ChargeTime == 35f)
             {
-                Projectile.velocity = Projectile.SafeDirectionTo(npc.Center, -Vector2.UnitY) * 29f;
+                Projectile.velocity = Projectile.SafeDirectionTo(npc.Center, -Vector2.UnitY) * 20f;
                 Projectile.rotation = Projectile.AngleTo(npc.Center) + MathHelper.PiOver2;
             }
         }
@@ -155,8 +157,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // This does not incorporate attraction on purpose. Doing so causes the minions to very easily become distracted.
             foreach (Projectile p in Main.ActiveProjectiles)
             {
-                if (p.type == Projectile.type &&
-                    Projectile.Distance(p.Center) < 40f)
+                if (p.type == Projectile.type && Projectile.Distance(p.Center) < 40f)
                 {
                     PoleWarperSummon otherPole = (PoleWarperSummon)p.ModProjectile;
                     if (otherPole.North != North)
@@ -172,6 +173,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool PreDraw(ref Color lightColor)
         {

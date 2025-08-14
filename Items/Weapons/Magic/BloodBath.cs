@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FleshOfInfidelity>();
         }
 
         public override void SetDefaults()
@@ -89,16 +92,6 @@ namespace CalamityMod.Items.Weapons.Magic
                 Projectile.NewProjectile(source, realPlayerPos.X, realPlayerPos.Y, speedX4, speedY5, type, damage, knockback, player.whoAmI, 0f, (float)Main.rand.Next(15));
             }
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(9).
-                AddIngredient(ItemID.Vertebrae, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

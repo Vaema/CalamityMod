@@ -218,7 +218,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentColor = Main.rand.Next(3, 5);
                 NPC.rarity = 3;
-                NPC.value = 100000;
             }
             // Decide item..........................
             switch (CurrentColor)
@@ -580,14 +579,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (CurrentColor == (int)FishColor.Gold)
             {
-                NPC.rarity = 3;
-                NPC.value = 100000;
                 NPC.ProduceGoldCritterDust();
-            }
-            if (CurrentColor == (int)FishColor.Radiant)
-            {
-                NPC.rarity = 3;
-                NPC.value = 100000;
             }
         }
 

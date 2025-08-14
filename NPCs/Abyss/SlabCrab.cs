@@ -55,12 +55,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.height = 30;
 
             NPC.damage = BaseAttack;
-            NPC.lifeMax = 375;
+            NPC.lifeMax = 300;
 
             NPC.aiStyle = AIType = -1;
 
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -77,10 +77,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToWater = false;
             NPC.GravityIgnoresLiquid = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -125,7 +125,7 @@ namespace CalamityMod.Graphics.Primitives
 
             Matrix view;
             Matrix projection;
-            if (MainSettings.Pixelate)
+            if (MainSettings.Pixelate || MainSettings.UseUnscaledMatrices)
                 CalcuatePixelatedPerspectiveMatrices(out view, out projection);
             else
                 CalamityUtils.CalculatePerspectiveMatricies(out view, out projection);

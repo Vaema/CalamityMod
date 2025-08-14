@@ -75,10 +75,8 @@ namespace CalamityMod.Projectiles.Melee
 
             GameShaders.Misc["CalamityMod:ExoVortex"].Apply();
             for (int i = 0; i < 6; i++)
-            {
-                Color portalColor = Color.Lerp(Main.DiscoColor, Color.White, (float)Math.Abs(Math.Sin(Main.GlobalTimeWrappedHourly * 2f)));
                 Main.spriteBatch.Draw(howNoisy, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, howNoisy.Size() / 2f, squishScale, SpriteEffects.None, 0f);
-            }
+
             Main.spriteBatch.ExitShaderRegion();
             return false;
         }

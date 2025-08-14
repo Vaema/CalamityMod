@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.World;
@@ -20,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0]; // How fast the attack goes, higher is faster
         public ref float laserDist => ref Projectile.ai[1]; // The spacing between lasers
-        public ref float laserType => ref Projectile.ai[2]; // The style of laser wall, ranging from 0 - 5
+        public ref float laserType => ref Projectile.ai[2]; // The style of laser wall, ranging from 0 - 5 (6 for GFB circular variant)
         public bool canDamage => doneAttack && laserFX >= 1f;
         public bool doneAttack = false;
         public int attackTime = 30;
@@ -94,17 +95,33 @@ namespace CalamityMod.Projectiles.Boss
         public override bool CanHitPlayer(Player target)
         {
             if (canDamage)
-                return true;
+            {
+                if (laserType == 6)
+                {
+                    float distance = Vector2.Distance(Projectile.Center, target.Center);
+                    float expand = MathF.Min(target.width, target.height);
+                    if (distance < laserDist * 1.5f || distance > laserDist * 10f + 40f)
+                        return false;
+                    
+                    if (distance % laserDist > (laserDist - Utils.Remap(distance, 240f, 1440f, 8f, 56f) - expand) || distance % laserDist < expand)
+                        return true;
+                }
+                else
+                    return true;
+            }
             return false;
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
             base.OnHitPlayer(target, info);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             if (!canDamage)
                 return false;
+            else if (laserType == 6) // Custom hit check through CanHitPlayer
+                return true;
             else
             {
                 float _ = float.NaN;
@@ -144,7 +161,18 @@ namespace CalamityMod.Projectiles.Boss
             Texture2D bBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick").Value;
             Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             float opacity = (doneAttack ? 0.65f : 0.3f) * (float)Math.Pow(Math.Min(laserFX, 1), 2);
+            if (CalamityClientConfig.Instance.Photosensitivity)
+                opacity = 0.2f;
+
             Color beamColor = drawColor with { A = 0 };
+            if (laserType == 6)
+            {
+                Texture2D ring = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRingThinLarge").Value;
+                for (float scale = 0.25f * laserDist / 120f; scale < 1.25f; scale += 0.125f * laserDist / 120f)
+                    Main.EntitySpriteDraw(ring, Projectile.Center - Main.screenPosition, null, beamColor * opacity, 0f, ring.Size() * 0.5f, scale, SpriteEffects.None);
+                return false;
+            }
+
             Vector2 X = Vector2.UnitX.RotatedBy((laserType == 1 || laserType == 3 || laserType == 5) ? MathHelper.PiOver4 : 0);
             Vector2 Y = Vector2.UnitY.RotatedBy((laserType == 1 || laserType == 3 || laserType == 5) ? MathHelper.PiOver4 : 0);
             for (int l = 0; l < 2; l++)
@@ -156,9 +184,6 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 startPoint = Projectile.Center - (horizontal ? Y : X) * (length);
                     Vector2 laserPoint = startPoint + (horizontal ? X : Y) * (laserDist * i) - (horizontal ? X : Y) * (laserDist * laserCount / 2);
-
-                    if (CalamityClientConfig.Instance.Photosensitivity)
-                        opacity = 0.2f;
 
                     for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
                     {

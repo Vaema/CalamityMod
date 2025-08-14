@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Sounds;
 using CalamityMod.World;
@@ -25,16 +26,16 @@ namespace CalamityMod.NPCs.DevourerofGods
         public static int phase1IconIndex;
         public static int phase2IconIndex;
 
-        public static Asset<Texture2D> Texture_Glow;
-        public static Asset<Texture2D> Texture_Glow2;
-        public static Asset<Texture2D> Phase2Texture;
-        public static Asset<Texture2D> Phase2Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture_Glow2;
+        public static Asset<Texture2D> Texture_Glow_Purple;
+        public static Asset<Texture2D> Texture_Glow_Cyan;
+        public static Asset<Texture2D> TextureP2;
+        public static Asset<Texture2D> TextureP2_Glow_Purple;
+        public static Asset<Texture2D> TextureP2_Glow_Cyan;
 
         public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsTail_Head_Boss";
-            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsTailS_Head_Boss";
+            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsTail_P2_Head_Boss";
             
             phase1IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase1IconPath, -1);
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
@@ -49,11 +50,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
-                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-                Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "Glow2", AssetRequestMode.AsyncLoad);
-                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+                Texture_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_Glow_Purple", AssetRequestMode.AsyncLoad);
+                Texture_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_Glow_Cyan", AssetRequestMode.AsyncLoad);
+                TextureP2 = ModContent.Request<Texture2D>(Texture + "_P2", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Purple", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Cyan", AssetRequestMode.AsyncLoad);
             }
         }
 
@@ -64,8 +65,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 100; // 200
             NPC.npcSlots = 5f;
             NPC.width = 66;
             NPC.height = 66;
@@ -84,11 +84,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.dontCountMe = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -159,9 +156,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase2 = lifeRatio < 0.65f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (phase2)
             {
@@ -266,7 +262,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             segmentDirection.Y = (int)(segmentDirection.Y / 16f) * 16;
             playerXDist -= segmentDirection.X;
             playerYDist -= segmentDirection.Y;
-            float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
             if (NPC.ai[1] > 0f && NPC.ai[1] < Main.npc.Length)
             {
                 try
@@ -279,7 +274,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                 }
                 NPC.rotation = (float)System.Math.Atan2(playerYDist, playerXDist) + MathHelper.PiOver2;
-                playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
                 int segmentWidth = NPC.width;
                 playerDistance = (playerDistance - segmentWidth) / playerDistance;
                 playerXDist *= playerDistance;
@@ -295,25 +290,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
             if (CalamityWorld.LegendaryMode)
                 segmentVelocity *= 1.1f;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -323,22 +304,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (Main.npc[NPC.realLife].type != ModContent.NPCType<DevourerofGodsHead>())
                 return true;
 
-            float disintegrationFactor = Main.npc[NPC.realLife].ModNPC<DevourerofGodsHead>().DeathAnimationTimer / 640f;
-            if (disintegrationFactor > 0f)
-            {
-                spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseOpacity(disintegrationFactor);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseSaturation(NPC.whoAmI);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseImage1("Images/Misc/Perlin");
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].Apply();
-            }
-
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
+            Texture2D texture2D15 = useOtherTextures ? TextureP2.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
             Vector2 drawPosition = NPC.Center - screenPos;
@@ -348,21 +319,18 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if ((!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInPassiveState || !useOtherTextures) && NPC.Opacity > 0.25f)
             {
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow.Value : Texture_Glow.Value;
+                texture2D15 = useOtherTextures ? TextureP2_Glow_Purple.Value : Texture_Glow_Purple.Value;
                 Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
             if (!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInAgressiveState && NPC.Opacity > 0.25f)
             {
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow2.Value;
+                texture2D15 = useOtherTextures ? TextureP2_Glow_Cyan.Value : Texture_Glow_Cyan.Value;
                 Color glowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawPosition, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
-
-            if (disintegrationFactor > 0f)
-                spriteBatch.ExitShaderRegion();
 
             return false;
         }
@@ -395,7 +363,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 NPC.soundDelay = 8;
                 float extrapitch = Main.zenithWorld ? 0.3f : 0f;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(DevourerofGodsHead.HitSound with { Pitch = DevourerofGodsHead.HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {
@@ -466,7 +434,6 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

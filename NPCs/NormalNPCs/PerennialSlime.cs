@@ -22,11 +22,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.damage = 35;
             NPC.width = 40;
             NPC.height = 30;
-            NPC.defense = 12;
-            NPC.lifeMax = 225;
+            NPC.defense = 20;
+            NPC.lifeMax = 360;
             NPC.knockBackResist = 0.5f;
             AnimationType = NPCID.CorruptSlime;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.alpha = 50;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -37,10 +37,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<PerennialSlimeBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

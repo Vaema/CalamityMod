@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void SetDefaults()
         {
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 2;
@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.HiveMind
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.4f;
+            NPC.knockBackResist = 0.4f;
             NPC.noGravity = true;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath21;
@@ -73,14 +73,18 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
+            // Despawn if Hive Mind isn't present
+            if (CalamityGlobalNPC.hiveMind == -1)
+            {
+                NPC.life = 0;
+                NPC.HitEffect();
+                NPC.checkDead();
+                NPC.active = false;
+            }
+
             float velocity = CalamityWorld.LegendaryMode ? 10f : death ? 7f : revenge ? 6f : 4f;
             float acceleration = CalamityWorld.LegendaryMode ? 0.5f : death ? 0.35f : revenge ? 0.3f : 0.2f;
             float deceleration = CalamityWorld.LegendaryMode ? 0.9f : death ? 0.95f : revenge ? 0.96f : 0.98f;
-            if (BossRushEvent.BossRushActive)
-            {
-                velocity *= 2f;
-                acceleration *= 2f;
-            }
 
             if (NPC.position.Y > Main.player[NPC.target].position.Y - 400f)
             {
@@ -128,10 +132,9 @@ namespace CalamityMod.NPCs.HiveMind
                     int shaderainXPos = (int)(NPC.position.X + 10f + Main.rand.Next(NPC.width - 20));
                     int shaderainYos = (int)(NPC.position.Y + NPC.height + 4f);
                     int type = ModContent.ProjectileType<ShaderainHostile>();
-                    int damage = NPC.GetProjectileDamage(type);
                     float randomXVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextFloat() * 5f : 0f;
                     float velocityY = 8f;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shaderainXPos, shaderainYos, randomXVelocity, velocityY, type, HiveMind.ShaderainDamage, 0f, Main.myPlayer);
                 }
             }
         }

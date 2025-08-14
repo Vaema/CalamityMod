@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = Item.useTime = 25;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5f;
-            Item.value = Item.sellPrice(0, 0, 0, 4);
+            Item.value = Item.sellPrice(copper: 4);
             Item.rare = ItemRarityID.White;
             Item.maxStack = Item.CommonMaxStack;
             Item.UseSound = SoundID.Item1;

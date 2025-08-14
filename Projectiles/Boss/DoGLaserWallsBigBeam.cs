@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -70,9 +71,11 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (time >= attackTime && !doneAttack)
             {
-                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7f)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f;
+                SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack2");
                 for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.9f, Pitch = 0, MaxInstances = -1 }, targetPos);
+                    SoundEngine.PlaySound(attack with { Volume = 0.8f, Pitch = 0, MaxInstances = -1 }, targetPos);
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
@@ -98,6 +101,7 @@ namespace CalamityMod.Projectiles.Boss
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 60);
             base.OnHitPlayer(target, info);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

@@ -163,6 +163,6 @@ namespace CalamityMod.Projectiles.Boss
         // Prevent the crystals from utilizing velocity. Their movement is entirely dependant on Center setting.
         public override bool ShouldUpdatePosition() => false;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GlacialState>(), 300);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Frozen, 300);
     }
 }

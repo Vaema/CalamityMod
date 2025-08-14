@@ -32,7 +32,6 @@ namespace CalamityMod.Items.Armor.Reaver
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
             player.GetDamage<GenericDamageClass>() += 0.09f;
             player.GetCritChance<GenericDamageClass>() += 4;
         }

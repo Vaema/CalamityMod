@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,23 +14,17 @@ using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee.Yoyos
 {
+    // Although normally yoyos are automatically exempted from pierce resist,
+    // the damage logic for the buzzsaw briefly clobbers aiStyle, necessitating a manual pierce resist exception.
+    [PierceResistException]
     public class LaceratorYoyo : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Lacerator>();
         public const int MaxUpdates = 3;
 
-        private static int CircleRes = 60;
-        private static int VertRes = 4;
-        private static int SpikeCount = 8;
-
-        private float circleProgress = 0;
-        private float verticalProgress = 1;
-        private bool goingUp = false;
         public float chargeProgress = 0;
-
         private bool sawHit = false;
         private bool spawnedBlood = false;
-
         private int sawDir = 0;
 
         public override void SetStaticDefaults()
@@ -63,6 +58,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 chargeProgress = 1;
             if (chargeProgress > 0)
             {
+                // Handles damage logic for the buzzsaw visual
                 if (Main.player[Projectile.owner].miscCounter % 5 == 0 && Projectile.FinalExtraUpdate() && chargeProgress > 0.05f)
                 {
                     spawnedBlood = false;
@@ -71,7 +67,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     Projectile.height = 196;
                     Projectile.Center = Projectile.position;
                     Projectile.originalDamage = Projectile.damage;
-                    Projectile.damage = (int)(Projectile.damage * MathHelper.Lerp(0, 1f, chargeProgress));
+                    Projectile.damage = (int)(Projectile.damage * MathHelper.Lerp(0, 0.75f, chargeProgress));
                     sawHit = true;
                     Projectile.usesIDStaticNPCImmunity = true;
                     Projectile.aiStyle = -1;
@@ -108,11 +104,10 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             if (sawHit)
             {
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 60);
                 Vector2 bloodpos = Projectile.Center + Projectile.DirectionTo(target.Center) * 84;
                 if (!spawnedBlood && Main.rand.NextBool() && chargeProgress > 0.2f && target.Hitbox.Contains(bloodpos.ToPoint()))
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), bloodpos, Projectile.DirectionTo(target.Center).RotatedBy(sawDir * MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(3f, 5f), ModContent.ProjectileType<BloodstoneHealOrb>(), 1, 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_OnHit(target), bloodpos, Projectile.DirectionTo(target.Center).RotatedBy(sawDir * MathHelper.PiOver2 * 0.9f).RotatedByRandom(0.1f) * Main.rand.NextFloat(3f, 5f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, Projectile.owner);
                     spawnedBlood = true;
                 }
                 return;

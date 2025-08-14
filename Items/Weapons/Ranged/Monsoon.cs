@@ -67,10 +67,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     }
                     int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 1.1), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[proj].arrow = true;
                         Main.projectile[proj].extraUpdates += 1;
-                    }
                 }
                 else
                 {

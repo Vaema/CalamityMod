@@ -40,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useTurn = true;
             Item.knockBack = 8f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.shoot = ModContent.ProjectileType<OrderbringerWaveProj>();
             Item.shootSpeed = 5.5f;
         }

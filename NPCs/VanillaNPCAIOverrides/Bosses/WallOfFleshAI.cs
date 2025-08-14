@@ -16,12 +16,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float TotalLasersPerBarrage = 3f;
         public const float EnragedLaserFiringDuration = 300f;
 
+        // Rev+ exclusive
+        public static int LaserDamage = 15; // 60 (modified to be always at maximum Expert damage and does not scale)
+        public static int SickleDamage = 22; // 88
+
+        // Death exclusive
+        public static int FireballDamage = 18; // 108
+
         public static bool BuffedWallofFleshAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Despawn
             if (npc.position.X < 160f || npc.position.X > ((Main.maxTilesX - 10) * 16))
@@ -88,8 +94,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] += 1f;
                 if (phase3)
                     npc.ai[1] += 1f;
-                if (bossRush)
-                    npc.ai[1] += 3f;
                 if (CalamityWorld.LegendaryMode)
                     npc.ai[1] += 9f;
 
@@ -122,8 +126,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * npc.velocity.Length();
                         Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
 
-                        int damage = npc.GetProjectileDamage(ProjectileID.DemonSickle);
-                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, ProjectileID.DemonSickle, damage, 0f, Main.myPlayer, 0f, projectileVelocity.Length() * 3f);
+                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, ProjectileID.DemonSickle, SickleDamage, 0f, Main.myPlayer, 0f, projectileVelocity.Length() * 3f);
                         Main.projectile[proj].timeLeft = 600;
                         Main.projectile[proj].tileCollide = false;
 
@@ -134,7 +137,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.Fireball;
-                                damage = npc.GetProjectileDamage(type);
                                 int numProj = 3;
                                 int spread = 15;
                                 float rotation = MathHelper.ToRadians(spread);
@@ -143,7 +145,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(fireballVelocity, fireballVelocity);
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1))) + randomVelocity;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, FireballDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -252,9 +254,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float timeBeforeEnrage = death ? (150f - 130f * (1f - lifeRatio)) : 600f;
             float speedMult = 1f;
 
-            if (bossRush)
-                timeBeforeEnrage *= 0.25f;
-
             if (calamityGlobalNPC.newAI[0] < timeBeforeEnrage)
             {
                 if (distanceFromTarget > halfAverageScreenWidth)
@@ -304,9 +303,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             calamityGlobalNPC.CurrentlyEnraged = distanceFromTarget > halfAverageScreenWidth || npc.ai[3] == 1f;
 
-            if (bossRush)
-                speedMult += 0.2f;
-
             float deathModeVelocityBoost = 0f;
             if (death)
             {
@@ -321,7 +317,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // NOTE: Max velocity is 9 in For The Worthy
 
             float velocityBoost = 4f * (1f - lifeRatio);
-            float velocityX = (bossRush ? 7f : death ? 3.5f : 2f) + deathModeVelocityBoost + velocityBoost;
+            float velocityX = (death ? 3.5f : 2f) + deathModeVelocityBoost + velocityBoost;
             velocityX *= speedMult;
 
             if (death)
@@ -439,9 +435,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Range of 64 to 268
                 chance *= 2;
 
-                if (bossRush)
-                    chance /= 4;
-                else if (death)
+                if (death)
                     chance /= 2;
 
                 if (chance < 2)
@@ -548,8 +542,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             CalamityUtils.CalamityTargeting(npc, default);
             float acceleration = death ? 0.15f : 0.12f;
@@ -558,13 +551,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.defense = npc.defDefense;
             if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.5)
             {
-                npc.damage = death ? 180 : 120;
+                npc.damage = npc.defDamage * 2;
                 npc.defense = 30;
                 acceleration += death ? 0.1f : 0.08f;
             }
             else if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.75)
             {
-                npc.damage = death ? 135 : 90;
+                npc.damage = (int)Math.Round(npc.defDamage * 1.5f);
                 npc.defense = 20;
                 acceleration += death ? 0.05f : 0.04f;
             }
@@ -702,8 +695,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Avoid cheap bullshit
             npc.damage = 0;
@@ -814,8 +806,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             Vector2 eyeLocation = npc.Center;
-            float predictionAmount = MathHelper.Lerp(0f, 20f, (float)Math.Sqrt(1f - lifeRatio));
-            Vector2 lookAt = Main.player[npc.target].Center + (bossRush ? (Main.player[npc.target].velocity * predictionAmount) : Vector2.Zero);
+            Vector2 lookAt = Main.player[npc.target].Center;
             float eyeTargetX = lookAt.X - eyeLocation.X;
             float eyeTargetY = lookAt.Y - eyeLocation.Y;
             float wallVelocity = (float)Math.Sqrt(eyeTargetX * eyeTargetX + eyeTargetY * eyeTargetY);
@@ -891,14 +882,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         float velocity = (fireEnragedLasers ? 3f : 4f) + shootBoost;
                         int projectileType = ProjectileID.EyeLaser;
-                        int damage = npc.GetProjectileDamage(projectileType);
 
                         bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
                         float projectileOffset = targetTooClose ? 60f : 150f;
                         Vector2 projectileVelocity = (lookAt - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
 
-                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
+                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, LaserDamage, 0f, Main.myPlayer, 1f, 0f);
                         Main.projectile[proj].timeLeft = 900;
 
                         if (!canHit)

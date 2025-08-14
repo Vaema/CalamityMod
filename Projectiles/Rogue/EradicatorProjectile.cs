@@ -129,7 +129,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Spin extra fast to visually shred the enemy.
             Projectile.rotation += spinDir * RotationIncrement * 0.8f;
 
-            // Randomly fire lasers while grinding. Each laser only does 12% damage.
+            // Randomly fire lasers while grinding.
             randomLaserCharge += Main.rand.NextFloat(0.09f, 0.14f);
             if (randomLaserCharge >= 1f)
             {
@@ -199,9 +199,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => OnHit();
-
-        private void OnHit()
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Non-stealth strikes do not stick on hit.
             if (!Projectile.Calamity().stealthStrike)

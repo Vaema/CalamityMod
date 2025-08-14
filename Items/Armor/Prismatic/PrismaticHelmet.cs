@@ -38,10 +38,9 @@ namespace CalamityMod.Items.Armor.Prismatic
         {
             player.Calamity().prismaticSet = true;
             player.statManaMax2 += 40;
-            player.manaCost *= 0.85f;
+            player.manaCost -= 0.15f;
             player.manaRegenBonus += 8;
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey);
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey());
         }
 
         public override void UpdateEquip(Player player)

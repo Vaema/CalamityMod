@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Armor.Prismatic
         public override void UpdateEquip(Player player)
         {
             player.Calamity().prismaticRegalia = true;
-            player.statLifeMax2 += 20;
             player.statManaMax2 += 40;
             player.GetDamage<MagicDamageClass>() += 0.12f;
             player.GetCritChance<MagicDamageClass>() += 15;

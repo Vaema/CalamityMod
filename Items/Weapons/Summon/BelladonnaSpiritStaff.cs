@@ -38,8 +38,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;
-            Item.rare = ItemRarityID.Blue;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.noMelee = true;
             Item.autoReuse = true;
         }

@@ -20,6 +20,8 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 4;
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
@@ -38,8 +40,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.minion = true;
             Projectile.DamageType = DamageClass.Summon;
         }
-
-        public override bool? CanDamage() => false;
 
         public override void AI()
         {

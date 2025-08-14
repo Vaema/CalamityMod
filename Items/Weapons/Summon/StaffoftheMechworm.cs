@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -12,11 +13,15 @@ namespace CalamityMod.Items.Weapons.Summon
     public class StaffoftheMechworm : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Eradicator>();
+        }
         public override void SetDefaults()
         {
             Item.width = 68;
             Item.height = 68;
-            Item.damage = 100;
+            Item.damage = 110;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;

@@ -38,9 +38,9 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
-            NPC.lifeMax = 1130;
+            NPC.lifeMax = 900;
             NPC.aiStyle = AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.knockBackResist = 0.04f;
@@ -51,10 +51,6 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

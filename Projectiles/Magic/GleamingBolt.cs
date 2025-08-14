@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 6; i++)
                 {
                     Vector2 velocity = ((MathHelper.TwoPi * i / 6f) - (MathHelper.Pi / 3f - Projectile.velocity.ToRotation())).ToRotationVector2() * 3.5f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<GleamingBolt2>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
                 }
             }
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);

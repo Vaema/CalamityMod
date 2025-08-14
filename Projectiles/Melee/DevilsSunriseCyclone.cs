@@ -141,9 +141,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(HitSound, target.Center);
             target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 180);
             // Heals on each hit
-            Player own = Main.player[Projectile.owner];
-            if (!own.moonLeech)
-                own.HealPlayer(1);
+            Main.player[Projectile.owner].DoLifestealDirect(target, 1, 0.75f);
 
             // Start slicing the hit enemy if not doing so already
             if (State != 2f)

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Particles;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -14,6 +14,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Deathwind : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeathhailStaff>();
+        }
         public override void SetDefaults()
         {
             Item.width = 40;
@@ -106,7 +110,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float SpeedY = velocity.Y + Main.rand.Next(-20, 21) * 0.05f;
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                 {
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 2), knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 1.5f), knockback, player.whoAmI);
                 }
                 else
                 {

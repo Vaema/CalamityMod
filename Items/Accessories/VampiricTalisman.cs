@@ -11,7 +11,6 @@ namespace CalamityMod.Items.Accessories
     {
         internal const int ArmorCrunchDebuffTime = 150;
         internal const int HeavyBleedingDebuffTime = 300;
-        internal const float StealthStrikeDamageMultiplier = 0.08f;
         public const float RaiderBonus = 15f;
 
         public bool ShowExtensionIndicator => false;
@@ -36,7 +35,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.vampiricTalisman = true;
             modPlayer.raiderTalisman = true;
             modPlayer.rottenDogTooth = true;
-            player.Calamity().bonusStealthDamage += StealthStrikeDamageMultiplier;
 
             //get fixed boi funny
             if (Main.zenithWorld)

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.NPCs;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -13,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,6 +17,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyBlast : ModProjectile, ILocalizedModType
     {
         public bool started = false;
+        public int FireDamage = 0;
 
         private const int TimeLeft = 120;
         private const int AccelerationTime = 60;
@@ -36,10 +32,6 @@ namespace CalamityMod.Projectiles.Boss
             Main.projFrames[Type] = 4;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-        }
-
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -50,6 +42,17 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = TimeLeft;
             CooldownSlot = ImmunityCooldownID.Bosses;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            FireDamage = Providence.FireDamage.CalculateProvidenceDamage();
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<ProfanedGuardianCommander>())
+                    FireDamage = ProfanedGuardianCommander.FireDamage;
+            }
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -64,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 320, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 180, 20);
 
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
 
@@ -111,8 +114,7 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(ShootSound, Projectile.Center);
             }
 
-            if (Math.Abs(Projectile.velocity.X) > 0.2)
-                Projectile.spriteDirection = -Projectile.direction;
+            Projectile.direction = Projectile.spriteDirection = (Math.Abs(Projectile.velocity.X) > 0.2).ToDirectionInt();
 
             GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Center + new Vector2(Main.rand.NextFloat(50), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.6f, false, 20, Main.rand.NextFloat(1f, 2f), ProvUtils.GetProjectileColor(255)));
             GeneralParticleHandler.SpawnParticle(new MediumMistParticle(Projectile.Center + new Vector2(40, 0).RotatedBy(Vector2.Zero.AngleTo(-Projectile.velocity)) + new Vector2(Main.rand.NextFloat(20), 0).RotatedByRandom(MathHelper.TwoPi), Projectile.velocity.RotatedBy(Math.PI) * 0.6f, Color.LightSlateGray, Color.DarkSlateGray, Main.rand.NextFloat(1f, 3f), 150f));
@@ -128,12 +130,11 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ProvUtils.StandardAI() ? Terraria.GameContent.TextureAssets.Projectile[Type].Value : ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/HolyBlastNight").Value;
-            int framing = texture.Height / Main.projFrames[Type];
-            int y6 = framing * Projectile.frame;
-            Vector2 sc = Vector2.One;
-            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, sc, texture);
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            SpriteEffects sp = Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            Projectile.DrawBackglow(ProvUtils.GetProjectileColor(lightColor, true), 4f, texture, effects: sp);
 
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, y6, texture.Width, framing)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, framing / 2f), sc, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
 
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, FireDamage, 0f, Projectile.owner);
                 }
             }
 
@@ -200,7 +201,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 320);
+            ProvUtils.ApplyDebuffs(target, 180);
         }
     }
 }

@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Velocity != Vector2.Zero)
                 {
                     Projectile.extraUpdates = CalamityWorld.LegendaryMode ? 4 : 3;
-                    Projectile.velocity = Velocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.velocity = Velocity;
                     Velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
@@ -194,14 +194,6 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool CanHitPlayer(Player target) => TelegraphDelay > TelegraphTotalTime;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || TelegraphDelay <= TelegraphTotalTime)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
-        }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

@@ -55,7 +55,8 @@ DoGFire.DisplayName: Death Fire
 DoGLaserWalls.DisplayName: God's Bane Doombeam Array
 DoGLaserWallsBigBeam.DisplayName: Hyperdeath Rift Ripper
 DoGP1EndPortal.DisplayName: Portal
-DoGTeleportRift.DisplayName: Rift
+DoGRiftCrack.DisplayName: DoG Distortion Crack
+DoGTeleportRift.DisplayName: DoG Distortion Rift
 DoGWingdings.DisplayName: Ramblings of Wing DoGster
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
 DyingSun.DisplayName: Dying Sun
@@ -65,10 +66,9 @@ FlareBomb.DisplayName: Flare Bomb
 FlareDust.DisplayName: Flare Dust
 FlareDust2.DisplayName: Flare Bomb
 Flarenado.DisplayName: Flarenado
-FoveanatorEnergyBomb.DisplayName: Nebulous Energy Bomb
-FoveanatorLaser.DisplayName: Nebulous Laser
-FoveanatorFlamethrower.DisplayName: Nebulous Flames
 FrostMist.DisplayName: Frost Mist
+GolemInfernoBolt.DisplayName: Golem Fire Bolt
+GolemInfernoBlast.DisplayName: Golem Fire Blast
 GooglyEye.DisplayName: Googly Eye
 GreatSandBlast.DisplayName: Great Sand Blast
 HellfireExplosion.DisplayName: Brimstone Hellfire Explosion

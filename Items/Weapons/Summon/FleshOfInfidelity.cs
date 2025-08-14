@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,7 +12,10 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FleshOfInfidelity : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToothBall>();
+        }
         public override void SetDefaults()
         {
             Item.width = 42;
@@ -35,16 +39,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.UnitY * -1f, type, damage, knockback, player.whoAmI);
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }
