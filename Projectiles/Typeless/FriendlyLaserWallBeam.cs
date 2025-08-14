@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Typeless
                     Texture2D usedTex = (black ? bBeam : beam);
                     float beamThickness = 0.03f * (black ? (0.8f - 0.15f * t) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
                     float rot = beamStart.DirectionTo(targetPos).ToRotation() + (MathHelper.PiOver2);
-                    Main.EntitySpriteDraw(usedTex, beamStart - Main.screenPosition, null, (black ? beamColor * opacity : beamColor * opacity) * (black ? (0.2f + 0.15f * t) : 1), rot, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * (usedTex == beam ? 1 : 0.8277f)), SpriteEffects.None);
+                    Main.EntitySpriteDraw(usedTex, beamStart - Main.screenPosition, null, (black ? Color.Black * opacity : beamColor * opacity) * (black ? (0.2f + 0.15f * t) : 1), rot, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * (usedTex == beam ? 1 : 0.8277f)), SpriteEffects.None);
                 }
             }
             else

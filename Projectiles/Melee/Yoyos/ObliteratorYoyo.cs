@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
@@ -16,20 +21,17 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
     public class ObliteratorYoyo : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheObliterator>();
-        private const int FramesPerShot = 5;
+        private static int DashStartup => 60;
+        private static int DashCooldown => 15;
         public SlotId GFB;
         public int GFBCounter = 0;
         public int time = 0;
-
-        // Ensures that the main AI only runs once per frame, despite the projectile's multiple updates
-        private int extraUpdateCounter = 0;
-        private const int UpdatesPerFrame = 3;
 
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.YoyosLifeTimeMultiplier[Type] = -1f;
             ProjectileID.Sets.YoyosMaximumRange[Type] = TheObliterator.Reach;
-            ProjectileID.Sets.YoyosTopSpeed[Type] = TheObliterator.Speed / UpdatesPerFrame;
+            ProjectileID.Sets.YoyosTopSpeed[Type] = TheObliterator.Speed / 3f;
 
             ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.TrailingMode[Type] = 1;
@@ -42,9 +44,26 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.penetrate = -1;
-            Projectile.MaxUpdates = UpdatesPerFrame;
+            Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6 * UpdatesPerFrame;
+            Projectile.localNPCHitCooldown = 7 * Projectile.MaxUpdates;
+        }
+
+        public override bool PreAI()
+        {
+            if (Projectile.FinalExtraUpdate())
+            {
+                if (Projectile.localAI[1] != DashStartup)
+                    Projectile.localAI[1]++;
+                if (Projectile.localAI[1] > DashStartup + DashCooldown)
+                    Projectile.localAI[1] = 0;
+            }
+
+            if (Projectile.localAI[1] <= DashStartup)
+                return true;
+            Projectile.aiStyle = -1;
+            Projectile.timeLeft++;
+            return true;
         }
 
         // localAI[1] is the shot counter. Every 5 frames, The Obliterator tries to fire a laser at a nearby target.
@@ -76,63 +95,60 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 }
             }
 
-            if ((Projectile.position - Main.player[Projectile.owner].position).Length() > 3200f) //200 blocks
-                Projectile.Kill();
 
-            // Only do stuff once per frame, despite the yoyo's extra updates.
-            extraUpdateCounter = (extraUpdateCounter + 1) % UpdatesPerFrame;
-            if (extraUpdateCounter != UpdatesPerFrame - 1)
-                return;
-
-            Lighting.AddLight(Projectile.Center, 0.8f, 0.3f, 1f);
-
-            Projectile.localAI[1]++;
-            if (Projectile.localAI[1] >= 4 * FramesPerShot)
-                Projectile.localAI[1] = 0f;
-
-            // Attempt to fire a laser every 5 frames
-            if (Projectile.localAI[1] % FramesPerShot == 0f)
+            if (Projectile.FinalExtraUpdate())
             {
-                List<int> targets = new List<int>();
-                float laserRange = 300f;
-                foreach (NPC n in Main.ActiveNPCs)
+                if (Projectile.localAI[1] == DashStartup)
                 {
-                    if (n.CanBeChasedBy(Projectile, false) && (n.Center - Projectile.Center).Length() <= laserRange && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
+                    List<NPC> targets = new List<NPC>();
+                    float laserRange = 600f;
+                    foreach (NPC n in Main.ActiveNPCs)
                     {
-                        targets.Add(n.whoAmI);
-                        // Bosses are added 5 times instead of 1 so that they are preferentially but not exclusively targeted.
-                        if (n.boss)
-                            for (int j = 0; j < 4; ++j)
-                                targets.Add(n.whoAmI);
+                        if (n.CanBeChasedBy(Projectile, false) && (n.Center - Projectile.Center).Length() <= laserRange && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
+                        {
+                            targets.Add(n);
+                        }
                     }
-                }
-                if (targets.Count == 0)
-                    return;
+                    if (targets.Count == 0)
+                        return;
+                    targets = targets.OrderBy(x => x.Distance(Projectile.Center)).ToList();
+                    Projectile.velocity = Projectile.DirectionTo(targets[0].Center);//.RotatedByRandom(0.3f);
+                    Projectile.Center = targets[0].Center - new Vector2(Projectile.velocity.X * targets[0].width*0.5f, Projectile.velocity.Y * targets[0].height*0.5f);
+                    Projectile.velocity *= 15;
+                    for (var i = 0; i < 20; i++)
+                    {
+                        Projectile.Center -= Projectile.velocity;
+                        if (Collision.SolidCollision(Projectile.position,Projectile.width,Projectile.height))
+                        {
+                            Projectile.Center += Projectile.velocity;
+                            break;
+                        }
+                    }
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0, Projectile.owner);
+                        int laserAmount = 8;
+                        for (int i = 0; i < laserAmount; i++)
+                        {
+                            int sparkLifetime = Main.rand.Next(30, 45);
+                            float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
+                            Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
+                            sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
 
-                // Pick which of the four corners the laser is spawning in
-                Vector2 laserSpawnPosition = Projectile.Center;
-                Vector2 offset;
-                if (Projectile.localAI[1] < FramesPerShot)
-                    offset = new Vector2(4, 4);
-                else if (Projectile.localAI[1] < 2 * FramesPerShot)
-                    offset = new Vector2(-4, 4);
-                else if (Projectile.localAI[1] < 3 * FramesPerShot)
-                    offset = new Vector2(-4, -4);
-                else
-                    offset = new Vector2(4, -4);
-                laserSpawnPosition += offset.RotatedBy(Projectile.rotation);
+                            if (Main.rand.NextBool(5))
+                                sparkScale *= 1.4f;
 
-                ref NPC target = ref Main.npc[targets[Main.rand.Next(targets.Count)]];
-                const float laserSpeed = 6f;
-                Vector2 velocity = target.Center - Projectile.Center;
-                velocity = velocity.SafeNormalize(Vector2.Zero) * laserSpeed;
-                if (Projectile.owner == Main.myPlayer)
-                {
-                    int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserSpawnPosition, velocity, ModContent.ProjectileType<NebulaShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                    if (proj.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[proj].DamageType = DamageClass.MeleeNoSpeed;
+                            Vector2 sparkVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.TwoPi * (i / (float)laserAmount)) * 4;
+                            SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                    }
+                    Projectile.localAI[1]++;
+                    Projectile.ResetLocalNPCHitImmunity();
                 }
             }
+
+            Projectile.aiStyle = ProjAIStyleID.Yoyo;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -145,6 +161,14 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             Vector2 origin = new Vector2(10f, 10f);
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/Yoyos/ObliteratorYoyoGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 2f, SpriteEffects.None, 0);
+
+            if (Projectile.localAI[1] <= DashStartup)
+                return;
+            var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/Jaws").Value;
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.Draw(tex,Projectile.Center+ Projectile.velocity.SafeNormalize(Vector2.Zero)*16f- Main.screenPosition,null,Color.Fuchsia,Projectile.velocity.ToRotation() + MathHelper.PiOver2,tex.Size()*0.5f,0.33f,SpriteEffects.None,0);
+            Main.spriteBatch.Draw(tex, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 16f - Main.screenPosition, null, Color.Aqua, Projectile.velocity.ToRotation() + MathHelper.PiOver2, tex.Size() * 0.5f, 0.25f, SpriteEffects.None, 0);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
         }
         public override void OnKill(int timeLeft)
         {
@@ -153,10 +177,35 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                 RumblePlaying?.Stop();
             }
         }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Projectile.localAI[1] > DashStartup)
+            {
+                modifiers.SourceDamage *= 4;
+            }
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+
+            if (Projectile.localAI[1] > DashStartup)
+            {
+                Projectile.localAI[1] = 0;
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 sparkVelocity = -Projectile.velocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(26f, 32f);
+                    int sparkLifetime = Main.rand.Next(10, 20);
+                    float sparkScale = Main.rand.NextFloat(1.4f, 1.8f);
+                    Color sparkColor = Color.Lerp(Main.rand.NextBool() ? Color.Cyan : Color.Purple, Color.White, Main.rand.NextFloat(0f, 0.3f));
+
+                    SparkParticle chompSpark = new(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                    GeneralParticleHandler.SpawnParticle(chompSpark);
+                }
+            }
+            else
+                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);
             GFBCounter = 15;
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
         }
     }
 }
