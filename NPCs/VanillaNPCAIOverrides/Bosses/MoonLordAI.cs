@@ -1174,9 +1174,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handAttackDirection = Vector2.Normalize(handAttackRotation) * velocity;
                             float ai = (MathHelper.TwoPi * (float)Main.rand.NextDouble() - MathHelper.Pi) / 30f + 0.0174532924f * handFaceDirection;
                             int type = ProjectileID.PhantasmalEye;
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, EyeDamage, 0f, Main.myPlayer, 0f, ai);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, EyeDamage, 0f, Main.myPlayer, 0f, ai, aggressionLevel);
                             Main.projectile[proj].timeLeft = 1200;
-                            Main.projectile[proj].Calamity().lineColor = aggressionLevel;
                         }
                     }
                     else

@@ -243,13 +243,16 @@ namespace CalamityMod.Effects
         internal static Effect DoGRiftAuraShader;
         #endregion
 
+        internal static Asset<Effect> SunkenSeaMenuLogoWater;
+
         public override void PostSetupContent()
         {
             AssetRepository calAss = CalamityMod.Instance.Assets;
 
             // Shorthand to load shaders immediately.
             // Strings provided to LoadShader are the .xnb file paths.
-            Effect LoadShader(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad).Value;
+            Effect LoadShader(string path) => LoadShaderAsset(path).Value;
+            Asset<Effect> LoadShaderAsset(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad);
 
             //
             // Loading and registering each individual compiled shader for use.
@@ -479,6 +482,8 @@ namespace CalamityMod.Effects
             DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
             #endregion
+
+            SunkenSeaMenuLogoWater = LoadShaderAsset("UI/SunkenSeaMenuLogoWater");
         }
 
         // Shorthand to register a loaded shader in Terraria's graphics engine

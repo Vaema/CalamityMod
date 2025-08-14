@@ -97,36 +97,36 @@ namespace CalamityMod.CalPlayer
             }
 
             // Whispering Death sets positive regen to zero but doesn't actually deal any damage
-            ApplyDoTDebuff(wDeath, 0, laudanum);
+            ApplyDoTDebuff(whisperingDeath, 0, laudanum);
 
             ApplyDoTDebuff(irradiated, 4, purity);
             int sulphurDoT = 6 - (sulphurSet ? 2 : 0) - (sulphurskin ? 2 : 0) - (corrosiveSpine ? 2 : 0);
             ApplyDoTDebuff(sulphurPoison, sulphurDoT, purity);
-            ApplyDoTDebuff(rTide, 6, purity);
+            ApplyDoTDebuff(riptide, 6, purity);
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
-            ApplyDoTDebuff(bBlood, 8, purity);
+            ApplyDoTDebuff(burningBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
             ApplyDoTDebuff(heavybleeding, 16, purity);
-            ApplyDoTDebuff(cDepth, 18, purity);
+            ApplyDoTDebuff(crushDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(bFlames, abaddon ? 15 : 30, purity);
-            ApplyDoTDebuff(pFlames, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(brimstoneFlames, abaddon ? 15 : 30, purity);
+            ApplyDoTDebuff(plague, alchFlask ? 15 : 30, purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
-            ApplyDoTDebuff(cragsLava, 30);
+            ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
             ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
             ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(hFlames, 40, purity);
+            ApplyDoTDebuff(holyFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
-            ApplyDoTDebuff(hPressure, 40, purity);
+            ApplyDoTDebuff(hadopelagicPressure, 40, purity);
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
-            ApplyDoTDebuff(gsInferno, profanedCrystalBuffs ? 50 : 40);
+            ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 50 : 40);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
             ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
@@ -191,7 +191,7 @@ namespace CalamityMod.CalPlayer
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (AlcoholsDict.TryGet(buff, out var level))
+                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
             if (vodka)
@@ -278,14 +278,9 @@ namespace CalamityMod.CalPlayer
             else
                 witheredWeaponHoldTime = 0;
 
-            if (ManaBurn)
+            if (Player.statMana < 0)
             {
-                int debuffIndex = Player.FindBuffIndex(ModContent.BuffType<ManaBurn>());
-                float debuffIntensity = debuffIndex == -1 ? 0f : Player.buffTime[debuffIndex] / (float)Player.manaSickTimeMax;
-
-                totalNegativeLifeRegen += (int)(Math.Sqrt(debuffIntensity) * Math.Pow(6D, debuffIntensity + 1f));
-                if (Player.lifeRegen > 0)
-                    Player.lifeRegen = 0;
+                totalNegativeLifeRegen -= Player.statMana/10f;
             }
 
             //
@@ -331,11 +326,11 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = SicknessDebuffsList.Includes(buffID);
+                    bool shouldHalveDuration = CalamityBuffSets.IsSicknessDebuff[buffID];
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= FireDebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsFireDebuff[buffID];
                     if (purity)
-                        shouldHalveDuration |= DebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
 
                     if (shouldHalveDuration)
                         --Player.buffTime[l];
@@ -379,7 +374,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
+            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.IsFireDebuff[l]))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
@@ -402,7 +397,7 @@ namespace CalamityMod.CalPlayer
             if (purity)
             {
                 int intendedPurityDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     // Healing rate is normally 5 HP/s (+1 every 12 frames)
@@ -457,7 +452,7 @@ namespace CalamityMod.CalPlayer
                 // If the player has any debuffs, give the extra life regen and defense
                 // More defense is given for each additional debuff
                 int intendedJewelDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
@@ -484,7 +479,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
                 // If any debuff is detected, provide even more life regen and massively accelerate it
-                if (Player.buffType.Any(DebuffsList.List.Contains))
+                if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
                 {
                     Player.lifeRegen += 3;
                     if (Player.lifeRegenTime < 900)
@@ -525,7 +520,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenCount = 0;
             }
 
-            if (hInferno)
+            if (holyInferno)
             {
                 Player.nebulaLevelLife = 0;
 
@@ -651,7 +646,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int hasBuff = Player.buffType[l];
-                    lesserEffect = AlcoholsDict.TryGet(hasBuff, out var a);
+                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
                 }
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
@@ -696,15 +691,6 @@ namespace CalamityMod.CalPlayer
             else
                 pinkCandleHealFraction = 0D;
 
-            if (BloomStoneRegen)
-            {
-                float dayTimeCompletion = !Main.dayTime ? 1f : (float)(Main.time / Main.dayLength);
-                float regenBenefitFactor = MathHelper.SmoothStep(0.25f, 1f, Utils.GetLerpValue(0f, 0.24f, dayTimeCompletion, true) * Utils.GetLerpValue(1f, 0.76f, dayTimeCompletion, true));
-
-                Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
-                Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
-            }
-            
             if (manaOverloader)
             {
                 float manaRatio = Player.statMana / (float)Player.statManaMax2;

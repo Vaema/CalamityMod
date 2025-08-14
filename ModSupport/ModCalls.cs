@@ -909,43 +909,45 @@ namespace CalamityMod
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
-            if (shouldBeListed && !AmalgamBuffList.Includes(type))
+            if (shouldBeListed && !CalamityBuffSets.BuffedByAmalgam[type])
             {
-                AmalgamBuffList.List.Add(type);
+                CalamityBuffSets.BuffedByAmalgam[type] = true;
                 return true;
             }
             else if (!shouldBeListed)
             {
-                return AmalgamBuffList.List.Remove(type);
+                CalamityBuffSets.BuffedByAmalgam[type] = false;
+                return false;
             }
 
             return false;
         }
         public static bool SetPersistentBuffList(int type, bool isPersistent)
         {
-            if (isPersistent && !PersistentBuffList.Includes(type))
+            if (isPersistent && !CalamityBuffSets.IsPersistentBuff[type])
             {
-                PersistentBuffList.List.Add(type);
+                CalamityBuffSets.IsPersistentBuff[type] = true;
                 return true;
             }
             else if (!isPersistent)
             {
-                return PersistentBuffList.List.Remove(type);
+                CalamityBuffSets.IsPersistentBuff[type] = false;
+                return false;
             }
 
             return false;
         }
 
-        public static bool IsOnAmalgamBuffList(int type) => AmalgamBuffList.Includes(type);
-        public static bool IsOnPersistentBuffList(int type) => PersistentBuffList.Includes(type);
+        public static bool IsOnAmalgamBuffList(int type) => CalamityBuffSets.BuffedByAmalgam[type];
+        public static bool IsOnPersistentBuffList(int type) => CalamityBuffSets.IsPersistentBuff[type];
         #endregion
 
         #region Venerated Locket Bans
         public static bool AddToVeneratedLocketBanlist(int type)
         {
-            if (!VeneratedLocketBanList.Includes(type))
+            if (!CalamityItemSets.DisablesVeneratedLocketEffect[type])
             {
-                VeneratedLocketBanList.List.Add(type);
+                CalamityItemSets.DisablesVeneratedLocketEffect[type] = true;
                 return true;
             }
             return false;
@@ -955,35 +957,37 @@ namespace CalamityMod
         #region Summoner Cross Class Nerf Disabling
         public static bool SetSummonerNerfDisabledByMinion(int type, bool disableNerf)
         {
-            if (disableNerf && !DisabledSummonerNerfMinionList.Includes(type))
+            if (disableNerf && !CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type])
             {
-                DisabledSummonerNerfMinionList.List.Add(type);
+                CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type] = true;
                 return true;
             }
             else if (!disableNerf)
             {
-                return DisabledSummonerNerfMinionList.List.Remove(type);
+                CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type] = false;
+                return false;
             }
 
             return false;
         }
         public static bool SetSummonerNerfDisabledByItem(int type, bool disableNerf)
         {
-            if (disableNerf && !DisabledSummonerNerfItemList.Includes(type))
+            if (disableNerf && !CalamityItemSets.ItemWhichDisablesSummonerNerf[type])
             {
-                DisabledSummonerNerfItemList.List.Add(type);
+                CalamityItemSets.ItemWhichDisablesSummonerNerf[type] = true;
                 return true;
             }
             else if (!disableNerf)
             {
-                return DisabledSummonerNerfItemList.List.Remove(type);
+                CalamityItemSets.ItemWhichDisablesSummonerNerf[type] = false;
+                return false;
             }
 
             return false;
         }
 
-        public static bool GetSummonerNerfDisabledByMinion(int type) => DisabledSummonerNerfMinionList.Includes(type);
-        public static bool GetSummonerNerfDisabledByItem(int type) => DisabledSummonerNerfItemList.Includes(type);
+        public static bool GetSummonerNerfDisabledByMinion(int type) => CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[type];
+        public static bool GetSummonerNerfDisabledByItem(int type) => CalamityItemSets.ItemWhichDisablesSummonerNerf[type];
         #endregion
 
         #region Debuff Display support
@@ -1071,9 +1075,9 @@ namespace CalamityMod
         //This is to add minions to the hp scaling config
         public static bool AddToHPScaling(int type)
         {
-            if (!BossHPScalingList.List.Contains(type))
+            if (!CalamityNPCSets.ScalesHealthLikeBoss[type])
             {
-                BossHPScalingList.List.Add(type);
+                CalamityNPCSets.ScalesHealthLikeBoss[type] = true;
                 return true;
             }
             return false;

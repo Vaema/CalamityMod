@@ -97,10 +97,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (targeted != null && target != targeted)
                 modifiers.SourceDamage *= 0.3f;
-        }
-        public override bool? CanHitNPC(NPC target)
-        {
-            return null;
+            else
+                modifiers.SetCrit();
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

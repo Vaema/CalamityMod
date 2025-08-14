@@ -26,9 +26,6 @@ namespace CalamityMod.NPCs.Perforator
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/PerfSmallDeath");
 
         public static Asset<Texture2D> GlowTexture;
-
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-        private const int MsgType = 23;
         private bool TailSpawned = false;
 
         public override void SetStaticDefaults()
@@ -99,38 +96,11 @@ namespace CalamityMod.NPCs.Perforator
             });
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(biomeEnrageTimer);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            biomeEnrageTimer = reader.ReadInt32();
-        }
-
         public override void AI()
         {
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-
-            // Enrage
-            if ((!Main.player[NPC.target].ZoneCrimson || (NPC.position.Y / 16f) < Main.worldSurface) && !BossRushEvent.BossRushActive)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
-            float enrageScale = 0f;
-            if (biomeEnraged && !Main.player[NPC.target].ZoneCrimson)
-                enrageScale += 1f;
-            if (biomeEnraged && (NPC.position.Y / 16f) < Main.worldSurface)
-                enrageScale += 1f;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -140,9 +110,9 @@ namespace CalamityMod.NPCs.Perforator
 
             if (expertMode)
             {
-                float velocityScale = (death ? 0.2f : 0.14f) * enrageScale;
+                float velocityScale = death ? 0.2f : 0.14f;
                 speed += velocityScale * (1f - lifeRatio);
-                float accelerationScale = (death ? 0.15f : 0.1f) * enrageScale;
+                float accelerationScale = death ? 0.15f : 0.1f;
                 turnSpeed += accelerationScale * (1f - lifeRatio);
             }
 
@@ -177,7 +147,7 @@ namespace CalamityMod.NPCs.Perforator
                         Main.npc[lol].ai[2] = NPC.whoAmI;
                         Main.npc[lol].ai[1] = Previous;
                         Main.npc[Previous].ai[0] = lol;
-                        NetMessage.SendData(MsgType, -1, -1, null, lol, 0f, 0f, 0f, 0);
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, lol, 0f, 0f, 0f, 0);
                         Previous = lol;
                     }
 

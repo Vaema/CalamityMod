@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 180;
             Projectile.extraUpdates = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()

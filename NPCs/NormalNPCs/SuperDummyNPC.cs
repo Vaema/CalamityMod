@@ -61,7 +61,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void UpdateLifeRegen(ref int damage)
         {
-            NPC.lifeRegen += 2000000;
+            if (NPC.lifeRegen >= 0)
+                NPC.lifeRegen += 2000000;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => Main.zenithWorld;

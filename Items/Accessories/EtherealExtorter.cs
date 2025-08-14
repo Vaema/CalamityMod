@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 28;
             Item.height = 32;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.value = Item.buyPrice(platinum: 1); // Sold by Bandit
             Item.rare = ItemRarityID.Yellow;
         }
 
