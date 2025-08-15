@@ -3908,7 +3908,7 @@ namespace CalamityMod.CalPlayer
             if (plagueReaper && !Player.HasCooldown(PlagueBlackout.ID))
             {
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
-                Player.AddCooldown(PlagueBlackout.ID, 1800);
+                Player.AddCooldown(PlagueBlackout.ID, PlagueReaperMask.BlackoutDuration + PlagueReaperMask.BlackoutCooldown);
             }
             if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {
