@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.extraUpdates = 1;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 300;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 

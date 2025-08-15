@@ -1,99 +1,128 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExcelsusMain : ModProjectile, ILocalizedModType
+    public class ExcelsusMain : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override void SetDefaults()
+        public override bool useMeleeSpeed => true;
+        public override bool useMeleeSize => false;
+        public override int swingWidth => 270;
+        public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<Excelsus>()).Item;
+        public override int AfterImageLength => 0;
+
+        public override int StartupTime { get; set; }
+        public override int CooldownTime { get; set; }
+
+        public override string Texture => ModContent.GetModItem(BaseItem.type).Texture;
+
+        public override float lineCollisionLength => 232;
+        public override bool AlternateSwings => true;
+
+        public override void Defaults()
         {
-            Projectile.width = 34;
-            Projectile.height = 34;
-            Projectile.friendly = true;
-            Projectile.DamageType = DamageClass.Melee;
-            Projectile.ignoreWater = true;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 300;
-            Projectile.alpha = 100;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.width = 78;
+            Projectile.height = 94;
+            Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
+            Projectile.noEnchantmentVisuals = true;
+        }
+        public override void Spawn(IEntitySource source)
+        {
+            //This sets variables for the spear in general, as well as the secondary attack
+            //The secondary attack is the "default" because it was coded first
+            var player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
+            StartupTime = 10;
+            CooldownTime = 10;
+            swingTime -= StartupTime + CooldownTime;
+            modplayer.swingNum = modplayer.swingNum++ % 3;
+            OffsetDistance = 70;
+            RotateInStartup = 0.2f;
+            RotateInCooldown = 0f;
+
+            UseSound = SoundID.DD2_MonkStaffSwing;
         }
 
-        public override void AI()
+        public override void AdditionalAI()
         {
-            if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 20f && Projectile.timeLeft > 85)
+            var player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
+            switch (modplayer.swingNum)
             {
-                Projectile.velocity *= 1.05f;
-            }
-            if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) > 0f && Projectile.timeLeft <= 85)
-            {
-                Projectile.velocity *= 0.98f;
-            }
-            Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.02f;
-            if (Main.rand.NextBool(8))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, Main.rand.NextBool(3) ? 56 : 242, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                case 1:
+                    break;
+                case 2:
+                    if (swingTimer == (int)(swingTime*0.5f))
+                    {
+                        if (Main.myPlayer == Projectile.owner)
+                        {
+                            for (var i = -1; i < 2; i++)
+                            {
+                                var p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle.RotatedBy(0.2f * i) * 16, ModContent.ProjectileType<DoGFire>(), Projectile.damage, Projectile.knockBack, player.whoAmI, 2);
+                                if (Main.projectile.IndexInRange(p))
+                                {
+                                    Main.projectile[p].hostile = false;
+                                    Main.projectile[p].friendly = true;
+                                    Main.projectile[p].DamageType = DamageClass.Melee;
+                                    Main.projectile[p].timeLeft = 120;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 0:
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<ExcelsusPink>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
+                    player.itemAnimation = BaseItem.useAnimation;
+                    player.itemTime = BaseItem.useTime;
+                    Projectile.Kill();
+                    return;
             }
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public override float SwingFunction()
         {
-            Projectile.tileCollide = false;
-            if (Projectile.timeLeft > 85)
-            {
-                Projectile.timeLeft = 85;
-            }
-            return false;
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            if (Projectile.timeLeft < 85)
-            {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                return new Color((int)b2, (int)b2, (int)b2, (int)a2);
-            }
-            return default(Color);
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            return false;
+            if (inStartup)
+                return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth * 0.6f, -swingWidth * 0.5f, MathF.Pow(StartupCompletion, 2f)));
+            if (inCooldown)
+                return MathHelper.ToRadians(MathHelper.Lerp(swingWidth * 0.5f, swingWidth * 0.6f, 1 - MathF.Pow(1 - CooldownCompletion, 2f)));
+            return MathHelper.ToRadians(MathHelper.SmoothStep(-swingWidth * 0.5f, swingWidth * 0.5f, SwingCompletion));
         }
 
         public override void PostDraw(Color lightColor)
         {
-            Color color;
-            if (Projectile.timeLeft < 85)
-            {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                color = new Color((int)b2, (int)b2, (int)b2, (int)a2);
-            }
-            else
-            {
-                color = new Color(255, 255, 255, 100);
-            }
-            Vector2 origin = new Vector2(39f, 46f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ExcelsusMainGlow").Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            var player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
+            if (modplayer.swingNum == 0)
+                return;
+            var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/Jaws").Value;
+            float jawScaleMult = 1f;
+            if (inStartup)
+                jawScaleMult = StartupCompletion;
+            if (inCooldown)
+                jawScaleMult = 1-CooldownCompletion;
+            jawScaleMult = MathF.Pow(jawScaleMult, 3);
+            float rotation = Projectile.rotation - (Projectile.spriteDirection == -1 ? MathHelper.PiOver2: 0);
+            Vector2 DrawPos = Projectile.Center + Projectile.scale * new Vector2(50,10 * Projectile.spriteDirection).RotatedBy(Projectile.rotation - MathHelper.PiOver2 + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4));
+            
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.Draw(tex, DrawPos - Main.screenPosition, tex.Frame(2,1,0,0), modplayer.swingNum == 1 ? Color.Fuchsia : Color.Cyan, rotation + MathHelper.PiOver4, new Vector2(tex.Width * 0.25f,tex.Height * 0.5f), Projectile.scale * jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.timeLeft > 85)
-            {
-                Projectile.timeLeft = 85;
-            }
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
         }
     }
 }

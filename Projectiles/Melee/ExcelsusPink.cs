@@ -1,8 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,32 +17,64 @@ namespace CalamityMod.Projectiles.Melee
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
         {
-            Projectile.width = 34;
-            Projectile.height = 34;
-            Projectile.friendly = true;
+            Projectile.width = 250;
+            Projectile.height = 250;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
-            Projectile.penetrate = 3;
-            Projectile.timeLeft = 300;
+            Projectile.penetrate = -1;
+            Projectile.timeLeft = 35;
             Projectile.alpha = 100;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
 
+        Vector2 GoalPos = Vector2.Zero;
+        Vector2 StartPos = Vector2.Zero;
+        float offset = 0;
+
         public override void AI()
         {
-            if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) < 24f && Projectile.timeLeft > 85)
+            var player = Main.player[Projectile.owner];
+            if (GoalPos == Vector2.Zero)
             {
-                Projectile.velocity *= 1.05f;
+                GoalPos = player.Calamity().mouseWorld;
+                StartPos = Projectile.Center;
             }
-            if (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y) > 0f && Projectile.timeLeft <= 85)
+            Projectile.Center = Vector2.Lerp(StartPos, GoalPos, MathHelper.Min(1,MathF.Pow(1 - (Projectile.timeLeft - 5) / 30f,0.5f)));
+            Projectile.rotation = StartPos.DirectionTo(GoalPos).ToRotation();
+            offset = 200*MathHelper.Min(1-(Projectile.timeLeft-5)/30f, (Projectile.timeLeft - 5) / 5f);
+            if (offset < 16)
+                offset = 16;
+            if (Projectile.timeLeft == 5)
             {
-                Projectile.velocity *= 0.98f;
-            }
-            Projectile.rotation += (Math.Abs(Projectile.velocity.X) + Math.Abs(Projectile.velocity.Y)) * 0.02f;
-            if (Main.rand.NextBool(8))
-            {
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.PinkTorch, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Projectile.friendly = true;
+
+                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.5f, PitchVariance = 0.3f }, Projectile.position);
+                for (int i = 0; i < 35; i++)
+                {
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 181, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.9f), 0, default, Main.rand.NextFloat(1.5f, 2.8f));
+                    dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
+                    dust.noGravity = true;
+                }
+                for (int j = 0; j < 14; j++)
+                {
+                    Vector2 dustVel = new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.2f);
+
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, 272, dustVel, 0, default, 1f);
+                    dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
+
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, 226, dustVel, 0, default, 1f);
+                    dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
+                }
+                Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 5;
+
+                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), 0, 0.1f, 0.85f, 36);
+                GeneralParticleHandler.SpawnParticle(pulse);
+
+                Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Magenta, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.65f, 26);
+                GeneralParticleHandler.SpawnParticle(explosion2);
+
             }
         }
 
@@ -65,13 +101,24 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, tex.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/Jaws").Value;
+            float jawScaleMult = 1f;
+            jawScaleMult = MathF.Pow(jawScaleMult, 3);
+            float rotationOff = 0.5f * MathHelper.Min(MathF.Pow(MathHelper.Clamp(1 - (Projectile.timeLeft - 5) / 30f,0,1),0.5f), MathF.Pow(MathHelper.Clamp((Projectile.timeLeft - 5) / 10f,0,1),0.5f));
+            if (rotationOff < 0.01f)
+                rotationOff = 0.01f;
+            float drawRot = Projectile.rotation;// - MathHelper.PiOver2 + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4);
+
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, offset).RotatedBy(drawRot) - Main.screenPosition, tex.Frame(2, 1, 0, 0), Color.Fuchsia, Projectile.rotation + rotationOff + MathHelper.PiOver2, new Vector2(tex.Width * 0.25f, tex.Height * 0.5f), jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+            Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, -offset).RotatedBy(drawRot) - Main.screenPosition, tex.Frame(2, 1, 1, 0), Color.Aqua, Projectile.rotation - rotationOff + MathHelper.PiOver2, new Vector2(tex.Width * 0.25f, tex.Height * 0.5f), jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             return false;
         }
 
         public override void PostDraw(Color lightColor)
         {
+            return;
             Color color;
             if (Projectile.timeLeft < 85)
             {

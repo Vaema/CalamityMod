@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
-        public static float Reach = 600f;
+        public static float Reach = 720f;
         public static float Speed = 54f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
 
