@@ -120,8 +120,8 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
-            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(daybroken, 40, purity);
+            ApplyDoTDebuff(nightwither, 40, purity);
             ApplyDoTDebuff(holyFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
             ApplyDoTDebuff(hadopelagicPressure, 40, purity);

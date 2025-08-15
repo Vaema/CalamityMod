@@ -123,8 +123,6 @@ namespace CalamityMod.CalPlayer
         public bool resetHeightandWidth = false;
         /// <summary> If set to true, completely disables ALL life regeneration effects. Used by Omega Blue armor. </summary>
         public bool noLifeRegen = false;
-        public bool reducedDaybrokenDamage = false;
-        public bool reducedNightwitherDamage = false;
         public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
@@ -2310,8 +2308,6 @@ namespace CalamityMod.CalPlayer
             CryoStoneVanity = false;
             voidField = false;
             copyrightInfringementShield = false;
-            reducedDaybrokenDamage = false;
-            reducedNightwitherDamage = false;
 
             daedalusReflect = false;
             daedalusSplit = false;

@@ -26,13 +26,13 @@ namespace CalamityMod.Buffs.DamageOverTime
             player.Calamity().daybroken = true;
         }
 
-        internal static void DrawEffects(PlayerDrawSet drawInfo, bool reducedEffects)
+        internal static void DrawEffects(PlayerDrawSet drawInfo)
         {
             Player Player = drawInfo.drawPlayer;
 
-            if (Main.rand.Next(reducedEffects ? 8 : 4) < 3)
+            if (Main.rand.Next(4) < 3)
             {
-                Dust solarDust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.OrangeTorch, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, reducedEffects ? 175 : 100, default, reducedEffects ? 2f : 3f);
+                Dust solarDust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.OrangeTorch, Player.velocity.X * 0.4f, Player.velocity.Y * 0.4f, 100, default, 3f);
                 solarDust.noGravity = true;
                 solarDust.velocity *= 2.8f;
                 solarDust.velocity.Y -= 0.5f;

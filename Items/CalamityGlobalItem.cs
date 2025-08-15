@@ -1259,17 +1259,6 @@ namespace CalamityMod.Items
                 player.buffImmune[BuffID.OnFire] = true;
             }
 
-            // Reduced Nightwither and Holy Flames damage.
-            if (item.type == ItemID.MoonStone)
-                modPlayer.reducedNightwitherDamage = true;
-            if (item.type == ItemID.SunStone)
-                modPlayer.reducedDaybrokenDamage = true;
-            if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
-            {
-                modPlayer.reducedDaybrokenDamage = true;
-                modPlayer.reducedNightwitherDamage = true;
-            }
-
             if (item.type == ItemID.FairyBoots)
                 modPlayer.fairyBoots = true;
 
