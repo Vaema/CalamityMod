@@ -346,9 +346,9 @@ PlaguebringerCarapace: {
 	DisplayName: Plaguebringer Carapace
 	Tooltip:
 		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Grants immunity to the Plague
-		15% increased summon damage
-		Friendly bees inflict the plague
 		'''
 }
 
@@ -356,19 +356,24 @@ PlaguebringerPistons: {
 	DisplayName: Plaguebringer Pistons
 	Tooltip:
 		'''
-		15% increased summon damage and 15% increased movement speed
-		You grow flowers on the grass beneath you, chance to grow very random dye plants on grassless dirt
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1} and {$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Flowers grow on the grass you walk on, and dye plants rarely grow on grassless dirt you walk on
 		'''
 }
 
 PlaguebringerVisor: {
 	DisplayName: Plaguebringer Visor
-	Tooltip: 15% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
 		Grants a plague dash which can slam through enemies without taking damage
 		Summons a lil' plaguebringer which swarms your foes with little bees
-		+3 max minions
+		Friendly bees inflict the plague
 		'''
 }
 
