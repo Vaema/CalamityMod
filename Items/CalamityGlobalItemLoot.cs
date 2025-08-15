@@ -145,7 +145,6 @@ namespace CalamityMod.Items
                 case ItemID.TwinsBossBag:
                     loot.Remove(FindHallowedBars(loot));
                     loot.AddIf(DropHelper.HallowedBarsCondition, ItemID.HallowedBar, 1, 20, 35);
-                    loot.Add(ModContent.ItemType<Arbalest>(), 10); // 10% Arbalest
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
