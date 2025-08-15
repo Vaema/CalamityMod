@@ -24,6 +24,7 @@ namespace CalamityMod.Items.Armor.Plaguebringer
         public static float PlagueDashKnockback = 3f;
         public static int PlagueDashIFrames = 12;
         public static int BeeMinionDamage = 25;
+        public static int BeePlagueDuration = CalamityUtils.SecondsToFrames(5);
 
         public override void SetDefaults()
         {

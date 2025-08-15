@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -16,6 +16,7 @@ using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
@@ -2410,7 +2411,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (xerocSet)
                 {
-                    Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 180);
+                    Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), EmpyreanMask.WrathDuration);
                 }
                 else if (reaverDefense)
                 {

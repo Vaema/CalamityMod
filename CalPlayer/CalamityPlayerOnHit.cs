@@ -12,6 +12,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Hydrothermic;
+using CalamityMod.Items.Armor.Plaguebringer;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -416,7 +417,7 @@ namespace CalamityMod.CalPlayer
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
                 if (plaguebringerPatronSet && CalamityProjectileSets.IsFriendlyBeeProjectile[proj.type])
-                    target.AddBuff(BuffType<Plague>(), 300);
+                    target.AddBuff(BuffType<Plague>(), PlaguebringerVisor.BeePlagueDuration);
 
                 // All projectiles fired from Soma Prime are marked using CalamityGlobalProjectile
                 CalamityGlobalProjectile cgp = proj.Calamity();

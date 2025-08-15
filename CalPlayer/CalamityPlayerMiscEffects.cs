@@ -21,6 +21,7 @@ using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.DesertProwler;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
@@ -3376,8 +3377,8 @@ namespace CalamityMod.CalPlayer
 
             if (xWrath)
             { 
-                Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-                Player.GetCritChance<RogueDamageClass>() += 5;
+                Player.GetDamage<ThrowingDamageClass>() += EmpyreanMask.WrathRogueDamageBoost;
+                Player.GetCritChance<RogueDamageClass>() += EmpyreanMask.WrathRogueCritBoost;
             }
 
             if (graxDefense)
