@@ -31,17 +31,17 @@ namespace CalamityMod.Items
             {
                 #region Boss Treasure Bags
                 case ItemID.KingSlimeBossBag:
-                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, 3); // 33% Katana
-                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, 3); // 33% Keybrand in Remix
+                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, DropHelper.BagWeaponDropRateInt); // 33% Katana
+                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, DropHelper.BagWeaponDropRateInt); // 33% Keybrand in Remix
 
-                    loot.Add(new CommonDrop(ModContent.ItemType<CrownJewel>(), 10)); // 10% Crown Jewel
+                    loot.Add(ModContent.ItemType<CrownJewel>(), DropHelper.BagWeaponDropRateFraction); // 33% Crown Jewel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
 
                 case ItemID.EyeOfCthulhuBossBag:
-                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateInt); // 33% Deathstare Rod
-                    loot.Add(ModContent.ItemType<TeardropCleaver>(), 10); // 10% Teardrop Cleaver
+                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateFraction); // 33% Deathstare Rod
+                    loot.Add(ModContent.ItemType<TeardropCleaver>(), DropHelper.BagWeaponDropRateFraction); // 33% Teardrop Cleaver
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -93,7 +93,7 @@ namespace CalamityMod.Items
                         ModContent.ItemType<HardenedHoneycomb>(),
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, queenBeeWeapons));
-                    loot.Add(ModContent.ItemType<TheBee>(), 10); // 10% The Bee
+                    loot.Add(ModContent.ItemType<TheBee>(), DropHelper.BagWeaponDropRateFraction); // 33% The Bee
                     loot.Add(ItemID.Stinger, 1, 8, 12); // 100% 8-12 Stinger
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
