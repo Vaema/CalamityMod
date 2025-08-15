@@ -972,6 +972,14 @@ namespace CalamityMod.CalPlayer
 
         private void MiscEffects()
         {
+            //Mana Burn update
+            if (ManaBurnFireDrawer != null)
+            {
+                ManaBurnFireDrawer.LocalTimer = 0;
+                ManaBurnFireDrawer.RelativePower = MathHelper.Lerp(0.25f, 0.5f, -Player.statMana / (float)Player.statManaMax2);
+                ManaBurnFireDrawer.Update();
+            }
+
             // Update textures
             if (!Main.dedServ && Player.whoAmI == Main.myPlayer)
             {
@@ -2229,12 +2237,12 @@ namespace CalamityMod.CalPlayer
                     }
                 }
             }
-            if (Player.miscCounter % 20 == 0)
+            if (Player.miscCounter % HydrothermicHeadRanged.FlareCooldown == 0)
                 canFireAtaxiaRangedProjectile = true;
+            if (Player.miscCounter % HydrothermicHeadRogue.VolleyCooldown == 0)
+                canFireAtaxiaRogueProjectile = true;
             if (Player.miscCounter % 100 == 0)
                 canFireBloodflareMageProjectile = true;
-            if (Player.miscCounter % 120 == 0)
-                canFireAtaxiaRogueProjectile = true;
             if (Player.miscCounter % 150 == 0)
             {
                 canFireGodSlayerRangedProjectile = true;
@@ -3811,7 +3819,7 @@ namespace CalamityMod.CalPlayer
 
             if (ataxiaBlaze)
             {
-                if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
+                if (Player.statLife <= (int)(Player.statLifeMax2 * HydrothermicArmor.InfernoHealthThreshold))
                     Player.AddBuff(BuffID.Inferno, 2);
             }
 
@@ -3867,11 +3875,12 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(600);
+                    int baseDmg = auricSet ? 500 : 380;
+                    int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDmg);
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
                     if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = 600;
+                        Main.projectile[p].originalDamage = baseDmg;
                 }
             }
 
@@ -3968,20 +3977,18 @@ namespace CalamityMod.CalPlayer
             // Inferno potion boost
             if (ataxiaBlaze && Player.inferno)
             {
-                const int FramesPerHit = 30;
-
                 // Constantly increment the timer every frame.
-                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % FramesPerHit;
+                hydrothermicInfernoTimer = (hydrothermicInfernoTimer + 1) % HydrothermicArmor.InfernoHitRate;
 
                 // Only run this code for the client which is wearing the armor.
                 // Brimstone flames is applied every single frame, but direct damage is only dealt twice per second.
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(50);
+                    int damage = (int)Player.GetBestClassDamage().ApplyTo(HydrothermicArmor.InfernoDamage);
 
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                     var source = Player.GetSource_FromThis(HydrothermicArmor.InfernoPotionEntitySourceContext);
-                    float range = 300f;
+                    float range = HydrothermicArmor.InfernoRange;
 
                     foreach (NPC npc in Main.ActiveNPCs)
                     {
@@ -4880,23 +4887,6 @@ namespace CalamityMod.CalPlayer
         #region Limits
         private void Limits()
         {
-            // TODO -- what is Forbidden Circlet actually supposed to do?
-            if (forbiddenCirclet)
-            {
-                ref StatModifier summon = ref Player.GetDamage<SummonDamageClass>();
-                ref StatModifier rogue = ref Player.GetDamage<RogueDamageClass>();
-                float boostToSummonFromRogue = 0f;
-                float boostToRogueFromSummon = 0f;
-
-                if (summon.Additive < rogue.Additive)
-                    boostToSummonFromRogue = rogue.Additive - summon.Additive;
-                if (rogue.Additive < summon.Additive)
-                    boostToRogueFromSummon = summon.Additive - rogue.Additive;
-
-                summon += boostToSummonFromRogue;
-                rogue += boostToRogueFromSummon;
-            }
-
             // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
             if (Player.endurance > 0f)
                 Player.endurance = 1f - (1f / (1f + Player.endurance));

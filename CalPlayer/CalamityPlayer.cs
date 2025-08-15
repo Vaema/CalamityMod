@@ -6,6 +6,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -1127,7 +1128,6 @@ namespace CalamityMod.CalPlayer
         public bool godSlayerDashHotKeyPressed = false;
         public bool SpeedBlasterDashStarted = false;
         public bool ataxiaBolt = false;
-        public bool ataxiaFire = false;
         public bool ataxiaVolley = false;
         public bool ataxiaBlaze = false;
         public bool hydrothermalSmoke = false;
@@ -1682,6 +1682,7 @@ namespace CalamityMod.CalPlayer
         // This may seem like a scuffed setup, but a simple bool will have ordering issues when it comes to drawing.
         // Until ModSceneMetrics gets implemented, this works for now.
         public int BrimstoneLavaFountainCounter = 0;
+        public FireParticleSet ManaBurnFireDrawer = null;
         #endregion Draw Effects
 
         #region Draedon Summoning
@@ -2138,7 +2139,6 @@ namespace CalamityMod.CalPlayer
 
             ataxiaBolt = false;
             ataxiaGeyser = false;
-            ataxiaFire = false;
             ataxiaVolley = false;
             ataxiaBlaze = false;
             ataxiaMage = false;
@@ -3146,7 +3146,6 @@ namespace CalamityMod.CalPlayer
             ataxiaMage = false;
             ataxiaBolt = false;
             ataxiaGeyser = false;
-            ataxiaFire = false;
             ataxiaVolley = false;
             ataxiaBlaze = false;
             hydrothermalSmoke = false;
@@ -3914,7 +3913,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
                 Player.AddCooldown(PlagueBlackout.ID, 1800);
             }
-            if (forbiddenCirclet && forbiddenCooldown <= 0)
+            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {
                 forbiddenCooldown = ForbiddenCirclet.StormCooldown;
                 int stormMana = (int)(ForbiddenCirclet.StormManaCost * Player.manaCost);
@@ -3927,7 +3926,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_Misc("1");
+                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
@@ -3939,9 +3938,42 @@ namespace CalamityMod.CalPlayer
 
                     if (Player.whoAmI == Main.myPlayer)
                     {
-                        int mark = Projectile.NewProjectile(source, Player.ClampedMouseWorld(), Vector2.Zero, ProjectileType<CircletMark>(), damage, kBack, Player.whoAmI);
-                        if (mark.WithinBounds(Main.maxProjectiles))
-                            Main.projectile[mark].DamageType = DamageClass.Generic;
+                        if (Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] > 0)
+                        {
+                            foreach (var proj in Main.ActiveProjectiles)
+                            {
+                                if (proj.owner != Player.whoAmI || proj.type != ProjectileType<CircletTornado>())
+                                    continue;
+                                proj.ai[0] = CircletTornado.Lifetime - CircletTornado.Fadetime + proj.ai[0] % 60f;
+                                proj.netUpdate = true;
+                            }
+                        }
+                        Vector2 tornadoPos = Player.ClampedMouseWorld();
+                        Projectile.NewProjectile(source, tornadoPos, Vector2.Zero, ProjectileType<CircletTornado>(), damage, kBack, Player.whoAmI);
+
+                        Vector2 diff = tornadoPos - Player.Center;
+                        float distance = diff.Length();
+                        if (distance > 0f)
+                        {
+                            for (float i = 0f; i < distance; i += 15f)
+                            {
+                                Vector2 dustPos = Player.Center + diff * i / distance;
+                                Dust trail = Dust.NewDustDirect(dustPos, 0, 0, DustID.Sandnado);
+                                trail.position = dustPos;
+                                trail.fadeIn = 0.5f;
+                                trail.scale = 0.7f;
+                                trail.velocity *= 0.4f;
+                                trail.noLight = true;
+                            }
+                        }
+                        for (int j = 0; j < 30; j++)
+                        {
+                            Dust cloud = Dust.NewDustDirect(tornadoPos, 0, 0, DustID.Sandnado);
+                            cloud.position = tornadoPos;
+                            cloud.fadeIn = 1f;
+                            cloud.scale = 0.3f;
+                            cloud.noLight = true;
+                        }
                     }
                 }
             }
@@ -4301,6 +4333,12 @@ namespace CalamityMod.CalPlayer
             if (Player.ZoneDesert && (ZoneAstral || areThereAnyDamnBosses) && Player.HasBuff(BuffID.WindPushed))
             {
                 Player.ClearBuff(BuffID.WindPushed);
+            }
+            if (Player.statMana < 0) 
+            {
+                Player.AddBuff(ModContent.BuffType<ManaBurn>(), 10);
+            } else if (Player.HasBuff(ModContent.BuffType<ManaBurn>())) {
+                Player.ClearBuff(ModContent.BuffType<ManaBurn>());
             }
         }
         #endregion
@@ -5322,8 +5360,8 @@ namespace CalamityMod.CalPlayer
             bool hasNonWeaponFunction = isPickaxe || isAxe || isHammer || isPlaced || isChannelable;
             bool playerUsingWeapon = hasDamage && hasHitboxes && !hasNonWeaponFunction;
 
-            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items.
-            if ((it.IsAir || !it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive)
+            // The Gem Tech armor's rogue crystal ensures that stealth is not consumed by non-rogue items. Forbidden Circlet does this for summon weapons
+            if ((it.IsAir || (!it.CountsAsClass<RogueDamageClass>()) && GemTechSet && GemTechState.IsRedGemActive) || (it.CountsAsClass<SummonDamageClass>() && forbiddenCirclet))
                 playerUsingWeapon = false;
 
             // Molten Amputator consumes stealth in a special way

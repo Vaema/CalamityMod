@@ -510,24 +510,24 @@ namespace CalamityMod.Items
                 { ItemID.ZapinatorOrange, autoReuse },
                 #endregion
 
-                #region CATEGORY 7: Non-consumable Quality of Life
+                #region CATEGORY 7: Summoning Item Quality of Life
                 { ItemID.Abeemination, nonConsumableBossSummon },
-                { ItemID.BloodMoonStarter, nonConsumableBossSummon }, // Bloody Tear
+                { ItemID.BloodMoonStarter, Do(UseTimeExact(10))}, // Bloody Tear
                 { ItemID.BloodySpine, nonConsumableBossSummon },
                 { ItemID.CelestialSigil, nonConsumableBossSummon },
                 { ItemID.DeerThing, nonConsumableBossSummon },
-                { ItemID.GoblinBattleStandard, nonConsumableBossSummon },
+                { ItemID.GoblinBattleStandard, Do(UseTimeExact(10)) },
                 { ItemID.MechanicalEye, nonConsumableBossSummon },
                 { ItemID.MechanicalSkull, nonConsumableBossSummon },
                 { ItemID.MechanicalWorm, nonConsumableBossSummon },
                 { ItemID.MechdusaSummon, nonConsumableBossSummon }, // Ocram's Razor
-                { ItemID.NaughtyPresent, nonConsumableBossSummon },
-                { ItemID.PirateMap, nonConsumableBossSummon },
-                { ItemID.PumpkinMoonMedallion, nonConsumableBossSummon },
+                { ItemID.NaughtyPresent, Do(UseTimeExact(10)) },
+                { ItemID.PirateMap, Do(UseTimeExact(10)) },
+                { ItemID.PumpkinMoonMedallion, Do(UseTimeExact(10)) },
                 { ItemID.QueenSlimeCrystal, nonConsumableBossSummon }, // Gelatin Crystal
                 { ItemID.SlimeCrown, nonConsumableBossSummon },
-                { ItemID.SnowGlobe, nonConsumableBossSummon },
-                { ItemID.SolarTablet, nonConsumableBossSummon },
+                { ItemID.SnowGlobe, Do(UseTimeExact(10)) },
+                { ItemID.SolarTablet, Do(UseTimeExact(10)) },
                 { ItemID.SuspiciousLookingEye, nonConsumableBossSummon },
                 { ItemID.WormFood, nonConsumableBossSummon },
                 #endregion

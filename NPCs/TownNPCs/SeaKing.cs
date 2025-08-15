@@ -194,18 +194,16 @@ namespace CalamityMod.NPCs.TownNPCs
         }
         public override void AddShops()
         {
-            Condition downedOldDuke = CalamityConditions.DownedOldDuke;
-
             NPCShop shop = new(Type);
-            shop.Add(ModContent.ItemType<Shellshooter>())
-                .Add(ModContent.ItemType<SnapClam>())
-                .Add(ModContent.ItemType<SandDollar>())
-                .Add(ModContent.ItemType<Waywasher>())
-                .Add(ModContent.ItemType<AmidiasTrident>())
-                .Add(ModContent.ItemType<EnchantedConch>())
-                .Add(ModContent.ItemType<PolypLauncher>())
-                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 20), Condition.Hardmode)
-                .AddWithCustomValue(ModContent.ItemType<BloodwormItem>(), Item.buyPrice(gold: 40), downedOldDuke)
+            shop.Add<Shellshooter>()
+                .Add<SnapClam>()
+                .Add<SandDollar>()
+                .Add<Waywasher>()
+                .Add<AmidiasTrident>()
+                .Add<EnchantedConch>()
+                .Add<PolypLauncher>()
+                .AddWithCustomValue(ItemID.TruffleWorm, Item.buyPrice(gold: 25), Condition.Hardmode)
+                .AddWithCustomValue<BloodwormItem>(Item.buyPrice(platinum: 1), CalamityConditions.DownedOldDuke)
                 .Register();
         }
 

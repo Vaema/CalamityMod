@@ -64,7 +64,7 @@ namespace CalamityMod.Systems.Collections
         /// </summary>
         public static bool[] IsFireDebuff = Factory.CreateBoolSet(BuffID.OnFire, BuffID.OnFire3, BuffID.Burning, BuffID.CursedInferno, BuffID.ShadowFlame, BuffType<Shadowflame>(),
                 BuffType<SearingLava>(), BuffType<BrimstoneFlames>(), BuffType<Daybroken>(), BuffType<HolyFlames>(), BuffType<GodSlayerInferno>(), BuffType<Dragonfire>(),
-                BuffType<WeakBrimstoneFlames>(), BuffType<BanishingFire>());
+                BuffType<WeakBrimstoneFlames>(), BuffType<BanishingFire>(), BuffType<ManaBurn>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
@@ -80,7 +80,7 @@ namespace CalamityMod.Systems.Collections
                 BuffType<HeavyBleeding>(), BuffType<Laceration>(), BuffType<AbsorberAffliction>(), BuffType<ArmorCrunch>(), BuffType<Crumbling>(), BuffType<Vaporfied>(), BuffType<Eutrophication>(),
                 BuffType<Dragonfire>(), BuffType<VermillionFlux>(), BuffType<AuricRebuke>(), BuffType<StaticDischarge>(), BuffType<Nightwither>(), BuffType<Voidfrost>(),
                 BuffType<VulnerabilityHex>(), BuffType<MiracleBlight>(), BuffType<WhisperingDeath>(), BuffType<FrozenLungs>(), BuffType<FishAlert>(), BuffType<HolyInferno>(),
-                BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>());
+                BuffType<IcarusFolly>(), BuffType<DoGExtremeGravity>(), BuffType<PopoNoselessBuff>(), BuffType<SearingLava>(), BuffType<WeakBrimstoneFlames>(), BuffType<Withered>(), BuffType<ManaBurn>());
 
         /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is a whip tag buff on the player.<br/>

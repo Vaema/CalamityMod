@@ -13,6 +13,7 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -3281,10 +3282,9 @@ namespace CalamityMod.Projectiles
                         {
                             if (Main.player[projectile.owner].miscCounter % 30 == 0 && projectile.FinalExtraUpdate())
                             {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < 15)
+                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < DaedalusHeadRogue.ShardCountLimit)
                                 {
-                                    // Daedalus Rogue Crystals: 25%, soft cap starts at 120 base damage
-                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
+                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * DaedalusHeadRogue.ShardDamageRatio, DaedalusHeadRogue.ShardDamageSoftcap);
 
                                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                                     int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
@@ -3449,7 +3449,7 @@ namespace CalamityMod.Projectiles
                     showArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
                 }
                 if (brimstoneBullets)
                 {
@@ -3891,7 +3891,13 @@ namespace CalamityMod.Projectiles
         {
             if (BloodstoneOrbValue > 0)
                 Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
-
+            //Mana Burn
+            if (Main.player[projectile.owner].statMana < 0)
+            {
+                float burnRatio = (-Main.player[projectile.owner].statMana / 5000f); // -400 mana = +8% dmg, -700 mana = +14% dmg
+                target.Calamity().manaBurn += damageDone * burnRatio;
+                target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
+            }
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {

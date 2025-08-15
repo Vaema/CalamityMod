@@ -8,6 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -421,7 +422,7 @@ namespace CalamityMod.Items
                     modPlayer.canFireAtaxiaRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        int ataxiaFlareDamage = (int)(damage * 0.25f);
+                        int ataxiaFlareDamage = (int)(damage * HydrothermicHeadRanged.FlareDamageRatio);
                         Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
                     }
                 }
@@ -446,9 +447,7 @@ namespace CalamityMod.Items
                 {
                     modPlayer.canFireAtaxiaRogueProjectile = false;
                     int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
-
-                    // Hydrothermic Rogue Flares: 6 x (50 + 15%), soft cap starts at 90 base damage
-                    int flareDamage = CalamityUtils.DamageSoftCap(50 + damage * 0.15, 90);
+                    int flareDamage = CalamityUtils.DamageSoftCap(HydrothermicHeadRogue.VolleyDamage + damage * HydrothermicHeadRogue.VolleyDamageRatio, HydrothermicHeadRogue.VolleyDamageSoftcap);
 
                     if (player.whoAmI == Main.myPlayer)
                     {
@@ -637,6 +636,11 @@ namespace CalamityMod.Items
                 if (item.type != ModContent.ItemType<EvilSmasher>())
                     player.Calamity().evilSmasherBoost = 0;
             }
+
+            if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
+            {
+                player.manaRegenDelay = player.maxRegenDelay;
+            }
         }
 
         public override bool? UseItem(Item item, Player player)
@@ -686,7 +690,6 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-
             return base.UseItem(item, player);
         }
 
@@ -1728,11 +1731,11 @@ namespace CalamityMod.Items
         private static readonly int Rarity0BuyPrice = Item.buyPrice(0, 0, 50, 0);
         private static readonly int Rarity1BuyPrice = Item.buyPrice(0, 1, 0, 0);
         private static readonly int Rarity2BuyPrice = Item.buyPrice(0, 2, 0, 0);
-        private static readonly int Rarity3BuyPrice = Item.buyPrice(0, 4, 0, 0);
-        private static readonly int Rarity4BuyPrice = Item.buyPrice(0, 12, 0, 0);
-        private static readonly int Rarity5BuyPrice = Item.buyPrice(0, 24, 0, 0);
-        private static readonly int Rarity6BuyPrice = Item.buyPrice(0, 36, 0, 0);
-        private static readonly int Rarity7BuyPrice = Item.buyPrice(0, 48, 0, 0);
+        private static readonly int Rarity3BuyPrice = Item.buyPrice(0, 5, 0, 0);
+        private static readonly int Rarity4BuyPrice = Item.buyPrice(0, 10, 0, 0);
+        private static readonly int Rarity5BuyPrice = Item.buyPrice(0, 20, 0, 0);
+        private static readonly int Rarity6BuyPrice = Item.buyPrice(0, 35, 0, 0);
+        private static readonly int Rarity7BuyPrice = Item.buyPrice(0, 45, 0, 0);
         private static readonly int Rarity8BuyPrice = Item.buyPrice(0, 60, 0, 0);
         private static readonly int Rarity9BuyPrice = Item.buyPrice(0, 80, 0, 0);
         private static readonly int Rarity10BuyPrice = Item.buyPrice(1, 0, 0, 0); // Highest raw rarity used by vanilla items (ML drops)

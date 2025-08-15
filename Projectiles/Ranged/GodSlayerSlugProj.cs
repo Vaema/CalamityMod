@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
 
             // Reduce damage, but remove piercing. Reset local iframes so the bullet, turned blue, may always strike again. Reset the point blank timer.
-            Projectile.damage = (int)(0.23f * Projectile.damage);
+            Projectile.damage = (int)(0.25f * Projectile.damage);
             Projectile.penetrate = 1;
             for (int i = 0; i < Main.maxNPCs; i++)
                 Projectile.localNPCImmunity[i] = 0;

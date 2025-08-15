@@ -62,6 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
+            Projectile.MinionAntiClump();
 
             NPC potentialTarget = Projectile.Center.MinionHoming(DistanceToCheck, player);
 

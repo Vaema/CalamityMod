@@ -62,37 +62,30 @@ BrimflameRobes: {
 
 DaedalusBreastplate: {
 	DisplayName: Daedalus Breastplate
-	Tooltip: 3% increased damage and critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage}"
 }
 
 DaedalusHeadMagic: {
 	DisplayName: Daedalus Hood
 	Tooltip:
 		'''
-		13% increased magic damage and 7% increased magic critical strike chance
-		10% reduced mana usage and +60 max mana
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
-	SetBonus:
-		'''
-		5% increased magic damage
-		You have a 10% chance to absorb physical attacks and projectiles when hit
-		If you absorb an attack you are healed for 1/2 of that attack's damage
-		'''
+	SetBonus: You have a {0}% chance to heal back {1}% of taken damage
 }
 
 DaedalusHeadMelee: {
 	DisplayName: Daedalus Helm
 	Tooltip:
 		'''
-		15% increased melee damage
-		10% increased melee critical strike chance
+		{$CommonItemTooltip.PercentIncreasedMeleeDamageCritChance}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@1}
 		'''
 	SetBonus:
 		'''
-		10% increased melee speed
-		Enemies are more likely to target you
-		You reflect projectiles back at enemies
-		Reflected projectiles deal 50% less damage to you
+		{$Common.AggroBoost}
+		You reflect projectiles back at enemies, negating their damage
 		{$Common.ReflectInformation}
 		'''
 }
@@ -101,37 +94,37 @@ DaedalusHeadRanged: {
 	DisplayName: Daedalus Headgear
 	Tooltip:
 		'''
-		13% increased ranged damage and 7% increased ranged critical strike chance
-		Reduces ammo usage by 20%
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		20% chance to save ammo
 		'''
-	SetBonus:
-		'''
-		5% increased ranged damage
-		Getting hit causes you to emit a blast of crystal shards
-		'''
+	SetBonus: Getting hit causes you to emit a blast of crystal shards
 }
 
 DaedalusHeadRogue: {
 	DisplayName: Daedalus Facemask
 	Tooltip:
 		'''
-		13% increased rogue damage and 7% increased rogue critical strike chance
-		15% increased rogue velocity and 5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$Common.RogueVelocity@2} and {$CommonItemTooltip.PercentIncreasedMovementSpeed@3}
 		'''
 	SetBonus:
 		'''
-		5% increased rogue damage
-		+105 maximum stealth
+		{$Common.RogueStealth}
 		Rogue projectiles throw out crystal shards as they travel
 		'''
 }
 
 DaedalusHeadSummon: {
 	DisplayName: Daedalus Mask
-	Tooltip: 5% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		20% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		A daedalus crystal floats above you to protect you
 		'''
 }
@@ -140,8 +133,8 @@ DaedalusLeggings: {
 	DisplayName: Daedalus Leggings
 	Tooltip:
 		'''
-		3% increased critical strike chance
-		10% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -191,18 +184,22 @@ ForbiddenCirclet: {
 		{$Common.RogueStealth}
 		{1} to call an ancient storm to the cursor location
 		The ancient storm costs {2} mana and benefits from both summon and rogue bonuses
-		Rogue stealth strikes spawn homing eaters on enemy hits
-		Rogue and summon attacks will scale off of the stat with a higher boost
+		Rogue stealth strikes will tag enemies, causing summons to spawn homing eaters on hit
+		Using summon weapons no longer reset your stealth
 		Minions no longer deal less damage while wielding rogue weapons
 		'''
 }
 
 HydrothermicArmor: {
 	DisplayName: Hydrothermic Armor
-	Tooltip: 8% increased damage and 4% increased critical strike chance
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedDamage}
+		Grants immunity to fire and lava
+		'''
 	CommonSetBonus:
 		'''
-		Inferno effect when below 50% life
+		Inferno effect when below {0}% life
 		You emit a blazing explosion when you are hit
 		'''
 }
@@ -211,28 +208,22 @@ HydrothermicHeadMagic: {
 	DisplayName: Hydrothermic Mask
 	Tooltip:
 		'''
-		12% increased magic damage, +100 max mana, and 10% increased magic critical strike chance
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
-	SetBonus:
-		'''
-		5% increased magic damage and 15% reduced mana usage
-		Magic attacks summon damaging and healing flare orbs on hit
-		'''
+	SetBonus: Magic attacks summon damaging and healing flare orbs on hit
 }
 
 HydrothermicHeadMelee: {
 	DisplayName: Hydrothermic Helm
 	Tooltip:
 		'''
-		17% increased melee damage and 10% increased melee critical strike chance
-		Melee attacks and melee projectiles inflict on fire
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage} and {$CommonItemTooltip.PercentIncreasedMeleeCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
 		'''
 	SetBonus:
 		'''
-		15% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		Melee attacks and projectiles cause chaos flames to erupt on enemy hits
 		'''
 }
@@ -241,30 +232,23 @@ HydrothermicHeadRanged: {
 	DisplayName: Hydrothermic Headgear
 	Tooltip:
 		'''
-		12% increased ranged damage and 10% increased ranged critical strike chance
-		Reduces ammo usage by 25%
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		25% chance to save ammo
 		'''
-	SetBonus:
-		'''
-		5% increased ranged damage
-		You fire a homing chaos flare when using ranged weapons every 0.33 seconds
-		'''
+	SetBonus: You fire a homing chaos flare when using ranged weapons every {0} seconds
 }
 
 HydrothermicHeadRogue: {
 	DisplayName: Hydrothermic Hood
 	Tooltip:
 		'''
-		12% increased rogue damage and 10% increased rogue critical strike chance
-		5% increased movement speed
-		Grants immunity to fire and lava
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		5% increased rogue damage
-		+110 maximum stealth
-		Rogue weapons unleash a volley of homing chaos flames around the player every 2 seconds
+		{$Common.RogueStealth}
+		Rogue weapons unleash a volley of homing chaos flames around the player every {1} seconds
 		'''
 }
 
@@ -272,12 +256,13 @@ HydrothermicHeadSummon: {
 	DisplayName: Hydrothermic Helmet
 	Tooltip:
 		'''
-		5% increased summon damage and increased minion knockback
-		Grants immunity to fire and lava
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		'''
 	SetBonus:
 		'''
-		40% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Summons a hydrothermic vent to protect you
 		'''
 }
@@ -286,8 +271,8 @@ HydrothermicSubligar: {
 	DisplayName: Hydrothermic Subligar
 	Tooltip:
 		'''
-		5% increased critical strike chance
-		10% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 

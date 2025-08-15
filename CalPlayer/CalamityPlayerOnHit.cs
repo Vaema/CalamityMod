@@ -5,11 +5,13 @@ using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
+using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -406,6 +408,11 @@ namespace CalamityMod.CalPlayer
                 globalProj.arcFlashCooldown = 30;
             }
 
+            if (forbiddenCirclet && globalProj.stealthStrike)
+            {
+                target.AddBuff(ModContent.BuffType<ForbiddenStealthSummonTagBuff>(), ForbiddenCirclet.TagDuration);
+            }
+
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
                 if (plaguebringerCarapace && CalamityProjectileSets.IsFriendlyBeeProjectile[proj.type])
@@ -647,12 +654,10 @@ namespace CalamityMod.CalPlayer
             {
                 if (npcCheck)
                 {
-                    if (ataxiaGeyser && Player.ownedProjectileCounts[ProjectileType<ChaoticGeyser>()] < 3)
+                    if (ataxiaGeyser && Player.ownedProjectileCounts[ProjectileType<ChaoticGeyser>()] < HydrothermicHeadMelee.GeyserCountLimit)
                     {
-                        // Ataxia True Melee Geysers: 15%, softcap starts at 300 base damage
-                        int geyserDamage = CalamityUtils.DamageSoftCap(damage * 0.15, 45);
-
-                        Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI, 0f, 0f);
+                        int geyserDamage = CalamityUtils.DamageSoftCap(damage * HydrothermicHeadMelee.GeyserDamageRatio, HydrothermicHeadMelee.GeyserDamageSoftcap);
+                        Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI);
                     }
 
                     if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
@@ -831,10 +836,10 @@ namespace CalamityMod.CalPlayer
             var source = proj.GetSource_FromThis();
             if (ataxiaMage && ataxiaDmg <= 0)
             {
-                int orbDamage = (int)(proj.damage * 0.6f);
+                int orbDamage = (int)(proj.damage * HydrothermicHeadMagic.OrbDamageRatio);
 
                 CalamityUtils.SpawnOrb(proj, orbDamage, ProjectileType<HydrothermicSphere>(), 800f, 20f);
-                int cooldown = (int)(orbDamage * 0.5);
+                int cooldown = (int)(orbDamage * HydrothermicHeadMagic.OrbDamageCooldownMult);
                 ataxiaDmg += cooldown;
             }
             if (tarraMage && crit)
@@ -1063,7 +1068,7 @@ namespace CalamityMod.CalPlayer
                     {
                         Vector2 source = new Vector2(position.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
                         Vector2 velocity = (position - source) / 40f;
-                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(95);
+                        int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(110);
                         Projectile.NewProjectile(spawnSource, source, velocity, ProjectileType<NanoFlare>(), damage, 3f, proj.owner);
                     }
                 }
@@ -1102,21 +1107,6 @@ namespace CalamityMod.CalPlayer
                     spawnedFeathers = true;
                 }
                 rogueCrownCooldown = spawnedFeathers ? 15 : 60;
-            }
-
-            if (forbiddenCirclet && modProj.stealthStrike && forbiddenCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
-            {
-                for (int index2 = 0; index2 < ForbiddenCirclet.EaterSpawnCount; index2++)
-                {
-                    float xVector = Main.rand.NextFloat(-7f, 7f);
-                    float yVector = Main.rand.NextFloat(-7f, 7f);
-                    int damage = (int)Player.GetTotalDamage<RogueDamageClass>().ApplyTo(ForbiddenCirclet.EaterDamage);
-
-                    int eater = Projectile.NewProjectile(spawnSource, proj.Center.X, proj.Center.Y, xVector, yVector, ProjectileType<ForbiddenCircletEater>(), damage, proj.knockBack, proj.owner);
-                    if (eater.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[eater].DamageType = DamageClass.Generic;
-                    forbiddenCooldown = ForbiddenCirclet.EaterSpawnCooldown;
-                }
             }
 
             if (titanHeartSet && modProj.stealthStrike && titanCooldown <= 0 && modProj.stealthStrikeHitCount < 3)
@@ -1183,10 +1173,6 @@ namespace CalamityMod.CalPlayer
                 if (eGauntlet)
                 {
                     CalamityUtils.Inflict246DebuffsNPC(target, BuffType<ElementalMix>());
-                }
-                if (ataxiaFire)
-                {
-                    CalamityUtils.Inflict246DebuffsNPC(target, BuffID.OnFire3, 4f);
                 }
             }
             if ((melee || rogue || whip) && !noFlask)
@@ -1359,8 +1345,8 @@ namespace CalamityMod.CalPlayer
 
                     if (ataxiaMage)
                     {
-                        double healMult = 0.1D - proj.numHits * 0.05D;
-                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), 1.25f);
+                        double healMult = HydrothermicHeadMagic.OrbHealingRatio - proj.numHits * HydrothermicHeadMagic.OrbHealingRatioLossPerPierce;
+                        Player.SpawnLifeStealProjectile(target, proj, ProjectileType<HydrothermicHealOrb>(), (int)Math.Round(damage * healMult), HydrothermicHeadMagic.OrbHealingCooldownMult);
                     }
                 }
             }

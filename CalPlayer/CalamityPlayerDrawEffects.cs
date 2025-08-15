@@ -118,6 +118,24 @@ namespace CalamityMod.CalPlayer
             else // This is such a stupid way to reset this but you can't just put it in ResetEffects
             {
                 calamityPlayer.trippyLevel = 1;
+
+                // Mana Burn VFX disabled when hih
+                if (Player.statMana < 0)
+                {
+                    float compactness = Player.width * 0.6f;
+                    if (compactness < 10f)
+                        compactness = 10f;
+                    float power = Player.height / 100f;
+                    if (power > 2.75f)
+                        power = 2.75f;
+                    var color = Color.Blue;
+                    if (ManaBurnFireDrawer is null || ManaBurnFireDrawer.LocalTimer >= ManaBurnFireDrawer.SetLifetime)
+                        ManaBurnFireDrawer = new FireParticleSet(60 - (Player.statMana / 4), 1, color * 1.25f, color, compactness, power);
+                    else
+                        ManaBurnFireDrawer.DrawSet(Player.Bottom - Vector2.UnitY * (12f - Player.gfxOffY));
+                }
+                else
+                    ManaBurnFireDrawer = null;
             }
 
             // TODO -- rogue stealth visuals are an utter catastrophe and should be fully destroyed on next stealth rework

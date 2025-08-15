@@ -1590,3 +1590,8 @@ PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
 }
+
+ForbiddenStealthSummonTagBuff: {
+	DisplayName: Forbidden Stealth Summon Tag Buff
+	Description: If you're seeing this, something went horribly wrong
+}

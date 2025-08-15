@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 1.5f;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.value = Item.buyPrice(gold: 35); // Sold by Arms Dealer
             Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item11 with { Volume = 0.6f };
             Item.autoReuse = true;
@@ -33,10 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-14, -1);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-14, -1);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -26,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 1f;
-            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.rare = ItemRarityID.Pink;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.DamageType = DamageClass.Ranged;
