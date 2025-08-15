@@ -9,6 +9,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -289,7 +290,7 @@ namespace CalamityMod.CalPlayer
 
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
-                totalNegativeLifeRegen = (int)(0.8f * totalNegativeLifeRegen);
+                totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
 

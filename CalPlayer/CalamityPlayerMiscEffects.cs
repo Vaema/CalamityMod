@@ -3628,7 +3628,7 @@ namespace CalamityMod.CalPlayer
             // Flight time boosts
             double flightTimeMult = 1D +
                 (harpyRing ? 0.2 : 0D) +
-                (reaverSpeed ? 0.1 : 0D) +
+                (reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0D) +
                 (angelTreads ? 0.1 : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
@@ -3654,7 +3654,7 @@ namespace CalamityMod.CalPlayer
 
             // Reaver Tank set nuke flight time
             if (reaverDefense)
-                flightTimeMult -= 0.3f;
+                flightTimeMult -= ReaverHeadTank.SetBonusMobilityReduction;
 
             // Increase wing time
             if (Player.wingTimeMax > 0)

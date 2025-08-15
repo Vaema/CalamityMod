@@ -1480,8 +1480,6 @@ namespace CalamityMod.CalPlayer
         public bool victideSnail = false;
         /// <summary> Hydrothermic armor's Vent. </summary>
         public bool cSpirit = false;
-        /// <summary> Reaver armor's Reaver Orb. </summary>
-        public bool rOrb = false;
         /// <summary> Daedalus armor's Daedalus Crystal. </summary>
         public bool dCrystal = false;
         public bool endoHydra = false;
@@ -2618,7 +2616,6 @@ namespace CalamityMod.CalPlayer
             astralProbe = false;
             victideSnail = false;
             cSpirit = false;
-            rOrb = false;
             dCrystal = false;
             MutatedTruffleBool = false;
             sandElemental = false;

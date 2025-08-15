@@ -17,6 +17,7 @@ using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.LunicCorps;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Armor.Victide;
@@ -2413,7 +2414,7 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (reaverDefense)
                 {
-                    Player.AddBuff(ModContent.BuffType<ReaverRage>(), 180);
+                    Player.AddBuff(ModContent.BuffType<ReaverRage>(), ReaverHeadTank.ReaverRageDuration);
                 }
 
                 if (fBarrier || (aquaticHeart && NPC.downedBoss3))
@@ -2662,17 +2663,6 @@ namespace CalamityMod.CalPlayer
                                     Main.projectile[shard].DamageType = DamageClass.Generic;
                             }
                         }
-                    }
-                }
-                else if (reaverDefense) //Defense and DR Helm
-                {
-                    var source = Player.GetSource_Misc("23");
-                    if (hurtInfo.Damage > 0)
-                    {
-                        int rDamage = (int)Player.GetBestClassDamage().ApplyTo(240);
-
-                        if (Player.whoAmI == Main.myPlayer)
-                            Projectile.NewProjectile(source, Player.Center.X, Player.position.Y + 36f, 0f, -18f, ModContent.ProjectileType<ReaverThornBase>(), rDamage, 0f, Player.whoAmI, 0f, 0f);
                     }
                 }
                 else if (godSlayerDamage) //god slayer melee helm

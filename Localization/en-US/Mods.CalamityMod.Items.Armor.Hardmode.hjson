@@ -405,64 +405,54 @@ PlagueReaperVest: {
 
 ReaverCuisses: {
 	DisplayName: Reaver Cuisses
-	Tooltip:
-		'''
-		5% increased critical strike chance
-		12% increased movement speed
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed}"
 }
 
 ReaverHeadExplore: {
 	DisplayName: Reaver Headgear
 	Tooltip:
 		'''
-		20% increased mining speed
-		50% increased block & wall placement speed
+		{0}% increased mining speed
+		{1}% increased block & wall placement speed
 		Grants immunity to lava and can move freely through liquids
 		'''
 	SetBonus:
 		'''
-		Summons an orb which highlights nearby treasure and provides light
-		Grants underwater breathing and reduced enemy aggression
+		Emits light and shows the location of treasure and ore
+		{$Common.AggroReduction} and grants underwater breathing
 		These have a moderate effect while in the Abyss
-		Increased block placement & tool range by 7
+		Increased block placement & tool range by {0}
 		Increases pickup range for items
 		'''
 }
 
 ReaverHeadMobility: {
 	DisplayName: Reaver Visage
-	Tooltip: 10% increased jump speed and 15% increased movement speed
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed} and {1}% increased jump speed"
 	SetBonus:
 		'''
 		Grants immunity to fall damage and allows constant jumping
-		10% increased flight time and horizontal wing speed
-		Hooks fly out and retract 50% faster
-		Reduces the cooldown of dashes
+		{0}% increased flight time and horizontal wing speed
+		Grappling hooks retract and pull the player {1}% faster
+		Reduces the cooldown of dashes by {2}%
 		'''
 }
 
 ReaverHeadTank: {
 	DisplayName: Reaver Helm
-	Tooltip:
-		'''
-		15% increased damage reduction but 30% decreased damage
-		+50 max life
-		'''
+	Tooltip: +{0} max life and +{1} HP/s life regen
 	SetBonus:
 		'''
-		+10 defense and +5 HP/s life regen
-		Enemies are more likely to target you
-		Reduces the life regen lost from damage over time debuffs by 20%
-		30% decreased movement speed and flight time
-		Enemy damage is reflected and summons a thorn spike
-		Reaver Rage activates when you are damaged
+		{$Common.AggroBoost}
+		Reduces the life regen lost from damage over time debuffs by {0}%
+		{1}% decreased movement speed and flight time
+		Grants Reaver Rage for {2} seconds after taking damage
 		'''
 }
 
 ReaverScaleMail: {
 	DisplayName: Reaver Scale Mail
-	Tooltip: 9% increased damage and 4% increased critical strike chance
+	Tooltip: "{0}% increased damage reduction"
 }
 
 TitanHeartBoots: {
