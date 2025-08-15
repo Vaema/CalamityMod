@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Placeables.Ores
 
         public override void AddRecipes()
         {
-            CreateRecipe(30).
+            CreateRecipe(10).
                 AddIngredient<YharonSoulFragment>().
                 AddCondition(Condition.NearShimmer).
                 Register();
