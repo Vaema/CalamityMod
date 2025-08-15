@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AuricOre>());
-            Item.value = Item.sellPrice(silver: 70);
+            Item.value = Item.sellPrice(silver: 60);
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
