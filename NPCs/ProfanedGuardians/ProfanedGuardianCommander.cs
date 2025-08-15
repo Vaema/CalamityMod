@@ -1201,7 +1201,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             npcLoot.Add(ModContent.ItemType<RelicOfDeliverance>(), 4);
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianMask>(), 7);
-            npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 5);
+            npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 4);
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianTrophy>(), 10);
             npcLoot.Add(ModContent.ItemType<ProfanedCore>());
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<UnholyEssence>(), 1, 15, 20, 20, 25));
