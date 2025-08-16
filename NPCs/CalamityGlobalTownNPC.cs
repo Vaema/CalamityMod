@@ -232,6 +232,7 @@ namespace CalamityMod.NPCs
             "Xsiana", // <@!625780237489143839> (lokistic)
             "Lain", // <@!655201622863118337> (literallyadeerfr)
             "Hamis", // <@!608455754093035521> (haefer)
+            "Brio Scarlet", // <@!358576903701004289> (brio_scarlet)
         };
         private static readonly string[] TavernkeepNames =
         {
