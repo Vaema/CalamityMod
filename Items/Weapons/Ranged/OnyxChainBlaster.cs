@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Fire the Onyx Shard that is characteristic of the Onyx Blaster
-            // The shard deals 250% damage and double knockback
-            int shardDamage = (int)(2.5f * damage);
+            // The shard deals 200% damage and double knockback
+            int shardDamage = 2 * damage;
             float shardKB = 2f * knockback;
             Vector2 offset = new Vector2(Main.rand.Next(-25, 26) * 0.05f, Main.rand.Next(-25, 26) * 0.05f);
             Projectile shard = Projectile.NewProjectileDirect(source, position, velocity + offset, ProjectileID.BlackBolt, shardDamage, shardKB, player.whoAmI);
