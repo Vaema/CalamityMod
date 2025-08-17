@@ -1,6 +1,8 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -69,6 +71,16 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (loadedShots <= 0)
                 loadedShots = 3;
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<StellarCannon>().
+                AddIngredient<CosmiliteBar>(8).
+                AddIngredient<DarksunFragment>(20).
+                AddTile<CosmicAnvil>().
+                Register();
         }
     }
 }

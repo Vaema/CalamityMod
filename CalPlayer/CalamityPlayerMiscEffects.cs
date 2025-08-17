@@ -21,9 +21,11 @@ using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.DesertProwler;
+using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
+using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
@@ -2863,8 +2865,8 @@ namespace CalamityMod.CalPlayer
             }
 
             bool hasPlagueBlackoutCD = cooldowns.TryGetValue(PlagueBlackout.ID, out CooldownInstance plagueBlackoutCD);
-            if (!plagueReaper && hasPlagueBlackoutCD && plagueBlackoutCD.timeLeft > 1500)
-                plagueBlackoutCD.timeLeft = 1500;
+            if (!plagueReaper && hasPlagueBlackoutCD && plagueBlackoutCD.timeLeft > PlagueReaperMask.BlackoutCooldown)
+                plagueBlackoutCD.timeLeft = PlagueReaperMask.BlackoutCooldown;
 
             if (!prismaticSet && prismaticLasers > 1800)
             {
@@ -3375,8 +3377,8 @@ namespace CalamityMod.CalPlayer
 
             if (xWrath)
             { 
-                Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-                Player.GetCritChance<RogueDamageClass>() += 5;
+                Player.GetDamage<ThrowingDamageClass>() += EmpyreanMask.WrathRogueDamageBoost;
+                Player.GetCritChance<RogueDamageClass>() += EmpyreanMask.WrathRogueCritBoost;
             }
 
             if (graxDefense)
@@ -3628,12 +3630,12 @@ namespace CalamityMod.CalPlayer
             // Flight time boosts
             double flightTimeMult = 1D +
                 (harpyRing ? 0.2 : 0D) +
-                (reaverSpeed ? 0.1 : 0D) +
+                (reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0D) +
                 (angelTreads ? 0.1 : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +
-                (plagueReaper ? 0.05 : 0D) +
+                (plagueReaper ? PlagueReaperMask.SetBonusFlightTimeBoost : 0D) +
                 (ascendantInsignia ? 0.17 : 0D) + // Added to soaring insignia's flight to get 50%
                 (Player.empressBrooch ? 0.33 : 0D) +
                 externalFlightTimeMultBoost;
@@ -3654,7 +3656,7 @@ namespace CalamityMod.CalPlayer
 
             // Reaver Tank set nuke flight time
             if (reaverDefense)
-                flightTimeMult -= 0.3f;
+                flightTimeMult -= ReaverHeadTank.SetBonusMobilityReduction;
 
             // Increase wing time
             if (Player.wingTimeMax > 0)

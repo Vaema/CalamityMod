@@ -123,8 +123,6 @@ namespace CalamityMod.CalPlayer
         public bool resetHeightandWidth = false;
         /// <summary> If set to true, completely disables ALL life regeneration effects. Used by Omega Blue armor. </summary>
         public bool noLifeRegen = false;
-        public bool reducedDaybrokenDamage = false;
-        public bool reducedNightwitherDamage = false;
         public float ammoCost = 1f;
         public float healingPotionMultiplier = 1f;
         /// <summary>
@@ -1480,8 +1478,6 @@ namespace CalamityMod.CalPlayer
         public bool victideSnail = false;
         /// <summary> Hydrothermic armor's Vent. </summary>
         public bool cSpirit = false;
-        /// <summary> Reaver armor's Reaver Orb. </summary>
-        public bool rOrb = false;
         /// <summary> Daedalus armor's Daedalus Crystal. </summary>
         public bool dCrystal = false;
         public bool endoHydra = false;
@@ -2312,8 +2308,6 @@ namespace CalamityMod.CalPlayer
             CryoStoneVanity = false;
             voidField = false;
             copyrightInfringementShield = false;
-            reducedDaybrokenDamage = false;
-            reducedNightwitherDamage = false;
 
             daedalusReflect = false;
             daedalusSplit = false;
@@ -2618,7 +2612,6 @@ namespace CalamityMod.CalPlayer
             astralProbe = false;
             victideSnail = false;
             cSpirit = false;
-            rOrb = false;
             dCrystal = false;
             MutatedTruffleBool = false;
             sandElemental = false;
@@ -3911,7 +3904,7 @@ namespace CalamityMod.CalPlayer
             if (plagueReaper && !Player.HasCooldown(PlagueBlackout.ID))
             {
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
-                Player.AddCooldown(PlagueBlackout.ID, 1800);
+                Player.AddCooldown(PlagueBlackout.ID, PlagueReaperMask.BlackoutDuration + PlagueReaperMask.BlackoutCooldown);
             }
             if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
             {

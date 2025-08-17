@@ -363,9 +363,23 @@ namespace CalamityMod.NPCs.OldDuke
                 // Disable contact damage while tired
                 NPC.damage = 0;
 
-                // Play exhausted sound
+                // Play exhausted sound and huff fumes
                 if (calamityGlobalNPC.newAI[0] % 60f == 0f && Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < 2800f)
+                {
                     SoundEngine.PlaySound(HuffSound with { Volume = HuffSound.Volume * 1.25f }, Main.LocalPlayer.Center);
+                    for (int i = 0; i < 40; i++)
+                    {
+                        float scale = Main.rand.NextFloat(1f, 3f);
+                        Vector2 fumePos = NPC.Center + NPC.rotation.ToRotationVector2() * (Main.rand.NextBool() ? 100f : 80f) * NPC.direction;
+                        Vector2 fumeVel = Vector2.UnitX * NPC.velocity.X + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(12f)) * scale * -8f * Main.rand.NextFloat(1f, 1.25f);
+                        MediumMistParticle fume = new(fumePos, fumeVel, GlowColor, Color.DarkSlateGray, scale, 150f);
+                        GeneralParticleHandler.SpawnParticle(fume);
+                    }
+
+                    Vector2 pulsePos = NPC.Center + NPC.rotation.ToRotationVector2() * 88f * NPC.direction;
+                    CustomPulse pulse = new(pulsePos, Vector2.Zero, Color.White * 0.2f, "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.05f, 0.125f, 30);
+                    GeneralParticleHandler.SpawnParticle(pulse);
+                }
 
                 if (Main.zenithWorld)
                 {

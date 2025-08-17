@@ -9,6 +9,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -119,8 +120,8 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
             ApplyDoTDebuff(laceration, 36, purity);
-            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 20 : 40, purity);
-            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 20 : 40, purity);
+            ApplyDoTDebuff(daybroken, 40, purity);
+            ApplyDoTDebuff(nightwither, 40, purity);
             ApplyDoTDebuff(holyFlames, 40, purity);
             ApplyDoTDebuff(voidfrost, 40, purity);
             ApplyDoTDebuff(hadopelagicPressure, 40, purity);
@@ -289,7 +290,7 @@ namespace CalamityMod.CalPlayer
 
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
-                totalNegativeLifeRegen = (int)(0.8f * totalNegativeLifeRegen);
+                totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
 

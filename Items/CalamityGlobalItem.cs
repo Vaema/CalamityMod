@@ -9,6 +9,8 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Hydrothermic;
+using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -1240,17 +1242,6 @@ namespace CalamityMod.Items
                 player.buffImmune[BuffID.OnFire] = true;
             }
 
-            // Reduced Nightwither and Holy Flames damage.
-            if (item.type == ItemID.MoonStone)
-                modPlayer.reducedNightwitherDamage = true;
-            if (item.type == ItemID.SunStone)
-                modPlayer.reducedDaybrokenDamage = true;
-            if (item.type == ItemID.CelestialStone || item.type == ItemID.CelestialShell)
-            {
-                modPlayer.reducedDaybrokenDamage = true;
-                modPlayer.reducedNightwitherDamage = true;
-            }
-
             if (item.type == ItemID.FairyBoots)
                 modPlayer.fairyBoots = true;
 
@@ -1458,7 +1449,7 @@ namespace CalamityMod.Items
 
             float flightSpeedMult = 1f +
                 (modPlayer.soaring ? SoaringPotion.FlightBoost : 0f) +
-                (modPlayer.reaverSpeed ? 0.1f : 0f) +
+                (modPlayer.reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0f) +
                 moveSpeedBoost;
 
             float flightAccMult = 1f + moveSpeedBoost;
@@ -1508,14 +1499,11 @@ namespace CalamityMod.Items
             if (grabRangeMultiplier > 1f)
                 grabRange = (int)(grabRangeMultiplier * grabRange);
 
-            // Then, if wearing the appropriate Reaver armor, add 246 flat item grab range. (2.625 + 15.375 = 18 tiles)
-            // For reference, Treasure Magnet adds 150 (2.625 + 9.375 = 12 tiles)
+            // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
-                grabRange += 246;
-
-            // Victide utility set provides a lesser boost of 102 (2.625 + 6.375 = 9 tiles)
+                grabRange += ReaverHeadExplore.SetBonusGrabRangeBoost;
             if (player.Calamity().victideSnailSet)
-                grabRange += 102;
+                grabRange += VictideHeadSnail.SetBonusGrabRangeBoost;
 
             // Nebula boosters have greater pickup range while using Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])

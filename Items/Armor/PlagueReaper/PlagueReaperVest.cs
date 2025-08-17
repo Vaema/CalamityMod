@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Armor.PlagueReaper
     public class PlagueReaperVest : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RangedDamageBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -21,8 +26,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.15f;
-            player.GetCritChance<RangedDamageClass>() += 5;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.buffImmune[ModContent.BuffType<Plague>()] = true;
         }
 

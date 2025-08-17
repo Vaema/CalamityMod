@@ -1247,7 +1247,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     ModContent.ItemType<RougeSlash>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
-                normalOnly.Add(ModContent.ItemType<Swordsplosion>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EffulgentFeather>(), 1, 25, 30);

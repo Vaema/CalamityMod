@@ -1157,10 +1157,10 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
 
                     // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, 4));
-                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, 4));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, DropHelper.NormalWeaponDropRateInt));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, DropHelper.NormalWeaponDropRateInt));
 
-                    npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), 10);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), DropHelper.NormalWeaponDropRateFraction);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1179,8 +1179,8 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EoCShield));
 
                     // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ModContent.ItemType<TeardropCleaver>(), 10);
-                    npcLoot.AddNormalOnly(ModContent.ItemType<DeathstareRod>(), 4);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<TeardropCleaver>(), DropHelper.NormalWeaponDropRateFraction);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<DeathstareRod>(), DropHelper.NormalWeaponDropRateFraction);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1304,7 +1304,7 @@ namespace CalamityMod.NPCs
 
                     // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.HiveBackpack));
-                    npcLoot.AddNormalOnly(ModContent.ItemType<TheBee>(), 10);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<TheBee>(), DropHelper.NormalWeaponDropRateFraction);
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1509,7 +1509,6 @@ namespace CalamityMod.NPCs
 
                     // Expert+ drops are also available on Normal. These are done manually due to Last Twin Standing.
                     npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ItemID.MechanicalWheelPiece);
-                    npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ModContent.ItemType<Arbalest>(), 10);
 
                     // Would be in the bag otherwise
                     npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);

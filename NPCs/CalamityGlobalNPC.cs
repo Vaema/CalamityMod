@@ -19,6 +19,7 @@ using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
+using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
@@ -5185,9 +5186,9 @@ namespace CalamityMod.NPCs
 
             if (!projectile.npcProj && !projectile.trap)
             {
-                // Plague Reaper deals 1.1x damage to Plagued enemies
+                // Plague Reaper deals extra damage to Plagued enemies
                 if (projectile.CountsAsClass<RangedDamageClass>() && modPlayer.plagueReaper && plague)
-                    modifiers.SourceDamage *= 1.1f;
+                    modifiers.SourceDamage *= PlagueReaperMask.SetBonusPlaguedRangedDamageMult;
 
                 // True Vulnerability Hex causes enemies to take 1.15x damage, 2.5x from Calamity itself
                 if (trueVulnerabilityHex)

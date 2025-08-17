@@ -795,27 +795,15 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("FairyBoots"));
 
-            // Reduced Nightwither and Daybroken damage, and melee speed removal.
+            // Melee speed removal.
             if (item.type == ItemID.MoonStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("MoonStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.SunStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("SunStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.CelestialStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
             if (item.type == ItemID.CelestialShell)
-            {
-                EditTooltipByNum(4, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(2, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
 
             // Mana Flower tinker buffs.
             if (item.type == ItemID.MagnetFlower)

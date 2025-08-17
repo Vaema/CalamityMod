@@ -895,7 +895,7 @@ namespace CalamityMod.NPCs.CalClone
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<Regenerator>(), 10);
+                normalOnly.Add(ModContent.ItemType<Regenerator>(), DropHelper.NormalWeaponDropRateFraction);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);

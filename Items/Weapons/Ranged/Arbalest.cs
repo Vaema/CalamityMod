@@ -66,5 +66,15 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             return false;
         }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddRecipeGroup("AnyMythrilBar", 10).
+                AddIngredient(ItemID.Cog, 15).
+                AddIngredient(ItemID.SoulofSight, 10).
+                AddTile(TileID.MythrilAnvil).
+                Register();
+        }
     }
 }

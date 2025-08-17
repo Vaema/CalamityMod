@@ -479,11 +479,6 @@ RadiatorBuff: {
 	Description: Radioactive but adorable
 }
 
-ReaverOrbBuff: {
-	DisplayName: Reaver Orb
-	Description: The reaver orb will light your way
-}
-
 SparksBuff: {
 	DisplayName: Sparks
 	Description: Eats butterflies
