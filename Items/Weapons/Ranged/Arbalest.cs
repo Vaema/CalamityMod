@@ -35,9 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Arrow;
         }
 
-        // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             SoundEngine.PlaySound(SoundID.Item5, player.Center);
