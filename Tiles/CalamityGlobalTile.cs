@@ -33,6 +33,7 @@ namespace CalamityMod.Tiles
             TileType<Navystone>(),
             TileType<Shellstone>(),
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<Voidstone>()
         };
 

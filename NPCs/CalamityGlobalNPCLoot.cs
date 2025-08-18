@@ -98,12 +98,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Werewolf:
                     npcLoot.ChangeDropRate(ItemID.MoonCharm, 1, 20);
                     break;
-
-                // Possessed Armor
-                // Nazar @ 1% Normal, 2% Expert+
-                case NPCID.PossessedArmor:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    break;
                 #endregion
 
                 #region Sky / Space
@@ -465,14 +459,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Chaos Elemental
-                // Megaphone @ 1% Normal, 2% Expert+
                 // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
                 case NPCID.ChaosElemental:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
-
                     // Remove the vanilla loot rule for Rod of Discord.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
-
                     // Define a replacement rule which has an increased chance.
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
                     break;
@@ -481,12 +471,6 @@ namespace CalamityMod.NPCs
                 // Trifold Map @ 1% Normal, 2% Expert+
                 case NPCID.IlluminantBat:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
-                    break;
-
-                // Illuminant Slime
-                // Fast Clock @ 1% Normal, 2% Expert+
-                case NPCID.IlluminantSlime:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Gastropod
@@ -712,11 +696,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
                 case NPCID.Ghost:
                     npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -814,13 +795,6 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateShip:
                     rev.Add(ItemID.FlyingDutchmanMasterTrophy);
                     rev.Add(ItemID.PirateShipMountItem, 4);
-                    break;
-
-                // Pirate's Curse
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
-                case NPCID.PirateGhost:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
