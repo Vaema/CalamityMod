@@ -712,11 +712,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
                 case NPCID.Ghost:
                     npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -814,13 +811,6 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateShip:
                     rev.Add(ItemID.FlyingDutchmanMasterTrophy);
                     rev.Add(ItemID.PirateShipMountItem, 4);
-                    break;
-
-                // Pirate's Curse
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
-                case NPCID.PirateGhost:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
