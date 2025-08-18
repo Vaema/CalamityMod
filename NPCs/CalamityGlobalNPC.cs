@@ -4842,20 +4842,8 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffID.BrokenArmor, 300);
                     break;
 
-                case NPCID.PossessedArmor:
-                    target.AddBuff(BuffID.Cursed, 60);
-                    break;
-
-                case NPCID.ChaosElemental:
-                    target.AddBuff(BuffID.Silenced, 180);
-                    break;
-
                 case NPCID.IlluminantBat:
                     target.AddBuff(BuffID.Confused, 120);
-                    break;
-
-                case NPCID.IlluminantSlime:
-                    target.AddBuff(BuffID.Slow, 180);
                     break;
 
                 case NPCID.Piranha:
