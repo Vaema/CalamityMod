@@ -32,7 +32,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 5f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<DWArrow>();
             Item.shootSpeed = 20f;
@@ -67,9 +66,15 @@ namespace CalamityMod.Items.Weapons.Ranged
                         player.itemTime = 180;
                         player.itemAnimation = 180;
                     }
-                    else if (Main.myPlayer == player.whoAmI)
+                    else
                     {
-                        Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 1016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI,-1,1);
+
+                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 2 && Main.LocalPlayer.Distance(player.Center) < 1600)
+                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 2;
+                        if (Main.myPlayer == player.whoAmI)
+                        {
+                            Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 1016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
+                        }
                     }
                 }
             }
@@ -84,6 +89,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                 GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale * 96), Vector2.Zero, Color.Fuchsia, Vector2.One, 0, scale, scale, 3));
                 if (player.itemTime == 60)
                 {
+
+                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5 && Main.LocalPlayer.Distance(player.Center) < 1600)
+                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
                     if (Main.myPlayer == player.whoAmI)
                     {
                         int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 1016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);
@@ -104,21 +112,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             storedDMG = damage;
             storedKB = knockback;
-            return false;
-            for (int index = 0; index < 4; ++index)
-            {
-                float SpeedX = velocity.X + Main.rand.Next(-20, 21) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.Next(-20, 21) * 0.05f;
-                if (CalamityUtils.CheckWoodenAmmo(type, player))
-                {
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 1.5f), knockback, player.whoAmI);
-                }
-                else
-                {
-                    int baseArrow = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
-                    Main.projectile[baseArrow].noDropItem = true;
-                }
-            }
             return false;
         }
     }

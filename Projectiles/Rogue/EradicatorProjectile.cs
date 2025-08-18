@@ -136,8 +136,8 @@ namespace CalamityMod.Projectiles.Rogue
                 randomLaserCharge -= 1f;
                 Vector2 velocity = Vector2.UnitX.RotatedBy(Projectile.timeLeft / 120f * MathHelper.TwoPi);
 
-                int laserDamage = (int)(Projectile.damage * 0f);
-                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, 1.5f);
+                int laserDamage = (int)(Projectile.damage * 0.15f);
+                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, 1.5f,0,2);
                 if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                 {
                     laser.DamageType = RogueDamageClass.Instance;

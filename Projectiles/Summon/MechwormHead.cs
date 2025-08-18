@@ -5,6 +5,8 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
+using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -283,11 +285,21 @@ namespace CalamityMod.Projectiles.Summon
                     for (int i = 0; i < 3; i++)
                     {
                         Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-0.15f, 0.15f, i / 3f)) * 0.3f;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, ModContent.ProjectileType<MechwormLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        var p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, ModContent.ProjectileType<DoGFire>(), Projectile.damage, Projectile.knockBack, Projectile.owner,2);
+                        if (Main.projectile.IndexInRange(p))
+                        {
+                            Main.projectile[p].hostile = false;
+                            Main.projectile[p].friendly = true;
+                            Main.projectile[p].DamageType = DamageClass.Summon;
+                            Main.projectile[p].timeLeft = 120;
+                            Main.projectile[p].scale = 0.5f;
+                            Main.projectile[p].usesIDStaticNPCImmunity = false;
+                            Main.projectile[p].usesLocalNPCImmunity = true;
+                            Main.projectile[p].localNPCHitCooldown = 10 * Projectile.MaxUpdates;
+                        }
                     }
                 }
 
-                SoundEngine.PlaySound(SoundID.Item12, Projectile.Center);
                 Projectile.netUpdate = true;
             }
 
@@ -323,7 +335,25 @@ namespace CalamityMod.Projectiles.Summon
                 // On the starting frame of a teleport, spawn portals.
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportStartingPoint, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0f, Projectile.owner);
+                    if (AttackStateTimer != 0)
+                    {
+                        int sparkAmount = 8;
+                        for (int i = 0; i < sparkAmount; i++)
+                        {
+                            int sparkLifetime = Main.rand.Next(30, 45);
+                            float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
+                            Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
+                            sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
+
+                            if (Main.rand.NextBool(5))
+                                sparkScale *= 1.4f;
+
+                            Vector2 sparkVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.TwoPi * (i / (float)sparkAmount)) * 4;
+                            SparkParticle spark = new SparkParticle(TeleportStartingPoint, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportStartingPoint, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0f, Projectile.owner);
+                    }
                     int endGateIndex = Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportEndingPoint, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0f, Projectile.owner);
                     EndRiftGateUUID = Projectile.GetByUUID(Projectile.owner, endGateIndex);
 

@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Excelsus : BaseSwordHoldoutItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override int ProjectileType => ModContent.ProjectileType<ExcelsusMain>();
+        public override int ProjectileType => ModContent.ProjectileType<ExcelsusHoldout>();
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheObliterator>();
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.shoot = ModContent.ProjectileType<ExcelsusMain>();
+            Item.shoot = ModContent.ProjectileType<ExcelsusHoldout>();
             Item.shootSpeed = 12f;
             base.SetDefaults();
         }

@@ -66,9 +66,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             return true;
         }
 
-        // localAI[1] is the shot counter. Every 5 frames, The Obliterator tries to fire a laser at a nearby target.
-        // It has 4 "laser ports" which whirl around in circles with the yoyo. It uses each of these in order.
-        // localAI[1] counts up to 19 (4 x 5 - 1), then resets back to 0 for a 20-frame cycle.
         public override void AI()
         {
             time++;
@@ -112,7 +109,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     if (targets.Count == 0)
                         return;
                     targets = targets.OrderBy(x => x.Distance(Projectile.Center)).ToList();
-                    Projectile.velocity = Projectile.DirectionTo(targets[0].Center);//.RotatedByRandom(0.3f);
+                    Projectile.velocity = Projectile.DirectionTo(targets[0].Center);
                     Projectile.Center = targets[0].Center - new Vector2(Projectile.velocity.X * targets[0].width*0.5f, Projectile.velocity.Y * targets[0].height*0.5f);
                     Projectile.velocity *= 15;
                     for (var i = 0; i < 20; i++)
@@ -127,21 +124,21 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0, Projectile.owner);
-                        int laserAmount = 8;
-                        for (int i = 0; i < laserAmount; i++)
-                        {
-                            int sparkLifetime = Main.rand.Next(30, 45);
-                            float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
-                            Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
-                            sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
+                    }
+                    int laserAmount = 8;
+                    for (int i = 0; i < laserAmount; i++)
+                    {
+                        int sparkLifetime = Main.rand.Next(30, 45);
+                        float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
+                        Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
+                        sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
 
-                            if (Main.rand.NextBool(5))
-                                sparkScale *= 1.4f;
+                        if (Main.rand.NextBool(5))
+                            sparkScale *= 1.4f;
 
-                            Vector2 sparkVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.TwoPi * (i / (float)laserAmount)) * 4;
-                            SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
-                            GeneralParticleHandler.SpawnParticle(spark);
-                        }
+                        Vector2 sparkVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.TwoPi * (i / (float)laserAmount)) * 4;
+                        SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                        GeneralParticleHandler.SpawnParticle(spark);
                     }
                     Projectile.localAI[1]++;
                     Projectile.ResetLocalNPCHitImmunity();
@@ -202,6 +199,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     SparkParticle chompSpark = new(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
                     GeneralParticleHandler.SpawnParticle(chompSpark);
                 }
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { Pitch = -0.45f, Volume = 0.33f }, Projectile.Center);
             }
             else
                 target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 180);

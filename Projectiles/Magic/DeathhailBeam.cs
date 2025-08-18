@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Magic
         public ref float laserType => ref Projectile.ai[2];
         public bool canDamage => doneAttack && laserFX >= 1f;
         public bool doneAttack = false;
-        public int attackTime = 30;
+        public int attackTime = 10;
         public float laserLength => 3000;
         public float laserFX = 0;
         public float storedTime = 0;
@@ -74,12 +74,15 @@ namespace CalamityMod.Projectiles.Magic
             if (time >= attackTime && !doneAttack)
             {
                 SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
-                for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.3f, Pitch = 0, MaxInstances = -1 }, targetPos);
+                SoundEngine.PlaySound(attack with { Volume = 0.5f, Pitch = 0, MaxInstances = -1 }, targetPos);
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
                 Projectile.ForceNetUpdate();
+
+
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3 && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)

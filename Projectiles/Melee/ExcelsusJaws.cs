@@ -6,19 +6,22 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExcelsusPink : ModProjectile, ILocalizedModType
+    public class ExcelsusJaws : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+        public override string Texture => "CalamityMod/Particles/Jaws";
         public override void SetDefaults()
         {
-            Projectile.width = 250;
-            Projectile.height = 250;
+            Projectile.width = 500;
+            Projectile.height = 500;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.ignoreWater = true;
             Projectile.penetrate = -1;
@@ -42,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             Projectile.Center = Vector2.Lerp(StartPos, GoalPos, MathHelper.Min(1,MathF.Pow(1 - (Projectile.timeLeft - 5) / 30f,0.5f)));
             Projectile.rotation = StartPos.DirectionTo(GoalPos).ToRotation();
-            offset = 200*MathHelper.Min(1-(Projectile.timeLeft-5)/30f, (Projectile.timeLeft - 5) / 5f);
+            offset = 200*MathHelper.Min(MathF.Pow(1-(Projectile.timeLeft-5)/30f,0.4f), (Projectile.timeLeft - 5) / 5f);
             if (offset < 16)
                 offset = 16;
             if (Projectile.timeLeft == 5)
@@ -67,12 +70,13 @@ namespace CalamityMod.Projectiles.Melee
                     Dust dust2 = Dust.NewDustPerfect(Projectile.Center + dustVel * 2, 226, dustVel, 0, default, 1f);
                     dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 }
-                Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 5;
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5 && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
 
-                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), 0, 0.1f, 0.85f, 36);
+                Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), 0, 0.2f, 1.7f, 36);
                 GeneralParticleHandler.SpawnParticle(pulse);
 
-                Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Magenta, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 0.65f, 26);
+                Particle explosion2 = new DetailedExplosion(Projectile.Center, Vector2.Zero, Color.Magenta, Vector2.One, Main.rand.NextFloat(-5, 5), 0f, 1.3f, 26);
                 GeneralParticleHandler.SpawnParticle(explosion2);
 
             }
@@ -101,14 +105,13 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/Jaws").Value;
+            var tex = TextureAssets.Projectile[Type].Value;
             float jawScaleMult = 1f;
             jawScaleMult = MathF.Pow(jawScaleMult, 3);
             float rotationOff = 0.5f * MathHelper.Min(MathF.Pow(MathHelper.Clamp(1 - (Projectile.timeLeft - 5) / 30f,0,1),0.5f), MathF.Pow(MathHelper.Clamp((Projectile.timeLeft - 5) / 10f,0,1),0.5f));
             if (rotationOff < 0.01f)
                 rotationOff = 0.01f;
-            float drawRot = Projectile.rotation;// - MathHelper.PiOver2 + (Projectile.spriteDirection == -1 ? -MathHelper.PiOver4 : MathHelper.PiOver4);
-
+            float drawRot = Projectile.rotation;
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, offset).RotatedBy(drawRot) - Main.screenPosition, tex.Frame(2, 1, 0, 0), Color.Fuchsia, Projectile.rotation + rotationOff + MathHelper.PiOver2, new Vector2(tex.Width * 0.25f, tex.Height * 0.5f), jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
             Main.spriteBatch.Draw(tex, Projectile.Center + new Vector2(0, -offset).RotatedBy(drawRot) - Main.screenPosition, tex.Frame(2, 1, 1, 0), Color.Aqua, Projectile.rotation - rotationOff + MathHelper.PiOver2, new Vector2(tex.Width * 0.25f, tex.Height * 0.5f), jawScaleMult, Projectile.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
@@ -116,31 +119,9 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public override void PostDraw(Color lightColor)
-        {
-            return;
-            Color color;
-            if (Projectile.timeLeft < 85)
-            {
-                byte b2 = (byte)(Projectile.timeLeft * 3);
-                byte a2 = (byte)(100f * ((float)b2 / 255f));
-                color = new Color((int)b2, (int)b2, (int)b2, (int)a2);
-            }
-            else
-            {
-                color = new Color(255, 255, 255, 100);
-            }
-            Vector2 origin = new Vector2(39f, 46f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/ExcelsusPinkGlow").Value, Projectile.Center - Main.screenPosition, null, color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.timeLeft > 85)
-            {
-                Projectile.timeLeft = 85;
-            }
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 360);
         }
     }
 }

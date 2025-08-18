@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -13,11 +14,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExcelsusMain : BaseSwordHoldoutProjectile, ILocalizedModType
+    public class ExcelsusHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override bool useMeleeSpeed => true;
-        public override bool useMeleeSize => false;
+        public override bool useMeleeSize => true;
         public override int swingWidth => 270;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<Excelsus>()).Item;
         public override int AfterImageLength => 0;
@@ -34,13 +35,11 @@ namespace CalamityMod.Projectiles.Melee
         {
             Projectile.width = 78;
             Projectile.height = 94;
-            Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
+            Projectile.extraUpdates = 5; //ExtraUpdates help make collision more accurate
             Projectile.noEnchantmentVisuals = true;
         }
         public override void Spawn(IEntitySource source)
         {
-            //This sets variables for the spear in general, as well as the secondary attack
-            //The secondary attack is the "default" because it was coded first
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             StartupTime = 10;
@@ -61,6 +60,23 @@ namespace CalamityMod.Projectiles.Melee
             switch (modplayer.swingNum)
             {
                 case 1:
+                    if (inSwing)
+                    {
+                        var veloc = oldPlayerOffset - (Projectile.Center - Main.player[Projectile.owner].Center);
+                        veloc.Normalize();
+                        int sparkLifetime = Main.rand.Next(15, 23);
+
+                        Vector2 sparkVel = Vector2.UnitY * -9f;
+                        float maxRotationDeviance = 0.4f;
+                        float rotationAngle = Main.rand.NextFloat(-maxRotationDeviance, maxRotationDeviance);
+                        sparkVel = sparkVel.RotatedBy(rotationAngle) * Main.rand.NextFloat(0.3f, 1.0f);
+
+                        float sparkScale = Main.rand.NextFloat(0.007f, 0.015f);
+
+                        Vector2 compensatedSparkVel = veloc.RotatedBy(MathHelper.PiOver4 * 0.5f * Projectile.spriteDirection) * Main.rand.NextFloat(2, 5);
+                        Particle spark = new GlowSparkParticle(Projectile.Center + new Vector2(-angle.X.DirectionalSign(), Main.rand.NextFloat(-0.05f, 0.05f)).RotatedBy(Projectile.rotation - 0.7f * Projectile.spriteDirection) * Main.rand.NextFloat(-20, -108) * Projectile.scale, compensatedSparkVel, false, sparkLifetime, sparkScale, Main.rand.NextBool() ? Color.Fuchsia : Color.HotPink, new Vector2(0.5f, 1.3f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
                     break;
                 case 2:
                     if (swingTimer == (int)(swingTime*0.5f))
@@ -80,10 +96,27 @@ namespace CalamityMod.Projectiles.Melee
                             }
                         }
                     }
+                    if (inSwing)
+                    {
+                        var veloc = oldPlayerOffset - (Projectile.Center - Main.player[Projectile.owner].Center);
+                        veloc.Normalize();
+                        int sparkLifetime = Main.rand.Next(15, 23);
+
+                        Vector2 sparkVel = Vector2.UnitY * -9f;
+                        float maxRotationDeviance = 0.4f;
+                        float rotationAngle = Main.rand.NextFloat(-maxRotationDeviance, maxRotationDeviance);
+                        sparkVel = sparkVel.RotatedBy(rotationAngle) * Main.rand.NextFloat(0.3f, 1.0f);
+
+                        float sparkScale = Main.rand.NextFloat(0.007f, 0.015f);
+
+                        Vector2 compensatedSparkVel = veloc.RotatedBy(MathHelper.PiOver4 * 0.5f * Projectile.spriteDirection) * Main.rand.NextFloat(2, 5);
+                        Particle spark = new GlowSparkParticle(Projectile.Center + new Vector2(-angle.X.DirectionalSign(), Main.rand.NextFloat(-0.05f, 0.05f)).RotatedBy(Projectile.rotation - 0.7f * Projectile.spriteDirection) * Main.rand.NextFloat(20, 108) * Projectile.scale, compensatedSparkVel, false, sparkLifetime, sparkScale, Main.rand.NextBool() ? Color.Cyan : Color.Aqua, new Vector2(0.5f, 1.3f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
                     break;
                 case 0:
                     if (Main.myPlayer == Projectile.owner)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<ExcelsusPink>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<ExcelsusJaws>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
                     player.itemAnimation = BaseItem.useAnimation;
                     player.itemTime = BaseItem.useTime;
                     Projectile.Kill();
@@ -122,7 +155,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
+            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 240);
         }
     }
 }

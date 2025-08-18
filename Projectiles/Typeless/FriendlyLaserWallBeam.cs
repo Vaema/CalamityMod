@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -81,12 +82,16 @@ namespace CalamityMod.Projectiles.Typeless
             if (time >= attackTime && !doneAttack)
             {
                 SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallLightAttack");
-                for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(attack with { Volume = 0.3f, Pitch = 0, MaxInstances =  -1}, targetPos);
+                if (Projectile.scale > 3) {
+                    attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
+                }
+                SoundEngine.PlaySound(attack with { Volume = 0.4f, Pitch = 0, MaxInstances =  -1}, Vector2.Lerp(targetPos, Main.player[Projectile.owner].Center, laserType == 0 ? 0 : 0.7f));
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
                 Projectile.ForceNetUpdate();
+                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < Projectile.ai[2] && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = Projectile.ai[2];
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)
@@ -113,9 +118,9 @@ namespace CalamityMod.Projectiles.Typeless
                 return true;
             return false;
         }
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            base.OnHitPlayer(target, info);
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
@@ -138,6 +143,7 @@ namespace CalamityMod.Projectiles.Typeless
             Texture2D beam = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomLineThick").Value;
             Texture2D bBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/LineThick").Value;
             Texture2D angleBeam = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
+            Texture2D angleBeamInside = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBladeNoBloom").Value;
             float opacity = (doneAttack ? 0.65f : 0.35f) * (float)Math.Pow(Math.Min(laserFX, 1), 2);
             Color beamColor = drawColor with { A = 0 };
 
@@ -156,11 +162,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
             else
             {
-                for (int t = 0; t < (!doneAttack ? 1 : 4 * Projectile.scale); t++)
+                opacity = 1f;
+                for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
                 {
-                    bool inFront = t > 0;
-                    float beamThickness = 16/1960f * Projectile.scale * (inFront ? t/4f : 1) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
-                    Main.EntitySpriteDraw(angleBeam, beamStart - Main.screenPosition, null, beamColor * (1 - t * 0.3f) * opacity * (inFront ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(angleBeam.Width / 2, angleBeam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * 0.8277f), SpriteEffects.None);
+                    bool notFirstDrawn = t > 0;
+                    float beamThickness = 16/1960f * Projectile.scale * (notFirstDrawn ? t/4f : 1) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
+                    Main.EntitySpriteDraw(notFirstDrawn ? angleBeamInside : angleBeam, beamStart - Main.screenPosition, null, (notFirstDrawn ? Color.Black * opacity : beamColor * opacity) * (notFirstDrawn ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(angleBeam.Width / 2, angleBeam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * 0.8277f), SpriteEffects.None);
                 }
             }
             return false;
