@@ -14,6 +14,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 
+            Main.tileBlendAll[Type] = true;
             CalamityUtils.MergeWithGeneral(Type);
 
             TileID.Sets.HasSlopeFrames[Type] = true;
