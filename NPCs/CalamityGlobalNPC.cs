@@ -1649,7 +1649,6 @@ namespace CalamityMod.NPCs
                 // Organic undead or other enemies that are covered in slime.
                 case NPCID.ArmedZombieSlimed:
                 case NPCID.BigSlimedZombie:
-                case NPCID.BunnySlimed:
                 case NPCID.SlimedZombie:
                 case NPCID.SmallSlimedZombie:
                     VulnerableToCold = true;
@@ -2288,6 +2287,204 @@ namespace CalamityMod.NPCs
                     VulnerableToCold = true;
                     VulnerableToHeat = true;
                     VulnerableToSickness = false;
+                    break;
+
+                // Town NPCs. Mostly irrelevant, but it displays in the Bestiary
+                case NPCID.Merchant:
+                case NPCID.Nurse:
+                case NPCID.ArmsDealer:
+                case NPCID.Dryad:
+                case NPCID.Guide:
+                case NPCID.OldMan:
+                case NPCID.Demolitionist:
+                case NPCID.Clothier:
+                case NPCID.BoundGoblin:
+                case NPCID.BoundWizard:
+                case NPCID.GoblinTinkerer:
+                case NPCID.Wizard:
+                case NPCID.BoundMechanic:
+                case NPCID.Mechanic:
+                case NPCID.Truffle:
+                case NPCID.Steampunker:
+                case NPCID.DyeTrader:
+                case NPCID.PartyGirl:
+                case NPCID.Painter:
+                case NPCID.WitchDoctor:
+                case NPCID.Pirate:
+                case NPCID.Stylist:
+                case NPCID.WebbedStylist:
+                case NPCID.TravellingMerchant:
+                case NPCID.Angler:
+                case NPCID.SleepingAngler:
+                case NPCID.DD2Bartender:
+                case NPCID.BartenderUnconscious:
+                case NPCID.Golfer:
+                case NPCID.GolferRescue:
+                case NPCID.BestiaryGirl:
+                case NPCID.Princess:
+                case NPCID.TownCat:
+                case NPCID.TownDog:
+                case NPCID.TownBunny:
+                    VulnerableToCold = true;
+                    VulnerableToHeat = true;
+                    VulnerableToSickness = true;
+                    break;
+                case NPCID.SantaClaus:
+                    VulnerableToCold = false;
+                    VulnerableToHeat = true;
+                    VulnerableToSickness = true;
+                    break;
+                case NPCID.TaxCollector:
+                    VulnerableToCold = true;
+                    VulnerableToHeat = false;
+                    VulnerableToSickness = true;
+                    break;
+                // Non-organic Town NPCs.
+                case NPCID.Cyborg:
+                case NPCID.BoundTownSlimeOld:
+                    VulnerableToSickness = false;
+                    break;
+                // Town Slimes.
+                case NPCID.TownSlimeBlue:
+                case NPCID.TownSlimeGreen:
+                case NPCID.TownSlimeOld:
+                case NPCID.TownSlimePurple:
+                case NPCID.TownSlimeRainbow:
+                case NPCID.TownSlimeRed:
+                case NPCID.TownSlimeYellow:
+                case NPCID.TownSlimeCopper:
+                case NPCID.BoundTownSlimePurple:
+                    VulnerableToSickness = false;
+                    VulnerableToHeat = true;
+                    break;
+
+                // Critters
+                case NPCID.Bunny:
+                case NPCID.Bird:
+                case NPCID.BirdBlue:
+                case NPCID.BirdRed:
+                case NPCID.Squirrel:
+                case NPCID.Mouse:
+                case NPCID.BunnySlimed:
+                case NPCID.BunnyXmas:
+                case NPCID.Firefly:
+                case NPCID.Butterfly:
+                case NPCID.Worm:
+                case NPCID.LightningBug:
+                case NPCID.Snail:
+                case NPCID.GlowingSnail:
+                case NPCID.Frog:
+                case NPCID.Duck:
+                case NPCID.Duck2:
+                case NPCID.DuckWhite:
+                case NPCID.DuckWhite2:
+                case NPCID.ScorpionBlack:
+                case NPCID.Scorpion:
+                case NPCID.TruffleWorm:
+                case NPCID.TruffleWormDigger:
+                case NPCID.Grasshopper:
+                case NPCID.GoldBird:
+                case NPCID.GoldBunny:
+                case NPCID.GoldButterfly:
+                case NPCID.GoldFrog:
+                case NPCID.GoldGrasshopper:
+                case NPCID.GoldMouse:
+                case NPCID.GoldWorm:
+                case NPCID.EnchantedNightcrawler:
+                case NPCID.Grubby:
+                case NPCID.Sluggy:
+                case NPCID.Buggy:
+                case NPCID.SquirrelRed:
+                case NPCID.SquirrelGold:
+                case NPCID.PartyBunny:
+                case NPCID.BlackDragonfly:
+                case NPCID.BlueDragonfly:
+                case NPCID.GreenDragonfly:
+                case NPCID.OrangeDragonfly:
+                case NPCID.RedDragonfly:
+                case NPCID.YellowDragonfly:
+                case NPCID.GoldDragonfly:
+                case NPCID.Seagull:
+                case NPCID.Seagull2:
+                case NPCID.LadyBug:
+                case NPCID.GoldLadyBug:
+                case NPCID.Maggot:
+                case NPCID.Grebe:
+                case NPCID.Grebe2:
+                case NPCID.Rat:
+                case NPCID.Owl:
+                case NPCID.WaterStrider:
+                case NPCID.GoldWaterStrider:
+                case NPCID.ExplosiveBunny:
+                case NPCID.EmpressButterfly:
+                case NPCID.Stinkbug:
+                case NPCID.ScarletMacaw:
+                case NPCID.BlueMacaw:
+                case NPCID.Toucan:
+                case NPCID.YellowCockatiel:
+                case NPCID.GrayCockatiel:
+                case NPCID.Shimmerfly:
+                case NPCID.BoundTownSlimeYellow:
+                    VulnerableToCold = true;
+                    VulnerableToHeat = true;
+                    VulnerableToSickness = true;
+                    break;
+                // Water Critters
+                case NPCID.Goldfish:
+                case NPCID.GoldfishWalker:
+                case NPCID.GoldGoldfish:
+                case NPCID.GoldGoldfishWalker:
+                case NPCID.Pupfish:
+                case NPCID.Dolphin:
+                case NPCID.Turtle:
+                case NPCID.TurtleJungle:
+                case NPCID.SeaTurtle:
+                case NPCID.Seahorse:
+                case NPCID.GoldSeahorse:
+                    VulnerableToHeat = false;
+                    VulnerableToSickness = true;
+                    VulnerableToElectricity = true;
+                    VulnerableToWater = false;
+                    break;
+                // Penguins
+                case NPCID.Penguin:
+                case NPCID.PenguinBlack:
+                    VulnerableToCold = false;
+                    VulnerableToHeat = true;
+                    VulnerableToSickness = true;
+                    break;
+                // Fairies
+                case NPCID.FairyCritterPink:
+                case NPCID.FairyCritterGreen:
+                case NPCID.FairyCritterBlue:
+                    VulnerableToSickness = false;
+                    break;
+                // Gem Critters
+                case NPCID.GemSquirrelAmethyst:
+                case NPCID.GemSquirrelTopaz:
+                case NPCID.GemSquirrelSapphire:
+                case NPCID.GemSquirrelEmerald:
+                case NPCID.GemSquirrelRuby:
+                case NPCID.GemSquirrelDiamond:
+                case NPCID.GemSquirrelAmber:
+                case NPCID.GemBunnyAmethyst:
+                case NPCID.GemBunnyTopaz:
+                case NPCID.GemBunnySapphire:
+                case NPCID.GemBunnyEmerald:
+                case NPCID.GemBunnyDiamond:
+                case NPCID.GemBunnyAmber:
+                    VulnerableToCold = true;
+                    VulnerableToSickness = true;
+                    VulnerableToWater = true;
+                    break;
+                // Underworld Critters
+                case NPCID.HellButterfly:
+                case NPCID.Lavafly:
+                case NPCID.MagmaSnail:
+                    VulnerableToCold = true;
+                    VulnerableToHeat = false;
+                    VulnerableToSickness = true;
+                    VulnerableToWater = true;
                     break;
             }
         }
@@ -4301,7 +4498,6 @@ namespace CalamityMod.NPCs
                 case NPCID.JungleSlime:
                 case NPCID.BabySlime:
                 case NPCID.Pinky:
-                case NPCID.BunnySlimed:
                 case NPCID.Slimeling:
                 case NPCID.Slimer2:
                     npc.damage = (npc.velocity.Y == 0f || npc.velocity.Length() < 3f) ? 0 : npc.defDamage;
