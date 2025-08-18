@@ -703,7 +703,7 @@ namespace CalamityMod.World
                     {
                         bool canPlaceGrass = false;
 
-                        //place sand clumps on top of exposed limestone
+                        //place grass on top of exposed sand
                         if (Main.tile[X, Y].TileType == ModContent.TileType<PolypSand>() && !Main.tile[X, Y - 1].HasTile && !Main.tile[X, Y - 2].HasTile &&
                         !Main.tile[X, Y - 3].HasTile && !Main.tile[X, Y - 4].HasTile && !Main.tile[X, Y - 5].HasTile)
                         {
@@ -713,6 +713,27 @@ namespace CalamityMod.World
                         if (canPlaceGrass)
                         {
                             PlaceSand(X, Y, 0, ModContent.TileType<ScarletSeaGrassTile>());
+                        }
+                    }
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>())
+                    {
+                        if (WorldGen.genRand.NextBool(25) && !Main.tile[X - 1, Y].HasTile)
+                        {
+                            ushort[] Soil = new ushort[] { (ushort)ModContent.TileType<LimestoneCobble>() };
+
+                            ShapeData circle = new ShapeData();
+                            GenAction blotchMod = new Modifiers.Blotches(2, 0.4);
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(WorldGen.genRand.Next(3, 7)), Actions.Chain(new GenAction[]
+                            {
+                                    blotchMod.Output(circle)
+                            }));
+
+                            WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
+                            {
+                                    new Modifiers.OnlyTiles((ushort)ModContent.TileType<Limestone>()),
+                                    new Actions.ClearTile(), new Actions.PlaceTile(WorldGen.genRand.Next(Soil))
+                            }));
+
                         }
                     }
                 }
