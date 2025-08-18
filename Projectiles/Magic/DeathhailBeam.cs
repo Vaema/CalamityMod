@@ -148,7 +148,6 @@ namespace CalamityMod.Projectiles.Magic
                 float beamThickness = 0.09f * (black ? (0.8f - 0.15f * t / Projectile.scale) : 1f) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
                 Main.EntitySpriteDraw(beam, beamStart - Main.screenPosition, null, (black ? Color.Black * opacity : beamColor * (1 - t * 0.3f) * opacity) * (black ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(beam.Width / 2, beam.Height), new Vector2(beamThickness, laserLength / 975) * Projectile.scale, SpriteEffects.None);
             }
-            //Main.EntitySpriteDraw(bloom, Projectile.Center - Main.screenPosition, null, Color.Red with { A = 0 }, 0, bloom.Size() / 2, 0.3f, SpriteEffects.None);
             return false;
         }
     }

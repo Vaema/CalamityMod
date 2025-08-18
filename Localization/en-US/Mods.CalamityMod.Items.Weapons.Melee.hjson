@@ -487,8 +487,14 @@ ExaltedOathblade: {
 }
 
 Excelsus: {
-	DisplayName: Excelsus
-	Tooltip: Fires a spread of spinning blades
+	DisplayName: Maw of Infinity
+	Tooltip:
+		'''
+		Swings a blade forged from the Devourer's maw in a 3-swing combo
+		The first swing only hits close range
+		The second swing additionally launches Godkiller Fireballs
+		The third swing causes a bite at the cursor, exploding for masive damage
+		'''
 }
 
 Exoblade: {
@@ -1357,7 +1363,7 @@ TheObliterator: {
 		{$Common.YoyoStatsInfinite}
 		[GFB]
 		'''
-	TooltipNormal: Ruins nearby enemies with death lasers
+	TooltipNormal: Occasionally performs a portal dash at nearby foes
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 

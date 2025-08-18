@@ -746,8 +746,8 @@ StaffOfNecrosteocytes: {
 }
 
 StaffoftheMechworm: {
-	DisplayName: Staff of the Mechworm
-	Tooltip: Summons an aerial mechworm to fight for you
+	DisplayName: Void Eater Marionette
+	Tooltip: Summons a mini devourer to fight for you
 }
 
 StarspawnHelixStaff: {

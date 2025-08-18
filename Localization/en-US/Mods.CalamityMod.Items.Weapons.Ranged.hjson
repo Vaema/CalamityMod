@@ -380,12 +380,12 @@ DeadSunsWind: {
 }
 
 Deathwind: {
-	DisplayName: Deathwind
+	DisplayName: Thread of Eradication
 	Tooltip:
 		'''
-		Fires a spread of 4 arrows
-		Wooden arrows are converted into nebula arrows
-		Nebula arrows deal more damage and inflict god slayer inferno
+		Charges up a God Killer Doombeam
+		Channelling the weapon causes it to charge up an even more powerful Hyperdeath Ripper
+		While charging the Hyperdeath Ripper, the bow's turning speed is slowed down
 		'''
 }
 

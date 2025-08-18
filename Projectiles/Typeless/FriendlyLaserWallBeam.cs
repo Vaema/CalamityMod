@@ -165,9 +165,9 @@ namespace CalamityMod.Projectiles.Typeless
                 opacity = 1f;
                 for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
                 {
-                    bool notFirstDrawn = t > 0;
-                    float beamThickness = 16/1960f * Projectile.scale * (notFirstDrawn ? t/4f : 1) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
-                    Main.EntitySpriteDraw(notFirstDrawn ? angleBeamInside : angleBeam, beamStart - Main.screenPosition, null, (notFirstDrawn ? Color.Black * opacity : beamColor * opacity) * (notFirstDrawn ? (0.2f + 0.15f * t / Projectile.scale) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(angleBeam.Width / 2, angleBeam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * 0.8277f), SpriteEffects.None);
+                    bool notFirstDrawn = (t > (Projectile.scale > 3 ? 1 : 0));
+                    float beamThickness = 16/1960f * Projectile.scale * (notFirstDrawn ? (1f - 0.8f * (t-1) / 4f) : 1) * (laserFX <= 1 ? (float)Math.Pow(Math.Min(laserFX, 1), 2) : laserFX) * Utils.Remap(sine, -1, 1, 0.8f, 1.1f);
+                    Main.EntitySpriteDraw(notFirstDrawn ? angleBeamInside : angleBeam, beamStart - Main.screenPosition, null, (notFirstDrawn ? Color.Black * opacity : beamColor * opacity) * (notFirstDrawn ? (0.2f + 0.8f * (t - 1) / 4f) : 1), directionToTarget.ToRotation() + MathHelper.PiOver2, new Vector2(angleBeam.Width / 2, angleBeam.Height), new Vector2(beamThickness * Projectile.scale, laserLength / 975 * 0.8277f), SpriteEffects.None);
                 }
             }
             return false;

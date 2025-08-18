@@ -233,11 +233,10 @@ DarkSpark: {
 }
 
 DeathhailStaff: {
-	DisplayName: Deathhail Staff
+	DisplayName: Hyperdeath Rift Scepter
 	Tooltip:
 		'''
-		Casts a storm of nebula lasers from the sky
-		'Rain death upon your foes!'
+		Rips a massive rift in spacetime
 		'''
 }
 
