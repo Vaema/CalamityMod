@@ -57,6 +57,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 45;
@@ -90,6 +92,8 @@ namespace CalamityMod.Projectiles.Summon
             BladeIndex = reader.ReadInt32();
             ChargeStartingPosition = reader.ReadVector2();
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void AI()
         {

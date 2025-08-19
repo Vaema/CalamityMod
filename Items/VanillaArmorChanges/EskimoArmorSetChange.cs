@@ -33,7 +33,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
             player.Calamity().ColdDebuffMultiplier += 0.25f;
 
             player.buffImmune[BuffID.Frostburn] = true;
-            player.buffImmune[ModContent.BuffType<GlacialState>()] = true;
         }
     }
 }

@@ -9,6 +9,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -106,37 +107,37 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(weakBrimstoneFlames, 7);
             ApplyDoTDebuff(burningBlood, 8, purity);
             ApplyDoTDebuff(brainRot, 8, purity);
-            ApplyDoTDebuff(heavybleeding, 16, purity);
-            ApplyDoTDebuff(laceration, 24, purity);
             ApplyDoTDebuff(vaporfied, 8, purity);
             int staticDoT = ((Player.controlLeft || Player.controlRight) ? 12 : 3) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(staticDischarge, staticDoT, purity);
-            ApplyDoTDebuff(brimstoneFlames, abaddon ? 10 : 20, purity);
-            ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
-            ApplyDoTDebuff(daybroken, reducedDaybrokenDamage ? 15 : 30, purity);
-            ApplyDoTDebuff(nightwither, reducedNightwitherDamage ? 15 : 30, purity);
-            ApplyDoTDebuff(holyFlames, 24, purity);
-            ApplyDoTDebuff(voidfrost, 30, purity);
-            ApplyDoTDebuff(vHex, 24);
-            ApplyDoTDebuff(trueVHex, 36);
-            ApplyDoTDebuff(crushDepth, 15, purity);
-            ApplyDoTDebuff(astralInfection, 18, infectedJewel || hideOfDeus || purity);
-            ApplyDoTDebuff(hadopelagicPressure, 30, purity);
-            ApplyDoTDebuff(plague, alchFlask ? 12 : 24, purity);
-            ApplyDoTDebuff(searingLava, 30); // Being literally submerged in crags lava should do more than brimstone flames
+            ApplyDoTDebuff(heavybleeding, 16, purity);
+            ApplyDoTDebuff(crushDepth, 18, purity);
+            ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
-            ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
+            ApplyDoTDebuff(brimstoneFlames, abaddon ? 15 : 30, purity);
+            ApplyDoTDebuff(plague, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(vHex, 30); // Has other effects
+            ApplyDoTDebuff(searingLava, 30);
+            ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
+            ApplyDoTDebuff(laceration, 36, purity);
+            ApplyDoTDebuff(daybroken, 40, purity);
+            ApplyDoTDebuff(nightwither, 40, purity);
+            ApplyDoTDebuff(holyFlames, 40, purity);
+            ApplyDoTDebuff(voidfrost, 40, purity);
+            ApplyDoTDebuff(hadopelagicPressure, 40, purity);
 
             // Profaned Soul Crystal turns you into Providence, a God, and you take more damage from God Slayer Inferno
-            ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 45 : 35);
+            ApplyDoTDebuff(godSlayerInferno, profanedCrystalBuffs ? 50 : 40);
             int fluxDoT = ((Player.controlLeft || Player.controlRight) ? 50 : 10) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(vermillionFlux, fluxDoT);
-            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 240 : 40) / (dynamoStemCells ? 2 : 1);
+            ApplyDoTDebuff(elementalMix, 50, purity); // Never inflicted on the player
+            ApplyDoTDebuff(trueVHex, 50);
+            int dragonfireDoT = ((Player.name == "JFL" || Player.name == "MrJFL") ? 200 : 50) / (dynamoStemCells ? 2 : 1);
             ApplyDoTDebuff(dragonFire, dragonfireDoT);
-            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 75 : 15) / (eleResist ? 2 : 1);
+            ApplyDoTDebuff(miracleBlight, 60);
+            ApplyDoTDebuff(banishingFire, 60); // Never inflicted on the player
+            int rebukeDoT = ((Player.controlLeft || Player.controlRight) ? 80 : 16) / (eleResist ? 2 : 1);
             ApplyDoTDebuff(auricRebuke, rebukeDoT);
-            ApplyDoTDebuff(miracleBlight, 50);
 
             // Slowly increase the sulphuric water poisoning effect. Once it's high enough, the player takes damage and the meter resets.
             bool nearSafeZone = false;
@@ -191,7 +192,7 @@ namespace CalamityMod.CalPlayer
             for (int l = 0; l < Player.MaxBuffs; l++)
             {
                 int buff = Player.buffType[l];
-                if (AlcoholsDict.TryGet(buff, out var level))
+                if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
             if (everclear)
@@ -252,14 +253,9 @@ namespace CalamityMod.CalPlayer
             else
                 witheredWeaponHoldTime = 0;
 
-            if (ManaBurn)
+            if (Player.statMana < 0)
             {
-                int debuffIndex = Player.FindBuffIndex(ModContent.BuffType<ManaBurn>());
-                float debuffIntensity = debuffIndex == -1 ? 0f : Player.buffTime[debuffIndex] / (float)Player.manaSickTimeMax;
-
-                totalNegativeLifeRegen += (int)(Math.Sqrt(debuffIntensity) * Math.Pow(6D, debuffIntensity + 1f));
-                if (Player.lifeRegen > 0)
-                    Player.lifeRegen = 0;
+                totalNegativeLifeRegen -= Player.statMana/10f;
             }
 
             //
@@ -268,7 +264,7 @@ namespace CalamityMod.CalPlayer
 
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
-                totalNegativeLifeRegen = (int)(0.8f * totalNegativeLifeRegen);
+                totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
             if (tequilaSunrise)
                 totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
@@ -309,11 +305,11 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = SicknessDebuffsList.Includes(buffID);
+                    bool shouldHalveDuration = CalamityBuffSets.IsSicknessDebuff[buffID];
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= FireDebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsFireDebuff[buffID];
                     if (purity)
-                        shouldHalveDuration |= DebuffsList.Includes(buffID);
+                        shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
 
                     if (shouldHalveDuration)
                         --Player.buffTime[l];
@@ -357,10 +353,10 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(FireDebuffsList.Includes))
+            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.IsFireDebuff[l]))
             {
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegen += 6;
             }
@@ -380,7 +376,7 @@ namespace CalamityMod.CalPlayer
             if (purity)
             {
                 int intendedPurityDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     // Healing rate is normally 5 HP/s (+1 every 12 frames)
@@ -397,10 +393,10 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
                         Player.Heal(1);
 
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
-                    intendedPurityDefense = 20 + (currentDebuffs - 1) * 8;
+                    intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
                     if (jewelBonusDefense < intendedPurityDefense)
                         jewelBonusDefense = intendedPurityDefense;
 
@@ -435,14 +431,14 @@ namespace CalamityMod.CalPlayer
                 // If the player has any debuffs, give the extra life regen and defense
                 // More defense is given for each additional debuff
                 int intendedJewelDefense = 0;
-                int currentDebuffs = Player.buffType.Count(DebuffsList.List.Contains);
+                int currentDebuffs = Player.buffType.Count(i => CalamityBuffSets.IsDebuff[i]);
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
 
-                    intendedJewelDefense = 16 + (currentDebuffs - 1) * 5;
+                    intendedJewelDefense = 12 + (currentDebuffs - 1) * 4;
                     if (jewelBonusDefense < intendedJewelDefense)
                         jewelBonusDefense = intendedJewelDefense;
                 }
@@ -462,11 +458,21 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 2;
 
                 // If any debuff is detected, provide even more life regen and massively accelerate it
-                if (Player.buffType.Any(DebuffsList.List.Contains))
+                if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
                 {
                     Player.lifeRegen += 3;
-                    if (Player.lifeRegenTime < 1800)
-                        Player.lifeRegenTime = 1800;
+                    if (Player.lifeRegenTime < 900)
+                        Player.lifeRegenTime = 900;
+                }
+            }
+
+            //If a player had a life regen hindering debuff, add 30 seconds to their regen time when under Tequila Sunrise
+            //This stacks with all other post-debuff boosts due to Tequila Sunrise increasing DoT damage taken
+            if (tequilaSunrise)
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
                 }
             }
 
@@ -610,6 +616,9 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegen += Main.eclipse ? 2 : 4;
             }
 
+            if (silvaSet)
+                Player.lifeRegen += 6;
+
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
@@ -633,7 +642,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; l++)
                 {
                     int hasBuff = Player.buffType[l];
-                    lesserEffect = AlcoholsDict.TryGet(hasBuff, out var a);
+                    lesserEffect = CalamityBuffSets.AlcoholStrength.TryGetValue(hasBuff, out var a);
                 }
                 if (Player.lifeRegen < 0)
                     Player.lifeRegen += lesserEffect ? 1 : regenBoost;
@@ -658,8 +667,8 @@ namespace CalamityMod.CalPlayer
             {
                 Player.lifeRegen += 7;
 
-                if (Player.lifeRegenTime < 1800)
-                    Player.lifeRegenTime = 1800;
+                if (Player.lifeRegenTime < 900)
+                    Player.lifeRegenTime = 900;
 
                 Player.lifeRegenTime += 4;
             }
@@ -678,23 +687,6 @@ namespace CalamityMod.CalPlayer
             else
                 pinkCandleHealFraction = 0D;
 
-            if (reaverRegen && reaverRegenCooldown >= 60)
-            {
-                reaverRegenCooldown = 0;
-
-                if (Player.statLife != Player.statLifeMax2 && !noLifeRegen)
-                    Player.HealPlayer(1, HealTextType.None);
-            }
-
-            if (BloomStoneRegen)
-            {
-                float dayTimeCompletion = !Main.dayTime ? 1f : (float)(Main.time / Main.dayLength);
-                float regenBenefitFactor = MathHelper.SmoothStep(0.25f, 1f, Utils.GetLerpValue(0f, 0.24f, dayTimeCompletion, true) * Utils.GetLerpValue(1f, 0.76f, dayTimeCompletion, true));
-
-                Player.lifeRegen += (int)MathHelper.Lerp(2f, 6f, regenBenefitFactor);
-                Player.lifeRegenTime += (int)MathHelper.Lerp(1f, 3f, regenBenefitFactor);
-            }
-            
             if (manaOverloader)
             {
                 float manaRatio = Player.statMana / (float)Player.statManaMax2;
@@ -738,9 +730,9 @@ namespace CalamityMod.CalPlayer
 
                 if (turboRegenPower > 0)
                 {
-                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 1800 / 3600.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 1800f)
-                        Player.lifeRegenTime = 1800f;
+                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 900 / 3600.
+                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 900f)
+                        Player.lifeRegenTime = 900f;
 
                     Player.lifeRegen += turboRegenPower;
                     Player.lifeRegenTime += turboRegenPower;
@@ -751,48 +743,7 @@ namespace CalamityMod.CalPlayer
             }
             #endregion
 
-            // Life regen soft cap.
-            if (Player.statLife < actualMaxLife)
-            {
-                // The soft cap doesn't apply if the player is not moving and not using a weapon while having any of the following:
-                // Shiny Stone, Cosmic Freeze buff from the Cosmic Discharge, Demonshade Armor, Regenator, or The Camper.
-                int baseLifeRegenBoost = 4;
-                bool noLifeRegenCap = (Player.shinyStone || cFreeze || shadeRegen || camper || regenator) &&
-                    Player.StandingStill() && Player.itemAnimation == 0;
-
-                if (!noLifeRegenCap)
-                {
-                    // Calculate the % of HP the player has left.
-                    float maxLifeRatio = Player.statLife / (float)actualMaxLife;
-
-                    // Calculate the ratio of the player's current max life relative to the starting HP of 100.
-                    // This makes the soft cap far less harsh at lower amounts of max life.
-                    // Ranges from 20 (at 100 max life) to 4 (at 500 max life) to 2 (at 1000 max life) to 1 (at greater than 2000 max life).
-                    int lifeRegenSoftCapMax = 20;
-                    int lifeRegenSoftCapMin = (int)Math.Round(100f / actualMaxLife * lifeRegenSoftCapMax);
-
-                    // The soft cap for life regen which ranges from 20 (at less than 5% HP) to 1 (at greater than or equal to 95% HP).
-                    // This value is capped at a min and max amount.
-                    int lifeRegenSoftCap = (int)MathHelper.Clamp((int)Math.Round((1f - maxLifeRatio) * lifeRegenSoftCapMax), lifeRegenSoftCapMin, lifeRegenSoftCapMax);
-
-                    // If life regen is greater than the calculated soft cap, reduce it.
-                    if (Player.lifeRegen - baseLifeRegenBoost > lifeRegenSoftCap)
-                    {
-                        // The scalar used to calculate how much the life regen stat should be reduced by.
-                        // Ranges from 1 (at 0% HP) to 2 (at 100% HP).
-                        float lifeRegenScalar = 1f + maxLifeRatio;
-
-                        // Calculate the amount of life regen the player should get according to the soft cap and their current % HP remaining.
-                        // The higher the player's % HP remaining the less life regen they get and vice versa.
-                        int defLifeRegen = (int)((Player.lifeRegen - baseLifeRegenBoost) / lifeRegenScalar);
-
-                        // Set the player's life regen to the scaled amount.
-                        Player.lifeRegen = baseLifeRegenBoost + defLifeRegen;
-                    }
-                }
-            }
-
-            if (regenator) // Gives special regen of it's own, but disables all regular life regen
+            if (regenerator) // Gives special regen of it's own, but disables all regular life regen
             {
                 if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
                     Player.HealPlayer(1, HealTextType.None);
@@ -803,7 +754,7 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 10;
             }
             else
-                regenatorDamage = 0;
+                regeneratorDamage = 0;
 
             if (toxicHeart) // Since it needs to know your life regen, it must be placed here
             {
@@ -858,8 +809,8 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Regenator trades all positive regen for damage, and caps your health gain at 50%
-            if (regenator)
+            // Regenerator trades all positive regen for damage, and caps your health gain at 50%
+            if (regenerator)
             {
                 int finalRegen = Player.lifeRegen + (int)Math.Round(regen * (Player.statLifeMax2 / 400f * 0.85f + 0.15f));
                 finalRegen = (int)Math.Max(finalRegen, 0);
@@ -869,8 +820,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.palladiumRegen)
                     finalRegen += 4;
 
-                regenatorDamage = (finalRegen * 1.75f) * 0.01f;
-                Player.GetDamage<GenericDamageClass>() += regenatorDamage;
+                regeneratorDamage = (finalRegen * 1.75f) * 0.01f;
+                Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
                     Player.lifeRegen = 0;

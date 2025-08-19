@@ -232,11 +232,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 NPC.ProduceGoldCritterDust();
             }
-            if (Variant == (int)FishColor.Gold || Variant == (int)FishColor.Radiant)
-            {
-                NPC.rarity = 3;
-                NPC.value = 100000;
-            }
         }
 
         public void IdleBehavior()
@@ -339,7 +334,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (CurrentBehavior == (int)PhaseType.Idle)
             {
-                pathfinding.ClearResults();
+                pathfinding?.ClearResults();
                 CurrentBehavior = (int)PhaseType.Flee;
                 AlertPolyp();
             }

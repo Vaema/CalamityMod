@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Aerospec
@@ -11,6 +12,15 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float MeleeDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusMoveSpeedBoost = 0.05f;
+        public static int SetBonusMeleeCritBoost = 5; // NOTE: Tooltip shares this number with move speed % as they're equal
+        public static int SetBonusAggroBoost = 300;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -32,19 +42,17 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<AerospecBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMoveSpeedBoost.ToPercent())
+            + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.aeroSet = true;
             player.noFallDmg = true;
-            player.moveSpeed += 0.05f;
-            player.GetCritChance<MeleeDamageClass>() += 5;
-            player.aggro += 300;
+            player.moveSpeed += SetBonusMoveSpeedBoost;
+            player.GetCritChance<MeleeDamageClass>() += SetBonusMeleeCritBoost;
+            player.aggro += SetBonusAggroBoost;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<MeleeDamageClass>() += 0.1f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<MeleeDamageClass>() += MeleeDamageBoost;
 
         public override void AddRecipes()
         {

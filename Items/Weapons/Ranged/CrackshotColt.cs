@@ -26,14 +26,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.25f;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.rare = ItemRarityID.Blue;
+            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Green;
             Item.UseSound = ShootSound;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<MarksmanShot>();
             Item.useAmmo = AmmoID.Bullet;
             Item.shootSpeed = 14f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // This item has a right click.

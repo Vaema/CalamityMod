@@ -9,6 +9,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
+using CalamityMod.Items.Armor.Statigel;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
@@ -438,8 +439,8 @@ namespace CalamityMod
             int extraIFrames = 0;
             if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
                 extraIFrames += 30;
-            if (modPlayer.statigelSet && hurtInfo.Damage > 100)
-                extraIFrames += 30;
+            if (modPlayer.statigelSet && hurtInfo.Damage > StatigelArmor.SetBonusHurtDamageThreshold)
+                extraIFrames += StatigelArmor.SetBonusIFrameExtension;
 
             // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
             // If you only take 1 damage, you get 5 iframes.
@@ -605,6 +606,107 @@ namespace CalamityMod
             hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
             hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
             hurtInfo.Knockback = 0;
+        }
+        #endregion
+
+        #region Player Healing and Lifesteal
+        /// <summary>
+        /// Directly provides lifesteal to the player.
+        /// This obeys the spawn behaviour of lifesteal and incurs cooldown.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
+        /// <param name="amount">The amount of life being healed.</param>
+        /// <param name="cooldownMultiplier">The multiplier to the rate of lifesteal. Increase above 1 to make it weaker and below 1 to make it stronger.</param>
+        public static void DoLifestealDirect(this Player player, NPC target, int amount, float cooldownMultiplier = 1f)
+        {
+            // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
+                return;
+
+            // Limit the amount of heal to the player's max health
+            amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
+            
+            // As well as the physical cap to how much HP can be healed
+            amount = Math.Min(amount, BalancingConstants.LifeStealCap);
+
+            // Player limitations: disallow if lifesteal variable reaches 0 or lower or Moon Bite is active
+            if (amount <= 0 || player.lifeSteal <= 0f || player.moonLeech)
+                return;
+
+            // Grant lifesteal and subtract from the variable accordingly
+            player.lifeSteal -= amount * cooldownMultiplier;
+            player.HealPlayer(amount);
+        }
+
+        /// <summary>
+        /// Spawns a projectile which grants healing to the player on contact.
+        /// This obeys the spawn behaviour of lifesteal and incurs cooldown.
+        /// This applies as a projectile on-hit effect. Use DoLifestealDirect for direct lifestealing.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="target">The target being hit. Input null if there is none.</param>
+        /// <param name="projSource">The source projectile performing this heal.</param>
+        /// <param name="projType">The type of healing projectile spawned.</param>
+        /// <param name="amount">The amount of life to heal.</param>
+        /// <param name="cooldownMultiplier">The multiplier to the rate of lifesteal. Increase above 1 to make it weaker and below 1 to make it stronger.</param>
+        /// <param name="shared">Whether or not the heal is given to the player on the team with lowest HP. False by default.</param>
+        /// <param name="distanceRequired">The distance the projectile has to be from the player to direct the heal to when sharing. Default of 3000f (187.5 tiles)</param>
+        public static void SpawnLifeStealProjectile(this Player player, NPC target, Projectile projSource, int projType, int amount, float cooldownMultiplier = 1f, bool shared = false, float distanceRequired = 3000f)
+        {
+            // NPC limitations: disallow if target is not an enemy or deliberately disallowed from lifestealing
+            if (target is not null && (!target.IsAnEnemy(false) || !target.canGhostHeal))
+                return;
+
+            int lowestHealthCheck = player.statLifeMax2 - player.statLife;
+            int targetPlayer = player.whoAmI;
+            if (shared)
+            {
+                foreach (Player otherPlayer in Main.ActivePlayers)
+                {
+                    if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
+                    {
+                        float playerDist = Vector2.Distance(projSource.Center, otherPlayer.Center);
+                        if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
+                        {
+                            lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
+                            targetPlayer = otherPlayer.whoAmI;
+                        }
+                    }
+                }
+            }
+
+            // Limit the amount of heal to the target player's max health
+            amount = Math.Min(amount, lowestHealthCheck);
+            
+            // As well as the physical cap to how much HP can be healed
+            amount = Math.Min(amount, BalancingConstants.LifeStealCap);
+
+            // Player limitations: disallow if lifesteal variable reaches 0 or lower or Moon Bite is active
+            // This is performed on the player who DOES the lifesteal, and not the recipient
+            if (amount <= 0 || player.lifeSteal <= 0f || player.moonLeech)
+                return;
+
+            // Grant lifesteal and subtract from the variable accordingly
+            player.lifeSteal -= amount * cooldownMultiplier;
+            if (projSource.owner == Main.myPlayer)
+                Projectile.NewProjectile(projSource.GetSource_FromThis(), projSource.Center, Vector2.Zero, projType, 0, 0f, projSource.owner, targetPlayer, amount);
+        }
+
+        /// <summary>
+        /// A short method that heals the player.
+        /// All direct heals in Calamity should use this.
+        /// </summary>
+        /// <param name="player">The player being healed.</param>
+        /// <param name="amount">The amount of life being healed.</param>
+        /// <param name="healTextType">Whether the heal CombatText should be displayed, and whether it should be synced. Displays and syncs by default.</param>
+        public static void HealPlayer(this Player player, int amount, HealTextType healTextType = HealTextType.Broadcast)
+        {
+            player.statLife += amount;
+            if (player.statLife > player.statLifeMax2)
+                player.statLife = player.statLifeMax2;
+            if (healTextType != HealTextType.None)
+                player.HealEffect(amount, healTextType == HealTextType.Broadcast);
         }
         #endregion
 
@@ -915,32 +1017,15 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityItemSets.WeaponWithToolPowerAffectedBySummonPenalty[item.type];
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
+                bool heldItemIsExcludedByModCall = CalamityItemSets.ItemWhichDisablesSummonerNerf[item.type];
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;
             }
             return false;
-        }
-
-
-        /// <summary>
-        /// A short method that heals the player.
-        /// All direct heals in Calamity should use this.
-        /// </summary>
-        /// <param name="player">The player being healed.</param>
-        /// <param name="amount">The amount of life being healed.</param>
-        /// <param name="healTextType">Whether the heal CombatText should be displayed, and whether it should be synced. Displays and syncs by default.</param>
-        public static void HealPlayer(this Player player, int amount, HealTextType healTextType = HealTextType.Broadcast)
-        {
-            player.statLife += amount;
-            if (player.statLife > player.statLifeMax2)
-                player.statLife = player.statLifeMax2;
-            if (healTextType != HealTextType.None)
-                player.HealEffect(amount, healTextType == HealTextType.Broadcast);
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Plaguebringer
@@ -13,14 +14,23 @@ namespace CalamityMod.Items.Armor.Plaguebringer
     public class PlaguebringerVisor : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
-        public const int PlagueDashIFrames = 12;
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int PlagueDashDamage = 50;
+        public static float PlagueDashKnockback = 3f;
+        public static int PlagueDashIFrames = 12;
         public static int BeeMinionDamage = 25;
+        public static int BeePlagueDuration = CalamityUtils.SecondsToFrames(5);
 
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
-            Item.defense = 7; // 32 total
+            Item.defense = 9; // 32 total
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
@@ -28,19 +38,13 @@ namespace CalamityMod.Items.Armor.Plaguebringer
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.15f;
-            player.statLifeMax2 += 20;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<PlaguebringerCarapace>() && legs.type == ModContent.ItemType<PlaguebringerPistons>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<PlaguebringerCarapace>() && legs.type == ModContent.ItemType<PlaguebringerPistons>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
 
         public override void UpdateArmorSet(Player player)
         {
@@ -49,7 +53,6 @@ namespace CalamityMod.Items.Armor.Plaguebringer
             player.Calamity().plaguebringerPatronSet = true;
             player.Calamity().DashID = PlaguebringerArmorDash.ID;
             player.dashType = 0;
-            player.maxMinions += 3;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_ItemUse(Item);

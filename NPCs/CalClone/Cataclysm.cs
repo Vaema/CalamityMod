@@ -48,11 +48,13 @@ namespace CalamityMod.NPCs.CalClone
             }
         }
 
+        public static int FlamethrowerDamage = 30; // 120
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 45; // 90
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -60,9 +62,8 @@ namespace CalamityMod.NPCs.CalClone
             if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
 
-            NPC.defense = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 15 : 10;
-            NPC.DR_NERD((CalamityWorld.death || BossRushEvent.BossRushActive) ? 0.225f : 0.15f);
-            NPC.LifeMaxNERB(11000, 13200, 80000);
+            NPC.defense = 10;
+            NPC.LifeMaxNERB(8500, 10000, 80000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -145,23 +146,15 @@ namespace CalamityMod.NPCs.CalClone
             // Emit light
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1f, 0f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
             Player player = Main.player[NPC.target];
-
-            float enrageScale = bossRush ? 1f : 0f;
-            if (Main.IsItDay() || bossRush)
-            {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
-                enrageScale += 2f;
-            }
 
             float calCloneBroPlayerXDist = NPC.position.X + (NPC.width / 2) - player.position.X - (player.width / 2);
             float calCloneBroPlayerYDist = NPC.position.Y + NPC.height - 59f - player.position.Y - (player.height / 2);
@@ -225,15 +218,10 @@ namespace CalamityMod.NPCs.CalClone
 
             if (NPC.ai[1] == 0f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-
                 float calCloneBroProjAttackMaxSpeed = 5f;
                 float calCloneBroProjAttackAccel = 0.1f;
-                calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
-                calCloneBroProjAttackAccel += 0.06f * enrageScale;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     calCloneBroProjAttackMaxSpeed *= 1.15f;
                     calCloneBroProjAttackAccel *= 1.15f;
@@ -325,9 +313,7 @@ namespace CalamityMod.NPCs.CalClone
                         {
                             NPC.localAI[1] = 0f;
                             float calCloneBroProjSpeed = NPC.AnyNPCs(ModContent.NPCType<Catastrophe>()) ? 4f : 6f;
-                            calCloneBroProjSpeed += enrageScale;
                             int type = ModContent.ProjectileType<BrimstoneFire>();
-                            int damage = NPC.GetProjectileDamage(type);
                             calCloneBroProjLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
                             calCloneBroProjTargetX = player.position.X + (player.width / 2) - calCloneBroProjLocation.X;
                             calCloneBroProjTargetY = player.position.Y + (player.height / 2) - calCloneBroProjLocation.Y;
@@ -339,7 +325,7 @@ namespace CalamityMod.NPCs.CalClone
                             calCloneBroProjTargetX += NPC.velocity.X * 0.5f;
                             calCloneBroProjLocation.X -= calCloneBroProjTargetX;
                             calCloneBroProjLocation.Y -= calCloneBroProjTargetY;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), calCloneBroProjLocation.X, calCloneBroProjLocation.Y, calCloneBroProjTargetX, calCloneBroProjTargetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), calCloneBroProjLocation.X, calCloneBroProjLocation.Y, calCloneBroProjTargetX, calCloneBroProjTargetY, type, FlamethrowerDamage, 0f, Main.myPlayer, 0f, 0f);
                         }
                     }
                 }
@@ -348,19 +334,15 @@ namespace CalamityMod.NPCs.CalClone
             {
                 if (NPC.ai[1] == 1f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
                     NPC.rotation = calCloneBroRotation;
 
                     float calCloneBroChargeSpeed = 14f + (death ? 4f * (1f - lifeRatio) : 0f);
-                    calCloneBroChargeSpeed += 3f * enrageScale;
                     if (expertMode)
                         calCloneBroChargeSpeed += 2f;
                     if (revenge)
                         calCloneBroChargeSpeed += 2f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         calCloneBroChargeSpeed *= 1.25f;
 
                     Vector2 calCloneBroChargeCenter = NPC.Center;
@@ -377,11 +359,8 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SupremeCalamitas.SupremeCalamitas.BrimstoneShotSound, NPC.Center);
 
                         int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                        int damage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneFire>());
-                        if (bossRush)
-                            damage /= 2;
 
-                        int totalProjectiles = bossRush ? 12 : death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
+                        int totalProjectiles = death ? 10 : revenge ? 8 : expertMode ? 6 : 4;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float velocity = 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity);
@@ -389,7 +368,7 @@ namespace CalamityMod.NPCs.CalClone
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity2, type, CalamitasClone.DartDamage, 0f, Main.myPlayer, 0f, 0f, projectileVelocityToPass);
                         }
 
                         for (int i = 0; i < 6; i++)
@@ -400,9 +379,6 @@ namespace CalamityMod.NPCs.CalClone
 
                 if (NPC.ai[1] == 2f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     NPC.ai[2] += 1f + (death ? 0.5f * (1f - lifeRatio) : 0f);
                     if (expertMode)
                         NPC.ai[2] += 0.25f;
@@ -411,9 +387,6 @@ namespace CalamityMod.NPCs.CalClone
 
                     if (NPC.ai[2] >= 75f)
                     {
-                        // Avoid cheap bullshit
-                        NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-
                         NPC.velocity.X *= 0.93f;
                         NPC.velocity.Y *= 0.93f;
 
@@ -568,7 +541,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
     }
 }

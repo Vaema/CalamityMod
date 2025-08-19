@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.NeedsUUID[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
@@ -169,7 +170,5 @@ namespace CalamityMod.Projectiles.Summon
             Main.EntitySpriteDraw(pupilTexture, pupilDrawPosition, null, Projectile.GetAlpha(lightColor), PupilAngle, pupilTexture.Size() * 0.5f, PupilScale, SpriteEffects.None);
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.localAI[1] <= 900f && Projectile.localAI[1] > 120f)
-                target.AddBuff(BuffID.Ichor, 240);
+                target.AddBuff(BuffID.Ichor, 360);
         }
     }
 }

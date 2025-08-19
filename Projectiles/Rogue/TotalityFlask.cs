@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Dust dust2 = Main.dust[index3];
                 dust2.velocity *= 3f;
             }
-            int tarAmt = Main.rand.Next(2, 4);
+            int tarAmt = Projectile.Calamity().stealthStrike ? 5 : Main.rand.Next(2, 3+1);
             for (int t = 0; t < tarAmt; t++)
             {
                 Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);

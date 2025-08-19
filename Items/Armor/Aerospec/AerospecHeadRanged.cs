@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Aerospec
@@ -11,6 +12,14 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecHeadRanged : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float RangedDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusMoveSpeedBoost = 0.05f;
+        public static int SetBonusRangedCritBoost = 5; // NOTE: Tooltip shares this number with move speed % as they're equal
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -32,18 +41,16 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<AerospecBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMoveSpeedBoost.ToPercent())
+            + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.aeroSet = true;
             player.noFallDmg = true;
-            player.moveSpeed += 0.05f;
-            player.GetCritChance<RangedDamageClass>() += 5;
+            player.moveSpeed += SetBonusMoveSpeedBoost;
+            player.GetCritChance<RangedDamageClass>() += SetBonusRangedCritBoost;
         }
 
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<RangedDamageClass>() += 0.1f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
 
         public override void AddRecipes()
         {

@@ -25,20 +25,16 @@ namespace CalamityMod.NPCs.NormalNPCs
             AnimationType = NPCID.Zombie;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             NPC.CloneDefaults(NPCID.Zombie);
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 60;
             NPC.defense = 15;
             NPC.damage = 16;
             NPC.knockBackResist = 0.45f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             Banner = NPCID.Zombie;
             BannerItem = ItemID.ZombieBanner;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool PreAI()

@@ -1,6 +1,8 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
+using CalamityMod.Projectiles.Typeless;
+using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -79,17 +81,6 @@ namespace CalamityMod.ILEditing
             }
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Decrease to 0.5f.
-
-            // CIT 22SEP2024: Removed the edit intended to decrease Frog Leg's jump speed boost,
-            // as it was not doing anything due to vanilla changing how Frog Leg's jump speed boost is applied.
-
-            // Remove the jump height addition from the Werewolf buff (Moon Charm).
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(2)))
-            {
-                LogFailure("Jump Height Boost Fixes", "Could not locate Moon Charm jump height boost value.");
-                return;
-            }
-            cursor.Next.Operand = 0;
         }
 
         private const float VanillaBaseJumpSpeed = 5.01f;
@@ -115,16 +106,12 @@ namespace CalamityMod.ILEditing
         private static void RunSpeedAdjustments(ILContext il)
         {
             var cursor = new ILCursor(il);
-            float asphaltTopSpeedMultiplier = 1.75f; // +75%. Vanilla is +250%
+            float asphaltTopSpeedMultiplier = 2.25f; // +125%. Vanilla is +250%
             float asphaltSlowdown = 1f; // Vanilla is 2f. This should actually make asphalt faster.
-
-            // Dunerider Boots multiply all run stats by 1.75f in vanilla
-            float duneRiderBootsMultiplier = 1.25f; // Change to 1.25f
 
             // Multiplied by 0.6 on frozen slime, for +26% acceleration
             // Multiplied by 0.7 on ice, for +47% acceleration
             float iceSkateAcceleration = 2.1f;
-            float iceSkateTopSpeed = 1f; // no boost at all
 
             //
             // ASPHALT
@@ -154,22 +141,6 @@ namespace CalamityMod.ILEditing
             }
 
             //
-            // DUNERIDER BOOTS + SAND BLOCKS
-            //
-            {
-                // Find the multiplier for Dunerider Boots on Sand Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.75f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate the Dunerdier Boots multiplier.");
-                    return;
-                }
-
-                // Massively reduce the increased speed of Dunerider Boots while on Sand Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, duneRiderBootsMultiplier);
-            }
-
-            //
             // ICE SKATES + FROZEN SLIME BLOCKS
             //
             {
@@ -183,17 +154,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Frozen Slime Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Frozen Slime Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Frozen Slime Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Frozen Slime Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
 
             //
@@ -210,17 +170,6 @@ namespace CalamityMod.ILEditing
                 // Massively reduce the acceleration bonus of Ice Skates on Ice Blocks.
                 cursor.Remove();
                 cursor.Emit(OpCodes.Ldc_R4, iceSkateAcceleration);
-
-                // Find the top speed multiplier of Ice Skates on Ice Blocks.
-                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(1.25f)))
-                {
-                    LogFailure("Run Speed Adjustments", "Could not locate Ice Skates + Ice Block top speed multiplier.");
-                    return;
-                }
-
-                // Make Ice Skates give no top speed boost whatsoever on Ice Blocks.
-                cursor.Remove();
-                cursor.Emit(OpCodes.Ldc_R4, iceSkateTopSpeed);
             }
         }
 
@@ -385,16 +334,6 @@ namespace CalamityMod.ILEditing
         private static void PrefixChanges(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
         {
             orig(self, item);
-            // Defense accessory prefixes have slightly scaling defense boosts through progression
-            if (item.prefix >= PrefixID.Hard && item.prefix <= PrefixID.Warding)
-            {
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-            }
             // Hard / Guarding / Armored / Warding give 0.25% / 0.5% / 0.75% / 1% DR
             if (item.prefix == PrefixID.Hard)
                 self.endurance += 0.0025f;
@@ -502,30 +441,13 @@ namespace CalamityMod.ILEditing
         #region UpdateBuffs Balancing Changes
         private static void UpdateBuffsBalancingChanges(ILContext il)
         {
-            // This IL edit accomplishes four things:
-            // 1. Nerf Sharpening Station's armor penetration boost from 12 to 5.
-            // 2. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
-            // 3. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
-            // 4. Remove the ability for Feral Bite to randomly inflict debuffs.
+            // This IL edit accomplishes three things:
+            // 1. Nerf Beetle Scale Mail's set bonus Beetle Might melee speed from 10% per stack to 5%.
+            // 2. Nerf Nebula armor's Damage and Life Boosters (Mana Boosters are not handled in this method).
+            // 3. Remove the vanilla implementation of Feral Bite inflicting random debuffs.
             var cursor = new ILCursor(il);
 
-            // First, find the code which applies Sharpened's armor penetration buff.
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.Sharpened)))
-            {
-                LogFailure("Sharpening Station Nerf", "Could not locate the Sharpened buff ID.");
-                return;
-            }
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(12f))) // The amount of armor penetration to grant.
-            {
-                LogFailure("Sharpening Station Nerf", "Could not locate the amount of armor penetration granted.");
-                return;
-            }
-
-            // Replace the value entirely.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, BalancingConstants.SharpeningStationArmorPenetration);
-
-            // Next, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
+            // First, move to Beetle Scale Mail's melee speed boost from Beetle Might buff.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdcI4(BuffID.BeetleMight1)))
             {
                 LogFailure("Beetle Scale Mail Nerf", "Could not locate the Beetle Might buff ID.");
@@ -581,7 +503,7 @@ namespace CalamityMod.ILEditing
             // There are multiple branches pointing to this instruction, so it cannot be removed. Instead, swap its value directly.
             cursor.Next.Operand = BalancingConstants.NebulaDamagePerBooster;
 
-            // Finally, removing Feral Bite's debuffs.
+            // Finally, removing Feral Bite's vanilla debuff infliction.
             // Find the random debuff duration multiplier for the debuffs inflicted by Feral Bite.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcR4(0.01f))) // The 0.01f random debuff duration multiplier.
             {
@@ -590,14 +512,78 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove and change to 0f, this makes the random debuffs from Feral Bite have 0 duration.
+            // Calamity reimplements a different version of this in CalamityGlobalBuff.Update
             cursor.Remove();
             cursor.Emit(OpCodes.Ldc_R4, 0f);
         }
         #endregion
 
-        #region Vortex Booster Keeps Vortex Stealth When Dashing
-        private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
+        #region SoC Buffs & Vortex Booster Keeping Stealth
+        private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
+            //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
+            //This is done to be able to adjust values as needed. Here we change the iframe amount and recoil velocity
+            if (self.dash == 2 && self.eocDash > 0 && self.eocHit < 0)
+            {
+                Rectangle DashHitbox = new Rectangle((int)(self.position.X + self.velocity.X * 0.5 - 4.0), (int)(self.position.Y + self.velocity.Y * 0.5 - 4.0), self.width + 8, self.height + 8);
+                for (int i = 0; i < 200; i++)
+                {
+                    NPC hitNPC = Main.npc[i];
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == 112 && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    {
+                        continue;
+                    }
+                    Rectangle npcHitbox = hitNPC.getRect();
+                    if (DashHitbox.Intersects(npcHitbox) && (hitNPC.noTileCollide || self.CanHit(hitNPC)))
+                    {
+                        float dmg = self.GetTotalDamage(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 300f : 30f);
+                        float kb = self.GetTotalKnockback(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 12f : 9f);
+                        bool crit = false;
+                        if (Main.rand.Next(100) < self.GetTotalCritChance(DamageClass.Melee))
+                        {
+                            crit = true;
+                        }
+                        int direction = self.direction;
+                        if (self.velocity.X < 0f)
+                        {
+                            direction = -1;
+                        }
+                        if (self.velocity.X > 0f)
+                        {
+                            direction = 1;
+                        }
+                        self.eocHit = i;
+                        if (self.whoAmI == Main.myPlayer)
+                        {
+                            self.ApplyDamageToNPC(hitNPC, (int)dmg, kb, direction, crit, DamageClass.Melee);
+                        }
+                        self.eocDash = 10;
+                        self.dashDelay = BalancingConstants.OnShieldBonkCooldown;
+                        self.velocity.X = -direction * 9;
+                        self.velocity.Y = -4f;
+                        self.GiveImmuneTimeForCollisionAttack(8); //This is normally 4 in vanilla
+                        int heldDir = 0;
+                        if (self.controlLeft)
+                            heldDir--;
+                        if (self.controlRight)
+                            heldDir++;
+                        int dirSum = Math.Abs(direction + heldDir);
+                        switch (dirSum)
+                        {
+                            case 0: //Holding in direction of recoil
+                                self.velocity.X *= 1.75f;
+                                break;
+                            case 1: //Neutral direction
+                                self.velocity.X *= 1.5f;
+                                break;
+                            case 2: //Holding in direction of enemy
+                                self.velocity.X *= 1.25f;
+                                break;
+                        }
+                    }
+                }
+            }
+
             // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
             bool vortexStealth = self.vortexStealthActive;
             orig(self);

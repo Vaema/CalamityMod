@@ -10,7 +10,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class HypothermiaShard : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        private float counter = 0f;
+        private int counter = 0;
         public override void SetDefaults()
         {
             Projectile.width = 6;
@@ -18,7 +18,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.scale = 1f;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.alpha = 50;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.DamageType = RogueDamageClass.Instance;
@@ -29,18 +28,19 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Lighting.AddLight(Projectile.Center, 0.1f, 0f, 0.5f);
             Projectile.rotation += Projectile.velocity.X * 0.2f;
-            counter += 0.25f;
             if (Main.rand.NextBool(10))
             {
-                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 318, 0f, 0f, 0, default, 0.8f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 318, 0f, 0f, Scale: 0.8f);
                 Main.dust[dust].noGravity = true;
                 Main.dust[dust].velocity *= 0.2f;
             }
+
             Projectile.velocity *= 0.996f;
-            if (counter > 100f)
+            counter++;
+            if (counter > 400)
             {
                 Projectile.scale -= 0.05f;
-                if ((double)Projectile.scale <= 0.2)
+                if (Projectile.scale <= 0.2f)
                 {
                     Projectile.scale = 0.2f;
                     Projectile.Kill();
@@ -53,16 +53,14 @@ namespace CalamityMod.Projectiles.Rogue
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             if (Projectile.velocity.X != oldVelocity.X)
-            {
                 Projectile.velocity.X = -oldVelocity.X;
-            }
             if (Projectile.velocity.Y != oldVelocity.Y)
-            {
                 Projectile.velocity.Y = -oldVelocity.Y;
-            }
             return false;
         }
 
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
         public override void OnKill(int timeLeft)
         {
             for (int k = 0; k < 3; k++)
@@ -71,27 +69,26 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
         public override bool PreDraw(ref Color lightColor)
         {
             //Changes the texture of the projectile
             Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            if (Projectile.ai[0] == 1f)
+            switch (Projectile.ai[0])
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;
+                case 0:
+                    texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                    break;
+                case 1:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard2").Value;
+                    break;
+                case 2:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard3").Value;
+                    break;
+                case 3:
+                    texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard4").Value;
+                    break;
             }
-            if (Projectile.ai[0] == 2f)
-            {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard3").Value;
-            }
-            if (Projectile.ai[0] == 3f)
-            {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Rogue/HypothermiaShard4").Value;
-            }
-            Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, new Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Projectile.GetAlpha(lightColor), Projectile.rotation, new Vector2(texture.Width / 2f, texture.Height / 2f), Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

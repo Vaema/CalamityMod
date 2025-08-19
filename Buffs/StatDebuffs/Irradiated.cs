@@ -10,9 +10,10 @@ namespace CalamityMod.Buffs.StatDebuffs
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 20 //Base irradiated DOT. This is changed with some application sources.
+            EnemyLostRegen = 20, //Base irradiated DOT. This is changed with some application sources.
+            NPCLifeRegenMethod = IrradiatedNPCLifeRegen
         };
-        public void ElectricDebuffNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        public static void IrradiatedNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             var cnpc = npc.Calamity();
             int projectileCount = 0;

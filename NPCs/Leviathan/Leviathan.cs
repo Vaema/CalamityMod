@@ -57,21 +57,23 @@ namespace CalamityMod.NPCs.Leviathan
                 AttackTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/Leviathan/LeviathanAttack", AssetRequestMode.AsyncLoad);
         }
 
+        public static int BoulderDamage = 40; // 160
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.npcSlots = 20f;
-            NPC.GetNPCDamage();
+            NPC.damage = 100; // 200
             NPC.width = 900;
             NPC.height = 450;
             NPC.defense = 40;
-            NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(60000, 72000, 600000);
+            NPC.DR_NERD(0.1f);
+            NPC.LifeMaxNERB(57000, 68400, 600000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
-            NPC.value = Item.buyPrice(0, 12, 50, 0);
+            NPC.value = Item.buyPrice(gold: 7, silver: 50);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.noTileCollide = true;
@@ -84,14 +86,11 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.3f;
 
             if (Main.zenithWorld)
                 NPC.scale *= 0.3f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -131,10 +130,9 @@ namespace CalamityMod.NPCs.Leviathan
             if (CalamityGlobalNPC.LeviAndAna == -1)
                 CalamityGlobalNPC.LeviAndAna = NPC.whoAmI;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             Vector2 npcCenter = NPC.Center;
 
             // Is in spawning animation
@@ -201,7 +199,7 @@ namespace CalamityMod.NPCs.Leviathan
             bool notOcean = player.position.Y < 800f || player.position.Y > Main.worldSurface * 16D || (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400));
 
             // Enrage
-            if (notOcean && !bossRush)
+            if (notOcean && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -209,12 +207,12 @@ namespace CalamityMod.NPCs.Leviathan
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : 0f;
+            float enrageScale = 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -312,7 +310,7 @@ namespace CalamityMod.NPCs.Leviathan
                         hoverAcceleration += death ? 0.15f * (1f - lifeRatio) : 0.1f * (1f - lifeRatio);
                     }
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         hoverSpeed *= 1.15f;
                         hoverAcceleration *= 1.15f;
@@ -393,7 +391,6 @@ namespace CalamityMod.NPCs.Leviathan
                             {
                                 float speed = (sirenAlive && !phase4 && !death) ? 13.5f : 16f;
                                 int type = ModContent.ProjectileType<LeviathanBomb>();
-                                int damage = NPC.GetProjectileDamage(type);
 
                                 if (expertMode)
                                     speed = (sirenAlive && !phase4 && !death) ? 14f : 17f;
@@ -412,12 +409,11 @@ namespace CalamityMod.NPCs.Leviathan
 
                                 if (Main.zenithWorld)
                                 {
-                                    type = CalamityWorld.LegendaryMode ? ProjectileID.BouncyBoulder : ProjectileID.Boulder;
+                                    type = Main.rand.NextBool() ? ProjectileID.BouncyBoulder : ProjectileID.Boulder;
                                     leviCenter.Y -= 5; //Shoot a bit more up since boulders are affected by gravity
-                                    damage *= 2;
                                 }
 
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), leviCenter.X, leviCenter.Y, xDestination, yDestination, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), leviCenter.X, leviCenter.Y, xDestination, yDestination, type, BoulderDamage, 0f, Main.myPlayer);
                                 if (Main.zenithWorld)
                                     Main.projectile[proj].scale *= 5f;
 
@@ -442,16 +438,8 @@ namespace CalamityMod.NPCs.Leviathan
                     float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
                     NPC.ai[1] += 1f;
-                    int activePlayerAmt = 0;
-                    for (int i = 0; i < Main.maxPlayers; i++)
-                    {
-                        if (Main.player[i].active && !Main.player[i].dead && (npcCenter - Main.player[i].Center).Length() < 1000f)
-                            activePlayerAmt++;
-                    }
-                    NPC.ai[1] += activePlayerAmt / 2;
-
                     bool spawnedAberration = false;
-                    float aberrationSpawnDelay = CalamityWorld.LegendaryMode ? 20f : (!sirenAlive || phase4) ? 60f : 40f;
+                    float aberrationSpawnDelay = Main.zenithWorld ? 20f : (!sirenAlive || phase4) ? 60f : 50f;
                     if (NPC.ai[1] > aberrationSpawnDelay)
                     {
                         NPC.ai[1] = 0f;
@@ -459,8 +447,8 @@ namespace CalamityMod.NPCs.Leviathan
                         spawnedAberration = true;
                     }
 
-                    int spawnLimit = CalamityWorld.LegendaryMode ? 10 : (sirenAlive && !phase4) ? 1 : (death ? 2 : 3);
-                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit)
+                    int spawnLimit = Main.zenithWorld ? 20 : Main.getGoodWorld ? 6 : (sirenAlive && !phase4) ? 0 : 2;
+                    if (spawnedAberration && NPC.CountNPCS(ModContent.NPCType<AquaticAberration>()) < spawnLimit && NPC.ai[2] <= spawnLimit)
                     {
                         SoundEngine.PlaySound(soundChoice with { Pitch = soundChoice.Pitch + extrapitch }, npcCenter);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -574,7 +562,7 @@ namespace CalamityMod.NPCs.Leviathan
                             if (revenge && (!sirenAlive || phase4))
                                 lineupSpeed += death ? 9f * (1f - lifeRatio) : 6f * (1f - lifeRatio);
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 lineupSpeed *= 1.15f;
 
                             Vector2 leviChargeCenter = npcCenter;
@@ -610,7 +598,7 @@ namespace CalamityMod.NPCs.Leviathan
                             chargeAcceleration += death ? 0.15f * (1f - lifeRatio) : 0.1f * (1f - lifeRatio);
                         }
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             chargeSpeed *= 1.15f;
                             chargeAcceleration *= 1.15f;
@@ -809,7 +797,7 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }
@@ -983,7 +971,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

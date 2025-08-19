@@ -10,6 +10,7 @@ using Terraria.Enums;
 using Terraria.ObjectData;
 using Terraria.Audio;
 using CalamityMod.Sounds;
+using CalamityMod.Items.Pets;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
@@ -21,6 +22,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<CagedFlamelightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 60;
@@ -90,11 +92,6 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedFlamelightItem>());
         }
     }
 }

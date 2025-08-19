@@ -38,7 +38,6 @@ CelestialReaperProjectile.DisplayName: Celestial Reaper
 CelestusMiniScythe.DisplayName: Celestus
 CelestusProj.DisplayName: Celestus
 CinquedeaProj.DisplayName: Cinquedea
-CircletMark.DisplayName: Tornado Mark
 CircletTornado.DisplayName: Tornado
 CobaltEnergy.DisplayName: Cobalt Energy
 CobaltKunaiProjectile.DisplayName: Cobalt Kunai
@@ -158,6 +157,7 @@ LeonidCometSmall.DisplayName: Leonid Comet
 LeonidProgenitorBombshell.DisplayName: Leonid Bombshell
 LeonidStar.DisplayName: Leonid Star
 LeviathanTooth.DisplayName: Leviathan Tooth
+LeviathanToothStealth.DisplayName: Leviathan Jaw
 LionfishProj.DisplayName: Lionfish
 LostSoulFriendly.DisplayName: Lost Soul
 LuminousShard.DisplayName: Stardust Shard

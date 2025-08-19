@@ -63,6 +63,7 @@ namespace CalamityMod.World
                     return;
 
                 c.item[itemIndex].SetDefaults(id, false);
+                c.item[itemIndex].Prefix(-1);
 
                 // Don't set quantity unless quantity is specified
                 if (minQuantity > 0)

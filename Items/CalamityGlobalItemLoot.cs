@@ -31,17 +31,17 @@ namespace CalamityMod.Items
             {
                 #region Boss Treasure Bags
                 case ItemID.KingSlimeBossBag:
-                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, 3); // 33% Katana
-                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, 3); // 33% Keybrand in Remix
+                    loot.DefineConditionalDropSet(DropHelper.NotRemix).Add(ItemID.Katana, DropHelper.BagWeaponDropRateInt); // 33% Katana
+                    loot.DefineConditionalDropSet(DropHelper.Remix).Add(ItemID.Keybrand, DropHelper.BagWeaponDropRateInt); // 33% Keybrand in Remix
 
-                    loot.Add(new CommonDrop(ModContent.ItemType<CrownJewel>(), 10)); // 10% Crown Jewel
+                    loot.Add(ModContent.ItemType<CrownJewel>(), DropHelper.BagWeaponDropRateFraction); // 33% Crown Jewel
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
 
                 case ItemID.EyeOfCthulhuBossBag:
-                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateInt); // 33% Deathstare Rod
-                    loot.Add(ModContent.ItemType<TeardropCleaver>(), 10); // 10% Teardrop Cleaver
+                    loot.Add(ModContent.ItemType<DeathstareRod>(), DropHelper.BagWeaponDropRateFraction); // 33% Deathstare Rod
+                    loot.Add(ModContent.ItemType<TeardropCleaver>(), DropHelper.BagWeaponDropRateFraction); // 33% Teardrop Cleaver
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -51,8 +51,8 @@ namespace CalamityMod.Items
                 // We don't care.
                 case ItemID.EaterOfWorldsBossBag:
                     var eowRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 90, 135); // 100% 90-135 Demonite Ore
-                    eowRevLCR.Add(ItemID.ShadowScale, 1, 35, 55); // 100% 35-55 Shadow Scale
+                    eowRevLCR.Add(ItemID.DemoniteOre, 1, 70, 90); // 100% 70-90 Demonite Ore
+                    eowRevLCR.Add(ItemID.ShadowScale, 1, 20, 30); // 100% 20-30 Shadow Scale
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -62,11 +62,9 @@ namespace CalamityMod.Items
                 // This can theoretically be exploited by killing the boss on Expert, then turning on Rev to open the bags.
                 // We don't care.
                 case ItemID.BrainOfCthulhuBossBag:
-                    // BoC drops less partial loot than EoW
-                    // However, sell price is overall higher despite the lower yield
                     var bocRevLCR = loot.DefineConditionalDropSet(DropHelper.If(() => CalamityWorld.revenge));
-                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 80, 120); // 100% 80-120 Crimtane Ore
-                    bocRevLCR.Add(ItemID.TissueSample, 1, 25, 40); // 100% 25-40 Tissue Sample
+                    bocRevLCR.Add(ItemID.CrimtaneOre, 1, 70, 90); // 100% 70-90 Crimtane Ore
+                    bocRevLCR.Add(ItemID.TissueSample, 1, 20, 30); // 100% 20-30 Tissue Sample
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;
@@ -95,7 +93,7 @@ namespace CalamityMod.Items
                         ModContent.ItemType<HardenedHoneycomb>(),
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, queenBeeWeapons));
-                    loot.Add(ModContent.ItemType<TheBee>(), 10); // 10% The Bee
+                    loot.Add(ModContent.ItemType<TheBee>(), DropHelper.BagWeaponDropRateFraction); // 33% The Bee
                     loot.Add(ItemID.Stinger, 1, 8, 12); // 100% 8-12 Stinger
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -147,7 +145,6 @@ namespace CalamityMod.Items
                 case ItemID.TwinsBossBag:
                     loot.Remove(FindHallowedBars(loot));
                     loot.AddIf(DropHelper.HallowedBarsCondition, ItemID.HallowedBar, 1, 20, 35);
-                    loot.Add(ModContent.ItemType<Arbalest>(), 10); // 10% Arbalest
                     loot.AddRevBagAccessories();
                     loot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
                     break;

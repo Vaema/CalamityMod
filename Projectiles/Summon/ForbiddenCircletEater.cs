@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Main.projFrames[Type] = 4;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
+            ProjectileID.Sets.MinionShot[Type] = true; //This marks it as a minion shot, which allows it to proc summon tag effects.
         }
 
         public override void SetDefaults()
@@ -70,6 +71,8 @@ namespace CalamityMod.Projectiles.Summon
             float attackDistance = 100000f;
             bool canAttack = false;
             Projectile.ai[0] += 1f;
+
+            NPC target = null;
             if (Projectile.ai[0] > 30f)
             {
                 if (player.HasMinionAttackTargetNPC)
@@ -82,14 +85,11 @@ namespace CalamityMod.Projectiles.Summon
                         float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
                         if (npcDist < 640f && npcDist < attackDistance && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
                         {
-                            attackDistance = npcDist;
-                            projX = npcX;
-                            projY = npcY;
-                            canAttack = true;
+                            target = npc;
                         }
                     }
                 }
-                if (!canAttack)
+                if (target.IsNullOrInactive())
                 {
                     foreach (NPC npc in Main.ActiveNPCs)
                     {
@@ -100,60 +100,17 @@ namespace CalamityMod.Projectiles.Summon
                             float npcDist = Math.Abs(Projectile.position.X + (float)(Projectile.width / 2) - npcX) + Math.Abs(Projectile.position.Y + (float)(Projectile.height / 2) - npcY);
                             if (npcDist < 640f && npcDist < attackDistance && Collision.CanHit(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height))
                             {
-                                attackDistance = npcDist;
-                                projX = npcX;
-                                projY = npcY;
-                                canAttack = true;
+
+                                target = npc;
                             }
                         }
                     }
                 }
             }
-            if (!canAttack)
-            {
-                projX = Projectile.position.X + (float)(Projectile.width / 2) + Projectile.velocity.X * 100f;
-                projY = Projectile.position.Y + (float)(Projectile.height / 2) + Projectile.velocity.Y * 100f;
-            }
-            float projVel = 0.16f;
-            Vector2 playerDirection = Projectile.Center;
-            float playerX = projX - playerDirection.X;
-            float playerY = projY - playerDirection.Y;
-            float playerDist = (float)Math.Sqrt((double)(playerX * playerX + playerY * playerY));
-            playerDist = 10f / playerDist;
-            playerX *= playerDist;
-            playerY *= playerDist;
-            if (Projectile.velocity.X < playerX)
-            {
-                Projectile.velocity.X = Projectile.velocity.X + projVel;
-                if (Projectile.velocity.X < 0f && playerX > 0f)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X + projVel * 2f;
-                }
-            }
-            else if (Projectile.velocity.X > playerX)
-            {
-                Projectile.velocity.X = Projectile.velocity.X - projVel;
-                if (Projectile.velocity.X > 0f && playerX < 0f)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - projVel * 2f;
-                }
-            }
-            if (Projectile.velocity.Y < playerY)
-            {
-                Projectile.velocity.Y = Projectile.velocity.Y + projVel;
-                if (Projectile.velocity.Y < 0f && playerY > 0f)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + projVel * 2f;
-                }
-            }
-            else if (Projectile.velocity.Y > playerY)
-            {
-                Projectile.velocity.Y = Projectile.velocity.Y - projVel;
-                if (Projectile.velocity.Y > 0f && playerY < 0f)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - projVel * 2f;
-                }
-            }
+            if (!target.IsNullOrInactive())
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.DirectionTo(target.Center) * 15, 0.1f);
+            else
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.velocity.SafeNormalize(Vector2.Zero) * 15, 0.1f);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

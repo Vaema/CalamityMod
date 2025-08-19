@@ -1,6 +1,6 @@
-﻿using System.Text;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -16,25 +16,16 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "Iron";
 
-        public const float ArmorPieceDR = 0.03f;
-        public const float SetBonusDR = 0.06f;
-        public const int SetBonusLifeRegen = 2;
-
-        public override void ApplyHeadPieceEffect(Player player) => player.endurance += ArmorPieceDR;
-
-        public override void ApplyBodyPieceEffect(Player player) => player.endurance += ArmorPieceDR;
-
-        public override void ApplyLegPieceEffect(Player player) => player.endurance += ArmorPieceDR;
+        public const float KnockbackMultiplier = 1.5f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText += $"\n{CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(KnockbackMultiplier)}";
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            player.endurance += SetBonusDR;
-            player.lifeRegen += SetBonusLifeRegen;
+            player.GetKnockback<GenericDamageClass>() *= KnockbackMultiplier;
         }
     }
 }

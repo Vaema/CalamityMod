@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Hydrothermic
@@ -13,6 +14,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         internal static string VanitySmokeEntitySourceContext => "SetBonus_Calamity_Hydrothermic_Vanity";
         internal static string InfernoPotionEntitySourceContext => "SetBonus_Calamity_Hydrothermic_InfernoPotionBoost";
 
+        public static float DamageBoost = 0.13f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent());
+
+        public static float InfernoHealthThreshold = 0.5f;
+        public static int InfernoHitRate = 30;
+        public static int InfernoDamage = 50;
+        public static float InfernoRange = 300f;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -24,9 +33,9 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
-            player.GetDamage<GenericDamageClass>() += 0.08f;
-            player.GetCritChance<GenericDamageClass>() += 4;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.lavaImmune = true;
+            player.buffImmune[BuffID.OnFire] = true;
         }
 
         public override void AddRecipes()

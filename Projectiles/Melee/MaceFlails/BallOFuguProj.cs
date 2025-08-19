@@ -70,12 +70,18 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             if (SpikeCount > 0)
             {
                 SoundEngine.PlaySound(BallOFugu.BlowSound, Projectile.Center);
-                Particle BlowParticle = new CustomPulse(Projectile.Center, Vector2.Zero, SpikeColor, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(0, MathHelper.TwoPi), 0f, 0.05f + 0.005f * SpikeCount, 12);
-                GeneralParticleHandler.SpawnParticle(BlowParticle);
+
+                for (int i = -4; i < 5; i++)
+                {
+                    Vector2 maxScale = new Vector2(Main.rand.NextFloat(1f, 1.2f), Main.rand.NextFloat(0.6f, 0.75f)) * (i % 2 == 0 ? 1f : 1.35f);
+                    float rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(30f * i);
+                    CustomPulse spike = new CustomPulse(Projectile.Center, Vector2.One, SpikeColor, "CalamityMod/Particles/BlastCone", maxScale, rotation, 1f, 0.5f, 12);
+                    GeneralParticleHandler.SpawnParticle(spike);
+                }
 
                 for (int i = 0; i < SpikeCount; i++)
                 {
-                    Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(6f, 7.2f);
+                    Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(MathHelper.ToRadians(105f)) * Main.rand.NextFloat(6f, 7.2f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<UrchinSpikeFugu>(), (int)(Projectile.damage * SpikeDamage), Projectile.knockBack * SpikeKnockback, Projectile.owner);
                 }
             }

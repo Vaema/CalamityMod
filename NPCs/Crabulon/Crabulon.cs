@@ -73,11 +73,13 @@ namespace CalamityMod.NPCs.Crabulon
             }
         }
 
+        public static int MushroomShotDamage = 9; // 36
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 40; // 64 (1.6x expert scaling)
             NPC.npcSlots = 14f;
-            NPC.GetNPCDamage();
             NPC.width = 196;
             NPC.height = 196;
             NPC.defense = 8;
@@ -88,21 +90,18 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.noTileCollide = false;
             NPC.boss = true;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 5, 0, 0);
+            NPC.value = Item.buyPrice(gold: 5);
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
             }
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -132,10 +131,9 @@ namespace CalamityMod.NPCs.Crabulon
         {
             Lighting.AddLight(NPC.Center, 0f, 0.3f, 0.7f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             NPC.spriteDirection = NPC.direction;
 
@@ -185,32 +183,6 @@ namespace CalamityMod.NPCs.Crabulon
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            // Enrage
-            if ((!player.ZoneGlowshroom || (NPC.position.Y / 16f) < Main.worldSurface) && !bossRush)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
-
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && ((NPC.position.Y / 16f) < Main.worldSurface || bossRush))
-            {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
-                enrageScale += 1f;
-            }
-            if (biomeEnraged && (!player.ZoneGlowshroom || bossRush))
-            {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
-                enrageScale += 1f;
-            }
-
-            if (CalamityWorld.LegendaryMode)
-                enrageScale += 0.5f;
-
             if (NPC.ai[0] < 2f)
             {
                 int mushBombAmt = phase4 ? 6 : phase3 ? 3 : phase2 ? 2 : 1;
@@ -240,7 +212,7 @@ namespace CalamityMod.NPCs.Crabulon
                     {
                         float yVelocity = death ? 1f : expertMode ? 2.5f : 4f;
                         Vector2 projectileVelocity = (Vector2.Normalize(player.Center - NPC.Center) * mushBombSpeed) - Vector2.UnitY * yVelocity;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, NPC.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, player.Center.Y);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                     }
                 }
             }
@@ -278,14 +250,14 @@ namespace CalamityMod.NPCs.Crabulon
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                float walkingVelocity = (death ? (5f + 2f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f) + 2.5f * enrageScale;
+                float walkingVelocity = death ? (5f + 2f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f;
                 if (phase2)
                     walkingVelocity += 0.5f;
                 if (phase3)
                     walkingVelocity += 0.75f;
                 if (phase4)
                     walkingVelocity += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     walkingVelocity *= 2f;
 
                 bool shouldWalkSlower = false;
@@ -409,7 +381,7 @@ namespace CalamityMod.NPCs.Crabulon
                             NPC.ai[1] += 1f;
                     }
 
-                    float jumpGateValue = (bossRush ? 15f : expertMode ? 60f : 120f) / (enrageScale + 1f);
+                    float jumpGateValue = expertMode ? 60f : 120f;
                     if (NPC.ai[1] >= jumpGateValue)
                     {
                         NPC.ai[1] = -20f;
@@ -517,26 +489,25 @@ namespace CalamityMod.NPCs.Crabulon
                     SoundEngine.PlaySound(SlamSound, NPC.Center);
 
                     int type = ModContent.ProjectileType<MushBombFall>();
-                    int damage = NPC.GetProjectileDamage(type);
 
                     if ((NPC.ai[2] % 2f == 0f || death) && ((phase2 && revenge) || (phase3 && expertMode)))
                     {
                         SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float projectileVelocity = BossRushEvent.BossRushActive ? 24f : CalamityWorld.death ? 15f : 10f;
+                            float projectileVelocity = CalamityWorld.death ? 15f : 10f;
                             Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                             destination.Normalize();
                             destination *= projectileVelocity;
 
                             // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                            int numProj = bossRush ? 24 : phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
+                            int numProj = phase4 ? 14 : CalamityWorld.death ? (phase3 ? 10 : 16) : 12;
                             float rotation = MathHelper.ToRadians(90);
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                                 Vector2 randomVelocityVector = new Vector2((Main.rand.NextFloat() - 0.5f) * 4f, (Main.rand.NextFloat() - 0.5f) * 4f);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(perturbedSpeed.X, -projectileVelocity) + randomVelocityVector, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(perturbedSpeed.X, -projectileVelocity) + randomVelocityVector, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
                     }
@@ -549,19 +520,19 @@ namespace CalamityMod.NPCs.Crabulon
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float projectileVelocity = BossRushEvent.BossRushActive ? 24f : CalamityWorld.death ? 15f : 10f;
+                                float projectileVelocity = CalamityWorld.death ? 15f : 10f;
                                 Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
                                 destination.Normalize();
                                 destination *= projectileVelocity;
 
                                 // Less mushrooms in Death Mode phase 3 because otherwise it's an absolute shitshow.
-                                int numProj = bossRush ? 16 : phase4 ? 8 : (phase3 && death) ? 6 : 8;
+                                int numProj = phase4 ? 8 : (phase3 && death) ? 6 : 8;
                                 float rotation = MathHelper.ToRadians(60);
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                                     Vector2 randomVelocityVector = new Vector2((Main.rand.NextFloat() - 0.5f) * 4f, (Main.rand.NextFloat() - 0.5f) * 4f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(perturbedSpeed.X, -projectileVelocity) + randomVelocityVector, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, new Vector2(perturbedSpeed.X, -projectileVelocity) + randomVelocityVector, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                                 }
                             }
                         }
@@ -643,7 +614,7 @@ namespace CalamityMod.NPCs.Crabulon
                     }
                     else
                     {
-                        float velocityX = (death ? 0.15f : expertMode ? 0.125f : 0.1f) + 0.05f * enrageScale;
+                        float velocityX = death ? 0.15f : expertMode ? 0.125f : 0.1f;
                         if (NPC.direction < 0)
                             NPC.velocity.X -= velocityX;
                         else if (NPC.direction > 0)
@@ -713,16 +684,17 @@ namespace CalamityMod.NPCs.Crabulon
                             center = player.Center;
 
                         center.Y -= 320f + Math.Abs(player.Center.Y - NPC.Center.Y);
-                        center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X - NPC.Center.X > 0f) ? 1 : -1);
+                        center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X > NPC.Center.X) ? 1 : -1);
 
                         NPC.ai[2] = 1f;
                         NPC.ai[3] = NPC.Bottom.Y;
                         NPC.noTileCollide = true;
 
-                        float leapVelocity = bossRush ? 24f : death ? 18f : 16f;
+                        float leapVelocity = death ? 18f : 16f;
                         NPC.velocity = center - NPC.Center;
                         NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
                         NPC.velocity *= leapVelocity;
+                        NPC.velocity.X *= 0.6f;
 
                         float velocityMinY = -leapVelocity;
                         if (NPC.velocity.Y > velocityMinY)
@@ -732,7 +704,7 @@ namespace CalamityMod.NPCs.Crabulon
                     }
                     else
                     {
-                        float mushroomFireRate = death ? 20f : 10f;
+                        float mushroomFireRate = 15f;
                         if (NPC.ai[1] % mushroomFireRate == 0f)
                         {
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
@@ -740,7 +712,6 @@ namespace CalamityMod.NPCs.Crabulon
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<MushBomb>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 float yVelocity = death ? 3f : 2f;
                                 if (death)
                                 {
@@ -750,11 +721,11 @@ namespace CalamityMod.NPCs.Crabulon
                                     for (int i = 0; i < numProj; i++)
                                     {
                                         Vector2 perturbedSpeed = initialVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, perturbedSpeed, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, perturbedSpeed, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                                     }
                                 }
                                 else
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitY * yVelocity, type, damage, 0f, Main.myPlayer, 0f, player.Center.Y);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.UnitY * yVelocity, type, MushroomShotDamage, 0f, Main.myPlayer, 0f, player.Center.Y);
                             }
                         }
 
@@ -774,7 +745,6 @@ namespace CalamityMod.NPCs.Crabulon
                             NPC.netUpdate = true;
 
                             int type = ModContent.ProjectileType<MushBombGround>();
-                            int damage = NPC.GetProjectileDamage(type);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -784,10 +754,10 @@ namespace CalamityMod.NPCs.Crabulon
                                 Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - ((i / (float)numProj) * initialVelocity), type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - (i / (float)numProj * initialVelocity), type, MushroomShotDamage, 0f, Main.myPlayer);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(-81, 0), Main.rand.Next(-20, 1)), -(initialVelocity - (i / (float)numProj * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer);
                             }
 
                             for (int j = (int)NPC.position.X - 20; j < (int)NPC.position.X + NPC.width + 40; j += 20)
@@ -876,7 +846,6 @@ namespace CalamityMod.NPCs.Crabulon
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ModContent.ProjectileType<MushBombFall>();
-                            int damage = NPC.GetProjectileDamage(type);
                             int maxColumns = 5;
                             int mushroomsPerColumn = 8;
                             Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(210f, 8f);
@@ -889,7 +858,7 @@ namespace CalamityMod.NPCs.Crabulon
                                 for (int j = 0; j < mushroomsPerColumn; j++)
                                 {
                                     initialVelocity += Vector2.UnitX * Main.rand.NextFloat(-0.5f, 0.5f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(70f * (i + 1), 0f), -(initialVelocity - ((j / (float)mushroomsPerColumn) * initialVelocity)), type, damage, 0f, Main.myPlayer, 1f, NPC.Bottom.Y - 16f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(70f * (i + 1), 0f), -(initialVelocity - ((j / (float)mushroomsPerColumn) * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer, 1f, NPC.Bottom.Y - 16f);
                                 }
 
                                 initialVelocity = Vector2.UnitY * 16f;
@@ -907,17 +876,16 @@ namespace CalamityMod.NPCs.Crabulon
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ModContent.ProjectileType<MushBombGround>();
-                            int damage = NPC.GetProjectileDamage(type);
                             float xVelocity = death ? 3f : 1.5f;
                             int numProj = 3;
                             Vector2 initialVelocity = Vector2.UnitX * xVelocity;
                             Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
                             for (int i = 0; i < numProj; i++)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 41), 0f), initialVelocity - ((i / (float)numProj) * initialVelocity), type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 41), 0f), initialVelocity - ((i / (float)numProj) * initialVelocity), type, MushroomShotDamage, 0f, Main.myPlayer);
 
                             for (int i = 0; i < numProj; i++)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 41), 0f), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 41), 0f), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer);
                         }
 
                         float playerLocation = NPC.Center.X - player.Center.X;
@@ -982,7 +950,7 @@ namespace CalamityMod.NPCs.Crabulon
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.02 : 0.05));
+                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (Main.getGoodWorld ? 0.02 : 0.05));
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;
@@ -994,8 +962,8 @@ namespace CalamityMod.NPCs.Crabulon
                             int npcType = ModContent.NPCType<CrabShroom>();
                             int crabShroom = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, npcType);
                             Main.npc[crabShroom].SetDefaults(npcType);
-                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
-                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (Main.getGoodWorld ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (Main.getGoodWorld ? 0.2f : 0.1f);
                             if (Main.dedServ && crabShroom < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, crabShroom);
                         }
@@ -1003,6 +971,7 @@ namespace CalamityMod.NPCs.Crabulon
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
 
         // Can only hit the target if within certain distance
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -1261,7 +1230,7 @@ namespace CalamityMod.NPCs.Crabulon
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

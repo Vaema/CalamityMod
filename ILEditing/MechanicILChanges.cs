@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
@@ -161,26 +162,7 @@ namespace CalamityMod.ILEditing
             // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
             cursor.Emit(OpCodes.Or);
 
-            //
-            // SHIELD OF CTHULHU
-            //
-
-            // Move to Shield of Cthulhu's code by finding its function call for iframes.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Player>("GiveImmuneTimeForCollisionAttack")))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate function call for Shield of Cthulhu iframes.");
-                return;
-            }
-
-            if (!cursor.TryGotoPrev(MoveType.AfterLabel, i => i.MatchLdcI4(30)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate amount of frames of dash cooldown applied on impact with Shield of Cthulhu.");
-                return;
-            }
-
-            // Remove the instruction and replace it with one which gives Calamity's (customizable) amount of dash cooldown.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.OnShieldBonkCooldown);
+            // CIT 22JUL2025: Shield of Cthulhu bonk is reimplemented in a separate On edit; removed the change made to it via this IL edit.
 
             //
             // SOLAR FLARE ARMOR
@@ -331,47 +313,78 @@ namespace CalamityMod.ILEditing
                 self.dashTime = 0;
             }
         }
-        #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(On_NPC.orig_ShouldEmpressBeEnraged orig)
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
-            if (BossRushEvent.BossRushActive)
-                return true;
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
 
-            return orig();
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
         }
         #endregion
 
         #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
-        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        private static void PreventVanillaBossDeathsInBossRush(ILContext il)
         {
-            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
-            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
-            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
-            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
-            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
-            if (BossRushEvent.BossRushActive)
-                return;
+            // GOAL: Prevent vanilla boss defeated flags from getting set during Boss Rush.
+            // All of this is handled within a switch case directly in the DoDeathEvents function.
+            // Thus, the objective here is to add a branch past the entire switch case if it is Boss Rush.
+            var cursor = new ILCursor(il);
 
-            orig(self, closestPlayer);
+            // Move to the point right before the switch case.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnOnPlayer")))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to before the switch case.");
+                return;
+            }
+
+            // Define a branch label, load the Boss Rush check, and create the branch if it is true.
+            var label = il.DefineLabel();
+            cursor.Emit(OpCodes.Ldsfld, typeof(BossRushEvent).GetField("BossRushActive"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to after the switch case to place the label.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnBoss")))
+                {
+                    LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
         #endregion
 
-        #region Enabling of Triggered NPC Platform Fallthrough
-        // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
-        private static void AllowTriggeredFallthrough(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
+        #region Enabling of Fusion Feeder Sand Digging
+        private static void AllowFusionFeederToDigThroughSand(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
         {
             if (self.active && self.type == ModContent.NPCType<FusionFeeder>())
             {
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
-            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
-                fall = true;
-
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
         }
         #endregion
 
@@ -516,18 +529,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Platform Collision Checks for Grounded Bosses
-        private static bool EnableCalamityBossPlatformCollision(On_NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
-        {
-            if ((self.type == ModContent.NPCType<AstrumAureus>() || self.type == ModContent.NPCType<Crabulon>() || self.type == ModContent.NPCType<RavagerBody>() ||
-                self.type == ModContent.NPCType<RockPillar>() || self.type == ModContent.NPCType<FlamePillar>()) &&
-                self.target >= 0 && Main.player[self.target].position.Y > self.position.Y + self.height)
-                return true;
-
-            return orig(self);
-        }
-        #endregion
-
         #region Incorporate Enchantments in Item Names
         private static string IncorporateEnchantmentInAffix(On_Item.orig_AffixName orig, Item self)
         {
@@ -622,7 +623,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -670,31 +671,32 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 
@@ -1483,88 +1485,28 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Statue Additions
-        /// <summary>
-        /// Change the following code sequence in Wiring.HitWireSingle
-        /// num8 = (int) Utils.SelectRandom<short>(Main.rand, new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        ///
-        /// to
-        ///
-        /// var arr = new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        /// arr = arr.ToList().Add(id).ToArray();
-        /// num8 = Utils.SelectRandom(Main.rand, arr);
-        ///
-        /// </summary>
-        /// <param name="il"></param>
         private static void AddTwinklersToStatue(ILContext il)
         {
-            // obtain a cursor positioned before the first instruction of the method
-            // the cursor is used for navigating and modifying the il
-            var c = new ILCursor(il);
+            // Allow Twinklers to be spawned by the Firefly Statue.
+            var cursor = new ILCursor(il);
 
-            // the exact location for this hook is very complex to search for due to the hook instructions not being unique, and buried deep in control flow
-            // switch statements are sometimes compiled to if-else chains, and debug builds litter the code with no-ops and redundant locals
-
-            // in general you want to search using structure and function rather than numerical constants which may change across different versions or compile settings
-            // using local variable indices is almost always a bad idea
-
-            // we can search for
-            // switch (*)
-            //   case 54:
-            //     Utils.SelectRandom *
-
-            // in general you'd want to look for a specific switch variable, or perhaps the containing switch (type) { case 105:
-            // but the generated IL is really variable and hard to match in this case
-
-            // we'll just use the fact that there are no other switch statements with case 54, followed by a SelectRandom
-
-            ILLabel[] targets = null;
-            while (c.TryGotoNext(i => i.MatchSwitch(out targets)))
+            // Move to the method which randomly selects an NPC for the Statue to spawn. This is the second call of the method in this function.
+            for (int i = 0; i < 2; i++)
             {
-                // some optimising compilers generate a sub so that all the switch cases start at 0
-                // ldc.i4.s 51
-                // sub
-                // switch
-                int offset = 0;
-                if (c.Prev.MatchSub() && c.Prev.Previous.MatchLdcI4(out offset))
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom))))
                 {
-                    ;
+                    LogFailure("Add Twinkler to Firefly Statue", "Could not move to the SelectRandom method.");
+                    return;
                 }
-
-                // get the label for case 54: if it exists
-                int case54Index = 54 - offset;
-                if (case54Index < 0 || case54Index >= targets.Length || !(targets[case54Index] is ILLabel target))
-                {
-                    continue;
-                }
-
-                // move the cursor to case 54:
-                c.GotoLabel(target);
-                // there's lots of extra checks we could add here to make sure we're at the right spot, such as not encountering any branching instructions
-                c.GotoNext(i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom)));
-
-                // goto next positions us before the instruction we searched for, so we can insert our array modifying code right here
-                c.EmitDelegate<Func<short[], short[]>>(arr =>
-                {
-                    // resize the array and add our custom firefly
-                    Array.Resize(ref arr, arr.Length + 1);
-                    arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
-                    return arr;
-                });
-
-                // hook applied successfully
-                return;
             }
 
-            // couldn't find the right place to insert
-            throw new Exception("Hook location not found, switch(*) { case 54: ...");
+            // Emit a delegate which resizes the array and adds Twinkler to it.
+            cursor.EmitDelegate<Func<short[], short[]>>(arr =>
+            {
+                Array.Resize(ref arr, arr.Length + 1);
+                arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
+                return arr;
+            });
         }
         #endregion
 

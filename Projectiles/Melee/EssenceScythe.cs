@@ -23,16 +23,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.width = 100;
             Projectile.height = 78;
             Projectile.aiStyle = ProjAIStyleID.Sickle;
+            AIType = ProjectileID.DeathSickle;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.tileCollide = false;
-            Projectile.alpha = 55;
-            Projectile.penetrate = 10;
-            Projectile.timeLeft = 300;
             Projectile.ignoreWater = true;
-            AIType = ProjectileID.DeathSickle;
+            Projectile.alpha = 55;
+            Projectile.penetrate = 5;
+            Projectile.timeLeft = 300;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 2;
+            Projectile.idStaticNPCHitCooldown = 3;
         }
 
         public override void AI()
@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Melee
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ShadowbeamStaff, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
 
-            CalamityUtils.HomeInOnNPC(Projectile, true, 300f, 12f, 20f);
+            CalamityUtils.HomeInOnNPC(Projectile, true, 512f, 12f, 20f);
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -78,11 +78,8 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-            if (target.life <= 0 && target.lifeMax > 5)
-            {
-                if (Projectile.owner == Main.myPlayer)
-                    CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], 8, ModContent.ProjectileType<EssenceFlame>(), BalancingConstants.LifeStealRange, 0f);
-            }
+            if (target.life <= 0)
+                Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<EssenceFlame>(), 8, 0f);
         }
     }
 }

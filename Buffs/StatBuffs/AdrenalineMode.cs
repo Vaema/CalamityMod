@@ -21,7 +21,6 @@ namespace CalamityMod.Buffs.StatBuffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.Calamity().adrenalineModeActive = true;
-            player.Calamity().AdrenalineTrail = true;
         }
 
         public override void ModifyBuffText(ref string buffName, ref string tip, ref int rare)

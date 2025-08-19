@@ -48,7 +48,7 @@ namespace CalamityMod.World
             if (tile.TileType == ModContent.TileType<Basalt>() ||
             tile.TileType == ModContent.TileType<Navystone>() || tile.TileType == ModContent.TileType<HardenedEutrophicSand>() ||
             tile.TileType == ModContent.TileType<Shellstone>() || tile.TileType == ModContent.TileType<EutrophicSand>() ||
-            tile.TileType == ModContent.TileType<Limestone>() || tile.TileType == ModContent.TileType<PolypSand>() || tile.TileType == ModContent.TileType<ScarletSeaGrassTile>() ||
+            tile.TileType == ModContent.TileType<Limestone>() || tile.TileType == ModContent.TileType<PolypSand>() || tile.TileType == ModContent.TileType<ScarletSeaGrassTile>() || tile.TileType == ModContent.TileType<LimestoneCobble>() ||
             tile.TileType == ModContent.TileType<Runestone>() || tile.TileType == ModContent.TileType<Dunesand>() ||
             tile.WallType == ModContent.WallType<NavystoneWall>() || // hardened eutrophic sand doesnt have a wall lol
             tile.WallType == ModContent.WallType<ShellstoneWall>() || tile.WallType == ModContent.WallType<EutrophicSandWall>() ||
@@ -246,6 +246,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }

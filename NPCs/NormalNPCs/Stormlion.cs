@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 100;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.WalkingAntlion;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
             Banner = NPC.type;
@@ -39,10 +39,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

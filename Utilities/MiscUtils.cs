@@ -31,6 +31,14 @@ namespace CalamityMod
                 ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key), textColor.Value);
         }
 
+        public static void DisplayFormattedText(string key, Color textColor, params object[] args)
+        {
+            if (Main.netMode == NetmodeID.SinglePlayer)
+                Main.NewText(Language.GetOrRegister(key).Format(args), textColor);
+            else if (Main.dedServ || Main.netMode == NetmodeID.MultiplayerClient)
+                ChatHelper.BroadcastChatMessage(NetworkText.FromKey(key, args), textColor);
+        }
+
         public static int IngredientIndex(this Recipe r, int itemID)
         {
             for (int i = 0; i < r.requiredItem.Count; ++i)
@@ -204,7 +212,7 @@ namespace CalamityMod
         }
 
         public static int SecondsToFrames(int seconds) => seconds * 60;
-        public static int SecondsToFrames(float seconds) => (int)(seconds * 60);
+        public static int SecondsToFrames(float seconds) => (int)MathF.Round(seconds * 60);
         public static int MinutesToFrames(int minutes) => minutes * 3600;
 
         public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;

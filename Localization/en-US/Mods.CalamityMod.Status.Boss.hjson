@@ -3,9 +3,6 @@ SlimeGodRun: The Slime God flees to fight another day...
 // Cryogen
 CryogenBossText: Cryogen is derping out!
 PyrogenBossText: Pyrogen is derping out!
-// Triplets
-TripletsBossText: The Triplets have awoken!
-TripletsDefeatName: The Triplets
 // Calamitas Clone
 CalamitasBossText: You underestimate my power...
 CalamitasBossText2: Rise again, my siblings.
@@ -16,8 +13,6 @@ SandSharkText2: An enormous apex predator approaches...
 // Plaguebringer Goliath
 PlagueBossText: PLAGUE NUKE BARRAGE ARMED, PREPARING FOR LAUNCH!!!
 PlagueBossText2: MISSILES LAUNCHED, TARGETING ROUTINE INITIATED!!!
-// Astrum Deus
-DeusAltarRejectNightText: The god of the stars rejects your offering. The ritual can only be performed at night.
 // Providence
 ProfanedBossText: Holy flames burn away at your wings...
 // Polterghast

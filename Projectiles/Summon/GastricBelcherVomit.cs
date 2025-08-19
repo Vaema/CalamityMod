@@ -21,9 +21,9 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.friendly = true;
             Projectile.width = Projectile.height = 18;
             Projectile.timeLeft = 300;
-            Projectile.penetrate = 3;
-            Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.penetrate = 2;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 30;
             Projectile.DamageType = DamageClass.Summon;
         }
 

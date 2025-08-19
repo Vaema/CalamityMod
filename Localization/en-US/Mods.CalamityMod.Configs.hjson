@@ -7,7 +7,6 @@ CalamityClientConfig: {
 		UI: UI Changes
 		MeterPositions: Meter Positions
 		MusicToggles: Music Toggles
-		Multithreading: Multi-Threading
 	}
 
 	AbyssLayer3Alt: {
@@ -48,15 +47,6 @@ CalamityClientConfig: {
 			'''
 			Adds extra info to Calamity's boss health bar.
 			This displays either the boss's exact health or number of remaining parts or segments.
-			'''
-	}
-
-	CalamityArmorSetBonusDoubleTap: {
-		Label: "[i:CalamityMod/DesertProwlerHat] Calamity Armor Set Bonuses Can Use Vanilla Hotkey"
-		Tooltip:
-			'''
-			Allows Calamity armor set bonuses to be triggered by the vanilla double-tap DOWN hotkey (or UP depending on your settings).
-			Also allows vanilla armor set bonuses to be triggered by Calamity's armor set bonus hotkey.
 			'''
 	}
 
@@ -137,7 +127,7 @@ CalamityClientConfig: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:
 			'''
-			When enabled, you can hold the DOWN key while in the air to accelerate downwards faster.
+			When enabled, you can hold the {$Key.DOWN} key while in the air to accelerate downwards faster.
 			This config does not increase your maximum falling speed, just how quickly you accelerate to it.
 			Calamity is balanced around this setting being enabled.
 			'''
@@ -252,6 +242,21 @@ CalamityClientConfig: {
 			[c/FF232C:All screen-shake visuals are balanced around a value of 1.]
 			[c/FF232C:Higher values may be nauseating or otherwise bad for some.]
 			'''
+	}
+
+	SetBonusDoubleTap: {
+		Label: "[i:VortexHelmet] Allow Double Tap for Armor Set Bonuses"
+		Tooltip:
+			'''
+			Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
+			Set to Auto to automatically turn off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
+			'''
+
+		Options: {
+			On: Always On
+			Auto: Auto
+			Off: Always Off
+		}
 	}
 
 	ShopNewAlert: {
@@ -388,21 +393,6 @@ CalamityClientConfig: {
 	WikiStatusMessage: {
 		Label: "[i:Book] Wiki Status Message"
 		Tooltip: Enable or disable the status message promoting the Official Calamity Wiki that plays on world entry.
-	}
-
-	MultiThreadingType: {
-		Label: Sunken Sea Multi-Threading Option
-		Tooltip:
-			'''
-			Option 0 will disable worldgen multi-threading.
-			Option 1 will enable ReLogic's multi-threading.
-			Option 2 will enable custom multi-threading.
-			'''
-	}
-
-	SunkenSeaMultiThreading: {
-		Label: Sunken Sea Multi Threading
-		Tooltip: ""
 	}
 }
 
@@ -567,3 +557,5 @@ CalamityServerConfig: {
 			'''
 	}
 }
+
+SetBonusDoubleTapOptions.Tooltip: ""

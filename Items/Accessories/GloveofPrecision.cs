@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.gloveOfPrecision = true;
             player.GetDamage<RogueDamageClass>() += 0.10f;
-            player.GetCritChance<RogueDamageClass>() += 15;
+            player.GetCritChance<RogueDamageClass>() += 10;
             modPlayer.rogueVelocity += 0.15f;
             player.GetAttackSpeed<RogueDamageClass>() -= 0.15f;
         }

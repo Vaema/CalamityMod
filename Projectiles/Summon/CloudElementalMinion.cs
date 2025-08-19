@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.cloudWaifu && !modPlayer.allWaifus && !modPlayer.cloudWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.cloudElemental && !modPlayer.allElementals && !modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -51,9 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.cWaifu = false;
+                    modPlayer.cloudEleBuff = false;
                 }
-                if (modPlayer.cWaifu)
+                if (modPlayer.cloudEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.frame = 0;
             }
 
-            if (!modPlayer.cloudWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.cloudElementalVanity && !modPlayer.allElementalsVanity)
             {
                 float lightScalar = (float)Main.rand.Next(90, 111) * 0.01f;
                 lightScalar *= Main.essScale;
@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.cloudWaifuVanity || modPlayer.allWaifusVanity)
+            if (modPlayer.cloudElementalVanity || modPlayer.allElementalsVanity)
             {
                 return false;
             }

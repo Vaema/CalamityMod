@@ -2,10 +2,10 @@
 using CalamityMod.Items.Potions;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -33,11 +33,10 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = CommonCalamitySounds.PlasmaBlastSound;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/PlasmaBlast");
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)

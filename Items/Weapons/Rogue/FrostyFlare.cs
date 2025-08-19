@@ -9,16 +9,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class FrostyFlare : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 10;
             Item.height = 22;
-            Item.damage = 32;
+            Item.damage = 37;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.useAnimation = Item.useTime = 13;
@@ -27,12 +22,10 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.knockBack = 2f;
-            Item.value = Item.buyPrice(0, 0, 8, 0);
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<FrostyFlareProj>();
             Item.shootSpeed = 22f;
-            Item.maxStack = Item.CommonMaxStack;
-            Item.consumable = true;
             Item.DamageType = RogueDamageClass.Instance;
         }
 

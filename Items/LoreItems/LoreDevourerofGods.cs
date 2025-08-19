@@ -19,7 +19,7 @@ namespace CalamityMod.Items.LoreItems
             Item.width = 20;
             Item.height = 20;
             Item.consumable = false;
-            Item.rare = ModContent.RarityType<PureGreen>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void AddRecipes()

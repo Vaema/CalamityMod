@@ -2,8 +2,10 @@
 using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,6 +13,10 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
 {
     public class AcidwoodLanternTile : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
+        public override void Load() => FlameTexture = ModContent.Request<Texture2D>(Texture + "Flame");
+
         public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<AcidwoodLantern>());
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
@@ -46,9 +52,19 @@ namespace CalamityMod.Tiles.FurnitureAcidwood
             CalamityUtils.LightHitWire(Type, i, j, 1, 2);
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override void GetTileFlameData(int i, int j, ref TileDrawing.TileFlameData tileFlameData)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAcidwood/AcidwoodLanternTileFlame").Value, i, j, 0, -8);
+            ulong flameSeed = Main.TileFrameSeed ^ (ulong)(((long)i << 32) | (uint)j);
+            tileFlameData.flameSeed = flameSeed;
+            tileFlameData.flameTexture = FlameTexture.Value;
+            tileFlameData.flameColor = new Color(64, 128, 102, 0);
+            tileFlameData.flameCount = 3;
+            tileFlameData.flameRangeXMin = -10;
+            tileFlameData.flameRangeXMax = 11;
+            tileFlameData.flameRangeYMin = -10;
+            tileFlameData.flameRangeYMax = 11;
+            tileFlameData.flameRangeMultX = 0.1f;
+            tileFlameData.flameRangeMultY = 0.1f;
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

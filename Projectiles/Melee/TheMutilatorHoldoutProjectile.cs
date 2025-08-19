@@ -42,6 +42,9 @@ namespace CalamityMod.Projectiles.Melee
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
 
+        public override SoundStyle? UseSound => SoundID.Item1;
+
+
         public bool hasGivenBlood = false;
 
         public override void Spawn(IEntitySource source)

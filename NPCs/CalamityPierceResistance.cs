@@ -62,7 +62,6 @@ namespace CalamityMod.NPCs
             exemptProjectiles.Add(ProjectileType<MarniteRepulsionHitbox>()); // Included here as it does not have a projectile
             exemptProjectiles.Add(ProjectileID.MonkStaffT3);
             exemptProjectiles.Add(ProjectileID.PiercingStarlight);
-            exemptProjectiles.Add(ProjectileID.SandnadoFriendly);
             exemptProjectiles.Add(ProjectileID.Terragrim);
 
             // Specific vanilla projectile single hitbox exemptions
@@ -70,6 +69,9 @@ namespace CalamityMod.NPCs
             singleHitboxExemptProjectiles[ProjectileID.NettleBurstLeft] = true;
             singleHitboxExemptProjectiles[ProjectileID.NettleBurstRight] = true;
             singleHitboxExemptProjectiles[ProjectileID.PrincessWeapon] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud2] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud3] = true;
 
             var projectileTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
                 .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModProjectile)));
@@ -145,7 +147,7 @@ namespace CalamityMod.NPCs
         private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
         {
             // Thanatos segments do not trigger pierce resistance if they are closed
-            if (ThanatosIDList.Includes(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
+            if (CalamityNPCTypeSets.Thanatos.Contains(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
                 return;
 
             float damageReduction = projectile.Calamity().timesPierced * BalancingConstants.PierceResistHarshness;

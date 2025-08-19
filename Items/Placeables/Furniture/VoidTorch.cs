@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture
 {
+    [LegacyName("AbyssTorch")]
     public class VoidTorch : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Placeables";

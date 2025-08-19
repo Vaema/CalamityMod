@@ -93,8 +93,13 @@ namespace CalamityMod.Projectiles.Rogue
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
-            if (target.lifeMax > 5 && Projectile.numHits == 0 && Slash == 0f)
-                OnHitEffects(hit.Damage);
+            if (target.IsAnEnemy(false) && Projectile.numHits == 0 && Slash == 0f)
+            {
+                Player player = Main.player[Projectile.owner];
+                player.SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.025));
+                if (Main.LocalPlayer.team == player.team && player.team != 0)
+                    Main.LocalPlayer.AddBuff(ModContent.BuffType<AvertorBonus>(), CalamityUtils.SecondsToFrames(20f), true);
+            }
 
             if (Projectile.numHits > 0 && !(target.life <= 0 && target.realLife == -1))
                 Projectile.damage = (int)(Projectile.damage * 0.9f);
@@ -102,29 +107,6 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.damage = 1;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
-            if (Projectile.numHits == 0 && Slash == 0f)
-                OnHitEffects(info.Damage);
-        }
-
-        private void OnHitEffects(int damage)
-        {
-            Player player = Main.player[Projectile.owner];
-            if (Main.LocalPlayer.team == player.team && player.team != 0)
-            {
-                Main.LocalPlayer.AddBuff(ModContent.BuffType<AvertorBonus>(), CalamityUtils.SecondsToFrames(20f), true);
-
-                int heal = (int)Math.Round(damage * 0.025);
-                if (heal > BalancingConstants.LifeStealCap)
-                    heal = BalancingConstants.LifeStealCap;
-
-                if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0)
-                    return;
-
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.LocalPlayer, heal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
-            }
-        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180);
     }
 }

@@ -57,12 +57,12 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Infinity)
                 {
                     Projectile.timeLeft = 340;
-                    Projectile.ArmorPenetration = 25;
+                    Projectile.ArmorPenetration = 20;
                 }
                 if (Svant)
                 {
                     Projectile.timeLeft = 640;
-                    Projectile.ArmorPenetration = 100;
+                    Projectile.ArmorPenetration = 200;
                 }
                 direction = Main.rand.NextBool();
                 homeSpeed = Main.rand.NextFloat(5, 8);
