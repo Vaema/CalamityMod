@@ -52,6 +52,17 @@ AxeofPurity: {
 		'''
 }
 
+Bakidon: {
+	DisplayName: Bakidon
+	Tooltip:
+		'''
+		A lost artifact said to pin the heavens in place
+		<left> to freeze the passage of day and night temporarily
+		This does not work during celestial anomalies
+		The time freeze recharges while not in use
+		'''
+}
+
 BeastialPickaxe: {
 	DisplayName: Beastial Pickaxe
 	Tooltip: ""
@@ -80,9 +91,10 @@ Cosmolight: {
 	DisplayName: Cosmolight
 	Tooltip:
 		'''
-		A magical artifact, rekindled by exposure to raw cosmic energy
-		<left> to fast forward time
-		<right> to freeze time
+		A lost artifact freshly rekindled by exposure to raw cosmic energies
+		Hold <left> to drastically accelerate the passage of day and night
+		<right> to freeze the passage of day and night indefinitely
+		The time freeze lasts forever and works during celestial anomalies
 		'''
 }
 
@@ -251,15 +263,5 @@ WulfrumTreasurePinger: {
 		'''
 		Locates nearby metal that's hopefully more valuable than wulfrum
 		This contraption seems incredibly shoddy. [c/FC4903:It'll break sooner than later for sure]
-		'''
-}
-
-Bakidon: {
-	DisplayName: Bakidon
-	Tooltip:
-		'''
-		A magical artifact, whose flame died out long ago
-		Using it freezes the passage of time temporarily
-		This does not work during celestial anomalies
 		'''
 }
