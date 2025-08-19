@@ -125,11 +125,6 @@ namespace CalamityMod.Items
         /// </summary>
         public bool devItem = false;
         /// <summary>
-        /// If true, this item can fire projectiles with point-blank damage.<br/>
-        /// Also adds a tooltip line to the bottom of the item's tooltip.
-        /// </summary>
-        public bool canFirePointBlankShots = false;
-        /// <summary>
         /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
         /// Used by coin items spawned from hitting ricoshot coins.
         /// </summary>
@@ -172,7 +167,6 @@ namespace CalamityMod.Items
             myClone.revengeanceItem = revengeanceItem;
             myClone.donorItem = donorItem;
             myClone.devItem = devItem;
-            myClone.canFirePointBlankShots = canFirePointBlankShots;
             myClone.grabRangeMultiplier = grabRangeMultiplier;
 
             return myClone;
@@ -569,13 +563,10 @@ namespace CalamityMod.Items
             tag.Add("charge", Charge);
             tag.Add("enchantmentID", AppliedEnchantment.HasValue ? AppliedEnchantment.Value.ID : 0);
             tag.Add("DischargeEnchantExhaustion", DischargeEnchantExhaustion);
-            tag.Add("canFirePointBlankShots", canFirePointBlankShots);
         }
 
         public override void LoadData(Item item, TagCompound tag)
         {
-            canFirePointBlankShots = tag.GetBool("canFirePointBlankShots");
-
             // Changed charge from int to float. If an old charge int is present, load that instead.
             if (tag.ContainsKey("Charge"))
                 Charge = tag.GetInt("Charge");
@@ -594,11 +585,6 @@ namespace CalamityMod.Items
 
         public override void NetSend(Item item, BinaryWriter writer)
         {
-            BitsByte flags = new BitsByte();
-            flags[0] = canFirePointBlankShots;
-            // rip, no other flags. what a byte.
-
-            writer.Write(flags);
             writer.Write(Charge);
             writer.Write(AppliedEnchantment.HasValue ? AppliedEnchantment.Value.ID : 0);
             writer.Write(DischargeEnchantExhaustion);
@@ -606,9 +592,6 @@ namespace CalamityMod.Items
 
         public override void NetReceive(Item item, BinaryReader reader)
         {
-            BitsByte flags = reader.ReadByte();
-            canFirePointBlankShots = flags[0];
-
             Charge = reader.ReadSingle();
 
             Enchantment? savedEnchantment = EnchantmentManager.FindByID(reader.ReadInt32());
