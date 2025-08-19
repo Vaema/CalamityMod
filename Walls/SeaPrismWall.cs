@@ -21,7 +21,7 @@ namespace CalamityMod.Walls
             Main.wallHouse[Type] = true;
             DustType = 108;
 
-            AddMapEntry(new Color(11, 56, 81));
+            AddMapEntry(new Color(27, 123, 131));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;

@@ -21,6 +21,8 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
             Main.tileMerge[Type][ModContent.TileType<MediumSeaPrismCrystal>()] = true;
 
+            Main.tileMerge[Type][ModContent.TileType<SeaPrismCrystals>()] = true;
+
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
             Main.tileLighted[Type] = true;
