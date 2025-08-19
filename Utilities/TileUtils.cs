@@ -6,6 +6,8 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
+using CalamityMod.Tiles.FurnitureDriftwood;
+using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
@@ -448,6 +450,8 @@ namespace CalamityMod
             TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
@@ -518,6 +522,7 @@ namespace CalamityMod
             TileType<CelestialRemains>(),
             // Sunken Sea
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<PolypSand>(),
             TileType<VolcanicSand>(),
             TileType<PinkPearlPile>(),

@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<FirestormCannonHoldout>();
             Item.shootSpeed = 5.5f;
             Item.useAmmo = AmmoID.Flare;

@@ -69,7 +69,6 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<GoldenEagle>(),
                 ModContent.ItemType<RougeSlash>()
             }));
-            itemLoot.Add(ModContent.ItemType<Swordsplosion>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<FollyFeed>(), DropHelper.BagWeaponDropRateFraction);

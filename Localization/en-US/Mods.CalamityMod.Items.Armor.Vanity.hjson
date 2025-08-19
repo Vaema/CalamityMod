@@ -58,7 +58,7 @@ AstrumDeusMask: {
 	Tooltip: ""
 }
 
-BrimstoneWaifuMask: {
+BrimstoneElementalMask: {
 	DisplayName: Brimstone Elemental Mask
 	Tooltip: ""
 }
@@ -266,6 +266,16 @@ TheFormalFootwear: {
 TheGrandGarment: {
 	DisplayName: The Grand Garment
 	Tooltip: Part of The High-Flying Finery
+}
+
+VictideCoralTurban: {
+	DisplayName: Victide Coral Turban
+	Tooltip: ""
+}
+
+VictideShellmet: {
+	DisplayName: Victide Shellmet
+	Tooltip: ""
 }
 
 YharonMask: {

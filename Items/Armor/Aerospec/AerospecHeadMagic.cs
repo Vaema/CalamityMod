@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Armor.Aerospec
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float MagicDamageBoost = 0.1f;
         public static int MaxManaBoost = 30;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), MaxManaBoost);
+        public static float MagicDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, MagicDamageBoost.ToPercent());
 
         // Set Bonus
         public static float SetBonusManaCostReduction = 0.08f;

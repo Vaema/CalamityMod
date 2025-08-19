@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Boss
                 center.Y += 2f;
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), center, Projectile.velocity, Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 11f, Projectile.ai[1] - 1f);
             }
-            int tornadoSpeed = 10;
+            int tornadoSpeed = 15;
             int breakThreshold = 300;
             Projectile.localAI[1] += 1f;
             bool breakapart = Main.zenithWorld && Projectile.localAI[1] >= breakThreshold;
@@ -130,9 +130,6 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.localAI[1] == breakThreshold && Main.zenithWorld)
             {
                 Projectile.velocity.X = Main.rand.NextBool() ? -tornadoSpeed : tornadoSpeed;
-
-                if (CalamityWorld.LegendaryMode)
-                    Projectile.velocity.X *= 1.5f;
             }
 
             if (Projectile.timeLeft == 600)
@@ -161,7 +158,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             if (Projectile.timeLeft <= 600)
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
+                target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
     }
 }

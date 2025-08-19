@@ -31,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 30;
             Item.knockBack = 8f;
-            Item.UseSound = SoundID.Item1;
             Item.shootSpeed = 10f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

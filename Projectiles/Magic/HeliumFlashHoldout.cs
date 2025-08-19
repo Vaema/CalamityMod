@@ -152,7 +152,7 @@ namespace CalamityMod.Projectiles.Magic
                 // Full charge effects
                 if (CurrentChargingFrames == HeliumFlash.FullChargeFrames)
                 {
-                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/HeliumFlashReady");
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                     for (int i = 0; i < 18; i++)
                     {

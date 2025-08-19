@@ -17,7 +17,6 @@ namespace CalamityMod.Systems
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<AstralachneaGround>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<AstralachneaWall>()];
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<DevilFishAlt>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<DevilFish>()];
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<ScryllarRage>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<Scryllar>()];
-            ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<HiveBlob2>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<HiveBlob>()];
             ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCType<LavaSlimeNoLavaDrop>()] = ContentSamples.NpcBestiaryCreditIdsByNpcNetIds[NPCID.LavaSlime];
         }
     }

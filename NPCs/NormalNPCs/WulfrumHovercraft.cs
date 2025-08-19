@@ -317,8 +317,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                //Become a spark piñata in Legendary
-                if (CalamityWorld.LegendaryMode && Supercharged)
+                //Become a spark piñata in FTW
+                if (Main.getGoodWorld && Supercharged)
                 {
                     for (int Sparks = Main.rand.Next(2, 5); Sparks > 0; Sparks--)
                     {

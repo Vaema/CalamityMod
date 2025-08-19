@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.StormWeaver
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
@@ -191,7 +191,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase4 = lifeRatio < 0.3f;
 
             // Update armored settings to naked settings
-            if (phase2 && !CalamityWorld.LegendaryMode)
+            if (phase2 && !Main.zenithWorld)
             {
                 // Spawn armor gore, roar and set other crucial variables
                 if (!NPC.chaseable)
@@ -278,7 +278,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 }
 
                 // Used for body and tail projectile firing timings in phase 1
-                if (!phase2 || CalamityWorld.LegendaryMode)
+                if (!phase2 || Main.zenithWorld)
                     NPC.localAI[0] += 1f;
             }
 
@@ -554,7 +554,8 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
                     {
                         Vector2 soundCenter = Main.player[NPC.target].Center;
-                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                        SoundStyle lightning = new("CalamityMod/Sounds/Custom/LightningTelegraph") { Volume = 0.7f };
+                        SoundEngine.PlaySound(lightning, soundCenter);
                     }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {
@@ -617,7 +618,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 }
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 velocity *= 1.4f;
                 acceleration *= 1.4f;
@@ -828,7 +829,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            bool phase2 = lifeRatio < 0.8f && !CalamityWorld.LegendaryMode;
+            bool phase2 = lifeRatio < 0.8f && !Main.zenithWorld;
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge

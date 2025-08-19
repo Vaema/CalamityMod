@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -13,9 +13,8 @@ namespace CalamityMod.Items.Armor.Sulphurous
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float MoveSpeedBoost = 0.1f;
-        public static float SubmergedMoveSpeedBoostBuff = 0.25f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MoveSpeedBoost.ToPercent(), SubmergedMoveSpeedBoostBuff.ToPercent());
+        public static float RogueDamageBoost = 0.04f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent());
 
         public override void SetDefaults()
         {
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Armor.Sulphurous
             Item.rare = ItemRarityID.Green;
         }
 
-        public override void UpdateEquip(Player player) => player.moveSpeed += MoveSpeedBoost + (player.Calamity().countsAsAnyWet ? SubmergedMoveSpeedBoostBuff : 0f);
+        public override void UpdateEquip(Player player) => player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
 
         public override void AddRecipes()
         {

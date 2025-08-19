@@ -10,6 +10,8 @@ using Terraria.Enums;
 using Terraria.ObjectData;
 using CalamityMod.Items.Weapons.Melee;
 using Terraria.GameContent;
+using CalamityMod.Systems;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -70,20 +72,52 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            var tile = Main.tile[i, j];
-            bool lessLightDueToLowWater = tile.LiquidAmount > 50 && tile.LiquidType == LiquidID.Water;
+            float fade1 = GetFade1(i, j);
+            float fade2 = GetFade2(i, j);
 
-            //Blue
-            Color blue = new Color(202, 236, 238);
-            Color darkviolet = new Color(18, 67, 116);
-            Color value = Color.Lerp(blue, darkviolet, (MathF.Sin(-j / 80f + Main.GameUpdateCount * 0.017f + i / 40f) + 1f) / 2f);
-            Color value1 = Color.Lerp(blue, darkviolet, (MathF.Sin((j - 10) / 50f + Main.GameUpdateCount * 0.064f + -i / 30f) + 1f) / 2f);
-            r = lessLightDueToLowWater ? 0.27f : 0.36f;
-            g = lessLightDueToLowWater ? 0.405f : 0.54f;
-            b = lessLightDueToLowWater ? 0.405f : 0.54f;
-            r *= (value.R + value1.R) / 300f;
-            g *= (value.G + value1.G) / 300f;
-            b *= (value.B + value1.B) / 300f;
+            Color baseColor = new Color(162, 216, 218); //Blue
+            Color glow1 = new Color(171, 113, 215);    //Purple
+            Color glow2 = new Color(56, 174, 117);     //Green
+
+            Vector3 blended = baseColor.ToVector3();
+
+            blended = Vector3.Lerp(blended, glow1.ToVector3(), fade1 * 0.5f);
+            blended = Vector3.Lerp(blended, glow2.ToVector3(), fade2 * 0.5f);
+
+            float brightness = 0.6f;
+            blended *= brightness;
+
+            r = blended.X;
+            g = blended.Y;
+            b = blended.Z;
+        }
+
+        private static float GetFade1(int i, int j)
+        {
+            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.2f) + 1f) / 2f;
+        }
+
+        private static float GetFade2(int i, int j)
+        {
+            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
+        }
+
+        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+            Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 position = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreen;
+
+            Rectangle sourceRect = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
+
+            Texture2D baseTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Blue").Value;
+            spriteBatch.Draw(baseTex, position, sourceRect, Lighting.GetColor(i, j) * 1.5f);
+
+            Texture2D tex1 = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Purple").Value;
+            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Green").Value;
+
+            spriteBatch.Draw(tex1, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade1(i, j));
+            spriteBatch.Draw(tex2, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade2(i, j));
         }
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {

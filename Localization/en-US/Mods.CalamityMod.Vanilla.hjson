@@ -1,3 +1,4 @@
+DashKey: Press {0} while facing a direction
 DodgeInfo:
 	'''
 	Grants the ability to dodge attacks
@@ -49,9 +50,6 @@ AddedTooltip: {
 		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
 		Fairies are immune to damage and will no longer flee
 		'''
-	MoonStone: Reduces the damage of the Nightwither debuff
-	SunStone: Reduces the damage of the Daybroken debuff
-	CelestialStone: Reduces the damage of the Nightwither and Daybroken debuffs
 	ArcaneFlower: 5% increased magic damage
 	RifleScope: The scope effect can be toggled with visibility
 	FeatherfallPotion: Disables all airborne flight recovery
@@ -76,7 +74,7 @@ EditedTooltip: {
 	BloodySpine:
 		'''
 		Summons the Brain of Cthulhu when used in the Crimson
-		Enrages outside the Underground Crimson
+		Despawns outside the Crimson
 		'''
 	ClothierVoodooDoll:
 		'''
@@ -95,31 +93,19 @@ EditedTooltip: {
 		Summons the Golem when used at the Lihzahrd Altar
 		Enrages outside the Jungle Temple
 		'''
-	MechanicalEye:
-		'''
-		Summons The Twins when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalEye: Summons The Twins when used during nighttime
 	MechanicalSkull:
 		'''
 		Summons Skeletron Prime when used during nighttime
 		Enrages during the day
 		'''
-	MechanicalWorm:
-		'''
-		Summons The Destroyer when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalWorm: Summons The Destroyer when used during nighttime
 	QueenSlimeCrystal: Summons Queen Slime when used in the Hallow
-	SuspiciousLookingEye:
-		'''
-		Summons the Eye of Cthulhu when used during nighttime
-		Enrages during the day
-		'''
+	SuspiciousLookingEye: Summons the Eye of Cthulhu when used during nighttime
 	WormFood:
 		'''
 		Summons the Eater of Worlds when used in the Corruption
-		Enrages outside the Underground Corruption
+		Despawns outside the Corruption
 		'''
 	MasterExclusive: Master or Revengeance
 	// Sparkle Slime Balloon
@@ -147,7 +133,6 @@ EditedTooltip: {
 	// Arcane Crystal
 	AegisCrystal: Permanently boosts natural life regeneration
 	ArcheryPotion: 20% increased arrow speed and 5% increased arrow damage
-	IronskinPotion: Increase defense by {0}
 	// Aerial Bane
 	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
 	AleSake:
@@ -181,7 +166,6 @@ EditedTooltip: {
 	MagicQuiver: Increases arrow damage by 5% and greatly increases arrow speed
 	MoltenQuiver1: Increases arrow damage by 7% and greatly increases arrow speed
 	MoltenQuiver2: Lights wooden arrows ablaze and all arrows inflict Hellfire
-	MagicPowerPotion: 10% increased magic damage
 	MagicHat: 6% increased magic critical strike chance
 	PowerGlove: 10% increased melee speed, does not stack with downgrades
 	BerserkerGlove: 10% increased true melee damage

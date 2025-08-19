@@ -68,7 +68,7 @@ namespace CalamityMod.NPCs.StormWeaver
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
@@ -118,7 +118,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase2 = NPC.life / (float)NPC.lifeMax < 0.8f;
 
             // Update armored settings to naked settings
-            if (phase2 && (!CalamityWorld.LegendaryMode || !CalamityWorld.revenge))
+            if (phase2 && (!Main.zenithWorld || !CalamityWorld.revenge))
             {
                 // Spawn armor gore and set other crucial variables
                 if (NPC.takenDamageMultiplier == 2f)
@@ -244,7 +244,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            bool phase2 = lifeRatio < 0.8f && (!CalamityWorld.LegendaryMode || !revenge);
+            bool phase2 = lifeRatio < 0.8f && (!Main.zenithWorld || !revenge);
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge

@@ -34,7 +34,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = Lifetime;
             Projectile.extraUpdates = 2;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

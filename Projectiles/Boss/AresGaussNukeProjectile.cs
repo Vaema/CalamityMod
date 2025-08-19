@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
             Projectile.timeLeft = timeLeft;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
@@ -123,6 +123,13 @@ namespace CalamityMod.Projectiles.Boss
             int target = Player.FindClosest(Projectile.Center, 1, 1);
             Vector2 distanceFromTarget = Main.player[target].Center - Projectile.Center;
 
+            // Instant explode upon collision with the target
+            if (CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, Main.player[target].Hitbox))
+            {
+                Projectile.Kill();
+                return;
+            }
+
             // Set AI to stop homing, start accelerating
             float stopHomingDistance = death ? 280f : revenge ? 290f : expertMode ? 300f : 320f;
             if ((distanceFromTarget.Length() < stopHomingDistance && Projectile.ai[0] != -1f) || Projectile.ai[0] == 1f)
@@ -175,10 +182,8 @@ namespace CalamityMod.Projectiles.Boss
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/AresGaussNukeProjectileGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, targetHitbox);
-
-        // Explodes on contact
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => Projectile.Kill();
+        // Does not do damage by itself, only through the explosion
+        public override bool? CanDamage() => false;
 
         public override void OnKill(int timeLeft)
         {
@@ -200,7 +205,7 @@ namespace CalamityMod.Projectiles.Boss
                 // Explosion waves
                 for (int i = 0; i < 3; i++)
                 {
-                    Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), Projectile.damage, 0f, Main.myPlayer);
+                    Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), i == 2 ? Projectile.damage : 0, 0f, Main.myPlayer);
                     if (explosion.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
                         // Make the max explosion radius decrease over time, creating a ring effect.

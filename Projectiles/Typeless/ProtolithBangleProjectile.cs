@@ -115,17 +115,6 @@ namespace CalamityMod.Projectiles.Typeless
             float launchPower = 6;
             target.MoveNPC(launchVel, launchPower, true);
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            bool hasCD = Owner.Calamity().cooldowns.TryGetValue(GenericBandCooldown.ID, out CooldownInstance bandCD);
-
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Owner.Calamity().generalBandCooldown > ProtolithBangle.cooldown / 2)
-            {
-                Owner.Calamity().generalBandCooldown -= ProtolithBangle.cooldown / 2;
-                if (hasCD)
-                    bandCD.timeLeft -= ProtolithBangle.cooldown / 2;
-            }
-        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f * Projectile.scale, targetHitbox);
         public override bool? CanDamage()
         {

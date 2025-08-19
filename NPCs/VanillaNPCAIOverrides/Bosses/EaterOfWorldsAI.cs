@@ -27,13 +27,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Causes it to split far more in death mode
-            if ((((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && death) || CalamityWorld.LegendaryMode)
+            if ((((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && death) || Main.getGoodWorld)
             {
                 calamityGlobalNPC.DR = 0.5f;
                 npc.defense = npc.defDefense * 2;
             }
 
-            if (CalamityWorld.LegendaryMode && npc.type == NPCID.EaterofWorldsHead)
+            if (Main.getGoodWorld && npc.type == NPCID.EaterofWorldsHead)
                 npc.reflectsProjectiles = true;
 
             // Get a target
@@ -76,7 +76,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[1] -= 1f;
 
                     int vileSpitGateValue = (int)MathHelper.Lerp(death ? 45f : 90f, 900f, lifeRatio);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         vileSpitGateValue = (int)(vileSpitGateValue * 0.5f);
 
                     Vector2 vileSpitShootLocation = npc.Center + npc.velocity;
@@ -378,7 +378,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 segmentAcceleration += (npc.justHit ? 0.16f : 0.04f);
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 segmentVelocity += 4f;
                 segmentAcceleration += 0.05f;
@@ -415,7 +415,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 int npcWidth = npc.width;
                 npcWidth = (int)(npcWidth * npc.scale);
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     npcWidth = 62;
 
                 targetDistance = (targetDistance - npcWidth) / targetDistance;
@@ -707,7 +707,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         public static int GetEaterOfWorldsSegmentsCountRevDeath()
         {
-            return CalamityWorld.LegendaryMode ? 100 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 57 : 62;
+            return Main.getGoodWorld ? 100 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 57 : 62;
         }
     }
 }

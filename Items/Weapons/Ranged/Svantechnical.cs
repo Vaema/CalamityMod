@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 6f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -62,12 +61,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             SineCounter++;
             if (SineCounter % 4 == 0)
             {
-                    Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
-                    Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
-                    Vector2 helixVel3 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine2));
-                    int shot1 = Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 2f : 0);
-                    int shot2 = Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 4f : 0);
-                    int shot3 = Projectile.NewProjectile(source, position.X, position.Y, helixVel3.X, helixVel3.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 3f : 0);
+                Vector2 helixVel1 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine));
+                Vector2 helixVel2 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(-sine));
+                Vector2 helixVel3 = (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedBy(MathHelper.ToRadians(sine2));
+                Projectile.NewProjectile(source, position.X, position.Y, helixVel1.X, helixVel1.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 2f : 0);
+                Projectile.NewProjectile(source, position.X, position.Y, helixVel2.X, helixVel2.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 4f : 0);
+                Projectile.NewProjectile(source, position.X, position.Y, helixVel3.X, helixVel3.Y, shotType, damage, knockback, player.whoAmI, 0f, 0, player.altFunctionUse != 2 ? 3f : 0);
             }
             else if (player.altFunctionUse != 2)
             {

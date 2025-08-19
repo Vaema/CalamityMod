@@ -31,7 +31,6 @@ namespace CalamityMod.NPCs.Abyss
         public override void SetDefaults()
         {
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.aiStyle = -1;
             NPC.damage = 150;
             NPC.width = 80;

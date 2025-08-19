@@ -20,32 +20,26 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.height = 18;
             Projectile.width = 18;
-            Projectile.timeLeft = 150;
             Projectile.friendly = true;
+            Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
-            Projectile.DamageType = RogueDamageClass.Instance;
+            Projectile.timeLeft = 240;
             Projectile.alpha = 80;
-
-            Projectile.penetrate = 2;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
             Projectile.extraUpdates = 1;
+            DrawOffsetX = 1;
+            DrawOriginOffsetY = 4;
         }
 
         public override void AI()
         {
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            DrawOffsetX = 1;
-            DrawOriginOffsetY = 4;
 
             // Continuously trail dust
             int trailDust = 1;
             for (int i = 0; i < trailDust; ++i)
             {
-                int dustID = 54; //Used by Wraiths and other shadowy stuff
-
-                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
+                int idx = Dust.NewDust(Projectile.position - Projectile.velocity, Projectile.width, Projectile.height, DustID.Wraith, 0f, 0f, 0, new Color(38, 30, 43));
                 Main.dust[idx].noGravity = true;
                 Main.dust[idx].velocity += Projectile.velocity * 0.8f;
             }
@@ -54,63 +48,26 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.ai[0] > 0f)
                 Projectile.ai[0] -= 1f;
 
-            // Home in on nearby enemies if homing is enabled
-            if (Projectile.ai[1] == 0f)
-                HomingAI();
+            // Home in on nearby enemies
+            CalamityUtils.HomeInOnNPC(Projectile, true, 400f, 12f, 35f);
         }
 
-        private void HomingAI()
+        public override void OnKill(int timeLeft)
         {
-            CalamityUtils.HomeInOnNPC(Projectile, true, 200f, 12f, 35f);
+            // Create a burst of dust
+            int dustAmt = Main.rand.Next(30, 41);
+            for (int i = 0; i < dustAmt; i++)
+            {
+                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Wraith, 0f, 0f, 0, new Color(38, 30, 43), Main.rand.NextFloat(1f, 1.8f));
+                Main.dust[idx].noGravity = true;
+                Main.dust[idx].velocity *= Main.rand.NextFloat(2f, 3.1f);
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            // Rapidly screech to a halt upon touching an enemy and disable homing.
-            Projectile.velocity *= 0.4f;
-            Projectile.ai[1] = 1f;
-
-            // Fade out a bit with every hit
-            Projectile.alpha += 20;
-            if (Projectile.alpha > 255)
-                Projectile.alpha = 255;
-
-            // Explode into dust (as if being shredded apart on contact)
-            int onHitDust = Main.rand.Next(6, 11);
-            for (int i = 0; i < onHitDust; ++i)
-            {
-                int dustID = 54;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
-
-                Main.dust[idx].noGravity = true;
-                float speed = Main.rand.NextFloat(1.4f, 2.6f);
-                Main.dust[idx].velocity *= speed;
-                float scale = Main.rand.NextFloat(1.0f, 1.8f);
-                Main.dust[idx].scale = scale;
-            }
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            // Create a burst of dust
-            int killDust = Main.rand.Next(30, 41);
-            for (int i = 0; i < killDust; ++i)
-            {
-                int dustID = 54;
-                int idx = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, dustID, 0f, 0f, 0, new Color(38, 30, 43));
-
-                Main.dust[idx].noGravity = true;
-                float speed = Main.rand.NextFloat(2.0f, 3.1f);
-                Main.dust[idx].velocity *= speed;
-                float scale = Main.rand.NextFloat(1.0f, 1.8f);
-                Main.dust[idx].scale = scale;
-            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 42;
             Item.height = 38;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.value = Item.buyPrice(gold: 10); // Sold by Skeleton Merchant named "Sans Undertale"
             Item.rare = ItemRarityID.Purple;
             Item.vanity = true;
             Item.Calamity().devItem = true;

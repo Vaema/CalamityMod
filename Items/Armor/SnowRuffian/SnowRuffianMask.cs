@@ -10,13 +10,13 @@ namespace CalamityMod.Items.Armor.SnowRuffian
     public class SnowRuffianMask : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
-        private bool shouldBoost = false;
 
-        public static float RangedDamageBoost = 0.02f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+        public static int RangedCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost);
 
-        public static float SetBonusRangedDamageBoost = 0.04f;
-        public static int SetBonusRangedCritBoost = 4; // NOTE: Tooltip shares this number with damage % as they're equal
+        // Set Bonus
+        public static float GlideFallSpeedMult = 0.9f;
+        public static int SetBonusFrostburnDuration = CalamityUtils.SecondsToFrames(3);
 
         public override void Load()
         {
@@ -32,40 +32,19 @@ namespace CalamityMod.Items.Armor.SnowRuffian
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 3; //12
+            Item.defense = 3; // 12
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<SnowRuffianChestplate>() && legs.type == ModContent.ItemType<SnowRuffianGreaves>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<SnowRuffianChestplate>() && legs.type == ModContent.ItemType<SnowRuffianGreaves>();
 
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
             modPlayer.snowRuffianSet = true;
-            player.GetCritChance<RangedDamageClass>() += SetBonusRangedCritBoost;
-            player.GetDamage<RangedDamageClass>() += SetBonusRangedDamageBoost;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRangedDamageBoost.ToPercent());
-
-            if (player.controlJump)
-            {
-                player.noFallDmg = true;
-                player.UpdateJumpHeight();
-                if (shouldBoost && !player.mount.Active)
-                {
-                    player.velocity.X *= 1.1f;
-                    shouldBoost = false;
-                }
-
-            }
-            else if (!shouldBoost && player.velocity.Y == 0)
-            {
-                shouldBoost = true;
-            }
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusFrostburnDuration.FramesToSeconds());
         }
 
-        public override void UpdateEquip(Player player) => player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
+        public override void UpdateEquip(Player player) => player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
 
         public override void AddRecipes()
         {
@@ -78,21 +57,8 @@ namespace CalamityMod.Items.Armor.SnowRuffian
                 Register();
         }
     }
+
     public class SnowRuffianWings : EquipTexture
     {
-        public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
-        {
-            ascentWhenFalling = 0.5f;
-            ascentWhenRising = 0f;
-            maxCanAscendMultiplier = 0f;
-            maxAscentMultiplier = 0f;
-            constantAscend = 0f;
-        }
-
-        public override void HorizontalWingSpeeds(Player player, ref float speed, ref float acceleration)
-        {
-            speed = 2f;
-            acceleration *= 1.25f;
-        }
     }
 }

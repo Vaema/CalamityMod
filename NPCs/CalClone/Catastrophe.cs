@@ -150,13 +150,6 @@ namespace CalamityMod.NPCs.CalClone
 
             Player player = Main.player[NPC.target];
 
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-                enrageScale += 2f;
-            }
-
             float calCloneBroPlayerXDist = NPC.position.X + (NPC.width / 2) - player.position.X - (player.width / 2);
             float calCloneBroPlayerYDist = NPC.position.Y + NPC.height - 59f - player.position.Y - (player.height / 2);
             float calCloneBroRotation = (float)Math.Atan2(calCloneBroPlayerYDist, calCloneBroPlayerXDist) + MathHelper.PiOver2;
@@ -221,10 +214,8 @@ namespace CalamityMod.NPCs.CalClone
             {
                 float calCloneBroProjAttackMaxSpeed = 4.5f;
                 float calCloneBroProjAttackAccel = 0.2f;
-                calCloneBroProjAttackMaxSpeed += 2f * enrageScale;
-                calCloneBroProjAttackAccel += 0.1f * enrageScale;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     calCloneBroProjAttackMaxSpeed *= 1.15f;
                     calCloneBroProjAttackAccel *= 1.15f;
@@ -313,7 +304,6 @@ namespace CalamityMod.NPCs.CalClone
                         {
                             NPC.localAI[1] = 0f;
                             float calCloneBroProjSpeed = death ? 14f : 12f;
-                            calCloneBroProjSpeed += 3f * enrageScale;
                             int type = ModContent.ProjectileType<BrimstoneBall>();
                             calCloneBroProjLocation = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);
                             calCloneBroProjTargetX = player.position.X + (player.width / 2) - calCloneBroProjLocation.X;
@@ -339,12 +329,11 @@ namespace CalamityMod.NPCs.CalClone
                     NPC.rotation = calCloneBroRotation;
 
                     float calCloneBroChargeSpeed = (NPC.AnyNPCs(ModContent.NPCType<Cataclysm>()) ? 12f : 16f) + (death ? 4f * (1f - lifeRatio) : 0f);
-                    calCloneBroChargeSpeed += 4f * enrageScale;
                     if (expertMode)
                         calCloneBroChargeSpeed += 2f;
                     if (revenge)
                         calCloneBroChargeSpeed += 2f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         calCloneBroChargeSpeed *= 1.25f;
 
                     Vector2 calCloneBroChargeCenter = new Vector2(NPC.position.X + NPC.width * 0.5f, NPC.position.Y + NPC.height * 0.5f);

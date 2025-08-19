@@ -121,13 +121,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
-                enrageScale += 1.5f;
-            }
-
             // Deus cannot hit for 3 seconds or while invulnerable
             bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
             if (doNotDealDamage)
@@ -174,7 +167,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
             // Flight timer
-            float aiSwitchTimer = doubleWormPhase ? (CalamityWorld.LegendaryMode ? 600f : 1200f) : (CalamityWorld.LegendaryMode ? 900f : 1800f);
+            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
 
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
@@ -195,12 +188,10 @@ namespace CalamityMod.NPCs.AstrumDeus
             // Become gradually more pissed as more worms are killed
             int gfbMaxWormCount = 10;
             int gfbWormCount = 0;
-            if (CalamityWorld.MaliceMode)
+            if (Main.zenithWorld)
                 gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
             if (gfbWormCount > gfbMaxWormCount)
                 gfbWormCount = gfbMaxWormCount;
-            if (gfbWormCount > 0)
-                enrageScale += (gfbMaxWormCount - gfbWormCount) * 0.111f;
 
             // Copy dontTakeDamage and Opacity from head
             NPC.dontTakeDamage = Main.npc[(int)NPC.ai[2]].dontTakeDamage;
@@ -262,7 +253,8 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             float segmentVelocityBoost = 5f * (1f - lifeRatio);
             segmentVelocity += segmentVelocityBoost;
-            segmentVelocity += 4f * enrageScale;
+            if (gfbWormCount > 0)
+                segmentVelocity += (gfbMaxWormCount - gfbWormCount) * 0.444f;
 
             if (revenge)
             {
@@ -312,7 +304,9 @@ namespace CalamityMod.NPCs.AstrumDeus
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                float deusLaserSpeed = (death ? 16f : revenge ? 14f : 13f) + enrageScale * 4f;
+                                float deusLaserSpeed = death ? 16f : revenge ? 14f : 13f;
+                                if (gfbWormCount > 0)
+                                    deusLaserSpeed += (gfbMaxWormCount - gfbWormCount) * 0.444f;
 
                                 Vector2 deusLaserCenter = NPC.Center;
                                 float deusLaserTargetX = player.Center.X - deusLaserCenter.X;
@@ -440,7 +434,7 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             // Need segment amount to get a smooth transition down the worm based on length
             int segmentAmt = Main.zenithWorld ? (CalamityWorld.death ? 8 : CalamityWorld.revenge ? 7 : Main.expertMode ? 6 : 5) : (CalamityWorld.death ? 40 : CalamityWorld.revenge ? 35 : Main.expertMode ? 30 : 25);
-            float cyanThreshold = CalamityWorld.LegendaryMode ? 300f : 600f;
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
             float transitionStart = MathHelper.Lerp(cyanThreshold * 0.75f, cyanThreshold * 0.95f, 1f - (NPC.ai[3] / (float)segmentAmt));
             float transitionEnd = MathHelper.Lerp(cyanThreshold * 0.8f, cyanThreshold, 1f - (NPC.ai[3] / (float)segmentAmt));
             bool drawCyan = NPC.Calamity().newAI[3] >= transitionEnd && NPC.Calamity().newAI[3] <= cyanThreshold + transitionEnd;

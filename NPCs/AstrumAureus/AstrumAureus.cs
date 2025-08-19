@@ -113,10 +113,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
 
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale *= 0.8f;
+            if (Main.getGoodWorld)
+                NPC.scale = 0.7f;
             if (Main.zenithWorld)
-                NPC.scale *= 1.5f;
+                NPC.scale = 1.5f;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -195,26 +195,16 @@ namespace CalamityMod.NPCs.AstrumAureus
                     NPC.localAI[3] -= death ? 4f : expertMode ? 2f : 1f;
             }
 
-            float enrageScale = 0f;
-            if (Main.IsItDay() && !player.Calamity().ZoneAstral)
-            {
-                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
-                enrageScale += 1f;
-            }
-
             float astralFlameBarrageTimerIncrement = 1f;
             if (expertMode)
                 astralFlameBarrageTimerIncrement += death ? (float)Math.Round(3f * (1f - lifeRatio)) : (float)Math.Round(2f * (1f - lifeRatio));
 
-            float walkingVelocity = CalamityWorld.MaliceMode ? 6f : 5f;
-            walkingVelocity += 3f * enrageScale;
-            if (phase5)
-                walkingVelocity += 2f;
+            float walkingVelocity = phase5 ? 7f : 5f;
             if (expertMode)
                 walkingVelocity += 1.5f * (1f - lifeRatio);
             if (revenge)
                 walkingVelocity += Math.Abs(NPC.Center.X - player.Center.X) * 0.0025f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 walkingVelocity *= 1.15f;
 
             float walkingProjectileVelocity = walkingVelocity * 0.8f;
@@ -343,7 +333,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         {
                             float velocity = death ? (8f + NPC.localAI[2] * 0.025f) : 7f;
                             int type = ModContent.ProjectileType<AstralFlame>();
-                            float spreadLimit = (phase4 ? 100f : 50f) + enrageScale * 50f;
+                            float spreadLimit = phase4 ? 100f : 50f;
                             float randomSpread = (Main.rand.NextFloat() - 0.5f) * spreadLimit;
                             Vector2 spawnVector = new Vector2(NPC.Center.X, NPC.Center.Y - 80f * NPC.scale);
                             Vector2 destination = new Vector2(spawnVector.X + randomSpread, spawnVector.Y - 100f * NPC.scale);
@@ -640,11 +630,10 @@ namespace CalamityMod.NPCs.AstrumAureus
                                 calamityGlobalNPC.newAI[1] = speedMultLimit;
                         }
 
-                        float velocity = CalamityWorld.MaliceMode ? 27f : 20f;
-                        velocity += 6f * enrageScale;
+                        float velocity = 20f;
                         if (expertMode)
                             velocity += death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             velocity *= 1.15f;
 
                         NPC.velocity = (new Vector2(player.Center.X, player.Center.Y - 500f) - NPC.Center).SafeNormalize(Vector2.Zero) * velocity;
@@ -770,7 +759,7 @@ namespace CalamityMod.NPCs.AstrumAureus
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            float laserVelocity = CalamityWorld.MaliceMode ? 7f : death ? 6f : 5f;
+                            float laserVelocity = Main.getGoodWorld ? 7f : death ? 6f : 5f;
                             int maxProjectiles = !phase3 ? (death ? 11 : 9) : (death ? 15 : 13);
                             int spread = !phase3 ? (death ? 18 : 16) : (death ? 22 : 20);
 
@@ -819,10 +808,9 @@ namespace CalamityMod.NPCs.AstrumAureus
                                 NPC.velocity.Y = -3f;
 
                             float fallSpeed = 1.2f;
-                            fallSpeed += 0.36f * enrageScale;
                             if (expertMode)
                                 fallSpeed += death ? 0.36f * (1f - lifeRatio) : 0.24f * (1f - lifeRatio);
-                            if (CalamityWorld.MaliceMode)
+                            if (Main.getGoodWorld)
                                 fallSpeed += 0.5f;
 
                             if (calamityGlobalNPC.newAI[1] > 0f)
@@ -835,7 +823,6 @@ namespace CalamityMod.NPCs.AstrumAureus
                     {
                         // Push Aureus towards the player on the X axis if he's not directly on top of or below the player
                         float velocityXChange = 0.2f + Math.Abs(NPC.Center.X - player.Center.X) * 0.0001f;
-                        velocityXChange += 0.1f * enrageScale;
 
                         if (calamityGlobalNPC.newAI[0] > 0f)
                             velocityXChange *= calamityGlobalNPC.newAI[0] + 1f;
@@ -846,10 +833,9 @@ namespace CalamityMod.NPCs.AstrumAureus
                             NPC.velocity.X += velocityXChange;
 
                         float velocityXCap = 12f;
-                        velocityXCap += 3.6f * enrageScale;
                         if (expertMode)
                             velocityXCap += death ? 3.6f * (1f - lifeRatio) : 2.4f * (1f - lifeRatio);
-                        if (CalamityWorld.MaliceMode)
+                        if (Main.getGoodWorld)
                             velocityXCap += 5f;
 
                         if (calamityGlobalNPC.newAI[0] > 0f)
@@ -1056,13 +1042,13 @@ namespace CalamityMod.NPCs.AstrumAureus
 
             void CustomGravity()
             {
-                float gravity = 0.36f + 0.12f * enrageScale;
-                float maxFallSpeed = reduceFallSpeed ? 12f : 12f + 4f * enrageScale;
+                float gravity = 0.36f;
+                float maxFallSpeed = 12f;
 
                 if (calamityGlobalNPC.newAI[1] > 0f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1] + 1f;
 
-                if (CalamityWorld.LegendaryMode && !reduceFallSpeed)
+                if (Main.getGoodWorld && !reduceFallSpeed)
                 {
                     gravity *= 1.15f;
                     maxFallSpeed *= 1.15f;

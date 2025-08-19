@@ -76,7 +76,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int idleTime = phase8 ? 20 : phase7 ? 30 : phase3 ? 35 : 40;
             float timeToFinishRitual = phase8 ? 180f : phase7 ? 240f : phase5 ? 300f : 360f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 iceMistFireRate = 40;
                 iceMistSpeed = 15f;
@@ -1195,7 +1195,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 kill = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : death ? 5 : 4;
+                    int totalProjectiles = Main.getGoodWorld ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : death ? 5 : 4;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     Vector2 spinningPoint = new Vector2(0f, -splitProjVelocity);
                     for (int k = 0; k < totalProjectiles; k++)

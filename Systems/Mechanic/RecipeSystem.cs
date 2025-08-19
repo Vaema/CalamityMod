@@ -11,6 +11,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;
@@ -1628,30 +1630,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofLight, 4);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
-
-            // Mechanical Glove directly from correct class emblem for cheaper (compromise)
-            r = Recipe.Create(ItemID.MechanicalGlove);
-            r.AddIngredient(ItemID.PowerGlove);
-            r.AddIngredient(ItemID.WarriorEmblem);
-            r.AddIngredient(ItemID.SoulofFright);
-            r.AddIngredient(ItemID.SoulofMight);
-            r.AddIngredient(ItemID.SoulofSight);
-            r.AddTile(TileID.TinkerersWorkbench);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.MechanicalGlove);
-            r.DisableDecraft();
-
-            // Celestial Emblem directly from correct class emblem for cheaper (compromise)
-            r = Recipe.Create(ItemID.CelestialEmblem);
-            r.AddIngredient(ItemID.CelestialMagnet);
-            r.AddIngredient(ItemID.SorcererEmblem);
-            r.AddIngredient(ItemID.SoulofFright);
-            r.AddIngredient(ItemID.SoulofMight);
-            r.AddIngredient(ItemID.SoulofSight);
-            r.AddTile(TileID.TinkerersWorkbench);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.CelestialEmblem);
             r.DisableDecraft();
 
             // Tiershift Mini Nuke 1s to post Moon Lord.

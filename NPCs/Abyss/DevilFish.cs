@@ -46,7 +46,6 @@ namespace CalamityMod.NPCs.Abyss
         {
             NPC.noGravity = true;
             NPC.lavaImmune = true;
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 90;
             NPC.width = 136;
             NPC.height = 62;

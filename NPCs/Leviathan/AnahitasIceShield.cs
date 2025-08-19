@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
         }
 

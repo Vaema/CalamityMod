@@ -401,6 +401,8 @@ namespace CalamityMod.UI.ModeIndicator
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
             // But would be super useful so other mods can let their own difficulties go there.
 
+            DifficultyModeSystem._newGameModeID = mode.BackBoneGameModeID;
+
             // Disable difficulties.
             for (int i = 0; i < Difficulties.Count; i++)
             {
@@ -440,8 +442,11 @@ namespace CalamityMod.UI.ModeIndicator
             SoundEngine.PlaySound(mode.ActivationSound);
             CalamityNetcode.SyncCalamityWorldDifficulties(Main.myPlayer);
 
-            menuOpen = false;
-            menuOpenTransitionTime = MenuAnimLength;
+            if (menuOpen)
+            {
+                menuOpen = false;
+                menuOpenTransitionTime = MenuAnimLength;
+            }
         }
 
         #endregion

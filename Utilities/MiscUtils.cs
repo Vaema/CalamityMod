@@ -212,7 +212,7 @@ namespace CalamityMod
         }
 
         public static int SecondsToFrames(int seconds) => seconds * 60;
-        public static int SecondsToFrames(float seconds) => (int)(seconds * 60);
+        public static int SecondsToFrames(float seconds) => (int)MathF.Round(seconds * 60);
         public static int MinutesToFrames(int minutes) => minutes * 3600;
 
         public static bool WithinBounds(this int index, int cap) => index >= 0 && index < cap;

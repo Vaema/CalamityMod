@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Owner.Calamity().mouseRight && PostFireCooldown <= 0)
             {
-                if (Owner.CheckMana(Owner.ActiveItem(), (int)(HeldItem.mana * Owner.manaCost) * 16, true, false))
+                if (Owner.CheckMana(Owner.ActiveItem(), (int)(HeldItem.mana * Owner.manaCost) * 13, true))
                 {
                     PostFireCooldown = 100;
                     Shoot(true);
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             else if (ShootingTimer >= FireRate)
             {
-                if (Owner.CheckMana(Owner.ActiveItem(), -1, true, false) && PostFireCooldown <= 0)
+                if (Owner.CheckMana(Owner.ActiveItem(), -1, true) && PostFireCooldown <= 0)
                 {
                     MaxFireRateShots++;
 

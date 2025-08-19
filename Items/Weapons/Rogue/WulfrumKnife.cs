@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = Throw3Sound;
             Item.autoReuse = true;
-            Item.value = Item.sellPrice(0, 0, 0, 5);
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<WulfrumKnifeProj>();
             Item.shootSpeed = 4f;

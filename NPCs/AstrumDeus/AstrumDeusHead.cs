@@ -151,13 +151,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            float enrageScale = 0f;
-            if (Main.IsItDay())
-            {
-                NPC.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive;
-                enrageScale += 1.5f;
-            }
-
             // Deus cannot hit for 3 seconds or while invulnerable
             bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
             if (doNotDealDamage)
@@ -208,7 +201,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
 
             // Flight timer
-            float aiSwitchTimer = doubleWormPhase ? (CalamityWorld.LegendaryMode ? 600f : 1200f) : (CalamityWorld.LegendaryMode ? 900f : 1800f);
+            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
 
             calamityGlobalNPC.newAI[3] += 1f;
             if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
@@ -229,12 +222,10 @@ namespace CalamityMod.NPCs.AstrumDeus
             // Become gradually more pissed as more worms are killed
             int gfbMaxWormCount = 10;
             int gfbWormCount = 0;
-            if (CalamityWorld.MaliceMode)
+            if (Main.zenithWorld)
                 gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
             if (gfbWormCount > gfbMaxWormCount)
                 gfbWormCount = gfbMaxWormCount;
-            if (gfbWormCount > 0)
-                enrageScale += (gfbMaxWormCount - gfbWormCount) * 0.111f;
 
             // Split into two worms
             float splitAnimationTime = 180f;
@@ -339,7 +330,7 @@ namespace CalamityMod.NPCs.AstrumDeus
                             int startIndexHeadTwo = startIndexHeadOne + phase2Length + 1;
                             int headTwoID = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPC.type, startIndexHeadTwo);
                             Main.npc[headTwoID].Calamity().newAI[0] = 2f;
-                            Main.npc[headTwoID].Calamity().newAI[3] = CalamityWorld.LegendaryMode ? 300f : 600f;
+                            Main.npc[headTwoID].Calamity().newAI[3] = Main.getGoodWorld ? 300f : 600f;
                             Main.npc[headTwoID].velocity = Vector2.Normalize(player.Center - Main.npc[headTwoID].Center) * 16f;
                             Main.npc[headTwoID].timeLeft *= 20;
                             Main.npc[headTwoID].ForceNetUpdate();
@@ -446,7 +437,8 @@ namespace CalamityMod.NPCs.AstrumDeus
 
             float segmentVelocityBoost = 5f * (1f - lifeRatio);
             segmentVelocity += segmentVelocityBoost;
-            segmentVelocity += 4f * enrageScale;
+            if (gfbWormCount > 0)
+                segmentVelocity += (gfbMaxWormCount - gfbWormCount) * 0.444f;
 
             if (revenge)
             {
@@ -557,8 +549,11 @@ namespace CalamityMod.NPCs.AstrumDeus
             float turnSpeedBoost = death ? (0.18f * (1f - lifeRatio)) : (0.2f * (1f - lifeRatio));
             float speed = (hasJustSpawned ? 0.26f : deathModeEnragePhase_Head ? 0.2f : death ? 0.18f : 0.13f) + speedBoost;
             float turnSpeed = (hasJustSpawned ? 0.3f : deathModeEnragePhase_Head ? 0.27f : death ? 0.25f : 0.2f) + turnSpeedBoost;
-            speed += 0.05f * enrageScale;
-            turnSpeed += 0.08f * enrageScale;
+            if (gfbWormCount > 0)
+            {
+                speed += (gfbMaxWormCount - gfbWormCount) * 0.00555f;
+                turnSpeed += (gfbMaxWormCount - gfbWormCount) * 0.00888f;
+            }
 
             if (flyAtTarget)
             {
@@ -576,7 +571,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             speed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
             turnSpeed *= increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 speed *= 1.15f;
                 turnSpeed *= 1.15f;
@@ -799,7 +794,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             bool deathModeEnragePhase = NPC.Calamity().newAI[0] == 3f;
             bool doubleWormPhase = NPC.Calamity().newAI[0] != 0f && !deathModeEnragePhase;
 
-            float cyanThreshold = CalamityWorld.LegendaryMode ? 300f : 600f;
+            float cyanThreshold = Main.getGoodWorld ? 300f : 600f;
             // Head is always the last segment to visually transition
             float transitionStart = cyanThreshold * 0.95f;
             bool drawCyan = NPC.Calamity().newAI[3] >= cyanThreshold;
