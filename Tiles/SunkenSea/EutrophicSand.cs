@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type); // Tile blends with sandstone, which it is set to merge with here
 
-            Main.tileShine[Type] = 1800;
+            Main.tileShine[Type] = 2500;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;

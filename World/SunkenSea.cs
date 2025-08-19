@@ -1840,7 +1840,11 @@ namespace CalamityMod.World
             {
                 new Actions.ClearTile(),
                 new Actions.SetLiquid(),
-                new Actions.PlaceWall((ushort)ModContent.WallType<NavystoneWall>())
+            }));
+
+            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 4), Actions.Chain(new GenAction[]
+            {
+                new Actions.PlaceWall((ushort)ModContent.WallType<SeaPrismWall>())
             }));
 
             return true;

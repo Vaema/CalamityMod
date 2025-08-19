@@ -3,6 +3,7 @@ using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,8 +12,8 @@ namespace CalamityMod.Tiles.SunkenSea
     public class SeaPrism : ModTile
     {
         private const short subsheetWidth = 468;
-        private const short subsheetHeight = 90; 
-        
+        private const short subsheetHeight = 90;
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -103,7 +104,41 @@ namespace CalamityMod.Tiles.SunkenSea
 
             spriteBatch.Draw(tex1, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade1(i, j));
             spriteBatch.Draw(tex2, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade2(i, j));
+
+            //Not sure sure how everything below will run on stuff so we may need to kill this cool glint thing I did
+
+            Texture2D GlintTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_GlintMask").Value;
+
+            Vector2 glintDir = new Vector2(1f, -1f);
+            glintDir.Normalize();
+
+            Vector2 screenPos = position;
+
+            float projection = Vector2.Dot(screenPos, glintDir);
+
+            // this sets the length between the glints diagonally 
+            float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
+            float[] beamCenters = new float[]
+            {
+              screenDiagonalLength * 0.05f, // upper glint
+              screenDiagonalLength * 0.5f,  // middle glint
+              screenDiagonalLength * 1.05f  // lower glint
+            };
+
+            float stripeWidth = 100f;
+
+            foreach (float bc in beamCenters)
+            {
+             float dist = Math.Abs(projection - bc);
+             float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f);
+
+                if (strength > 0f)
+              {
+                    spriteBatch.Draw(GlintTex, position, sourceRect, Color.White * strength, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                }
+}
             return true;
+
         }
     }
 }
