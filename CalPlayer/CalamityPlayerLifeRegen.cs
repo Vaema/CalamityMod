@@ -741,13 +741,13 @@ namespace CalamityMod.CalPlayer
 
             if (regenerator) // Gives special regen of it's own, but disables all regular life regen
             {
-                if (Player.miscCounter % 7 == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
+                if (Player.miscCounter % Regenerator.FramesPerHeal == 0 && Player.statLife < (int)(Player.statLifeMax2 * 0.5f))
                     Player.HealPlayer(1, HealTextType.None);
 
                 // Boost life regen time quite a bit.
                 // This is so that in events and such where small hits are common, your damage boost isn't completley negated
                 if (Player.lifeRegenTime < 3600)
-                    Player.lifeRegenTime += 10;
+                    Player.lifeRegenTime += Regenerator.RegenTimeBoost;
             }
             else
                 regeneratorDamage = 0;
@@ -816,7 +816,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.palladiumRegen)
                     finalRegen += 4;
 
-                regeneratorDamage = (finalRegen * 1.75f) * 0.01f;
+                regeneratorDamage = finalRegen * Regenerator.RegenToDamageRatio;
                 Player.GetDamage<GenericDamageClass>() += regeneratorDamage;
 
                 if (Player.lifeRegen > 0)
@@ -826,11 +826,11 @@ namespace CalamityMod.CalPlayer
                 if (Player.lifeRegenCount > 0)
                     Player.lifeRegenCount = 0;
 
-                //Hard-lock the player's health to 50%.
+                //Hard-lock the player's health to a certain ratio.
                 //No lifesteal, no regen, no healing pots
-                if (Player.statLife >= (int)(Player.statLifeMax2 * 0.5f))
+                if (Player.statLife >= (int)(Player.statLifeMax2 * Regenerator.HealthRatioCap))
                 {
-                    Player.statLife = (int)(Player.statLifeMax2 * 0.5f);
+                    Player.statLife = (int)(Player.statLifeMax2 * Regenerator.HealthRatioCap);
                     Player.moonLeech = true;
                     healingPotionMultiplier = 0;
                 }
