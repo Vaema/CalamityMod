@@ -1488,60 +1488,33 @@ namespace CalamityMod.World
                         if (WorldGen.genRand.NextBool())
                         {
                             ushort[] Piles = new ushort[] { (ushort)ModContent.TileType<NavystonePile1>(),
-                            (ushort)ModContent.TileType<NavystonePile2>(), (ushort)ModContent.TileType<NavystonePile3>() };
+                            (ushort)ModContent.TileType<NavystonePile2>(), (ushort)ModContent.TileType<NavystonePile3>(), (ushort)ModContent.TileType<NavystoneAmbient>(),
+                            (ushort)ModContent.TileType<NavystoneAmbient2>(), (ushort)ModContent.TileType<NavystoneAmbient3>()};
 
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(Piles));
-                        }
-                        if (WorldGen.genRand.NextBool(8))
-                        {
-                            ushort[] NavystoneAmbients = new ushort[] { (ushort)ModContent.TileType<NavystoneAmbient>(),
-                            (ushort)ModContent.TileType<NavystoneAmbient2>(), (ushort)ModContent.TileType<NavystoneAmbient3>() };
-
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(NavystoneAmbients));
                         }
                     }
                     //Polyp Forest Ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Limestone>())
                     {
+                        int RandStyle() => WorldGen.genRand.Next(8);
+                        int style = RandStyle();
                         //BranchCoralsOnLimestone
                         if (WorldGen.genRand.NextBool(15))
                         {
                             ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 7);
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, style);
                         }
                         if (WorldGen.genRand.NextBool(15))
                         {
                             ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 1);
-                        }
-                        if (WorldGen.genRand.NextBool(15))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 5);
-                        }
-                        if (WorldGen.genRand.NextBool(15))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 4);
-                        }
-                        if (WorldGen.genRand.NextBool(15))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
-                        }
-                        if (WorldGen.genRand.NextBool(15))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 2);
-                        }
-                        if (WorldGen.genRand.NextBool(15))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 6);
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, style);
                         }
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<ScarletSeaGrassTile>())
                     {
+                        int RandStyle() => WorldGen.genRand.Next(8);
+                        int style = RandStyle();
                         if (WorldGen.genRand.NextBool(50) && !Main.tile[X - 1, Y].HasTile)
                             WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(3), Actions.Chain(new GenAction[]
                         {
@@ -1550,49 +1523,24 @@ namespace CalamityMod.World
                             new Actions.PlaceTile((ushort)ModContent.TileType<PinkPearlPile>()),
                         }));
                         //BranchCoralsOnSand
-                        if (WorldGen.genRand.NextBool(55))
+                        if (WorldGen.genRand.NextBool(25))
                         {
                             ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
+                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, style);
                         }
-                        if (WorldGen.genRand.NextBool(55))
+                        if (WorldGen.genRand.NextBool(25))
                         {
                             ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 1);
+                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, style);
                         }
-                        if (WorldGen.genRand.NextBool(55))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 5);
-                        }
-                        if (WorldGen.genRand.NextBool(55))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 4);
-                        }
-                        if (WorldGen.genRand.NextBool(55))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 3);
-                        }
-                        if (WorldGen.genRand.NextBool(55))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 2);
-                        }
-                        if (WorldGen.genRand.NextBool(55))
-                        {
-                            ushort[] BranchCorals = new ushort[] { (ushort)ModContent.TileType<BranchCoral>() };
-                            WorldGen.PlaceObject(X, Y + 1, WorldGen.genRand.Next(BranchCorals), true, 0, 0, 8);
-                        }
-                        if (WorldGen.genRand.NextBool(30))
+                        if (WorldGen.genRand.NextBool(25))
                         {
                             ushort[] DigitateCorals = new ushort[] { (ushort)ModContent.TileType<DigitateCoral>(),
                             (ushort)ModContent.TileType<DigitateCoral3>(), (ushort)ModContent.TileType<DigitateCoral2>() };
 
                             WorldGen.PlaceObject(X, Y - 1, WorldGen.genRand.Next(DigitateCorals));
                         }
-                        if (WorldGen.genRand.NextBool(15))
+                        if (WorldGen.genRand.NextBool(8))
                         {
                             ushort[] FryCorals = new ushort[] { (ushort)ModContent.TileType<FryCoral>(),
                             (ushort)ModContent.TileType<FryCoral3>(), (ushort)ModContent.TileType<FryCoral2>() };
