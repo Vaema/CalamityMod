@@ -84,7 +84,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
-        public static int SpitDamage = 8; // 32
+        public static int SpitDamage = 10; // 40
 
         public override void SetDefaults()
         {

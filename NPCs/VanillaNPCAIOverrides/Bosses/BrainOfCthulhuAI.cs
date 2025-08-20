@@ -17,7 +17,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         private const int SpinRadius = 45;
 
         // Rev+ exclusive
-        public static int BloodShotDamage = 11; // 44
+        public static float ContactDamageMult = 1.15f; // 62 (buffed from 54)
+        public static int BloodShotDamage = 12; // 48
 
         public static bool BuffedBrainofCthulhuAI(NPC npc, Mod mod)
         {
@@ -247,7 +248,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         else
                         {
                             // Set damage
-                            npc.damage = npc.defDamage;
+                            npc.damage = (int)Math.Round(npc.defDamage * ContactDamageMult);
                         }
 
                         // Teleport
@@ -478,7 +479,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else if (npc.ai[0] == -1f || npc.ai[0] == -6f)
                 {
                     // Set damage
-                    npc.damage = npc.defDamage;
+                    npc.damage = (int)Math.Round(npc.defDamage * ContactDamageMult);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -954,7 +955,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (!brainIsInPhase2)
                 {
                     // Set damage
-                    npc.damage = npc.defDamage;
+                    npc.damage = (int)Math.Round(npc.defDamage * ContactDamageMult);
 
                     Vector2 destination = Main.player[npc.target].Center + (death ? Main.player[npc.target].velocity * 20f : Vector2.Zero);
                     Vector2 targetDirection = destination - npc.Center;

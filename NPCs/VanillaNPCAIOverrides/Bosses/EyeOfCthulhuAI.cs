@@ -14,9 +14,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         private const float ProjectileOffset = 50f;
 
-        // Vanilla values
-        public static float Phase2ContactDamageMult = 1.2f; // 36
-        public static float Phase3ContactDamageMult = 1.333f; // 40
+        // Rev+ exclusive
+        public static float Phase1ContactDamageMult = 1.333f; // 40 (buffed from 30)
+        public static float Phase2ContactDamageMult = 1.6f; // 48 (buffed from 36)
+        public static float Phase3ContactDamageMult = 1.8f; // 54 (buffed from 40)
         public static int BloodShotDamage = 8; // 32
 
         public static bool BuffedEyeofCthulhuAI(NPC npc, Mod mod)
@@ -43,6 +44,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool finalPhaseDeath = lifeRatio < finalPhaseDeathLifeRatio;
 
             float lineUpDist = death ? 15f : 20f;
+
+            // Set contact damage
+            npc.damage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : phase2 ? Phase2ContactDamageMult : Phase1ContactDamageMult));
 
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
             float servantAndProjectileVelocity = death ? 10f : 6f;
@@ -358,7 +362,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 npc.defense = 0;
-                npc.damage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : Phase2ContactDamageMult));
 
                 if (npc.ai[1] == 0f & phase3)
                     npc.ai[1] = 5f;

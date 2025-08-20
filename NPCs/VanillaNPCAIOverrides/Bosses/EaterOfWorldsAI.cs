@@ -18,6 +18,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float DRIncreaseTime = 600f;
 
         // Rev+ exclusive
+        public static float HeadDamageMult = 1.25f; // 60 (buffed from 48)
+        public static float BodyDamageMult = 1.5f; // 30 (buffed from 20)
+        public static float TailDamageMult = 1.5f; // 26 (buffed from 17)
         public static int FireballDamage = 12; // 48; Applies to both Cursed Flames and (Death) Shadowflame fireballs
 
         public static bool BuffedEaterofWorldsAI(NPC npc, Mod mod)
@@ -25,6 +28,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+            // Set contact damage
+            npc.damage = (int)Math.Round(npc.defDamage * (npc.type == NPCID.EaterofWorldsHead ? HeadDamageMult : npc.type == NPCID.EaterofWorldsBody ? BodyDamageMult : TailDamageMult));
 
             // Causes it to split far more in death mode
             if ((((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && death) || Main.getGoodWorld)
