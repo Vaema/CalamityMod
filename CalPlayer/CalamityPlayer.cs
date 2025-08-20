@@ -659,6 +659,8 @@ namespace CalamityMod.CalPlayer
 
         public bool roverDrive = false;
         public bool roverDriveShieldVisible = false;
+        internal float roverDriveShieldPartialRechargeProgress = 0f;
+        internal bool playedRoverDriveShieldSound = false;
 
         // Lunic Corps shield is controlled by its armor set bool
         // Lunic Corps shield comes from an armor set and its visibility is non optional

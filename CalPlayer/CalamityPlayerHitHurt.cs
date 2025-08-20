@@ -2060,10 +2060,9 @@ namespace CalamityMod.CalPlayer
                 // Regardless of whether shields took damage, iterate over and stall all shield regen on ANY hit.
                 // This applies even if you are hit while shields are fully down, or if you unequip any of the relevant items.
                 {
-                    // Rover Drive does not recharge while partially full, only when broken.
-                    // If you are hit when recharging, though, that timer gets reset.
-                    if (cooldowns.TryGetValue(WulfrumRoverDriveRecharge.ID, out var roverDriveRechargeCD))
-                        roverDriveRechargeCD.timeLeft = RoverDrive.ShieldRechargeTime;
+                    // Set Rover Drive's recharge delay to full. Override any existing cooldown instance.
+                    if (roverDrive)
+                        Player.AddCooldown(WulfrumRoverDriveRecharge.ID, RoverDrive.ShieldRechargeDelay, true);
 
                     // Set the Lunic Corps Armor's recharge delay to full. Override any existing cooldown instance.
                     if (lunicCorpsSet)

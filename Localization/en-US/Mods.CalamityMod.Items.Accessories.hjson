@@ -1525,9 +1525,9 @@ RoverDrive: {
 	DisplayName: Rover Drive
 	Tooltip:
 		'''
-		Gain a barrier with 20 health
+		Gain a barrier with {0} health
 		[ADREN]
-		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
+		The barrier will regenerate {1} seconds after being hit, taking {2} seconds to completely regenerate
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
 		'''
@@ -1969,10 +1969,10 @@ TheSponge: {
 	Tooltip:
 		'''
 		Grants immunity to knockback
-		Gain a barrier with 120 health
-		The barrier grants 10% damage reduction while active
+		Gain a barrier with {0} health
+		The barrier grants {1}% damage reduction while active
 		[ADREN]
-		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
+		The barrier will regenerate {2} seconds after being hit, taking {3} seconds to completely regenerate
 		Getting hit resets the timer
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
