@@ -73,6 +73,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool MinionContactDamage() => true;
 
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = true; // Should always be able to fly through platforms
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
+        }
+
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }
 }
