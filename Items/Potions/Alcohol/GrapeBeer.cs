@@ -27,15 +27,10 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(12, 28, ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.MinutesToFrames(2), true);
+            Item.DefaultToFood(12, 28, ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.MinutesToFrames(5), true);
 
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.LightRed;
-        }
-
-        public override void OnConsumeItem(Player player)
-        {
-            //player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
         }
 
         public override void AddRecipes()

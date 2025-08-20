@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 28, ModContent.BuffType<ScrewdriverBuff>(), CalamityUtils.MinutesToFrames(5), true);
+            Item.DefaultToFood(14, 28, ModContent.BuffType<ManhattanBuff>(), CalamityUtils.MinutesToFrames(5), true);
 
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;

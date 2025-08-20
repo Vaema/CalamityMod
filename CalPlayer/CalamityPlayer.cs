@@ -4647,6 +4647,12 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            //reset the stored Y value for red wine's increased vertical speed
+            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
+            {
+                Player.velocity.Y = redWineStoredY;
+            }
+
             #region Managing time control
             if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
             {
@@ -5739,14 +5745,6 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-            }
-        }
-        public override void PostUpdate()
-        {
-            //reset the stored Y value for red wine's increased vertical speed
-            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
-            {
-                Player.velocity.Y = redWineStoredY;
             }
         }
         #endregion

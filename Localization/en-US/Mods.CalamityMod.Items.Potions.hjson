@@ -253,8 +253,8 @@ Margarita: {
 	DisplayName: Margarita
 	Tooltip:
 		'''
-		Reduces duration of harmful debuffs by {0}%
-		Reduces damage of debuffs you inflict by {1}%
+		Halves duration of harmful debuffs you recieve
+		Reduces damage of debuffs you inflict by {0}%
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -334,8 +334,10 @@ StarBeamRye: {
 	DisplayName: Star Beam Rye
 	Tooltip:
 		'''
-		{0}% increased Mana regeneration
-		{1}% decreased maximum Mana
+		Disabled natural mana regeneration
+		Mana regenerates at a fixed rate, even while using an item
+		Magic weapons deal increased damage based on how quickly they consume mana
+		This does not work while inflicted with Mana Sickness
 		{$Common.AlcoholWarning}
 		'''
 }

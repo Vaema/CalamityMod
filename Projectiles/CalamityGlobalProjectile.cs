@@ -182,6 +182,17 @@ namespace CalamityMod.Projectiles
         public float conditionalHomingRange = 0f;
 
         /// <summary>
+        /// Causes a projectile to use both Static and Local iframes when set
+        /// </summary>
+        public bool HybridIframes = false;
+
+        /// <summary>
+        /// Whether or not this proj was spawned with grape beer on
+        /// this does NOT mean it has grape beer homing!
+        /// </summary>
+        public bool GrapeBeer = false;
+
+        /// <summary>
         /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
         /// This is NOT set automatically, and must be set whenever it is needed.
         /// </summary>
@@ -297,16 +308,50 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
 
+            void ApplyGrapeBeer()
+            {
+
+                conditionalHomingRange = 600;
+                if (projectile.timeLeft > 300 * projectile.MaxUpdates)
+                    projectile.timeLeft = 300 * projectile.MaxUpdates;
+                HybridIframes = true;
+                projectile.localNPCHitCooldown = -1;
+                projectile.usesLocalNPCImmunity = true;
+                Main.player[projectile.owner].Calamity().grapeBeerTimer++;
+            }
+            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            {
+                if (source is EntitySource_Parent { Entity: Player player })
+                {
+                    if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
+                    {
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
+                            ApplyGrapeBeer();
+                        else
+                            GrapeBeer = true;
+                    }
+                }
+            }
+
             if (source is EntitySource_Parent { Entity: NPC npc })
             {
                 if (!npc.friendly)
                     ParentNPCIndex = npc.whoAmI;
             }
             //
-            // SPECIFIC PROJECTILE BALANCE CHANGES
+            // SPECIFIC PROJECTILE BALANCE CHANGES (and Grape Beer homing)
             //
             else if (source is EntitySource_Parent { Entity: Projectile parent })
             {
+                //Grape Beer homing
+                if (parent.Calamity().GrapeBeer)
+                {
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
+                        ApplyGrapeBeer();
+                    else
+                        GrapeBeer = true;
+                }
+
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
                 if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
@@ -364,13 +409,20 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            ///Apply Hybrid iframes
+            if (HybridIframes)
+            {
+                projectile.usesIDStaticNPCImmunity = true;
+                projectile.usesLocalNPCImmunity = true;
+            }
+
             #region Vanilla Summons AI Changes
 
-            //
-            // MINION AI CHANGES:
-            //
+                //
+                // MINION AI CHANGES:
+                //
 
-            // Hornet Staff's minion changes.
+                // Hornet Staff's minion changes.
             if (projectile.type == ProjectileID.Hornet)
                 return HornetMinionAI.DoHornetMinionAI(projectile);
 
@@ -2914,17 +2966,6 @@ namespace CalamityMod.Projectiles
                         if (modPlayer.filthyGlove || modPlayer.bloodyGlove)
                             projectile.ArmorPenetration += gloveArmorPenAmt;
                     }
-                    if (player.Calamity().grapeBeer && player.heldProj != projectile.whoAmI && projectile.damage > 0 && projectile.DamageType == DamageClass.Ranged && projectile.Distance(player.Center) < 80)
-                    {
-                        var item = player.ActiveItem();
-                        if (item != null && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket) && player.Calamity().grapeBeerTimer < 5)
-                        {
-                            conditionalHomingRange += 600;
-                            player.Calamity().grapeBeerTimer += 1;
-                            if (projectile.usesLocalNPCImmunity)
-                                projectile.localNPCHitCooldown = -1;
-                        }
-                    }
                 }
 
                 if (NPC.downedMoonlord)
@@ -3917,6 +3958,12 @@ namespace CalamityMod.Projectiles
         #region On Hit NPC
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            //Manage Hybrid iframes
+            if (HybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            {
+                projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
+                Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            }
             if (BloodstoneOrbValue > 0)
                 Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
             //Mana Burn
@@ -4028,6 +4075,15 @@ namespace CalamityMod.Projectiles
                     break;
             }
             return null;
+        }
+
+        public override bool? CanHitNPC(Projectile projectile, NPC target)
+        {
+            if (HybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+            {
+                return false;
+            }
+            return base.CanHitNPC(projectile, target);
         }
 
         // Cultist lightning orbs cannot hit players specifically. This could probably be switched to CanDamage?

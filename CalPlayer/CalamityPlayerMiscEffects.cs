@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -3534,8 +3535,20 @@ namespace CalamityMod.CalPlayer
 
             if (starBeamRye)
             {
-                Player.manaRegenBonus += (int)((Player.statManaMax2/3f + 1) *2f );
-                Player.statManaMax2 = (int)(Player.statManaMax2 * StarBeamRye.MaxManaBoost);
+                Player.manaFlower = false;
+                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
+                if (!Player.manaSick)
+                {
+                    Player.manaRegenCount -= Player.manaRegen;
+                    Player.manaRegenDelay = 0;
+                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
+                    if (Player.HeldItem.mana > 0) 
+                    {
+                        Main.NewText(Player.HeldItem.mana / (float)Player.HeldItem.useTime);
+                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
+                    }
+                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
+                }
             }
 
             if (moscowMule)
@@ -5042,8 +5055,6 @@ namespace CalamityMod.CalPlayer
 
                     if (item.type == ModContent.ItemType<HadalStew>())
                         CalamityUtils.ConsumeItemViaQuickBuff(Player, item, HadalStew.BuffType, HadalStew.BuffDuration, true);
-                    if (item.type == ModContent.ItemType<Margarita>())
-                        CalamityUtils.ConsumeItemViaQuickBuff(Player, item, Margarita.BuffType, CalamityUtils.MinutesToFrames(Margarita.MinuteDuration), false);
                 }
             }
         }
