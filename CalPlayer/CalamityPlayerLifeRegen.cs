@@ -415,9 +415,6 @@ namespace CalamityMod.CalPlayer
                     if (Player.miscCounter % healFrameCadence == healFrameCadence - 1)
                         Player.Heal(1);
 
-                    if (Player.lifeRegenTime < 900)
-                        Player.lifeRegenTime = 900;
-
                     intendedPurityDefense = 15 + (currentDebuffs - 1) * 5;
                     if (jewelBonusDefense < intendedPurityDefense)
                         jewelBonusDefense = intendedPurityDefense;
@@ -457,8 +454,6 @@ namespace CalamityMod.CalPlayer
                 if (currentDebuffs > 0)
                 {
                     Player.lifeRegen += 4;
-                    if (Player.lifeRegenTime < 900)
-                        Player.lifeRegenTime = 900;
 
                     intendedJewelDefense = 12 + (currentDebuffs - 1) * 4;
                     if (jewelBonusDefense < intendedJewelDefense)
@@ -479,13 +474,9 @@ namespace CalamityMod.CalPlayer
             {
                 Player.lifeRegen += 2;
 
-                // If any debuff is detected, provide even more life regen and massively accelerate it
+                // If any debuff is detected, provide even more life regen
                 if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
-                {
                     Player.lifeRegen += 3;
-                    if (Player.lifeRegenTime < 900)
-                        Player.lifeRegenTime = 900;
-                }
             }
             #endregion
 

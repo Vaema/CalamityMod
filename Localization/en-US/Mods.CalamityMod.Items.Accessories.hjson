@@ -496,7 +496,6 @@ CrownJewel: {
 		'''
 		+1 HP/s life regen
 		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
 		'''
 }
 
@@ -1015,7 +1014,6 @@ InfectedJewel: {
 		'''
 		Passively grants +1 HP/s life regen
 		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
 		Each debuff beyond the first grants 4 additional defense
 		Nullifies the Astral Infection debuff
@@ -1432,7 +1430,7 @@ Radiance: {
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
 		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
-		[c/CDF69C:+15 defense and faster natural regen recovery while afflicted with any debuff]
+		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
 		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
 		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
