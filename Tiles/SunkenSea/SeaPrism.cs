@@ -107,7 +107,7 @@ namespace CalamityMod.Tiles.SunkenSea
             spriteBatch.Draw(tex1, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade1(i, j));
             spriteBatch.Draw(tex2, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade2(i, j));
 
-            //Not sure sure how everything below will run on stuff so we may need to kill this cool glint thing I did
+            //IF this glint effect below runs poorly on lower end PC's we should keep it as a setting for those with good PC's
 
             Texture2D GlintTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_GlintMask").Value;
 
