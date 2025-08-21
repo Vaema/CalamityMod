@@ -183,16 +183,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
             }
 
-            // If needs to be changed later
-            if (struckCoin.type == ModContent.ProjectileType<M1GarandEmptyClip>())
-            {
-                SoundEngine.PlaySound(M1GarandEmptyClip.BlingHitSound, struckCoin.Center);
-            }
-
-            else
-            {
-                SoundEngine.PlaySound(RicoshotCoin.BlingHitSound, struckCoin.Center);
-            }
+            SoundEngine.PlaySound(RicoshotCoin.BlingHitSound, struckCoin.Center);
 
             // If the target was valid, freeze the shot in place for a brief moment.
             if (target.IsValid)
