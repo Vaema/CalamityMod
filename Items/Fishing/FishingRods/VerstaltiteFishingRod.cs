@@ -47,12 +47,12 @@ namespace CalamityMod.Items.Fishing.FishingRods
         {
             player.accFishingLine = true;
             if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
-                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.EarlyBloomRod;
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.VerstaltiteFishingRod;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.EarlyBloomRod;
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.VerstaltiteFishingRod;
         }
 
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)

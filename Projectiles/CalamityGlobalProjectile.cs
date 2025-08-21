@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
@@ -14,8 +13,7 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.Fishing.BrimstoneCragCatches;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
@@ -3084,6 +3082,10 @@ namespace CalamityMod.Projectiles
 
             return true;
         }
+        #endregion
+
+        #region Fishing Minigames
+        // All these fields are exclusively used for fishing minigames, so I declared them in this region for organization
 
         /// <summary>
         /// Reel state of bobber
@@ -3201,13 +3203,13 @@ namespace CalamityMod.Projectiles
             {
                 Vector2 FoundWaterline = projectile.Center;
                 var tilePos = projectile.Center.ToTileCoordinates();
-                if (Main.tile[tilePos.X,tilePos.Y].LiquidAmount > 0)
+                if (Main.tile[tilePos.X, tilePos.Y].LiquidAmount > 0)
                 {
                     for (var i = 0; i < 1000; i++)
                     {
-                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y-i].LiquidAmount > 0)
+                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y - i].LiquidAmount > 0)
                             continue;
-                        FoundWaterline.Y = (tilePos.Y - i+1) * 16f;
+                        FoundWaterline.Y = (tilePos.Y - i + 1) * 16f;
                         FoundWaterline.Y += (1 - Main.tile[tilePos.X, tilePos.Y - i + 1].LiquidAmount / 255f) * 16f;
                         break;
                     }
@@ -3235,7 +3237,7 @@ namespace CalamityMod.Projectiles
             //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
             //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
-            
+
 
             switch (owner.Calamity().SelectedFishingMinigame)
             {
@@ -3353,7 +3355,7 @@ namespace CalamityMod.Projectiles
                             }
                             projectile.ai[0] = isReelingIn;
                         }
-                        return false; 
+                        return false;
                     }
 
 
@@ -3424,9 +3426,11 @@ namespace CalamityMod.Projectiles
                                 {
                                     Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Torch);
                                 }
-                                    var particle = new HeavySmokeParticle(PersistentFishingDataVector2, Vector2.One.RotatedByRandom(6.28) * Main.rand.NextFloat(1f, 4f), Color.Lerp(Color.DarkOrange,Color.DarkGray,Main.rand.NextFloat()), 15, 0.2f, 1);// (PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
-                                    GeneralParticleHandler.SpawnParticle(particle);
+                                var particle = new HeavySmokeParticle(PersistentFishingDataVector2, Vector2.One.RotatedByRandom(6.28) * Main.rand.NextFloat(1f, 4f), Color.Lerp(Color.DarkOrange, Color.DarkGray, Main.rand.NextFloat()), 15, 0.2f, 1);
+                                GeneralParticleHandler.SpawnParticle(particle);
                             }
+
+                            //When in lava, give the bobber a particle over it to show its location
                             if (projectile.lavaWet)
                             {
                                 var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
@@ -3465,16 +3469,15 @@ namespace CalamityMod.Projectiles
                 case CalamityPlayer.FishingMinigames.FeralDoubleRod:
                     if (projectile.ai[0] == 0)
                     {
-                        //var waterline = GetWaterLine();
-                        if (projectile.wet)
+                        if (projectile.wet) //Fishing in water
                         {
                             if (cplayer.mouseRight && projectile.ai[1] == 0)
                             {
                                 projectile.localAI[1] += 2;
-                                owner.lifeRegenCount -= 60; //0.5 health per tick
+                                owner.lifeRegenCount -= 60; // -0.5 health per tick
                             }
                         }
-                        else
+                        else //Attached to an enemy
                         {
                             if (PersistentFishingData >= 0 && Main.npc[(int)PersistentFishingData].active && projectile.Distance(Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2) < 128)
                             {
@@ -3482,37 +3485,38 @@ namespace CalamityMod.Projectiles
                                 projectile.velocity = Vector2.Zero;
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
-                                    owner.lifeRegenCount -= 600; //0.5 health per tick
+                                    owner.lifeRegenCount -= 600; // -5 health per 10 ticks
                                     var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                     if (Main.projectile.IndexInRange(projID))
                                     {
-                                        Main.projectile[projID].ArmorPenetration = 100;
+                                        Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
                                     }
                                 }
                                 projectile.timeLeft++;
                                 return true;
-                            } else if (PersistentFishingData >= 0)
+                            }
+                            else if (PersistentFishingData >= 0)
                             {
                                 PersistentFishingData = -1;
                                 projectile.velocity.Y -= 3;
                             }
-                                foreach (var item in Main.ActiveNPCs)
+                            foreach (var item in Main.ActiveNPCs)
+                            {
+                                if (item.friendly || item.dontTakeDamage)
+                                    continue;
+                                if (projectile.Colliding(projectile.Hitbox, item.Hitbox))
                                 {
-                                    if (item.friendly || item.dontTakeDamage)
-                                        continue;
-                                    if (projectile.Colliding(projectile.Hitbox, item.Hitbox))
-                                    {
-                                        PersistentFishingDataVector2 = projectile.Center - item.Center;
-                                        PersistentFishingData = item.whoAmI;
-                                        break;
-                                    }
+                                    PersistentFishingDataVector2 = projectile.Center - item.Center;
+                                    PersistentFishingData = item.whoAmI;
+                                    break;
                                 }
-                            
+                            }
+
                         }
                     }
                     break;
-                
-                
+
+
                 case CalamityPlayer.FishingMinigames.NavyFishingRod:
                     {
                         if (isReelingIn != projectile.ai[0])
@@ -3524,7 +3528,8 @@ namespace CalamityMod.Projectiles
                         if (AdjustedOwnerWaterline.Y >= projectile.Center.Y)
                         {
                             projectile.velocity.Y += 0.4f;
-                        } else
+                        }
+                        else
                         {
                             projectile.velocity.Y -= 0.1f;
                         }
@@ -3541,8 +3546,8 @@ namespace CalamityMod.Projectiles
                                 PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
                             var timer = TimerToCatch - 300;
                             SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
-                            
-                            SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0),DustID.BlueCrystalShard);
+
+                            SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
                         }
                         if (TimerToCatch >= 300 && CatchTime >= 0)
                         {
@@ -3628,33 +3633,19 @@ namespace CalamityMod.Projectiles
 
 
                 case CalamityPlayer.FishingMinigames.TheDevourerOfCods:
-                    var fishToEat = new List<int>()
-                    {
-                        ItemID.Bass,
-                        ItemID.AtlanticCod,
-                        ItemID.Flounder,
-                        ItemID.NeonTetra,
-                        ItemID.RedSnapper,
-                        ItemID.RockLobster,
-                        ItemID.Salmon,
-                        ItemID.Shrimp,
-                        ItemID.Trout,
-                        ItemID.Tuna,
-                        ModContent.ItemType<CharredLasher>(),
-                        ModContent.ItemType<CragBullhead>(),
-                        ModContent.ItemType<ProcyonidPrawn>(),
-                        ModContent.ItemType<TwinklingPollox>(),
-                        ModContent.ItemType<Items.Placeables.Abyss.PlantyMush>()
-                    };
+                    var fishToEat = TheDevourerofCods.FishToEat;
                     if (projectile.ai[1] < -1)
                     {
+                        //Coonsuming a fish provides/increases the player's food buffs.
                         if (fishToEat.Contains((int)projectile.localAI[1]))
                         {
                             projectile.ai[1] = 0;
                             projectile.localAI[1] = 0;
-                            SoundEngine.PlaySound(SoundID.Item2,projectile.Center);
+                            SoundEngine.PlaySound(SoundID.Item2, projectile.Center);
+                            //If the player doesn't have Ex. Stuffed, either give them Plenty Satisfied or inrease existing Plenty Satisfied duration
                             if (!owner.HasBuff(BuffID.WellFed3))
                             {
+
                                 if (owner.HasBuff(BuffID.WellFed2))
                                 {
                                     var bIndex = owner.FindBuffIndex(BuffID.WellFed2);
@@ -3662,12 +3653,14 @@ namespace CalamityMod.Projectiles
                                     {
                                         owner.buffTime[bIndex] += 300;
                                     }
-                                } else
+                                }
+                                else
                                 {
 
                                     owner.AddBuff(BuffID.WellFed2, 300);
                                 }
-                            } else
+                            }
+                            else //If the player DOES have Ex. Stuffed, increase the duration of it
                             {
                                 var bIndex = owner.FindBuffIndex(BuffID.WellFed3);
                                 if (owner.buffTime[bIndex] < 60000)
@@ -3676,12 +3669,12 @@ namespace CalamityMod.Projectiles
                                 }
                             }
                         }
-                        else
+                        else //If the hooked item isn't consumable, make it stay hooked forever.
                         {
                             projectile.ai[1] = -30;
                         }
                     }
-                    
+
                     return false;
 
 
@@ -3713,6 +3706,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.wet)
                             projectile.velocity *= 0.99f;
 
+                        //When in lava, give the bobber a particle over it to show its location
                         if (projectile.lavaWet)
                         {
                             var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
@@ -3731,7 +3725,7 @@ namespace CalamityMod.Projectiles
                                 projectile.velocity.X -= 0.25f;
                             if (owner.Calamity().pressedRight)
                                 projectile.velocity.X += 0.25f;
-                            if (Waterline.Y <= projectile.Center.Y-8)
+                            if (Waterline.Y <= projectile.Center.Y - 8)
                                 TimerToCatch -= Main.rand.Next(1, 5);
                             if (TimerToCatch <= 0)
                             {
@@ -3802,9 +3796,6 @@ namespace CalamityMod.Projectiles
                         break;
                     }
 
-
-                case CalamityPlayer.FishingMinigames.EarlyBloomRod:
-                    break;
             }
             return false;
         }

@@ -1,5 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Fishing.AstralCatches;
+using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -13,6 +17,24 @@ namespace CalamityMod.Items.Fishing.FishingRods
 {
     public class TheDevourerofCods : ModItem, ILocalizedModType
     {
+        public static List<int> FishToEat = new List<int>()
+                    {
+                        ItemID.Bass,
+                        ItemID.AtlanticCod,
+                        ItemID.Flounder,
+                        ItemID.NeonTetra,
+                        ItemID.RedSnapper,
+                        ItemID.RockLobster,
+                        ItemID.Salmon,
+                        ItemID.Shrimp,
+                        ItemID.Trout,
+                        ItemID.Tuna,
+                        ModContent.ItemType<CharredLasher>(),
+                        ModContent.ItemType<CragBullhead>(),
+                        ModContent.ItemType<ProcyonidPrawn>(),
+                        ModContent.ItemType<TwinklingPollox>(),
+                        ModContent.ItemType<PlantyMush>()
+    };
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
