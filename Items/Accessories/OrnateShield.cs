@@ -20,13 +20,12 @@ namespace CalamityMod.Items.Accessories
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 2; // This has a ram dash, it should give a bit less defense due to how good it is
+            Item.defense = 2;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            // Ornate Shield ram dash
             player.Calamity().DashID = OrnateShieldDash.ID;
             player.dashType = 0;
         }

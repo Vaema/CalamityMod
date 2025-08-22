@@ -33,24 +33,17 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-
-            // Asgard's Valor ram dash
             modPlayer.DashID = AsgardsValorDash.ID;
             player.dashType = 0;
-
-            // Inherited Obsidian Shield effects
             player.noKnockback = true;
-            player.fireWalk = true;
-
-            player.buffImmune[BuffID.OnFire] = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ObsidianShield).
                 AddIngredient<OrnateShield>().
                 AddIngredient<CoreofCalamity>().
+                AddIngredient(ItemID.HallowedBar, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

@@ -39,24 +39,9 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-
-            // Asgardian Aegis ram dash
             modPlayer.DashID = AsgardianAegisDash.ID;
             player.dashType = 0;
-
-            // Inherited Ankh Shield effects
             player.noKnockback = true;
-            player.fireWalk = true;
-
-            //Immune to all major Fire debuffs before this point
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.OnFire3] = true;
-            player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
-            player.buffImmune[BuffID.CursedInferno] = true;
-            player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
-            player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
-            player.buffImmune[ModContent.BuffType<GodSlayerInferno>()] = true;
         }
 
         public override void AddRecipes()
