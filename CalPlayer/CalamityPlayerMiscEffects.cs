@@ -972,8 +972,36 @@ namespace CalamityMod.CalPlayer
             }
         }
 
+        private void DemonAltarTalking()
+        {
+
+            for (var h = -15; h < 15; h++)
+            {
+                for (var j = -15; j < 15; j++)
+                {
+                    var tilePos = Player.Center.ToTileCoordinates() + new Point(h, j);
+                    if (Main.tile[tilePos.X, tilePos.Y].TileType == TileID.DemonAltar)
+                    {
+                        CombatText.NewText(new Rectangle(tilePos.X * 16, tilePos.Y * 16, 16, 16), WorldGen.crimson ? Color.Red : Color.Purple, CalamityUtils.GetTextValue("Items.Weapons.Melee.EvilSmasher.AltarDialogue" + DemonAltarDialogueCounter), true);
+                        DemonAltarDialogueCounter++;
+                        DemonAltarDialogueCooldown = 240;
+                        if (DemonAltarDialogueCounter >= 6)
+                        {
+                            DemonAltarDialogueCooldown = 1200;
+                            DemonAltarDialogueCounter = 0;
+                        }
+                        return;
+                    }
+                }
+            }
+        }
         private void MiscEffects()
         {
+            if (Player.inventory.Any(x => x.type == ItemID.Pwnhammer) && !Player.inventory.Any(x => x.type == ModContent.ItemType<EvilSmasher>()) && Player.adjTile[TileID.DemonAltar] && DemonAltarDialogueCooldown <= 0 && Player.miscCounter % 30 == 0)
+            {
+                DemonAltarTalking();
+            }
+
             //Mana Burn update
             if (ManaBurnFireDrawer != null)
             {

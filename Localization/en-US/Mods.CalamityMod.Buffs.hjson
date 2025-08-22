@@ -1590,3 +1590,8 @@ ForbiddenStealthSummonTagBuff: {
 	DisplayName: Forbidden Stealth Summon Tag Buff
 	Description: If you're seeing this, something went horribly wrong
 }
+
+SmashedEvil: {
+	DisplayName: Smashed Evil
+	Description: Increased damage, movement speed, and regeneration
+}

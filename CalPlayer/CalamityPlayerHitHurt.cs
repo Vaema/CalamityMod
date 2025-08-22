@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -517,6 +517,14 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Modify Hit NPC
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (target.HasBuff<SmashedEvil>())
+            {
+                //This is essentially 10 AP, but independent of armor amount
+                modifiers.FlatBonusDamage += 5;
+            }
+        }
         public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)
         {
             modifiers.CritDamage += critDamage;

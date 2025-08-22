@@ -458,12 +458,26 @@ EvilSmasher: {
 	DisplayName: Evil Smasher
 	Tooltip:
 		'''
-		For every enemy you kill this hammer gains stat bonuses
-		These bonuses stack until a cap is reached
-		The bonus stacks will reset if you select a different item
-		The bonus stacks will be reduced by 1 every time you get hit
+		Channels a powerful hammer strike with the capability to crush all evil
+		Striking a tile with the hammer strike will cause an explosion and push you back
+		Striking enemies provides inflicts Smashed Evil on both the user and target
+		Smashed Evil strengthens players and weakens enemies
+		Charging strikes increases damage, explosion radius, and Smashed Evil duration
 		'EViL! sMaSH eVIl! SmAsh... ER!'
 		'''
+	AltarDialogue0: Bearer of the Holy Hammer...
+	AltarDialogue1: Desirest thou to taste true power?
+	AltarDialogue2: Your eyes shall be opened...
+	AltarDialogue3: Ye shall be even as the gods!
+	AltarDialogue4: Yield the hammer unto us upon the altar
+	AltarDialogue5: Surrender, and thou shalt surely recieve our might
+	//All damage and kill dialogue has the capitalization randomized when said
+	DamageDialogue0: smash!
+	DamageDialogue1: evil!
+	DamageDialogue2: crush!
+	DamageDialogue3: des.. troy!
+	KillDialogue0: smash evil!
+	KillDialogue1: smash.. er!
 }
 
 ExaltedOathblade: {

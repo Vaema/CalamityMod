@@ -399,6 +399,9 @@ namespace CalamityMod.CalPlayer
 
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
+
+        public int DemonAltarDialogueCounter = 0;
+        public int DemonAltarDialogueCooldown = 0;
         #endregion
 
         #region Sound
@@ -1993,6 +1996,7 @@ namespace CalamityMod.CalPlayer
         #region ResetEffects
         public override void ResetEffects()
         {
+
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
@@ -2447,6 +2451,9 @@ namespace CalamityMod.CalPlayer
             blunderBooster = false;
             blunderBoosterVisibility = true;
             veneratedLocket = false;
+
+            if (DemonAltarDialogueCooldown > 0)
+                DemonAltarDialogueCooldown--;
 
             alcoholPoisoning = false;
             shadowflame = false;
