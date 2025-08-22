@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class ElysianAegis : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public class ElysianAegis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public bool HasFlavorTooltip => true;

@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class AsgardsValor : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public class AsgardsValor : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
