@@ -202,7 +202,6 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
-            IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
