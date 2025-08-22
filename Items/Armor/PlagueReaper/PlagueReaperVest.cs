@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Armor.PlagueReaper
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
 
-        public static float RangedDamageBoost = 0.15f;
+        public static float RangedDamageBoost = 0.16f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
 
         public override void SetDefaults()

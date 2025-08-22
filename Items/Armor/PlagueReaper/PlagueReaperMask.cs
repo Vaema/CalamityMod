@@ -2,8 +2,6 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -27,8 +25,6 @@ namespace CalamityMod.Items.Armor.PlagueReaper
         // Set Bonus
         public static float SetBonusFlightTimeBoost = 0.05f;
         public static float SetBonusPlaguedRangedDamageMult = 1.1f;
-        public static int CinderSpawnInterval = 10;
-        public static int CinderDamage = 40;
         public static float BlackoutRangedDamageBoost = 0.6f;
         public static int BlackoutRangedCritBoost = 20;
         public static int BlackoutDuration = CalamityUtils.SecondsToFrames(5);
@@ -62,22 +58,6 @@ namespace CalamityMod.Items.Armor.PlagueReaper
                 player.blackout = true;
                 player.GetDamage<RangedDamageClass>() += BlackoutRangedDamageBoost;
                 player.GetCritChance<RangedDamageClass>() += BlackoutRangedCritBoost;
-            }
-
-            if (player.whoAmI == Main.myPlayer)
-            {
-                var source = player.GetSource_Accessory(Item);
-                if (player.immune)
-                {
-                    if (player.miscCounter % CinderSpawnInterval == 0)
-                    {
-                        var damage = (int)player.GetTotalDamage<RangedDamageClass>().ApplyTo(CinderDamage);
-
-                        var cinder = CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 22f, ModContent.ProjectileType<TheSyringeCinder>(), damage, 4f, player.whoAmI);
-                        if (cinder.whoAmI.WithinBounds(Main.maxProjectiles))
-                            cinder.DamageType = DamageClass.Generic;
-                    }
-                }
             }
         }
 

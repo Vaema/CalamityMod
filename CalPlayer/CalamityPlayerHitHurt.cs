@@ -829,11 +829,6 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChiBuff)
                 contactDamageReduction += 0.08;
 
-            // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
-            // To prevent abuse, this effect does not work if there are any bosses alive.
-            if (fearmongerSet && !areThereAnyDamnBosses && (Main.pumpkinMoon || Main.snowMoon))
-                contactDamageReduction += 0.15;
-
             if (abyssalDivingSuitPlates)
                 contactDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
 
@@ -1077,11 +1072,6 @@ namespace CalamityMod.CalPlayer
 
             if (trinketOfChiBuff)
                 projectileDamageReduction += 0.08;
-
-            // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
-            // To prevent abuse, this effect does not work if there are any bosses alive.
-            if (fearmongerSet && !areThereAnyDamnBosses && (Main.pumpkinMoon || Main.snowMoon))
-                projectileDamageReduction += 0.15;
 
             if (abyssalDivingSuitPlates)
                 projectileDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;

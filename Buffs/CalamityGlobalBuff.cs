@@ -200,10 +200,6 @@ namespace CalamityMod.Buffs
                     tip = tip.Replace("25", "15");
                     break;
 
-                case BuffID.LeafCrystal:
-                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.LeafCrystal");
-                    break;
-
                 case BuffID.MagicPower:
                     tip = tip.Replace("20", "10");
                     break;
