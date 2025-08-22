@@ -431,10 +431,6 @@ namespace CalamityMod.Projectiles
                     projectile.Kill();
             }
 
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-                return ChlorophyteCrystalAI.DoChlorophyteCrystalAI(projectile);
-
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
@@ -4197,13 +4193,6 @@ namespace CalamityMod.Projectiles
                 SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                 Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                shouldDrawBool = false;
-            }
-
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-            {
-                ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
                 shouldDrawBool = false;
             }
 
