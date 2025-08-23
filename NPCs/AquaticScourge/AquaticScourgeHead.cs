@@ -54,12 +54,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
-        public static int MistDamage = 25; // 100
-        public static int CloudDamage = 28; // 112; applies to both Sand and Toxic
+        public static int MistDamage = 23; // 92
+        public static int CloudDamage = 26; // 104; applies to both Sand and Toxic
 
         public override void SetDefaults()
         {
-            NPC.damage = 90; // 180
+            NPC.damage = 85; // 170
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 90;
             NPC.height = 90;

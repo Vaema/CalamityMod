@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int LaserDamage = 25; // 100
 
         // Rev+ exclusive
-        public static int SkullDamage = 25; // 100
+        public static int SkullDamage = 22; // 88
         public static int RocketDamage = 30; // 120
 
         public static bool BuffedSkeletronPrimeAI(NPC npc, Mod mod)
