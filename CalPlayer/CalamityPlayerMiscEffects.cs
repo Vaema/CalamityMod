@@ -162,6 +162,9 @@ namespace CalamityMod.CalPlayer
             // Drawing parameters
             UpdateDrawingParameters();
 
+            // Handle Lucrecia's passive energy effects
+            HandleLucreciaEffects();
+
             // Update all particle sets for items.
             // This must be done here instead of in the item logic because these sets are not properly instanced
             // in the global classes. Attempting to update them there will cause multiple updates to one set for multiple items.
@@ -366,6 +369,52 @@ namespace CalamityMod.CalPlayer
 
                 Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
             }
+
+            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && lucreciaEnergy > 0)
+            {
+                if (lucreciaEnergy == lucreciaEnergyMax && !lucreciaEnergyPaused)
+                {
+                    lucreciaEnergyPaused = true;
+                    lucreciaEnergyTimer = 0;
+                }
+
+                lucreciaEnergyTimer++;
+
+                // If the energy is at max, pause for 180 ticks
+                if (lucreciaEnergyPaused)
+                {
+                    if (lucreciaEnergyTimer >= 1 && !lucreciaEnergyMaxSFXPlayed)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center); 
+                        lucreciaEnergyMaxSFXPlayed = true;
+
+                    }
+                    // If the pause is Done, resume decrementing.
+                    if (lucreciaEnergyTimer >= 180)
+                    {
+                        lucreciaEnergyPaused = false;
+                        lucreciaEnergyTimer = 0;
+                        lucreciaEnergy--;
+                    }
+                }
+                else // Decrementing
+                {
+                    lucreciaEnergyMaxSFXPlayed = false;
+                    // Once every 6 ticks
+                    if (lucreciaEnergyTimer >= 6)
+                    {
+                        lucreciaEnergy--;
+                        lucreciaEnergyTimer = 0;
+                    }
+                }
+            }
+            else
+            {
+                // Reset the timer and pause state if the player isn't holding the weapon.
+                lucreciaEnergyTimer = 0;
+                lucreciaEnergyPaused = false;
+            }
+
 
             if (lAmbergris)
             {
@@ -4508,6 +4557,47 @@ namespace CalamityMod.CalPlayer
             GemTechState.ProvideGemBoosts();
         }
         #endregion
+
+        #region Lucrecia Effects
+
+        public void HandleLucreciaEffects()
+        {
+            int lucreciaItemID = ModContent.ItemType<Lucrecia>();
+            if (Player.HeldItem.type == lucreciaItemID && lucreciaEnergy > 0)
+            {
+                lucreciaParticleTimer--;
+
+                // If the timer is at or below zero, spawn a particle.
+                if (lucreciaParticleTimer <= 0)
+                {
+                    // Reset the timer (spawn rate depends on energy)
+                    lucreciaParticleTimer = (int)(20 - 15 * (lucreciaEnergy / 60));
+
+                    float radius = Main.rand.NextFloat(160f, 190f); // Distance from center
+                    float spawnAngle = Main.rand.NextFloat(MathHelper.TwoPi); // Random angle along the whole radius
+
+                    Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
+
+                    // Scale opacity with energy
+                    float opacity = lucreciaEnergy / (float)lucreciaEnergyMax;
+                    Color color = Main.rand.NextBool() ? Color.MediumPurple : Color.CornflowerBlue;
+                    color *= opacity;
+
+                    if (lucreciaEnergy >= 100)
+                    {
+                        color *= 1.6f; // Brighter
+                    }
+
+                    Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
+                    float rotationSpeed = 0.04f;
+
+                    var particle = new RoundedStarParticle(spawnPosition, dummyVelocity, color, Main.rand.NextFloat(0.05f, 0.065f), Main.rand.Next(30, 60), rotationSpeed, 1f, true, Player.Center, Player.whoAmI);
+                    GeneralParticleHandler.SpawnParticle(particle);
+                }
+            }
+        }
+        #endregion
+
 
         #region Energy Shields
         private void EnergyShields()
