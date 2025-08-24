@@ -276,7 +276,6 @@ namespace CalamityMod.CalPlayer
         public int lucreciaEnergy = 0;
         public int lucreciaEnergyTimer = 0;
         public bool lucreciaEnergyPaused = false;
-        public int lucreciaEnergyMax = 100;
         public bool lucreciaEnergyMaxSFXPlayed = false;
         private int lucreciaParticleTimer = 0;
         public int PhotoAudioCooldown = 0;

@@ -372,7 +372,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && lucreciaEnergy > 0)
             {
-                if (lucreciaEnergy == lucreciaEnergyMax && !lucreciaEnergyPaused)
+                if (lucreciaEnergy == Lucrecia.MaxEnergy && !lucreciaEnergyPaused)
                 {
                     lucreciaEnergyPaused = true;
                     lucreciaEnergyTimer = 0;
@@ -414,7 +414,6 @@ namespace CalamityMod.CalPlayer
                 lucreciaEnergyTimer = 0;
                 lucreciaEnergyPaused = false;
             }
-
 
             if (lAmbergris)
             {
@@ -4579,7 +4578,7 @@ namespace CalamityMod.CalPlayer
                     Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
 
                     // Scale opacity with energy
-                    float opacity = lucreciaEnergy / (float)lucreciaEnergyMax;
+                    float opacity = lucreciaEnergy / (float)Lucrecia.MaxEnergy;
                     Color color = Main.rand.NextBool() ? Color.MediumPurple : Color.CornflowerBlue;
                     color *= opacity;
 

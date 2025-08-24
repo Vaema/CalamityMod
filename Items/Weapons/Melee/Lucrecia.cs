@@ -13,6 +13,8 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
+        public static int MaxEnergy = 100;
+
         public override int ProjectileType => ModContent.ProjectileType<LucreciaProj>();
 
         public override void SetDefaults()

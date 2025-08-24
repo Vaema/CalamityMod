@@ -285,7 +285,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 // +22 energy on hit
                 modPlayer.lucreciaEnergy += 22;
-                modPlayer.lucreciaEnergy = Math.Min(modPlayer.lucreciaEnergy, modPlayer.lucreciaEnergyMax);
+                modPlayer.lucreciaEnergy = Math.Min(modPlayer.lucreciaEnergy, Lucrecia.MaxEnergy);
 
                 // On-hit cut FX
                 int points = 2;
