@@ -9,6 +9,10 @@ namespace CalamityMod.Items.Accessories
     public class HideofAstrumDeus : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int BlazeDamage => CalamityUtils.ScaleWithDifficulty(25);
+        public static int StarDamage => CalamityUtils.ScaleWithDifficulty(160);
+
         public override void SetDefaults()
         {
             Item.width = 26;

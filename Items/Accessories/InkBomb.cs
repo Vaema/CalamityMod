@@ -8,6 +8,9 @@ namespace CalamityMod.Items.Accessories
     public class InkBomb : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int InkDamage => CalamityUtils.ScaleWithDifficulty(16);
+
         public override void SetDefaults()
         {
             Item.width = 22;

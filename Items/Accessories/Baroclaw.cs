@@ -9,6 +9,9 @@ namespace CalamityMod.Items.Accessories
     public class Baroclaw : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(125);
+
         public override void SetDefaults()
         {
             Item.width = 40;

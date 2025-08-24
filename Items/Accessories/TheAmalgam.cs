@@ -16,6 +16,9 @@ namespace CalamityMod.Items.Accessories
     public class TheAmalgam : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int NimbusDamage => CalamityUtils.ScaleWithDifficulty(200);
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(9, 6));

@@ -13,6 +13,10 @@ namespace CalamityMod.Items.Armor.GodSlayer
     public class GodSlayerHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        // Set Bonus
+        public static int DartDamage => CalamityUtils.ScaleWithDifficulty(350);
+
         public override void SetDefaults()
         {
             Item.width = 18;
