@@ -24,7 +24,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Variables
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-            bool deathModeSurprise = lifeRatio >= 0.9f && death;
             bool phase2 = lifeRatio < (death ? 0.6f : 0.7f);
             bool phase3 = lifeRatio < (death ? 0.3f : 0.4f);
             bool phase4 = lifeRatio < (death ? 0.1f : 0.2f);
@@ -189,7 +188,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 chargeTime += Main.rand.Next(5, 66);
 
             // Spawn cthulhunadoes in phase 3
-            if (phase3AI && ((!phase4 && !deathModeSurprise) || CalamityWorld.LegendaryMode))
+            if (phase3AI && ((!phase4) || CalamityWorld.LegendaryMode))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 float timeGateValue = 600f;
@@ -212,7 +211,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[0] = deathModeSurprise ? 9f : -1f;
+                    npc.ai[0] = -1f;
                     npc.netUpdate = true;
                 }
             }
@@ -902,10 +901,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 break;
                         }
                     }
-
-                    // Go back to normalcy after dropping below 90% HP
-                    if (!deathModeSurprise && !phase3)
-                        phase3AttackPicker = 3;
 
                     // Set velocity for charge
                     if (phase3AttackPicker == 1)
