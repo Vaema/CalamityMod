@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -23,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
         /// Do not reference this field directly. Use GetGlowTex() instead.
         /// </summary>
         private static Asset<Texture2D> GlowTex = null;
-        private static Texture2D GetGlowTex()
+        public static Texture2D GetGlowTex()
         {
             if (GlowTex == null)
             {
@@ -136,7 +137,8 @@ namespace CalamityMod.Projectiles.Magic
                 if (Projectile.velocity.Length() > 5)
                     Projectile.velocity *= 0.98f;
 
-                Projectile.rotation = Projectile.velocity.ToRotation();
+                if (Projectile.velocity != Vector2.Zero)
+                    Projectile.rotation = Projectile.velocity.ToRotation();
             } 
             else if (Projectile.timeLeft > 60) {
                 
@@ -148,7 +150,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.velocity *= 0.95f;
             }
                 Projectile.position += Projectile.velocity;
-            if (Projectile.timeLeft <= 241)
+            if (Projectile.timeLeft <= 241 && Projectile.velocity != Vector2.Zero)
                 for (int i = 0; i < Segments.Count; i++)
             {
                 float segmentDistance = Segments[i].followDistance * TailLength;
@@ -233,6 +235,11 @@ namespace CalamityMod.Projectiles.Magic
                 DrawHeadStar(new(0.0168f, 0.0791f));
             });
             return false;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 60);
         }
     }
 }

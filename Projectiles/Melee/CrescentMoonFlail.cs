@@ -144,15 +144,10 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.ai[0] > 20 && Projectile.Distance(player.Center) < 100)
                     Projectile.ai[0] = 501;
 
-                    Projectile.velocity = Vector2.Lerp(Projectile.velocity,Projectile.DirectionTo(player.Center) * 35, Projectile.ai[0]* 0.00075f);
-                    if (Projectile.Distance(player.Center) < 32 && Projectile.ai[0] > 20)
-                    {
-                       Projectile.Kill();
-                    }
-                if (Projectile.ai[0] % 10 == 5)
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.DirectionTo(player.Center) * 35, Projectile.ai[0] * 0.00075f);
+                if (Projectile.Distance(player.Center) < 32 && Projectile.ai[0] > 20)
                 {
-                    int moonDamage = (int)(Projectile.damage * 0.1f);
-                    //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(0.2f), ModContent.ProjectileType<CrescentMoonProj>(), moonDamage, 0f, Projectile.owner, 0f, 0f);
+                    Projectile.Kill();
                 }
                 if (hasStarbits)
                 {

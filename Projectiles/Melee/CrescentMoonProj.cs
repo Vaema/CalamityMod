@@ -64,9 +64,9 @@ namespace CalamityMod.Projectiles.Melee
             {
                 int dustType = Utils.SelectRandom(Main.rand, new int[]
                 {
-                                109,
-                                111,
-                                132
+                    109,
+                    111,
+                    132
                 });
 
                 int dust = Dust.NewDust(Projectile.Center, 0, 0, dustType);
@@ -78,10 +78,6 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreDraw(ref Color lightColor)
         {
             return false;
-        }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
         }
     }
 }

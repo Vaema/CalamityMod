@@ -3,6 +3,7 @@ using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using rail;
 using Terraria;
 using Terraria.Audio;
@@ -46,10 +47,10 @@ namespace CalamityMod.Projectiles.Rogue
             var Owner = Main.player[Projectile.owner];
             var DrawCenter = Projectile.Center + Projectile.velocity;
             var StarScale = 0.2f;
-            Projectile.scale = MathF.Min(Projectile.timeLeft/20f,MathF.Min((lifetime- Projectile.timeLeft)/ 20f, 1f));
+            Projectile.scale = MathF.Min(Projectile.timeLeft / 20f, MathF.Min((lifetime - Projectile.timeLeft) / 20f, 1f));
             void SpawnStar(Vector2 offset, float intensity, int flashOffset = 0, int flashMod = 100)
             {
-                offset += new Vector2(35.666f,-53.166f); //this centers the constellation
+                offset += new Vector2(35.666f, -53.166f); //this centers the constellation
                 offset.X *= Projectile.spriteDirection;
                 var star = new BloomParticle(DrawCenter + offset.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), StarScale * intensity, StarScale * intensity, 2, false);
                 var star2 = new CustomSpark(DrawCenter + offset.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * ((Owner.miscCounter + flashOffset) / 300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 4 * StarScale * intensity, Color.White, Vector2.One);
@@ -66,13 +67,9 @@ namespace CalamityMod.Projectiles.Rogue
                 SpawnStar(new Vector2(-96, 35), 0.75f, 75); //Left
             }
             Projectile.position = Projectile.Center;
-            Projectile.Size = new Vector2(225,375) * Projectile.scale;
+            Projectile.Size = new Vector2(225, 375) * Projectile.scale;
             Projectile.Center = Projectile.position;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -87,13 +84,16 @@ namespace CalamityMod.Projectiles.Rogue
                 var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 3);
             }
-            ConnectStars( new Vector2(0f, 0f), new Vector2(75, -60)); //Center - Vega
-            ConnectStars( new Vector2(0f, 0f), new Vector2(3, -102)); //Center - Top
-            ConnectStars( new Vector2(0f, 0f), new Vector2(-96, 35)); //Center - Left
-            ConnectStars( new Vector2(0f, 0f), new Vector2(-52, 207)); //Center - Bottom R
-            ConnectStars(new Vector2(75, -60), new Vector2(3, -102)); //Vega - Top
-            ConnectStars(new Vector2(-144, 239), new Vector2(-96, 35)); //Bottom L - Left
-            ConnectStars(new Vector2(-144, 239), new Vector2(-52, 207)); //Bottom L - Bottom R
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                ConnectStars(new Vector2(0f, 0f), new Vector2(75, -60)); //Center - Vega
+                ConnectStars(new Vector2(0f, 0f), new Vector2(3, -102)); //Center - Top
+                ConnectStars(new Vector2(0f, 0f), new Vector2(-96, 35)); //Center - Left
+                ConnectStars(new Vector2(0f, 0f), new Vector2(-52, 207)); //Center - Bottom R
+                ConnectStars(new Vector2(75, -60), new Vector2(3, -102)); //Vega - Top
+                ConnectStars(new Vector2(-144, 239), new Vector2(-96, 35)); //Bottom L - Left
+                ConnectStars(new Vector2(-144, 239), new Vector2(-52, 207)); //Bottom L - Bottom R
+            });
             return false;
         }
 

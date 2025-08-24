@@ -9,6 +9,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
@@ -70,21 +71,30 @@ namespace CalamityMod.CalPlayer
             //Stratus Starburst visuals
             if (StarburstEntities.Count > 0 && drawInfo.shadow == 0f)
             {
-                var tex = TextureAssets.Projectile[ModContent.ProjectileType<HalleysStarburst>()].Value;
-                foreach (StarburstEntity star in StarburstEntities)
+                //This uses the same star and glow textures that the constellations use, so we're just getting the static textures Draco uses to prevent needless requests
+                var tex = TextureAssets.Projectile[ModContent.ProjectileType<DracoConstellation>()].Value;
+                var glowTex = DracoConstellation.GetGlowTex();
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
                 {
-                    var color = star.color;
-                    var value = star.value;
-                    value -= star.MergeChildren.Count;
-                    var ScaleMod = MathHelper.Lerp(0.6f,1f,value/10f);
-                    Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, tex.Frame(1,6,0,star.frame), color * 0.75f, 0, new Vector2(6,6.5f), star.scale * ScaleMod, SpriteEffects.None, 1);
-                    foreach (var ministar in star.MergeChildren)
+                    for (var i = 0; i < StarburstEntities.Count; i++)
                     {
+                        StarburstEntity star = StarburstEntities[i];
+                        var color = star.color;
+                        var value = star.value;
+                        value -= star.MergeChildren.Count;
+                        var ScaleMod = MathHelper.Lerp(0.4f, 0.8f, value / 10f);
 
-                        ScaleMod = MathHelper.Lerp(0.6f, 1f, ministar.value / 10f);
-                        Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, tex.Frame(1, 6, 0, ministar.frame), ministar.color * 0.75f, 0, new Vector2(6, 6.5f), ministar.scale * ScaleMod, SpriteEffects.None, 1);
+                        Main.spriteBatch.Draw(glowTex, star.Center - Main.screenPosition, null, star.color * 0.66f, 0, glowTex.Size() * 0.5f, 0.2f * star.scale * ScaleMod, SpriteEffects.None, 1);
+                        Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, null, star.color * 0.66f, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly + i), tex.Size() * 0.5f, 0.75f * star.scale * ScaleMod, SpriteEffects.None, 1);
+                        for (var i2 = 0; i2 < star.MergeChildren.Count; i2++)
+                        {
+                            var ministar = star.MergeChildren[i2];
+                            ScaleMod = MathHelper.Lerp(0.4f, 0.8f, ministar.value / 10f);
+                            Main.spriteBatch.Draw(glowTex, ministar.Center - Main.screenPosition, null, ministar.color * 0.66f, 0, glowTex.Size() * 0.5f, 0.2f * ministar.scale * ScaleMod, SpriteEffects.None, 1);
+                            Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, null, ministar.color * 0.66f, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly + i), tex.Size() * 0.5f, 0.75f * ministar.scale * ScaleMod, SpriteEffects.None, 1);
+                        }
                     }
-                }
+                });
             }
             if (Starshield > 0 && drawInfo.shadow == 0)
             {

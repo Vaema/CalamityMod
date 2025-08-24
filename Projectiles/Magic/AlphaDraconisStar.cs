@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -55,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.Kill();
                 if (Projectile.ai[2] == 2)
                 {
-                    Projectile.rotation += 0.1f;
+                    Projectile.rotation += 0.05f;
                     Projectile.scale = MathHelper.Min(Projectile.scale + 0.02f, 1);
                     Player closestPlayer = null;
                     float closestDis = 200;
@@ -93,14 +94,12 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public override void OnKill(int timeLeft)
-        {
-
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile,1,Color.White,shrink: true);
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                CalamityUtils.DrawAfterimagesCentered(Projectile, 1, Color.White, shrink: true);
+            });
             return false;
         }
     }

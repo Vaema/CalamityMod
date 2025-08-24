@@ -32,6 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ModContent.RarityType<PureGreen>();
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.noMelee = true;
+            Item.autoReuse = true;
         }
 
         public override bool CanUseItem(Player player) => true;

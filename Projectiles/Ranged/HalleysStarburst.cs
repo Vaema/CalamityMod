@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class HalleysStarburst : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public override string Texture => "CalamityMod/Projectiles/Typeless/StratusStarburst";
+        public override string Texture => "CalamityMod/Particles/Sparkle";
         Color drawColor = Color.Black;
         public override void SetStaticDefaults()
         {
@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Projectile.FinalExtraUpdate())
             {
                 var star = new BloomParticle(Projectile.Center, Vector2.Zero, drawColor, 0.2f, 0.25f, 2, false);
-                var star2 = new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 1f, Color.White, Vector2.One);
+                var star2 = new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, Texture, false, 2, 1f, Color.White, Vector2.One);
                 GeneralParticleHandler.SpawnParticle(star);
                 GeneralParticleHandler.SpawnParticle(star2);
             }

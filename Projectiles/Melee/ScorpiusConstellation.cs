@@ -3,6 +3,7 @@ using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -96,31 +97,20 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale, SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale, color * Projectile.Opacity, 3);
             }
             //Order is back of tail to front. Last four are the head
-            ConnectStars( new Vector2(-255, 77), new Vector2(-176, 71));
-            ConnectStars(new Vector2(-176, 71), new Vector2(-236, 142));
-            ConnectStars(new Vector2(-236, 142), new Vector2(-188, 197));
-            ConnectStars(new Vector2(-188, 197), new Vector2(-85, 193));
-            ConnectStars(new Vector2(-85, 193), new Vector2(-19, 172));
-            ConnectStars(new Vector2(-19, 172), new Vector2(0f, 0f));
-            ConnectStars(new Vector2(0f, 0f), new Vector2(99, -166));
-            ConnectStars(new Vector2(99, -166), new Vector2(224, -300)); 
-            ConnectStars(new Vector2(99, -166), new Vector2(243, -237));
-            ConnectStars(new Vector2(99, -166), new Vector2(243, -163)); 
-            ConnectStars(new Vector2(99, -166), new Vector2(246, -97));
-
-            /*
-            SpawnStar(new Vector2(0f, 0f), 0.75f, 0); //Center
-            SpawnStar(new Vector2(99, -166), 1.25f, 40); //Antares
-            SpawnStar(new Vector2(224, -300), 0.75f, 40); //topHead
-            SpawnStar(new Vector2(243, -237), 0.75f, 40); //midHead
-            SpawnStar(new Vector2(243, -163), 0.75f, 40); //lowHead
-            SpawnStar(new Vector2(246, -97), 0.75f, 40); //bottomHead
-            SpawnStar(new Vector2(-255, 77), 0.75f, 40); //tail
-            SpawnStar(new Vector2(-176, 71), 0.75f, 40); //zig
-            SpawnStar(new Vector2(-236, 142), 0.75f, 40); //zag
-            SpawnStar(new Vector2(-188, 197), 0.75f, 40); //tail 4
-            SpawnStar(new Vector2(-85, 193), 0.75f, 40); //taol 5(-19,172)
-            */
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                ConnectStars(new Vector2(-255, 77), new Vector2(-176, 71));
+                ConnectStars(new Vector2(-176, 71), new Vector2(-236, 142));
+                ConnectStars(new Vector2(-236, 142), new Vector2(-188, 197));
+                ConnectStars(new Vector2(-188, 197), new Vector2(-85, 193));
+                ConnectStars(new Vector2(-85, 193), new Vector2(-19, 172));
+                ConnectStars(new Vector2(-19, 172), new Vector2(0f, 0f));
+                ConnectStars(new Vector2(0f, 0f), new Vector2(99, -166));
+                ConnectStars(new Vector2(99, -166), new Vector2(224, -300));
+                ConnectStars(new Vector2(99, -166), new Vector2(243, -237));
+                ConnectStars(new Vector2(99, -166), new Vector2(243, -163));
+                ConnectStars(new Vector2(99, -166), new Vector2(246, -97));
+            });
             return false;
         }
 

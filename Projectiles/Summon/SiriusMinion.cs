@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using rail;
 using Terraria;
 using Terraria.ID;
@@ -22,6 +25,8 @@ namespace CalamityMod.Projectiles.Summon
         public ref float TimerForShooting => ref Projectile.ai[0];
 
         public bool CheckForSpawning = false;
+
+        public List<StarburstEntity> starburstsToFire = new();
 
         public override void SetStaticDefaults()
         {
@@ -66,6 +71,9 @@ namespace CalamityMod.Projectiles.Summon
             ShootTarget(target); // If there's a target, shoot at the target.
 
             if (target is not null && Owner.miscCounter % 30 == 0) {
+
+                if (moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
+                    moddedOwner.StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
                 moddedOwner.StratusStarburst++;
             }
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 1f); // Passively makes blue light.
@@ -173,9 +181,25 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 if (Projectile.ai[2] > 0)
                 {
+                    var value = 0f;
+                    //Count the value of starbursts in Sirius firing animation
+                    foreach (var item in starburstsToFire)
+                    {
+                        value += item.value;
+                    }
+                    //Add starbursts to the animation to equal the shot starburst cost
                     foreach (var star in moddedOwner.StarburstEntities)
                     {
-                        star.Center = Vector2.Lerp(star.Center, Projectile.Center+Projectile.velocity, Projectile.ai[2] / 15f);
+                        if (value >= 50)
+                            break;
+                        value += star.value;
+                        starburstsToFire.Add(star);
+                    }
+                    //Animate the starbursts in the animation
+                    foreach (var star in starburstsToFire)
+                    {
+
+                        star.Center = Vector2.Lerp(star.Center, Projectile.Center + Projectile.velocity, Projectile.ai[2] / 15f);
                         star.AICooldown = 2;
                     }
                     Projectile.ai[2]++;
@@ -194,6 +218,11 @@ namespace CalamityMod.Projectiles.Summon
                             }
                         moddedOwner.StratusStarburst -= 50;
                         Projectile.ai[2] = 0;
+                        foreach (var item in starburstsToFire)
+                        {
+                            moddedOwner.StarburstEntities.Remove(item);
+                        }
+                        starburstsToFire = new();
                     }
                 }
             }
@@ -213,19 +242,22 @@ namespace CalamityMod.Projectiles.Summon
                 var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 1.5f);
             }
-            ConnectStars(4,new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot
-            ConnectStars(2,new Vector2(0f, 0f), new Vector2(-118f, 217f)); //Sirius - Bottom
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                ConnectStars(4, new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot
+                ConnectStars(2, new Vector2(0f, 0f), new Vector2(-118f, 217f)); //Sirius - Bottom
 
-            ConnectStars(6,new Vector2(0f, 0f), new Vector2(-62f, 11f)); //Sirius - neck
+                ConnectStars(6, new Vector2(0f, 0f), new Vector2(-62f, 11f)); //Sirius - neck
 
-            ConnectStars(9,new Vector2(119f, 32f), new Vector2(46f, 59f)); // Front Foot - Front Leg
-            ConnectStars(10,new Vector2(46f, 59f),new Vector2(-49f, 166f)); // Frong Leg - Belly
-            ConnectStars(10,new Vector2(-49f, 166f), new Vector2(-67f, 272f)); // Belly - Back Foot
-            ConnectStars(3,new Vector2(-67f, 272f), new Vector2(-118f, 217f)); // Back Foot - Bottom
-            ConnectStars(5,new Vector2(-118f, 217f), new Vector2(-192f, 284f)); // Bottom - Tail
-            ConnectStars(8,new Vector2(-62f, 11f), new Vector2(-101f, -23f)); // Neck - Head
-            ConnectStars(8,new Vector2(-101f, -23f), new Vector2(-50f, -103f)); // Head - Nose
-            ConnectStars(7,new Vector2(-50f, -103f), new Vector2(-62f, 11f)); // Nose - Neck
+                ConnectStars(9, new Vector2(119f, 32f), new Vector2(46f, 59f)); // Front Foot - Front Leg
+                ConnectStars(10, new Vector2(46f, 59f), new Vector2(-49f, 166f)); // Frong Leg - Belly
+                ConnectStars(10, new Vector2(-49f, 166f), new Vector2(-67f, 272f)); // Belly - Back Foot
+                ConnectStars(3, new Vector2(-67f, 272f), new Vector2(-118f, 217f)); // Back Foot - Bottom
+                ConnectStars(5, new Vector2(-118f, 217f), new Vector2(-192f, 284f)); // Bottom - Tail
+                ConnectStars(8, new Vector2(-62f, 11f), new Vector2(-101f, -23f)); // Neck - Head
+                ConnectStars(8, new Vector2(-101f, -23f), new Vector2(-50f, -103f)); // Head - Nose
+                ConnectStars(7, new Vector2(-50f, -103f), new Vector2(-62f, 11f)); // Nose - Neck
+            });
             return false;
         }
         #endregion

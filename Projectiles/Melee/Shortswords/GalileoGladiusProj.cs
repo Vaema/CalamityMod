@@ -43,7 +43,6 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         public override void Spawn(IEntitySource source)
         {
             angle = angle.RotatedByRandom(0.25f);
-            //Projectile.scale *= 3;
         }
 
         public override void AdditionalAI()
@@ -98,8 +97,6 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             Owner.Calamity().StratusStarburst++;
         }
-
-        //This can be deleted once Gilded Proboscis is merged into the main branch.
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             var lineCollisionLength = 160;

@@ -12,13 +12,13 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 4;
+            Main.projFrames[Type] = 6;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 166;
-            Projectile.height = 94;
+            Projectile.width = 314;
+            Projectile.height = 198;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Projectile.velocity *= 0.975f;
             Projectile.frameCounter++;
-            if (Projectile.frameCounter >= 10)
+            if (Projectile.frameCounter >= 5)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
@@ -70,9 +70,6 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return targetHitbox.IntersectsConeFastInaccurate(Projectile.Center, 600, 0, MathHelper.TwoPi);
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
         }
 
         public override bool PreDraw(ref Color lightColor)

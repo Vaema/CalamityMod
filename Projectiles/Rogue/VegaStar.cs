@@ -129,5 +129,11 @@ namespace CalamityMod.Projectiles.Rogue
                 Main.dust[dust].noGravity = true;
             }
         }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (Projectile.ai[2] == 0)
+                return;
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 120);
+        }
     }
 }
