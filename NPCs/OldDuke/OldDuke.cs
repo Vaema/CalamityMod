@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.OldDuke
 
         public static float Phase2ContactDamageMult = 1.1f; // 308
         public static float Phase3ContactDamageMult = 1.2f; // 336
-        public static int GoreDamage = 60; // 240
+        public static int GoreDamage = 55; // 220
         public static int VortexDamage = 105; // 420
 
         // GFB exclusive

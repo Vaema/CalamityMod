@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public static int LightningDamage = 64; // 256
         public static int FrostWaveDamage = 64; // 256
-        public static int TornadoDamage = 66; // 264
+        public static int TornadoDamage = 72; // 288
 
         public override void SetDefaults()
         {
