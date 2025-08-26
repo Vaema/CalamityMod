@@ -49,8 +49,7 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.auricSet = true;
             modPlayer.rogueStealthMax += 1.3f;
             modPlayer.wearingRogueArmor = true;
-            player.ignoreWater = true;
-            player.crimsonRegen = true;
+            player.crimsonRegen = true; // Inherited from Bloodflare
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
                 modPlayer.DeferredDashID = GodslayerArmorDash.ID;

@@ -46,8 +46,7 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.silvaSet = true;
             modPlayer.silvaMage = true;
             modPlayer.auricSet = true;
-            player.ignoreWater = true;
-            player.crimsonRegen = true;
+            player.crimsonRegen = true; // Inherited from Bloodflare
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
