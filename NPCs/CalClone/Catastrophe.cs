@@ -49,7 +49,7 @@ namespace CalamityMod.NPCs.CalClone
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 45; // 90
+            NPC.damage = 54; // 108
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;

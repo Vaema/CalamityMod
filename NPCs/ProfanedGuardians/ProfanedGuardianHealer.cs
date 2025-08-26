@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int CrystalDamage = 55; // 220
+        public static int CrystalDamage = 50; // 200
         public static int StarDamage = 55; // 220; HolyBurnOrb
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight

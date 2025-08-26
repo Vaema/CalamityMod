@@ -54,8 +54,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int FireDamage = 42; // 168; HolyFlare
-        public static int BlobDamage = 42; // 168
+        public static int FireDamage = 40; // 160; HolyFlare
+        public static int BlobDamage = 40; // 160
         public static int FireSentryDamage = 55; // 220; HolyBomb
         public static int MoltenBlastDamage = 55; // 220
 

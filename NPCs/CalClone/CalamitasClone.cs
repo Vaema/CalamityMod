@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 60; // 120
+            NPC.damage = 70; // 140
             NPC.npcSlots = 14f;
             NPC.width = 120;
             NPC.height = 120;

@@ -66,14 +66,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         }
 
         public static int FireDamage = 42; // 168; HolyFire, HolyFire2
-        public static int SpearDamage = 55; // 220; HolySpear, ProfanedSpear
-        public static int HolyBlastDamage = 64; // 256
+        public static int SpearDamage = 45; // 180; HolySpear, ProfanedSpear
+        public static int HolyBlastDamage = 60; // 240
         public static int RayDamage = 80; // 320
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 110; // 220
+            NPC.damage = 120; // 240
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
             NPC.width = 228;

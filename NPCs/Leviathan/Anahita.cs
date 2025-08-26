@@ -59,15 +59,15 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
-        public static float DashDamageMult = 1.5f; // 165
-        public static int SpearDamage = 24; // 96
+        public static float DashDamageMult = 1.5f; // 150
+        public static int SpearDamage = 27; // 108
         public static int MistDamage = 24; // 96
         public static int SongDamage = 30; // 120
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 55; // 110
+            NPC.damage = 50; // 100
             NPC.npcSlots = 16f;
             NPC.width = 100;
             NPC.height = 100;
