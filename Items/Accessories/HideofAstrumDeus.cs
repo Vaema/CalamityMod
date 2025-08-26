@@ -10,8 +10,8 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int BlazeDamage => CalamityUtils.ScaleWithDifficulty(25);
-        public static int StarDamage => CalamityUtils.ScaleWithDifficulty(160);
+        public static int BlazeDamage => CalamityUtils.ScaleWithDifficulty(50);
+        public static int StarDamage => 75;
 
         public override void SetDefaults()
         {
@@ -28,7 +28,6 @@ namespace CalamityMod.Items.Accessories
             modPlayer.hideOfDeus = true;
             if (modPlayer.hideOfDeusMeleeBoostTimer > 0)
                 player.GetDamage<TrueMeleeDamageClass>() += 0.3f;
-            player.thorns += 0.75f;
         }
     }
 }

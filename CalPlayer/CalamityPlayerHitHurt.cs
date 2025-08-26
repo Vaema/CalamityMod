@@ -2541,13 +2541,7 @@ namespace CalamityMod.CalPlayer
                     SoundEngine.PlaySound(SoundID.Item74, Player.Center);
 
                     int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(HideofAstrumDeus.BlazeDamage);
-                    int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(HideofAstrumDeus.StarDamage);
-
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
-                    for (int n = 0; n < 12; n++)
-                    {
-                        CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<AstralStar>(), astralStarDamage, 5f, Player.whoAmI);
-                    }
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
                 // In the meantime, gave them homing astral bombers instead of the lame falling stars

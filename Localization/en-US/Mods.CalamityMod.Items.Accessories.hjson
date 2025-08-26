@@ -970,10 +970,9 @@ HideofAstrumDeus: {
 	DisplayName: Hide of Astrum Deus
 	Tooltip:
 		'''
-		Taking damage or inflicting true melee strikes drops an immense amount of astral stars from the sky
-		Taking damage temporarily increases true melee damage by 30%
+		True melee strikes drops astral stars from the sky
+		Releases an explosion and temporarily increases true melee damage by 30% when damaged
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Attackers take damage and are inflicted with Astral Infection
 		Nullifies the Astral Infection debuff
 		'''
 }
