@@ -273,7 +273,6 @@ DemonshadeBreastplate: {
 	Tooltip:
 		'''
 		25% increased melee speed, 15% increased damage and critical strike chance
-		Enemies take ungodly damage when they touch you
 		Increased max life by 50 and max mana by 200
 		Standing still absorbs shadows to grant exponentially accelerating life regen
 		'''
@@ -410,7 +409,6 @@ GodSlayerChestplate: {
 	Tooltip:
 		'''
 		+50 max life
-		Enemies take damage when they hit you
 		11% increased damage and 8% increased critical strike chance
 		'''
 	CommonSetBonus:
@@ -435,11 +433,7 @@ GodSlayerHeadMelee: {
 		Enemies are more likely to target you
 		{$GodSlayerHeadMelee.SetBonusEffect}
 		'''
-	SetBonusEffect:
-		'''
-		Taking over 80 damage in one hit will cause you to release a swarm of high-damage god killer darts
-		Enemies take a lot of damage when they hit you
-		'''
+	SetBonusEffect: Taking over 80 damage in one hit will cause you to release a swarm of high-damage god killer darts
 }
 
 GodSlayerHeadRanged: {

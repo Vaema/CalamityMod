@@ -47,7 +47,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayer = true;
             modPlayer.godSlayerRanged = true;
             modPlayer.auricSet = true;
-            player.thorns += 3f;
             player.ignoreWater = true;
             player.crimsonRegen = true;
 

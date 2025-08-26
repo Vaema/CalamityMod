@@ -2584,7 +2584,6 @@ namespace CalamityMod.CalPlayer
             {
                 Player.moveSpeed += TheAbsorber.MoveSpeedBoost;
                 Player.jumpSpeedBoost += TheAbsorber.JumpSpeedBoost;
-                Player.thorns += TheAbsorber.ThornsBoost;
             }
 
             // Nimble Bounder bonus

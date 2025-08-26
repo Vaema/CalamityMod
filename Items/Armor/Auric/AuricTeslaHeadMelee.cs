@@ -51,7 +51,6 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayerDamage = true;
             modPlayer.auricSet = true;
             modPlayer.auricSetMelee = true;
-            player.thorns += 3f;
             player.ignoreWater = true;
             player.crimsonRegen = true;
             player.aggro += 1200;

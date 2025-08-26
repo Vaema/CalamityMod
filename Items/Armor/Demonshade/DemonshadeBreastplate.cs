@@ -28,7 +28,6 @@ namespace CalamityMod.Items.Armor.Demonshade
         {
             var modPlayer = player.Calamity();
             modPlayer.shadeRegen = true;
-            player.thorns += 100f;
             player.statLifeMax2 += 50;
             player.statManaMax2 += 200;
             player.GetDamage<GenericDamageClass>() += 0.15f;

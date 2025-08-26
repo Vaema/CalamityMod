@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(125);
+        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(150);
 
         public override void SetDefaults()
         {
@@ -25,7 +25,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.baroclaw = true;
-            player.thorns += 2.5f;
         }
         public override void AddRecipes()
         {
