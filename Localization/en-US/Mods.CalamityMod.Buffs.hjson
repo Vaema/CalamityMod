@@ -1073,6 +1073,11 @@ AquaticStar: {
 	Description: The aquatic star will protect you
 }
 
+AqueousHunterDroneBuff: {
+	DisplayName: Aqueous Hunter Drone Buff
+	Description: shimp
+}
+
 AstralProbeBuff: {
 	DisplayName: Astral Probe
 	Description: The astral probe will protect you

@@ -8,6 +8,7 @@ AnomalysNanogunHoldout.DisplayName: The Anomaly's Nanogun
 AnomalysNanogunMPFBBoom.DisplayName: MPFB Explosion
 AnomalysNanogunMPFBDevastator.DisplayName: MPFB Devastator
 AnomalysNanogunPlasmaBeam.DisplayName: Plasma Beam
+AqueousHunterDroneSummon.DisplayName: Aqueous Hunter Drone
 AugerHoldout.DisplayName: P-GSS Auger
 AugerSlash.DisplayName: Auger Slash
 AugerPull.DisplayName: Auger Pull
@@ -82,3 +83,4 @@ PlagueShotBuffer.DisplayName: Plague Shot
 WaterShot.DisplayName: Water Shot
 WaterShotBuffer.DisplayName: Water Shot
 FrequencyManipulatorEnergy.DisplayName: Frequency Manipulator Energy
+ShrimpPlasmaMissile.DisplayName: Shrimp Plasma Missile

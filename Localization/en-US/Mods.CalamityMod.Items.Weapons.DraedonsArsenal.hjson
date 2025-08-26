@@ -10,6 +10,18 @@ AerialTracker: {
 		'''
 }
 
+AqueousHunterDrone: {
+	DisplayName: Aqueous Hunter Drone
+	Tooltip:
+		'''
+		Summons a shrimp drone that fires bursts of homing plasma missiles
+		Pressing <right> while holding any summon weapon will make the shrimp fire vertical missiles
+		These missiles will fall at your cursor and leave a lingering blast if they hit tiles
+		Each shrimp costs 4 minion slots
+		[c/1FFBFF:'yum shimp.']
+		'''
+}
+
 Auger: {
 	DisplayName: P-GSS: Auger
 	Tooltip:
@@ -220,16 +232,6 @@ SnakeEyes: {
 		Reflected bolts home in and explode on impact
 		[c/1FFBFF:'Equipped with high-end sensors, little can evade them. Even less are able to escape their ever watchful eyes.]
 		[c/1FFBFF:An excellent bridge between my experiments with the sight-based soul powered machines and my latest project.']
-		'''
-}
-
-StarSwallowerContainmentUnit: {
-	DisplayName: Star Swallower Containment Unit
-	Tooltip:
-		'''
-		Summons a biomechanical frog that vomits plasma onto enemies
-		[c/1FFBFF:'These simplistic creatures were mechanized to autonomously transport plasma.]
-		[c/1FFBFF:They are vastly more servicable than their mundane organic counterparts.']
 		'''
 }
 

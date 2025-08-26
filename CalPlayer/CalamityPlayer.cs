@@ -1515,6 +1515,7 @@ namespace CalamityMod.CalPlayer
         public bool starSwallowerPetFroge = false;
         public bool snakeEyes = false;
         public bool poleWarper = false;
+        public bool aqueousHunterDrone = false;
         public bool causticDragon = false;
         public bool plaguebringerPatronSummon = false;
         public bool howlTrio = false;
@@ -2664,6 +2665,7 @@ namespace CalamityMod.CalPlayer
             starSwallowerPetFroge = false;
             snakeEyes = false;
             poleWarper = false;
+            aqueousHunterDrone = false;
             causticDragon = false;
             plaguebringerPatronSummon = false;
             howlTrio = false;
