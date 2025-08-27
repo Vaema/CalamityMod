@@ -2540,13 +2540,6 @@ namespace CalamityMod.NPCs
                     canBreakPlayerDefense = true;
                     break;
 
-                // Enemies that should have coldDamage set to true
-                case NPCID.IceMimic:
-                case NPCID.IceBat:
-                case NPCID.IceTortoise:
-                    npc.coldDamage = true;
-                    break;
-
                 // These go through walls and are very annoying with the new tombstone breaking spawning them mechanic in 1.4
                 case NPCID.Ghost:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
