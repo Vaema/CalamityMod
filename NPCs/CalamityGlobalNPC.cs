@@ -5889,12 +5889,12 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.death && Main.bloodMoon)
             {
                 spawnRate = (int)(spawnRate * 0.25);
-                maxSpawns = (int)(maxSpawns * 10f);
+                maxSpawns = (int)(maxSpawns * 5f);
             }
 
             if (CalamityWorld.death && player.ZoneGraveyard)
             {
-                spawnRate = (int)(spawnRate * 0.6);
+                spawnRate = (int)(spawnRate * 0.6667);
                 maxSpawns = (int)(maxSpawns * 1.5f);
             }
 
@@ -5911,27 +5911,18 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge)
                 spawnRate = (int)(spawnRate * 0.85);
 
-            if (Main.SceneMetrics.WaterCandleCount > 0)
-                spawnRate = (int)(spawnRate * 0.8888); // On top of 0.75 = 0.6666x (1.33x -> 1.5x spawn rate)
-            if (player.enemySpawns) // Battle Potion
-            {
-                spawnRate = (int)(spawnRate * 0.8); // On top of 0.5 = 0.4x (2x -> 2.5x spawn rate)
-                maxSpawns = (int)(maxSpawns * 1.25f); // On top of 2 (2x -> 2.5x max spawns)
-            }
             if (player.Calamity().chaosCandle)
             {
-                spawnRate = (int)(spawnRate * 0.4); // 2.5x spawn rate
-                maxSpawns = (int)(maxSpawns * 2.5f);
+                spawnRate = (int)(spawnRate * 0.5); // 2x spawn rate
+                maxSpawns = (int)(maxSpawns * 2f);
             }
             if (player.Calamity().zerg)
             {
-                spawnRate = (int)(spawnRate * 0.2); // 5x spawn rate
-                maxSpawns = (int)(maxSpawns * 5f);
+                spawnRate = (int)(spawnRate * 0.25); // 4x spawn rate
+                maxSpawns = (int)(maxSpawns * 4f);
             }
 
             // Reductions
-            if (Main.SceneMetrics.PeaceCandleCount > 0)
-                spawnRate = (int)(spawnRate * 1.0989); // On top of 1.3 = 1.4286x (0.77x -> 0.7x spawn rate)
             if (player.Calamity().tranquilityCandle)
             {
                 spawnRate = (int)(spawnRate * 1.6666); // 0.6x spawn rate
@@ -5939,8 +5930,8 @@ namespace CalamityMod.NPCs
             }
             if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
-                spawnRate = (int)(spawnRate * 3.3333); // 0.3x spawn rate
-                maxSpawns = (int)(maxSpawns * 0.3f);
+                spawnRate = (int)(spawnRate * 2.5); // 0.4x spawn rate
+                maxSpawns = (int)(maxSpawns * 0.4f);
             }
             if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
             {
