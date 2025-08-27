@@ -18,7 +18,7 @@ namespace CalamityMod.World
             int yIslandGen;
             Rectangle potentialArea;
 
-            if (WorldGen.getGoodWorldGen)
+            if (WorldGen.drunkWorldGen)
             {
                 do
                 {

@@ -9,7 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Cinquedea : RogueWeapon
     {
-
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -26,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<CinquedeaProj>();
             Item.shootSpeed = 10f;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.value = Item.buyPrice(gold: 10); // Sold by Bandit
             Item.DamageType = RogueDamageClass.Instance;
         }
 

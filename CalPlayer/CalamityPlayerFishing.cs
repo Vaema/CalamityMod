@@ -169,6 +169,8 @@ namespace CalamityMod.CalPlayer
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
+                itemDrop = -1;
+                return;
             }
 
             // Ignore catches if it's junk

@@ -153,6 +153,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Lompl Allimath",
             "Lucille Karma",
             "MarieArk",
+            "Mihaii",
             "Minecat",
             "Mrrp",
             "Nao",

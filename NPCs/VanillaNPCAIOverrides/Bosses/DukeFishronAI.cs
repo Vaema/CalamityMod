@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseVelocity = 10f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 idlePhaseAcceleration *= 1.15f;
                 idlePhaseVelocity *= 1.15f;
@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 chargeVelocity *= 1.1f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargeVelocity *= 1.15f;
 
             int bubbleBelchPhaseTimer = death ? 60 : 80;
@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float bubbleBelchPhaseAcceleration = death ? 0.35f : 0.3f;
             float bubbleBelchPhaseVelocity = death ? 5.5f : 5f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 bubbleBelchPhaseAcceleration *= 1.5f;
                 bubbleBelchPhaseVelocity *= 1.5f;
@@ -114,7 +114,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float bubbleSpinPhaseVelocity = 20f;
             float bubbleSpinPhaseRotation = MathHelper.TwoPi / (bubbleSpinPhaseTimer / 2);
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 bubbleSpinBubbleVelocity *= 1.5f;
 
             int spawnEffectPhaseTimer = 75;
@@ -184,11 +184,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 chargeVelocity += 1f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargeTime += Main.rand.Next(5, 66);
 
             // Spawn cthulhunadoes in phase 3
-            if (phase3AI && ((!phase4) || CalamityWorld.LegendaryMode))
+            if (phase3AI && ((!phase4) || Main.getGoodWorld))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 float timeGateValue = 600f;
@@ -337,7 +337,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Phase switch
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                if (npc.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int attackPicker = 0;
                     switch ((int)npc.ai[3])
@@ -585,7 +585,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Phase switch
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                if (npc.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int phase2AttackPicker = 0;
                     switch ((int)npc.ai[3])
@@ -726,7 +726,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 phase2BubbleSharkronDirection = Vector2.Normalize(npc.velocity) * (npc.width + 20) / 2f + npc.Center;
                         int phase2Bubbles = NPC.NewNPC(npc.GetSource_FromAI(), (int)phase2BubbleSharkronDirection.X, (int)phase2BubbleSharkronDirection.Y + 45, NPCID.DetonatingBubble);
                         Main.npc[phase2Bubbles].target = npc.target;
-                        Main.npc[phase2Bubbles].velocity = Vector2.Normalize(npc.velocity).RotatedBy(MathHelper.PiOver2 * npc.direction) * bubbleSpinBubbleVelocity * (CalamityWorld.LegendaryMode ? (Main.rand.NextFloat() + 0.5f) : 1f);
+                        Main.npc[phase2Bubbles].velocity = Vector2.Normalize(npc.velocity).RotatedBy(MathHelper.PiOver2 * npc.direction) * bubbleSpinBubbleVelocity * (Main.getGoodWorld ? (Main.rand.NextFloat() + 0.5f) : 1f);
                         Main.npc[phase2Bubbles].netUpdate = true;
                         Main.npc[phase2Bubbles].ai[3] = Main.rand.Next(80, 121) / 100f;
 
@@ -857,7 +857,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Phase switch
                 npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                if (npc.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int phase3AttackPicker = 0;
                     if (phase4)

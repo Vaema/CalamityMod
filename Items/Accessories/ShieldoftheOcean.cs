@@ -86,7 +86,7 @@ namespace CalamityMod.Items.Accessories
                     Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * (Main.zenithWorld ? 35f : 12.5f) - Vector2.UnitY * 6f;
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
-                    int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                    int scaledFallDamage = CalamityUtils.ScaleWithDifficulty(ShoveFallBaseDamage) * (Main.zenithWorld ? 10 : 1);
                     if (empowered)
                         npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
                     else
@@ -103,7 +103,7 @@ namespace CalamityMod.Items.Accessories
                 {
                     if (empowered)
                     {
-                        int scaledImmuneDamage = ImmuneToShoveBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                        int scaledImmuneDamage = CalamityUtils.ScaleWithDifficulty(ImmuneToShoveBaseDamage) * (Main.zenithWorld ? 10 : 1);
                         Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), scaledImmuneDamage, 0f, player.whoAmI, npc.whoAmI);
                     }
 

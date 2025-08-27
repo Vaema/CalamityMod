@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 38;
             Item.height = 24;
             Item.shootSpeed = 10f;
-            Item.damage = 310;
+            Item.damage = 207;
             Item.mana = 12;
             Item.useAnimation = Item.useTime = 9;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 1.25f;
+            modItem.ChargePerUse = 1f;
             modItem.ChargePerAltUse = 0f;
         }
 

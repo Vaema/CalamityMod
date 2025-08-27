@@ -21,12 +21,13 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type); // Tile blends with sandstone, which it is set to merge with here
 
-            Main.tileShine[Type] = 1800;
+            Main.tileShine[Type] = 2500;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
@@ -139,7 +140,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }

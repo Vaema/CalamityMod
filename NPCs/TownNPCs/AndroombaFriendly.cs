@@ -65,6 +65,8 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.catchItem = (short)ModContent.ItemType<AndroombaItem>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<ArsenalLabBiome>().Type };
             NPC.dontTakeDamage = true;
+            NPC.Calamity().VulnerableToSickness = false;
+            NPC.Calamity().VulnerableToElectricity = true;
         }
 
         public override bool CanChat() => false;

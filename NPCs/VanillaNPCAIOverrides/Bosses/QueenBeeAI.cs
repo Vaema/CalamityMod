@@ -41,16 +41,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
             {
                 calamityGlobalNPC.CurrentlyEnraged = true;
-                enrageScale += 0.5f;
+                enrageScale += 1f;
             }
             if (!Main.player[npc.target].ZoneJungle && enrage)
             {
                 calamityGlobalNPC.CurrentlyEnraged = true;
-                enrageScale += 0.5f;
+                enrageScale += 1f;
             }
 
-            if (CalamityWorld.LegendaryMode)
-                enrageScale += 1f;
+            if (Main.getGoodWorld)
+                enrageScale += 0.5f;
 
             if (enrageScale > maxEnrageScale)
                 enrageScale = maxEnrageScale;

@@ -334,7 +334,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (CurrentBehavior == (int)PhaseType.Idle)
             {
-                pathfinding.ClearResults();
+                pathfinding?.ClearResults();
                 CurrentBehavior = (int)PhaseType.Flee;
                 AlertPolyp();
             }

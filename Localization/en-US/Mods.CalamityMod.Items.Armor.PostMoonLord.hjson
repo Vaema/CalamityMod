@@ -273,7 +273,6 @@ DemonshadeBreastplate: {
 	Tooltip:
 		'''
 		25% increased melee speed, 15% increased damage and critical strike chance
-		Enemies take ungodly damage when they touch you
 		Increased max life by 50 and max mana by 200
 		Standing still absorbs shadows to grant exponentially accelerating life regen
 		'''
@@ -299,19 +298,15 @@ DemonshadeHelm: {
 
 EmpyreanCloak: {
 	DisplayName: Empyrean Cloak
-	Tooltip:
-		'''
-		Armor of the cosmos
-		7% increased rogue damage and critical strike chance
-		'''
+	Tooltip: "{$Common.RogueDamage} and {$Common.RogueCrit@1}"
 }
 
 EmpyreanCuisses: {
 	DisplayName: Empyrean Cuisses
 	Tooltip:
 		'''
-		5% increased rogue damage and critical strike chance
-		15% increased movement speed
+		{$Common.RogueDamageCrit}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -319,13 +314,12 @@ EmpyreanMask: {
 	DisplayName: Empyrean Mask
 	Tooltip:
 		'''
-		11% increased rogue damage and critical strike chance
-		5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$Common.RogueVelocity@2}
 		'''
 	SetBonus:
 		'''
-		9% increased rogue damage and velocity
-		+115 maximum stealth
+		{$Common.RogueStealth}
 		Rogue projectiles have special effects on enemy hits
 		Imbued with cosmic wrath when you are damaged
 		'''
@@ -345,8 +339,6 @@ FearmongerGreathelm: {
 		Minions no longer deal less damage while wielding non-summoner weapons
 		Immunity to all but the strongest forms of frost and flame
 		Minion attacks grant +3.5 HP/s life regen and massively accelerate life regen
-		15% increased damage reduction during the Pumpkin and Frost Moons
-		This extra damage reduction ignores the soft cap
 		'''
 }
 
@@ -417,7 +409,6 @@ GodSlayerChestplate: {
 	Tooltip:
 		'''
 		+50 max life
-		Enemies take damage when they hit you
 		11% increased damage and 8% increased critical strike chance
 		'''
 	CommonSetBonus:
@@ -442,11 +433,7 @@ GodSlayerHeadMelee: {
 		Enemies are more likely to target you
 		{$GodSlayerHeadMelee.SetBonusEffect}
 		'''
-	SetBonusEffect:
-		'''
-		Taking over 80 damage in one hit will cause you to release a swarm of high-damage god killer darts
-		Enemies take a lot of damage when they hit you
-		'''
+	SetBonusEffect: Taking over 80 damage in one hit will cause you to release a swarm of high-damage god killer darts
 }
 
 GodSlayerHeadRanged: {

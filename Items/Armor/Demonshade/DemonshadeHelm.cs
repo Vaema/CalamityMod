@@ -21,6 +21,8 @@ namespace CalamityMod.Items.Armor.Demonshade
         internal static string ShadowScytheEntitySourceContext => "SetBonus_Calamity_Demonshade";
 
         public static int DevilDamage = 1000;
+        public static int BeamDamage => CalamityUtils.ScaleWithDifficulty(300);
+        public static int ScytheDamage => CalamityUtils.ScaleWithDifficulty(500);
         public static float MultDamageBoost = 0.5f;
         public static double MultDamageTakenBoost = 0.25D;
 

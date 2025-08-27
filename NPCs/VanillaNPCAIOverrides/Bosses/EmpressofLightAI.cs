@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool visible = true;
             bool takeDamage = true;
             float lessTimeSpentPerPhaseMultiplier = phase2 ? (death ? 0.375f : 0.5f) : (death ? 0.75f : 1f);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 lessTimeSpentPerPhaseMultiplier *= 0.2f;
 
             float extraPhaseTime;
@@ -174,7 +174,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     float idleTimer = phase2 ? (death ? 10f : 15f) : (death ? 20f : 30f);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         idleTimer *= 0.5f;
                     if (idleTimer < 10f)
                         idleTimer = 10f;
@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] < 60f)
                         AI_120_HallowBoss_DoMagicEffect(npc.Center + randomStreakOffset, 1, Utils.GetLerpValue(0f, 60f, npc.ai[1], clamped: true), npc);
 
-                    int streakSpawnFrequency = CalamityWorld.LegendaryMode ? 1 : 2;
+                    int streakSpawnFrequency = Main.getGoodWorld ? 1 : 2;
                     if (phase3)
                         streakSpawnFrequency *= 2;
 
@@ -441,21 +441,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
                             if (phase3)
                             {
-                                int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, -rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - ai3);
-                                if (Main.rand.NextBool(60) && CalamityWorld.LegendaryMode)
-                                {
-                                    Main.projectile[proj2].extraUpdates += 1;
-                                    Main.projectile[proj2].netUpdate = true;
-                                }
-                            }
-
-                            if (Main.rand.NextBool(60) && CalamityWorld.LegendaryMode)
-                            {
-                                Main.projectile[proj].extraUpdates += 1;
-                                Main.projectile[proj].netUpdate = true;
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, -rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - ai3);
                             }
                         }
 
@@ -637,7 +626,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] % 42f == 0f && npc.ai[1] < 42f)
                     {
                         float projRotation = MathHelper.TwoPi * Main.rand.NextFloat();
-                        float totalProjectiles = CalamityWorld.LegendaryMode ? 30f : death ? (dayTimeEnrage ? 22f : 15f) : (dayTimeEnrage ? 18f : 13f);
+                        float totalProjectiles = Main.getGoodWorld ? 30f : death ? (dayTimeEnrage ? 22f : 15f) : (dayTimeEnrage ? 18f : 13f);
                         int projIndex = 0;
                         bool inversePhase2SpreadPattern = Main.rand.NextBool();
                         for (float i = 0f; i < 1f; i += 1f / totalProjectiles)
@@ -653,7 +642,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float initialVelocity = death ? 2f : 1.75f;
                             if (dayTimeEnrage && projIndex % 2 == 0)
                                 initialVelocity *= 2f;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 initialVelocity *= 1.5f;
 
                             // Given that maxAddedVelocity = 2
@@ -935,11 +924,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
-                                if (Main.rand.NextBool(30) && CalamityWorld.LegendaryMode)
-                                {
+                                if (Main.getGoodWorld)
                                     Main.projectile[proj].extraUpdates += 1;
-                                    Main.projectile[proj].netUpdate = true;
-                                }
                             }
 
                             // Spawn extra homing Rainbow Streaks per player.
@@ -1170,21 +1156,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((death ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
                             if (phase3)
                             {
                                 int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, -vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - streakHomeTime);
-                                if (Main.rand.NextBool(15) && CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                 {
                                     Main.projectile[proj2].extraUpdates += 1;
                                     Main.projectile[proj2].netUpdate = true;
                                 }
-                            }
-
-                            if (Main.rand.NextBool(15) && CalamityWorld.LegendaryMode)
-                            {
-                                Main.projectile[proj].extraUpdates += 1;
-                                Main.projectile[proj].netUpdate = true;
                             }
                         }
 

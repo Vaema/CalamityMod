@@ -21,7 +21,7 @@ namespace CalamityMod.Systems
         {
             if (CalamityGlobalNPC.aquaticScourge == -1)
                 return false;
-            return Main.npc[CalamityGlobalNPC.aquaticScourge].justHit || Main.npc[CalamityGlobalNPC.aquaticScourge].life <= Main.npc[CalamityGlobalNPC.aquaticScourge].lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode;
+            return Main.npc[CalamityGlobalNPC.aquaticScourge].justHit || Main.npc[CalamityGlobalNPC.aquaticScourge].life <= Main.npc[CalamityGlobalNPC.aquaticScourge].lifeMax * 0.999 || BossRushEvent.BossRushActive || Main.zenithWorld;
         }
     }
 }

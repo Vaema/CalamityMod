@@ -176,7 +176,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (Main.zenithWorld)
                     {
                         int spread = 15;
-                        for (int times = CalamityWorld.LegendaryMode ? 3 : 2; times > 0; times--)
+                        for (int times = 3; times > 0; times--)
                         {
                             Vector2 velocity = NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 6f;
                             Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));

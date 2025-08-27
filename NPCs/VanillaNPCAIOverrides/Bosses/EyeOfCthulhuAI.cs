@@ -14,9 +14,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         private const float ProjectileOffset = 50f;
 
-        // Vanilla values
-        public static float Phase2ContactDamageMult = 1.2f; // 36
-        public static float Phase3ContactDamageMult = 1.333f; // 40
+        // Rev+ exclusive
+        public static float Phase1ContactDamageMult = 1.333f; // 40 (buffed from 30)
+        public static float Phase2ContactDamageMult = 1.6f; // 48 (buffed from 36)
+        public static float Phase3ContactDamageMult = 1.8f; // 54 (buffed from 40)
         public static int BloodShotDamage = 8; // 32
 
         public static bool BuffedEyeofCthulhuAI(NPC npc, Mod mod)
@@ -43,6 +44,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool finalPhaseDeath = lifeRatio < finalPhaseDeathLifeRatio;
 
             float lineUpDist = death ? 15f : 20f;
+
+            // Set contact damage
+            npc.damage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : phase2 ? Phase2ContactDamageMult : Phase1ContactDamageMult));
 
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
             float servantAndProjectileVelocity = death ? 10f : 6f;
@@ -130,7 +134,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float hoverSpeed = death ? 9.5f + 7f * (1f - lifeRatio) : 7f;
                     float hoverAcceleration = death ? 0.2f + 0.15f * (1f - lifeRatio) : 0.15f;
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         hoverSpeed += 3f;
                         hoverAcceleration += 0.08f;
@@ -159,7 +163,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] += 1f;
 
                         float servantSpawnGateValue = death ? 15f : 40f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             servantSpawnGateValue *= 0.8f;
 
                         if (npc.ai[3] >= servantSpawnGateValue && shootProjectile)
@@ -207,7 +211,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float chargeSpeed = (death ? 10.5f : 8f) + npc.ai[3] * additionalVelocityPerCharge;
                     if (death)
                         chargeSpeed += 10f * (1f - lifeRatio);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeSpeed += 4f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
@@ -218,7 +222,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 else if (npc.ai[1] == 2f)
                 {
                     int chargeDelay = death ? (75 - (int)Math.Round(30f * (1f - lifeRatio))) : 95;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeDelay -= 30;
 
                     float slowDownGateValue = chargeDelay * (death ? 0.85f : 0.65f);
@@ -231,7 +235,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             decelerationScalar = 0f;
 
                         npc.velocity *= (MathHelper.Lerp(death ? 0.76f : 0.92f, death ? 0.88f : 0.96f, decelerationScalar));
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             npc.velocity *= 0.99f;
 
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
@@ -273,7 +277,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             else if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     npc.reflectsProjectiles = true;
 
                 if (npc.ai[0] == 1f)
@@ -292,13 +296,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation += npc.ai[2];
 
                 float phaseChangeRate = death ? 2f : 1f;
-                float servantSpawnGateValue = CalamityWorld.LegendaryMode ? 4f : 20f;
+                float servantSpawnGateValue = Main.getGoodWorld ? 4f : 20f;
                 npc.ai[1] += phaseChangeRate;
                 if (npc.ai[1] % servantSpawnGateValue == 0f)
                 {
                     float servantVelocity = death ? 9.3f : 5.65f;
                     Vector2 servantSpawnVelocity = Main.rand.NextVector2CircularEdge(servantVelocity, servantVelocity);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         servantSpawnVelocity *= 3f;
 
                     Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
@@ -310,21 +314,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (Main.dedServ && servantSpawn < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, servantSpawn);
-
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            int type = ProjectileID.BloodNautilusShot;
-                            Vector2 projectileVelocity = Main.rand.NextVector2CircularEdge(15f, 15f);
-                            int numProj = 3;
-                            int spread = 20;
-                            float rotation = MathHelper.ToRadians(spread);
-                            for (int i = 0; i < numProj; i++)
-                            {
-                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, 15, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = 600;
-                            }
-                        }
                     }
 
                     for (int n = 0; n < 10; n++)
@@ -373,7 +362,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 npc.defense = 0;
-                npc.damage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : Phase2ContactDamageMult));
 
                 if (npc.ai[1] == 0f & phase3)
                     npc.ai[1] = 5f;
@@ -402,7 +390,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         hoverSpeed += 1f;
                         hoverAcceleration += 0.1f;
@@ -458,7 +446,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         chargeSpeed *= 1.15f;
                     if (npc.ai[3] == 2f)
                         chargeSpeed *= 1.3f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeSpeed *= 1.2f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
@@ -688,14 +676,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (Main.dedServ && eye < Main.maxNPCs)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, eye);
                             }
-                            else if (!CalamityWorld.LegendaryMode)
+                            else if (!Main.getGoodWorld)
                             {
                                 int projType = ProjectileID.BloodNautilusShot;
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].timeLeft = 600;
                             }
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                             {
                                 int type = ProjectileID.BloodNautilusShot;
                                 Vector2 projectileVelocity = servantSpawnVelocity * 3f;

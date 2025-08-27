@@ -60,13 +60,14 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override string Texture => "CalamityMod/NPCs/Bumblebirb/Birb";
         public override string BossHeadTexture => "CalamityMod/NPCs/Bumblebirb/Birb_Head_Boss";
 
-        public static int FeatherDamage = 42; // 168
+        public static float DashDamageMult = 1.5f; // 240
+        public static int FeatherDamage = 40; // 160
         public static int LightningDamage = 65; // 260
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 120; // 240
+            NPC.damage = 80; // 160
             NPC.npcSlots = 32f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -80,7 +81,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(platinum: 1);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
@@ -173,7 +174,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             if (NPC.localAI[2] > 0f)
                 enrageScale += 1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 enrageScale += 0.5f;
 
             if (enrageScale > 3f)
@@ -227,8 +228,6 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             calamityGlobalNPC.DR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f ? 0.55f : 0.1f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f;
-
-            int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
 
             if (phaseSwitchPhase)
             {
@@ -337,7 +336,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             }
 
             // Max spawn amount
-            int maxBirbs = CalamityWorld.MaliceMode ? 12 : revenge ? 3 : 2;
+            int maxBirbs = Main.zenithWorld ? 12 : revenge ? 3 : 2;
 
             // Variable for charging
             float chargeDistance = 600f;
@@ -466,7 +465,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                         bool spawnRight = player.velocity.X > 0f;
                                         for (int i = 0; i < totalProjectiles; i++)
                                         {
-                                            if (CalamityWorld.LegendaryMode)
+                                            if (Main.getGoodWorld)
                                             {
                                                 if (i >= (int)(totalProjectiles * 0.125) && i <= (int)(totalProjectiles * 0.375))
                                                 {
@@ -533,13 +532,13 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     {
                                         int totalProjectiles = phase2 ? 40 : 48;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             totalProjectiles *= 2;
 
                                         float radians = MathHelper.TwoPi / totalProjectiles;
                                         int distance = phase2 ? 1200 : 1320;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             distance *= 2;
 
                                         bool spawnRight = player.velocity.X > 0f;
@@ -618,8 +617,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Fly towards target quickly
             else if (NPC.ai[0] == 2f)
             {
-                // Set reduced damage
-                NPC.damage = reducedSetDamage;
+                NPC.damage = NPC.defDamage;
 
                 if (NPC.target < 0 || !player.active || player.dead)
                 {
@@ -648,7 +646,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                 float velocity = 8f + (enrageScale - 1f) * 2f;
                 float follyQuickFlySpeed = velocity + NPC.ai[2] + follyQuickFlyTargetDirection.Length() / 120f;
-                if (CalamityWorld.MaliceMode)
+                if (Main.getGoodWorld)
                     follyQuickFlySpeed *= 2f;
 
                 float follyQuickFlyVelMult = 20f;
@@ -657,7 +655,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.velocity = (NPC.velocity * (follyQuickFlyVelMult - 1f) + follyQuickFlyTargetDirection) / follyQuickFlyVelMult;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= (CalamityWorld.MaliceMode ? 90f : 180f))
+                if (NPC.ai[1] >= (Main.getGoodWorld ? 90f : 180f))
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 0f;
@@ -735,8 +733,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] > 10f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
+                    NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                     NPC.velocity = follyChargePrepareTargetDirection;
 
@@ -756,8 +753,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Charge
             else if (NPC.ai[0] == 3.2f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                 NPC.ai[2] += 0.0333333351f;
                 float velocity = 28f + (enrageScale - 1f) * 4f;
@@ -855,7 +851,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool gfbSpawnFlag = CalamityWorld.MaliceMode && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
+                        bool gfbSpawnFlag = Main.zenithWorld && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
                         bool spawnFlag = NPC.CountNPCS(ModContent.NPCType<DraconicSwarmer>()) < maxBirbs && (NPC.ai[1] == 140f || (revenge && NPC.ai[1] == 155f) || NPC.ai[1] == 170f || gfbSpawnFlag);
                         if (spawnFlag)
                         {
@@ -1247,7 +1243,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     ModContent.ItemType<RougeSlash>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
-                normalOnly.Add(ModContent.ItemType<Swordsplosion>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EffulgentFeather>(), 1, 25, 30);

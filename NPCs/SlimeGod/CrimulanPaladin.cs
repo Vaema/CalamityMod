@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.SlimeGod
             addedStretch = -landingRecoil;
 
             // Used for teleporting
-            float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
+            float scale = Main.getGoodWorld ? 0.8f : 1f;
 
             // How fast the slime slams down
             float slamVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
@@ -152,7 +152,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (lifeRatio <= 0.5f && Main.netMode != NetmodeID.MultiplayerClient && expertMode)
             {
                 // Spread of random globs in meme mode
-                if (CalamityWorld.LegendaryMode)
+                if (Main.zenithWorld)
                 {
                     int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
                     for (int i = 0; i < 30; i++)

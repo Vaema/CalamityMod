@@ -165,7 +165,7 @@ namespace CalamityMod
             }
         }
 
-        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia)
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia, bool respectIFrames = false)
         {
             if (!projectile.friendly)
                 return;
@@ -184,10 +184,12 @@ namespace CalamityMod
             foreach (NPC n in Main.ActiveNPCs)
             {
                 float extraDistance = (n.width / 2) + (n.height / 2);
-                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance))
+                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance) || (respectIFrames && (projectile.localNPCImmunity[n.whoAmI] > 0 || projectile.localNPCImmunity[n.whoAmI] == -1 || n.immune[projectile.owner] > 0)))
                     continue;
 
                 float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);
+                if (respectIFrames && Projectile.perIDStaticNPCImmunity[projectile.type][n.whoAmI] > Main.GameUpdateCount)
+                    currentNPCDist += 1600; //Prioritize things that don't currently have iframes, but still home in on stuff that has static iframes if needed.
                 if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1)))
                 {
                     npcDistCompare = currentNPCDist;
@@ -340,9 +342,8 @@ namespace CalamityMod
             Vector2 spawnPosition = new Vector2(x, y);
             Vector2 velocity = targetPos - spawnPosition;
             velocity.X += Main.rand.NextFloat(-xVariance, xVariance);
-            float speed = projSpeed;
             float targetDist = velocity.Length();
-            targetDist = speed / targetDist;
+            targetDist = projSpeed / targetDist;
             velocity.X *= targetDist;
             velocity.Y *= targetDist;
             return Projectile.NewProjectileDirect(source, spawnPosition, velocity, projType, damage, knockback, owner);

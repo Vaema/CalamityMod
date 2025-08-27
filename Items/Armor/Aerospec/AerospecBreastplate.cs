@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Armor.Aerospec
 
         // Common Set Bonus
         public static int SetBonusHurtDamageThreshold = 25;
-        public static int SetBonusFeatherDamage = 30;
+        public static int SetBonusFeatherDamage => CalamityUtils.ScaleWithDifficulty(15);
         public static float SetBonusFallSpeed = 15f;
 
         public override void SetDefaults()

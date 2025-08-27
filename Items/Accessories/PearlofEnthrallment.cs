@@ -37,13 +37,13 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sirenWaifu = true;
+            modPlayer.waterElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<WaterWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<WaterElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<WaterWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<WaterElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<WaterElementalMinion>()] < 1)
                 {
@@ -59,13 +59,13 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.sirenWaifuVanity = true;
+            modPlayer.waterElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<WaterWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<WaterElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<WaterWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<WaterElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<WaterElementalMinion>()] < 1)
                 {

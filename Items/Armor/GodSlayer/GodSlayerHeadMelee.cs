@@ -13,6 +13,10 @@ namespace CalamityMod.Items.Armor.GodSlayer
     public class GodSlayerHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        // Set Bonus
+        public static int DartDamage => CalamityUtils.ScaleWithDifficulty(350);
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -40,7 +44,6 @@ namespace CalamityMod.Items.Armor.GodSlayer
             modPlayer.godSlayerDamage = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
             player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextFromModItem<GodSlayerChestplate>("CommonSetBonus").Format(hotkey, GodslayerArmorDash.GodslayerCooldown);
-            player.thorns += 2.5f;
             player.aggro += 1000;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))

@@ -5,6 +5,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Fonts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
@@ -218,7 +219,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
         }
 
@@ -426,7 +427,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             groundPhaseTurnSpeed += Vector2.Distance(destination, NPC.Center) * 0.0002f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 segmentVelocity *= 1.1f;
                 speed *= 1.1f;
@@ -752,10 +753,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || CalamityWorld.LegendaryMode) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
+                    if (NPC.Opacity >= 1f && distanceFromTarget > 480f && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                     {
                         calamityGlobalNPC.newAI[0] += 1f;
-                        if (calamityGlobalNPC.newAI[0] >= (CalamityWorld.LegendaryMode ? 30f : 150f) && calamityGlobalNPC.newAI[0] % (CalamityWorld.LegendaryMode ? 30f : phase7 ? 30f : 60f) == 0f)
+                        if (calamityGlobalNPC.newAI[0] >= (Main.getGoodWorld ? 30f : 150f) && calamityGlobalNPC.newAI[0] % (Main.getGoodWorld ? 30f : phase7 ? 30f : 60f) == 0f)
                         {
                             float fireballSpeed = 8f;
                             Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
@@ -770,7 +771,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.zenithWorld)
                             {
                                 for (int l = 0; l < 8; l++)
                                 {
@@ -1112,7 +1113,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         speedCopy += Vector2.Distance(destination, NPC.Center) * 0.005f;
                         turnSpeedCopy += Vector2.Distance(destination, NPC.Center) * 0.00025f;
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 speedCopy *= 2f;
@@ -1270,7 +1271,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         else if (increaseSpeed)
                             groundPhaseTurnSpeed *= 2f;
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 segmentVelocity *= 2f;
@@ -1871,7 +1872,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         turnSpeedCopy += distanceFromTarget * 0.0001f * (1f - lifeRatio);
                     }
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             speedCopy *= 2f;
@@ -2015,7 +2016,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else if (increaseSpeed)
                         groundPhaseTurnSpeed *= 2f;
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             segmentVelocity *= 2f;
@@ -2318,7 +2319,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     float mult = revenge ? 1.5f : 3f;
                     for (int i = 0; i < totalSpreads; i++)
                     {
-                        int totalProjectiles = (CalamityWorld.LegendaryMode) ? 30 : 12;
+                        int totalProjectiles = Main.getGoodWorld ? 30 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float newVelocity = finalVelocity - i * mult;
                         float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
@@ -2605,7 +2606,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
                 normalOnly.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-                normalOnly.Add(ModContent.ItemType<Norfleet>(), 10);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<DevourerofGodsMask>(), 7);
@@ -2798,9 +2798,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
 
                 // Speak in Wingdings if the Punch Card is equipped
-                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && FontAssetSystem.Fonts["Wingdings"] != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 {
-                    Vector2 vector = DoGWingdings.Wingdings.MeasureString(Language.GetTextValue(text));
+                    Vector2 vector = FontAssetSystem.Fonts["Wingdings"].MeasureString(Language.GetTextValue(text));
                     // This is how normal combat text spawn positioning is handled
                     float positionX = (float)location.X + (float)location.Width * 0.5f - vector.X * 0.5f + Main.rand.Next(-(int)((double)location.Width * 0.5), (int)((double)location.Width * 0.5) + 1);
                     float positionY = (float)location.Y + (float)location.Height * 0.25f - vector.Y * 0.5f + Main.rand.Next(-(int)((double)location.Height * 0.5), (int)((double)location.Height * 0.5) + 1);

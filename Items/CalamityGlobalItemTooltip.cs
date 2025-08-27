@@ -145,14 +145,6 @@ namespace CalamityMod.Items
             // Modify all vanilla tooltips before appending mod mechanics (if any).
             ModifyVanillaTooltips(item, tooltips);
 
-            // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
-            if (canFirePointBlankShots)
-            {
-                LocalizedText lineText = CalamityUtils.GetText("Misc.PointBlank");
-                TooltipLine line = new TooltipLine(Mod, "CalamityMod:PointBlankTooltip", lineText.Value);
-                tooltips.Insert(++lastTooltipIndex, line);
-            }
-
             // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the tooltip list.
             EnchantmentTooltips(item, tooltips);
 
@@ -423,7 +415,7 @@ namespace CalamityMod.Items
             string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
             Dictionary<int, SummonTag> TagByItem = new();
-            foreach (SummonTag tag1 in SummonTagDebuffDict.Dict.Values)
+            foreach (SummonTag tag1 in CalamityBuffSets.SummonTagDebuff.Values)
             {
                 if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
             }
@@ -571,10 +563,6 @@ namespace CalamityMod.Items
             // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
             if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Pwnhammer"));
-
-            // Warmth Potion reduces debuff durations
-            if (item.type == ItemID.WarmthPotion)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("WarmthPotion"));
 
             // Nerfed Archery Potion tooltip
             if (item.type == ItemID.ArcheryPotion)
@@ -803,27 +791,15 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("FairyBoots"));
 
-            // Reduced Nightwither and Daybroken damage, and melee speed removal.
+            // Melee speed removal.
             if (item.type == ItemID.MoonStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("MoonStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.SunStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("SunStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.CelestialStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
             if (item.type == ItemID.CelestialShell)
-            {
-                EditTooltipByNum(4, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(2, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
 
             // Mana Flower tinker buffs.
             if (item.type == ItemID.MagnetFlower)
@@ -952,21 +928,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FireGauntlet1"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("FireGauntlet2") + AddedTooltip("TitanGloveLine"));
             }
-
-            // On Fire! debuff immunities
-            if (item.type == ItemID.ObsidianSkull || item.type == ItemID.ObsidianSkullRose || item.type == ItemID.MoltenCharm)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.ObsidianHorseshoe || item.type == ItemID.ObsidianShield || item.type == ItemID.ObsidianWaterWalkingBoots || item.type == ItemID.LavaSkull || item.type == ItemID.MoltenSkullRose)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.LavaWaders)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            if (item.type == ItemID.TerrasparkBoots)
-                EditTooltipByNum(3, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            // Ozzatron 23NOV2023: Removed tooltip edits for Magma Skull and Molten Skull Rose, as they were invalid after vanilla tooltip changes.
 
             // Yoyo Glove/Bag apply a 0.5x damage multiplier on the second yoyo
             if (item.type == ItemID.YoyoBag || item.type == ItemID.YoYoGlove)
@@ -1131,10 +1092,8 @@ namespace CalamityMod.Items
 
             // Non-consumable boss summon items
             #region Vanilla Boss Summon Non-consumable Tooltips
-            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.BloodMoonStarter || item.type == ItemID.GoblinBattleStandard ||
-                item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing || item.type == ItemID.QueenSlimeCrystal ||
-                item.type == ItemID.PirateMap || item.type == ItemID.SnowGlobe || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull ||
-                item.type == ItemID.NaughtyPresent || item.type == ItemID.PumpkinMoonMedallion || item.type == ItemID.SolarTablet || item.type == ItemID.SolarTablet || item.type == ItemID.CelestialSigil)
+            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
+                || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
 

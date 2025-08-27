@@ -54,8 +54,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int FireDamage = 42; // 168; HolyFlare
-        public static int BlobDamage = 42; // 168
+        public static int FireDamage = 40; // 160; HolyFlare
+        public static int BlobDamage = 40; // 160
         public static int FireSentryDamage = 55; // 220; HolyBomb
         public static int MoltenBlastDamage = 55; // 220
 
@@ -262,7 +262,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Charge variables
             float chargeVelocityMult = 0.25f;
             float maxChargeVelocity = death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 maxChargeVelocity *= 1.15f;
 
             // Whether the commander is calling all guardians together for the laser attack
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             float moveVelocity = death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 moveVelocity *= 1.25f;
             if (healerAlive)
                 moveVelocity *= 0.8f;
@@ -455,7 +455,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = (commanderUsingLaser || commanderGoingLowOrHighInPhase1) ? 10f : 15f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -487,7 +487,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[1] >= -throwRocksGateValue)
                 {
                     NPC.velocity *= 0.8f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         NPC.velocity *= 0.5f;
                 }
 
@@ -548,7 +548,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (distanceFromDestination.Length() > 40f)
                     {
                         float inertia = commanderGoingLowOrHighInPhase2 ? 8f : 15f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             inertia *= 0.8f;
 
                         NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;

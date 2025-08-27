@@ -9,7 +9,6 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
-using CalamityMod.Items.Armor.Statigel;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
@@ -439,8 +438,6 @@ namespace CalamityMod
             int extraIFrames = 0;
             if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
                 extraIFrames += 30;
-            if (modPlayer.statigelSet && hurtInfo.Damage > StatigelArmor.SetBonusHurtDamageThreshold)
-                extraIFrames += StatigelArmor.SetBonusIFrameExtension;
 
             // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
             // If you only take 1 damage, you get 5 iframes.
@@ -1026,10 +1023,10 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityItemSets.WeaponWithToolPowerAffectedBySummonPenalty[item.type];
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
+                bool heldItemIsExcludedByModCall = CalamityItemSets.ItemWhichDisablesSummonerNerf[item.type];
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;

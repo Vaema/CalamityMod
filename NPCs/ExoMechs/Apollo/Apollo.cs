@@ -424,7 +424,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float timeToLineUpAttack = 30f;
             float timeToLineUpCharge = death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 timeToLineUpAttack *= 0.5f;
                 timeToLineUpCharge *= 0.5f;
@@ -445,7 +445,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             // Charge velocity
             float chargeVelocity = death ? 105f : revenge ? 101.25f : expertMode ? 97.5f : 90f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 baseVelocity *= 1.5f;
                 chargeVelocity *= 1.15f;
@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             float rocketPhaseDuration = lastMechAlive ? 60f : 90f;
             int numRockets = nerfedAttacks ? 2 : 3;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 numRockets += 3;
 
             // Default vector to fly to
@@ -488,7 +488,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                 int randomLocationVarianceX = shouldGetBuffedByBerserkPhase ? 50 : 20;
                 int randomLocationVarianceY = shouldGetBuffedByBerserkPhase ? 250 : 100;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     randomLocationVarianceX *= 2;
                     randomLocationVarianceY *= 2;
@@ -1178,7 +1178,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         NPC.ForceNetUpdate();
 
                         // Plasma bolts on charge
-                        if (Main.netMode != NetmodeID.MultiplayerClient && (!(Main.zenithWorld && !exoMechdusa) || (CalamityWorld.LegendaryMode)))
+                        if (Main.netMode != NetmodeID.MultiplayerClient && !(Main.zenithWorld && !exoMechdusa))
                         {
                             int totalProjectiles = death ? 12 : 8;
                             float radians = MathHelper.TwoPi / totalProjectiles;
