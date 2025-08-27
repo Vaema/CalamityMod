@@ -253,10 +253,6 @@ namespace CalamityMod.Buffs
                     tip = tip.Replace("25", "15");
                     break;
 
-                case BuffID.Warmth:
-                    tip += "\n" + CalamityUtils.GetTextValue("Vanilla.BuffDescription.WarmthExtra");
-                    break;
-
                 case BuffID.WeaponImbueConfetti:
                     tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.WeaponImbueConfetti");
                     break;

@@ -3342,21 +3342,6 @@ namespace CalamityMod.CalPlayer
             if (AdamantiteSet)
                 Player.statDefense += AdamantiteSetDefenseBoost;
 
-            // Warmth makes Chilled and Frozen tick down 3x as fast
-            if (Player.HasBuff(BuffID.Warmth))
-            {
-                for (int b = 0; b < Player.MaxBuffs; b++)
-                {
-                    if (Player.buffType[b] == BuffID.Chilled || Player.buffType[b] == BuffID.Frozen)
-                    {
-                        if (Player.buffTime[b] > 3)
-                        {
-                            Player.buffTime[b] -= 2;
-                        }
-                    }
-                }
-            }
-
             if (astralInjection)
             {
                 if (Player.statMana < Player.statManaMax2)
