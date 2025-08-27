@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<ProfanedGuardianBossBar>();
-            NPC.value = Item.buyPrice(platinum: 1);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;

@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(platinum: 1);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
