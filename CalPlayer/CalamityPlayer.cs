@@ -93,10 +93,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> If true, there is an event actively occuring near the player. Solely used for preventing Silva Revive's cooldown from decreasing. </summary>
         public static bool areThereAnyDamnEvents = false;
         public float calamityBonusLuck = 0f;
-        /// <summary> Custom variable for tracking if the player has Potion Sickness. Used for adding Potion Sickness to the Cooldown Rack. </summary>
-        public bool potionSick = false;
-        /// <summary> Custom variable for tracking how long the player has had Potion Sickness. Solely used for triggering the aura effects of Life Jelly and its upgrades. </summary>
-        public int timePotionSick;
         public bool drawBossHPBar = true;
         public float stealthUIAlpha = 1f;
         public float SulphWaterUIOpacity = 1f;
@@ -266,8 +262,8 @@ namespace CalamityMod.CalPlayer
         public int arsenalCooldown = 0;
         public int killModeCooldown = 0;
         public bool demonSwordKillMode = false;
-        public bool exaltedKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>());
-        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>());
+        public bool exaltedKillMode => (demonSwordKillMode && Player.ActiveItem().type == ItemType<ExaltedOathblade>());
+        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.ActiveItem().type == ItemType<DevilsDevastation>());
         /// <summary>
         /// Tracks Dragoon Drizzlefish's "gel feed" mechanic in Get fixed boi.<br/>
         /// Consuming Gel adds 1 to this counter, up to a maximum of 6, and using the weapon has a random chance to decrement the counter.<br/>
@@ -886,6 +882,7 @@ namespace CalamityMod.CalPlayer
         public bool cleansingjelly = false;
         public bool GrandGelatin = false;
         public int CleansingEffect = 0;
+        public bool spawnedJellyAura = false;
         public bool community = false;
         public bool shatteredCommunity = false;
         public bool fleshTotem = false;
@@ -2251,6 +2248,7 @@ namespace CalamityMod.CalPlayer
             lifejelly = false;
             GrandGelatin = false;
             cleansingjelly = false;
+            spawnedJellyAura = false;
             community = false;
             shatteredCommunity = false;
             stressPills = false;
@@ -3296,7 +3294,7 @@ namespace CalamityMod.CalPlayer
                 ascendantInsigniaBuffTime = 240; //4 seconds
             }
 
-            int numOfBlobs = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()];
+            int numOfBlobs = Player.ownedProjectileCounts[ProjectileType<TransformerBlob>()];
             if (transformer && numOfBlobs > 0 && Main.myPlayer == Player.whoAmI && CalamityKeybinds.TransformerHotKey.JustPressed && transformerCooldown <= 0 && true) // Add check if projectiles are active
             {
                 // Go fire all the blobs
@@ -3307,7 +3305,7 @@ namespace CalamityMod.CalPlayer
                 for (int x = 0; x < Main.maxProjectiles; x++)
                 {
                     Projectile projectile = Main.projectile[x];
-                    if (projectile.active && projectile.type == ModContent.ProjectileType<TransformerBlob>())
+                    if (projectile.active && projectile.type == ProjectileType<TransformerBlob>())
                     {
                         projectile.localAI[0] = 5;
                     }
@@ -3918,7 +3916,7 @@ namespace CalamityMod.CalPlayer
                 SoundEngine.PlaySound(PlagueReaperMask.ActivationSound, Player.Center);
                 Player.AddCooldown(PlagueBlackout.ID, PlagueReaperMask.BlackoutDuration + PlagueReaperMask.BlackoutCooldown);
             }
-            if (forbiddenCirclet && Player.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] < 2)
+            if (forbiddenCirclet && Player.ownedProjectileCounts[ProjectileType<CircletTornado>()] < 2)
             {
                 forbiddenCooldown = ForbiddenCirclet.StormCooldown;
                 int stormMana = (int)(ForbiddenCirclet.StormManaCost * Player.manaCost);
@@ -4136,23 +4134,7 @@ namespace CalamityMod.CalPlayer
             if (Player.accRunSpeed < accRunSpeedMin)
                 Player.accRunSpeed = accRunSpeedMin;
 
-            // Life Jelly regen aura spawn when using a healing potion
-            if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && lifejelly && !GrandGelatin)
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<PinkJellyAura>(), 0, 0, Player.whoAmI);
-
-            // Cleansing Jelly cleansing aura spawn when using a healing potion
-            if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && cleansingjelly && !GrandGelatin)
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<BlueJellyAura>(), 0, 0, Player.whoAmI);
-
-            // Grand Gellatin regen and cleansing aura spawn when using a healing potion
-            if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && GrandGelatin && !absorber)
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<GreenJellyAura>(), 0, 0, Player.whoAmI);
-
-            // Absorber's regen, cleansing, and buffing aura spawn when using a healing potion
-            if (timePotionSick == 1 && Player.whoAmI == Main.myPlayer && absorber)
-                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, Player.whoAmI);
-
-            if (Player.Transformation().Type == ModContent.ItemType<Popo>())
+            if (Player.Transformation().Type == ItemType<Popo>())
             {
                 if (Player.whoAmI == Main.myPlayer && !snowmanNoseless)
                     Player.AddBuff(BuffType<PopoBuff>(), 60, true);
@@ -4341,9 +4323,9 @@ namespace CalamityMod.CalPlayer
             }
             if (Player.statMana < 0) 
             {
-                Player.AddBuff(ModContent.BuffType<ManaBurn>(), 10);
-            } else if (Player.HasBuff(ModContent.BuffType<ManaBurn>())) {
-                Player.ClearBuff(ModContent.BuffType<ManaBurn>());
+                Player.AddBuff(BuffType<ManaBurn>(), 10);
+            } else if (Player.HasBuff(BuffType<ManaBurn>())) {
+                Player.ClearBuff(BuffType<ManaBurn>());
             }
         }
         #endregion
@@ -4392,20 +4374,6 @@ namespace CalamityMod.CalPlayer
         {
             if (Player.whoAmI == Main.myPlayer && CalamityClientConfig.Instance.VanillaCooldownDisplay)
             {
-                if (Player.whoAmI == Main.myPlayer && Player.potionDelay != 0)
-                    potionSick = true;
-                else
-                    potionSick = false;
-
-                if (!potionSick)
-                    timePotionSick = 0;
-                else
-                    timePotionSick++;
-
-                // Add a cooldown display for potion sickness if the player has the vanilla counter ticking
-                if (potionSick && !Player.HasCooldown(PotionSickness.ID))
-                    Player.AddCooldown(PotionSickness.ID, Player.potionDelay, false);
-
                 if (cooldowns.TryGetValue(PotionSickness.ID, out CooldownInstance cd))
                 {
                     if (Player.potionDelay != cd.timeLeft && cd.timeLeft > 0)
@@ -4414,6 +4382,8 @@ namespace CalamityMod.CalPlayer
                     if (cd.timeLeft > cd.duration)
                         cd.duration = cd.timeLeft; // If the new cooldown is larger than the full duration, update, else keep it the same.
                 }
+                else if (Player.whoAmI == Main.myPlayer && Player.potionDelay > 0)
+                    Player.AddCooldown(PotionSickness.ID, Player.potionDelay, false);
 
                 // Add a cooldown display for chaos state if the player has the vanilla counter ticking
                 // This will make the cooldown look like vanilla Rod of Discord, as it wasn't applied by either Normality Relocator or Spectral Veil
@@ -4968,25 +4938,25 @@ namespace CalamityMod.CalPlayer
             if (Player.isDisplayDollOrInanimate)
             {
                 // Body
-                if (Player.armor[1].type == ModContent.ItemType<AuricTeslaBodyArmor>())
+                if (Player.armor[1].type == ItemType<AuricTeslaBodyArmor>())
                     Player.body = EquipLoader.GetEquipSlot(Mod, "AuricTeslaBodyArmor", EquipType.Body);
-                else if (Player.armor[1].type == ModContent.ItemType<DaedalusBreastplate>())
+                else if (Player.armor[1].type == ItemType<DaedalusBreastplate>())
                     Player.body = EquipLoader.GetEquipSlot(Mod, "DaedalusBreastplate", EquipType.Body);
-                else if (Player.armor[1].type == ModContent.ItemType<EmpyreanCloak>())
+                else if (Player.armor[1].type == ItemType<EmpyreanCloak>())
                     Player.body = EquipLoader.GetEquipSlot(Mod, "EmpyreanCloak", EquipType.Body);
-                else if (Player.armor[1].type == ModContent.ItemType<SnowRuffianChestplate>())
+                else if (Player.armor[1].type == ItemType<SnowRuffianChestplate>())
                     Player.body = EquipLoader.GetEquipSlot(Mod, "SnowRuffianChestplate", EquipType.Body);
-                else if (Player.armor[1].type == ModContent.ItemType<VictideBreastplate>())
+                else if (Player.armor[1].type == ItemType<VictideBreastplate>())
                     Player.body = EquipLoader.GetEquipSlot(Mod, "VictideBreastplate", EquipType.Body);
 
                 // Legs
-                if (Player.armor[2].type == ModContent.ItemType<VictideGreaves>())
+                if (Player.armor[2].type == ItemType<VictideGreaves>())
                     Player.legs = EquipLoader.GetEquipSlot(Mod, "VictideGreaves", EquipType.Legs);
 
                 // Set Bonus
-                if (Player.armor[0].type == ModContent.ItemType<SnowRuffianMask>()
-                && Player.armor[1].type == ModContent.ItemType<SnowRuffianChestplate>()
-                && Player.armor[2].type == ModContent.ItemType<SnowRuffianGreaves>())
+                if (Player.armor[0].type == ItemType<SnowRuffianMask>()
+                && Player.armor[1].type == ItemType<SnowRuffianChestplate>()
+                && Player.armor[2].type == ItemType<SnowRuffianGreaves>())
                     snowRuffianSet = true;
             }
 
@@ -5400,11 +5370,11 @@ namespace CalamityMod.CalPlayer
                 playerUsingWeapon = false;
 
             // Molten Amputator consumes stealth in a special way
-            if (it.type == ModContent.ItemType<MoltenAmputator>())
+            if (it.type == ItemType<MoltenAmputator>())
                 playerUsingWeapon = false;
 
             // Shock Grenade consumes stealth in a special way
-            if (it.type == ModContent.ItemType<DoomsdayDevice>())
+            if (it.type == ItemType<DoomsdayDevice>())
                 playerUsingWeapon = false;
 
             // Animation check depends on whether the item is "clockwork", like Clockwork Assault Rifle.
