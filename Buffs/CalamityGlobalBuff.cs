@@ -90,6 +90,14 @@ namespace CalamityMod.Buffs
                 player.Calamity().shine = true;
             }
 
+            // Star in a Bottle provides Mana Regeneration Potion effect and cancels out the usual effect if you don't have it
+            else if (type == BuffID.StarInBottle && !player.manaRegenBuff)
+            {
+                player.manaRegenBuff = true;
+                player.manaRegenDelayBonus -= 0.5f;
+                player.manaRegenBonus -= 10;
+            }
+
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
             else if (type >= BuffID.BeetleEndurance1 && type <= BuffID.BeetleEndurance3 && player.beetleDefense)
             {

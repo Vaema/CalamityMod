@@ -4445,17 +4445,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            //Star in a Bottle gives Mana Regeneration instead of it's usual effect when you don't already have Mana Regeneration
-            if (!Player.manaRegenBuff && Player.HasBuff(BuffID.StarInBottle)) 
-            {
-                //Cancel out Star In A Bottle's normal effect
-				Player.manaRegenDelayBonus -= 0.5f;
-				Player.manaRegenBonus -= 10;
-                //Apply Mana Regen Potion effect
-                Player.manaRegenBuff = true;
-                
-            }
-
             ForceVariousEffects();
         }
         #endregion
