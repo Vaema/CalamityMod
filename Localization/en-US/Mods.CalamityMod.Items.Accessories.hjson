@@ -106,7 +106,7 @@ AmbrosialAmpoule: {
 		'''
 		+50 max life
 		Grants +2 to +5 HP/s life regen based on missing health
-		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
+		Grants the Honey buff
 		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
@@ -983,8 +983,7 @@ HoneyDew: {
 	Tooltip:
 		'''
 		+10 max life
-		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		Grants the Honey buff
 		Sickness debuff durations are halved
 		'''
 }
@@ -1104,8 +1103,7 @@ LivingDew: {
 	Tooltip:
 		'''
 		+25 max life
-		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		Grants the Honey buff
 		Fire and sickness debuff durations are halved
 		'''
 }
@@ -1429,7 +1427,7 @@ Radiance: {
 		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
+		[c/CDF69C:Grants the Honey buff]
 		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
 		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
 		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
