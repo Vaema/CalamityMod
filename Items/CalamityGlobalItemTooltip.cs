@@ -929,21 +929,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("FireGauntlet2") + AddedTooltip("TitanGloveLine"));
             }
 
-            // On Fire! debuff immunities
-            if (item.type == ItemID.ObsidianSkull || item.type == ItemID.ObsidianSkullRose || item.type == ItemID.MoltenCharm)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.ObsidianHorseshoe || item.type == ItemID.ObsidianShield || item.type == ItemID.ObsidianWaterWalkingBoots || item.type == ItemID.LavaSkull || item.type == ItemID.MoltenSkullRose)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.LavaWaders)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            if (item.type == ItemID.TerrasparkBoots)
-                EditTooltipByNum(3, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            // Ozzatron 23NOV2023: Removed tooltip edits for Magma Skull and Molten Skull Rose, as they were invalid after vanilla tooltip changes.
-
             // Yoyo Glove/Bag apply a 0.5x damage multiplier on the second yoyo
             if (item.type == ItemID.YoyoBag || item.type == ItemID.YoYoGlove)
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("YoyoGlove"));

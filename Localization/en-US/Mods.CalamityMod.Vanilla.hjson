@@ -179,8 +179,6 @@ EditedTooltip: {
 		14% increased melee damage
 		14% increased melee speed, does not stack with downgrades
 		'''
-	ObsidianSkullLine: Grants immunity to the Burning and On Fire! debuffs
-	LavaWaders: Grants immunity to the Burning and On Fire! debuffs, and 7 seconds of immunity to lava
 	Gi: 10% increased movement and jump speed
 	GoldPickaxe: Can mine Demonite, Crimtane, Meteorite, Sea Prisms, and Sea Prism Crystals
 	FlaskofCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames

@@ -3615,7 +3615,7 @@ namespace CalamityMod.CalPlayer
             double flightTimeMult = 1D +
                 (harpyRing ? 0.2 : 0D) +
                 (reaverSpeed ? ReaverHeadMobility.SetBonusFlightBoost : 0D) +
-                (angelTreads ? 0.1 : 0D) +
+                (angelTreads ? AngelTreads.FlightTimeBoost : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? 0.1 : 0D) +

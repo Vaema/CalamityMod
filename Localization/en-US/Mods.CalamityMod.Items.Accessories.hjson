@@ -151,10 +151,11 @@ AngelTreads: {
 	DisplayName: Angel Treads
 	Tooltip:
 		'''
-		36% increased running acceleration
-		Increased flight time and grants rocket flight
-		Provides water walking and extra mobility on ice
-		Grants immunity to On Fire! and temporary immunity to lava
+		Allows flight, super fast running, and extra mobility on ice
+		{0}% increased movement speed and {1}% increased flight time
+		Provides the ability to walk on water, honey & lava
+		Grants immunity to fire blocks and {2} seconds of immunity to lava
+		Reduces damage from touching lava
 		'Extreme speed!'
 		'''
 }
