@@ -105,6 +105,7 @@ namespace CalamityMod.Items
                     int[] wofWeapons = new int[]
                     {
                         ItemID.BreakerBlade,
+                        ModContent.ItemType<Carnage>(),
                         ItemID.ClockworkAssaultRifle,
                         ModContent.ItemType<Meowthrower>(),
                         ItemID.LaserRifle,
@@ -113,7 +114,6 @@ namespace CalamityMod.Items
                         ModContent.ItemType<BlastBarrel>()
                     };
                     loot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, wofWeapons));
-                    loot.Add(ModContent.ItemType<Carnage>(), 10); // 10% Carnage
 
                     int[] emblems = new int[]
                     {

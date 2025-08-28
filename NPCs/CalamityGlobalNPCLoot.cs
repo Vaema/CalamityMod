@@ -1344,6 +1344,7 @@ namespace CalamityMod.NPCs
                             var wofWeapons = new int[]
                             {
                                 ItemID.BreakerBlade,
+                                ModContent.ItemType<Carnage>(),
                                 ItemID.ClockworkAssaultRifle,
                                 ModContent.ItemType<Meowthrower>(),
                                 ItemID.LaserRifle,
@@ -1379,9 +1380,6 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-
-                    // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ModContent.ItemType<Carnage>(), 10);
 
                     // Drop Hermit's Box directly for EACH player, regardles of Expert or not. 100% chance on first kill, 10% chance afterwards.
                     // The special first kill rule is unlisted in the Bestiary
