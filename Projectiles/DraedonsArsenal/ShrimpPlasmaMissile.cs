@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Composition.Hosting.Core;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal

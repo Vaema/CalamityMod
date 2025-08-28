@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Cooldowns;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Xna.Framework;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -30,7 +28,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 34;
             Item.height = 32;
             Item.shootSpeed = 10f;
-            Item.damage = 31;
+            Item.damage = 30;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -47,7 +45,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         {
             Vector2 mouse = player.ClampedMouseWorld();
             Point mouseTileCoords = mouse.ToTileCoordinates();
-            if (!CalamityUtils.ParanoidTileRetrieval(mouseTileCoords.X, mouseTileCoords.Y).HasTile /*&& player.ownedProjectileCounts[Item.shoot] <= 0*/)
+            if (!CalamityUtils.ParanoidTileRetrieval(mouseTileCoords.X, mouseTileCoords.Y).HasTile)
             {
                 int p = Projectile.NewProjectile(source, new Vector2(mouse.X, player.Center.Y - 600), Vector2.Zero, type, damage, knockback, player.whoAmI);
                 Main.projectile[p].localAI[2] = player.ownedProjectileCounts[Item.shoot];

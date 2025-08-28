@@ -4,7 +4,6 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,12 +35,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public Vector2 chillSpot; // Stored position for intro animation and some movement
         public Vector2 spawnAnimStart; // Second stored position for the spawn animation
         public Vector2 lastTargetCenter;
-        public int attackDowntime = 0;
-        public int surpriseTimer = 0;
+        public int attackDowntime = 0; // Timer used for post attack effects
+        public int surpriseTimer = 0; // Used for the jump animation when surprized
         public float slidingDirection = 0; // Value that lerps from left to right
         public int animationClickTime = 70; // Time before body and tail click together in spawn anim
         public bool doSpin = false; // If the shrimp will spin for it's attack
-        public float specialAttackfx = 0;
+        public float specialAttackfx = 0; // spinnning effect opacity mult
         public override void SetStaticDefaults()
         {
             Main.projPet[Type] = true;
@@ -292,7 +291,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             interactionTimer = 0;
             facingDir = Math.Sign(Projectile.Center.DirectionTo(lastTargetCenter).X);
-            if (tailRecoil > 1 && doSpin)
+            if (tailRecoil > 1 && doSpin) // Little spin
             {
                 Projectile.rotation += 0.35f * facingDir;
             }
@@ -306,7 +305,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Projectile.velocity.Y -= 0.7f;
 
             Projectile.velocity *= 0.99f;
-            if (attackDowntime > 35)
+            if (attackDowntime > 35) // Reposition to somewhere on the other side of the target
             {
                 Projectile.velocity.X += 0.8f * Math.Sign(lastTargetCenter.X - lastFirePositionX);
                 TailRotationBasedOnMovement();
@@ -316,7 +315,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 CheckForSpecialAttack();
                 tailRot = MathHelper.Lerp(tailRot, 0, 0.1f);
             }
-            if (attackTimer > 60)
+            if (attackTimer > 60) // Fire the missiles
             {
                 Vector2 shootVel = tailPlace.DirectionTo(lastTargetCenter);
                 Vector2 shootPlace = tailPlace + shootVel * 10;
@@ -403,17 +402,18 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             bool left = facingDir == -1;
             float rotation = Projectile.rotation;
 
+            // Tail
             Main.EntitySpriteDraw(tail, tailPlace - Main.screenPosition, null, drawColor, rotation + tailRot, new Vector2(left ? tail.Height : 0, 0), Projectile.scale, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
             Main.EntitySpriteDraw(glow2, tailPlace - Main.screenPosition, null, Color.White, rotation + tailRot, new Vector2(left ? glow2.Height : 0, 0), Projectile.scale, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
-
             float sine = (float)Math.Sin(time * 0.35f / MathHelper.Pi);
             float headFadeIn = (float)Math.Pow(Utils.GetLerpValue(0, animationClickTime - 25, time, true), 8);
+            // Head
             Main.EntitySpriteDraw(head, headPlace - Main.screenPosition, null, drawColor * headFadeIn, rotation + sine * 0.1f, head.Size() * 0.5f, Projectile.scale, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
             Main.EntitySpriteDraw(glow, headPlace - Main.screenPosition, null, Color.White * headFadeIn, rotation + sine * 0.1f, glow.Size() * 0.5f, Projectile.scale, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
-
+            // Spin effect
             Main.EntitySpriteDraw(spin, Vector2.Lerp(headPlace, tailPlace, 0f) - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * specialAttackfx, rotation * 1.8f, spin.Size() * 0.5f, Projectile.scale * 0.53f * specialAttackfx, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
 
-            if (tailRecoil > 0)
+            if (tailRecoil > 0) // Glowing on the gun after firing
             {
                 float fade = Utils.GetLerpValue(0, 15, tailRecoil, true);
                 for (int i = 0; i < 12; i++)
@@ -422,7 +422,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Main.EntitySpriteDraw(glow2, tailPlace - Main.screenPosition + vel, null, Color.White with { A = 0 } * fade, rotation + tailRot, new Vector2(left ? glow2.Height : 0, 0), Projectile.scale, left ? SpriteEffects.FlipHorizontally : SpriteEffects.None);
                 }
             }
-
             return false;
         }
     }
