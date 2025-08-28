@@ -11,7 +11,7 @@ AerialTracker: {
 }
 
 AqueousHunterDrone: {
-	DisplayName: Aqueous Hunter Drone
+	DisplayName: P-PMA: Aqueous Hunter Drone
 	Tooltip:
 		'''
 		Summons a shrimp drone that fires bursts of homing plasma missiles
