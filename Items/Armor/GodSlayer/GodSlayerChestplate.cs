@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
 
         public static float DamageBoost = 0.15f;
-        public static int CritBoost = 10;
+        public static int CritBoost = 11;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
 
         // Common Set Bonus

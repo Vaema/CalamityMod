@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Armor.Silva
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
 
-        public static float DamageBoost = 0.12f;
-        public static int CritBoost = 12; // NOTE: Tooltip shares this number with damage % as they're equal
+        public static float DamageBoost = 0.11f;
+        public static int CritBoost = 11; // NOTE: Tooltip shares this number with damage % as they're equal
         public static float MoveSpeedBoost = 0.1f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), MoveSpeedBoost.ToPercent());
 
