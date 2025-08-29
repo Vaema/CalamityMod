@@ -7,6 +7,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.UI.DraedonSummoning;
 using ReLogic.Content;
 using ReLogic.Graphics;
+using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 
@@ -24,6 +25,9 @@ namespace CalamityMod.Fonts
 
         public override void OnModLoad()
         {
+            if (Main.dedServ)
+                return;
+
             AddFont("Wingdings", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings", AssetRequestMode.ImmediateLoad).Value); //Intentionally does not have a fallback due to it already having null checks where it is utilized to prevent them from appearing
             AddFont("CodebreakerDialog", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog", AssetRequestMode.ImmediateLoad).Value, FontAssets.MouseText.Value);
             AddFont("Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value, FontAssets.CombatText[1].Value);
