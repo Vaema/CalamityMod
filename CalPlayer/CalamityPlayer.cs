@@ -29,6 +29,7 @@ using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.PlagueReaper;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
@@ -3812,7 +3813,7 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    Player.AddBuff(BuffType<Buffs.StatBuffs.TarragonCloak>(), 602, false);
+                    Player.AddBuff(BuffType<Buffs.StatBuffs.TarragonCloak>(), TarragonHeadMelee.CloakDuration, false);
                 }
             }
             if (bloodflareRanged && !Player.HasCooldown(BloodflareRangedSet.ID))

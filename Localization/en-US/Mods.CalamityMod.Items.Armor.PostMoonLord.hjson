@@ -598,8 +598,8 @@ TarragonBreastplate: {
 	DisplayName: Tarragon Breastplate
 	Tooltip:
 		'''
-		10% increased damage and 5% increased critical strike chance
-		+1.5 HP/s life regen and +40 max life
+		{0}% increased damage and {1}% increased critical strike chance
+		+{2} HP/s life regen and {3}% increased damage reduction
 		'''
 	CommonSetBonus:
 		'''
@@ -612,8 +612,8 @@ TarragonHeadMagic: {
 	DisplayName: Tarragon Mask
 	Tooltip:
 		'''
-		15% increased magic damage and 10% increased magic critical strike chance
-		10% increased damage reduction, +100 max mana, and 15% reduced mana usage
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
 	SetBonus: "{$TarragonHeadMagic.SetBonusEffect}"
 	SetBonusEffect: On every 5th critical strike you will fire a leaf storm
@@ -623,60 +623,60 @@ TarragonHeadMelee: {
 	DisplayName: Tarragon Helm
 	Tooltip:
 		'''
-		12% increased melee damage and 7% increased melee critical strike chance
-		10% increased damage reduction
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage} and {$CommonItemTooltip.PercentIncreasedMeleeCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
 		'''
 	SetBonus:
 		'''
-		15% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		{$TarragonHeadMelee.SetBonusEffect}
 		'''
 	SetBonusEffect:
 		'''
-		Taking damage gives the Tarra Life buff, which grants +1.5 HP/s life regen
-		{0} to cloak yourself in life energy that heavily reduces enemy contact damage for 10 seconds
-		This has a 30 second cooldown
+		Taking damage gives the Tarra Life buff, which grants +{0} HP/s life regen
+		{1} to cloak yourself in life energy that heavily reduces enemy contact damage for {2} seconds
+		This has a {3} second cooldown
 		'''
 }
 
 TarragonHeadRanged: {
 	DisplayName: Tarragon Visage
-	Tooltip:
-		'''
-		10% increased ranged damage and critical strike chance
-		10% increased damage reduction
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
 	SetBonus: "{$TarragonHeadRanged.SetBonusEffect}"
-	SetBonusEffect: Ranged projectiles split into homing life energy and leaves on death
+	SetBonusEffect: Ranged projectiles spawn homing life energy and leaves on enemy hits
 }
 
 TarragonHeadRogue: {
 	DisplayName: Tarragon Helmet
 	Tooltip:
 		'''
-		10% increased rogue damage and critical strike chance
-		10% increased damage reduction and 5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		+115 maximum stealth
-		{$TarragonHeadRogue.SetBonusEffect}
+		{$Common.RogueStealth}
+		{$TarragonHeadRogue.SetBonusEffect@1}
 		'''
 	SetBonusEffect:
 		'''
-		After every 50 rogue critical hits you will gain 2.5 seconds of damage immunity
-		This effect has a cooldown of 25 seconds
-		While under the effects of a debuff you gain 10% increased rogue damage
+		After every {0} rogue critical hits you will gain {1} seconds of damage immunity
+		This effect has a cooldown of {2} seconds
+		While under the effects of a debuff you gain {3}% increased rogue damage
 		'''
 }
 
 TarragonHeadSummon: {
 	DisplayName: Tarragon Horned Helm
-	Tooltip: 10% increased damage reduction and 5% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		50% increased summon damage and +3 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		{$TarragonHeadSummon.SetBonusEffect}
 		'''
 	SetBonusEffect: Summons a life aura around you that damages nearby enemies
@@ -686,7 +686,7 @@ TarragonLeggings: {
 	DisplayName: Tarragon Leggings
 	Tooltip:
 		'''
-		10% increased movement speed
-		8% increased damage and critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamageCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }

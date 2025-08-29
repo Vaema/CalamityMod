@@ -23,6 +23,7 @@ using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
@@ -814,7 +815,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += Buffs.StatBuffs.TarragonCloak.ContactDamageReduction;
+                contactDamageReduction += TarragonHeadMelee.CloakContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 contactDamageReduction += 0.5;
@@ -2398,7 +2399,7 @@ namespace CalamityMod.CalPlayer
 
                 if (tarraMelee)
                 {
-                    Player.AddBuff(ModContent.BuffType<TarraLifeRegen>(), 120);
+                    Player.AddBuff(ModContent.BuffType<TarraLifeRegen>(), TarragonHeadMelee.TarraLifeDuration);
                 }
                 else if (xerocSet)
                 {

@@ -10,6 +10,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
@@ -397,12 +398,12 @@ namespace CalamityMod.Items
             }
             if (modPlayer.tarraMage && !item.channel)
             {
-                if (modPlayer.tarraCrits >= 5 && player.whoAmI == Main.myPlayer)
+                if (modPlayer.tarraCrits >= TarragonHeadMagic.CritsToSpawnLeaves && player.whoAmI == Main.myPlayer)
                 {
                     modPlayer.tarraCrits = 0;
                     // Tarragon Mage Leaves: (8-10) x 20%, soft cap starts at 200 base damage
                     int leafAmt = 8 + Main.rand.Next(3); // 8, 9, or 10
-                    int leafDamage = (int)(damage * 0.2f);
+                    int leafDamage = (int)(damage * TarragonHeadMagic.LeafDamageRatio);
 
                     for (int l = 0; l < leafAmt; l++)
                     {

@@ -10,6 +10,7 @@ using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -553,7 +554,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (tRegen)
-                Player.lifeRegen += 3;
+                Player.lifeRegen += TarragonHeadMelee.TarraLifeRegenBoost;
 
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
