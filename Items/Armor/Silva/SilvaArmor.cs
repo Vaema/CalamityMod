@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Armor.Silva
         public static readonly SoundStyle DispelSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaDispel");
 
         public static float DamageBoost = 0.15f;
-        public static int CritBoost = 12;
+        public static int CritBoost = 11;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
 
         // Common Set Bonus
