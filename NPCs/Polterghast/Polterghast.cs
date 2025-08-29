@@ -105,10 +105,10 @@ namespace CalamityMod.NPCs.Polterghast
 
         public static float Phase2ContactDamageMult = 1.25f; // 300
         public static float Phase3ContactDamageMult = 1.5f; // 360
-        public static int BlueShotDamage = 65; // 260
-        public static int BlueBlastDamage = 70; // 280
-        public static int RedShotDamage = 70; // 280
-        public static int RedBlastDamage = 75; // 300
+        public static int BlueShotDamage = 60; // 240
+        public static int BlueBlastDamage = 65; // 260
+        public static int RedShotDamage = 65; // 260
+        public static int RedBlastDamage = 70; // 280
 
         public override void SetDefaults()
         {

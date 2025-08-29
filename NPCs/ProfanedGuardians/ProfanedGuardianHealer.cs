@@ -67,8 +67,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int CrystalDamage = 50; // 200
-        public static int StarDamage = 55; // 220; HolyBurnOrb
+        public static int CrystalDamage = 48; // 192
+        public static int StarDamage = 54; // 216; HolyBurnOrb
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight
 
@@ -76,7 +76,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 100; // 200
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
             NPC.width = 228;
@@ -134,9 +134,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void AI()
         {
             CalamityGlobalNPC.doughnutBossHealer = NPC.whoAmI;
-
-            // Avoid cheap bullshit
-            NPC.damage = 0;
 
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1.1f, 0.9f, 0f);
 

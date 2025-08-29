@@ -237,13 +237,13 @@ namespace CalamityMod.NPCs.Providence
             base.ModifyHoverBoundingBox(ref boundingBox);
         }
 
-        public static int FireDamage = 40; // 160; HolyFire, HolyFire2, HolyFlare
-        public static int BlobDamage = 40; // 160
-        public static int FireSentryDamage = 55; // 220; HolyBomb
-        public static int MoltenBlastDamage = 55; // 220
-        public static int StarDamage = 55; // 220; HolyBurnOrb
-        public static int SpearDamage = 45; // 180
-        public static int CrystalDamage = 50; // 200
+        public static int FireDamage = 36; // 144; HolyFire, HolyFire2, HolyFlare
+        public static int BlobDamage = 36; // 144
+        public static int FireSentryDamage = 54; // 216; HolyBomb
+        public static int MoltenBlastDamage = 54; // 216
+        public static int StarDamage = 54; // 216; HolyBurnOrb
+        public static int SpearDamage = 42; // 168
+        public static int CrystalDamage = 48; // 192
         public static int HolyBlastDamage = 60; // 240
         public static int RayDamage = 100; // 400
 

@@ -65,8 +65,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int FireDamage = 42; // 168; HolyFire, HolyFire2
-        public static int SpearDamage = 45; // 180; HolySpear, ProfanedSpear
+        public static int FireDamage = 36; // 144; HolyFire, HolyFire2
+        public static int SpearDamage = 42; // 168; HolySpear, ProfanedSpear
         public static int HolyBlastDamage = 60; // 240
         public static int RayDamage = 80; // 320
 

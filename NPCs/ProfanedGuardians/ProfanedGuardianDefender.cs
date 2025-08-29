@@ -54,16 +54,16 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int FireDamage = 40; // 160; HolyFlare
-        public static int BlobDamage = 40; // 160
-        public static int FireSentryDamage = 55; // 220; HolyBomb
-        public static int MoltenBlastDamage = 55; // 220
+        public static int FireDamage = 36; // 144; HolyFlare
+        public static int BlobDamage = 36; // 144
+        public static int FireSentryDamage = 54; // 216; HolyBomb
+        public static int MoltenBlastDamage = 54; // 216
 
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 110; // 220
+            NPC.damage = 108; // 216
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
             NPC.width = 228;
