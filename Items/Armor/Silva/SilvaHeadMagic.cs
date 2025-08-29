@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Armor.Silva
         public static int MaxManaBoost = 100;
         public static float ManaCostReduction = 0.19f;
         public static float MagicDamageBoost = 0.18f;
-        public static int MagicCritBoost = 8;
+        public static int MagicCritBoost = 10;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, ManaCostReduction.ToPercent(), MagicDamageBoost.ToPercent(), MagicCritBoost);
 
         // Set Bonus
