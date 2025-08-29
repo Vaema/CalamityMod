@@ -9,6 +9,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
+using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
@@ -436,8 +437,8 @@ namespace CalamityMod
             CalamityPlayer modPlayer = player.Calamity();
 
             int extraIFrames = 0;
-            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
-                extraIFrames += 30;
+            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > GodSlayerHeadRogue.SetBonusHurtDamageThreshold)
+                extraIFrames += GodSlayerHeadRogue.ExtraIFrames;
 
             // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
             // If you only take 1 damage, you get 5 iframes.

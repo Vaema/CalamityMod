@@ -1146,7 +1146,6 @@ namespace CalamityMod.CalPlayer
         /// <summary> Demonshade Greaves' movement speed boost. </summary>
         public bool shadowSpeed = false;
         public bool dsSetBonus = false;
-        public bool auricBoost = false;
         public bool auricSetMelee = false;
         public bool daedalusReflect = false;
         public bool daedalusSplit = false;
@@ -1190,9 +1189,7 @@ namespace CalamityMod.CalPlayer
         public int silvaMageCooldown = 0;
         public bool silvaSummon = false;
         public bool hasSilvaEffect = false;
-        /// <summary> Constant variable representing the duration of Silva armor's revive, in frames. </summary>
-        public const int SilvaReviveDuration = 300;
-        public int silvaCountdown = SilvaReviveDuration;
+        public int silvaCountdown = SilvaArmor.ReviveDuration;
         public bool auricSet = false;
         public bool omegaBlueChestplate = false;
         public bool omegaBlueSet = false;
@@ -2119,7 +2116,6 @@ namespace CalamityMod.CalPlayer
             silvaSummon = false;
 
             auricSet = false;
-            auricBoost = false;
             auricSetMelee = false;
 
             GemTechSet = false;
@@ -3087,13 +3083,12 @@ namespace CalamityMod.CalPlayer
             godSlayerThrowing = false;
             godSlayerDashHotKeyPressed = false;
             SpeedBlasterDashStarted = false;
-            auricBoost = false;
             auricSetMelee = false;
             silvaSet = false;
             silvaMage = false;
             silvaSummon = false;
             hasSilvaEffect = false;
-            silvaCountdown = SilvaReviveDuration;
+            silvaCountdown = SilvaArmor.ReviveDuration;
             auricSet = false;
             GemTechSet = false;
             CobaltSet = false;
@@ -3613,7 +3608,7 @@ namespace CalamityMod.CalPlayer
                 // Gael's Greatsword replaces Rage Mode with an uber skull attack
                 if (!(Player.HasCooldown(Cooldowns.GaelsRage.ID)) && Player.ActiveItem().type == ItemType<GaelsGreatsword>() && rage > 0f)
                 {
-                    SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
+                    SoundEngine.PlaySound(SilvaArmor.DispelSound, Player.Center);
 
                     for (int i = 0; i < 3; i++)
                         Dust.NewDust(Player.position, 120, 120, DustID.Rain_BloodMoon, 0f, 0f, 100, default, 1.5f);
@@ -4530,7 +4525,7 @@ namespace CalamityMod.CalPlayer
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
-                    (silvaSet ? 0.05f : 0f) +
+                    (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (ascendantInsignia ? 0.25f : 0f ) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
@@ -4551,7 +4546,7 @@ namespace CalamityMod.CalPlayer
                     ((frostFlare && Player.statLife <= (int)(Player.statLifeMax2 * 0.5)) ? 0.15f : 0f) +
                     (dragonScales ? 0.1f : 0f) +
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
-                    (silvaSet ? 0.05f : 0f) +
+                    (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
                     (nimbleBounderBoost ? NimbleBounder.AccelerationBoost : 0f) +
                     (planarSpeedBoost > 0 ? (0.01f * planarSpeedBoost) : 0f) +
                     //(exaltedKillMode ? 0.4f : devilsDevastationKillMode ? 0.7f : 0) +

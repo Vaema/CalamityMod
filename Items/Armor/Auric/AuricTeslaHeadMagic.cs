@@ -7,8 +7,10 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Armor.Bloodflare.BloodflareHeadMagic;
+using static CalamityMod.Items.Armor.Silva.SilvaArmor;
 
 namespace CalamityMod.Items.Armor.Auric
 {
@@ -17,24 +19,25 @@ namespace CalamityMod.Items.Armor.Auric
     public class AuricTeslaHeadMagic : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static int MaxManaBoost = 100;
+        public static float ManaCostReduction = 0.2f;
+        public static float MagicDamageBoost = 0.22f;
+        public static int MagicCritBoost = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, ManaCostReduction.ToPercent(), MagicDamageBoost.ToPercent(), MagicCritBoost);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 24; //132
+            Item.defense = 24; // 110
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawOutlines = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawOutlines = true;
 
         public override void UpdateArmorSet(Player player)
         {
@@ -68,7 +71,7 @@ namespace CalamityMod.Items.Armor.Auric
                     {
                         Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipSilvaColor };
                         var LocalizedText = this.GetLocalization($"SetBonus{setBonusTooltipNumber}");
-                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format()
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(SetBonusRegenBoost.ToRegenPerSecond(), AccelerationBoost.ToPercent(), ReviveDuration.FramesToSeconds(), (ReviveCooldown / 60).FramesToSeconds())
                         : setBonusTooltipNumber == 2 ? LocalizedText.Format(GhostBoltCooldown.FramesToSeconds(), BloodsplosionCooldown.FramesToSeconds())
                         : LocalizedText.Format());
                         line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
@@ -82,12 +85,10 @@ namespace CalamityMod.Items.Armor.Auric
         }
         public override void UpdateEquip(Player player)
         {
-            var modPlayer = player.Calamity();
-            modPlayer.auricBoost = true;
-            player.manaCost -= 0.2f;
-            player.GetDamage<MagicDamageClass>() += 0.3f;
-            player.GetCritChance<MagicDamageClass>() += 20;
-            player.statManaMax2 += 100;
+            player.statManaMax2 += MaxManaBoost;
+            player.manaCost -= ManaCostReduction;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
         }
 
         public override void AddRecipes()

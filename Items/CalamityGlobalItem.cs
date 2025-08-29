@@ -9,6 +9,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
@@ -436,9 +437,7 @@ namespace CalamityMod.Items
                     modPlayer.canFireGodSlayerRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // God Slayer Ranged Shrapnel: 100%, soft cap starts at 800 base damage
-                        int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage, 800);
-
+                        int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage * GodSlayerHeadRanged.ShrapnelRoundDamageRatio, GodSlayerHeadRanged.ShrapnelRoundDamageSoftcap);
                         Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
                     }
                 }

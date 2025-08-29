@@ -86,7 +86,7 @@ namespace CalamityMod.CalPlayer
                 sVeilDust2.noLight = false;
             }
 
-            SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
+            SoundEngine.PlaySound(SilvaArmor.DispelSound, Player.Center);
 
             NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
         }
@@ -165,7 +165,7 @@ namespace CalamityMod.CalPlayer
                 Player.GiveUniversalIFrames(abyssalMirrorDodgeIFrames, true);
 
                 rogueStealth += 0.5f;
-                SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
+                SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<AbyssalMirror>()));
                 for (int i = 0; i < 10; i++)
@@ -302,10 +302,10 @@ namespace CalamityMod.CalPlayer
 
             if (silvaSet && silvaCountdown > 0)
             {
-                if (silvaCountdown == SilvaReviveDuration && !hasSilvaEffect)
+                if (silvaCountdown == SilvaArmor.ReviveDuration && !hasSilvaEffect)
                 {
-                    SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), SilvaReviveDuration);
+                    SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
+                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), SilvaArmor.ReviveDuration);
                 }
 
                 hasSilvaEffect = true;
@@ -2654,7 +2654,7 @@ namespace CalamityMod.CalPlayer
                 else if (godSlayerDamage) //god slayer melee helm
                 {
                     var source = Player.GetSource_Misc("24");
-                    if (hurtInfo.Damage > 80)
+                    if (hurtInfo.Damage > GodSlayerHeadMelee.SetBonusHurtDamageThreshold)
                     {
                         SoundEngine.PlaySound(SoundID.Item73, Player.Center);
                         float spread = 45f * 0.0174f;

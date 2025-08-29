@@ -18,10 +18,12 @@ using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Aerospec;
+using CalamityMod.Items.Armor.Auric;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Brimflame;
 using CalamityMod.Items.Armor.DesertProwler;
 using CalamityMod.Items.Armor.Empyrean;
+using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
@@ -2243,7 +2245,7 @@ namespace CalamityMod.CalPlayer
                 canFireBloodflareMageProjectile = true;
             if (Player.miscCounter % BloodflareHeadRanged.BloodBombCooldown == 0)
                 canFireBloodflareRangedProjectile = true;
-            if (Player.miscCounter % 150 == 0)
+            if (Player.miscCounter % GodSlayerHeadRanged.ShrapnelRoundCooldown == 0)
                 canFireGodSlayerRangedProjectile = true;
 
             if (auralisAurora > 0)
@@ -2420,8 +2422,8 @@ namespace CalamityMod.CalPlayer
                 silvaCountdown -= 1;
                 if (silvaCountdown <= 0)
                 {
-                    SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
-                    Player.AddCooldown(SilvaRevive.ID, CalamityUtils.SecondsToFrames(5 * 60));
+                    SoundEngine.PlaySound(SilvaArmor.DispelSound, Player.Center);
+                    Player.AddCooldown(SilvaRevive.ID, SilvaArmor.ReviveCooldown);
                 }
 
                 for (int j = 0; j < 2; j++)
@@ -2439,7 +2441,7 @@ namespace CalamityMod.CalPlayer
             }
             if (!Player.HasCooldown(SilvaRevive.ID) && hasSilvaEffect && silvaCountdown <= 0 && !areThereAnyDamnBosses && !areThereAnyDamnEvents)
             {
-                silvaCountdown = 480;
+                silvaCountdown = SilvaArmor.ReviveDuration;
                 hasSilvaEffect = false;
             }
 
@@ -3850,7 +3852,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.ownedProjectileCounts[ModContent.ProjectileType<SilvaCrystal>()] < 1)
                 {
-                    int baseDmg = auricSet ? 500 : 380;
+                    int baseDmg = auricSet ? AuricTeslaHeadSummon.CrystalDamage : SilvaHeadSummon.CrystalDamage;
                     int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(baseDmg);
 
                     var p = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, -1f, ModContent.ProjectileType<SilvaCrystal>(), damage, 0f, Main.myPlayer, -20f, 0f);
@@ -3878,9 +3880,9 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.statLife >= Player.statLifeMax2)
                 {
-                    Player.GetCritChance<RogueDamageClass>() += 10;
-                    Player.GetDamage<ThrowingDamageClass>() += 0.1f;
-                    rogueVelocity += 0.1f;
+                    Player.GetDamage<ThrowingDamageClass>() += GodSlayerHeadRogue.RogueDamageBoostAtFullHealth;
+                    Player.GetCritChance<RogueDamageClass>() += GodSlayerHeadRogue.RogueCritBoostAtFullHealth;
+                    rogueVelocity += GodSlayerHeadRogue.RogueVelocityBoostAtFullHealth;
                 }
             }
 

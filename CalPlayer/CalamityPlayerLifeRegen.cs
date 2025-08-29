@@ -11,6 +11,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
@@ -591,7 +592,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (silvaSet)
-                Player.lifeRegen += 6;
+                Player.lifeRegen += SilvaArmor.SetBonusRegenBoost;
 
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {

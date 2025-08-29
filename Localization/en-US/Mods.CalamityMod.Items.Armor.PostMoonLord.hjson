@@ -1,25 +1,21 @@
 AuricTeslaBodyArmor: {
 	DisplayName: Auric Tesla Body Armor
-	Tooltip:
-		'''
-		+100 max life
-		8% increased damage and 5% increased critical strike chance
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 }
 
 AuricTeslaCuisses: {
 	DisplayName: Auric Tesla Cuisses
 	Tooltip:
 		'''
-		10% increased movement speed
-		12% increased damage and 5% increased critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		Magic carpet effect
 		'''
 }
 
 AuricTeslaHeadRanged: {
 	DisplayName: Auric Tesla Hooded Facemask
-	Tooltip: 30% increased ranged damage and critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
 	SetBonus:
 		'''
 		Ranged Tarragon, Bloodflare and God Slayer armor effects
@@ -41,7 +37,7 @@ AuricTeslaHeadRanged: {
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadRanged.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus}
+		{$GodSlayerChestplate.CommonSetBonus@1}
 		'''
 }
 
@@ -49,12 +45,12 @@ AuricTeslaHeadRogue: {
 	DisplayName: Auric Tesla Plumed Helm
 	Tooltip:
 		'''
-		20% increased rogue damage and critical strike chance
-		5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		+130 maximum stealth
+		{$Common.RogueStealth}
 		Rogue Tarragon, Bloodflare and God Slayer armor effects
 		Hold Shift to view these set bonus details and press Shift repeatedly to cycle through them
 		'''
@@ -74,7 +70,7 @@ AuricTeslaHeadRogue: {
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadRogue.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus}
+		{$GodSlayerChestplate.CommonSetBonus@2}
 		'''
 }
 
@@ -82,13 +78,12 @@ AuricTeslaHeadMelee: {
 	DisplayName: Auric Tesla Royal Helm
 	Tooltip:
 		'''
-		20% increased melee damage
-		10% increased melee critical strike chance
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@1}
 		'''
 	SetBonus:
 		'''
-		Enemies are more likely to target you
-		28% increased melee speed
+		{$Common.AggroBoost}
 		Melee Tarragon, Bloodflare and God Slayer effects
 		Hold Shift to view these set bonus details and press Shift repeatedly to cycle through them
 		'''
@@ -108,17 +103,21 @@ AuricTeslaHeadMelee: {
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadMelee.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus}
+		{$GodSlayerChestplate.CommonSetBonus@1}
 		'''
 }
 
 AuricTeslaHeadSummon: {
 	DisplayName: Auric Tesla Space Helmet
-	Tooltip: 15% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		Max run speed and acceleration boosted by 5%
-		+6 max minions and 75% increased summon damage
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Summoner Tarragon, Bloodflare and Silva armor effects
 		Hold Shift to view these set bonus details and press Shift repeatedly to cycle through them
 		'''
@@ -144,10 +143,13 @@ AuricTeslaHeadSummon: {
 
 AuricTeslaHeadMagic: {
 	DisplayName: Auric Tesla Wire-Hemmed Visage
-	Tooltip: 30% increased magic damage, 20% increased magic critical strike chance, +100 max mana and 20% reduced mana usage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
+		'''
 	SetBonus:
 		'''
-		Max run speed and acceleration boosted by 5%
 		Magic Tarragon, Bloodflare and Silva armor effects
 		Hold Shift to view these set bonus details and press Shift repeatedly to cycle through them
 		'''
@@ -414,14 +416,10 @@ GemTechSchynbaulds: {
 
 GodSlayerChestplate: {
 	DisplayName: God Slayer Chestplate
-	Tooltip:
-		'''
-		+50 max life
-		11% increased damage and 8% increased critical strike chance
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		Pressing {0} allows you to dash towards your cursor for 2 seconds
+		Press {0} to dash towards your cursor for 2 seconds
 		Enemies you dash through take massive damage
 		During the dash you are immune to damage and most debuffs
 		The dash has a {1} second cooldown
@@ -432,41 +430,40 @@ GodSlayerHeadMelee: {
 	DisplayName: God Slayer Horned Greathelm
 	Tooltip:
 		'''
-		14% increased melee damage
-		7% increased melee critical strike chance
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage} and {$CommonItemTooltip.PercentIncreasedMeleeCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
 		'''
 	SetBonus:
 		'''
-		20% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		{$GodSlayerHeadMelee.SetBonusEffect}
 		'''
-	SetBonusEffect: Taking over 80 damage in one hit will cause you to release a swarm of high-damage god killer darts
+	SetBonusEffect: Releases a swarm of god killer darts when taking over {0} damage in one hit
 }
 
 GodSlayerHeadRanged: {
 	DisplayName: God Slayer Helmet
-	Tooltip: 14% increased ranged damage and critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
 	SetBonus: "{$GodSlayerHeadRanged.SetBonusEffect}"
-	SetBonusEffect: You fire a god killer shrapnel round while firing ranged weapons every 2.5 seconds
+	SetBonusEffect: Ranged weapons fire a god killer shrapnel round every {0} seconds
 }
 
 GodSlayerHeadRogue: {
 	DisplayName: God Slayer Mask
 	Tooltip:
 		'''
-		14% increased rogue damage and critical strike chance
-		5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		+120 maximum stealth
-		{$GodSlayerHeadRogue.SetBonusEffect}
+		{$Common.RogueStealth}
+		{$GodSlayerHeadRogue.SetBonusEffect@1}
 		'''
 	SetBonusEffect:
 		'''
-		While at full HP all of your rogue stats are boosted by 10%
-		If you take over 80 damage in one hit you will be given extra immunity frames
+		{0}% increased rogue damage, critical strike chance, and velocity when at full health
+		Increased length of invincibility when taking over {1} damage in one hit
 		'''
 }
 
@@ -474,8 +471,8 @@ GodSlayerLeggings: {
 	DisplayName: God Slayer Leggings
 	Tooltip:
 		'''
-		10% increased movement speed
-		11% increased damage and critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamageCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -556,17 +553,13 @@ PrismaticRegalia: {
 
 SilvaArmor: {
 	DisplayName: Silva Armor
-	Tooltip:
-		'''
-		+50 max life
-		11% increased damage and 8% increased critical strike chance
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
-		+3 HP/s life regen
-		Max run speed and acceleration boosted by 5%
-		Taking fatal damage will revive you and make you invulnerable to all damage for 5 seconds
-		This effect has a 5 minute cooldown, which does not decrement if any bosses or events are active
+		+{0} HP/s life regen
+		{1}% increased max run speed and acceleration
+		Taking fatal damage will revive you and make you invulnerable to all damage for {2} seconds
+		This effect has a {3} minute cooldown, which does not decrement if any bosses or events are active
 		'''
 }
 
@@ -574,8 +567,8 @@ SilvaHeadMagic: {
 	DisplayName: Silva Masked Cap
 	Tooltip:
 		'''
-		23% increased magic damage and 13% increased magic critical strike chance
-		+100 max mana and 19% reduced mana usage
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
 	SetBonus: "{$SilvaHeadMagic.SetBonusEffect}"
 	SetBonusEffect: Magic projectiles which cannot pierce will occasionally set off potent blasts of nature energy
@@ -583,10 +576,15 @@ SilvaHeadMagic: {
 
 SilvaHeadSummon: {
 	DisplayName: Silva Horned Hood
-	Tooltip: 10% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		65% increased summon damage and +5 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		{$SilvaHeadSummon.SetBonusEffect}
 		'''
 	SetBonusEffect: Summons an ancient leaf prism to blast your enemies with life energy
@@ -596,8 +594,8 @@ SilvaLeggings: {
 	DisplayName: Silva Leggings
 	Tooltip:
 		'''
-		10% increased movement speed
-		11% increased damage and critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamageCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
