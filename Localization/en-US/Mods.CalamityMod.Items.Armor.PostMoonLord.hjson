@@ -378,7 +378,7 @@ GemTechBodyArmor: {
 GemTechHeadgear: {
 	DisplayName: Gem Tech Headgear
 	Tooltip: "'The Devil said: Revel in your victory; You've earned your damning. Pack your things and leave.'"
-	AbilityBrief: Power Gems - Six gem fragments idly orbit you; one for each class, and a base gem
+	AbilityBrief: "[c/{0}:Power Gems - Six gem fragments idly orbit you; one for each class, and a base gem]"
 	AbilityDescription:
 		'''
 		Each active gem provides a bonus for its respective class, while the defensive gem grants defensive boosts
@@ -388,18 +388,18 @@ GemTechHeadgear: {
 		'''
 	GeneralGemInfo:
 		'''
-		A gem is lost when you take more than {0} damage in a single hit.
+		A gem is lost when you take more than {0} damage in a single hit
 		The type of gem lost is the same as the class of the most recently used weapon
 		If said gem has already been lost, the base gem is lost instead
 		When a gem is lost, it breaks off and homes towards the nearest enemy or boss, if one is present, dealing a base of {1} damage
 		Gems have a {2} second delay before they appear again
 		'''
-	RedGemInfo: "[i:Ruby] The red gem grants {0} maximum stealth, increased rogue stats, and makes stealth only consumable by rogue weapons"
-	YellowGemInfo: "[i:Topaz] The yellow gem provides increased melee stats and makes melee attacks release shards on hit with a cooldown. This cooldown is shorter for true melee attacks"
-	GreenGemInfo: "[i:Emerald] The green gem provides increased ranged stats and causes flechettes to fly swiftly towards targets when they are damaged by a ranged projectile"
-	BlueGemInfo: "[i:Sapphire] The blue gem grants {0} extra maximum minions, increased summon damage, and negates the summon damage penalty while wielding non-summoner weapons"
-	PurpleGemInfo: "[i:Amethyst] The violet gem grants {0} extra maximum mana, increased magic stats, and makes mana rapidly regenerate when holding a non-magic weapon"
-	PinkGemInfo: "[i:Diamond] The pink base gem grants {0} extra defense, extra damage reduction, increased movement speed, jump speed, and +{1} HP/s life regen"
+	RedGemInfo: "[i:CalamityMod/GemTechRedGem] The red gem grants {0} maximum stealth, increased rogue stats, and makes stealth only consumable by rogue weapons"
+	YellowGemInfo: "[i:CalamityMod/GemTechYellowGem] The yellow gem provides increased melee stats and makes melee attacks release shards on hit with a cooldown. This cooldown is shorter for true melee attacks"
+	GreenGemInfo: "[i:CalamityMod/GemTechGreenGem] The green gem provides increased ranged stats and causes flechettes to fly swiftly towards targets when they are damaged by a ranged projectile"
+	BlueGemInfo: "[i:CalamityMod/GemTechBlueGem] The blue gem grants {0} maximum minions, increased summon damage, and negates the summon damage penalty while wielding non-summoner weapons"
+	PurpleGemInfo: "[i:CalamityMod/GemTechPurpleGem] The violet gem grants {0} maximum mana, increased magic stats, and makes mana rapidly regenerate when holding a non-magic weapon"
+	PinkGemInfo: "[i:CalamityMod/GemTechPinkGem] The pink base gem grants {0} defense, increased damage reduction, movement speed, jump speed, and +{1} HP/s life regen"
 	GemBonusInfo:
 		'''
 		When all gems exist simultaneously, hitting a target with any weapon grants you +{0} HP/s life regen for {1} seconds
