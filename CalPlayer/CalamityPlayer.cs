@@ -27,6 +27,7 @@ using CalamityMod.Items.Armor.Empyrean;
 using CalamityMod.Items.Armor.LunicCorps;
 using CalamityMod.Items.Armor.OmegaBlue;
 using CalamityMod.Items.Armor.PlagueReaper;
+using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Tarragon;
@@ -3974,7 +3975,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
             if (prismaticSet && !Player.HasCooldown(PrismaticLaser.ID) && prismaticLasers <= 0)
-                prismaticLasers = CalamityUtils.SecondsToFrames(35f);
+                prismaticLasers = PrismaticHelmet.LaserDuration + PrismaticHelmet.LaserCooldown;
             if (WulfrumHat.HasArmorSet(Player))
             {
                 //Only activate if no cooldown & available scrap.

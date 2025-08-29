@@ -3618,7 +3618,7 @@ namespace CalamityMod.CalPlayer
                 (angelTreads ? AngelTreads.FlightTimeBoost : 0D) +
                 (blueCandle ? WeightlessCandle.WingTimeBoost : 0D) +
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
-                (prismaticGreaves ? 0.1 : 0D) +
+                (prismaticGreaves ? PrismaticGreaves.FlightTimeBoost : 0D) +
                 (plagueReaper ? PlagueReaperMask.SetBonusFlightTimeBoost : 0D) +
                 (ascendantInsignia ? 0.17 : 0D) + // Added to soaring insignia's flight to get 50%
                 (Player.empressBrooch ? 0.33 : 0D) +
@@ -4226,66 +4226,27 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (prismaticLasers > 1800 && Player.whoAmI == Main.myPlayer)
+            if (prismaticLasers > PrismaticHelmet.LaserCooldown && Player.whoAmI == Main.myPlayer)
             {
-                float shootSpeed = 18f;
-                int dmg = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(30);
-
-                Vector2 startPos = Player.RotatedRelativePoint(Player.MountedCenter, true);
-
-                // 14NOV2024: Ozzatron: clamped mouse position is inappropriate to apply here due to excessive use of decompiled vanilla shitcode
-                Vector2 velocity = Main.MouseWorld - startPos;
-                if (Player.gravDir == -1f)
-                {
-                    velocity.Y = Main.screenPosition.Y + Main.screenHeight - Main.mouseY - startPos.Y;
-                }
-                float travelDist = velocity.Length();
-                if ((float.IsNaN(velocity.X) && float.IsNaN(velocity.Y)) || (velocity.X == 0f && velocity.Y == 0f))
-                {
-                    velocity.X = Player.direction;
-                    velocity.Y = 0f;
-                    travelDist = shootSpeed;
-                }
-                else
-                {
-                    travelDist = shootSpeed / travelDist;
-                }
+                int dmg = (int)Player.GetTotalDamage<MagicDamageClass>().ApplyTo(PrismaticHelmet.LaserDamage);
 
                 // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                 var source = Player.GetSource_FromThis(PrismaticHelmet.LaserEntitySourceContext);
                 int laserAmt = Main.rand.Next(2);
                 for (int index = 0; index < laserAmt; index++)
                 {
-                    startPos = new Vector2(Player.Center.X + (Main.rand.Next(201) * -(float)Player.direction) + (Main.mouseX + Main.screenPosition.X - Player.position.X), Player.MountedCenter.Y - 600f);
-                    startPos.X = (startPos.X + Player.Center.X) / 2f + Main.rand.Next(-200, 201);
-                    startPos.Y -= 100 * index;
-                    velocity.X = Main.mouseX + Main.screenPosition.X - startPos.X;
-                    velocity.Y = Main.mouseY + Main.screenPosition.Y - startPos.Y;
-                    if (velocity.Y < 0f)
-                    {
-                        velocity.Y *= -1f;
-                    }
-                    if (velocity.Y < 20f)
-                    {
-                        velocity.Y = 20f;
-                    }
-                    travelDist = velocity.Length();
-                    travelDist = shootSpeed / travelDist;
-                    velocity.X *= travelDist;
-                    velocity.Y *= travelDist;
-                    velocity.X += Main.rand.Next(-50, 51) * 0.02f;
-                    velocity.Y += Main.rand.Next(-50, 51) * 0.02f;
-                    int laser = Projectile.NewProjectile(source, startPos, velocity, ModContent.ProjectileType<DeathhailBeam>(), dmg, 4f, Player.whoAmI, 0f, 0f);
-                    Main.projectile[laser].localNPCHitCooldown = 5;
-                    if (laser.WithinBounds(Main.maxProjectiles))
-                        Main.projectile[laser].DamageType = DamageClass.Generic;
+                    Vector2 newPos = new Vector2(Player.ClampedMouseWorld().X + Main.rand.NextFloat(-240f, 240f), Player.MountedCenter.Y - 960f);
+                    Vector2 newVel = (Player.ClampedMouseWorld() + Main.rand.NextVector2CircularEdge(24f, 24f) - newPos).SafeNormalize(Vector2.Zero) * 18f;
+                    Projectile laser = Projectile.NewProjectileDirect(source, newPos, newVel, ModContent.ProjectileType<DeathhailBeam>(), dmg, 4f, Player.whoAmI);
+                    laser.localNPCHitCooldown = 5;
+                    laser.DamageType = DamageClass.Generic;
                 }
                 SoundEngine.PlaySound(SoundID.Item12, Player.Center);
             }
-            if (prismaticLasers == 1800)
+            if (prismaticLasers == PrismaticHelmet.LaserCooldown)
             {
                 // At the exact moment the lasers stop, set the cooldown to appear
-                Player.AddCooldown(PrismaticLaser.ID, 1800);
+                Player.AddCooldown(PrismaticLaser.ID, PrismaticHelmet.LaserCooldown);
             }
             if (prismaticLasers == 1)
             {

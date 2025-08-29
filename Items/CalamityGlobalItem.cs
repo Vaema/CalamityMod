@@ -9,6 +9,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Hydrothermic;
+using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
@@ -467,7 +468,7 @@ namespace CalamityMod.Items
             }
             if (modPlayer.prismaticRegalia)
             {
-                if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)
+                if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(PrismaticRegalia.RocketChanceDenominator) && !item.channel)
                 {
                     if (player.whoAmI == Main.myPlayer)
                     {
@@ -476,7 +477,7 @@ namespace CalamityMod.Items
                             if (i != 0)
                             {
                                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
+                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ProjectileType<ScorpioRocket>(), (int)(damage * PrismaticRegalia.RocketDamageRatio), 2f, player.whoAmI, 0, 12f);
                                 //First extra value is rocket type which I just used 0 to get the default, second is the velocity I went with my gut feeling and got quite close to Scorpio's velocity with Rockets I
                                 if (rocket.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[rocket].DamageType = DamageClass.Generic;
