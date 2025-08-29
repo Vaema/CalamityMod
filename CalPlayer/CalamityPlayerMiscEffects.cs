@@ -1444,7 +1444,7 @@ namespace CalamityMod.CalPlayer
                     {
                         if (!tentaclesPresent[i])
                         {
-                            int damage = (int)Player.GetBestClassDamage().ApplyTo(350);
+                            int damage = (int)Player.GetBestClassDamage().ApplyTo(OmegaBlueHelmet.TentacleDamage);
 
                             var source = Player.GetSource_FromThis(OmegaBlueHelmet.TentacleEntitySourceContext);
                             Vector2 vel = new Vector2(Main.rand.Next(-13, 14), Main.rand.Next(-13, 14)) * 0.25f;
@@ -1453,15 +1453,11 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                float damageUp = 0.1f;
-                int critUp = 10;
                 if (omegaBlueAbyssalMadness)
                 {
-                    damageUp += 0.1f;
-                    critUp += 10;
+                    Player.GetDamage<GenericDamageClass>() += OmegaBlueHelmet.MadnessDamageBoost;
+                    Player.GetCritChance<GenericDamageClass>() += OmegaBlueHelmet.MadnessCritBoost;
                 }
-                Player.GetDamage<GenericDamageClass>() += damageUp;
-                Player.GetCritChance<GenericDamageClass>() += critUp;
             }
 
             // Rain armor set effects
@@ -2849,10 +2845,10 @@ namespace CalamityMod.CalPlayer
             }
 
             bool hasOmegaBlueCooldown = cooldowns.TryGetValue(OmegaBlue.ID, out CooldownInstance omegaBlueCD);
-            if (!omegaBlueSet && hasOmegaBlueCooldown && omegaBlueCD.timeLeft > 1500)
+            if (!omegaBlueSet && hasOmegaBlueCooldown && omegaBlueCD.timeLeft > OmegaBlueHelmet.MadnessCooldown)
             {
                 Player.ClearBuff(ModContent.BuffType<AbyssalMadness>());
-                omegaBlueCD.timeLeft = 1500;
+                omegaBlueCD.timeLeft = OmegaBlueHelmet.MadnessCooldown;
             }
 
             bool hasKillMode = cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);

@@ -3859,9 +3859,9 @@ namespace CalamityMod.CalPlayer
             {
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    Player.AddBuff(BuffType<AbyssalMadness>(), 300, false);
+                    Player.AddBuff(BuffType<AbyssalMadness>(), OmegaBlueHelmet.MadnessDuration, false);
                 }
-                Player.AddCooldown(OmegaBlue.ID, 1800);
+                Player.AddCooldown(OmegaBlue.ID, OmegaBlueHelmet.MadnessDuration + OmegaBlueHelmet.MadnessCooldown);
                 SoundEngine.PlaySound(OmegaBlueHelmet.ActivationSound, Player.Center);
                 for (int i = 0; i < 66; i++)
                 {

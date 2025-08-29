@@ -485,7 +485,7 @@ OmegaBlueChestplate: {
 	DisplayName: Omega Blue Chestplate
 	Tooltip:
 		'''
-		12% increased damage and 8% increased critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		Your attacks inflict Hadopelagic Pressure
 		No positive life regen
 		'''
@@ -495,17 +495,17 @@ OmegaBlueHelmet: {
 	DisplayName: Omega Blue Helmet
 	Tooltip:
 		'''
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		You can move freely through liquids
-		12% increased damage and 8% increased critical strike chance
 		'''
 	SetBonus:
 		'''
-		10% increased damage and critical strike chance and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		Short-ranged tentacles heal you by sucking enemy life
-		{0} to activate abyssal madness for 5 seconds
-		Abyssal madness increases damage and critical strike chance by 10%
-		It also increases tentacle aggression and range, and allows them to critically strike
-		This effect has a 25 second cooldown
+		[c/{1}:Abyssal Madness - {2} to go berserk for {3} seconds]
+		[c/99ABFF:While active, tentacles attack with greater range and aggression, and always critically strike]
+		[c/99ABFF:This also grants {$CommonItemTooltip.PercentIncreasedDamageCritChance@4}]
+		[c/99ABFF:This effect has a {5} second cooldown]
 		'''
 }
 
@@ -513,8 +513,8 @@ OmegaBlueTentacles: {
 	DisplayName: Omega Blue Tentacles
 	Tooltip:
 		'''
-		12% increased movement speed
-		12% increased damage and critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 }
 
