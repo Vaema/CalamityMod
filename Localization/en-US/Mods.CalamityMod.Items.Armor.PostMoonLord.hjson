@@ -25,19 +25,16 @@ AuricTeslaHeadRanged: {
 		'''
 		Inherited Tarragon Set Bonus:
 		{$TarragonHeadRanged.SetBonusEffect}
-		{$TarragonBreastplate.CommonSetBonus}
 		'''
 	SetBonus2:
 		'''
 		Inherited Bloodflare Set Bonus:
 		{$BloodflareHeadRanged.SetBonusEffect}
-		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 	SetBonus3:
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadRanged.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus@1}
 		'''
 }
 
@@ -58,19 +55,16 @@ AuricTeslaHeadRogue: {
 		'''
 		Inherited Tarragon Set Bonus:
 		{$TarragonHeadRogue.SetBonusEffect}
-		{$TarragonBreastplate.CommonSetBonus}
 		'''
 	SetBonus2:
 		'''
 		Inherited Bloodflare Set Bonus:
 		{$BloodflareHeadRogue.SetBonusEffect}
-		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 	SetBonus3:
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadRogue.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus@2}
 		'''
 }
 
@@ -91,19 +85,16 @@ AuricTeslaHeadMelee: {
 		'''
 		Inherited Tarragon Set Bonus:
 		{$TarragonHeadMelee.SetBonusEffect}
-		{$TarragonBreastplate.CommonSetBonus}
 		'''
 	SetBonus2:
 		'''
 		Inherited Bloodflare Set Bonus:
 		{$BloodflareHeadMelee.SetBonusEffect}
-		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 	SetBonus3:
 		'''
 		Inherited God Slayer Set Bonus:
 		{$GodSlayerHeadMelee.SetBonusEffect}
-		{$GodSlayerChestplate.CommonSetBonus@1}
 		'''
 }
 
@@ -125,19 +116,16 @@ AuricTeslaHeadSummon: {
 		'''
 		Inherited Tarragon Set Bonus:
 		{$TarragonHeadSummon.SetBonusEffect}
-		{$TarragonBreastplate.CommonSetBonus}
 		'''
 	SetBonus2:
 		'''
 		Inherited Bloodflare Set Bonus:
 		{$BloodflareHeadSummon.SetBonusEffect}
-		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 	SetBonus3:
 		'''
 		Inherited Silva Set Bonus:
 		{$SilvaHeadSummon.SetBonusEffect}
-		{$SilvaArmor.CommonSetBonus}
 		'''
 }
 
@@ -157,19 +145,16 @@ AuricTeslaHeadMagic: {
 		'''
 		Inherited Tarragon Set Bonus:
 		{$TarragonHeadMagic.SetBonusEffect}
-		{$TarragonBreastplate.CommonSetBonus}
 		'''
 	SetBonus2:
 		'''
 		Inherited Bloodflare Set Bonus:
 		{$BloodflareHeadMagic.SetBonusEffect}
-		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 	SetBonus3:
 		'''
 		Inherited Silva Set Bonus:
 		{$SilvaHeadMagic.SetBonusEffect}
-		{$SilvaArmor.CommonSetBonus}
 		'''
 }
 
@@ -205,6 +190,7 @@ BloodflareHeadMagic: {
 		'''
 		Magic weapons fire ghostly bolts every {0} seconds
 		Magic critical strikes cause blood explosions every {1} seconds
+		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
 
@@ -225,6 +211,7 @@ BloodflareHeadMelee: {
 		After striking an enemy {0} times with true melee you will enter a blood frenzy for {1} seconds
 		During this you will gain {2}% increased melee damage, critical strike chance, and {3}% reduced contact damage
 		This effect has a {4} second cooldown
+		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
 
@@ -237,6 +224,7 @@ BloodflareHeadRanged: {
 		{0} to unleash the lost souls of polterghast to destroy your enemies
 		This effect has a {1} second cooldown
 		Ranged weapons fire bloodsplosion orbs every {2} seconds
+		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
 
@@ -257,6 +245,7 @@ BloodflareHeadRogue: {
 		Grants {0} defense when above {1}% life
 		Rogue critical strikes burst into blood orbs
 		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
 
@@ -277,6 +266,7 @@ BloodflareHeadSummon: {
 		'''
 		Summons polterghast mines to circle you
 		Grants {0} defense when below {1}% life
+		{$BloodflareBodyArmor.CommonSetBonus}
 		'''
 }
 
@@ -444,14 +434,22 @@ GodSlayerHeadMelee: {
 		{$Common.AggroBoost}
 		{$GodSlayerHeadMelee.SetBonusEffect}
 		'''
-	SetBonusEffect: Releases a swarm of god killer darts when taking over {0} damage in one hit
+	SetBonusEffect:
+		'''
+		Releases a swarm of god killer darts when taking over {0} damage in one hit
+		{$GodSlayerChestplate.CommonSetBonus@1}
+		'''
 }
 
 GodSlayerHeadRanged: {
 	DisplayName: God Slayer Helmet
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
 	SetBonus: "{$GodSlayerHeadRanged.SetBonusEffect}"
-	SetBonusEffect: Ranged weapons fire a god killer shrapnel round every {0} seconds
+	SetBonusEffect:
+		'''
+		Ranged weapons fire a god killer shrapnel round every {0} seconds
+		{$GodSlayerChestplate.CommonSetBonus@1}
+		'''
 }
 
 GodSlayerHeadRogue: {
@@ -470,6 +468,7 @@ GodSlayerHeadRogue: {
 		'''
 		{0}% increased rogue damage, critical strike chance, and velocity when at full health
 		Increased length of invincibility when taking over {1} damage in one hit
+		{$GodSlayerChestplate.CommonSetBonus@2}
 		'''
 }
 
@@ -577,7 +576,11 @@ SilvaHeadMagic: {
 		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
 	SetBonus: "{$SilvaHeadMagic.SetBonusEffect}"
-	SetBonusEffect: Magic projectiles which cannot pierce will occasionally set off potent blasts of nature energy
+	SetBonusEffect:
+		'''
+		Magic projectiles which cannot pierce will occasionally set off potent blasts of nature energy
+		{$SilvaArmor.CommonSetBonus}
+		'''
 }
 
 SilvaHeadSummon: {
@@ -591,9 +594,13 @@ SilvaHeadSummon: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
-		{$SilvaHeadSummon.SetBonusEffect}
+		{$SilvaHeadSummon.SetBonusEffect@2}
 		'''
-	SetBonusEffect: Summons an ancient leaf prism to blast your enemies with life energy
+	SetBonusEffect:
+		'''
+		Summons an ancient leaf prism to blast your enemies with life energy
+		{$SilvaArmor.CommonSetBonus}
+		'''
 }
 
 SilvaLeggings: {
@@ -627,7 +634,11 @@ TarragonHeadMagic: {
 		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
 	SetBonus: "{$TarragonHeadMagic.SetBonusEffect}"
-	SetBonusEffect: On every 5th critical strike you will fire a leaf storm
+	SetBonusEffect:
+		'''
+		On every 5th critical strike you will fire a leaf storm
+		{$TarragonBreastplate.CommonSetBonus}
+		'''
 }
 
 TarragonHeadMelee: {
@@ -647,6 +658,7 @@ TarragonHeadMelee: {
 		Taking damage gives the Tarra Life buff, which grants +{0} HP/s life regen
 		{1} to cloak yourself in life energy that heavily reduces enemy contact damage for {2} seconds
 		This has a {3} second cooldown
+		{$TarragonBreastplate.CommonSetBonus}
 		'''
 }
 
@@ -654,7 +666,11 @@ TarragonHeadRanged: {
 	DisplayName: Tarragon Visage
 	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
 	SetBonus: "{$TarragonHeadRanged.SetBonusEffect}"
-	SetBonusEffect: Ranged projectiles spawn homing life energy and leaves on enemy hits
+	SetBonusEffect:
+		'''
+		Ranged projectiles spawn homing life energy and leaves on enemy hits
+		{$TarragonBreastplate.CommonSetBonus}
+		'''
 }
 
 TarragonHeadRogue: {
@@ -674,6 +690,7 @@ TarragonHeadRogue: {
 		After every {0} rogue critical hits you will gain {1} seconds of damage immunity
 		This effect has a cooldown of {2} seconds
 		While under the effects of a debuff you gain {3}% increased rogue damage
+		{$TarragonBreastplate.CommonSetBonus}
 		'''
 }
 
@@ -690,7 +707,11 @@ TarragonHeadSummon: {
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		{$TarragonHeadSummon.SetBonusEffect}
 		'''
-	SetBonusEffect: Summons a life aura around you that damages nearby enemies
+	SetBonusEffect:
+		'''
+		Summons a life aura around you that damages nearby enemies
+		{$TarragonBreastplate.CommonSetBonus}
+		'''
 }
 
 TarragonLeggings: {

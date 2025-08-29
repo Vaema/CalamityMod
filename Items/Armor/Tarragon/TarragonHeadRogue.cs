@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraThrowing = true;
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), CritsToActivateImmunity, ImmunityDuration.FramesToSeconds(), ImmunityCooldown.FramesToSeconds(), RogueDamageBoostWhileDebuffed.ToPercent()) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), CritsToActivateImmunity, ImmunityDuration.FramesToSeconds(), ImmunityCooldown.FramesToSeconds(), RogueDamageBoostWhileDebuffed.ToPercent());
         }
 
         public override void UpdateEquip(Player player)

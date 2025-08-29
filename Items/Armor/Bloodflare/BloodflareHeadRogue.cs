@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             modPlayer.bloodflareThrowing = true;
             modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), DefenseBoostAboveHealthThreshold, DefenseBoostHealthThreshold.ToPercent()) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), DefenseBoostAboveHealthThreshold, DefenseBoostHealthThreshold.ToPercent());
             player.crimsonRegen = true;
         }
 

@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraSet = true;
             modPlayer.tarraMelee = true;
             player.aggro += SetBonusAggroBoost;
-            player.setBonus = this.GetLocalization("SetBonus").Format(TarraLifeRegenBoost.ToRegenPerSecond(), CalamityUtils.GetArmorSetBonusKey(), CloakDuration.FramesToSeconds(), CloakCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(TarraLifeRegenBoost.ToRegenPerSecond(), CalamityUtils.GetArmorSetBonusKey(), CloakDuration.FramesToSeconds(), CloakCooldown.FramesToSeconds());
         }
 
         public override void UpdateEquip(Player player)

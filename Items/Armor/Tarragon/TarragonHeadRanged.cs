@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraRanged = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalizedValue("SetBonus");
         }
 
         public override void UpdateEquip(Player player)

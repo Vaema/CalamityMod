@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             modPlayer.tarraSet = true;
             modPlayer.tarraSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent()) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent());
             player.maxMinions += SetBonusMinionSlotBoost;
             player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }

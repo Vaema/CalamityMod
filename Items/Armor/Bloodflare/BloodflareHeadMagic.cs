@@ -46,7 +46,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             var modPlayer = player.Calamity();
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMage = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(GhostBoltCooldown.FramesToSeconds(), BloodsplosionCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(GhostBoltCooldown.FramesToSeconds(), BloodsplosionCooldown.FramesToSeconds());
             player.crimsonRegen = true;
         }
 

@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareMelee = true;
             player.aggro += SetBonusAggroBoost;
-            player.setBonus = this.GetLocalization("SetBonus").Format(HitsToActivateFrenzy, FrenzyDuration.FramesToSeconds(), FrenzyMeleeDamageBoost.ToPercent(), FrenzyContactDamageReduction.ToPercent(), FrenzyCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(HitsToActivateFrenzy, FrenzyDuration.FramesToSeconds(), FrenzyMeleeDamageBoost.ToPercent(), FrenzyContactDamageReduction.ToPercent(), FrenzyCooldown.FramesToSeconds());
             player.crimsonRegen = true;
         }
 

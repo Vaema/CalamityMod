@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
             modPlayer.godSlayer = true;
             modPlayer.godSlayerRanged = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(ShrapnelRoundCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextFromModItem<GodSlayerChestplate>("CommonSetBonus").Format(hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
+            player.setBonus = this.GetLocalization("SetBonus").Format(ShrapnelRoundCooldown.FramesToSeconds(), hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
             {

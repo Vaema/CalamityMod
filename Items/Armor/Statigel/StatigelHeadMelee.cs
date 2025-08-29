@@ -35,8 +35,7 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus")
-            + "\n" + CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();

@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSet = true;
             modPlayer.silvaSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent()) + "\n" + CalamityUtils.GetTextFromModItem<SilvaArmor>("CommonSetBonus").Format(SetBonusRegenBoost.ToRegenPerSecond(), AccelerationBoost.ToPercent(), ReviveDuration.FramesToSeconds(), (ReviveCooldown / 60).FramesToSeconds());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), SetBonusRegenBoost.ToRegenPerSecond(), AccelerationBoost.ToPercent(), ReviveDuration.FramesToSeconds(), (ReviveCooldown / 60).FramesToSeconds());
             player.maxMinions += SetBonusMinionSlotBoost;
             player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }
