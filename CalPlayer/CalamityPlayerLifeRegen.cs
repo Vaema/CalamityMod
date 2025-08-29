@@ -9,6 +9,7 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
@@ -632,12 +633,11 @@ namespace CalamityMod.CalPlayer
 
             if (fearmongerSet && fearmongerRegenFrames > 0)
             {
-                Player.lifeRegen += 7;
+                if (Player.lifeRegenTime < FearmongerGreathelm.MinionRegenTimeFloor)
+                    Player.lifeRegenTime = FearmongerGreathelm.MinionRegenTimeFloor;
 
-                if (Player.lifeRegenTime < 900)
-                    Player.lifeRegenTime = 900;
-
-                Player.lifeRegenTime += 4;
+                Player.lifeRegen += FearmongerGreathelm.MinionRegenBoost;
+                Player.lifeRegenTime += FearmongerGreathelm.MinionRegenTimeBoost;
             }
 
             if (pinkCandle && !noLifeRegen)

@@ -12,6 +12,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
 using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Plaguebringer;
 using CalamityMod.Items.Armor.Reaver;
@@ -940,12 +941,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Fearmonger set gains +10 frames (max 90) of regen when any minion lands any hit
+            // Fearmonger set gains regen duration when any minion lands any hit
             if (fearmongerSet)
             {
-                fearmongerRegenFrames += 10;
-                if (fearmongerRegenFrames > 90)
-                    fearmongerRegenFrames = 90;
+                fearmongerRegenFrames += FearmongerGreathelm.RegenBoostDurationPerHit;
+                if (fearmongerRegenFrames > FearmongerGreathelm.RegenBoostDurationLimit)
+                    fearmongerRegenFrames = FearmongerGreathelm.RegenBoostDurationLimit;
             }
 
             //Priorities: Nucleogenesis => Starbuster Core => Nuclear Rod => Jelly-Charged Battery

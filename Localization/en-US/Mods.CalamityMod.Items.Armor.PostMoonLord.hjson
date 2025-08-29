@@ -339,16 +339,16 @@ FearmongerGreathelm: {
 	DisplayName: Fearmonger Greathelm
 	Tooltip:
 		'''
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@2}
 		Pure terror radiates from your eyes
-		+60 max mana and 10% reduced mana usage
-		10% increased summon damage
 		'''
 	SetBonus:
 		'''
-		20% increased summon damage and +2 max minions
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		Minions no longer deal less damage while wielding non-summoner weapons
 		Immunity to all but the strongest forms of frost and flame
-		Minion attacks grant +3.5 HP/s life regen and massively accelerate life regen
+		Minion attacks grant +{1} HP/s life regen and massively accelerate life regen
 		'''
 }
 
@@ -356,10 +356,8 @@ FearmongerGreaves: {
 	DisplayName: Fearmonger Greaves
 	Tooltip:
 		'''
-		6% increased damage
-		50% increased minion knockback
-		10% increased movement speed
-		Taking damage increases your movement speed by 40% for 4 seconds
+		{$CommonItemTooltip.PercentIncreasedDamage}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -367,8 +365,8 @@ FearmongerPlateMail: {
 	DisplayName: Fearmonger Plate Mail
 	Tooltip:
 		'''
-		+100 max life and 8% increased damage reduction
-		5% increased damage and critical strike chance
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
+		+{2} max life and {3}% increased damage reduction
 		'''
 }
 
