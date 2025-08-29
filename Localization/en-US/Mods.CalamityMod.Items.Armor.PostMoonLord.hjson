@@ -173,11 +173,7 @@ AuricTeslaHeadMagic: {
 
 BloodflareBodyArmor: {
 	DisplayName: Bloodflare Body Armor
-	Tooltip:
-		'''
-		12% increased damage and 8% increased critical strike chance
-		+25 max life
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}"
 	CommonSetBonus:
 		'''
 		Greatly increased life regen, equivalent to Crimson armor
@@ -188,46 +184,57 @@ BloodflareBodyArmor: {
 
 BloodflareCuisses: {
 	DisplayName: Bloodflare Cuisses
-	Tooltip: 17% increased movement speed, 10% increased damage and 7% increased critical strike chance
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		'''
 }
 
 BloodflareHeadMagic: {
 	DisplayName: Bloodflare Hydra Hood
-	Tooltip: 20% increased magic damage, 10% increased magic critical strike chance, +100 max mana and 17% reduced mana usage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
+		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
+		'''
 	SetBonus: "{$BloodflareHeadMagic.SetBonusEffect}"
 	SetBonusEffect:
 		'''
-		Magic weapons fire ghostly bolts every 1.67 seconds
-		Magic critical strikes cause blood explosions every 2 seconds
+		Magic weapons fire ghostly bolts every {0} seconds
+		Magic critical strikes cause blood explosions every {1} seconds
 		'''
 }
 
 BloodflareHeadMelee: {
 	DisplayName: Bloodflare Ram Mask
-	Tooltip: 10% increased melee damage and 5% increased melee critical strike chance
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedMeleeDamage} and {$CommonItemTooltip.PercentIncreasedMeleeCritChance@1}
+		{$CommonItemTooltip.PercentIncreasedMeleeSpeed@2}
+		'''
 	SetBonus:
 		'''
-		18% increased melee speed
-		Enemies are more likely to target you
+		{$Common.AggroBoost}
 		{$BloodflareHeadMelee.SetBonusEffect}
 		'''
 	SetBonusEffect:
 		'''
-		After striking an enemy 15 times with true melee you will enter a blood frenzy for 5 seconds
-		During this you will gain 25% increased melee damage, critical strike chance, and contact damage is halved
-		This effect has a 30 second cooldown
+		After striking an enemy {0} times with true melee you will enter a blood frenzy for {1} seconds
+		During this you will gain {2}% increased melee damage, critical strike chance, and {3}% reduced contact damage
+		This effect has a {4} second cooldown
 		'''
 }
 
 BloodflareHeadRanged: {
 	DisplayName: Bloodflare Horned Helm
-	Tooltip: 10% increased ranged damage and critical strike chance
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}"
 	SetBonus: "{$BloodflareHeadRanged.SetBonusEffect}"
 	SetBonusEffect:
 		'''
 		{0} to unleash the lost souls of polterghast to destroy your enemies
-		This effect has a 30 second cooldown
-		Ranged weapons fire bloodsplosion orbs every 2.5 seconds
+		This effect has a {1} second cooldown
+		Ranged weapons fire bloodsplosion orbs every {2} seconds
 		'''
 }
 
@@ -235,18 +242,17 @@ BloodflareHeadRogue: {
 	DisplayName: Bloodflare Imp Mask
 	Tooltip:
 		'''
-		10% increased rogue damage and critical strike chance
-		5% increased movement speed
+		{$Common.RogueDamage} and {$Common.RogueCrit@1}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
 		'''
 	SetBonus:
 		'''
-		+120 maximum stealth
-		{$BloodflareHeadRogue.SetBonusEffect}
+		{$Common.RogueStealth}
+		{$BloodflareHeadRogue.SetBonusEffect@1}
 		'''
 	SetBonusEffect:
 		'''
-		Being over 80% life boosts your defense by 30 and rogue crit by 5%
-		Being below 80% life boosts your rogue damage by 10%
+		Grants {0} defense when above {1}% life
 		Rogue critical strikes burst into blood orbs
 		Picking up these blood orbs reduces the duration of [Potion Sickness]
 		'''
@@ -254,17 +260,21 @@ BloodflareHeadRogue: {
 
 BloodflareHeadSummon: {
 	DisplayName: Bloodflare Wyvern Helm
-	Tooltip: 5% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
-		50% increased summon damage and +3 max minions
-		{$BloodflareHeadSummon.SetBonusEffect}
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		{$BloodflareHeadSummon.SetBonusEffect@2}
 		'''
 	SetBonusEffect:
 		'''
 		Summons polterghast mines to circle you
-		At 90% life and above you gain 10% increased summon damage
-		At 50% life and below you gain 20 defense and +1 HP/s life regen
+		Grants {0} defense when below {1}% life
 		'''
 }
 

@@ -3,6 +3,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Bloodflare
@@ -12,41 +13,46 @@ namespace CalamityMod.Items.Armor.Bloodflare
     public class BloodflareHeadRogue : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float RogueDamageBoost = 0.15f;
+        public static int RogueCritBoost = 10;
+        public static float MoveSpeedBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueCritBoost, MoveSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusRogueStealth = 1.2f;
+        public static int DefenseBoostAboveHealthThreshold = 30;
+        public static float DefenseBoostHealthThreshold = 0.8f;
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.defense = 28; //85
+            Item.defense = 26; // 90
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<BloodflareBodyArmor>() && legs.type == ModContent.ItemType<BloodflareCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<BloodflareBodyArmor>() && legs.type == ModContent.ItemType<BloodflareCuisses>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadowSubtle = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadowSubtle = true;
 
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareThrowing = true;
-            modPlayer.rogueStealthMax += 1.2f;
+            modPlayer.rogueStealthMax += SetBonusRogueStealth;
             modPlayer.wearingRogueArmor = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), DefenseBoostAboveHealthThreshold, DefenseBoostHealthThreshold.ToPercent()) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
             player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.1f;
-            player.GetCritChance<ThrowingDamageClass>() += 10;
-            player.moveSpeed += 0.05f;
+            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
+            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

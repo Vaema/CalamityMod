@@ -14,6 +14,7 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Aerospec;
+using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
 using CalamityMod.Items.Armor.Empyrean;
@@ -818,7 +819,7 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += TarragonHeadMelee.CloakContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
-                contactDamageReduction += 0.5;
+                contactDamageReduction += BloodflareHeadMelee.FrenzyContactDamageReduction;
 
             if (npc.Calamity().temporalSadness)
                 contactDamageReduction += 0.5;

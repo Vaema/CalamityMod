@@ -8,6 +8,7 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Armor.Bloodflare.BloodflareHeadMagic;
 
 namespace CalamityMod.Items.Armor.Auric
 {
@@ -66,7 +67,10 @@ namespace CalamityMod.Items.Armor.Auric
                     if (line.Name == "SetBonus")
                     {
                         Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipSilvaColor };
-                        line.Text = this.GetLocalizedValue($"SetBonus{setBonusTooltipNumber}");
+                        var LocalizedText = this.GetLocalization($"SetBonus{setBonusTooltipNumber}");
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format()
+                        : setBonusTooltipNumber == 2 ? LocalizedText.Format(GhostBoltCooldown.FramesToSeconds(), BloodsplosionCooldown.FramesToSeconds())
+                        : LocalizedText.Format());
                         line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
                     }
                 }

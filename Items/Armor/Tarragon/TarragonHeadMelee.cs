@@ -14,12 +14,13 @@ namespace CalamityMod.Items.Armor.Tarragon
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
 
-        public static float MeleeDamageBoost = 0.10f;
+        public static float MeleeDamageBoost = 0.1f;
         public static int MeleeCritBoost = 5;
         public static float MeleeSpeedBoost = 0.15f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeDamageBoost.ToPercent(), MeleeCritBoost, MeleeSpeedBoost.ToPercent());
 
         // Set Bonus
+        public static int SetBonusAggroBoost = 800;
         public static int TarraLifeDuration = CalamityUtils.SecondsToFrames(5);
         public static int TarraLifeRegenBoost = 3;
         public static double CloakContactDamageReduction = 0.5D;
@@ -48,7 +49,7 @@ namespace CalamityMod.Items.Armor.Tarragon
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraMelee = true;
-            player.aggro += 800;
+            player.aggro += SetBonusAggroBoost;
             player.setBonus = this.GetLocalization("SetBonus").Format(TarraLifeRegenBoost.ToRegenPerSecond(), CalamityUtils.GetArmorSetBonusKey(), CloakDuration.FramesToSeconds(), CloakCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextValueFromModItem<TarragonBreastplate>("CommonSetBonus");
         }
 

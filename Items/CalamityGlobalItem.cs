@@ -8,6 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
@@ -375,9 +376,7 @@ namespace CalamityMod.Items
                     modPlayer.canFireBloodflareMageProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // Bloodflare Mage Bolt: 130%, soft cap starts at 2000 base damage
-                        int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * 1.3, 2600);
-
+                        int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * BloodflareHeadMagic.GhostBoltDamageRatio, BloodflareHeadMagic.GhostBoltonDamageSoftcap);
                         Projectile.NewProjectile(playerSource, position, velocity, ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
                     }
                 }
@@ -389,10 +388,7 @@ namespace CalamityMod.Items
                     modPlayer.canFireBloodflareRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // Bloodflare Ranged Bloodsplosion: 80%, soft cap starts at 150 base damage
-                        // This is intentionally extremely low because this effect can be grossly overpowered with sniper rifles and the like.
-                        int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * 0.8, 120);
-
+                        int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * BloodflareHeadRanged.BloodBombDamageRatio, BloodflareHeadRanged.BloodBombDamageSoftcap);
                         Projectile.NewProjectile(playerSource, position, velocity, ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
                     }
                 }

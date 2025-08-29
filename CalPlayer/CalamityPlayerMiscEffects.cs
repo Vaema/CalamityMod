@@ -2243,13 +2243,13 @@ namespace CalamityMod.CalPlayer
                 canFireAtaxiaRangedProjectile = true;
             if (Player.miscCounter % HydrothermicHeadRogue.VolleyCooldown == 0)
                 canFireAtaxiaRogueProjectile = true;
-            if (Player.miscCounter % 100 == 0)
+            if (Player.miscCounter % BloodflareHeadMagic.GhostBoltCooldown == 0)
                 canFireBloodflareMageProjectile = true;
-            if (Player.miscCounter % 150 == 0)
-            {
-                canFireGodSlayerRangedProjectile = true;
+            if (Player.miscCounter % BloodflareHeadRanged.BloodBombCooldown == 0)
                 canFireBloodflareRangedProjectile = true;
-            }
+            if (Player.miscCounter % 150 == 0)
+                canFireGodSlayerRangedProjectile = true;
+
             if (auralisAurora > 0)
                 auralisAurora--;
             if (auralisAuroraCooldown > 0)
@@ -2514,7 +2514,7 @@ namespace CalamityMod.CalPlayer
                 {
                     bloodflareMeleeHits = 0;
                     if (Player.whoAmI == Main.myPlayer)
-                        Player.AddBuff(ModContent.BuffType<BloodflareBloodFrenzy>(), 302, false);
+                        Player.AddBuff(ModContent.BuffType<BloodflareBloodFrenzy>(), BloodflareHeadMelee.FrenzyDuration, false);
                 }
 
                 if (bloodflareFrenzy)
@@ -2523,11 +2523,11 @@ namespace CalamityMod.CalPlayer
                     {
                         int hasBuff = Player.buffType[l];
                         if (Player.buffTime[l] <= 2 && hasBuff == ModContent.BuffType<BloodflareBloodFrenzy>() && Player.whoAmI == Main.myPlayer)
-                            Player.AddCooldown(BloodflareFrenzy.ID, CalamityUtils.SecondsToFrames(30));
+                            Player.AddCooldown(BloodflareFrenzy.ID, BloodflareHeadMelee.FrenzyCooldown);
                     }
 
-                    Player.GetCritChance<MeleeDamageClass>() += 25;
-                    Player.GetDamage<MeleeDamageClass>() += 0.25f;
+                    Player.GetCritChance<MeleeDamageClass>() += BloodflareHeadMelee.FrenzyMeleeCritBoost;
+                    Player.GetDamage<MeleeDamageClass>() += BloodflareHeadMelee.FrenzyMeleeDamageBoost;
 
                     for (int j = 0; j < 2; j++)
                     {
@@ -2833,19 +2833,19 @@ namespace CalamityMod.CalPlayer
             {
                 bloodflareFrenzy = false;
                 Player.ClearBuff(ModContent.BuffType<BloodflareBloodFrenzy>());
-                Player.AddCooldown(BloodflareFrenzy.ID, CalamityUtils.SecondsToFrames(30));
+                Player.AddCooldown(BloodflareFrenzy.ID, BloodflareHeadMelee.FrenzyCooldown);
             }
             if (!tarraMelee && tarragonCloak)
             {
                 tarragonCloak = false;
                 Player.ClearBuff(ModContent.BuffType<Buffs.StatBuffs.TarragonCloak>());
-                Player.AddCooldown(Cooldowns.TarragonCloak.ID, CalamityUtils.SecondsToFrames(30));
+                Player.AddCooldown(Cooldowns.TarragonCloak.ID, TarragonHeadMelee.CloakCooldown);
             }
             if (!tarraThrowing && tarragonImmunity)
             {
                 tarragonImmunity = false;
                 Player.ClearBuff(ModContent.BuffType<Buffs.StatBuffs.TarragonImmunity>());
-                Player.AddCooldown(Cooldowns.TarragonImmunity.ID, CalamityUtils.SecondsToFrames(25));
+                Player.AddCooldown(Cooldowns.TarragonImmunity.ID, TarragonHeadRogue.ImmunityCooldown);
             }
 
             bool hasOmegaBlueCooldown = cooldowns.TryGetValue(OmegaBlue.ID, out CooldownInstance omegaBlueCD);
@@ -2867,10 +2867,10 @@ namespace CalamityMod.CalPlayer
             if (!plagueReaper && hasPlagueBlackoutCD && plagueBlackoutCD.timeLeft > PlagueReaperMask.BlackoutCooldown)
                 plagueBlackoutCD.timeLeft = PlagueReaperMask.BlackoutCooldown;
 
-            if (!prismaticSet && prismaticLasers > 1800)
+            if (!prismaticSet && prismaticLasers > PrismaticHelmet.LaserCooldown)
             {
-                prismaticLasers = 1800;
-                Player.AddCooldown(PrismaticLaser.ID, 1800);
+                prismaticLasers = PrismaticHelmet.LaserCooldown;
+                Player.AddCooldown(PrismaticLaser.ID, PrismaticHelmet.LaserCooldown);
             }
             if (!angelicAlliance && divineBless)
             {
@@ -3811,41 +3811,34 @@ namespace CalamityMod.CalPlayer
 
             if (bloodflareThrowing)
             {
-                if (Player.statLife > (int)(Player.statLifeMax2 * 0.8))
-                {
-                    Player.GetCritChance<RogueDamageClass>() += 5;
-                    Player.statDefense += 30;
-                }
-                else
-                    Player.GetDamage<ThrowingDamageClass>() += 0.1f;
+                if (Player.statLife > (int)(Player.statLifeMax2 * BloodflareHeadRogue.DefenseBoostHealthThreshold))
+                    Player.statDefense += BloodflareHeadRogue.DefenseBoostAboveHealthThreshold;
             }
 
             if (bloodflareSummon)
             {
-                if (Player.statLife >= (int)(Player.statLifeMax2 * 0.9))
-                    Player.GetDamage<SummonDamageClass>() += 0.1f;
-                else if (Player.statLife <= (int)(Player.statLifeMax2 * 0.5))
-                    Player.statDefense += 20;
+                if (Player.statLife <= (int)(Player.statLifeMax2 * BloodflareHeadSummon.DefenseBoostHealthThreshold))
+                    Player.statDefense += BloodflareHeadSummon.DefenseBoostBelowHealthThreshold;
 
                 if (bloodflareSummonTimer > 0)
                     bloodflareSummonTimer--;
 
                 if (Player.whoAmI == Main.myPlayer && bloodflareSummonTimer <= 0)
                 {
-                    bloodflareSummonTimer = 900;
+                    bloodflareSummonTimer = BloodflareHeadSummon.MineCooldown;
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                     var source = Player.GetSource_FromThis(BloodflareHeadSummon.GhostMineEntitySourceContext);
                     for (int I = 0; I < 3; I++)
                     {
                         float ai1 = I * 120;
 
-                        int damage = (int)Player.CalcIntDamage<SummonDamageClass>(3750);
+                        int damage = (int)Player.CalcIntDamage<SummonDamageClass>(BloodflareHeadSummon.MineDamage);
 
                         int projectile = Projectile.NewProjectile(source, Player.Center.X + (float)(Math.Sin(I * 120) * 550), Player.Center.Y + (float)(Math.Cos(I * 120) * 550), 0f, 0f,
                             ModContent.ProjectileType<GhostlyMine>(), damage, 1f, Player.whoAmI, ai1, 0f);
                         if (projectile.WithinBounds(Main.maxProjectiles))
                         {
-                            Main.projectile[projectile].originalDamage = 3750;
+                            Main.projectile[projectile].originalDamage = BloodflareHeadSummon.MineDamage;
                             Main.projectile[projectile].DamageType = DamageClass.Generic;
                         }
                     }

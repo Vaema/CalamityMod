@@ -3820,7 +3820,7 @@ namespace CalamityMod.CalPlayer
             if (bloodflareRanged && !Player.HasCooldown(BloodflareRangedSet.ID))
             {
                 if (Player.whoAmI == Main.myPlayer)
-                    Player.AddCooldown(BloodflareRangedSet.ID, 1800);
+                    Player.AddCooldown(BloodflareRangedSet.ID, BloodflareHeadRanged.SoulCooldown);
 
                 SoundEngine.PlaySound(BloodflareHeadRanged.ActivationSound, Player.Center);
                 for (int d = 0; d < 64; d++)
@@ -3844,8 +3844,8 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     var source = Player.GetSource_Misc("1");
-                    int damage = (int)(Player.GetTotalDamage<RangedDamageClass>().ApplyTo(300f));
-                    for (int i = 0; i < 16; i++)
+                    int damage = (int)(Player.GetTotalDamage<RangedDamageClass>().ApplyTo(BloodflareHeadRanged.SoulDamage));
+                    for (int i = 0; i < BloodflareHeadRanged.SoulAmount; i++)
                     {
                         float ai1 = Main.rand.NextFloat() + 0.5f;
                         Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);

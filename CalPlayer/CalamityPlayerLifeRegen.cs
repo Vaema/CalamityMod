@@ -630,12 +630,6 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 4;
             }
 
-            if (bloodflareSummon)
-            {
-                if (Player.statLife <= (int)(actualMaxLife * 0.5))
-                    Player.lifeRegen += 2;
-            }
-
             if (fearmongerSet && fearmongerRegenFrames > 0)
             {
                 Player.lifeRegen += 7;
