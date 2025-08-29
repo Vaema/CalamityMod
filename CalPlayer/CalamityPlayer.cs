@@ -3889,14 +3889,14 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.whoAmI == Main.myPlayer)
                 {
-                    Player.AddBuff(BuffType<Enraged>(), 600, false);
+                    Player.AddBuff(BuffType<Enraged>(), DemonshadeHelm.EnrageDuration, false);
                 }
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     foreach (NPC npc in Main.ActiveNPCs)
                     {
                         if (!npc.friendly && !npc.dontTakeDamage && Vector2.Distance(Player.Center, npc.Center) <= 3000f)
-                            npc.AddBuff(BuffType<Enraged>(), 600, false);
+                            npc.AddBuff(BuffType<Enraged>(), DemonshadeHelm.EnrageDuration, false);
                     }
                 }
             }
@@ -4517,7 +4517,7 @@ namespace CalamityMod.CalPlayer
                 float runAccMult = 1f +
                     (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
-                    (shadowSpeed ? 0.5f : 0f) +
+                    (shadowSpeed ? DemonshadeGreaves.AccelerationBoost : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
@@ -4539,7 +4539,7 @@ namespace CalamityMod.CalPlayer
                 float runSpeedMult = 1f +
                     (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
-                    (shadowSpeed ? 0.5f : 0f) +
+                    (shadowSpeed ? DemonshadeGreaves.AccelerationBoost : 0f) +
                     (stressPills ? 0.05f : 0f) +
                     ((abyssalDivingSuit && Player.IsUnderwater()) ? 0.05f : 0f) +
                     (aquaticHeartWaterBuff ? AquaticHeart.WaterSpeedBoost : 0f) +
