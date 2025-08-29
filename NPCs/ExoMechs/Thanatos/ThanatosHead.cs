@@ -166,13 +166,13 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
         }
 
-        public static int LaserDamage = 85; // 340
+        public static int LaserDamage = 80; // 320
         public static int BeamDamage = 135; // 540
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 250; // 500
+            NPC.damage = 240; // 480
             NPC.npcSlots = 5f;
             NPC.width = 164;
             NPC.height = 164;

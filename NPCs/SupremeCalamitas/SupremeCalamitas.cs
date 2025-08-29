@@ -253,16 +253,16 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
-        public static int DartDamage = 85; // 340
-        public static int SkullDamage = 90; // 360
-        public static int HellblastDamage = 100; // 400
-        public static int FireblastDamage = 100; // 400
-        public static int GigablastDamage = 110; // 440
+        public static int DartDamage = 80; // 320
+        public static int SkullDamage = 85; // 340
+        public static int HellblastDamage = 95; // 380
+        public static int FireblastDamage = 95; // 380
+        public static int GigablastDamage = 105; // 420
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 220; // 440
+            NPC.damage = 210; // 420
             NPC.npcSlots = 50f;
             NPC.width = NPC.height = 44;
             NPC.defense = 100;

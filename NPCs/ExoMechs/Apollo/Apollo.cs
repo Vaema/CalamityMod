@@ -144,14 +144,14 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             }
         }
 
-        public static int FireballDamage = 85; // 340
-        public static int BoltDamage = 75; // 300
-        public static int RocketDamage = 100; // 400
+        public static int FireballDamage = 80; // 320
+        public static int BoltDamage = 70; // 280
+        public static int RocketDamage = 95; // 380
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 250; // 500
+            NPC.damage = 240; // 480
             NPC.npcSlots = 5f;
             NPC.width = 204;
             NPC.height = 226;

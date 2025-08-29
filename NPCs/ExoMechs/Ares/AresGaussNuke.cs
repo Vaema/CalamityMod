@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         }
 
         public static int NukeDamage = 135; // 540
-        public static int SparkDamage = 75; // 300
+        public static int SparkDamage = 70; // 280
 
         public override void SetDefaults()
         {
