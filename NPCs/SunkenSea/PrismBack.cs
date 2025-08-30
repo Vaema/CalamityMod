@@ -3,6 +3,7 @@ using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -118,7 +119,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // TODO
             // Change this to kelp when it's added
-            int tileType = ModContent.TileType<DepthVines>();
+            int tileType = ModContent.TileType<SunkenKelp>();
 
             // Assure the kelp still exists, if it's gone, clear the tile
             if ((TileX != 0 || TileY != 0) && t.TileType != tileType)

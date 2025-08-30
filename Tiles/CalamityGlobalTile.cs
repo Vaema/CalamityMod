@@ -32,6 +32,11 @@ namespace CalamityMod.Tiles
             TileType<PyreMantle>(),
             TileType<Navystone>(),
             TileType<Shellstone>(),
+            TileType<EutrophicSand>(),
+            TileType<PolypSand>(),
+            TileType<VolcanicSand>(),
+            TileType<HardenedEutrophicSand>(),
+            TileType<Dunesand>(),
             TileType<Limestone>(),
             TileType<LimestoneCobble>(),
             TileType<Voidstone>()

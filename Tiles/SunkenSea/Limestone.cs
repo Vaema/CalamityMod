@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Merges;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -48,6 +49,26 @@ namespace CalamityMod.Tiles.SunkenSea
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile Tile = Framing.GetTileSafely(i, j);
+            Tile Below = Framing.GetTileSafely(i, j + 1);
+            Tile Above = Framing.GetTileSafely(i, j - 1);
+
+            if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope)
+            {
+                if (Main.rand.NextBool(10))
+                {
+                    Below.TileType = (ushort)ModContent.TileType<GilHerb>();
+                    Below.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.dedServ)
+                    {
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
         }
     }
 }
