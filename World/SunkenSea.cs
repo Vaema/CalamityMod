@@ -1572,13 +1572,7 @@ namespace CalamityMod.World
                     {
                         int RandStyle() => WorldGen.genRand.Next(8);
                         int style = RandStyle();
-                        if (WorldGen.genRand.NextBool(50) && !Main.tile[X - 1, Y].HasTile)
-                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(3), Actions.Chain(new GenAction[]
-                        {
-                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<ScarletSeaGrassTile>(),(ushort)ModContent.TileType<PolypSand>()),
-                            new Actions.ClearTile(),
-                            new Actions.PlaceTile((ushort)ModContent.TileType<PinkPearlPile>()),
-                        }));
+                        
                         //BranchCoralsOnSand
                         if (WorldGen.genRand.NextBool(25))
                         {
@@ -1650,13 +1644,6 @@ namespace CalamityMod.World
                     //radiant reefs ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<EutrophicSand>())
                     {
-                        if (WorldGen.genRand.NextBool(100) && !Main.tile[X - 1, Y].HasTile)
-                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(7), Actions.Chain(new GenAction[]
-                        {
-                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<EutrophicSand>()),
-                            new Actions.ClearTile(),
-                            new Actions.PlaceTile((ushort)ModContent.TileType<WhitePearlPile>()),
-                        }));
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(15))
                         {
@@ -1753,26 +1740,35 @@ namespace CalamityMod.World
                         }
                     }
                     // Pearl Autism
-                    if (Main.tile[X, Y].TileType == ModContent.TileType<VolcanicSand>())
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {
-                        if (WorldGen.genRand.NextBool(50) && !Main.tile[X - 1, Y].HasTile)
-                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(3), Actions.Chain(new GenAction[]
+                        if (WorldGen.genRand.NextBool(60) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(2), Actions.Chain(new GenAction[]
                         {
-                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<VolcanicSand>()),
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<HardenedEutrophicSand>()),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<BlackPearlPile>()),
                         }));
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {
-                        if (WorldGen.genRand.NextBool(30) && !Main.tile[X - 1, Y].HasTile)
-                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(3), Actions.Chain(new GenAction[]
+                        if (WorldGen.genRand.NextBool(60) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(2), Actions.Chain(new GenAction[]
                         {
                             new Modifiers.OnlyTiles((ushort)ModContent.TileType<HardenedEutrophicSand>()),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<WhitePearlPile>()),
                         }));
                     }
+
+                    if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
+                        if (WorldGen.genRand.NextBool(60) && !Main.tile[X - 1, Y].HasTile)
+                            WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(2), Actions.Chain(new GenAction[]
+                    {
+                            new Modifiers.OnlyTiles((ushort)ModContent.TileType<HardenedEutrophicSand>()),
+                            new Actions.ClearTile(),
+                            new Actions.PlaceTile((ushort)ModContent.TileType<PinkPearlPile>()),
+                    }));
                 }
             }
         }
