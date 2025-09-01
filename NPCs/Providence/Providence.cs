@@ -169,6 +169,7 @@ namespace CalamityMod.NPCs.Providence
             Main.npcFrameCount[Type] = 3;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.2f,
