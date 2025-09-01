@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Melee
 
                     // Thrust forward
                     OffsetDistance = (int)MathHelper.Lerp(34, 60, SwingCompletion);
-                    Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 3;
+                    Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 3.5f;
 
                     // Scaling adjustments
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Melee
                     // Fire the bigass projectile
                     if (!trailFXTriggered)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 21, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 27, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
                         SoundEngine.PlaySound(swish with { Volume = 0.45f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
