@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Melee
         public override int swingWidth => 310;
         public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<Lucrecia>()).Item;
         public override string Texture => "CalamityMod/Items/Weapons/Melee/Lucrecia";
-        public override SoundStyle? UseSound => SoundID.Item71 with { Volume = 0.9f };
+        public override SoundStyle? UseSound => SoundID.Item71 with { Volume = 0.85f };
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
         public override int swingTime { get; set; } = 15;
@@ -217,6 +217,9 @@ namespace CalamityMod.Projectiles.Melee
                         var helixSpeed = 12f;
                         var helixVelocity = fireDirection * helixSpeed;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaSmallProjectile>(), Projectile.damage * 3, Projectile.knockBack, Projectile.owner);
+                        
+                        SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
+                        SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
                     }
                     AfterImageLength = 32;
                     Projectile.extraUpdates = 10;
