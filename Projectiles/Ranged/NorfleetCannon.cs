@@ -329,7 +329,7 @@ namespace CalamityMod.Projectiles.Ranged
             Owner = Main.player[Projectile.owner];
             OffsetLength = MaxOffsetLength;
 
-            if (Main.zenithWorld && Main.rand.NextBool(10))
+            if (Main.zenithWorld && Main.rand.NextBool(1000))
             {
                 PUNISHMENTMODE = true;
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/NuhUhUh"), Owner.Center);
