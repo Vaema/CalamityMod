@@ -41,9 +41,9 @@ namespace CalamityMod.Projectiles.Melee
         private bool IsThrusting => Projectile.localAI[0] == 1;
 
         public bool IsAlternateThrust { get; set; }
-        public int thrustPullbackTime = 26;
-        public int thrustForwardTime = 13;
-        public int thrustCooldownTime = 20;
+        public int thrustPullbackTime = 33;
+        public int thrustForwardTime = 16;
+        public int thrustCooldownTime = 25;
 
         public override void Defaults()
         {
@@ -59,6 +59,9 @@ namespace CalamityMod.Projectiles.Melee
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             var calamityPlayer = player.Calamity();
 
+            // Store the base use time from the item
+            int baseUseTime = BaseItem.useTime;
+
             if (player.altFunctionUse == 2)
             {
                 // Check for energy before the projectile exists
@@ -69,9 +72,12 @@ namespace CalamityMod.Projectiles.Melee
                 }
 
                 IsAlternateThrust = true;
-                StartupTime = thrustPullbackTime;
-                swingTime = thrustForwardTime;
-                CooldownTime = thrustCooldownTime;
+
+                // Scale all time vars correctly
+                StartupTime = (int)(thrustPullbackTime * (float)player.itemAnimationMax / baseUseTime);
+                swingTime = (int)(thrustForwardTime * (float)player.itemAnimationMax / baseUseTime);
+                CooldownTime = (int)(thrustCooldownTime * (float)player.itemAnimationMax / baseUseTime);
+
                 Projectile.DamageType = DamageClass.Melee;
                 Projectile.width = Projectile.height = 36;
                 useMeleeSize = true;
@@ -86,18 +92,17 @@ namespace CalamityMod.Projectiles.Melee
             else
             {
                 IsAlternateThrust = false;
-                StartupTime = 8;
-                CooldownTime = 5;
-                swingTime = 15;
+
+                // Scale all time vars correctly
+                StartupTime = (int)(10 * (float)player.itemAnimationMax / baseUseTime);
+                CooldownTime = (int)(6 * (float)player.itemAnimationMax / baseUseTime);
+                swingTime = (int)(18 * (float)player.itemAnimationMax / baseUseTime);
+
                 OffsetDistance = 36;
                 RotateInStartup = 0.8f;
                 RotateInCooldown = 0;
             }
 
-            if (swingTime > 0)
-                swingTime = (int)(swingTime / player.GetAttackSpeed(DamageClass.Melee));
-
-            // rest of the original Spawn method
             if (AlternateSwings)
                 modplayer.swingNum = (modplayer.swingNum + 1) % 2;
         }
@@ -148,7 +153,7 @@ namespace CalamityMod.Projectiles.Melee
                     // Fire the bigass projectile
                     if (!trailFXTriggered)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 27, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 24, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
                         SoundEngine.PlaySound(swish with { Volume = 0.45f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
