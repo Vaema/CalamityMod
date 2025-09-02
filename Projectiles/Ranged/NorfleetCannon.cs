@@ -28,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
         private SlotId NorfleetRecharge;
 
         private ref float OffsetLength => ref Projectile.localAI[0];
-        private ref float loadedShots => ref Projectile.ai[2];
 
         private Player Owner;
 
@@ -92,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     hum?.Stop();
                 }
-                if (loadedShots > 1)
+                if (Owner.Calamity().NorfleetCounter < 2)
                 {
                     ShootRocket(heldItem);
                     PostFireCooldown = PUNISHMENTMODE ? 1000 : 55;
@@ -191,6 +190,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Spawns the projectile.
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NorfleetFire");
                 SoundEngine.PlaySound(fire with { Volume = 0.9f, PitchVariance = 0.25f }, Projectile.Center);
+                Owner.Calamity().NorfleetCounter++;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -328,6 +328,12 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Owner = Main.player[Projectile.owner];
             OffsetLength = MaxOffsetLength;
+
+            if (Main.zenithWorld && Main.rand.NextBool(10))
+            {
+                PUNISHMENTMODE = true;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/NuhUhUh"), Owner.Center);
+            }
         }
 
         // Because we use the velocity as a direction, we don't need it to change its position.
