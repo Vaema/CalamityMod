@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
                 AddIngredient<AstralMonolith>(15).
                 AddIngredient(ItemID.Bone, 4).
                 AddIngredient(ItemID.Book).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

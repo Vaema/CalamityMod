@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<MegalodonHoldout>();
             Item.shootSpeed = 2f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool RangedPrefix() => true; //Can't scale with attack speed, but should still be able to recieve Unreal

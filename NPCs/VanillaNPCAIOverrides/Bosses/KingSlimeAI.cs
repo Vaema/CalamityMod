@@ -15,6 +15,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         public static readonly SoundStyle SpawnCrystalSound = new SoundStyle("CalamityMod/Sounds/Custom/KingSlimeJewelSpawn");
 
+        // Death exclusive
+        public static float SapphireJewelContactDamageMult = 1.5f; // 144
+
         public static bool BuffedKingSlimeAI(NPC npc, Mod mod)
         {
             // Percent life remaining
@@ -27,14 +30,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool teleported = false;
             npc.aiAction = 0;
             float teleportScaleSpeed = 2f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 teleportScaleSpeed -= 1f - lifeRatio;
                 teleportScale *= teleportScaleSpeed;
             }
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Phases based on life percentage
 
@@ -75,7 +77,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.defense = npc.defDefense;
             if (blueCrystalAlive)
             {
-                setDamage = (int)Math.Round(setDamage * 1.5);
+                setDamage = (int)Math.Round(setDamage * SapphireJewelContactDamageMult);
                 npc.defense *= 2;
             }
 
@@ -241,7 +243,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Faster fall
             if (npc.velocity.Y > 0f)
             {
-                float fallSpeedBonus = (bossRush ? 0.2f : death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
+                float fallSpeedBonus = (death ? 0.15f : 0f) + (!redCrystalAlive ? 0.1f : 0f);
                 npc.velocity.Y += fallSpeedBonus;
             }
 
@@ -317,7 +319,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[0] += teleportRate;
                 teleportScale = MathHelper.Clamp((60f - npc.ai[0]) / 60f, 0f, 1f);
                 teleportScale = 0.5f + teleportScale * 0.5f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     teleportScale *= teleportScaleSpeed;
 
                 if (npc.ai[0] >= 60f)
@@ -399,7 +401,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[0] += teleportRate;
                 teleportScale = MathHelper.Clamp(npc.ai[0] / 30f, 0f, 1f);
                 teleportScale = 0.5f + teleportScale * 0.5f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     teleportScale *= teleportScaleSpeed;
 
                 if (npc.ai[0] >= 30f && Main.netMode != NetmodeID.MultiplayerClient)
@@ -441,7 +443,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (!teleporting)
                 {
-                    npc.ai[0] += (bossRush ? 15f : MathHelper.Lerp(1f, 8f, 1f - lifeRatio));
+                    npc.ai[0] += MathHelper.Lerp(1f, 8f, 1f - lifeRatio);
                     if (npc.ai[0] >= 0f)
                     {
                         // Set damage
@@ -462,8 +464,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         bool deathModeRapidHops = death && lifeRatio < 0.3f;
                         if (deathModeRapidHops)
                             npc.ai[1] = 2f;
-
-                        float bossRushJumpSpeedMult = 1.5f;
 
                         // Jump type
                         if (npc.ai[1] == 3f)
@@ -500,9 +500,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (death)
                             npc.velocity.X *= 1.4f;
 
-                        if (bossRush)
-                            npc.velocity.X *= bossRushJumpSpeedMult;
-
                         npc.noTileCollide = true;
                     }
                     else if (npc.ai[0] >= -30f)
@@ -516,20 +513,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float jumpVelocityLimit = redCrystalAlive ? 3f : 4.5f;
                 if (death)
                     jumpVelocityLimit += 3f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     jumpVelocityLimit = 8f;
 
                 if ((npc.direction == 1 && npc.velocity.X < jumpVelocityLimit) || (npc.direction == -1 && npc.velocity.X > -jumpVelocityLimit))
                 {
                     if ((npc.direction == -1 && npc.velocity.X < 0.1) || (npc.direction == 1 && npc.velocity.X > -0.1))
                     {
-                        npc.velocity.X += (bossRush ? 0.4f : death ? 0.25f : 0.2f) * npc.direction;
+                        npc.velocity.X += (death ? 0.25f : 0.2f) * npc.direction;
                         if (death)
                             npc.velocity.X += 0.3f * npc.direction;
                     }
                     else
                     {
-                        npc.velocity.X *= bossRush ? 0.9f : death ? 0.92f : 0.93f;
+                        npc.velocity.X *= death ? 0.92f : 0.93f;
                         if (death)
                             npc.velocity.X *= 0.9f;
                     }
@@ -554,12 +551,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 return false;
 
             // Adjust size based on HP
-            float maxScale = CalamityWorld.LegendaryMode ? 3f : death ? 2.5f : 1.5f;
+            float maxScale = Main.getGoodWorld ? 3f : death ? 2.5f : 1.5f;
             float minScale = death ? 0.5f : 0.75f;
             float maxScaledValue = maxScale - minScale;
 
             // Inversed scale in FTW
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 lifeRatio = (maxScaledValue - lifeRatio * maxScaledValue) + minScale;
             else
                 lifeRatio = lifeRatio * maxScaledValue + minScale;
@@ -620,7 +617,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 break;
                         }
 
-                        if (((Main.raining && Main.hardMode) || bossRush) && Main.rand.NextBool(50))
+                        if ((Main.raining && Main.hardMode) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
                         if (death)
@@ -642,7 +639,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.rand.NextBool(100))
                             npcType = NPCID.Pinky;
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.zenithWorld)
                             npcType = NPCID.RainbowSlime;
 
                         int offset = 16;

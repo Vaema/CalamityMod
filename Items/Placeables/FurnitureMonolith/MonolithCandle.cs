@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
             CreateRecipe().
                 AddIngredient<AstralMonolith>(4).
                 AddIngredient(ItemID.Torch).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.WorkBenches).
                 Register();
         }
     }

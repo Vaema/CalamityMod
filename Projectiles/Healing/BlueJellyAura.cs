@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Healing
                     for (int l = 0; l < Player.MaxBuffs; l++)
                     {
                         int buffID = player.buffType[l];
-                        if (player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
+                        if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                         {
                             player.buffTime[l] *= 0;
                         }

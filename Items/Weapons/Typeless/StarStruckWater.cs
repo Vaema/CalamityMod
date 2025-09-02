@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.useTime = 15;
             Item.noUseGraphic = true;
             Item.noMelee = true;
-            Item.value = 200;
+            Item.value = Item.sellPrice(copper: 40); // Identical to Holy Water
         }
 
         public override void AddRecipes()

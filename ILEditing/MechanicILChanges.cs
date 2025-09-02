@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
@@ -161,26 +162,7 @@ namespace CalamityMod.ILEditing
             // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
             cursor.Emit(OpCodes.Or);
 
-            //
-            // SHIELD OF CTHULHU
-            //
-
-            // Move to Shield of Cthulhu's code by finding its function call for iframes.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Player>("GiveImmuneTimeForCollisionAttack")))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate function call for Shield of Cthulhu iframes.");
-                return;
-            }
-
-            if (!cursor.TryGotoPrev(MoveType.AfterLabel, i => i.MatchLdcI4(30)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate amount of frames of dash cooldown applied on impact with Shield of Cthulhu.");
-                return;
-            }
-
-            // Remove the instruction and replace it with one which gives Calamity's (customizable) amount of dash cooldown.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.OnShieldBonkCooldown);
+            // CIT 22JUL2025: Shield of Cthulhu bonk is reimplemented in a separate On edit; removed the change made to it via this IL edit.
 
             //
             // SOLAR FLARE ARMOR
@@ -331,15 +313,19 @@ namespace CalamityMod.ILEditing
                 self.dashTime = 0;
             }
         }
-        #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(On_NPC.orig_ShouldEmpressBeEnraged orig)
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
-            if (BossRushEvent.BossRushActive)
-                return true;
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
 
-            return orig();
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
         }
         #endregion
 
@@ -390,6 +376,15 @@ namespace CalamityMod.ILEditing
                 return;
             }
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
         }
         #endregion
 
@@ -628,7 +623,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -676,31 +671,32 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 

@@ -8,7 +8,10 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Armor.Bloodflare.BloodflareHeadRanged;
+using static CalamityMod.Items.Armor.GodSlayer.GodSlayerHeadRanged;
 
 namespace CalamityMod.Items.Armor.Auric
 {
@@ -17,24 +20,23 @@ namespace CalamityMod.Items.Armor.Auric
     public class AuricTeslaHeadRanged : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float RangedDamageBoost = 0.22f;
+        public static int RangedCritBoost = 20;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 40; //132
+            Item.defense = 39; // 125
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawOutlines = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawOutlines = true;
 
         public override void UpdateArmorSet(Player player)
         {
@@ -47,9 +49,7 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayer = true;
             modPlayer.godSlayerRanged = true;
             modPlayer.auricSet = true;
-            player.thorns += 3f;
-            player.ignoreWater = true;
-            player.crimsonRegen = true;
+            player.crimsonRegen = true; // Inherited from Bloodflare
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
                 modPlayer.DeferredDashID = GodslayerArmorDash.ID;
@@ -57,11 +57,10 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void UpdateEquip(Player player)
         {
-            var modPlayer = player.Calamity();
-            modPlayer.auricBoost = true;
-            player.GetDamage<RangedDamageClass>() += 0.3f;
-            player.GetCritChance<RangedDamageClass>() += 30;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }
+
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             ref var holdingShift = ref AuricTeslaBodyArmor.holdingShift;
@@ -80,7 +79,9 @@ namespace CalamityMod.Items.Armor.Auric
                     {
                         Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipGodslayerColor };
                         var LocalizedText = CalamityUtils.GetTextFromModItem(Type, $"SetBonus{setBonusTooltipNumber}");
-                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString(), GodslayerArmorDash.GodslayerCooldown) : setBonusTooltipNumber == 2 ? LocalizedText.Format(CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString()) : LocalizedText.Format());
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(ShrapnelRoundCooldown.FramesToSeconds(), CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString(), GodSlayerChestplate.DashCooldown.FramesToSeconds())
+                        : setBonusTooltipNumber == 2 ? LocalizedText.Format(CalamityUtils.GetArmorSetBonusKey(), SoulCooldown.FramesToSeconds(), BloodBombCooldown.FramesToSeconds())
+                        : LocalizedText.Format());
                         line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
                     }
                 }

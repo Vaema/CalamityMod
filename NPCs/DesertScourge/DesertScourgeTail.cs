@@ -23,15 +23,14 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 14; // 28
             NPC.width = 104;
             NPC.height = 104;
             NPC.defense = 9;
-            NPC.DR_NERD(0.1f);
 
             NPC.LifeMaxNERB(4200, 5000, 1150000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 4;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -45,7 +44,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.4f;
 
             NPC.Calamity().VulnerableToCold = true;
@@ -69,9 +68,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
@@ -173,30 +171,6 @@ namespace CalamityMod.NPCs.DesertScourge
             bool burrow = head.Calamity().newAI[0] >= burrowTimeGateValue;
             bool lungeUpward = burrow && head.Calamity().newAI[1] == 1f;
             bool quickFall = head.Calamity().newAI[1] == 2f;
-
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = Main.zenithWorld ? DesertScourgeHead.SegmentVelocity_ZenithSeed :
-                CalamityWorld.LegendaryMode ? DesertScourgeHead.SegmentVelocity_GoodWorld :
-                death ? DesertScourgeHead.SegmentVelocity_Death :
-                expertMode ? DesertScourgeHead.SegmentVelocity_Expert :
-                DesertScourgeHead.SegmentVelocity_Normal;
-            if (burrow || lungeUpward)
-                maxChaseSpeed *= 1.5f;
-            if (expertMode)
-                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity || NPC.dontTakeDamage)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)

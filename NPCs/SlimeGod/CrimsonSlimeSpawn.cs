@@ -22,14 +22,12 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 20; // 40
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale = 2f;
 
             NPC.defense = 4;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : CalamityWorld.LegendaryMode ? 220 : 110;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 110;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.CorruptSlime;
             NPC.lavaImmune = false;

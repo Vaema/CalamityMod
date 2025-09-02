@@ -2,6 +2,7 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.World;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,6 +18,8 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class MoltenBlast : ModProjectile, ILocalizedModType
     {
+        public int BlobDamage = 0;
+
         private const int TimeLeft = 90;
         private const int AccelerationTime = 60;
         private const float Acceleration = 1.05f;
@@ -39,6 +43,17 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            BlobDamage = Providence.BlobDamage.CalculateProvidenceDamage();
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<ProfanedGuardianDefender>())
+                    BlobDamage = ProfanedGuardianDefender.BlobDamage;
+            }
+        }
+
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(Projectile.localAI[0]);
@@ -53,7 +68,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 160, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 120, 20);
 
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
 
@@ -153,10 +168,10 @@ namespace CalamityMod.Projectiles.Boss
                 for (int b = 0; b < blobAmt; b++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f) + additionalBlobVelocity;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= 2f;
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), BlobDamage, 0f, Projectile.owner);
                 }
             }
 
@@ -171,7 +186,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 160);
+            ProvUtils.ApplyDebuffs(target, 120);
         }
     }
 }

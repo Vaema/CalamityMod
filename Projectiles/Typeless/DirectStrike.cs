@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // If the target is moving VERY fast, direct strikes spawned on top of them can actually miss
-            // Setting a target will gaurentee hits on said target by teleporting the projectile onto them every frame
+            // Setting a target will guarantee hits on said target by teleporting the projectile onto them every frame
             if (!invalidTarget)
                 Projectile.Center = Main.npc[(int)Projectile.ai[0]].Center;
         }

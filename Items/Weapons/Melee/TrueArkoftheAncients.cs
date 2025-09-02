@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public float Charge = 0f;
         public static float chargeDamageMultiplier = 1.25f; //Extra damage from charge
         public static float beamDamageMultiplier = 1f; //Damage multiplier for the charged shots (remember it applies ontop of the charge damage multiplied
-        public static float glassStarDamageMultiplier = 0.6f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
+        public static float glassStarDamageMultiplier = 1f; //Damage multiplier for the glass stars it shoots (Shoots 3x glass stars when not charged, shoots 2x glass stars + one beam when charged)
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void SetDefaults()
         {
             Item.width = Item.height = 72;
-            Item.damage = 194;
+            Item.damage = 130;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noUseGraphic = true;
             Item.noMelee = true;
@@ -102,7 +102,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 Projectile.NewProjectile(source, player.Center + Shift, velocity.RotatedBy(MathHelper.PiOver4 * 0.3f), ProjectileType<AncientStar>(), (int)(damage * glassStarDamageMultiplier), knockback, player.whoAmI, Charge > 0 ? 1 : 0);
                 Projectile.NewProjectile(source, player.Center - Shift, velocity.RotatedBy(-MathHelper.PiOver4 * 0.3f), ProjectileType<AncientStar>(), (int)(damage * glassStarDamageMultiplier), knockback, player.whoAmI, Charge > 0 ? 1 : 0);
             }
-
 
             Charge--;
             if (Charge < 0)

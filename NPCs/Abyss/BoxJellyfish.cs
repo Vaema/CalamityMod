@@ -29,12 +29,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.damage = 44;
             NPC.width = 30;
             NPC.height = 33;
-            NPC.defense = 5;
-            NPC.lifeMax = 115;
+            NPC.defense = 8;
+            NPC.lifeMax = 100;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;

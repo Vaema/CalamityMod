@@ -30,8 +30,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.UseSound = null;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
         }
     }
 }

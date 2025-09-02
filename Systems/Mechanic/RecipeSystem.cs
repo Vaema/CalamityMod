@@ -11,6 +11,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Astral;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Tools;
@@ -812,84 +814,6 @@ namespace CalamityMod.Systems
 
                 // Berserker's Glove recipe change now that it doesn't provide melee speed
                 { Vanilla(ItemID.BerserkerGlove), ReplaceIngredient(ItemID.PowerGlove, ItemID.TitanGlove) },
-
-                // Standardize the costs of all PHM ore armors to 10/16/14 head/chest/legs
-                { Vanilla(ItemID.CopperHelmet), ChangeIngredientStack(ItemID.CopperBar, 10) },
-                { Vanilla(ItemID.CopperChainmail), ChangeIngredientStack(ItemID.CopperBar, 16) },
-                { Vanilla(ItemID.CopperGreaves), ChangeIngredientStack(ItemID.CopperBar, 14) },
-                { Vanilla(ItemID.TinHelmet), ChangeIngredientStack(ItemID.TinBar, 10) },
-                { Vanilla(ItemID.TinChainmail), ChangeIngredientStack(ItemID.TinBar, 16) },
-                { Vanilla(ItemID.TinGreaves), ChangeIngredientStack(ItemID.TinBar, 14) },
-                { Vanilla(ItemID.IronHelmet), ChangeIngredientStack(ItemID.IronBar, 10) },
-                { Vanilla(ItemID.IronChainmail), ChangeIngredientStack(ItemID.IronBar, 16) },
-                { Vanilla(ItemID.IronGreaves), ChangeIngredientStack(ItemID.IronBar, 14) },
-                { Vanilla(ItemID.LeadHelmet), ChangeIngredientStack(ItemID.LeadBar, 10) },
-                { Vanilla(ItemID.LeadChainmail), ChangeIngredientStack(ItemID.LeadBar, 16) },
-                { Vanilla(ItemID.LeadGreaves), ChangeIngredientStack(ItemID.LeadBar, 14) },
-                { Vanilla(ItemID.SilverHelmet), ChangeIngredientStack(ItemID.SilverBar, 10) },
-                { Vanilla(ItemID.SilverChainmail), ChangeIngredientStack(ItemID.SilverBar, 16) },
-                { Vanilla(ItemID.SilverGreaves), ChangeIngredientStack(ItemID.SilverBar, 14) },
-                { Vanilla(ItemID.TungstenHelmet), ChangeIngredientStack(ItemID.TungstenBar, 10) },
-                { Vanilla(ItemID.TungstenChainmail), ChangeIngredientStack(ItemID.TungstenBar, 16) },
-                { Vanilla(ItemID.TungstenGreaves), ChangeIngredientStack(ItemID.TungstenBar, 14) },
-                { Vanilla(ItemID.GoldHelmet), ChangeIngredientStack(ItemID.GoldBar, 10) },
-                { Vanilla(ItemID.GoldChainmail), ChangeIngredientStack(ItemID.GoldBar, 16) },
-                { Vanilla(ItemID.GoldGreaves), ChangeIngredientStack(ItemID.GoldBar, 14) },
-                { Vanilla(ItemID.PlatinumHelmet), ChangeIngredientStack(ItemID.PlatinumBar, 10) },
-                { Vanilla(ItemID.PlatinumChainmail), ChangeIngredientStack(ItemID.PlatinumBar, 16) },
-                { Vanilla(ItemID.PlatinumGreaves), ChangeIngredientStack(ItemID.PlatinumBar, 14) },
-
-                // Standardize the costs of all HM ore items to the following:
-                // 10 BARS : Melee Helm, Ranged Helm, Magic Helm, Pickaxe, Drill, Waraxe, Chainsaw, Sword, Spear, Repeater
-                // 20 BARS : Breastplate
-                // 15 BARS : Leggings
-                { VanillaEach(
-                    ItemID.CobaltHelmet, ItemID.CobaltMask, ItemID.CobaltHat, ItemID.CobaltPickaxe, ItemID.CobaltDrill, ItemID.CobaltWaraxe, ItemID.CobaltChainsaw,
-                    ItemID.CobaltSword, ItemID.CobaltNaginata, ItemID.CobaltRepeater),
-                    ChangeIngredientStack(ItemID.CobaltBar, 10)
-                },
-                { Vanilla(ItemID.CobaltBreastplate), ChangeIngredientStack(ItemID.CobaltBar, 20) },
-                { Vanilla(ItemID.CobaltLeggings), ChangeIngredientStack(ItemID.CobaltBar, 15) },
-
-                { VanillaEach(
-                    ItemID.PalladiumHelmet, ItemID.PalladiumMask, ItemID.PalladiumHeadgear, ItemID.PalladiumPickaxe, ItemID.PalladiumDrill, ItemID.PalladiumWaraxe, ItemID.PalladiumChainsaw,
-                    ItemID.PalladiumSword, ItemID.PalladiumPike, ItemID.PalladiumRepeater),
-                    ChangeIngredientStack(ItemID.PalladiumBar, 10)
-                },
-                { Vanilla(ItemID.PalladiumBreastplate), ChangeIngredientStack(ItemID.PalladiumBar, 20) },
-                { Vanilla(ItemID.PalladiumLeggings), ChangeIngredientStack(ItemID.PalladiumBar, 15) },
-
-                { VanillaEach(
-                    ItemID.MythrilHelmet, ItemID.MythrilHat, ItemID.MythrilHood, ItemID.MythrilPickaxe, ItemID.MythrilDrill, ItemID.MythrilWaraxe, ItemID.MythrilChainsaw,
-                    ItemID.MythrilSword, ItemID.MythrilHalberd, ItemID.MythrilRepeater),
-                    ChangeIngredientStack(ItemID.MythrilBar, 10)
-                },
-                { Vanilla(ItemID.MythrilChainmail), ChangeIngredientStack(ItemID.MythrilBar, 20) },
-                { Vanilla(ItemID.MythrilGreaves), ChangeIngredientStack(ItemID.MythrilBar, 15) },
-
-                { VanillaEach(
-                    ItemID.OrichalcumHelmet, ItemID.OrichalcumMask, ItemID.OrichalcumHeadgear, ItemID.OrichalcumPickaxe, ItemID.OrichalcumDrill, ItemID.OrichalcumWaraxe, ItemID.OrichalcumChainsaw,
-                    ItemID.OrichalcumSword, ItemID.OrichalcumHalberd, ItemID.OrichalcumRepeater),
-                    ChangeIngredientStack(ItemID.OrichalcumBar, 10)
-                },
-                { Vanilla(ItemID.OrichalcumBreastplate), ChangeIngredientStack(ItemID.OrichalcumBar, 20) },
-                { Vanilla(ItemID.OrichalcumLeggings), ChangeIngredientStack(ItemID.OrichalcumBar, 15) },
-
-                { VanillaEach(
-                    ItemID.AdamantiteHelmet, ItemID.AdamantiteMask, ItemID.AdamantiteHeadgear, ItemID.AdamantitePickaxe, ItemID.AdamantiteDrill, ItemID.AdamantiteWaraxe, ItemID.AdamantiteChainsaw,
-                    ItemID.AdamantiteSword, ItemID.AdamantiteGlaive, ItemID.AdamantiteRepeater),
-                    ChangeIngredientStack(ItemID.AdamantiteBar, 10)
-                },
-                { Vanilla(ItemID.AdamantiteBreastplate), ChangeIngredientStack(ItemID.AdamantiteBar, 20) },
-                { Vanilla(ItemID.AdamantiteLeggings), ChangeIngredientStack(ItemID.AdamantiteBar, 15) },
-
-                { VanillaEach(
-                    ItemID.TitaniumHelmet, ItemID.TitaniumMask, ItemID.TitaniumHeadgear, ItemID.TitaniumPickaxe, ItemID.TitaniumDrill, ItemID.TitaniumWaraxe, ItemID.TitaniumChainsaw,
-                    ItemID.TitaniumSword, ItemID.TitaniumTrident, ItemID.TitaniumRepeater),
-                    ChangeIngredientStack(ItemID.TitaniumBar, 10)
-                },
-                { Vanilla(ItemID.TitaniumBreastplate), ChangeIngredientStack(ItemID.TitaniumBar, 20) },
-                { Vanilla(ItemID.TitaniumLeggings), ChangeIngredientStack(ItemID.TitaniumBar, 15) },
             };
 
             // Apply all recipe changes.
@@ -1033,14 +957,6 @@ namespace CalamityMod.Systems
             convert[ItemID.DPSMeter] = ItemID.LifeformAnalyzer;
             convert[ItemID.LifeformAnalyzer] = ItemID.Stopwatch;
             convert[ItemID.Stopwatch] = ItemID.DPSMeter;
-
-            // Pyramid loot edits. There's no good way to have this not be hardcoded.
-            convert[ItemID.PharaohsMask] = ItemID.PharaohsRobe;
-            convert[ItemID.PharaohsRobe] = ItemID.PharaohsMask;
-
-            convert[ItemID.AmberHook] = ItemID.SandstorminaBottle;
-            convert[ItemID.SandstorminaBottle] = ItemID.FlyingCarpet;
-            convert[ItemID.FlyingCarpet] = ItemID.AmberHook;
 
             // Enchanted Sword and Terragrim shimmer into each other
             convert[ItemID.EnchantedSword] = ItemID.Terragrim;
@@ -1686,19 +1602,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Loom);
             r.Register();
             r.DisableDecraft();
-
-            // Pharaoh set (replaced Chest items)
-            r = Recipe.Create(ItemID.PharaohsMask);
-            r.AddIngredient(ItemID.AncientCloth, 3);
-            r.AddTile(TileID.Loom);
-            r.Register();
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.PharaohsRobe);
-            r.AddIngredient(ItemID.AncientCloth, 4);
-            r.AddTile(TileID.Loom);
-            r.Register();
-            r.DisableDecraft();
         }
         #endregion
 
@@ -1727,30 +1630,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SoulofLight, 4);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
-
-            // Mechanical Glove directly from correct class emblem for cheaper (compromise)
-            r = Recipe.Create(ItemID.MechanicalGlove);
-            r.AddIngredient(ItemID.PowerGlove);
-            r.AddIngredient(ItemID.WarriorEmblem);
-            r.AddIngredient(ItemID.SoulofFright);
-            r.AddIngredient(ItemID.SoulofMight);
-            r.AddIngredient(ItemID.SoulofSight);
-            r.AddTile(TileID.TinkerersWorkbench);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.MechanicalGlove);
-            r.DisableDecraft();
-
-            // Celestial Emblem directly from correct class emblem for cheaper (compromise)
-            r = Recipe.Create(ItemID.CelestialEmblem);
-            r.AddIngredient(ItemID.CelestialMagnet);
-            r.AddIngredient(ItemID.SorcererEmblem);
-            r.AddIngredient(ItemID.SoulofFright);
-            r.AddIngredient(ItemID.SoulofMight);
-            r.AddIngredient(ItemID.SoulofSight);
-            r.AddTile(TileID.TinkerersWorkbench);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.CelestialEmblem);
             r.DisableDecraft();
 
             // Tiershift Mini Nuke 1s to post Moon Lord.

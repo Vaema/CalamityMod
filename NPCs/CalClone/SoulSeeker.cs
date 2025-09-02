@@ -40,9 +40,8 @@ namespace CalamityMod.NPCs.CalClone
             NPC.height = 40;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = CalamityWorld.death ? 1500 : 2500;
             if (BossRushEvent.BossRushActive)
             {
@@ -115,8 +114,7 @@ namespace CalamityMod.NPCs.CalClone
                         Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
 
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage, 1f, parent.target, 1f, 0f, projectileSpeed * 2f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, CalamitasClone.DartDamage, 1f, parent.target, 1f, 0f, projectileSpeed * 2f);
                 }
                 timer = 0;
             }

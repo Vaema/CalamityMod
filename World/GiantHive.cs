@@ -831,12 +831,13 @@ namespace CalamityMod.World
 
             int index = 0;
 
-            chest.item[index++].SetDefaults(random.Next(FocusLootHoney));
+            chest.item[index].SetDefaults(random.Next(FocusLootHoney));
+            chest.item[index++].Prefix(-1);
 
             if (random.Next(3) <= 1)
             {
                 chest.item[index].SetDefaults(random.Next(BarLootHoney));
-                chest.item[index].SetDefaults(random.Next(7, 15));
+                chest.item[index++].stack = random.Next(7, 15);
             }
             else
             {

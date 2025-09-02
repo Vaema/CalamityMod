@@ -36,13 +36,12 @@ namespace CalamityMod.NPCs.Astral
             NPC.damage = 0; // 0 contact damage, laser damage is handled separately
             NPC.width = 30; //324
             NPC.height = 30; //216
-            NPC.defense = 10;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 70;
+            NPC.defense = 20;
+            NPC.lifeMax = 120;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0.95f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.DeathSound = SoundID.NPCDeath14;
@@ -51,9 +50,9 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 30;
-                NPC.defense = 20;
+                NPC.defense = 30;
                 NPC.knockBackResist = 0.85f;
-                NPC.lifeMax = 105;
+                NPC.lifeMax = 180;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;

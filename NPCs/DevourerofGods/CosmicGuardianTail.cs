@@ -33,7 +33,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.width = 30;
             NPC.height = 50;
             NPC.defense = 70;
@@ -134,21 +134,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.velocity = Vector2.Zero;
                 NPC.position.X = NPC.position.X + targetX;
                 NPC.position.Y = NPC.position.Y + targetY;
-            }
-
-            // Calculate contact damage based on velocity
-            float segmentVelocity = BossRushEvent.BossRushActive ? 30f : CalamityWorld.revenge ? 25f : 23f;
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
         }
 

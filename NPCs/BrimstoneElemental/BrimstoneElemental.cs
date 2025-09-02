@@ -65,14 +65,21 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
+        // These values are all applied alongside their respective GFB attacks (too many to list)
+        public static int DartDamage = 19; // 76
+        public static int HellblastDamage = 24; // 96
+        public static int HellfireballDamage = 24; // 96
+        public static int RayDamage = 35; // 140
+
         public override void SetDefaults()
         {
             NPC.npcSlots = 64f;
-            NPC.GetNPCDamage();
+            NPC.damage = 56; // 112
+            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 100;
             NPC.height = 150;
             NPC.defense = 15;
-            NPC.value = Item.buyPrice(0, 16, 0, 0);
+            NPC.value = Item.buyPrice(gold: 12);
             NPC.LifeMaxNERB(41000, 49200, 500000);
             NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
@@ -179,16 +186,15 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables for buffing the AI
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool phase2 = lifeRatio < 0.5f && revenge;
             bool phase3 = lifeRatio < 0.33f;
 
             // Enrage
-            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !bossRush)
+            if ((!player.ZoneUnderworldHeight || !player.Calamity().ZoneCalamity) && !BossRushEvent.BossRushActive)
             {
                 if (calamityGlobalNPC.newAI[3] > 0f)
                     calamityGlobalNPC.newAI[3] -= 1f;
@@ -196,17 +202,17 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             else
                 calamityGlobalNPC.newAI[3] = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f || bossRush;
+            bool biomeEnraged = calamityGlobalNPC.newAI[3] <= 0f;
 
-            float enrageScale = bossRush ? 0.5f : 0f;
-            if (biomeEnraged && (!player.ZoneUnderworldHeight || bossRush))
+            float enrageScale = 0f;
+            if (biomeEnraged && !player.ZoneUnderworldHeight)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 0.5f;
             }
-            if (biomeEnraged && (!player.Calamity().ZoneCalamity || bossRush))
+            if (biomeEnraged && !player.Calamity().ZoneCalamity)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
@@ -297,9 +303,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
             if (NPC.ai[0] == -1f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int phase;
@@ -328,15 +331,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Pick a location to teleport to
             else if (NPC.ai[0] == 0f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
-
                 NPC.chaseable = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     NPC.localAI[1] += 1f;
 
-                    if (NPC.localAI[1] >= (bossRush ? 90f : death ? 120f : 180f))
+                    if (NPC.localAI[1] >= (death ? 120f : 180f))
                     {
                         NPC.TargetClosest();
                         NPC.localAI[1] = 0f;
@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Teleport to location
             else if (NPC.ai[0] == 1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage for some time while fading away
                 NPC.damage = 0;
 
                 NPC.chaseable = true;
@@ -390,7 +390,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].fadeIn = 1f;
                 }
-                NPC.alpha += bossRush ? 8 : death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
+                NPC.alpha += death ? 5 : revenge ? 4 : expertMode ? 3 : 2;
                 if (NPC.alpha >= 255)
                 {
                     int spawnType = currentMode == 3 ? NPCID.AngryNimbus : ModContent.NPCType<Brimling>();
@@ -416,16 +416,13 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Either teleport again or go to next AI state
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 if (NPC.alpha >= 255)
                 {
                     if (Main.zenithWorld)
                     {
                         SoundEngine.PlaySound(SoundID.Item68, NPC.Center);
                         int type = ModContent.ProjectileType<BrimstoneRay>();
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = RayDamage;
                         Vector2 pos = NPC.Center;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
@@ -458,10 +455,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 NPC.alpha -= 50;
                 if (NPC.alpha <= 0)
                 {
+                    // Restore contact damage once returned to proper opacity
+                    NPC.damage = NPC.defDamage;
                     NPC.chaseable = true;
                     NPC.ai[3] += 1f;
                     NPC.alpha = 0;
-                    if (NPC.ai[3] >= 2f || phase2 || CalamityWorld.LegendaryMode)
+                    if (NPC.ai[3] >= 2f || phase2 || Main.getGoodWorld)
                     {
                         NPC.ai[0] = -1f;
                         NPC.ai[1] = 0f;
@@ -479,9 +478,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Float above target and fire projectiles
             else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.chaseable = true;
                 NPC.rotation = NPC.velocity.X * 0.04f;
 
@@ -498,7 +494,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     float velocity = (death ? 7f : revenge ? 6f : 5f) + (2f * enrageScale) + (expertMode ? 3f * (1f - lifeRatio) : 0f);
                     int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellfireballDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<FrostMist>();
@@ -514,15 +510,13 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 5f, projectileVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         Main.projectile[proj].timeLeft = 240;
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
 
                     if (NPC.ai[1] % divisor2 == divisor2 - 1f)
                     {
                         velocity = (death ? 5f : 4f) + 2f * enrageScale;
                         type = ModContent.ProjectileType<BrimstoneBarrage>();
-                        damage = NPC.GetProjectileDamage(type);
+                        damage = DartDamage;
                         if (currentMode == 4)
                         {
                             type = ModContent.ProjectileType<WaterSpear>();
@@ -535,7 +529,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
                         int spread = death ? 90 : 45;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             numProj *= 3;
                             spread *= 2;
@@ -548,9 +542,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj2 = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                                    Main.projectile[proj2].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -570,14 +562,11 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Cocoon bullet hell
             else if (NPC.ai[0] == 4f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.defense = NPC.defDefense * 4;
 
                 NPC.chaseable = false;
                 NPC.localAI[0] += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     NPC.localAI[0] += 2f;
                 if (expertMode)
                     NPC.localAI[0] += 1f - lifeRatio;
@@ -604,7 +593,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     int totalProjectiles = 6;
                     float offsetAngle = MathHelper.Pi * radialOffset;
                     int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = HellblastDamage;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -615,15 +604,13 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
                             Main.projectile[proj].timeLeft = 300;
                             Main.projectile[proj].tileCollide = false;
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                                Main.projectile[proj].extraUpdates += 1;
                         }
                     }
 
                     totalProjectiles = 12;
                     float radians2 = MathHelper.TwoPi / totalProjectiles;
                     type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    damage = NPC.GetProjectileDamage(type);
+                    damage = DartDamage;
                     if (currentMode == 4)
                     {
                         type = ModContent.ProjectileType<SirenSong>();
@@ -644,9 +631,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                                Main.projectile[proj].extraUpdates += 1;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                         }
 
                         if (death)
@@ -655,9 +640,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                                    Main.projectile[proj].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -687,16 +670,13 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             // Laser beam attack
             else if (NPC.ai[0] == 5f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.chaseable = true;
 
                 NPC.defense = NPC.defDefense * 2;
 
                 Vector2 source = new Vector2(NPC.Center.X + (NPC.spriteDirection > 0 ? 34f : -34f), NPC.Center.Y - 74f);
                 Vector2 aimAt = player.Center + player.velocity * 20f;
-                float aimResponsiveness = bossRush ? 0.05f : (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
+                float aimResponsiveness = (NPC.ai[2] == 1f || death) ? 0.1f : 0.25f;
 
                 Vector2 aimVector = (aimAt - source).SafeNormalize(Vector2.UnitY);
                 if (aimVector.HasNaNs())
@@ -745,10 +725,10 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             Vector2 laserVelocity2 = new Vector2(NPC.localAI[0], NPC.localAI[1]);
                             laserVelocity2 = laserVelocity2.SafeNormalize(Vector2.UnitY);
                             int type = ModContent.ProjectileType<BrimstoneRay>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = RayDamage;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -789,7 +769,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -811,7 +791,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, NPC.localAI[0], NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
-                                if (CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, -NPC.localAI[0], -NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
 
                                 if (Main.zenithWorld)
@@ -834,7 +814,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 360);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
         public override void FindFrame(int frameHeight) // 9 total frames
@@ -886,14 +866,14 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             }
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<BrimstoneWaifuBag>()));
+            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<BrimstoneElementalBag>()));
 
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
@@ -920,7 +900,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
 
                 // Vanity
-                normalOnly.Add(ModContent.ItemType<BrimstoneWaifuMask>(), 7);
+                normalOnly.Add(ModContent.ItemType<BrimstoneElementalMask>(), 7);
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
             }
@@ -955,7 +935,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

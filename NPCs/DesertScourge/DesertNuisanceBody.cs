@@ -39,17 +39,17 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 12; // 24
             NPC.width = 88;
             NPC.height = 88;
 
             NPC.defense = 5;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.defense += 27;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax = 4800;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -70,9 +70,8 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.ai[3] > 0f)
             {
@@ -167,28 +166,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
             NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * segmentOffset;
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
-
-            // Calculate contact damage based on velocity
-            float maxChaseSpeed = Main.zenithWorld ? DesertNuisanceHead.SegmentVelocity_ZenithSeed :
-                CalamityWorld.LegendaryMode ? DesertNuisanceHead.SegmentVelocity_GoodWorld :
-                death ? DesertNuisanceHead.SegmentVelocity_Death :
-                DesertNuisanceHead.SegmentVelocity_Expert;
-            maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (death)
-                maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool CheckActive() => false;

@@ -7,6 +7,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
@@ -37,7 +38,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 1f;
             Item.UseSound = Throw3Sound;
             Item.autoReuse = true;
-            Item.value = Item.sellPrice(0, 0, 0, 5);
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.shoot = ModContent.ProjectileType<WulfrumKnifeProj>();
             Item.shootSpeed = 4f;
@@ -50,12 +51,27 @@ namespace CalamityMod.Items.Weapons.Rogue
             stealthStrikeStarted = false;
 
             Item.UseSound = Throw3Sound;
-
-            if (Item.stack == 2)
-                Item.UseSound = Throw2Sound;
-            if (Item.stack == 1)
-                Item.UseSound = Throw1Sound;
         }
+
+        public override void HoldItem(Player player)
+        {
+            if (player.controlUseTile && !player.mouseInterface && !player.ItemAnimationActive)
+            {
+                if (Main.rand.NextBool(7))
+                {
+                    Particle streak = new ManaDrainStreak(player, Main.rand.NextFloat(0.2f, 0.5f), Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(170f, 670f), Main.rand.NextFloat(30f, 44f), Color.GreenYellow, Color.DeepSkyBlue, Main.rand.Next(15, 30));
+                    GeneralParticleHandler.SpawnParticle(streak);
+                }
+                foreach (var item in Main.ActiveProjectiles)
+                {
+                    if (item.type == ModContent.ProjectileType<WulfrumKnifeProj>() && item.owner == player.whoAmI && item.ai[0] > 0)
+                    {
+                        item.ai[0] = -1;
+                    }
+                }
+            }
+        }
+        public override bool AltFunctionUse(Player player) => false;
 
         public override float StealthDamageMultiplier => 1.5f;
         public override bool AdditionalStealthCheck() => stealthStrikeStarted;
@@ -71,6 +87,17 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            if (player.altFunctionUse == 2)
+            {
+                foreach (var item in Main.ActiveProjectiles)
+                {
+                    if (item.type == ModContent.ProjectileType<WulfrumKnifeProj>() && item.owner == player.whoAmI && item.ai[0] > 0)
+                    {
+                        item.ai[0] = -1;
+                    }
+                }
+                return false;
+            }
             if (player.Calamity().StealthStrikeAvailable() || stealthStrikeStarted)
             {
                 stealthStrikeStarted = true;

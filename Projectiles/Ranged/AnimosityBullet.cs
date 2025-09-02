@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = Main.zenithWorld ? 3 : 1;
             Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
         public override void AI()
         {

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,22 +12,18 @@ namespace CalamityMod.Items.Weapons.Summon
     public class SandSharknadoStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        #region Other stats for easy modification
-
         public const float ProjSpeed = 30f;
-
         public const float FireSpeed = 50f; // In frames. 60 frames = 1 second.
-
-        #endregion
 
         public override void SetDefaults()
         {
             Item.width = 48;
             Item.height = 56;
-            Item.damage = 94;
+            Item.damage = 71;
             Item.knockBack = 2f;
             Item.mana = 10;
 
+            Item.buffType = ModContent.BuffType<Sandnado>();
             Item.shoot = ModContent.ProjectileType<SandnadoMinion>();
             Item.useAnimation = Item.useTime = 20;
             Item.DamageType = DamageClass.Summon;
@@ -40,12 +37,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                int sandnado = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(sandnado))
-                    Main.projectile[sandnado].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

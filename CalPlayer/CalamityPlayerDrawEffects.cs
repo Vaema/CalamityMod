@@ -8,6 +8,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,7 +36,14 @@ namespace CalamityMod.CalPlayer
                 PlayerDrawLayers.Shoes.Hide();
             }
 
-            if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
+            if (drawInfo.drawPlayer.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
+            {
+                foreach (var layer in PlayerDrawLayerLoader.Layers)
+                {
+                    layer.Hide();
+                }
+            }
+            else if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
             {
                 foreach (var layer in PlayerDrawLayerLoader.Layers)
                 {
@@ -110,6 +118,24 @@ namespace CalamityMod.CalPlayer
             else // This is such a stupid way to reset this but you can't just put it in ResetEffects
             {
                 calamityPlayer.trippyLevel = 1;
+
+                // Mana Burn VFX disabled when hih
+                if (Player.statMana < 0)
+                {
+                    float compactness = Player.width * 0.6f;
+                    if (compactness < 10f)
+                        compactness = 10f;
+                    float power = Player.height / 100f;
+                    if (power > 2.75f)
+                        power = 2.75f;
+                    var color = Color.Blue;
+                    if (ManaBurnFireDrawer is null || ManaBurnFireDrawer.LocalTimer >= ManaBurnFireDrawer.SetLifetime)
+                        ManaBurnFireDrawer = new FireParticleSet(60 - (Player.statMana / 4), 1, color * 1.25f, color, compactness, power);
+                    else
+                        ManaBurnFireDrawer.DrawSet(Player.Bottom - Vector2.UnitY * (12f - Player.gfxOffY));
+                }
+                else
+                    ManaBurnFireDrawer = null;
             }
 
             // TODO -- rogue stealth visuals are an utter catastrophe and should be fully destroyed on next stealth rework
@@ -199,10 +225,10 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.auricRebuke && drawInfo.shadow == 0f)
                 AuricRebuke.DrawEffects(drawInfo);
 
-            if (calamityPlayer.bBlood && drawInfo.shadow == 0f)
+            if (calamityPlayer.burningBlood && drawInfo.shadow == 0f)
                 BurningBlood.DrawEffects(drawInfo);
 
-            if (calamityPlayer.bFlames && drawInfo.shadow == 0f)
+            if (calamityPlayer.brimstoneFlames && drawInfo.shadow == 0f)
             {
                 bool resistsBrimstoneFlames = abaddon; // Looks weaker if you have Abaddon equipped
                 BrimstoneFlames.DrawEffects(drawInfo, resistsBrimstoneFlames);
@@ -211,12 +237,11 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.brainRot && drawInfo.shadow == 0f)
                 BrainRot.DrawEffects(drawInfo);
 
-            if (calamityPlayer.cDepth && drawInfo.shadow == 0f)
+            if (calamityPlayer.crushDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
-            // Daybroken's visual effects are reduced if the player resists it
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
-                Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
+                Daybroken.DrawEffects(drawInfo);
 
             if (calamityPlayer.demonicFlames && drawInfo.shadow == 0f)
                 DemonicFlames.DrawEffects(drawInfo);
@@ -230,17 +255,17 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.eutrophication && drawInfo.shadow == 0f)
                 Eutrophication.DrawEffects(drawInfo);
 
-            if (calamityPlayer.gsInferno && drawInfo.shadow == 0f)
+            if (calamityPlayer.godSlayerInferno && drawInfo.shadow == 0f)
                 GodSlayerInferno.DrawEffects(drawInfo);
 
             if (calamityPlayer.heavybleeding && drawInfo.shadow == 0f)
                 HeavyBleeding.DrawEffects(drawInfo);
 
             // Holy Flames, Holy Inferno and Banishing Fire share the same visual effects
-            if (drawInfo.shadow == 0f && (calamityPlayer.hFlames || calamityPlayer.hInferno || calamityPlayer.banishingFire))
+            if (drawInfo.shadow == 0f && (calamityPlayer.holyFlames || calamityPlayer.holyInferno || calamityPlayer.banishingFire))
                 HolyFlames.DrawEffects(drawInfo);
 
-            if (calamityPlayer.hPressure && drawInfo.shadow == 0f)
+            if (calamityPlayer.hadopelagicPressure && drawInfo.shadow == 0f)
                 HadopelagicPressure.DrawEffects(drawInfo);
 
             // Icarus' Folly has visual effects but they are mutually exclusive with all Holy Flames variations to prevent visual clutter
@@ -257,13 +282,13 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.mushy && drawInfo.shadow == 0f)
                 Mushy.DrawEffects(drawInfo);
 
-            if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
-                Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
+            if (calamityPlayer.nightwither && drawInfo.shadow == 0f)
+                Nightwither.DrawEffects(drawInfo);
 
-            if (calamityPlayer.pFlames && drawInfo.shadow == 0f)
+            if (calamityPlayer.plague && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);
 
-            if (calamityPlayer.rTide && drawInfo.shadow == 0f)
+            if (calamityPlayer.riptide && drawInfo.shadow == 0f)
                 RiptideDebuff.DrawEffects(drawInfo);
 
             if (calamityPlayer.shadowflame && drawInfo.shadow == 0f)
@@ -319,7 +344,7 @@ namespace CalamityMod.CalPlayer
                     GeneralParticleHandler.SpawnParticle(Plus);
                 }
             }
-            if (calamityPlayer.bloomStoneDR > 0 && drawInfo.shadow == 0f)
+            if (calamityPlayer.bloomStoneBuffedHealRateTimer > 0 && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(10))
                 {
@@ -441,52 +466,6 @@ namespace CalamityMod.CalPlayer
 
             Player drawPlayer = drawInfo.drawPlayer;
             Item item = drawPlayer.ActiveItem();
-
-            // Vanity accessory effects, allows them to draw while the game is paused
-            if (drawPlayer.Calamity().ghostBracelet)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "GhostBracelet", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "Popo", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, snowmanNoseless ? "PopoNoseless" : "Popo", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if (drawPlayer.Calamity().punchCard)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "PunchCard", EquipType.Head);
-            }
-            else if ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AbyssalDivingSuit", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            else if ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide)
-            {
-                drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Legs);
-                drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Body);
-                drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "AquaticHeart", EquipType.Head);
-                drawPlayer.face = -1;
-            }
-            // Need to set all of these so that certain vanity pieces like Capricorn Tail don't screw it up
-            if (drawPlayer.Calamity().ghostBracelet || ((drawPlayer.Calamity().snowmanPower || drawPlayer.Calamity().snowmanForce) && !drawPlayer.Calamity().snowmanHide) ||
-                drawPlayer.Calamity().punchCard || ((drawPlayer.Calamity().abyssalDivingSuitPower || drawPlayer.Calamity().abyssalDivingSuitForce) && !drawPlayer.Calamity().abyssalDivingSuitHide) ||
-                ((drawPlayer.Calamity().aquaticHeartPower || drawPlayer.Calamity().aquaticHeartForce) && !drawPlayer.Calamity().aquaticHeartHide))
-            {
-                drawInfo.legsGlowMask = -1;
-                drawInfo.legsOffset = Vector2.Zero;
-                drawInfo.bodyGlowMask = -1;
-                drawInfo.headGlowMask = -1;
-                drawInfo.helmetOffset = Vector2.Zero;
-            }
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&

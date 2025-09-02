@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<OpalStrikerHoldout>();
             Item.shootSpeed = 12f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

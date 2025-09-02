@@ -44,7 +44,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             // Minion targeting feature is not active here since this isn't a normal summon weapon
         }
@@ -317,6 +316,6 @@ namespace CalamityMod.Projectiles.Summon
             float _ = float.NaN;
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center, tipPosition, 30 * Projectile.scale, ref _);
         }
-        public override bool MinionContactDamage() => isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0;
+        public override bool? CanDamage() => isAttacking && attackTimer > bladeValue && Projectile.ai[0] != 0;
     }
 }

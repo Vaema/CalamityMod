@@ -87,11 +87,20 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            if (Projectile.Calamity().lineColor == 1)
-                tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor2").Value;
-            if (Projectile.Calamity().lineColor == 2)
-                tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor3").Value;
+            Texture2D tex;
+            switch (Projectile.ai[1])
+            {
+                case 0:
+                default:
+                    tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+                    break;
+                case 1:
+                    tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor2").Value;
+                    break;
+                case 2:
+                    tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/CometQuasherMeteor3").Value;
+                    break;
+            }
 
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.White, 1, tex);
             return false;

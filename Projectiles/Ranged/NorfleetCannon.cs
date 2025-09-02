@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         private void ShootRocket(Item item)
         {
-            if (hasFired == false)
+            if (!hasFired)
             {
                 // We use the velocity of this projectile as its direction vector.
                 Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
@@ -194,7 +194,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int i = 0; i < 3; i++)
                 {
-                    Vector2 firingVelocity = shootDirection.RotatedByRandom((0.2f * i) + 0.02f) * 5f * Main.rand.NextFloat(0.7f, 1.3f);
+                    Vector2 firingVelocity = shootDirection.RotatedByRandom((0.1f * i) + 0.02f) * 5f * Main.rand.NextFloat(0.8f, 1.2f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition, firingVelocity, ModContent.ProjectileType<NorfleetComet>(), Projectile.damage / 3, Projectile.knockBack, Projectile.owner, 0, i, PUNISHMENTMODE ? 1 : 0);
                 }
 

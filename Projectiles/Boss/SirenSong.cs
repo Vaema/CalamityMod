@@ -78,13 +78,5 @@ namespace CalamityMod.Projectiles.Boss
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.Dazed, 120);
-        }
     }
 }

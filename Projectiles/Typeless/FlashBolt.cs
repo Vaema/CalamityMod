@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Typeless
                 setAltPlace = true;
             }
 
-            if (simplify || Projectile.ai[0] == -1 || !Owner.Calamity().arcFlashRingVisual)
+            if (simplify || !Owner.Calamity().arcFlashRingVisual)
                 return false;
 
             Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;

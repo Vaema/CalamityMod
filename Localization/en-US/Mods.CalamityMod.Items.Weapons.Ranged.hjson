@@ -559,7 +559,7 @@ HalleysInferno: {
 		Press <right> to zoom out
 		Uses gel for ammo
 		50% chance to save ammo
-		'Halley came sooner than expected'
+		'Halley arrived sooner than expected'
 		'''
 }
 
@@ -673,6 +673,17 @@ LunarianBow: {
 		'''
 		Fires two arrows at once
 		Converts wooden arrows into sliding energy bolts
+		'''
+}
+
+M1Garand: {
+	DisplayName: M1 Garand
+	Tooltip:
+		'''
+		Shots fired only inherit the damage of the bullet used
+		Fires 8 bullets before ejecting the rifle's cartridge
+		Bullets which ricochet off coins can ricochet off cartridges too
+		'Mind your thumb'
 		'''
 }
 

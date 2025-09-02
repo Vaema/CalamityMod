@@ -60,10 +60,9 @@ namespace CalamityMod.Projectiles.Rogue
         {
             Projectile.ExpandHitboxBy(128);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            int spikeAmt = Main.rand.Next(3, 4+1);
             if (Projectile.owner == Main.myPlayer)
             {
-                for (int s = 0; s < spikeAmt; s++)
+                for (int s = 0; s < 3; s++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonBombSpike>(), Projectile.damage, 0f, Projectile.owner);
@@ -72,7 +71,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int c = 0; c < cloudAmt; c++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 10f, 200f, 0.01f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonCloud>(), (int)(Projectile.damage * 0.75), 0f, Projectile.owner, 0f, Projectile.Calamity().stealthStrike ? 1f : 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<BallisticPoisonCloud>(), (int)(Projectile.damage * 0.6f), 0f, Projectile.owner, 0f, Projectile.Calamity().stealthStrike ? 1f : 0f);
                 }
             }
             for (int d = 0; d < 5; d++)
@@ -99,42 +98,13 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 goreSource = Projectile.Center;
                 int goreAmt = 3;
                 Vector2 source = new Vector2(goreSource.X - 24f, goreSource.Y - 24f);
-                for (int goreIndex = 0; goreIndex < goreAmt; goreIndex++)
+                for (int goreIndex = 1; goreIndex <= goreAmt; goreIndex++)
                 {
-                    float velocityMult = 0.33f;
-                    if (goreIndex < (goreAmt / 3))
-                    {
-                        velocityMult = 0.66f;
-                    }
-                    if (goreIndex >= (2 * goreAmt / 3))
-                    {
-                        velocityMult = 1f;
-                    }
-                    Mod mod = ModContent.GetInstance<CalamityMod>();
+                    float velocityMult = 0.33f * goreIndex;
                     int type = Main.rand.Next(61, 64);
-                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
+                    int smoke = Gore.NewGore(Projectile.GetSource_Death(), source, Main.rand.NextVector2CircularEdge(2f, 2f), type, 1f);
                     Gore gore = Main.gore[smoke];
                     gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y += 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X += 1f;
-                    gore.velocity.Y -= 1f;
-                    type = Main.rand.Next(61, 64);
-                    smoke = Gore.NewGore(Projectile.GetSource_Death(), source, default, type, 1f);
-                    gore = Main.gore[smoke];
-                    gore.velocity *= velocityMult;
-                    gore.velocity.X -= 1f;
-                    gore.velocity.Y -= 1f;
                 }
             }
         }
@@ -144,7 +114,6 @@ namespace CalamityMod.Projectiles.Rogue
             target.AddBuff(BuffID.Venom, 180);
             Projectile.Kill();
         }
-
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Venom, 180);

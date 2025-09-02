@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Summon
                 //If farther than 200 pixels, move toward it
                 if (targetDist > 200f)
                 {
-                    float speedMult = (targetDist > 400f) ? 12f : (targetDist > 250) ? 6f : 3f;
+                    float speedMult = (targetDist > 400f) ? 16f : (targetDist > 250) ? 9f : 5f;
                     vecToTarget *= speedMult;
                     Projectile.velocity = (Projectile.velocity * 40f + vecToTarget) / 41f;
                 }
@@ -243,7 +243,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.ai[1] += Main.rand.Next(1, 4);
             }
             //Set the minion to be ready for attack
-            if (Projectile.ai[1] > 90f)
+            if (Projectile.ai[1] > 100f)
             {
                 Projectile.ai[1] = 0f;
                 Projectile.netUpdate = true;
@@ -265,25 +265,23 @@ namespace CalamityMod.Projectiles.Summon
                 //Increment the attack counter
                 Projectile.ai[1]++;
 
-                int projType = ModContent.ProjectileType<GastricBelcherVomit>();
-
                 //Calculate the general velocity
                 Vector2 velocity = targetVec - Projectile.Center;
                 velocity.Normalize();
 
                 //Add some inaccuracy for the vomit projectiles
-                float vomitSpeedMult = 16f;
+                float vomitSpeedMult = 20f;
                 Vector2 vomitVel = velocity * vomitSpeedMult;
                 vomitVel.Y += Main.rand.NextFloat(-30f, 30f) * 0.05f;
                 vomitVel.X += Main.rand.NextFloat(-30f, 30f) * 0.05f;
 
                 //Fire the vomit projectile
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vomitVel, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, vomitVel, ModContent.ProjectileType<GastricBelcherVomit>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Main.rand.Next(3), 0f);
 
-                //Fire 5 bubbles for every three attacks
+                //Fire 3 bubbles for every three attacks
                 if (bubbleCounter++ % 3 == 2)
                 {
-                    for (int projCount = 0; projCount < 5; projCount++)
+                    for (int projCount = 0; projCount < 3; projCount++)
                     {
                         //Add a shotgun spread to the bubbles
                         float bubbleSpeedMult = 14f;

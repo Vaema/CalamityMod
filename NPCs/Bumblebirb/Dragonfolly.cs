@@ -60,13 +60,17 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override string Texture => "CalamityMod/NPCs/Bumblebirb/Birb";
         public override string BossHeadTexture => "CalamityMod/NPCs/Bumblebirb/Birb_Head_Boss";
 
+        public static float DashDamageMult = 1.5f; // 240
+        public static int FeatherDamage = 36; // 144
+        public static int LightningDamage = 64; // 256
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 80; // 160
             NPC.npcSlots = 32f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 130;
             NPC.height = 100;
             NPC.defense = 40;
@@ -77,7 +81,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
@@ -132,10 +136,9 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Variables
             float rotationMult = 3f;
             float rotationAmt = 0.03f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Adjust slowing debuff immunity
             bool immuneToSlowingDebuffs = NPC.ai[0] == 3f || NPC.ai[0] == 3.1f || NPC.ai[0] == 3.2f;
@@ -148,7 +151,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // If target is outside the jungle for more than 5 seconds, enrage
-            if (!player.ZoneJungle)
+            if (!player.ZoneJungle && !BossRushEvent.BossRushActive)
             {
                 if (NPC.localAI[1] < CalamityGlobalNPC.biomeEnrageTimerMax)
                     NPC.localAI[1] += 1f;
@@ -162,16 +165,16 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             // Enrage scale
             float enrageScale = death ? 1.5f : 1f;
-            if (NPC.localAI[1] >= CalamityGlobalNPC.biomeEnrageTimerMax || bossRush)
+            if (NPC.localAI[1] >= CalamityGlobalNPC.biomeEnrageTimerMax)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 1f;
             }
 
-            if (NPC.localAI[2] > 0f || bossRush)
+            if (NPC.localAI[2] > 0f)
                 enrageScale += 1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 enrageScale += 0.5f;
 
             if (enrageScale > 3f)
@@ -223,10 +226,8 @@ namespace CalamityMod.NPCs.Bumblebirb
             bool phaseSwitchPhase = (phase2 && calamityGlobalNPC.newAI[0] < newPhaseTimer && calamityGlobalNPC.newAI[2] != 1f) ||
                 (phase3 && calamityGlobalNPC.newAI[1] < newPhaseTimer && calamityGlobalNPC.newAI[3] != 1f);
 
-            calamityGlobalNPC.DR = (phaseSwitchPhase || NPC.ai[0] == 5f || (enrageScale == 3f && !bossRush)) ? (bossRush ? 0.99f : 0.55f) : 0.1f;
-            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || (enrageScale == 3f && !bossRush);
-
-            int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
+            calamityGlobalNPC.DR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f ? 0.55f : 0.1f;
+            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f;
 
             if (phaseSwitchPhase)
             {
@@ -265,7 +266,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     Vector2 ai0 = NPC.Center - fireFrom;
                                     float ai = Main.rand.Next(100);
                                     Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.defDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                                 }
                             }
                         }
@@ -307,7 +308,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     Vector2 ai0 = NPC.Center - fireFrom;
                                     float ai = Main.rand.Next(100);
                                     Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.defDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                                 }
                             }
                         }
@@ -335,7 +336,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             }
 
             // Max spawn amount
-            int maxBirbs = (CalamityWorld.LegendaryMode && revenge) ? 12 : revenge ? 3 : 2;
+            int maxBirbs = Main.zenithWorld ? 12 : revenge ? 3 : 2;
 
             // Variable for charging
             float chargeDistance = 600f;
@@ -421,7 +422,6 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                             float featherVelocity = 2f + (enrageScale - 1f);
                             int type = ModContent.ProjectileType<RedLightningFeather>();
-                            int damage = NPC.GetProjectileDamage(type);
 
                             if (follyAttackPicker == 0 && NPC.localAI[3] == 0f)
                             {
@@ -465,19 +465,19 @@ namespace CalamityMod.NPCs.Bumblebirb
                                         bool spawnRight = player.velocity.X > 0f;
                                         for (int i = 0; i < totalProjectiles; i++)
                                         {
-                                            if (CalamityWorld.LegendaryMode)
+                                            if (Main.getGoodWorld)
                                             {
                                                 if (i >= (int)(totalProjectiles * 0.125) && i <= (int)(totalProjectiles * 0.375))
                                                 {
                                                     Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                     Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                                 }
                                                 if (i >= (int)(totalProjectiles * 0.625) && i <= (int)(totalProjectiles * 0.875))
                                                 {
                                                     Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                     Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                                 }
                                             }
                                             else
@@ -488,7 +488,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                                     {
                                                         Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                         Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                                     }
                                                 }
                                                 else
@@ -497,7 +497,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                                     {
                                                         Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                         Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                                     }
                                                 }
                                             }
@@ -532,13 +532,13 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     {
                                         int totalProjectiles = phase2 ? 40 : 48;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             totalProjectiles *= 2;
 
                                         float radians = MathHelper.TwoPi / totalProjectiles;
                                         int distance = phase2 ? 1200 : 1320;
 
-                                        if (CalamityWorld.LegendaryMode)
+                                        if (Main.getGoodWorld)
                                             distance *= 2;
 
                                         bool spawnRight = player.velocity.X > 0f;
@@ -551,7 +551,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                                                 Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                 Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                             }
                                             else
                                             {
@@ -559,7 +559,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                                 {
                                                     Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -featherVelocity).RotatedBy(radians * i)) * distance;
                                                     Vector2 velocity = Vector2.Normalize(player.Center - spawnVector) * featherVelocity;
-                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, FeatherDamage, 0f, Main.myPlayer);
                                                 }
                                             }
                                         }
@@ -617,8 +617,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Fly towards target quickly
             else if (NPC.ai[0] == 2f)
             {
-                // Set reduced damage
-                NPC.damage = reducedSetDamage;
+                NPC.damage = NPC.defDamage;
 
                 if (NPC.target < 0 || !player.active || player.dead)
                 {
@@ -647,7 +646,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                 float velocity = 8f + (enrageScale - 1f) * 2f;
                 float follyQuickFlySpeed = velocity + NPC.ai[2] + follyQuickFlyTargetDirection.Length() / 120f;
-                if (CalamityWorld.LegendaryMode && revenge)
+                if (Main.getGoodWorld)
                     follyQuickFlySpeed *= 2f;
 
                 float follyQuickFlyVelMult = 20f;
@@ -656,7 +655,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.velocity = (NPC.velocity * (follyQuickFlyVelMult - 1f) + follyQuickFlyTargetDirection) / follyQuickFlyVelMult;
 
                 NPC.ai[1] += 1f;
-                if (NPC.ai[1] >= ((CalamityWorld.LegendaryMode && revenge) ? 90f : 180f))
+                if (NPC.ai[1] >= (Main.getGoodWorld ? 90f : 180f))
                 {
                     NPC.TargetClosest();
                     NPC.ai[0] = 0f;
@@ -734,8 +733,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] > 10f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
+                    NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                     NPC.velocity = follyChargePrepareTargetDirection;
 
@@ -755,8 +753,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Charge
             else if (NPC.ai[0] == 3.2f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                 NPC.ai[2] += 0.0333333351f;
                 float velocity = 28f + (enrageScale - 1f) * 4f;
@@ -846,7 +843,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                     Vector2 ai0 = NPC.Center - fireFrom;
                                     float ai = Main.rand.Next(100);
                                     Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                                 }
                             }
                         }
@@ -854,7 +851,7 @@ namespace CalamityMod.NPCs.Bumblebirb
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool gfbSpawnFlag = CalamityWorld.LegendaryMode && revenge && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
+                        bool gfbSpawnFlag = Main.zenithWorld && (NPC.ai[1] == 145f || NPC.ai[1] == 150f || NPC.ai[1] == 160f || NPC.ai[1] == 165f);
                         bool spawnFlag = NPC.CountNPCS(ModContent.NPCType<DraconicSwarmer>()) < maxBirbs && (NPC.ai[1] == 140f || (revenge && NPC.ai[1] == 155f) || NPC.ai[1] == 170f || gfbSpawnFlag);
                         if (spawnFlag)
                         {
@@ -920,7 +917,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                                 Vector2 ai0 = NPC.Center - fireFrom;
                                 float ai = Main.rand.Next(100);
                                 Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                             }
                         }
                     }
@@ -1229,7 +1226,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             return newColor;
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.SuperHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.SuperHealingPotion;
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
@@ -1246,7 +1243,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     ModContent.ItemType<RougeSlash>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
-                normalOnly.Add(ModContent.ItemType<Swordsplosion>(), 10);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EffulgentFeather>(), 1, 25, 30);
@@ -1303,7 +1299,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         Vector2 ai0 = NPC.Center - fireFrom;
                         float ai = Main.rand.Next(100);
                         Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), 75, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                     }
                 }
             }
@@ -1313,7 +1309,6 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void ModifyTypeName(ref string typeName)

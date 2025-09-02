@@ -26,7 +26,6 @@ namespace CalamityMod.Buffs.StatBuffs
                         player.maxFallSpeed = 9f;
                     player.gills = true;
                 }
-                modPlayer.abyssalDivingSuitPower = true;
                 modPlayer.depthCharm = true;
                 modPlayer.jellyfishNecklace = true;
                 modPlayer.anechoicPlating = true;

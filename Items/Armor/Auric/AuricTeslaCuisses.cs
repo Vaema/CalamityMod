@@ -8,6 +8,7 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Auric
@@ -16,22 +17,29 @@ namespace CalamityMod.Items.Armor.Auric
     public class AuricTeslaCuisses : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float DamageBoost = 0.12f;
+        public static int CritBoost = 10;
+        public static float MoveSpeedBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 44;
+            Item.defense = 42;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.moveSpeed += 0.1f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            player.moveSpeed += MoveSpeedBoost;
             player.carpet = true;
-            player.GetDamage<GenericDamageClass>() += 0.12f;
-            player.GetCritChance<GenericDamageClass>() += 5;
         }
+
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             //This just runs the ModifyTooltips for whatever helmet is equipped if a full auric set is equipped; but runs it on this item's tooltips.

@@ -19,7 +19,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 180;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Electrified, 60);

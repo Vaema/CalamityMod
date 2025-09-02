@@ -1,4 +1,7 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Green;
             Item.UseSound = SoundID.Item44 with { Pitch = 0.5f };
             Item.autoReuse = true;
-            Item.shootSpeed = 5;
+            Item.buffType = ModContent.BuffType<BrittleStar>();
             Item.shoot = ModContent.ProjectileType<BrittleStarMinion>();
             Item.DamageType = DamageClass.Summon;
         }
@@ -36,18 +39,16 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ScourgeoftheDesert>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse != 2)
             {
                 Item.noUseGraphic = false;
-                position = player.ClampedMouseWorld();
-                velocity = Vector2.Zero;
                 int SummonNumber = player.ownedProjectileCounts[type];
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0, 0, SummonNumber);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, SummonNumber);
+                minion.originalDamage = Item.damage;
             }
             if (player.altFunctionUse == 2)
             {

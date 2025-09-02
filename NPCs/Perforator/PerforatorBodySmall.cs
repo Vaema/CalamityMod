@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 12; // 24
             NPC.width = 42;
             NPC.height = 42;
             NPC.defense = 4;
@@ -55,9 +55,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -136,22 +134,6 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.spriteDirection = 1;
                 else if (targetX > 0f)
                     NPC.spriteDirection = -1;
-            }
-
-            // Calculate contact damage based on velocity
-            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
-            float maxChaseSpeed = 16f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.4f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.8f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
             }
 
             if (Main.npc[(int)NPC.ai[1]].alpha >= 85)

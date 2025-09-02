@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,14 +14,17 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Deathwind : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeathhailStaff>();
+        }
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 154;
+            Item.damage = 125;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 14;
-            Item.useAnimation = 14;
+            Item.useTime = Item.useAnimation = 14;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -30,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<DWArrow>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
@@ -46,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 float SpeedY = velocity.Y + Main.rand.Next(-20, 21) * 0.05f;
                 if (CalamityUtils.CheckWoodenAmmo(type, player))
                 {
-                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 2), knockback, player.whoAmI);
+                    Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<DWArrow>(), (int)(damage * 1.5f), knockback, player.whoAmI);
                 }
                 else
                 {

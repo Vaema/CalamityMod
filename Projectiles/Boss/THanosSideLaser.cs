@@ -94,8 +94,8 @@ namespace CalamityMod.Projectiles.Boss
                 // If a velocity is in reserve, set the true velocity to it and make it as "taken" by setting it to <0,0>
                 if (Velocity != Vector2.Zero)
                 {
-                    Projectile.extraUpdates = CalamityWorld.LegendaryMode ? 4 : 3;
-                    Projectile.velocity = Velocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.extraUpdates = Main.getGoodWorld ? 4 : 3;
+                    Projectile.velocity = Velocity;
                     Velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }

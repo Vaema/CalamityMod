@@ -3,6 +3,7 @@ using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Projectiles.Enemy;
+using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -65,11 +66,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 88;
             NPC.height = 66;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.DeathSound = SoundID.NPCDeath27;
             NPC.knockBackResist = 0.15f;
@@ -119,7 +119,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // TODO
             // Change this to kelp when it's added
-            int tileType = ModContent.TileType<DepthVines>();
+            int tileType = ModContent.TileType<SunkenKelp>();
 
             // Assure the kelp still exists, if it's gone, clear the tile
             if ((TileX != 0 || TileY != 0) && t.TileType != tileType)

@@ -32,10 +32,10 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 18;
-            NPC.lifeMax = 120;
+            NPC.lifeMax = 160;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.7f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
             NPC.noGravity = true;

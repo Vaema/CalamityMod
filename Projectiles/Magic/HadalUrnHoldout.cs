@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
             if (Projectile.ai[0] > 0f)
             {
-                Projectile.ai[0] -= 1f;
+                Projectile.ai[0]--;
             }
             if (Main.myPlayer == Projectile.owner)
             {
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
                                 }
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shotSpeed, projType, projDamage, Projectile.knockBack, player.whoAmI, ai);
                             }
-                            Projectile.ai[0] = 16;
+                            Projectile.ai[0] = player.HeldItem.useTime;
                         }
                         else
                         {

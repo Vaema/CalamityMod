@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
+            target.AddBuff(ModContent.BuffType<MiracleBlight>(), 300);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

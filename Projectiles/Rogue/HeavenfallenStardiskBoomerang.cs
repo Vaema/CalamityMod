@@ -36,8 +36,8 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 20f == 4f) // every 5 frames
-                CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 6, Projectile.knockBack * 0.5f, Projectile.owner);
+            if (Projectile.Calamity().stealthStrike && Projectile.timeLeft % 20f == 4f)
+                CalamityUtils.ProjectileRain(Projectile.GetSource_FromThis(), Projectile.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<HeavenfallenEnergy>(), Projectile.damage / 2, Projectile.knockBack * 0.5f, Projectile.owner);
 
             if (Projectile.alpha > 0)
             {
@@ -136,7 +136,6 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
-
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 240);
 
         public override void OnKill(int timeLeft)

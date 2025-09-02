@@ -25,9 +25,9 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 75; // 150
             NPC.lavaImmune = true;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 40;

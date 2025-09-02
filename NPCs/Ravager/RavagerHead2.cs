@@ -20,10 +20,13 @@ namespace CalamityMod.NPCs.Ravager
             NPCID.Sets.NeedsExpertScaling[Type] = true;
         }
 
+        public static int HomingDartDamage = 30; // 120
+        public static int PostProviDartBuff = 20; // +80 == 200
+
         public override void SetDefaults()
         {
             NPC.aiStyle = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 40;
@@ -61,9 +64,8 @@ namespace CalamityMod.NPCs.Ravager
 
             Player player = Main.player[Main.npc[CalamityGlobalNPC.scavenger].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool provy = DownedBossSystem.downedProvidence && !bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool provy = DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive;
 
             if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
@@ -103,11 +105,10 @@ namespace CalamityMod.NPCs.Ravager
                 NPC.rotation = headRotation;
 
             NPC.ai[1] += 1f;
-            bool fireProjectiles = NPC.ai[1] >= (bossRush ? 240f : 480f);
+            bool fireProjectiles = NPC.ai[1] >= 480f;
             if (fireProjectiles && Vector2.Distance(NPC.Center, player.Center) > 80f)
             {
                 int type = ModContent.ProjectileType<HomingLaserDart>();
-                int damage = NPC.GetProjectileDamage(type);
                 float projectileVelocity = death ? 8f : 6f;
 
                 if (NPC.ai[1] >= 600f)
@@ -119,8 +120,7 @@ namespace CalamityMod.NPCs.Ravager
                     {
                         SoundEngine.PlaySound(RavagerHead.MissileSound, NPC.Center);
                         type = ModContent.ProjectileType<RavagerNuke>();
-                        damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity * 0.25f, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.scavenger].target, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity * 0.25f, type, RavagerHead.NukeDamage + (provy ? RavagerHead.PostProviNukeBuff : 0), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.scavenger].target, 0f);
                     }
                 }
                 else
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.Ravager
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, -1f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity, type, HomingDartDamage + (provy ? PostProviDartBuff : 0), 0f, Main.myPlayer, 0f, -1f);
                         }
                     }
                 }

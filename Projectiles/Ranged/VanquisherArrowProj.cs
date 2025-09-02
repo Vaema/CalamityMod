@@ -46,7 +46,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 2;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 7;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
         }
@@ -119,9 +118,9 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // First hit is 30% damage
+            // First hit is 40% damage
             // Second hit is 100% base damage, it is the "Slash Hit"
-            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.3f : 1f);
+            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.4f : 1f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

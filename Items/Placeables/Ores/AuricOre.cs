@@ -18,13 +18,13 @@ namespace CalamityMod.Items.Placeables.Ores
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Ores.AuricOre>());
-            Item.value = Item.sellPrice(silver: 50);
+            Item.value = Item.sellPrice(silver: 60);
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void AddRecipes()
         {
-            CreateRecipe(30).
+            CreateRecipe(10).
                 AddIngredient<YharonSoulFragment>().
                 AddCondition(Condition.NearShimmer).
                 Register();

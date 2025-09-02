@@ -185,12 +185,7 @@ BladecrestOathsword: {
 
 BlightedCleaver: {
 	DisplayName: Blighted Cleaver
-	Tooltip:
-		'''
-		Fires homing blazing blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
-		'''
+	Tooltip: Fires homing blazing blades
 }
 
 Bonebreaker: {
@@ -334,12 +329,7 @@ DeathsAscension: {
 
 DefiledGreatsword: {
 	DisplayName: Defiled Greatsword
-	Tooltip:
-		'''
-		Fires blazing, hyper, and sunlight blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
-		'''
+	Tooltip: Fires blazing, hyper, and sunlight blades
 }
 
 DepthCrusher: {
@@ -498,11 +488,7 @@ ExaltedOathblade: {
 
 Excelsus: {
 	DisplayName: Excelsus
-	Tooltip:
-		'''
-		Fires a spread of spinning blades
-		Summons laser fountains on hit
-		'''
+	Tooltip: Fires a spread of spinning blades
 }
 
 Exoblade: {
@@ -654,7 +640,14 @@ GeliticBlade: {
 
 GildedProboscis: {
 	DisplayName: Gilded Proboscis
-	Tooltip: Heals the player on hit
+	Tooltip:
+		'''
+		Steals life proportional to the damage dealt to foes
+		<left> to charge up a precise thrust
+		The thrust begins weak, but becomes more powerful the longer it's held
+		<right> to dash forward with a mighty upstrike
+		The distance you dash depends on if you are moving with or against the dash
+		'''
 }
 
 GoldplumeSpear: {

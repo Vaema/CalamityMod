@@ -34,7 +34,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 10; // 20
             NPC.width = 40;
             NPC.height = 34;
             NPC.defense = 8;
@@ -55,9 +55,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
@@ -139,22 +137,6 @@ namespace CalamityMod.NPCs.Perforator
                     NPC.spriteDirection = -1;
             }
 
-            // Calculate contact damage based on velocity
-            // This worm requires more velocity to deal damage with the body because it doesn't have spikes or metal bits or etc.
-            float maxChaseSpeed = 16f;
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.4f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.8f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
-
             if (Main.npc[(int)NPC.ai[1]].alpha >= 85)
             {
                 if (NPC.alpha > 0 && NPC.life > 0)
@@ -231,7 +213,7 @@ namespace CalamityMod.NPCs.Perforator
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<BurningBlood>(), 60, true);
+                target.AddBuff(ModContent.BuffType<BurningBlood>(), 120, true);
         }
     }
 }
