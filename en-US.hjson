@@ -1,0 +1,10 @@
+Mods: {
+	CalamityMod: {
+		Items: {
+			TableCoralLeft: {
+				Tooltip: ""
+				DisplayName: Table Coral Left
+			}
+		}
+	}
+}

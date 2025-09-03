@@ -3949,8 +3949,8 @@ PolypSand: {
 }
 
 TableCoralLeft: {
-    DisplayName: Table Coral
-    Tooltip: ""
+	DisplayName: Table Coral
+	Tooltip: ""
 }
 
 VolcanicSand: {
