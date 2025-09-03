@@ -101,6 +101,39 @@ namespace CalamityMod.CalPlayer
                 
             }
 
+            //Charge animation for Thread of Eradication
+            if (Player.HeldItem.type == ModContent.ItemType<Deathwind>() && !Player.ItemTimeIsZero && drawInfo.shadow == 0f)
+            {
+                var color = Color.Fuchsia;
+                float scale = (1 - (Player.itemTime - 7) / 50f) * 0.2f;
+                if (Player.itemTime < 7)
+                {
+                    scale = ((Player.itemTime) / 7f) * 0.2f;
+                }
+                if (Player.itemTime > 60)
+                {
+                    scale = (1 - (Player.itemTime - 70) / 110f) * 0.5f;
+                    if (Player.itemTime < 70)
+                    {
+                        scale = ((Player.itemTime - 60) / 10f) * 0.5f;
+                    }
+                    color = Color.Cyan;
+                }
+
+                if (CalamityClientConfig.Instance.Photosensitivity)
+                    color = color * 0.2f;
+                var bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                var circleTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                {
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                });
+                for (var i = 0; i < 5; i++)
+                Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i+1)/5f) * ( CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale* 2.2f * (0.5f + 0.5f * (1- (i)/5f)), SpriteEffects.None, 0);
+                //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
+            }
+
             // Dust modifications while high.
             if (calamityPlayer.trippy)
             {

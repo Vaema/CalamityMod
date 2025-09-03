@@ -163,6 +163,9 @@ namespace CalamityMod.Projectiles.Typeless
             else
             {
                 opacity = 1f;
+
+                if (CalamityClientConfig.Instance.Photosensitivity)
+                    opacity = 0.2f;
                 for (int t = 0; t < (!doneAttack ? 1 : 5); t++)
                 {
                     bool notFirstDrawn = (t > (Projectile.scale > 3 ? 1 : 0));

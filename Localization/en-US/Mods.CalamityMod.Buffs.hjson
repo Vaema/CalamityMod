@@ -1349,8 +1349,8 @@ MagicHatBuff: {
 }
 
 Mechworm: {
-	DisplayName: Mechworm
-	Description: The mechworm will protect you
+	DisplayName: Void Eater Marionette
+	Description: The power to control the Devourer is yours
 }
 
 MidnightSunBuff: {

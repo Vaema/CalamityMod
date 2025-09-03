@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
             if (time >= attackTime && !doneAttack)
             {
                 SoundStyle attack = new("CalamityMod/Sounds/Custom/DoGLaserWallBigAttack");
-                SoundEngine.PlaySound(attack with { Volume = 0.5f, Pitch = 0, MaxInstances = -1 }, targetPos);
+                SoundEngine.PlaySound(attack with { Volume = 0.6f, Pitch = 0, MaxInstances = -1 }, targetPos);
                 laserFX = 2.5f;
                 doneAttack = true;
                 storedTime = time;
@@ -122,7 +122,7 @@ namespace CalamityMod.Projectiles.Magic
                 float _ = float.NaN;
                 Vector2 start = beamStart;
                 Vector2 end = beamStart + directionToTarget * laserLength * 2;
-                bool hitCheck = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, 30 * Projectile.scale, ref _);
+                bool hitCheck = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, 70 * Projectile.scale, ref _);
 
                 return hitCheck;
             }

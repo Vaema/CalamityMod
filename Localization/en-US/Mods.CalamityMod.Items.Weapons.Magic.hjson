@@ -234,10 +234,7 @@ DarkSpark: {
 
 DeathhailStaff: {
 	DisplayName: Hyperdeath Rift Scepter
-	Tooltip:
-		'''
-		Rips a massive rift in spacetime
-		'''
+	Tooltip: Rips a massive rift in spacetime
 }
 
 DeathValleyDuster: {

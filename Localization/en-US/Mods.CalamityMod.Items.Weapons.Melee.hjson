@@ -492,7 +492,7 @@ Excelsus: {
 		'''
 		Swings a blade forged from the Devourer's maw in a 3-swing combo
 		The first swing only hits close range
-		The second swing additionally launches Godkiller Fireballs
+		The second swing additionally launches Faith Incinerator
 		The third swing causes a bite at the cursor, exploding for masive damage
 		'''
 }
@@ -1363,7 +1363,7 @@ TheObliterator: {
 		{$Common.YoyoStatsInfinite}
 		[GFB]
 		'''
-	TooltipNormal: Occasionally performs a portal dash at nearby foes
+	TooltipNormal: Occasionally performs a miniature Dimensional Drive at nearby foes
 	TooltipGFB: just a slight bit of dust spam on this weapon im afraid
 }
 

@@ -747,7 +747,11 @@ StaffOfNecrosteocytes: {
 
 StaffoftheMechworm: {
 	DisplayName: Void Eater Marionette
-	Tooltip: Summons a mini devourer to fight for you
+	Tooltip:
+        '''
+        Contains the power to control a miniature Devourer
+        Repeated summons increase the length of the Devourer
+        '''
 }
 
 StarspawnHelixStaff: {

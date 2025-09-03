@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 80;
             Item.height = 84;
-            Item.damage = 1500;
+            Item.damage = 3200;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 16;
             Item.useTime = 30;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 4f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.UseSound = SoundID.Item12;
+            Item.UseSound = SoundID.Item12 with {Volume = 0.75f};
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<DeathhailBeam>();
             Item.shootSpeed = 18f;

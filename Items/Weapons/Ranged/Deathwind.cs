@@ -53,12 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (player.itemTime < 60)
             {
                 player.itemRotation = player.DirectionTo(player.Calamity().mouseWorld).ToRotation();
-                float scale = (1 - (player.itemTime - 10) / 50f) * 0.3f;
-                if (player.itemTime < 10)
-                {
-                    scale = ((player.itemTime) / 10f) * 0.3f;
-                }
-                GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
                 if (player.itemTime == 1)
                 {
                     if (player.channel)
@@ -81,12 +75,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             else
             {
                 player.itemRotation += MathHelper.Clamp(MathHelper.WrapAngle(player.DirectionTo(player.Calamity().mouseWorld).ToRotation() - player.itemRotation), -0.04f, 0.04f);
-                float scale = (1- (player.itemTime-70) / 110f) * 0.75f;
-                if (player.itemTime < 70)
-                {
-                    scale = ((player.itemTime - 60) / 10f) * 0.75f;
-                }
-                GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale * 96), Vector2.Zero, Color.Fuchsia, Vector2.One, 0, scale, scale, 3));
                 if (player.itemTime == 60)
                 {
 
