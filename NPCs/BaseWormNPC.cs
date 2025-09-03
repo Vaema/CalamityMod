@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.NPCs.StormWeaver;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -27,8 +23,7 @@ namespace CalamityMod.NPCs
         /// </summary>
         public float segmentRigidity = 0.75f;
         /// <summary>
-        /// Should this animation mirror to match direction?
-        /// Currently unimplemented
+        /// Should this animation mirror to match the worm's X direction?
         /// </summary>
         public bool mirror = true;
         /// <summary>
@@ -213,12 +208,12 @@ namespace CalamityMod.NPCs
         /// <summary>
         /// The amount of segments of this worm. This does not include the head
         /// </summary>
-        public abstract int SegmentCount { get;}
+        public abstract int SegmentCount { get; }
         /// <summary>
         /// A list of the offsets to the next segment in the worm from this segment
         /// DOES include the head
         /// </summary>
-        public abstract List<float> SegmentTypePositionOffsets { get;}
+        public abstract List<float> SegmentTypePositionOffsets { get; }
         /// <summary>
         /// A list of all textures for the segments to draw with
         /// does NOT include the head
@@ -228,7 +223,7 @@ namespace CalamityMod.NPCs
         /// The type of the worm hitbox NPC
         /// Make sure that NPC is a child of BaseWormHitboxNPC!
         /// </summary>
-        public abstract int WormHitboxNpcType {  get; }
+        public abstract int WormHitboxNpcType { get; }
         /// <summary>
         /// Offsets for drawing each segment
         /// </summary>
@@ -247,11 +242,12 @@ namespace CalamityMod.NPCs
 
         #region Segments
         /// <summary>
-        /// The segments of this worm
+        /// The list of all segments of this worm
         /// </summary>
         public List<Segment> Segments = new();
+
         /// <summary>
-        /// The AssetTexture2D
+        /// The textures for each segment type of this worm. Works like getting a texture from TextureAssets
         /// </summary>
         public List<Asset<Texture2D>> SegmentTextureAssets
         {
@@ -269,21 +265,39 @@ namespace CalamityMod.NPCs
                 return internalTexAssets;
             }
         }
+
         /// <summary>
-        /// Internal list that stores the textureassets
+        /// Internal list that stores the textureassets.
+        /// Use SegmentTextureAssets to get the data stored here.
         /// </summary>
-        List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
+        private List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
+
         /// <summary>
         /// This class is used to store the information of each segment's location, size, and texture path
         /// Due to the amount of segments, there is only one actual NPC for this boss
         /// </summary>
         public class Segment
         {
+            /// <summary>
+            /// The type of segment this is. Segment type is used to determine spacing and textures.
+            /// </summary>
             public int segmentType = 0;
+
+            /// <summary>
+            /// The position of the center of this segment
+            /// </summary>
             public Vector2 Center = Vector2.Zero;
+
+            /// <summary>
+            /// The rotation of this segment in radians
+            /// </summary>
             public float rotation = 0;
+
+            /// <summary>
+            /// The velocity this segment has.
+            /// Currently doesn't actually do anything besides be a token value if needed to be read by something
+            /// </summary>
             public Vector2 velocity = Vector2.Zero;
-            public Vector2 size = Vector2.One;
             public Segment(ModNPC Head, int segmentStyle = 0)
             {
                 Center = Head.NPC.Center;
@@ -294,17 +308,29 @@ namespace CalamityMod.NPCs
         }
         public enum SegmentFollowLogic
         {
-            Regular = 0,
-            Exact = 1,
+            Regular = 0, //Traditional worm segment logic
+            Exact = 1, //Follows the path the head took exactly
+            // In the future, add a segment logic that supports solid tile collisions and forces applied to *any* segment
         }
+
+        /// <summary>
+        /// Which type of segment following logic this worm should currently use
+        /// </summary>
         public SegmentFollowLogic SegmentFollowType;
+
         /// <summary>
         /// How rigid the segment should be when using default segment logic
         /// </summary>
         public float SegmentRigidity = 0.2f;
 
-        public List<Vector2> segmentPoints = new List<Vector2>();
+        /// <summary>
+        /// The points used by ExactSegmentLogic to exactly follow the head
+        /// </summary>
+        private List<Vector2> segmentPoints = new List<Vector2>();
 
+        /// <summary>
+        /// Updates the positions of the segments based on the value set in SegmentFollowType
+        /// </summary>
         public void UpdateSegments()
         {
             NPC.position += NPC.velocity; //Update this segment's movement so that all other segments use this as the base. This is undone at the end of the method.
@@ -345,7 +371,7 @@ namespace CalamityMod.NPCs
 
         }
 
-        public void RegularSegmentLogic()
+        private void RegularSegmentLogic()
         {
             for (int i = 0; i < Segments.Count; i++)
             {
@@ -370,7 +396,7 @@ namespace CalamityMod.NPCs
             }
         }
 
-        public void ExactSegmentLogic()
+        private void ExactSegmentLogic()
         {
             float dist = 40f;
             int segmentPointInUse = 0;
@@ -426,6 +452,10 @@ namespace CalamityMod.NPCs
             }
         }
 
+        /// <summary>
+        /// Spawns the hitboxes for the worm's segments.
+        /// Won't spawn hitboxes if there's less than 5 avaliable NPC slots
+        /// </summary>
         public void SpawnHitboxes()
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -456,9 +486,9 @@ namespace CalamityMod.NPCs
             }
             Segments.Add(new Segment(this, 1));
         }
-        
+
         #endregion
-        
+
         #region Draw
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
@@ -470,7 +500,7 @@ namespace CalamityMod.NPCs
             return false;
         }
 
-        void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, Segment segment)
+        private void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, Segment segment)
         {
             var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
             if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
