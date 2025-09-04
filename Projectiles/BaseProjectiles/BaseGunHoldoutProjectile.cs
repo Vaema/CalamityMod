@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.ChangeDir(direction);
 
             Owner.heldProj = Projectile.whoAmI;
-            Owner.itemTime = Owner.itemAnimation = 2;
+            //Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
 
             // -Pi/2 because the arms rotation starts with arms pointing down.
