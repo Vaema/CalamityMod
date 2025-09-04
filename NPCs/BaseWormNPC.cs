@@ -456,7 +456,7 @@ namespace CalamityMod.NPCs
         /// Spawns the hitboxes for the worm's segments.
         /// Won't spawn hitboxes if there's less than 5 avaliable NPC slots
         /// </summary>
-        public void SpawnHitboxes()
+        public virtual void SpawnHitboxes()
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
                 for (int i = 0; i < Segments.Count; i++)
@@ -477,9 +477,13 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Defaults
-        public override void SetDefaults()
+
+        public override void SetStaticDefaults()
         {
             NPCID.Sets.MustAlwaysDraw[Type] = true;
+        }
+        public override void SetDefaults()
+        {
             for (var i = 0; i < SegmentCount - 1; i++)
             {
                 Segments.Add(new Segment(this, 0));
@@ -500,7 +504,7 @@ namespace CalamityMod.NPCs
             return false;
         }
 
-        private void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, Segment segment)
+        public virtual void DrawSegment(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor, Segment segment)
         {
             var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
             if (!SegmentTextureAssets.IndexInRange(segment.segmentType))
