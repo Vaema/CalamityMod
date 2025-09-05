@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Accessories
             Item.width = 52;
             Item.height = 68;
             Item.accessory = true;
-            Item.defense = 48;
+            Item.defense = 20;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }

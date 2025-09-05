@@ -39,7 +39,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1; // Saw pierce is set when the saw is spawned, due to it being dynamic based on charge.
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

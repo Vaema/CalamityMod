@@ -69,16 +69,22 @@ namespace CalamityMod.NPCs.Signus
             }
         }
 
+        public static int ScytheDamage = 60; // 240
+        public static int DustDamage = 60; // 240; Also applies to Legendary Mode Peanuts
+
+        // GFB exclusive
+        public static int StealthStrikeMult = 2; // 480
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 160; // 320
             NPC.npcSlots = 32f;
-            NPC.GetNPCDamage();
             NPC.width = 130;
             NPC.height = 130;
             NPC.defense = 60;
             NPC.LifeMaxNERB(320000, 375000, 380000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -134,12 +140,12 @@ namespace CalamityMod.NPCs.Signus
 
             double lifeRatio = NPC.life / (double)NPC.lifeMax;
 
-            lifeToAlpha = (int)((CalamityWorld.LegendaryMode ? 200D : 100D) * (1D - lifeRatio));
+            lifeToAlpha = (int)((Main.getGoodWorld ? 200D : 100D) * (1D - lifeRatio));
             int maxCharges = death ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             int maxTeleports = (death && lifeRatio < 0.9) ? 1 : revenge ? 2 : expertMode ? 3 : 4;
             float inertia = death ? 10f : revenge ? 11f : expertMode ? 12f : 14f;
             float chargeVelocity = death ? 14f : revenge ? 13f : expertMode ? 12f : 10f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 inertia *= 0.5f;
                 chargeVelocity *= 1.15f;
@@ -193,7 +199,7 @@ namespace CalamityMod.NPCs.Signus
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            if (lifeToAlpha < (CalamityWorld.LegendaryMode ? 100 : 50) && NPC.ai[0] != 1f)
+            if (lifeToAlpha < (Main.getGoodWorld ? 100 : 50) && NPC.ai[0] != 1f)
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -233,9 +239,6 @@ namespace CalamityMod.NPCs.Signus
 
             if (NPC.ai[0] <= 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.rotation = NPC.velocity.X * 0.04f;
                 float playerLocation = vectorCenter.X - player.Center.X;
                 NPC.direction = playerLocation < 0f ? 1 : -1;
@@ -259,7 +262,7 @@ namespace CalamityMod.NPCs.Signus
                 playerYDist *= playerDistance;
 
                 float inertia2 = 50f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia2 *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia2 + playerXDist) / (inertia2 + 1f);
@@ -284,9 +287,6 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 0f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
-
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     NPC.localAI[1] += 1f;
@@ -294,7 +294,7 @@ namespace CalamityMod.NPCs.Signus
                     if (expertMode)
                         NPC.localAI[1] += death ? 3f * (float)(1D - lifeRatio) : 2f * (float)(1D - lifeRatio);
 
-                    if (NPC.localAI[1] >= (CalamityWorld.LegendaryMode ? 0f : 120f))
+                    if (NPC.localAI[1] >= (Main.getGoodWorld ? 0f : 120f))
                     {
                         NPC.localAI[1] = 0f;
 
@@ -341,7 +341,7 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 1f)
             {
-                // Avoid cheap bullshit
+                // Disable contact damage for some time while fading away
                 NPC.damage = 0;
 
                 Vector2 position = new Vector2(NPC.ai[1] * 16f - (NPC.width / 2), NPC.ai[2] * 16f - (NPC.height / 2));
@@ -377,12 +377,11 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.alpha -= 50;
                 if (NPC.alpha <= lifeToAlpha)
                 {
+                    // Restore contact damage once returned to proper opacity
+                    NPC.damage = NPC.defDamage;
                     if (Main.netMode != NetmodeID.MultiplayerClient && revenge)
                     {
                         SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
@@ -461,9 +460,6 @@ namespace CalamityMod.NPCs.Signus
             }
             else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                NPC.damage = 0;
-
                 NPC.rotation = NPC.velocity.X * 0.04f;
                 float playerLocation = vectorCenter.X - player.Center.X;
                 NPC.direction = playerLocation < 0f ? 1 : -1;
@@ -492,16 +488,14 @@ namespace CalamityMod.NPCs.Signus
                             scytheXDist *= scytheDistance;
                             scytheYDist *= scytheDistance;
                             int type = ModContent.ProjectileType<SignusScythe>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist, scytheYDist, type, ScytheDamage, 0f, Main.myPlayer, 0f, NPC.target + 1);
                             if (stealthTimer >= maxStealth)
                             {
-                                damage *= 2;
                                 SoundEngine.PlaySound(RaidersTalisman.StealthHitSound, NPC.Center);
                                 for (int i = 0; i < 4; i++)
                                 {
                                     Vector2 offset = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, damage, 0f, Main.myPlayer, 0f, NPC.target + 1);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter.X, vectorCenter.Y, scytheXDist + offset.X, scytheYDist + offset.Y, type, ScytheDamage * StealthStrikeMult, 0f, Main.myPlayer, 0f, NPC.target + 1);
                                 }
                                 stealthTimer = 0;
                             }
@@ -569,7 +563,7 @@ namespace CalamityMod.NPCs.Signus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalLamps = (CalamityWorld.LegendaryMode && !Main.zenithWorld) ? 10 : 5;
+                    int totalLamps = (Main.getGoodWorld && !Main.zenithWorld) ? 10 : 5;
                     if (NPC.CountNPCS(ModContent.NPCType<CosmicLantern>()) < totalLamps)
                     {
                         bool buffed = false;
@@ -628,9 +622,6 @@ namespace CalamityMod.NPCs.Signus
 
                 if (calamityGlobalNPC.newAI[0] == 0f) // Line up the charge
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     float velocity = revenge ? 16f : expertMode ? 15f : 14f;
                     if (expertMode)
                         velocity += death ? 6f * (float)(1D - lifeRatio) : 4f * (float)(1D - lifeRatio);
@@ -666,17 +657,11 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 1f) // Pause before charge
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     NPC.velocity *= 0.8f;
 
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= 5f)
                     {
-                        // Set damage
-                        NPC.damage = NPC.defDamage;
-
                         calamityGlobalNPC.newAI[0] = 2f;
 
                         NPC.netUpdate = true;
@@ -693,9 +678,6 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 2f) // Charging
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
-
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         bool buffed = false;
@@ -708,15 +690,10 @@ namespace CalamityMod.NPCs.Signus
                         if ((phase2 || buffed) && NPC.ai[2] % 3f == 0f)
                         {
                             SoundEngine.PlaySound(SoundID.Item73, NPC.Center);
-                            int type = (CalamityWorld.LegendaryMode) ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
-                            int damage = (CalamityWorld.LegendaryMode) ? 60 : NPC.GetProjectileDamage(type);
-                            Vector2 velocity = Main.zenithWorld ? new Vector2(Main.rand.Next(-10, 11), Main.rand.Next(-10, 11)) : Vector2.Zero;
-                            if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                            {
-                                velocity = new Vector2(Main.rand.Next(-5, 6), Main.rand.Next(-5, 6));
-                            }
+                            int type = Main.zenithWorld ? ModContent.ProjectileType<PeanutRocket>() : ModContent.ProjectileType<EssenceDust>();
+                            Vector2 velocity = Main.rand.NextVector2Circular(Main.zenithWorld ? 10f : 0f, Main.zenithWorld ? 10f : 0f);
                             int ai = buffed ? 69 : 0;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, damage, 0f, Main.myPlayer, ai);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), vectorCenter, velocity, type, DustDamage, 0f, Main.myPlayer, ai);
                         }
                     }
 
@@ -746,9 +723,6 @@ namespace CalamityMod.NPCs.Signus
                 }
                 else if (calamityGlobalNPC.newAI[0] == 3f) // Slow down after charging and reset
                 {
-                    // Avoid cheap bullshit
-                    NPC.damage = 0;
-
                     if (stealthTimer >= maxStealth)
                     {
                         stealthTimer = 0;
@@ -980,7 +954,6 @@ namespace CalamityMod.NPCs.Signus
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)

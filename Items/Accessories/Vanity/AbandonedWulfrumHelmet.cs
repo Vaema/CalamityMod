@@ -1,9 +1,6 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.BaseItems;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.BaseItems;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,7 +23,7 @@ namespace CalamityMod.Items.Accessories.Vanity
         public new string LocalizationCategory => "Items.Accessories";
         public override (EquipType, string, string)[] EquipSlots =>
         [
-            (EquipType.Head, "AbandonedWulfrumHelmet", "WulfrumOldSetHead"),
+            (EquipType.Head, "AbandonedWulfrumHelmetTrans", "WulfrumOldSetHead"),
             (EquipType.Body, "AbandonedWulfrumHelmet", null),
             (EquipType.Legs, "AbandonedWulfrumHelmet", null),
             (EquipType.Face, null, null), //results in setting this equip slot to -1

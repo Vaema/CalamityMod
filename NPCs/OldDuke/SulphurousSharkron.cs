@@ -28,11 +28,11 @@ namespace CalamityMod.NPCs.OldDuke
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 44;
             NPC.height = 44;
-            NPC.GetNPCDamage();
             NPC.defense = 100;
             NPC.lifeMax = 6000;
             if (BossRushEvent.BossRushActive)
@@ -207,22 +207,16 @@ namespace CalamityMod.NPCs.OldDuke
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
             {
                 int spawnX = NPC.width / 2;
                 int type = ModContent.ProjectileType<OldDukeGore>();
-                int damage = NPC.GetProjectileDamage(type);
                 for (int i = 0; i < 10; i++)
                 {
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X + Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, damage, 0f, Main.myPlayer);
+                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, OldDuke.GoreDamage, 0f, Main.myPlayer);
                 }
             }
-        }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)/* tModPorter Note: bossLifeScale -> balance (bossAdjustment is different, see the docs for details) */
-        {
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -266,12 +260,6 @@ namespace CalamityMod.NPCs.OldDuke
         {
             cooldownSlot = ImmunityCooldownID.Bosses;
             return NPC.Opacity == 1f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

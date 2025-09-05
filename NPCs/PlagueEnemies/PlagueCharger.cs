@@ -36,14 +36,14 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.damage = 37;
             NPC.width = 36;
             NPC.height = 30;
-            NPC.defense = 20;
+            NPC.defense = 32;
             NPC.scale *= 0.5f;
-            NPC.lifeMax = 250;
+            NPC.lifeMax = 720;
             NPC.aiStyle = NPCAIStyleID.Flying;
             AIType = NPCID.Bee;
             NPC.knockBackResist = 0.4f;
             AnimationType = NPCID.Bee;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.noGravity = true;
             NPC.noTileCollide = false;

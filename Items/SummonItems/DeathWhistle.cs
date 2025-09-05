@@ -54,13 +54,6 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.LihzahrdBrick, 25).
                 AddTile(TileID.DemonAltar).
                 Register();
-            
-            
-            CreateRecipe().
-                AddIngredient(ItemID.LunarTabletFragment, 15).
-                AddIngredient(ItemID.LihzahrdBrick, 25).
-                AddTile(TileID.LihzahrdAltar).
-                Register();
         }
     }
 }

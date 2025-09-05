@@ -28,11 +28,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
-            NPC.DR_NERD(0.1f);
             NPC.width = 24;
             NPC.height = 24;
             NPC.defense = 20;
@@ -77,7 +75,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 if (Main.rand.NextBool(5))
                     NPC.reflectsProjectiles = true;
@@ -131,7 +129,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             Vector2 idealVelocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center) * (death ? 7f : 5.5f);
             float acceleration = death ? 0.14f : 0.105f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 idealVelocity *= 1.2f;
                 acceleration *= 1.4f;
@@ -186,13 +184,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * balance);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Poisoned, 180);
+            NPC.damage = (int)(NPC.damage * 1.15f);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

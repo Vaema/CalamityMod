@@ -82,10 +82,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
+        public static int FireballDamage = 85; // 340
+        public static int BoltDamage = 75; // 300
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 152;
             NPC.height = 90;
             NPC.defense = 100;
@@ -440,13 +443,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<AresPlasmaFireball>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 Vector2 plasmaOffset = Vector2.Normalize(plasmaBoltVelocity) * 40f + Vector2.UnitY * 16f;
 
                                 if (boltsSplitLess)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + plasmaOffset, plasmaBoltVelocity, type, damage, 0f, Main.myPlayer, -1f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + plasmaOffset, plasmaBoltVelocity, type, FireballDamage, 0f, Main.myPlayer, -1f);
                                 else
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + plasmaOffset, plasmaBoltVelocity, type, damage, 0f, Main.myPlayer, Main.player[targetIndex].Center.X, Main.player[targetIndex].Center.Y);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + plasmaOffset, plasmaBoltVelocity, type, FireballDamage, 0f, Main.myPlayer, Main.player[targetIndex].Center.X, Main.player[targetIndex].Center.Y);
                             }
 
                             // Recoil
@@ -482,8 +484,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     telSound.Stop();
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -696,7 +696,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

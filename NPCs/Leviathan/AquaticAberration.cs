@@ -37,9 +37,8 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 14;
@@ -55,7 +54,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.3f;
         }
 

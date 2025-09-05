@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 24; // 48
             NPC.width = 70;
             NPC.height = 70;
             NPC.defense = 6;
@@ -24,15 +24,15 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 120;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 4;
-
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
+            {
+                NPC.lifeMax *= 3;
                 NPC.reflectsProjectiles = true;
+            }
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
+            NPC.knockBackResist = 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
@@ -120,7 +120,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 180);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -151,8 +151,7 @@ namespace CalamityMod.NPCs.HiveMind
             if ((Main.expertMode || BossRushEvent.BossRushActive) && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, HiveMind.ShaderainDamage, 0f, Main.myPlayer);
             }
         }
     }

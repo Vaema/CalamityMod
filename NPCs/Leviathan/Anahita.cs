@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Leviathan
         private int frameUsed = 0;
         public bool HasBegunSummoningLeviathan = false;
         private int DrawProjectileTelegraphTimer = 0;
-        private int LegendaryModeAttackChosen = 0;
+        private int GetGoodAttackChosen = 0;
         public static Asset<Texture2D> ChargeTexture;
         public bool WaitingForLeviathan
         {
@@ -59,10 +59,15 @@ namespace CalamityMod.NPCs.Leviathan
             }
         }
 
+        public static float DashDamageMult = 1.5f; // 165
+        public static int SpearDamage = 24; // 96
+        public static int MistDamage = 24; // 96
+        public static int SongDamage = 30; // 120
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 55; // 110
             NPC.npcSlots = 16f;
             NPC.width = 100;
             NPC.height = 100;
@@ -73,7 +78,7 @@ namespace CalamityMod.NPCs.Leviathan
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<LeviathanAnahitaBossBar>();
-            NPC.value = Item.buyPrice(0, 12, 50, 0);
+            NPC.value = Item.buyPrice(gold: 7, silver: 50);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = HitSound;
@@ -83,7 +88,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
 
             if (Main.zenithWorld)
@@ -185,9 +190,7 @@ namespace CalamityMod.NPCs.Leviathan
             bubbleVelocity += 4f * enrageScale;
             if (!leviAlive)
                 bubbleVelocity += 2f * (1f - lifeRatio);
-            if (CalamityWorld.LegendaryMode)
-                bubbleVelocity *= 1.15f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 bubbleVelocity *= 2f;
 
             // Phases
@@ -612,14 +615,14 @@ namespace CalamityMod.NPCs.Leviathan
                 float velocity = death ? 13.5f : 12f;
                 velocity += 6f * enrageScale;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     velocity *= 1.15f;
 
                 Vector2 chargeSetupLocation = Vector2.Normalize(targetVector - NPC.Center - NPC.velocity) * velocity;
                 float acceleration = death ? 0.28f : 0.25f;
                 acceleration += 0.2f * enrageScale;
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     acceleration *= 1.15f;
 
                 if (Math.Abs(NPC.Center.Y - targetVector.Y) > 50f * NPC.scale || Math.Abs(NPC.Center.X - player.Center.X) > 350f * NPC.scale)
@@ -648,17 +651,17 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalTelegraphs = 8;
                         float telegraphDist = 500f;
 
-                        // In Legendary, the projectiles she fires is randomized
-                        if (CalamityWorld.LegendaryMode)
+                        // In FTW, the projectiles she fires is randomized
+                        if (Main.getGoodWorld)
                         {
-                            LegendaryModeAttackChosen = Main.rand.Next(3);
-                            if (LegendaryModeAttackChosen == 2)
+                            GetGoodAttackChosen = Main.rand.Next(3);
+                            if (GetGoodAttackChosen == 2)
                                 telegraphDist -= 50f;
 
                             for (int i = 0; i < totalTelegraphs; i++)
                             {
                                 Vector2 spawnVector = player.Center - Vector2.UnitY.RotatedBy(MathHelper.TwoPi / totalTelegraphs * i) * telegraphDist;
-                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, LegendaryModeAttackChosen);
+                                int tele = Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, Vector2.Zero, ModContent.ProjectileType<AnahitaTelegraph>(), 0, 0f, Main.myPlayer, player.whoAmI, GetGoodAttackChosen);
                                 Main.projectile[tele].netUpdate = true;
                                     
                             }
@@ -703,13 +706,13 @@ namespace CalamityMod.NPCs.Leviathan
                         int totalProjectiles = 8;
                         int projectileDistance = 600;
                         int type = ModContent.ProjectileType<WaterSpear>();
-                        if (CalamityWorld.LegendaryMode)
+                        int damage = SpearDamage;
+                        if (Main.getGoodWorld)
                         {
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
-                                switch (LegendaryModeAttackChosen)
+                                switch (GetGoodAttackChosen)
                                 {
                                     case 0:
                                         SoundEngine.PlaySound(SoundID.Item21, player.Center);
@@ -717,11 +720,13 @@ namespace CalamityMod.NPCs.Leviathan
 
                                     case 1:
                                         type = ModContent.ProjectileType<FrostMist>();
+                                        damage = MistDamage;
                                         SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                         break;
 
                                     case 2:
                                         type = ModContent.ProjectileType<SirenSong>();
+                                        damage = SongDamage;
                                         float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                         Main.musicPitch = soundPitch;
                                         SoundEngine.PlaySound(SoundID.Item26, player.Center);
@@ -745,12 +750,14 @@ namespace CalamityMod.NPCs.Leviathan
                                 case 1:
                                     totalProjectiles = 3;
                                     type = ModContent.ProjectileType<FrostMist>();
+                                    damage = MistDamage;
                                     SoundEngine.PlaySound(SoundID.Item30, player.Center);
                                     break;
 
                                 case 2:
                                     totalProjectiles = 6;
                                     type = ModContent.ProjectileType<SirenSong>();
+                                    damage = SongDamage;
                                     float soundPitch = (Main.rand.NextFloat() - 0.5f) * 0.5f;
                                     Main.musicPitch = soundPitch;
                                     SoundEngine.PlaySound(SoundID.Item26, player.Center);
@@ -764,7 +771,6 @@ namespace CalamityMod.NPCs.Leviathan
                                 totalProjectiles += totalProjectiles / 2;
 
                             float radians = MathHelper.TwoPi / totalProjectiles;
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < totalProjectiles; i++)
                             {
                                 Vector2 spawnVector = player.Center + Vector2.Normalize(new Vector2(0f, -projectileVelocity).RotatedBy(radians * i)) * projectileDistance;
@@ -821,7 +827,7 @@ namespace CalamityMod.NPCs.Leviathan
 
                     if (revenge)
                         chargeVelocity += 2f + (death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio));
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeVelocity *= 1.15f;
                     // Stunt velocity at the end of the charge attack to prevent her flying off
                     if (NPC.ai[0] == -1f)
@@ -847,9 +853,9 @@ namespace CalamityMod.NPCs.Leviathan
             // Charge
             else if (NPC.ai[0] == 4f)
             {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 1.5);
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
-                if (CalamityWorld.LegendaryMode && NPC.ai[1] % 5f == 0f)
+                if (Main.zenithWorld && NPC.ai[1] % 5f == 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item85, NPC.Center);
                     Vector2 bubbleSpawnPos = new Vector2(NPC.position.X + (NPC.width / 2) + (15 * NPC.direction * NPC.scale), NPC.position.Y + 30 * NPC.scale);
@@ -919,7 +925,7 @@ namespace CalamityMod.NPCs.Leviathan
 
             Vector2 chargeSetupLocation = Vector2.Normalize(player.Center + new Vector2(NPC.localAI[0], -distance) - NPC.Center - NPC.velocity) * 12f;
             float acceleration = revenge ? 0.75f : 0.5f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 acceleration *= 1.15f;
 
             NPC.SimpleFlyMovement(chargeSetupLocation, acceleration);
@@ -976,7 +982,7 @@ namespace CalamityMod.NPCs.Leviathan
             if (DrawProjectileTelegraphTimer > 0)
             {
                 Color telegraphColor = Color.Black;
-                switch (CalamityWorld.LegendaryMode ? LegendaryModeAttackChosen : (int)NPC.localAI[3])
+                switch (Main.getGoodWorld ? GetGoodAttackChosen : (int)NPC.localAI[3])
                 {
                     case 0:
                         telegraphColor = new Color(55, 70, 240);
@@ -1044,7 +1050,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

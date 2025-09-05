@@ -49,18 +49,17 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SpawnSpears(target.Center);
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => SpawnSpears(target);
+        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SpawnSpears(target);
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info) => SpawnSpears(target.Center);
-
-        private void SpawnSpears(Vector2 targetPos)
+        private void SpawnSpears(Entity target)
         {
             int spearAmt = Main.rand.Next(3, 4 + 1); // 3 or 4 spears
-            var source = Projectile.GetSource_FromThis();
             for (int n = 0; n < spearAmt; n++)
             {
-                ;
-                CalamityUtils.ProjectileRain(source, targetPos, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<EclipsesSmol>(), (int)(Projectile.damage * RainDamageMult), Projectile.knockBack * RainDamageMult, Projectile.owner);
+                Vector2 spawnPos = target.Center - new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(500f, 800f));
+                Vector2 spearVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnPos, target, 29f, 2) + Vector2.UnitX * Main.rand.NextFloat(-6f, 6f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPos, spearVel, ModContent.ProjectileType<EclipsesSmol>(), (int)(Projectile.damage * RainDamageMult), Projectile.knockBack * RainDamageMult, Projectile.owner);
             }
         }
 

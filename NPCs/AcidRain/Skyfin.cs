@@ -45,16 +45,14 @@ namespace CalamityMod.NPCs.AcidRain
                 NPC.damage = 88;
                 NPC.lifeMax = 3025;
                 NPC.defense = 18;
-                NPC.DR_NERD(0.05f);
             }
             else if (DownedBossSystem.downedAquaticScourge)
             {
                 NPC.damage = 38;
                 NPC.lifeMax = 220;
-                NPC.DR_NERD(0.05f);
             }
 
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

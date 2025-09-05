@@ -18,7 +18,7 @@ namespace CalamityMod.Items
         {
             Item.width = 28;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(gold: 50); // Sold by Bandit
             Item.rare = ItemRarityID.Pink;
 
             Item.useStyle = ItemUseStyleID.HoldUp;

@@ -16,6 +16,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float TotalLasersPerBarrage = 3f;
         public const float EnragedLaserFiringDuration = 300f;
 
+        // Rev+ exclusive
+        public static int LaserDamage = 15; // 60 (modified to be always at maximum Expert damage and does not scale)
+        public static int SickleDamage = 22; // 88
+
+        // Death exclusive
+        public static int FireballDamage = 18; // 108
+
         public static bool BuffedWallofFleshAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -44,7 +51,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase2 = lifeRatio < 0.66f;
             bool phase3 = lifeRatio < 0.33f;
 
-            if (CalamityWorld.LegendaryMode && Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(180))
+            if (Main.getGoodWorld && Main.netMode != NetmodeID.MultiplayerClient && Main.rand.NextBool(180))
             {
                 if (NPC.CountNPCS(NPCID.FireImp) < 4)
                 {
@@ -87,7 +94,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[1] += 1f;
                 if (phase3)
                     npc.ai[1] += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     npc.ai[1] += 9f;
 
                 if (npc.ai[1] > 2700f)
@@ -119,8 +126,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * npc.velocity.Length();
                         Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
 
-                        int damage = npc.GetProjectileDamage(ProjectileID.DemonSickle);
-                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, ProjectileID.DemonSickle, damage, 0f, Main.myPlayer, 0f, projectileVelocity.Length() * 3f);
+                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, ProjectileID.DemonSickle, SickleDamage, 0f, Main.myPlayer, 0f, projectileVelocity.Length() * 3f);
                         Main.projectile[proj].timeLeft = 600;
                         Main.projectile[proj].tileCollide = false;
 
@@ -131,7 +137,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.Fireball;
-                                damage = npc.GetProjectileDamage(type);
                                 int numProj = 3;
                                 int spread = 15;
                                 float rotation = MathHelper.ToRadians(spread);
@@ -140,7 +145,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 randomVelocity = Main.rand.NextVector2CircularEdge(fireballVelocity, fireballVelocity);
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1))) + randomVelocity;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 50f, perturbedSpeed, type, FireballDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -318,7 +323,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (death)
                 velocityX *= 1.2f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 velocityX *= 1.1f;
                 velocityX += 0.1f;
@@ -546,13 +551,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.defense = npc.defDefense;
             if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.5)
             {
-                npc.damage = death ? 180 : 120;
+                npc.damage = npc.defDamage * 2;
                 npc.defense = 30;
                 acceleration += death ? 0.1f : 0.08f;
             }
             else if ((double)Main.npc[Main.wofNPCIndex].life < (double)Main.npc[Main.wofNPCIndex].lifeMax * 0.75)
             {
-                npc.damage = death ? 135 : 90;
+                npc.damage = (int)Math.Round(npc.defDamage * 1.5f);
                 npc.defense = 20;
                 acceleration += death ? 0.05f : 0.04f;
             }
@@ -877,14 +882,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         float velocity = (fireEnragedLasers ? 3f : 4f) + shootBoost;
                         int projectileType = ProjectileID.EyeLaser;
-                        int damage = npc.GetProjectileDamage(projectileType);
 
                         bool targetTooClose = npc.Distance(Main.player[npc.target].Center) < 160f;
                         float projectileOffset = targetTooClose ? 60f : 150f;
                         Vector2 projectileVelocity = (lookAt - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         Vector2 projectileSpawn = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * projectileOffset;
 
-                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, 1f, 0f);
+                        int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, LaserDamage, 0f, Main.myPlayer, 1f, 0f);
                         Main.projectile[proj].timeLeft = 900;
 
                         if (!canHit)

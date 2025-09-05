@@ -13,6 +13,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class CultistAI
     {
+        // Vanilla values
+        public static int CloneFireballDamage = 18; // 72
+        public static int FireballDamage = 20; // 80
+        public static int IceMistDamage = 25; // 100
+        public static int LightningDamage = 30; // 120
+        public static int DoomDamage = 45; // 180 (Also fixes Master Mode scaling)
+
         public static bool BuffedCultistAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -52,9 +59,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float distanceAboveTarget = -240f;
             float moveSpeed = death ? 300f : 75f;
 
-            int iceMistDamage = isCultist ? npc.GetProjectileDamage(ProjectileID.CultistBossIceMist) : 0;
-            int fireballDamage = isCultist ? npc.GetProjectileDamage(ProjectileID.CultistBossFireBall) : npc.GetProjectileDamage(ProjectileID.CultistBossFireBallClone);
-            int lightningDamage = isCultist ? npc.GetProjectileDamage(ProjectileID.CultistBossLightningOrb) : 0;
+            int iceMistDamage = isCultist ? IceMistDamage : 0;
+            int fireballDamage = isCultist ? FireballDamage : CloneFireballDamage;
+            int lightningDamage = isCultist ? LightningDamage : 0;
 
             int iceMistFireRate = phase2 ? 50 : 60;
             float iceMistSpeed = (phase6 ? 12f : 10f) + (death ? (1f - lifeRatio) : 0f);
@@ -69,11 +76,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int idleTime = phase8 ? 20 : phase7 ? 30 : phase3 ? 35 : 40;
             float timeToFinishRitual = phase8 ? 180f : phase7 ? 240f : phase5 ? 300f : 360f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
-                iceMistFireRate = 30;
+                iceMistFireRate = 40;
                 iceMistSpeed = 15f;
-                fireballFireRate = 6;
+                fireballFireRate = 8;
                 fireballSpeed *= 1.25f;
                 lightningOrbPhaseTime = 60;
                 ancientLightSpawnRate = 10;
@@ -94,7 +101,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Enrage
-            if (!Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height) || CalamityWorld.LegendaryMode)
+            if (!Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 if (calamityGlobalNPC.newAI[0] >= 120f)
@@ -516,7 +523,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 Vector2 shadowFireballDirection = center4 + new Vector2(npc.direction * 30, 12f);
                                 Vector2 shadowFireballVelocity = playerDirection * (fireballSpeed + (float)Main.rand.NextDouble());
                                 shadowFireballVelocity = shadowFireballVelocity.RotatedByRandom(Math.PI / 6D);
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), shadowFireballDirection, shadowFireballVelocity, ProjectileID.CultistBossFireBallClone, fireballDamage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), shadowFireballDirection, shadowFireballVelocity, ProjectileID.CultistBossFireBallClone, CloneFireballDamage, 0f, Main.myPlayer);
                             }
                         }
                     }
@@ -1051,7 +1058,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (CalamityGlobalNPC.adultEidolonWyrmHead != -1)
                     {
                         if (Main.npc[CalamityGlobalNPC.adultEidolonWyrmHead].active)
-                            npc.damage *= 3;
+                            npc.damage = (int)Math.Round(npc.defDamage * PrimordialWyrmHead.LightDamageMult);
                     }
                 }
 
@@ -1179,16 +1186,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[1] >= duration)
             {
                 int type = ProjectileID.AncientDoomProjectile;
-                int damage = npc.GetProjectileDamage(type);
+                int damage = DoomDamage;
 
-                // Triple damage if the Primordial Wyrm is alive
+                // Increase damage if the Primordial Wyrm is alive
                 if (Main.npc[(int)npc.ai[0]].type == ModContent.NPCType<PrimordialWyrmHead>())
-                    damage *= 3;
+                    damage = (int)Math.Round(damage * PrimordialWyrmHead.DoomDamageMult);
 
                 kill = true;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : death ? 5 : 4;
+                    int totalProjectiles = Main.getGoodWorld ? 9 : (Main.npc[(int)npc.ai[0]].type == NPCID.CultistBoss && !phase3) ? 8 : death ? 5 : 4;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     Vector2 spinningPoint = new Vector2(0f, -splitProjVelocity);
                     for (int k = 0; k < totalProjectiles; k++)

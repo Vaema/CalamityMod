@@ -85,10 +85,13 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
+        public static int NukeDamage = 135; // 540
+        public static int SparkDamage = 75; // 300
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 170;
             NPC.height = 120;
             NPC.defense = 100;
@@ -418,9 +421,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<AresGaussNukeProjectile>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 float nukeOffset = 40f;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * nukeOffset, gaussNukeVelocity, type, damage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.Normalize(gaussNukeVelocity) * nukeOffset, gaussNukeVelocity, type, NukeDamage, 0f, Main.myPlayer, 0f, Main.player[targetIndex].Center.Y);
                             }
 
                             // Recoil
@@ -482,8 +484,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     telSound.Stop();
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -698,7 +698,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

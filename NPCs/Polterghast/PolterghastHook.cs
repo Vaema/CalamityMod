@@ -32,11 +32,13 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
+        public static int ShotDamage = 60; // 240
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0;
             NPC.width = 40;
             NPC.height = 40;
             NPC.lifeMax = 50000;
@@ -94,7 +96,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f;
@@ -150,7 +152,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.ai[2] += 1f;
                 if (NPC.ai[3] == 0f)
                 {
-                    if (NPC.ai[2] > ((CalamityWorld.LegendaryMode) ? 12f : 120f))
+                    if (NPC.ai[2] > (Main.getGoodWorld ? 40f : 120f))
                     {
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 1f;
@@ -166,11 +168,10 @@ namespace CalamityMod.NPCs.Polterghast
                     {
                         float shotSpeed = 10f * tileEnrageMult;
                         int type = ModContent.ProjectileType<PhantomHookShot>();
-                        int damage = NPC.GetProjectileDamage(type);
                         targetDistance = shotSpeed / targetDistance;
                         targetX *= targetDistance;
                         targetY *= targetDistance;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, damage, 0f, Main.myPlayer, 0f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), hookPosition.X, hookPosition.Y, targetX, targetY, type, ShotDamage, 0f, Main.myPlayer, 0f, 0f);
                     }
                 }
                 return;
@@ -183,7 +184,7 @@ namespace CalamityMod.NPCs.Polterghast
         private void Movement(bool phase2, bool expertMode, bool revenge, bool death, bool speedBoost, bool despawnBoost, float lifeRatio, float tileEnrageMult, Player player)
         {
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float colorChangeTime = 180f;
@@ -325,7 +326,7 @@ namespace CalamityMod.NPCs.Polterghast
             Color lightRed = new Color(255, 100, 100, 255);
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

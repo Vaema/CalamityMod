@@ -70,12 +70,11 @@ namespace CalamityMod.Projectiles.Summon
                 for (int dustIndex = 0; dustIndex < dustAmt; dustIndex++)
                 {
                     int dustType = Main.rand.NextBool(3) ? 56 : 242;
-                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                    rotate = rotate.RotatedBy((double)((float)(dustIndex - (dustAmt / 2 - 1)) * MathHelper.TwoPi / (float)dustAmt), default) + Projectile.Center;
+                    Vector2 rotate = Vector2.Normalize(Projectile.velocity) * new Vector2(Projectile.width / 2f, Projectile.height) * 0.75f;
+                    rotate = rotate.RotatedBy(dustIndex * MathHelper.TwoPi / (float)dustAmt) + Projectile.Center;
                     Vector2 faceDirection = rotate - Projectile.Center;
-                    int dusty = Dust.NewDust(rotate + faceDirection, 0, 0, dustType, faceDirection.X * 1.75f, faceDirection.Y * 1.75f, 100, default, 1.1f);
-                    Main.dust[dusty].noGravity = true;
-                    Main.dust[dusty].velocity = faceDirection;
+                    Dust dusty = Dust.NewDustPerfect(Projectile.Center, dustType, faceDirection, 100, default, 1.1f);
+                    dusty.noGravity = true;
                 }
 
                 // Construct a fake item to use with vanilla code for the sake of firing bullets.

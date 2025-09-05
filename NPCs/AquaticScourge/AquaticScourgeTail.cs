@@ -27,7 +27,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 36; // 72
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 25;
@@ -37,8 +37,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.knockBackResist = 0f;
             NPC.alpha = 255;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 2;
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -55,7 +53,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -94,13 +92,14 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || Main.zenithWorld)
             {
                 if (nonHostile)
                 {
                     // Kiss my motherfucking ass you piece of shit game
                     NPC.timeLeft *= 20;
                     NPC.npcSlots = 16f;
+                    NPC.damage = NPC.defDamage;
                     CalamityGlobalNPC.BossKillTimes.TryGetValue(NPC.type, out int revKillTime);
                     calamityGlobalNPC.KillTime = revKillTime;
                     calamityGlobalNPC.newAI[0] = 1f;
@@ -201,7 +200,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     for (int a = 0; a < Main.npc.Length; a++)
                     {
                         int type = Main.npc[a].type;
-                        if (AquaticScourgeIDList.Includes(type))
+                        if (CalamityNPCTypeSets.AquaticScourge.Contains(type))
                             Main.npc[a].active = false;
                     }
                 }
@@ -224,7 +223,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             }
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = Main.getGoodWorld ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 
@@ -242,7 +241,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeMaxSpeed += Vector2.Distance(player.Center, NPC.Center) * 0.001f;
                 }
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     scourgeMaxSpeed *= 1.15f;
             }
 
@@ -279,21 +278,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                     NPC.spriteDirection = -1;
                 else if (scourgeTargetX > 0f)
                     NPC.spriteDirection = 1;
-            }
-
-            // Calculate contact damage based on velocity
-            if (!nonHostile)
-            {
-                float minimalContactDamageVelocity = scourgeMaxSpeed * 0.25f;
-                float minimalDamageVelocity = scourgeMaxSpeed * 0.5f;
-                float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-                if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-                    NPC.damage = 0;
-                else
-                {
-                    float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                    NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-                }
             }
         }
 
@@ -344,7 +328,6 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -370,7 +353,7 @@ namespace CalamityMod.NPCs.AquaticScourge
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 180, true);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 300, true);
         }
     }
 }

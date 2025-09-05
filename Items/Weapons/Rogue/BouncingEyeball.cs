@@ -9,9 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class BouncingEyeball : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-        }
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -21,8 +18,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useAnimation = 23;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 3.5f;
-            Item.rare = ItemRarityID.Green;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
+            Item.rare = ItemRarityID.Orange;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;

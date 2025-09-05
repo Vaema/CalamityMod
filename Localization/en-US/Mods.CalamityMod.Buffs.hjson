@@ -479,11 +479,6 @@ RadiatorBuff: {
 	Description: Radioactive but adorable
 }
 
-ReaverOrbBuff: {
-	DisplayName: Reaver Orb
-	Description: The reaver orb will light your way
-}
-
 SparksBuff: {
 	DisplayName: Sparks
 	Description: Eats butterflies
@@ -891,7 +886,7 @@ SilvaRevival: {
 
 SpiritDefense: {
 	DisplayName: Spirit Defense
-	Description: Defense increased by {0} and damage reduction increased by {1}%
+	Description: Defense increased by {0}
 }
 
 SpiritPower: {
@@ -1113,7 +1108,7 @@ BrimseekerBuff: {
 	Description: Does it want something from you?
 }
 
-BrimstoneWaifu: {
+BrimstoneElemental: {
 	DisplayName: Brimstone Elemental
 	Description: The Brimstone Elemental will protect you
 }
@@ -1138,14 +1133,9 @@ CinderBlossomBuff: {
 	Description: A hot, searing flower is floating uncomfortably close to you
 }
 
-CloudyWaifu: {
+CloudElemental: {
 	DisplayName: Cloud Elemental
 	Description: The Cloud Elemental will protect you
-}
-
-GlacialEmbraceBuff: {
-	DisplayName: Glacial Embrace
-	Description: The magic of the ancient ice castle will aid you
 }
 
 Corroslime: {
@@ -1201,11 +1191,6 @@ DazzlingStabberBuff: {
 DemonshadeSetDevilBuff: {
 	DisplayName: Red Devil
 	Description: The red devil will protect you
-}
-
-LegionofCelestiaBuff: {
-	DisplayName: Celestial Axe
-	Description: If only it was this good at chopping trees...
 }
 
 EndoCooperBuff: {
@@ -1278,6 +1263,11 @@ GastricAberrationBuff: {
 	Description: The aquatic aberration will protect you
 }
 
+GlacialEmbraceBuff: {
+	DisplayName: Glacial Embrace
+	Description: The magic of the ancient ice castle will aid you
+}
+
 HauntedDishesBuff: {
 	DisplayName: Haunted Dishes
 	Description: The haunted dishes will protect you
@@ -1326,6 +1316,11 @@ KalandraMirrorBuff: {
 KingofConstellationsBuff: {
 	DisplayName: Celestial Dragons
 	Description: The celestial dragons will protect you
+}
+
+LegionofCelestiaBuff: {
+	DisplayName: Celestial Axe
+	Description: If only it was this good at chopping trees...
 }
 
 LiliesOfFinalityBuff: {
@@ -1419,6 +1414,11 @@ PuffWarriorBuff: {
 	Description: It confidently and excitedly protects you
 }
 
+RareSandElemental: {
+	DisplayName: Rare Sand Elemental
+	Description: The Sand Elemental will heal you
+}
+
 ResurrectionButterflyBuff: {
 	DisplayName: Resurrection Butterfly
 	Description: Sleep beneath the Cherry Blossoms, Red-White Butterfly
@@ -1434,12 +1434,7 @@ Sandnado: {
 	Description: The sandnado will protect you
 }
 
-SandyHealingWaifu: {
-	DisplayName: Rare Sand Elemental
-	Description: The Sand Elemental will heal you
-}
-
-SandyWaifu: {
+SandElemental: {
 	DisplayName: Sand Elemental
 	Description: The Sand Elemental will protect you
 }
@@ -1554,7 +1549,7 @@ VoidConcentrationBuff: {
 	Description: The infinite void yearns for more...
 }
 
-WaterWaifu: {
+WaterElemental: {
 	DisplayName: Anahita
 	Description: Anahita will protect you
 }
@@ -1589,4 +1584,9 @@ PopoBuff: {
 PopoNoselessBuff: {
 	DisplayName: Noseless Popo
 	Description: Your nose has been stolen!
+}
+
+ForbiddenStealthSummonTagBuff: {
+	DisplayName: Forbidden Stealth Summon Tag Buff
+	Description: If you're seeing this, something went horribly wrong
 }

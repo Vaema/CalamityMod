@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 80, 10);
+            ProvUtils.ApplyGFBDamage(Projectile, 120, 10);
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
 
@@ -55,10 +55,6 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.velocity.X *= 1.05f;
 
             int playerTracker = Player.FindClosest(Projectile.Center, 1, 1);
-
-            // Natural damage is removed from GFB
-            if (Projectile.ai[1] == 0f && !Main.zenithWorld)
-                Projectile.damage = Projectile.GetProjectileDamage(ModContent.NPCType<Providence>());
 
             Projectile.ai[1] += 1f;
             if (Projectile.ai[1] < 180f && Projectile.ai[1] > 60f)
@@ -130,7 +126,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 80);
+            ProvUtils.ApplyDebuffs(target, 120);
         }
     }
 }

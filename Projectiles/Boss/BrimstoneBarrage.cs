@@ -36,16 +36,6 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.localAI[0]);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.localAI[0] = reader.ReadSingle();
-        }
-
         public override void AI()
         {
             int target = Player.FindClosest(Projectile.Center, 1, 1);
@@ -118,14 +108,6 @@ namespace CalamityMod.Projectiles.Boss
                 trailDust.scale = Main.rand.NextFloat(0.2f, 0.6f);
             }
 
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.localAI[0] = 1f;
-
-                if (Projectile.ai[0] == 0f)
-                    Projectile.damage = NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) ? Projectile.GetProjectileDamage(ModContent.NPCType<SupremeCalamitas>()) : Projectile.GetProjectileDamage(ModContent.NPCType<CalamitasClone>());
-            }
-
             Lighting.AddLight(Projectile.Center, 0.75f * Projectile.Opacity, 0f, 0f);
             time++;
         }
@@ -140,7 +122,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
                 target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)

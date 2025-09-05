@@ -74,10 +74,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
+        public static int FistDamage = 105; // 420
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -335,7 +337,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCatastropheSlash>();
 
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = Main.zenithWorld ? SupremeCatastrophe.SlashDamage : FistDamage;
                     
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -401,7 +403,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCatastropheSlash>();
 
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = Main.zenithWorld ? SupremeCatastrophe.SlashDamage : FistDamage;
                     Vector2 fistSpawnPosition = NPC.Center + Vector2.UnitX * 74f * NPC.direction;
 
                     if ((broIsAlive == false ? BigAttackLimit <= 3 && BigAttackLimit > 0 : BigAttackLimit == 1) && death)
@@ -415,7 +417,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), fistSpawnPosition, NPC.DirectionTo(Target.Center) * 9.5f, ModContent.ProjectileType<SupremeCataclysmFist>(), damage, 0f, Main.myPlayer, 0f, PunchingFromRight.ToInt(), 3);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), fistSpawnPosition, NPC.DirectionTo(Target.Center) * 9.5f, ModContent.ProjectileType<SupremeCataclysmFist>(), FistDamage, 0f, Main.myPlayer, 0f, PunchingFromRight.ToInt(), 3);
                         }
                         SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound with { Volume = 1.8f, Pitch = 0.5f }, NPC.Center);
                         SoundStyle charge = new("CalamityMod/Sounds/Item/ScorchedEarthShot", 3);

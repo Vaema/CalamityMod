@@ -11,6 +11,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public new string LocalizationCategory => "Items.SummonItems";
         public override void SetStaticDefaults()
         {
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 4; // Goblin Battle Standard
         }
 
@@ -18,12 +19,11 @@ namespace CalamityMod.Items.SummonItems.Invasion
         {
             Item.width = 16;
             Item.height = 28;
-            Item.maxStack = 1;
-            Item.rare = ItemRarityID.Green;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
+            Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.consumable = false;
+            Item.rare = ItemRarityID.Green;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -51,7 +51,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<SulphuricScale>(5).
+                AddIngredient<SulphuricScale>().
                 AddCondition(Condition.NearWater).
                 Register();
         }

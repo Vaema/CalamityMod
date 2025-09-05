@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.AcidRain
             }
 
             NPC.knockBackResist = 0.8f;
-            NPC.value = Item.buyPrice(0, 0, 4, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.lavaImmune = false;
             NPC.noGravity = true;
             NPC.noTileCollide = false;
@@ -99,7 +99,6 @@ namespace CalamityMod.NPCs.AcidRain
         public void JumpToDestination()
         {
             NPC.knockBackResist = 0.8f;
-            NPC.DR_NERD(0.35f);
             NPC.noGravity = false;
             Projectile closestBubble = SearchForNearestBubble(out float distanceToBubbele);
 
@@ -157,7 +156,6 @@ namespace CalamityMod.NPCs.AcidRain
         public void DoFlyMovement()
         {
             NPC.knockBackResist = 0.5f;
-            NPC.DR_NERD(0f);
 
             float flySpeed = DownedBossSystem.downedPolterghast ? 17f : 14f;
             float flyInertia = DownedBossSystem.downedPolterghast ? 20f : 24.5f;

@@ -43,9 +43,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = 50;
             NPC.height = 50;
@@ -208,7 +208,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                     // Start off slow
                     Vector2 finalVelocity = NPC.SafeDirectionTo(player.Center, -Vector2.UnitY) * chargeSpeed;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         finalVelocity *= Main.rand.NextFloat(1f, 1.7f);
 
                     NPC.Calamity().newAI[2] = finalVelocity.X;

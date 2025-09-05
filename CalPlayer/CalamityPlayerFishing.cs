@@ -170,6 +170,8 @@ namespace CalamityMod.CalPlayer
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
+                itemDrop = -1;
+                return;
             }
 
             if (attempt.playerFishingConditions.PoleItemType == ModContent.ItemType<WulfrumRod>())

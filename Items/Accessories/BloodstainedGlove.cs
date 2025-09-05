@@ -24,15 +24,5 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.bloodyGlove = true;
         }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 2).
-                AddIngredient<BloodSample>(6).
-                AddIngredient(ItemID.Vertebrae, 2).
-                AddTile(TileID.DemonAltar).
-                Register();
-        }
     }
 }

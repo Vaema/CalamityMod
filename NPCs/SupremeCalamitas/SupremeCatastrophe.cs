@@ -67,10 +67,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
+        public static int SlashDamage = 105; // 420
+        public static int TrailedSlashDamage = 120; // 480
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -270,9 +273,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         dashAttackTimer--;
 
                         int type = ModContent.ProjectileType<SupremeCatastropheSlash>();
-                        int damage = NPC.GetProjectileDamage(type);
-
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.velocity.SafeNormalize(Vector2.UnitY) * 0.1f, type, damage, 0f, Main.myPlayer, 0f, SlashingFromRight.ToInt(), 4 + dashes);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, NPC.velocity.SafeNormalize(Vector2.UnitY) * 0.1f, type, TrailedSlashDamage, 0f, Main.myPlayer, 0f, SlashingFromRight.ToInt(), 4 + dashes);
                         dashes++;
                         if (dashes == 30 && broIsAlive == false)
                         {
@@ -302,8 +303,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             {
                                 SoundStyle slash = new("CalamityMod/Sounds/Item/MurasamaBigSwing");
                                 SoundEngine.PlaySound(slash with { Volume = 0.55f, Pitch = -0.3f }, NPC.Center);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.DirectionTo(Target.Center).RotatedBy(0.34f) * 130, NPC.DirectionTo(Target.Center).RotatedBy(0.34f) * 90f, type, damage, 0f, Main.myPlayer, 0f, 0, 50);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.DirectionTo(Target.Center).RotatedBy(-0.34f) * 130, NPC.DirectionTo(Target.Center).RotatedBy(-0.34f) * 90f, type, damage, 0f, Main.myPlayer, 0f, 0, 50);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.DirectionTo(Target.Center).RotatedBy(0.34f) * 130, NPC.DirectionTo(Target.Center).RotatedBy(0.34f) * 90f, type, TrailedSlashDamage, 0f, Main.myPlayer, 0f, 0, 50);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + NPC.DirectionTo(Target.Center).RotatedBy(-0.34f) * 130, NPC.DirectionTo(Target.Center).RotatedBy(-0.34f) * 90f, type, TrailedSlashDamage, 0f, Main.myPlayer, 0f, 0, 50);
                                 for (int i = 0; i < 30; i++)
                                 {
                                     Vector2 vel = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
@@ -379,7 +380,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCataclysmFist>();
 
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = Main.zenithWorld ? SupremeCataclysm.FistDamage : SlashDamage;
                     Vector2 slashSpawnPosition = NPC.Center + Vector2.UnitX * 125f * NPC.direction;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     { 
@@ -444,12 +445,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCataclysmFist>();
 
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = Main.zenithWorld ? SupremeCataclysm.FistDamage : SlashDamage;
                     Vector2 slashSpawnPosition = NPC.Center;
                     Vector2 firingVelocity = (broIsAlive == false ? (NPC.DirectionTo(Target.Center) + Target.velocity * 0.032f).SafeNormalize(Vector2.UnitY) : NPC.DirectionTo(Target.Center));
 
                     if ((broIsAlive == false ? BigAttackLimit <= 3 && BigAttackLimit > 0 : BigAttackLimit == 1) && death)
                     {
+                        if (!Main.zenithWorld)
+                            damage = TrailedSlashDamage;
+
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), slashSpawnPosition + firingVelocity * 130, (Phase2 ? NPC.DirectionTo(Target.Center) : firingVelocity) * 90f, ModContent.ProjectileType<SupremeCatastropheSlash>(), damage, 0f, Main.myPlayer, 0f, 5, 50);
                         SoundStyle slash = new("CalamityMod/Sounds/Item/MurasamaBigSwing");
                         SoundEngine.PlaySound(slash with { Volume = 0.55f, Pitch = -0.3f - BigAttackLimit * 0.1f }, NPC.Center);

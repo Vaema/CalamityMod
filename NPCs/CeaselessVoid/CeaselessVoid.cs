@@ -61,16 +61,19 @@ namespace CalamityMod.NPCs.CeaselessVoid
             }
         }
 
+        public static int BeamPortalDamage = 60; // 240
+        public static int DarkEnergyProjectileDamage = 60; // 240
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.npcSlots = 36f;
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 80;
             NPC.Calamity().DR = 0.5f;
             NPC.LifeMaxNERB(65000, 78000, 72000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -153,7 +156,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (phase4)
                 darkEnergyAmt += 1;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 darkEnergyAmt *= 2;
 
             // Spawn a few Dark Energies as soon as the fight starts
@@ -186,15 +189,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
             Player player = Main.player[NPC.target];
 
-            // Speed enrage
-            bool moveVeryFast = Vector2.Distance(NPC.Center, player.Center) > 960f || (!player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0);
-
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
                 {
                     if (NPC.velocity.Y > 3f)
                         NPC.velocity.Y = 3f;
@@ -211,24 +211,18 @@ namespace CalamityMod.NPCs.CeaselessVoid
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            float tileEnrageMult = (CalamityWorld.LegendaryMode && revenge) ? 1.5f : 1f;
-            NPC.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !BossRushEvent.BossRushActive;
-
-            // Set AI variable to be used by Dark Energies
-            NPC.ai[1] = tileEnrageMult;
-
             // Increase projectile fire rate based on number of nearby active tiles
-            float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
+            float projectileFireRateMultiplier = Main.getGoodWorld ? 0.5f : 1.5f;
 
             // Decides whether Ceaseless moves closer to its target or not
-            float distanceRequiredToMove = CalamityWorld.LegendaryMode ? 300f : 720f;
+            float distanceRequiredToMove = Main.getGoodWorld ? 300f : 720f;
             bool move = Vector2.Distance(NPC.Center, player.Center) > distanceRequiredToMove || !Collision.CanHit(NPC.Center, 1, 1, player.Center, 1, 1);
 
             // Succ attack
             if (!anyDarkEnergies)
             {
                 // This is here because it's used in multiple places
-                float suckDistance = (CalamityWorld.LegendaryMode && revenge) ? 2400f : death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
+                float suckDistance = death ? 1600f : revenge ? 1440f : expertMode ? 1280f : 1040f;
 
                 // Move closer to the target before trying to succ
                 if (movingDuringSuccPhase)
@@ -347,11 +341,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             float degrees = 360 / numBeamPortals;
                             float beamPortalDistance = death ? 400f : revenge ? 420f : expertMode ? 440f : 480f;
                             int type = ProjectileType<DoGBeamPortal>();
-                            int damage = NPC.GetProjectileDamage(type);
                             for (int i = 0; i < numBeamPortals; i++)
                             {
                                 float ai1 = i * degrees;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (float)(Math.Sin(i * degrees) * beamPortalDistance), player.Center.Y + (float)(Math.Cos(i * degrees) * beamPortalDistance), 0f, 0f, type, damage, 0f, Main.myPlayer, ai1, 0f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (float)(Math.Sin(i * degrees) * beamPortalDistance), player.Center.Y + (float)(Math.Cos(i * degrees) * beamPortalDistance), 0f, 0f, type, BeamPortalDamage, 0f, Main.myPlayer, ai1, 0f);
                             }
                         }
                     }
@@ -377,7 +370,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ProjectileType<DarkEnergyBall>();
-                            int damage = NPC.GetProjectileDamage(type);
                             bool normalSpread = NPC.localAI[0] % 2f == 0f;
                             float speed = 0.5f;
                             int totalProjectiles = 4;
@@ -387,7 +379,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             {
                                 Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(MathHelper.TwoPi / totalProjectiles * i + radialOffset)) * suckDistance;
                                 Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                             }
                         }
 
@@ -405,7 +397,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileType<DarkEnergyBall2>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 bool normalSpread = NPC.localAI[0] % 2f != 0f;
                                 float speed = 2f;
                                 int totalProjectiles = 2;
@@ -419,7 +410,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                                 {
                                     Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
                                     Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -436,7 +427,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileType<DarkEnergyBall2>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 bool normalSpread = NPC.localAI[0] % 2f == 0f;
                                 float speed = 4f;
                                 int totalProjectiles = 2;
@@ -450,7 +440,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                                 {
                                     Vector2 spawnVector = NPC.Center + Vector2.Normalize(spinningPoint.RotatedBy(radians * i + radialOffset)) * suckDistance;
                                     Vector2 velocity = Vector2.Normalize(NPC.Center - spawnVector) * speed;
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnVector, velocity, type, DarkEnergyProjectileDamage, 0f, Main.myPlayer);
                                 }
                             }
                         }
@@ -532,8 +522,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // Basic movement towards a location
             void Movement(bool succ)
             {
-                float velocity = moveVeryFast ? 25f : ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * tileEnrageMult;
-                float acceleration = (moveVeryFast ? 0.75f : death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * tileEnrageMult;
+                float velocity = ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f));
+                float acceleration = (death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f);
 
                 // Increase speed dramatically in succ phase
                 if (succ)
@@ -549,7 +539,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     acceleration *= 5f;
                 }
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     velocity *= 1.15f;
                     acceleration *= 1.15f;
@@ -559,8 +549,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
                 // Move between 8 different positions around the player, in order
                 float maxDistance = 320f;
-                Vector2 moveToOffset = succ ? Vector2.Zero : CalamityWorld.LegendaryMode ? new Vector2(0f, -maxDistance) : Vector2.Zero;
-                if ((!succ && CalamityWorld.LegendaryMode) || !madeItToLocation)
+                Vector2 moveToOffset = succ ? Vector2.Zero : Main.getGoodWorld ? new Vector2(0f, -maxDistance) : Vector2.Zero;
+                if ((!succ && Main.getGoodWorld) || !madeItToLocation)
                 {
                     // Move to a new location every few seconds
                     calamityGlobalNPC.newAI[2] += 1f;
@@ -582,7 +572,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 Vector2 distanceFromDestination = destination - NPC.Center;
 
                 // Movement
-                if (NPC.Distance(destination) > maxDistance || succ || (!CalamityWorld.LegendaryMode && !madeItToLocation))
+                if (NPC.Distance(destination) > maxDistance || succ || (!Main.getGoodWorld && !madeItToLocation))
                     CalamityUtils.SmoothMovement(NPC, 0f, distanceFromDestination, velocity, acceleration, true);
                 if (NPC.Distance(destination) < 80)
                 {
@@ -816,12 +806,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.soundDelay == 0 && NPC.life >= NPC.lifeMax * 0.05f)
             {
                 NPC.soundDelay = 8;
-                float pitchVar = 0;
-                if (Main.zenithWorld)
-                {
-                    pitchVar = Main.rand.Next(-60, 41) * 0.01f;
-                }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
+                float pitchVar = Main.zenithWorld ? 0.4f : 0;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { PitchVariance = pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)

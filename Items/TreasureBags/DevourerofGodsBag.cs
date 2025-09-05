@@ -84,7 +84,6 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Eradicator>()
             }));
             itemLoot.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-            itemLoot.Add(ModContent.ItemType<Norfleet>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<NebulousCore>());

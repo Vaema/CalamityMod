@@ -8,6 +8,9 @@ namespace CalamityMod.Items.Accessories
     public class SandCloak : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int SandVeilDefenseBoost = 4;
+
         public override void SetDefaults()
         {
             Item.width = 30;

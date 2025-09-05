@@ -131,6 +131,7 @@ namespace CalamityMod.Projectiles.Summon
                 projectile.ForceNetUpdate(false);
 
             projectile.extraUpdates = head.extraUpdates;
+            projectile.localNPCHitCooldown = head.localNPCHitCooldown;
 
             MechwormHead headModProj = head.ModProjectile<MechwormHead>();
             if (headModProj.EndRiftGateUUID == -1)

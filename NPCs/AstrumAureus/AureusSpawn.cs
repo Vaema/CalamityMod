@@ -35,9 +35,9 @@ namespace CalamityMod.NPCs.AstrumAureus
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 55; // 110
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 90;
             NPC.height = 60;
             NPC.Opacity = 0f;
@@ -308,11 +308,10 @@ namespace CalamityMod.NPCs.AstrumAureus
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int totalProjectiles = CalamityWorld.LegendaryMode ? 36 : (3 + (int)((NPC.scale - 1f) * 3));
+                    int totalProjectiles = 3 + (int)((NPC.scale - 1f) * 3);
                     double radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<AstralLaser>();
-                    int damage2 = NPC.GetProjectileDamage(type);
-                    float velocity = CalamityWorld.LegendaryMode ? 10f : 6f;
+                    float velocity = 6f;
                     double angleA = radians * 0.5;
                     double angleB = MathHelper.ToRadians(90f) - angleA;
                     float velocityX = (float)(velocity * Math.Sin(angleA) / Math.Sin(angleB));
@@ -320,7 +319,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 vector255 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, vector255, type, damage2, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, vector255, type, AstrumAureus.LaserDamage, 0f, Main.myPlayer);
                     }
                 }
             }

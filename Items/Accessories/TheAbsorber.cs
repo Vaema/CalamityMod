@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         public static float JumpSpeedBoost = 0.6f; // Both 12% so we only need just one in the tooltip
         public static float ThornsBoost = 3.5f;
         public static int AuraLifetime = 1800;
-        public static int AuraRegenBoost = 6;
+        public static int AuraRegenBoost = 4;
         public static float AuraDamageBoost = 0.08f;
         public static float AuraDamageReductionBoost = 0.05f;
         public static float DamageTakenHealedPercent = 0.05f;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 24;
-            Item.defense = 10;
+            Item.defense = 6;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
             Item.accessory = true;

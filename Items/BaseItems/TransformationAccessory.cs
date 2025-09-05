@@ -84,11 +84,13 @@ namespace CalamityMod.Items.BaseItems
     {
         public override void Load()
         {
+            On_Player.ResetVisibleAccessories += ResetTransformation;
             On_Player.UpdateVisibleAccessory += SetTransformationItem;
         }
 
         internal TransformationAccessory currentTransformation = null;
-        int prevSlot = -1;
+        int previousHighest = -1;
+        int currentHighest = -1;
 
         public int Type 
         { 
@@ -107,20 +109,36 @@ namespace CalamityMod.Items.BaseItems
             }
         }
 
+        private void ResetTransformation(On_Player.orig_ResetVisibleAccessories orig, Player self)
+        {
+            orig(self);
+
+            Reset(self);
+        }
+
+        private void Reset(Player p)
+        {
+            previousHighest = currentHighest;
+            currentHighest = -1;
+
+            if (p.Transformation().currentTransformation != null && !p.Transformation().currentTransformation.IsForced)
+                p.Transformation().currentTransformation = null;
+        }
+
         private void SetTransformationItem(On_Player.orig_UpdateVisibleAccessory orig, Player self, int itemSlot, Item item, bool modded)
         {
             orig(self, itemSlot, item, modded);
 
             if (self.Transformation().currentTransformation == null || !self.Transformation().currentTransformation.IsForced)
             {
-                if (self.Transformation().prevSlot > itemSlot) //determines if we're on the first visible slot (as this isnt called on non-visible slots)
-                    self.Transformation().currentTransformation = null;
-
                 if (item.ModItem is TransformationAccessory transformation && transformation.ShouldTransform.Invoke(self) && (currentTransformation == null || transformation.Priority >= currentTransformation.Priority))
                     self.Transformation().currentTransformation = transformation;
             }
 
-            if (self.Transformation().currentTransformation != null && itemSlot == 19) // last item slot, can set equip slots to our transformation if one is equipped
+            if (currentHighest < itemSlot)
+                currentHighest = itemSlot;
+
+            if (self.Transformation().currentTransformation != null && itemSlot == previousHighest) // last item slot, can set equip slots to our transformation if one is equipped
             {
                 TransformationAccessory trans = self.Transformation().currentTransformation;
                 bool[] list = new bool[15];
@@ -133,11 +151,9 @@ namespace CalamityMod.Items.BaseItems
                         list[(int)Type] = true;
                     }
                 }
-                if(trans.ShouldHideAccessories)
+                if (trans.ShouldHideAccessories)
                     self.HideAccessories();
             }
-
-            self.Transformation().prevSlot = itemSlot;
         }
 
         public override void UpdateAutopause()
@@ -151,6 +167,8 @@ namespace CalamityMod.Items.BaseItems
                     SetEquipSlot(Player, EquipType.Head, Mod, name);
                 }
             }
+
+            Reset(Player);
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)

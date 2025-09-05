@@ -24,14 +24,12 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            //Dust
             for (int i = 0; i < 3; i++)
             {
-                int dint = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, 0, default, 0.75f);
-                Dust dust = Main.dust[dint];
-                dust.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f, 0.3f);
-                dust.color = Main.hslToRgb((float)(0.40000000596046448 + Main.rand.NextDouble() * 0.20000000298023224), 0.9f, 0.5f);
-                dust.color = Color.Lerp(dust.color, Color.White, 0.3f);
+                Dust dint = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.TerraBlade, 0f, 0f, Scale: 0.75f);
+                dint.velocity = Projectile.velocity * Main.rand.NextFloat(-0.3f, 0.3f);
+                dint.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
+                dint.color = Color.Lerp(dint.color, Color.White, 0.3f);
             }
         }
 
@@ -40,25 +38,15 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 20; i++)
             {
                 Vector2 dspeed = new Vector2(Main.rand.NextFloat(-4f, 4f), Main.rand.NextFloat(-6f, 6f));
-                int dint = Dust.NewDust(Projectile.Center, 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 0.7f);
-                Dust dust = Main.dust[dint];
-                dust.color = Main.hslToRgb((float)(0.40000000596046448 + Main.rand.NextDouble() * 0.20000000298023224), 0.9f, 0.5f);
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TerraBlade, dspeed.X, dspeed.Y, 0, default, 0.7f);
+                dust.color = Main.hslToRgb(Main.rand.NextFloat(0.2f, 0.6f), 0.9f, 0.5f);
                 dust.color = Color.Lerp(dust.color, Color.White, 0.3f);
             }
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            Projectile.position.X = Projectile.position.X - (float)(Projectile.width / 2);
-            Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
-            Projectile.width = 60;
-            Projectile.height = 60;
-            Projectile.maxPenetrate = -1;
-            Projectile.penetrate = -1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
-            Projectile.Damage();
 
             if (!Main.dedServ)
             {
-                Vector2 goreVec = new Vector2(Projectile.position.X + (float)(Projectile.width / 2) - 24f, Projectile.position.Y + (float)(Projectile.height / 2) - 24f);
+                Vector2 goreVec = new Vector2(Projectile.Center.X - 24f, Projectile.Center.Y - 24f);
                 float smokeScale = 0.66f;
                 for (int i = 0; i < 2; i++)
                 {

@@ -12,6 +12,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class QueenSlimeAI
     {
+        // Vanilla values
+        public static int SmallGelDamage = Main.masterMode ? 20 : 17; // 68
+        public static int SpikeDamage = Main.masterMode ? 20 : 17; // 68
+        public static int LargeGelDamage = 30; // 120
+        public static int SlamDamage = 40; // 160
+
         public static bool BuffedQueenSlimeAI(NPC npc, Mod mod)
         {
             // Difficulty bools
@@ -327,12 +333,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (death)
                         {
                             int numGelProjectiles = 12;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 numGelProjectiles = 15;
 
                             float gelVelocity = death ? 20f : 16f;
                             int type = ProjectileID.QueenSlimeGelAttack;
-                            int damage = npc.GetProjectileDamage(type);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -340,11 +345,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 spinningpoint = new Vector2(gelVelocity, 0f);
 
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         spinningpoint *= Main.rand.NextFloat() + 0.5f;
 
                                     spinningpoint = spinningpoint.RotatedBy((float)(-j) * MathHelper.TwoPi / (float)numGelProjectiles, Vector2.Zero);
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, spinningpoint, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, spinningpoint, type, LargeGelDamage, 0f, Main.myPlayer, 0f, -2f);
                                     Main.projectile[proj].timeLeft = 900;
                                 }
                             }
@@ -465,7 +470,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             break;
 
                         float jumpVelocity = death ? 7f : 4.5f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             jumpVelocity = 12f;
 
                         if ((npc.direction == 1 && npc.velocity.X < jumpVelocity) || (npc.direction == -1 && npc.velocity.X > 0f - jumpVelocity))
@@ -511,7 +516,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (phase2)
                             slamDelay = 10;
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             slamDelay = 0;
 
                         if (npc.velocity.Y == 0f)
@@ -520,8 +525,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.QueenSlimeSmash;
-                                int damage = npc.GetProjectileDamage(type);
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Bottom, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Bottom, Vector2.Zero, type, SlamDamage, 0f, Main.myPlayer);
 
                                 // Line of explosions in Master Mode
                                 if (death)
@@ -537,7 +541,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     {
                                         expandDelay = MathHelper.Lerp(0f, maxExpandDelay, Math.Abs(i - maxSmashesPerSide) / (float)maxSmashesPerSide);
                                         if (i != maxSmashesPerSide)
-                                            Projectile.NewProjectile(npc.GetSource_FromAI(), extraSmashPosition, Vector2.Zero, type, damage, 0f, Main.myPlayer, -expandDelay);
+                                            Projectile.NewProjectile(npc.GetSource_FromAI(), extraSmashPosition, Vector2.Zero, type, SlamDamage, 0f, Main.myPlayer, -expandDelay);
 
                                         extraSmashPosition -= Vector2.UnitX * smashSpawnDistanceOffset;
                                     }
@@ -548,7 +552,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     float projectileVelocity = death ? 18f : 12f;
                                     type = ProjectileID.QueenSlimeMinionBlueSpike;
-                                    damage = npc.GetProjectileDamage(type);
                                     Vector2 destination = (new Vector2(npc.Center.X, npc.Center.Y - 100f) - npc.Center).SafeNormalize(Vector2.UnitY);
                                     destination *= projectileVelocity;
                                     int numProj = 20;
@@ -556,7 +559,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     for (int i = 0; i < numProj; i++)
                                     {
                                         Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, SpikeDamage, 0f, Main.myPlayer, 0f, -2f);
                                     }
 
                                     if (phase5)
@@ -566,7 +569,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         for (int i = 0; i < numProj; i++)
                                         {
                                             Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, SpikeDamage, 0f, Main.myPlayer, 0f, -2f);
                                         }
                                     }
                                 }
@@ -625,7 +628,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             npc.velocity.Y += death ? 1.75f : 1.5f;
                             float slamVelocity = death ? 15.5f : 15f;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                             {
                                 npc.velocity.Y += 1f;
                                 slamVelocity = 15.99f;
@@ -646,7 +649,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     Vector2 fireFrom = npc.Center;
                                     int projectileAmt = 2;
                                     int type = ProjectileID.QueenSlimeMinionBlueSpike;
-                                    int damage = npc.GetProjectileDamage(type);
                                     Vector2 velocityIncrease = death ? (Vector2.UnitY * 4f) : Vector2.Zero;
                                     for (int i = 0; i < projectileAmt; i++)
                                     {
@@ -655,7 +657,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         for (int j = 0; j < totalProjectiles; j++)
                                         {
                                             Vector2 projVelocity = (npc.velocity + velocityIncrease).RotatedBy(radians * j + MathHelper.PiOver2);
-                                            Projectile.NewProjectile(npc.GetSource_FromAI(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer, 0f, -1f);
+                                            Projectile.NewProjectile(npc.GetSource_FromAI(), fireFrom, projVelocity, type, SpikeDamage, 0f, Main.myPlayer, 0f, -1f);
                                         }
                                     }
                                 }
@@ -731,12 +733,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numGelProjectiles = phase4 ? Main.rand.Next(9, 12) : phase2 ? Main.rand.Next(6, 9) : 12;
                             if (phase5)
                                 numGelProjectiles += 6;
-                            if (CalamityWorld.LegendaryMode)
-                                numGelProjectiles = 20;
+                            if (Main.getGoodWorld)
+                                numGelProjectiles = 15;
 
                             float projectileVelocity = death ? 12f : 10.5f;
                             int type = ProjectileID.QueenSlimeGelAttack;
-                            int damage = npc.GetProjectileDamage(type);
                             if (phase2)
                             {
                                 Vector2 destination = (new Vector2(npc.Center.X, npc.Center.Y + 100f) - npc.Center).SafeNormalize(Vector2.UnitY);
@@ -744,11 +745,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 float rotation = MathHelper.ToRadians(120);
                                 for (int i = 0; i < numGelProjectiles; i++)
                                 {
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         destination *= Main.rand.NextFloat() + 0.5f;
 
                                     Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numGelProjectiles - 1)));
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, perturbedSpeed, type, LargeGelDamage, 0f, Main.myPlayer, 0f, -2f);
                                     Main.projectile[proj].timeLeft = 900;
                                 }
                             }
@@ -758,11 +759,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     Vector2 spinningpoint = new Vector2(projectileVelocity, 0f);
 
-                                    if (CalamityWorld.LegendaryMode)
+                                    if (Main.getGoodWorld)
                                         spinningpoint *= Main.rand.NextFloat() + 0.5f;
 
                                     spinningpoint = spinningpoint.RotatedBy((-j) * MathHelper.TwoPi / numGelProjectiles, Vector2.Zero);
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, spinningpoint, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, spinningpoint, type, LargeGelDamage, 0f, Main.myPlayer, 0f, -2f);
                                     Main.projectile[proj].timeLeft = 900;
                                 }
                             }
@@ -780,7 +781,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             foreach (int t in targets)
                             {
                                 Vector2 velocity2 = (Main.player[t].Center - npc.Center).SafeNormalize(Vector2.UnitY) * projectileVelocity;
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity2, type, damage, 0f, Main.myPlayer, 0f, -2f);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, velocity2, type, LargeGelDamage, 0f, Main.myPlayer, 0f, -2f);
                                 Main.projectile[proj].timeLeft = 900;
                             }
                         }
@@ -870,7 +871,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.netUpdate = true;
             }
 
-            float slimeSpawnHealthGateValue = CalamityWorld.LegendaryMode ? 0.01f : phase3 ? 0.04f : phase2 ? 0.03f : 0.025f;
+            float slimeSpawnHealthGateValue = Main.zenithWorld ? 0.01f : phase3 ? 0.04f : phase2 ? 0.03f : 0.025f;
             if (death)
                 slimeSpawnHealthGateValue *= 0.5f;
 
@@ -1025,7 +1026,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 vector6 *= 1.5f;
 
                             int type = ProjectileID.QueenSlimeMinionBlueSpike;
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), center, vector6 * (death ? 0.8f : 0.5f), type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), center, vector6 * (death ? 0.8f : 0.5f), type, SpikeDamage, 0f, Main.myPlayer);
                             npc.localAI[0] = 25f;
                             if (num22 > 4)
                                 break;
@@ -1055,7 +1056,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         npc.localAI[0] = 50f;
                         int type = ProjectileID.QueenSlimeMinionBlueSpike;
                         Vector2 spikeVelocity = new Vector2(num19, num20) * (death ? 0.8f : 0.5f);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), center, spikeVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), center, spikeVelocity, type, SpikeDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -1210,7 +1211,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         int type = ProjectileID.QueenSlimeMinionPinkBall;
                         Vector2 pinkBallVelocity = new Vector2(num24, num25) * (death ? 0.8f : 0.5f);
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), center2, pinkBallVelocity, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), center2, pinkBallVelocity, type, SmallGelDamage, 0f, Main.myPlayer);
                     }
                 }
             }

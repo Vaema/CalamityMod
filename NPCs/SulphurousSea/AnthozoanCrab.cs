@@ -38,9 +38,9 @@ namespace CalamityMod.NPCs.SulphurousSea
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 22;
-            NPC.lifeMax = 1130;
+            NPC.lifeMax = 900;
             NPC.aiStyle = AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.knockBackResist = 0.04f;

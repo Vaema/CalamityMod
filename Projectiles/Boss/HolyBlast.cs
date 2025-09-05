@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.World;
@@ -16,6 +17,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyBlast : ModProjectile, ILocalizedModType
     {
         public bool started = false;
+        public int FireDamage = 0;
 
         private const int TimeLeft = 120;
         private const int AccelerationTime = 60;
@@ -30,10 +32,6 @@ namespace CalamityMod.Projectiles.Boss
             Main.projFrames[Type] = 4;
         }
 
-        public override void OnSpawn(IEntitySource source)
-        {
-        }
-
         public override void SetDefaults()
         {
             Projectile.Calamity().DealsDefenseDamage = true;
@@ -44,6 +42,17 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = TimeLeft;
             CooldownSlot = ImmunityCooldownID.Bosses;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            FireDamage = Providence.FireDamage.CalculateProvidenceDamage();
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<ProfanedGuardianCommander>())
+                    FireDamage = ProfanedGuardianCommander.FireDamage;
+            }
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -58,7 +67,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 320, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 180, 20);
 
             Lighting.AddLight(Projectile.Center, 0.9f, 0.7f, 0f);
 
@@ -150,7 +159,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.owner == Main.myPlayer)
             {
                 int totalProjectiles = !ProvUtils.StandardAI() ? 8 : 6;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     totalProjectiles *= 2;
 
                 float radians = MathHelper.TwoPi / totalProjectiles;
@@ -161,7 +170,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, (int)Math.Round(Projectile.damage * 0.75), 0f, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + additionalVelocity, type, FireDamage, 0f, Projectile.owner);
                 }
             }
 
@@ -192,7 +201,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 320);
+            ProvUtils.ApplyDebuffs(target, 180);
         }
     }
 }

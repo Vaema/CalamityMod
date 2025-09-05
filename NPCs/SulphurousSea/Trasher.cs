@@ -32,16 +32,15 @@ namespace CalamityMod.NPCs.SulphurousSea
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.noGravity = true;
             NPC.damage = 50;
             NPC.width = 150;
             NPC.height = 40;
             NPC.defense = 22;
-            NPC.lifeMax = 250;
+            NPC.lifeMax = 200;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath5;
             NPC.knockBackResist = 0.15f;

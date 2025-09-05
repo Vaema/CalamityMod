@@ -54,13 +54,18 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
+        public static int FireDamage = 42; // 168; HolyFlare
+        public static int BlobDamage = 42; // 168
+        public static int FireSentryDamage = 55; // 220; HolyBomb
+        public static int MoltenBlastDamage = 55; // 220
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 110; // 220
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 164;
             NPC.defense = 50;
@@ -257,7 +262,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Charge variables
             float chargeVelocityMult = 0.25f;
             float maxChargeVelocity = death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 maxChargeVelocity *= 1.15f;
 
             // Whether the commander is calling all guardians together for the laser attack
@@ -377,7 +382,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
 
             float moveVelocity = death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 moveVelocity *= 1.25f;
             if (healerAlive)
                 moveVelocity *= 0.8f;
@@ -439,9 +444,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -452,7 +455,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = (commanderUsingLaser || commanderGoingLowOrHighInPhase1) ? 10f : 15f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -484,7 +487,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[1] >= -throwRocksGateValue)
                 {
                     NPC.velocity *= 0.8f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         NPC.velocity *= 0.5f;
                 }
 
@@ -501,13 +504,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         Vector2 velocity = Vector2.Normalize(player.Center - shootFrom) * moltenBlastVelocity;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<MoltenBlast>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
-                                Main.projectile[proj].timeLeft = projTimeLeft;
-                            }
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
+                            Main.projectile[proj].timeLeft = projTimeLeft;
                         }
 
                         // Dust for blasting out the molten blasts
@@ -550,7 +548,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (distanceFromDestination.Length() > 40f)
                     {
                         float inertia = commanderGoingLowOrHighInPhase2 ? 8f : 15f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             inertia *= 0.8f;
 
                         NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -667,9 +665,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -942,7 +938,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)

@@ -35,9 +35,11 @@ namespace CalamityMod.NPCs.StormWeaver
             }
         }
 
+        public static int LightningOrbDamage = 64; // 256
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 80; // 160
             NPC.npcSlots = 5f;
             NPC.width = 48;
             NPC.height = 80;
@@ -66,7 +68,7 @@ namespace CalamityMod.NPCs.StormWeaver
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
@@ -116,7 +118,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase2 = NPC.life / (float)NPC.lifeMax < 0.8f;
 
             // Update armored settings to naked settings
-            if (phase2 && (!CalamityWorld.LegendaryMode || !CalamityWorld.revenge))
+            if (phase2 && (!Main.zenithWorld || !CalamityWorld.revenge))
             {
                 // Spawn armor gore and set other crucial variables
                 if (NPC.takenDamageMultiplier == 2f)
@@ -148,8 +150,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (Main.npc[(int)NPC.ai[2]].localAI[0] % spawnOrbGateValue == 0f)
                     {
                         int type = ProjectileID.CultistBossLightningOrb;
-                        int damage = NPC.GetProjectileDamage(type);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, LightningOrbDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -226,21 +227,6 @@ namespace CalamityMod.NPCs.StormWeaver
                 else if (targetX > 0f)
                     NPC.spriteDirection = 1;
             }
-
-            // Calculate contact damage based on velocity
-            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
-            float minimalContactDamageVelocity = velocity * 0.25f;
-            float minimalDamageVelocity = velocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -258,7 +244,7 @@ namespace CalamityMod.NPCs.StormWeaver
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            bool phase2 = lifeRatio < 0.8f && (!CalamityWorld.LegendaryMode || !revenge);
+            bool phase2 = lifeRatio < 0.8f && (!Main.zenithWorld || !revenge);
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
@@ -309,7 +295,7 @@ namespace CalamityMod.NPCs.StormWeaver
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            int buffDuration = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] >= chargePhaseGateValue ? 120 : 60;
+            int buffDuration = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] >= chargePhaseGateValue ? 240 : 120;
             if (hurtInfo.Damage > 0)
                 target.AddBuff(BuffID.Electrified, buffDuration);
         }
@@ -364,7 +350,6 @@ namespace CalamityMod.NPCs.StormWeaver
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

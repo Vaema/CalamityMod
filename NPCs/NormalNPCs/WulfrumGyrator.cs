@@ -55,9 +55,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 5;
-            NPC.lifeMax = 23;
+            NPC.lifeMax = 25;
             NPC.knockBackResist = 0.15f;
-            NPC.value = Item.buyPrice(0, 0, 0, 75);
+            NPC.value = Item.buyPrice(copper: 75);
             NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
@@ -128,8 +128,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.direction = direction;
                     NPC.ForceNetUpdate();
                 }
-                //GOTTA GO FAST (Legendary only)
-                if (CalamityWorld.LegendaryMode)
+                //GOTTA GO FAST (FTW only)
+                if (Main.getGoodWorld)
                 {
                     NPC.velocity *= 1.01f;
                     //Overcharged

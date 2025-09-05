@@ -166,11 +166,14 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             }
         }
 
+        public static int LaserDamage = 85; // 340
+        public static int BeamDamage = 135; // 540
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
-            NPC.GetNPCDamage();
             NPC.width = 164;
             NPC.height = 164;
             NPC.defense = 100;
@@ -181,7 +184,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -250,7 +253,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         }
 
         public float GetSlowdownAreaEdgeRadius(bool lastMechAlive) =>
-            (CalamityWorld.death ? 600f : CalamityWorld.revenge ? 700f : Main.expertMode ? 800f : 1000f) * (lastMechAlive ? 0.6f : 1f) * (Main.zenithWorld && !exoMechdusa ? 2 : CalamityWorld.LegendaryMode ? 0.5f : 1f);
+            (CalamityWorld.death ? 600f : CalamityWorld.revenge ? 700f : Main.expertMode ? 800f : 1000f) * (lastMechAlive ? 0.75f : 1f) * (Main.zenithWorld && !exoMechdusa ? 2 : Main.getGoodWorld ? 0.75f : 1f);
 
         public int CheckForOtherMechs(ref int targetIndex, out bool exoPrimeAlive, out bool exoTwinsAlive)
         {
@@ -523,7 +526,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             else
                 baseVelocity *= increaseSpeedMult;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 baseVelocity *= 1.15f;
 
             float turnDegrees = baseVelocity * 0.1f * (shouldGetBuffedByBerserkPhase ? 1.25f : 1.1f);
@@ -937,8 +940,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     int type = ModContent.ProjectileType<ThanatosBeamStart>();
-                                    int damage = NPC.GetProjectileDamage(type);
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, BeamDamage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
                                 }
                             }
                         }
@@ -1041,19 +1043,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
                         }
                     }
                 }
-            }
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = baseVelocity * 0.25f;
-            float minimalDamageVelocity = baseVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
             }
         }
 
@@ -1363,7 +1352,6 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

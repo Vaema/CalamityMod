@@ -21,8 +21,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
-            Item.rare = ItemRarityID.Lime;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
+            Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<HeavenfallenStardiskBoomerang>();
             Item.shootSpeed = 10f;
             Item.DamageType = RogueDamageClass.Instance;

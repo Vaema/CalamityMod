@@ -35,13 +35,13 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.brimstoneWaifu = true;
+            modPlayer.brimElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<BrimstoneWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
                 {
@@ -58,13 +58,13 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.brimstoneWaifuVanity = true;
+            modPlayer.brimElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
-                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<BrimstoneElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<BrimstoneWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<BrimstoneElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<BrimstoneElementalMinion>()] < 1)
                 {

@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Enemy
                 return;
 
             if (Projectile.Opacity >= 0.9f)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
+                target.AddBuff(ModContent.BuffType<Irradiated>(), 300);
         }
     }
 }

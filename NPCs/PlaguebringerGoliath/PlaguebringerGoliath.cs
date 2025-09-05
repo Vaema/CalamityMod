@@ -84,10 +84,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
         }
 
+        public static int StingerDamage = 28; // 112
+        public static int NukeDamage = 35; // 140; Also applies to GFB Peanuts and Gauss Nukes
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.npcSlots = 64f;
             NPC.width = 198;
             NPC.height = 198;
@@ -98,7 +101,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(0, 30, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit4;
@@ -172,7 +175,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             float challengeAmt = (1f - lifeRatio) * 100f;
             float nukeBarrageChallengeAmt = (0.5f - lifeRatio) * 200f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 challengeAmt *= 1.5f;
                 nukeBarrageChallengeAmt *= 1.5f;
@@ -204,7 +207,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             // Missile countdown
             if (halfLife && MissileCountdown == 0)
-                MissileCountdown = CalamityWorld.LegendaryMode ? 300 : 600;
+                MissileCountdown = Main.getGoodWorld ? 300 : 600;
             if (MissileCountdown > 1)
                 MissileCountdown--;
 
@@ -245,7 +248,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             if (enrageScale > 1.5f)
                 enrageScale = 1.5f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 enrageScale += 0.5f;
 
             bool diagonalDash = (revenge && phase2);
@@ -536,8 +539,8 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                         if (calamityGlobalNPC.newAI[0] > 90f)
                             NPC.velocity *= 1.01f;
 
-                        // Spawn honey in legendary rev+
-                        if (CalamityWorld.LegendaryMode && calamityGlobalNPC.newAI[0] % 6f == 0f)
+                        // Spawn honey in the stupid seed
+                        if (Main.zenithWorld && calamityGlobalNPC.newAI[0] % 6f == 0f)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
@@ -795,7 +798,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 NPC.direction = playerLocation < 0 ? 1 : -1;
                 NPC.spriteDirection = NPC.direction;
 
-                if (NPC.ai[2] > (CalamityWorld.LegendaryMode ? 3f : 5f))
+                if (NPC.ai[2] > 5f)
                 {
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;
@@ -860,7 +863,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                         if (Main.zenithWorld)
                             type = ModContent.ProjectileType<HiveBombGoliath>();
 
-                        int damage = NPC.GetProjectileDamage(type);
+                        int damage = type == ModContent.ProjectileType<HiveBombGoliath>() ? NukeDamage : StingerDamage;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), stingerSpawnPos.X, stingerSpawnPos.Y, projXDist, projYDist, type, damage, 0f, Main.myPlayer, challengeAmt, player.position.Y);
                         NPC.netUpdate = true;
                     }
@@ -906,7 +909,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 missileVelocity += 2f * enrageScale;
 
                 int type = ModContent.ProjectileType<HiveBombGoliath>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = NukeDamage;
 
                 int chargeDistanceX = 600;
                 float chargeSpeed = revenge ? 28f : 26f;
@@ -1336,7 +1339,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 {
                     ModContent.ItemType<Virulence>(),
                     ModContent.ItemType<TheHive>(),
-                    ModContent.ItemType<BlightSpewer>(),
+                    ModContent.ItemType<Malevolence>(),
                     ModContent.ItemType<PlagueStaff>(),
                     ModContent.ItemType<FuelCellBundle>(),
                     ModContent.ItemType<InfectedRemote>(),
@@ -1374,7 +1377,6 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

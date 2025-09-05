@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -29,22 +30,21 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<ResurrectionButterflyBuff>();
             Item.shoot = ModContent.ProjectileType<PinkButterfly>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             Vector2 clampedMouse = player.ClampedMouseWorld();
-            Vector2 mouseDirection = Vector2.Normalize(clampedMouse - player.Center) * Item.shootSpeed;
+            Vector2 mouseDirection = Vector2.Normalize(clampedMouse - player.Center) * 10f;
 
-            int p = Projectile.NewProjectile(source, clampedMouse, mouseDirection.RotatedBy(MathHelper.PiOver2), ModContent.ProjectileType<PinkButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
-            p = Projectile.NewProjectile(source, clampedMouse, mouseDirection.RotatedBy(-MathHelper.PiOver2), ModContent.ProjectileType<PurpleButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            var pink = Projectile.NewProjectileDirect(source, clampedMouse, mouseDirection.RotatedBy(MathHelper.PiOver2), ModContent.ProjectileType<PinkButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
+            pink.originalDamage = Item.damage;
+            var purple = Projectile.NewProjectileDirect(source, clampedMouse, mouseDirection.RotatedBy(-MathHelper.PiOver2), ModContent.ProjectileType<PurpleButterfly>(), damage, knockback, Main.myPlayer, 0f, 0f);
+            purple.originalDamage = Item.damage;
             return false;
         }
 
