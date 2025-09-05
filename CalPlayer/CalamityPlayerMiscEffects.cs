@@ -198,7 +198,7 @@ namespace CalamityMod.CalPlayer
             if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0 && !Player.dead)
             {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), Player.HeldItem.damage, Player.HeldItem.knockBack, Player.whoAmI);
             }

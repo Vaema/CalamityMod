@@ -1,54 +1,100 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
     public class PlasmaBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public int time = 0;
+        public Color c1 = new Color(192, 10, 111);
+        public Color c2 = Color.Coral;
+        public Color c3 = Color.DarkOrange;
+        public Player Owner => Main.player[Projectile.owner];
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
-
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = 25;
+            Projectile.height = 25;
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 1;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.timeLeft = 600;
             Projectile.ignoreWater = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.tileCollide = false;
         }
 
         public override void AI()
         {
+            if (time > 5 && time % 2 == 0)
+            {
+                Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/DualTrail", false, 15, 0.11f, Color.Lerp(c1, c3, Main.rand.NextFloat(0f, 1f)), new Vector2(0.9f, 1.1f), shrinkSpeed: 0.5f);
+                GeneralParticleHandler.SpawnParticle(trail);
+
+                if (time > 18)
+                {
+                    int dustStyle = DustType<SquashDust>();
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), dustStyle);
+                    dust.scale = Main.rand.NextFloat(1.2f, 1.8f);
+                    dust.velocity = -Projectile.velocity * Main.rand.NextFloat(3f, 5f);
+                    dust.noGravity = true;
+                    dust.color = Color.Lerp(c1, c3, Main.rand.NextFloat(0f, 1f));
+                    dust.fadeIn = 5f;
+                }
+            }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+            time++;
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            Texture2D glowTexture = Request<Texture2D>("CalamityMod/Projectiles/Rogue/LeonidStar").Value;
+            Texture2D tex2 = Request<Texture2D>("CalamityMod/Particles/FadeStreak").Value;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            Color drawColor = Projectile.GetAlpha(lightColor);
+            float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
+            Vector2 rotationPoint = glowTexture.Size() * 0.5f;
+            SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            int draws = 18;
+            float sine = (float)Math.Sin(time * 0.02f);
+            float fastSine = (float)Math.Sin(time * 0.3f);
+            Color glowColor = Color.Lerp(c1, c3, 1 + sine);
+            Vector2 stretch = new Vector2(1f, 1f) * 0.8f;
+
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 offset = (MathHelper.TwoPi * i / 5).ToRotationVector2().RotatedBy(Projectile.rotation + MathHelper.Pi);
+                for (int t = 0; t < 3; t++)
+                    Main.EntitySpriteDraw(tex2, drawPosition, null, Color.Lerp(c1, c3, t / 2f) with { A = 0 }, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2((2.3f + t * 0.03f) * (i == 2 ? 1.8f : i == 3 ? 1.8f : 1), (1.1f + t * 0.03f) * (i == 2 ? 0.75f : i == 3 ? 0.75f : 1)) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(tex2, drawPosition, null, Color.White with { A = 0 }, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2(1.5f, 0.7f) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
+            }
             return false;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            //Vector2 launchVel = Projectile.velocity.SafeNormalize(Vector2.UnitX);
-            //float launchPower = (Projectile.ai[2] == 5 ? 35 : 14);
-            //target.MoveNPC(launchVel, launchPower, true);
-
-            float minMult = 0.3f;
-            int hitsToMinMult = 7;
+            float minMult = 0.4f;
+            int hitsToMinMult = 15;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }

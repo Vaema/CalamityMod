@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -43,11 +44,13 @@ namespace CalamityMod.Graphics.Metaballs
 
             public void Update()
             {
+                float sine = (float)Math.Sin(time * 0.15f * SquashPower) * 0.8f;
                 Center += Velocity;
-                Velocity *= 0.95f;
-                if ((float)time / (float)Lifetime > 0.5f)
+                    Velocity *= 0.96f;
+                    Velocity += Velocity.RotatedBy(0.36f * sine * SquashPower * (Math.Sign(ShrinkSpeed))) * 0.02f;
+                if ((float)time / (float)Lifetime > 0.8f)
                 {
-                    Size *= 0.94f;
+                    Size *= 0.9f;
                 }
                 BaseSquash.X *= (1 - 0.2f * ShrinkSpeed);
                 BaseSquash.Y *= (1 + 0.2f * ShrinkSpeed);
@@ -84,7 +87,7 @@ namespace CalamityMod.Graphics.Metaballs
                 return;
 
             // Load the layer asset wrapper.
-            LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/StarsmokeBlueLayer", AssetRequestMode.ImmediateLoad);
+            LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Particles/GlowSquareParticleBig", AssetRequestMode.ImmediateLoad);
         }
 
         public override void Update()
@@ -100,9 +103,9 @@ namespace CalamityMod.Graphics.Metaballs
             float rate = Main.GlobalTimeWrappedHourly * 19;
             List<Color> colors = new List<Color>()
             {
-                Color.Purple,
-                Color.BlueViolet,
-                Color.DarkViolet
+                new Color (192, 10, 111),
+                Color.Coral,
+                Color.DarkOrange
             };
 
             int colorIndex = (int)(rate / 2 % colors.Count);
@@ -116,7 +119,7 @@ namespace CalamityMod.Graphics.Metaballs
                 Particles[i].Update();
             Particles.RemoveAll(p => p.Size <= 2f);
         }
-        public override Color EdgeColor => borderColor with { A = 0 };
+        public override Color EdgeColor => borderColor with { A = 0 } * 0.3f;
 
         public static void SpawnParticle(Vector2 position, Vector2 velocity, float size, int lifetime, Vector2 squash, float shrinkSpeed = 0, float velocitySquash = 0) =>
             Particles.Add(new(position, velocity, size, lifetime, squash, shrinkSpeed, velocitySquash));
@@ -129,10 +132,13 @@ namespace CalamityMod.Graphics.Metaballs
 
         public override void DrawInstances()
         {
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Graphics/Metaballs/StarsmokeMetaball1").Value;
+            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Graphics/Metaballs/StarsmokeMetaball2").Value;
 
             foreach (StarsmokeParticle particle in Particles)
             {
+                float sine = (float)Math.Sin(particle.time * 0.2f) * 0.5f;
+                float lifetimeVal = 1 - (particle.time / particle.Lifetime);
+                Vector2 altSquash = new Vector2(1f + 1 * (1 + sine) * lifetimeVal, 1f + 1 * (1 - sine) * lifetimeVal);
                 Vector2 squash = Vector2.Lerp(particle.BaseSquash, new Vector2(Utils.Remap(particle.Velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(particle.Velocity.Length(), 2, 7, 1, 2.5f)), particle.SquashPower);
                 Vector2 drawPosition = particle.Center - Main.screenPosition;
                 Vector2 origin = tex.Size() * 0.5f;
