@@ -50,6 +50,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             Main.npcFrameCount[Type] = 10;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0,
@@ -67,8 +68,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int CrystalDamage = 55; // 220
-        public static int StarDamage = 55; // 220; HolyBurnOrb
+        public static int CrystalDamage = 48; // 192
+        public static int StarDamage = 54; // 216; HolyBurnOrb
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight
 
@@ -76,7 +77,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 100; // 200
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
             NPC.width = 228;
@@ -134,9 +135,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void AI()
         {
             CalamityGlobalNPC.doughnutBossHealer = NPC.whoAmI;
-
-            // Avoid cheap bullshit
-            NPC.damage = 0;
 
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1.1f, 0.9f, 0f);
 
@@ -216,7 +214,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             bool useCrystalShards = AIState == (float)Phase.CrystalShards;
             float velocity = useCrystalShards ? (death ? 16f : revenge ? 15f : expertMode ? 14f : 12f) : (Main.npc[CalamityGlobalNPC.doughnutBoss].velocity.Length() + 5f);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 velocity *= 1.25f;
 
             float idealDistanceFromDestination = useCrystalShards ? 80f : 160f;
@@ -250,7 +248,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = 10f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -403,7 +401,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 float inertia = death ? 32f : revenge ? 34f : expertMode ? 36f : 40f;
                 if (lifeRatio < 0.5f)
                     inertia *= 0.8f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.8f;
 
                 NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;

@@ -3948,6 +3948,11 @@ PolypSand: {
 	Tooltip: ""
 }
 
+TableCoralLeft: {
+	DisplayName: Table Coral
+	Tooltip: ""
+}
+
 VolcanicSand: {
 	DisplayName: Volcanic Sand
 	Tooltip: ""
@@ -4641,5 +4646,10 @@ ShellTrimBrick: {
 
 ShellTrimBrickWall: {
 	DisplayName: Shell Trim Brick Wall
+	Tooltip: ""
+}
+
+BasaltSlab: {
+	DisplayName: Basalt Slab
 	Tooltip: ""
 }

@@ -97,11 +97,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             if (Supercharged)
             {
                 SuperchargeTimer--;
-                NPC.defense = CalamityWorld.LegendaryMode ? 20 : 13;
+                NPC.defense = Main.getGoodWorld ? 20 : 13;
             }
             else if (!Supercharged)
             {
-                NPC.defense = CalamityWorld.LegendaryMode ? 10 : 4;
+                NPC.defense = Main.getGoodWorld ? 10 : 4;
             }
 
             Player player = Main.player[NPC.target];
@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Main.projectile[mine].hostile = true;
                         Main.projectile[mine].timeLeft = 60;
                     }
-                    mineDelay = CalamityWorld.LegendaryMode ? 3 : 5;
+                    mineDelay = 3;
                 }
                 else if (Main.zenithWorld && mineDelay >= 1)
                     mineDelay--;

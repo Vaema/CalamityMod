@@ -25,9 +25,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static Vector2 lastDeerclopsPosition;
 
         // Vanilla values
-        public static int IceSpikeDamage = 13; // 52
         public static int DebrisDamage = 18; // 72
-        public static int HandDamage = 10; // 40
+
+        // Rev+ exclusive
+        public static int IceSpikeDamage = 16; // 64 (buffed from 52)
+        public static int HandDamage = 13; // 52 (buffed from 40)
 
         public static bool BuffedDeerclopsAI(NPC npc, Mod mod)
         {

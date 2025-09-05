@@ -165,9 +165,9 @@ namespace CalamityMod.NPCs.Perforator
             // Phases based on life percentage
             bool phase2 = lifeRatio < 0.7f;
 
-            bool spawnSmall = CalamityWorld.LegendaryMode ? lifeRatio < 0.85f : lifeRatio < 0.75f;
-            bool spawnMedium = CalamityWorld.LegendaryMode ? lifeRatio < 0.60f : lifeRatio < 0.50f;
-            bool spawnLarge = CalamityWorld.LegendaryMode ? lifeRatio < 0.45f : lifeRatio < 0.25f;
+            bool spawnSmall = Main.getGoodWorld ? lifeRatio < 0.85f : lifeRatio < 0.75f;
+            bool spawnMedium = Main.getGoodWorld ? lifeRatio < 0.60f : lifeRatio < 0.50f;
+            bool spawnLarge = Main.getGoodWorld ? lifeRatio < 0.45f : lifeRatio < 0.25f;
 
             if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || !(player.ZoneCrimson || BossRushEvent.BossRushActive))
             {
@@ -329,7 +329,7 @@ namespace CalamityMod.NPCs.Perforator
                     }
 
 
-                    if (CalamityWorld.LegendaryMode && lifeRatio < 0.5f)
+                    if (Main.getGoodWorld && lifeRatio < 0.5f)
                     {
                         if (lifeRatio > 0.35f)
                             NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X + Main.rand.Next(-25, 26), (int)NPC.Center.Y + Main.rand.Next(-25, 26), ModContent.NPCType<PerforatorHeadLarge>(), 1);
@@ -382,7 +382,7 @@ namespace CalamityMod.NPCs.Perforator
             // Emit ichor blobs
             if (phase2)
             {
-                if (wormsAlive == 0 || largeSpawned || floatAboveToFireBlobs || CalamityWorld.LegendaryMode)
+                if (wormsAlive == 0 || largeSpawned || floatAboveToFireBlobs || Main.getGoodWorld)
                 {
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] >= blobPhaseGateValue)
@@ -433,7 +433,7 @@ namespace CalamityMod.NPCs.Perforator
 
                             bool ichorBlobBigWormPhase = wormsAlive > 0 && largeSpawned;
                             int numBlobs = expertMode ? (ichorBlobBigWormPhase ? 4 : 6) : (ichorBlobBigWormPhase ? 2 : 4);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 numBlobs *= 2;
 
                             int type = ModContent.ProjectileType<IchorBlob>();
@@ -445,7 +445,7 @@ namespace CalamityMod.NPCs.Perforator
                                 blobVelocity.Normalize();
                                 blobVelocity *= Main.rand.Next(400, 801) * 0.01f;
 
-                                if (CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                     blobVelocity *= Main.rand.NextFloat() + 1f;
 
                                 float blobVelocityYAdd = Math.Abs(blobVelocity.Y) * 0.25f;
@@ -484,7 +484,7 @@ namespace CalamityMod.NPCs.Perforator
                     SoundEngine.PlaySound(GeyserShoot, NPC.Center);
 
                     int numProj = death ? 16 : revenge ? 14 : expertMode ? 12 : 10;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         numProj *= 2;
 
                     int spread = 75;

@@ -37,7 +37,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 50;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 1300;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.lifeMax *= 2;
 
             NPC.knockBackResist = 0.9f;
@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.HiveMind
             float relocateSpeed = getFuckedAI ? 1.2f : death ? 0.8f : revenge ? 0.7f : expertMode ? 0.6f : 0.5f;
             float acceleration = 0.8f;
             float distanceFromMind = FastVariant ? 96f : 128f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 distanceFromMind *= 2;
 
             float hiveMindX = Main.npc[hiveMind].Center.X;
@@ -187,7 +187,7 @@ namespace CalamityMod.NPCs.HiveMind
                     if (Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[Main.npc[hiveMind].target].position, Main.player[Main.npc[hiveMind].target].width, Main.player[Main.npc[hiveMind].target].height))
                     {
                         float projSpeed = death ? 8f : revenge ? 7f : expertMode ? 6f : 4f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             projSpeed *= 1.5f;
 
                         Vector2 projDirection = NPC.Center;
@@ -197,7 +197,7 @@ namespace CalamityMod.NPCs.HiveMind
                         playerDist = projSpeed / playerDist;
                         playerX *= playerDist;
                         playerY *= playerDist;
-                        int type = (CalamityWorld.LegendaryMode && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
+                        int type = (Main.getGoodWorld && Main.rand.NextBool(5)) ? ProjectileID.CursedFlameHostile : ModContent.ProjectileType<VileClot>();
                         int damage = type == ProjectileID.CursedFlameHostile ? CursedFlameDamage : VileClotDamage;
                         Vector2 projectileVelocity = new Vector2(playerX, playerY);
                         if (type == ProjectileID.CursedFlameHostile)

@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 105;
             Item.knockBack = 4f;
             Item.useAnimation = Item.useTime = 15; // 14 because of useStyle 1
+            Item.buffType = ModContent.BuffType<VoidConcentrationBuff>();
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
-            Item.shootSpeed = 10f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
         }
@@ -50,10 +50,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             if (player.altFunctionUse != 2)
             {
-                int p = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-                player.AddBuff(ModContent.BuffType<VoidConcentrationBuff>(), 120);
+                player.AddBuff(Item.buffType, 2);
+                var minion = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                minion.originalDamage = Item.damage;
             }
             return false;
         }

@@ -44,7 +44,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.defense = 45;
             NPC.DR_NERD(0.1f);
             NPC.LifeMaxNERB(62500, 75000, 60000);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 
             NPC.knockBackResist = 0f;
@@ -117,7 +117,7 @@ namespace CalamityMod.NPCs.Polterghast
             Vector2 vector = NPC.Center;
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float colorChangeTime = 180f;
@@ -422,7 +422,7 @@ namespace CalamityMod.NPCs.Polterghast
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

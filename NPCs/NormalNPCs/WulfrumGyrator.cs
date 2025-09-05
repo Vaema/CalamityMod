@@ -128,8 +128,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.direction = direction;
                     NPC.ForceNetUpdate();
                 }
-                //GOTTA GO FAST (Legendary only)
-                if (CalamityWorld.LegendaryMode)
+                //GOTTA GO FAST (FTW only)
+                if (Main.getGoodWorld)
                 {
                     NPC.velocity *= 1.01f;
                     //Overcharged

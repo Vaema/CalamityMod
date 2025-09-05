@@ -120,6 +120,7 @@ Cooldowns: {
 	LifeSteal: Life Steal Cooldown
 	LionHeartShield: Energy Shell Cooldown
 	LucreciaEnergy: Lucrecia Energy
+	M1GarandShots: Chambered Rounds
 	MasterChefShieldDurability: MJOLNIR Shield Level
 	MasterChefShieldRecharge: MJOLNIR Shield Recharge
 	NebulousCore: Nebulous Core Cooldown
@@ -531,7 +532,7 @@ Exhumed: {
 
 Indignant: {
 	DisplayName: Indignant
-	Description: Summons demons that harm you but drop healing items on death on item usage.
+	Description: Summons demons that harm you but drop healing orbs on death on item usage.
 }
 
 Aflame: {

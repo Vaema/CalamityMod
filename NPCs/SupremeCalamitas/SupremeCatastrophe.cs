@@ -67,7 +67,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
-        public static int SlashDamage = 105; // 420
+        public static int SlashDamage = 100; // 400
         public static int TrailedSlashDamage = 120; // 480
 
         public override void SetDefaults()

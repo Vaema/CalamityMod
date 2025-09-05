@@ -42,8 +42,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.knockBackResist = 0f;
             NPC.alpha = 255;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 2;
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -60,7 +58,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -99,7 +97,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || Main.zenithWorld)
             {
                 if (nonHostile)
                 {
@@ -259,7 +257,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             }
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = Main.getGoodWorld ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 
@@ -277,7 +275,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeMaxSpeed += Vector2.Distance(player.Center, NPC.Center) * 0.001f;
                 }
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     scourgeMaxSpeed *= 1.15f;
             }
 

@@ -50,7 +50,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<SpeedBlasterShot>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
         public override bool AltFunctionUse(Player player) => true;
         public override bool CanUseItem(Player player)

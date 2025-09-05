@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Summon;
@@ -27,6 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 6f;
             Item.UseSound = SoundID.Item15; //phaseblade sound effect
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<CosmicViperEngineBuff>();
             Item.shoot = ModContent.ProjectileType<CosmicViperSummon>();
             Item.shootSpeed = 10f; // Affects bullet speed
             Item.DamageType = DamageClass.Summon;
@@ -37,20 +39,18 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                float speed = Item.shootSpeed;
-                Vector2 spawnPos = player.RotatedRelativePoint(player.MountedCenter, true);
-                float xPos = Main.screenPosition.X + Main.mouseX - spawnPos.X;
-                float yPos = Main.screenPosition.Y + (player.gravDir == -1 ? Main.screenHeight - Main.mouseY : Main.mouseY) - spawnPos.Y;
-                Vector2 vel = new Vector2(xPos, yPos).SafeNormalize(Vector2.UnitX * player.direction) * speed;
+            player.AddBuff(Item.buffType, 2);
 
-                spawnPos = player.ClampedMouseWorld();
-                vel = vel.RotatedBy(MathHelper.PiOver2);
-                int p = Projectile.NewProjectile(source, spawnPos + vel, vel, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
+            float speed = Item.shootSpeed;
+            Vector2 spawnPos = player.RotatedRelativePoint(player.MountedCenter, true);
+            float xPos = Main.screenPosition.X + Main.mouseX - spawnPos.X;
+            float yPos = Main.screenPosition.Y + (player.gravDir == -1 ? Main.screenHeight - Main.mouseY : Main.mouseY) - spawnPos.Y;
+            Vector2 vel = new Vector2(xPos, yPos).SafeNormalize(Vector2.UnitX * player.direction) * speed;
+
+            spawnPos = player.ClampedMouseWorld();
+            vel = vel.RotatedBy(MathHelper.PiOver2);
+            var minion = Projectile.NewProjectileDirect(source, spawnPos + vel, vel, type, damage, knockback, player.whoAmI, 0f, 1f);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

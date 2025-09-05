@@ -49,8 +49,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.defense = 6;
 
             NPC.LifeMaxNERB(4200, 5000, 1150000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 4;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -64,7 +64,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.netAlways = true;
             NPC.dontCountMe = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.4f;
 
             NPC.Calamity().VulnerableToCold = true;

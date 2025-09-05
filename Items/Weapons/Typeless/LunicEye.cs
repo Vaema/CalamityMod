@@ -12,7 +12,7 @@ namespace CalamityMod.Items.Weapons.Typeless
     {
         public new string LocalizationCategory => "Items.Weapons.Typeless";
 
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/LunicShot", 2) { PitchVariance = 0.1f };
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/LunicShot", 2) { Volume = 0.8f, PitchVariance = 0.1f };
         public static readonly SoundStyle ImpactSound = new("CalamityMod/Sounds/Item/LunicImpact") { PitchVariance = 0.1f };
 
         public override void SetDefaults()

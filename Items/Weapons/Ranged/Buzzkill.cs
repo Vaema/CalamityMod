@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BuzzkillHoldout>();
             Item.shootSpeed = 20f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults

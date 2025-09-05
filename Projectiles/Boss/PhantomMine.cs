@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity *= Projectile.ai[0];
                 }
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     if (Projectile.velocity.Length() >= Projectile.ai[0])
                     {
