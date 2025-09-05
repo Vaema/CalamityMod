@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee
         public override SoundStyle? UseSound => SoundID.Item71 with { Volume = 0.85f };
         public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
-        public override int swingTime { get; set; } = 15;
+        public override int swingTime { get; set; }
         public override bool AlternateSwings { get => base.AlternateSwings; set => base.AlternateSwings = value; }
         public override float lineCollisionLength => 82;
 
@@ -38,12 +38,15 @@ namespace CalamityMod.Projectiles.Melee
         public bool trailFXTriggered = false;
         public bool particlesSpawned = false;
         public bool sparkTriggered = false;
-        private bool IsThrusting => Projectile.localAI[0] == 1;
 
+        public int standardStartupTime = 8;
+        public int standardSwingTime = 14;
+        public int standardCooldownTime = 7;
+        private bool IsThrusting => Projectile.localAI[0] == 1;
         public bool IsAlternateThrust { get; set; }
-        public int thrustPullbackTime = 33;
-        public int thrustForwardTime = 16;
-        public int thrustCooldownTime = 25;
+        public int thrustStartupTime = 33;
+        public int thrustForwardTime = 7;
+        public int thrustCooldownTime = 17;
 
         public override void Defaults()
         {
@@ -74,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
                 IsAlternateThrust = true;
 
                 // Scale all time vars correctly
-                StartupTime = (int)(thrustPullbackTime * (float)player.itemAnimationMax / baseUseTime);
+                StartupTime = (int)(thrustStartupTime * (float)player.itemAnimationMax / baseUseTime);
                 swingTime = (int)(thrustForwardTime * (float)player.itemAnimationMax / baseUseTime);
                 CooldownTime = (int)(thrustCooldownTime * (float)player.itemAnimationMax / baseUseTime);
 
@@ -94,9 +97,9 @@ namespace CalamityMod.Projectiles.Melee
                 IsAlternateThrust = false;
 
                 // Scale all time vars correctly
-                StartupTime = (int)(10 * (float)player.itemAnimationMax / baseUseTime);
-                CooldownTime = (int)(6 * (float)player.itemAnimationMax / baseUseTime);
-                swingTime = (int)(18 * (float)player.itemAnimationMax / baseUseTime);
+                StartupTime = (int)(standardStartupTime * (float)player.itemAnimationMax / baseUseTime);
+                CooldownTime = (int)(standardSwingTime * (float)player.itemAnimationMax / baseUseTime);
+                swingTime = (int)(standardCooldownTime * (float)player.itemAnimationMax / baseUseTime);
 
                 OffsetDistance = 36;
                 RotateInStartup = 0.8f;
@@ -132,12 +135,19 @@ namespace CalamityMod.Projectiles.Melee
                     }
                 }
 
-                else if (timer < StartupTime + swingTime)
+                else if (inCooldown)
                 {
-                    Projectile.extraUpdates = 18;
+                    Projectile.Opacity -= 0.0135f;
 
+                    // During cooldown, pull back slightly
+                    Projectile.scale = baseScale * MathHelper.Lerp(1.6f, 1.55f, CooldownCompletion);
+                    OffsetDistance = (int)MathHelper.Lerp(68, 42, CooldownCompletion);
+                }
+
+                else if (inSwing)
+                {
                     // Thrust forward
-                    OffsetDistance = (int)MathHelper.Lerp(34, 60, SwingCompletion);
+                    OffsetDistance = (int)MathHelper.Lerp(34, 68, SwingCompletion);
                     Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 3.5f;
 
                     // Scaling adjustments
@@ -178,36 +188,26 @@ namespace CalamityMod.Projectiles.Melee
                     }
 
                 }
-
-                else
-                {
-                    Projectile.extraUpdates = 7;
-                    Projectile.Opacity -= 0.012f;
-
-                    // During cooldown, pull back slightly
-                    Projectile.scale = baseScale * MathHelper.Lerp(1.6f, 1.55f, CooldownCompletion);
-                    OffsetDistance = (int)MathHelper.Lerp(60, 52, CooldownCompletion);
-                }
             }
 
             else // Primary
             {
-                Projectile.Opacity += 0.03f; //fade in effect to look smoother for repeated use
-
                 if (inStartup)
                 {
+                    AfterImageLength = 0;
+
+                    Projectile.Opacity += 0.01f; // Fade in
                     gotEnergyThisSwing = false;
                     helixFired = false;
-                    AfterImageLength = 0;
                     Projectile.scale = baseScale * MathHelper.Lerp(0.625f, 0.8f, StartupCompletion);
                 }
 
                 else if (inCooldown)
                 {
+                    AfterImageLength = 0;
+
                     helixFired = false;
                     Projectile.Opacity -= 0.09f;
-                    AfterImageLength = 0;
-                    Projectile.extraUpdates = 6;
                     Projectile.scale = baseScale * MathHelper.Lerp(0.85f, 0.625f, CooldownCompletion);
                 }
 
@@ -226,8 +226,9 @@ namespace CalamityMod.Projectiles.Melee
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
                     }
-                    AfterImageLength = 32;
-                    Projectile.extraUpdates = 10;
+
+                    AfterImageLength = 30;
+
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);
                     var parabola = 1f - MathF.Pow(t - 0.5f, 2f) * 4f;
                     OffsetDistance = (int)MathHelper.Lerp(36 * 1f, 36 * 1.435f, parabola);
@@ -312,9 +313,9 @@ namespace CalamityMod.Projectiles.Melee
             }
         }
 
-        // Draw fullbright
         public override bool PreDraw(ref Color lightColor)
         {
+            // Draw fullbright
             lightColor = Color.White;
             return base.PreDraw(ref lightColor);
         }
