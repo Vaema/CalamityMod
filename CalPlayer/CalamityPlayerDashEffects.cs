@@ -444,22 +444,22 @@ namespace CalamityMod.CalPlayer
             // Have the dash time incrementally move towards its default state of zero.
             if (dashTimeMod != 0)
                 dashTimeMod -= (dashTimeMod > 0).ToDirectionInt();
-            
-                // Determine dash times.
-                if (DashID == GodslayerArmorDash.ID)
-                    justDashed = HandleGodSlayerDash(out direction);
-                else if (omnidirectionalDash)
-                    justDashed = HandleOmnidirectionalDash(out direction);
-                else
-                    justDashed = HandleHorizontalDash(out direction,forceDash);
 
-                if (justDashed && !forceDash && UsedDash.dashStartup > 0)
-                {
-                    Player.timeSinceLastDashStarted = 0;
-                    Player.dashDelay = -1;
-                    return justDashed;
-                }
-            
+            // Determine dash times.
+            if (DashID == GodslayerArmorDash.ID)
+                justDashed = HandleGodSlayerDash(out direction);
+            else if (omnidirectionalDash)
+                justDashed = HandleOmnidirectionalDash(out direction);
+            else
+                justDashed = HandleHorizontalDash(out direction, forceDash);
+
+            if (justDashed && !forceDash && UsedDash.dashStartup > 0)
+            {
+                Player.timeSinceLastDashStarted = 0;
+                Player.dashDelay = -1;
+                return justDashed;
+            }
+
             // Make dash movements happen if ready.
             if (justDashed)
             {
