@@ -275,6 +275,11 @@ namespace CalamityMod.CalPlayer
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
         public int DragonsBreathAudioCooldown2 = 0;
+        public int lucreciaEnergy = 0;
+        public int lucreciaEnergyTimer = 0;
+        public bool lucreciaEnergyPaused = false;
+        public bool lucreciaEnergyMaxSFXPlayed = false;
+        private int lucreciaParticleTimer = 0;
         public int PhotoAudioCooldown = 0;
         public int PhotoTimer = 90;
         /// <summary> Cooldown variable used to add a delay between Anahita's Arpeggio uses. </summary>
@@ -3213,6 +3218,7 @@ namespace CalamityMod.CalPlayer
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
+            lucreciaEnergy = 0;
             garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
