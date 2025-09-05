@@ -54,7 +54,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.3f;
         }
 

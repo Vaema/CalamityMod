@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon.MirrorofKalandraMinions;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -53,6 +54,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 4f;
             Item.mana = 10;
+            Item.buffType = ModContent.BuffType<KalandraMirrorBuff>();
             Item.shoot = ModContent.ProjectileType<AtzirisDisfavor>();
 
             Item.autoReuse = true;
@@ -71,6 +73,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<AtzirisDisfavor>()] == 1)
             {
                 type = ModContent.ProjectileType<HopeShredder>();
@@ -82,9 +85,9 @@ namespace CalamityMod.Items.Weapons.Summon
                     type = ModContent.ProjectileType<Starforge>();
             }
 
-            int minion = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(minion))
-                Main.projectile[minion].rotation = -MathHelper.PiOver2;
+            var minion = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.rotation = -MathHelper.PiOver2;
+            minion.originalDamage = Item.damage;
 
             return false;
         }

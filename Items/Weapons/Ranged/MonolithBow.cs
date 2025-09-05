@@ -31,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 9f;
             Item.useAmmo = AmmoID.Arrow;
             Item.consumeAmmoOnFirstShotOnly = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

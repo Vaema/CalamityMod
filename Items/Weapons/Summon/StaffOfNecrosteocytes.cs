@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -24,22 +25,19 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<SmallSkeletonBuff>();
             Item.shoot = ModContent.ProjectileType<SmallSkeletonMinion>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Point mouseTileCoords = position.ToTileCoordinates();
+            player.AddBuff(Item.buffType, 2);
+            Point mouseTileCoords = player.ClampedMouseWorld().ToTileCoordinates();
             if (WorldGen.SolidTile(mouseTileCoords.X, mouseTileCoords.Y))
                 return false;
-            if (player.altFunctionUse != 2)
-            {
-                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

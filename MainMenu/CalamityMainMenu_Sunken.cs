@@ -110,14 +110,17 @@ namespace CalamityMod.MainMenu
         {
             base.SetStaticDefaults();
 
-            LogoWaterFill.Wait();
-            Logo.Wait();
-            
-            Main.QueueMainThreadAction(() =>
+            if (!Main.dedServ)
             {
-                logoWaterFillTarget = new RenderTarget2D(Main.instance.GraphicsDevice, LogoWaterFill.Width(), LogoWaterFill.Height());
-                logoTarget = new RenderTarget2D(Main.instance.GraphicsDevice, Logo.Width(), Logo.Height());
-            });
+                LogoWaterFill.Wait();
+                Logo.Wait();
+
+                Main.QueueMainThreadAction(() =>
+                {
+                    logoWaterFillTarget = new RenderTarget2D(Main.instance.GraphicsDevice, LogoWaterFill.Width(), LogoWaterFill.Height());
+                    logoTarget = new RenderTarget2D(Main.instance.GraphicsDevice, Logo.Width(), Logo.Height());
+                });
+            }
         }
 
         public static void ForceMenuStyle()

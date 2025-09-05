@@ -11,6 +11,11 @@ namespace CalamityMod.Items.Armor.Demonshade
     public class DemonshadeGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        // Shadow Speed... (elusive)
+        public static float MoveSpeedBoost = 0.3f;
+        public static float AccelerationBoost = 0.5f;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -26,7 +31,7 @@ namespace CalamityMod.Items.Armor.Demonshade
         {
             var modPlayer = player.Calamity();
             modPlayer.shadowSpeed = true;
-            player.moveSpeed += 0.3f;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

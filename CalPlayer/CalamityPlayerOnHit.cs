@@ -11,10 +11,15 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Astral;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Hydrothermic;
+using CalamityMod.Items.Armor.Plaguebringer;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.TitanHeart;
 using CalamityMod.Items.Armor.Umbraphile;
 using CalamityMod.Items.Fishing.AstralCatches;
@@ -415,8 +420,8 @@ namespace CalamityMod.CalPlayer
 
             if (!proj.npcProj && !proj.trap && proj.friendly)
             {
-                if (plaguebringerCarapace && CalamityProjectileSets.IsFriendlyBeeProjectile[proj.type])
-                    target.AddBuff(BuffType<Plague>(), 300);
+                if (plaguebringerPatronSet && CalamityProjectileSets.IsFriendlyBeeProjectile[proj.type])
+                    target.AddBuff(BuffType<Plague>(), PlaguebringerVisor.BeePlagueDuration);
 
                 // All projectiles fired from Soma Prime are marked using CalamityGlobalProjectile
                 CalamityGlobalProjectile cgp = proj.Calamity();
@@ -623,7 +628,7 @@ namespace CalamityMod.CalPlayer
                 if (item.CountsAsClass<MeleeDamageClass>() && hideOfDeus && hideOfDeusTimer == 0)
                 {
                     hideOfDeusTimer = 10;
-                    int bulwarkStarDamage = (int)Player.GetTotalDamage<MeleeDamageClass>().ApplyTo(320);
+                    int bulwarkStarDamage = (int)Player.GetTotalDamage<MeleeDamageClass>().ApplyTo(HideofAstrumDeus.StarDamage);
 
                     for (int n = 0; n < 3; n++)
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ProjectileType<AstralStar>(), bulwarkStarDamage, 5f, Player.whoAmI);
@@ -660,7 +665,7 @@ namespace CalamityMod.CalPlayer
                         Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 2f, Player.whoAmI);
                     }
 
-                    if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
+                    if (bloodflareMelee && item.CountsAsClass<MeleeDamageClass>() && bloodflareMeleeHits < BloodflareHeadMelee.HitsToActivateFrenzy && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                         bloodflareMeleeHits++;
                 }
             }
@@ -780,7 +785,7 @@ namespace CalamityMod.CalPlayer
 
                     Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<ChaoticGeyser>(), geyserDamage, 0f, Player.whoAmI, 0f, 0f);
                 }
-                if (bloodflareMelee && proj.IsTrueMelee() && bloodflareMeleeHits < 15 && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
+                if (bloodflareMelee && proj.IsTrueMelee() && bloodflareMeleeHits < BloodflareHeadMelee.HitsToActivateFrenzy && !bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                     bloodflareMeleeHits++;
             }
         }
@@ -795,11 +800,11 @@ namespace CalamityMod.CalPlayer
             {
                 if (tarraRanged && proj.CountsAsClass<RangedDamageClass>() && tarraRangedCooldown <= 0)
                 {
-                    tarraRangedCooldown = 60;
+                    tarraRangedCooldown = TarragonHeadRanged.OnHitEffectCooldown;
                     for (int l = 0; l < 2; l++)
                     {
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                        int leafDamage = CalamityUtils.DamageSoftCap((int)(0.25f * proj.damage), 150);
+                        int leafDamage = CalamityUtils.DamageSoftCap((int)(proj.damage * TarragonHeadRanged.LeafDamageRatio), TarragonHeadRanged.LeafDamageSoftcap);
                         int leaf = Projectile.NewProjectile(source, position, velocity, ProjectileID.Leaf, leafDamage, 0f, Player.whoAmI);
                         if (leaf.WithinBounds(Main.maxProjectiles))
                         {
@@ -812,7 +817,7 @@ namespace CalamityMod.CalPlayer
                         for (int projCount = 0; projCount < 2; projCount++)
                         {
                             Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                            int energyDamage = CalamityUtils.DamageSoftCap((int)(0.33f * proj.damage), 200);
+                            int energyDamage = CalamityUtils.DamageSoftCap((int)(proj.damage * TarragonHeadRanged.EnergyDamageRatio), TarragonHeadRanged.EnergyDamageSoftcap);
                             Projectile.NewProjectile(source, proj.Center, velocity, ProjectileType<TarraEnergy>(), energyDamage, 0f, proj.owner);
                         }
                     }
@@ -850,9 +855,8 @@ namespace CalamityMod.CalPlayer
             {
                 if (bloodflareMage && bloodflareMageCooldown <= 0 && crit)
                 {
-                    bloodflareMageCooldown = 120;
-                    // Bloodflare Mage Explosion: 50%, softcap starts at 500 base damage to not overly punish slow weapons
-                    int bloodflareFireballDamage = CalamityUtils.DamageSoftCap(proj.damage * 0.5, 250);
+                    bloodflareMageCooldown = BloodflareHeadMagic.BloodsplosionCooldown;
+                    int bloodflareFireballDamage = CalamityUtils.DamageSoftCap(proj.damage * BloodflareHeadMagic.BloodsplosionDamageRatio, BloodflareHeadMagic.BloodsplosionDamageSoftcap);
 
                     int fire = Projectile.NewProjectile(source, position, Vector2.Zero, ProjectileType<BloodBombExplosion>(), bloodflareFireballDamage, 0f, Player.whoAmI, 0f, 0f, 1f);
                     if (fire.WithinBounds(Main.maxProjectiles))
@@ -864,10 +868,9 @@ namespace CalamityMod.CalPlayer
             }
             if (silvaMage && silvaMageCooldown <= 0 && (proj.penetrate == 1 || proj.timeLeft <= 5))
             {
-                silvaMageCooldown = 300;
+                silvaMageCooldown = SilvaHeadMagic.BurstCooldown;
                 SoundEngine.PlaySound(SoundID.Zombie103, proj.Center); //So scuffed, just because zombie sounds werent ported normally
-                // Silva Mage Blasts: 800 + 60%, softcap on the whole combined thing starts at 1400
-                int silvaBurstDamage = CalamityUtils.DamageSoftCap(800.0 + 0.6 * proj.damage, 1400);
+                int silvaBurstDamage = CalamityUtils.DamageSoftCap(SilvaHeadMagic.BurstDamage + proj.damage * SilvaHeadMagic.BurstDamageRatio, SilvaHeadMagic.BurstDamageSoftcap);
                 Projectile.NewProjectile(source, proj.Center, Vector2.Zero, ProjectileType<SilvaBurst>(), silvaBurstDamage, 8f, Player.whoAmI);
             }
         }
@@ -938,12 +941,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Fearmonger set gains +10 frames (max 90) of regen when any minion lands any hit
+            // Fearmonger set gains regen duration when any minion lands any hit
             if (fearmongerSet)
             {
-                fearmongerRegenFrames += 10;
-                if (fearmongerRegenFrames > 90)
-                    fearmongerRegenFrames = 90;
+                fearmongerRegenFrames += FearmongerGreathelm.RegenBoostDurationPerHit;
+                if (fearmongerRegenFrames > FearmongerGreathelm.RegenBoostDurationLimit)
+                    fearmongerRegenFrames = FearmongerGreathelm.RegenBoostDurationLimit;
             }
 
             //Priorities: Nucleogenesis => Starbuster Core => Nuclear Rod => Jelly-Charged Battery

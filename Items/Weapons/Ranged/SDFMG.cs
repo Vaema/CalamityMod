@@ -33,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults

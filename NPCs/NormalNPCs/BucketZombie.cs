@@ -29,6 +29,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.defense = 15;
             NPC.damage = 16;
             NPC.knockBackResist = 0.45f;
+            NPC.npcSlots = 1.15f; // Equal to the strongest variants
             NPC.value = Item.buyPrice(silver: 1);
             Banner = NPCID.Zombie;
             BannerItem = ItemID.ZombieBanner;

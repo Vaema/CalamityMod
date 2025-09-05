@@ -54,12 +54,12 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
-        public static int MistDamage = 25; // 100
-        public static int CloudDamage = 28; // 112; applies to both Sand and Toxic
+        public static int MistDamage = 23; // 92
+        public static int CloudDamage = 26; // 104; applies to both Sand and Toxic
 
         public override void SetDefaults()
         {
-            NPC.damage = 90; // 180
+            NPC.damage = 85; // 170
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 90;
             NPC.height = 90;
@@ -68,8 +68,6 @@ namespace CalamityMod.NPCs.AquaticScourge
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.LifeMaxNERB(80000, 96000, 1000000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 2;
             NPC.knockBackResist = 0f;
             NPC.value = Item.buyPrice(gold: 12);
             NPC.behindTiles = true;
@@ -87,7 +85,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.25f;
 
             NPC.Calamity().VulnerableToHeat = false;
@@ -141,7 +139,7 @@ namespace CalamityMod.NPCs.AquaticScourge
 
             // Adjust hostility and stats
             bool nonHostile = calamityGlobalNPC.newAI[0] == 0f;
-            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode)
+            if (NPC.justHit || NPC.life <= NPC.lifeMax * 0.999 || BossRushEvent.BossRushActive || Main.zenithWorld)
             {
                 if (nonHostile)
                 {
@@ -410,7 +408,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 NPC.alpha = 0;
 
             Vector2 scourgePosition = NPC.Center;
-            Vector2 predictionVector = CalamityWorld.MaliceMode ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
+            Vector2 predictionVector = Main.getGoodWorld ? Main.player[NPC.target].velocity * 20f : Vector2.Zero;
             float scourgeTargetX = player.Center.X + predictionVector.X;
             float scourgeTargetY = player.Center.Y + predictionVector.Y;
 
@@ -443,7 +441,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                     scourgeAcceleration *= accelerationMultiplier;
                 }
 
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     scourgeMaxSpeed *= 1.15f;
                     scourgeAcceleration *= 1.15f;
@@ -645,7 +643,7 @@ namespace CalamityMod.NPCs.AquaticScourge
             if (spawnInfo.Player.Calamity().ZoneSulphur && spawnInfo.Water)
             {
                 if (!NPC.AnyNPCs(ModContent.NPCType<AquaticScourgeHead>()))
-                    return (CalamityWorld.LegendaryMode ? 0.05f : 0.01f);
+                    return Main.zenithWorld ? 0.1f : 0.01f;
             }
 
             return 0f;

@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int OrbDamage = 85; // 340
+        public static int OrbDamage = 80; // 320
 
         public override void SetDefaults()
         {

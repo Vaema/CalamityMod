@@ -379,6 +379,15 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
+        }
+        #endregion
+
         #region Town NPC Spawning Improvements
         private static void PermitNighttimeTownNPCSpawning(ILContext il)
         {

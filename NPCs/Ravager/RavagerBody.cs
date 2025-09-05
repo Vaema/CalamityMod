@@ -491,7 +491,7 @@ namespace CalamityMod.NPCs.Ravager
                             NPC.ai[1] += 1f;
                     }
 
-                    float jumpGateValue = CalamityWorld.LegendaryMode ? 0f : 180f;
+                    float jumpGateValue = Main.getGoodWorld ? 0f : 180f;
                     if (NPC.ai[1] >= jumpGateValue)
                     {
                         NPC.ai[1] = -20f;
@@ -588,30 +588,6 @@ namespace CalamityMod.NPCs.Ravager
                         bool anyRockPillars = NPC.AnyNPCs(ModContent.NPCType<RockPillar>());
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
 
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            if (!expertMode || anyRockPillars || anyFlamePillars)
-                                SoundEngine.PlaySound(PillarSound, NPC.Center);
-
-                            // Eruption of bouncing rock projectiles
-                            float projectileVelocity = 12f;
-                            int type = ModContent.ProjectileType<EarthRockBig>();
-                            Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
-                            destination.Normalize();
-                            destination *= projectileVelocity;
-                            int numProj = 11;
-                            float rotation = MathHelper.ToRadians(90);
-                            for (int i = 0; i < numProj; i++)
-                            {
-                                // Spawn projectiles 0, 1, 2, 3, 7, 8, 9 and 10
-                                if (i < 4 || i > 6)
-                                {
-                                    Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 30f * NPC.scale + Vector2.Normalize(perturbedSpeed) * 30f * NPC.scale, perturbedSpeed, type, RockDamage, 0f, Main.myPlayer);
-                                }
-                            }
-                        }
-
                         if (expertMode)
                         {
                             foreach (NPC n in Main.ActiveNPCs)
@@ -630,12 +606,12 @@ namespace CalamityMod.NPCs.Ravager
                             {
                                 SoundEngine.PlaySound(PillarSound, NPC.Center);
                             }
-                            if (!anyRockPillars || CalamityWorld.LegendaryMode)
+                            if (!anyRockPillars || Main.getGoodWorld)
                             {
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
                             }
-                            else if (!anyFlamePillars || CalamityWorld.LegendaryMode)
+                            else if (!anyFlamePillars || Main.getGoodWorld)
                             {
                                 float distanceMultiplier = finalPhase ? 2.5f : 2f;
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)player.Center.X - (int)(spawnDistance * distanceMultiplier), (int)player.Center.Y - 100, ModContent.NPCType<FlamePillar>());

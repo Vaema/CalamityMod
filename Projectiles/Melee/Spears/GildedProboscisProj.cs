@@ -264,7 +264,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 240);
+            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 900);
             Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.002));
         }
     }

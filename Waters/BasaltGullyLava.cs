@@ -18,9 +18,9 @@ namespace CalamityMod.Waters
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 2.48f / 4;
-            g = 1.29f / 4;
-            b = 0.48f / 4;
+            r = 248f / 255;
+            g = 73f / 255;
+            b = 73f / 255;
         }
     }
 }

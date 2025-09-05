@@ -14,6 +14,7 @@ using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Daedalus;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -191,21 +192,6 @@ namespace CalamityMod.Projectiles
         /// Used for calculating pierce resist damage reduction.
         /// </summary>
         public int timesPierced = 0;
-
-        /// <summary>
-        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
-        /// If it reaches 0, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public int pointBlankShotDuration = 0;
-        /// <summary>
-        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
-        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public float pointBlankShotDistanceTravelled = 0f;
-        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
-        public const int DefaultPointBlankDuration = 18;
-        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
-        public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
         // Empress of Light variables
         private const float EmpressRainbowStreakSpreadOutCutoff = 140f;
@@ -406,12 +392,6 @@ namespace CalamityMod.Projectiles
 
             #endregion
 
-            if (!Main.player[projectile.owner].ActiveItem().IsAir && !Main.player[projectile.owner].ActiveItem().Calamity().canFirePointBlankShots)
-                pointBlankShotDuration = 0;
-
-            if (pointBlankShotDuration > 0)
-                pointBlankShotDuration--;
-
             // Reduce secondary yoyo damage if the player has Yoyo Glove
             // Brief behavior documentation of yoyo AI: ai[0, 1] are the x, y co-ords and localAI[0] is the airtime in frames
             // All secondary yoyos are spawned with ai[0] of 1 which tells then tell its AI to do secondary yoyo AI
@@ -450,10 +430,6 @@ namespace CalamityMod.Projectiles
                 if (projectile.ai[0] == -1)
                     projectile.Kill();
             }
-
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-                return ChlorophyteCrystalAI.DoChlorophyteCrystalAI(projectile);
 
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
@@ -2186,7 +2162,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.velocity.Y > 16f)
                             projectile.velocity.Y = 16f;
 
-                        if (CalamityWorld.LegendaryMode && projectile.velocity.Length() > 4f)
+                        if (Main.getGoodWorld && projectile.velocity.Length() > 4f)
                             projectile.velocity *= 0.985f;
 
                         return false;
@@ -3653,12 +3629,6 @@ namespace CalamityMod.Projectiles
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
             }
 
-            // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
-            // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
-            // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
-            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
-                pointBlankShotDistanceTravelled += projectile.velocity.Length();
-
             // optimization to remove conversion X/Y loop for irrelevant projectiles
             bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
                 || projectile.type == ProjectileID.VilePowder
@@ -3760,7 +3730,7 @@ namespace CalamityMod.Projectiles
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
@@ -3776,7 +3746,7 @@ namespace CalamityMod.Projectiles
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
@@ -4223,13 +4193,6 @@ namespace CalamityMod.Projectiles
                 SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                 Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                shouldDrawBool = false;
-            }
-
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-            {
-                ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
                 shouldDrawBool = false;
             }
 
