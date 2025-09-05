@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             slidingDirection = MathHelper.Lerp(slidingDirection, Owner.direction, 0.03f);
 
-            bool isSummonWeapon = (Owner.HeldItem.DamageType == DamageClass.Summon) || (Owner.HeldItem.DamageType == DamageClass.SummonMeleeSpeed) || (Owner.HeldItem.DamageType == DamageClass.MagicSummonHybrid);
+            bool isSummonWeapon = Owner.HeldItem.DamageType.CountsAsClass(DamageClass.Summon);
             if (Owner.Calamity().mouseRight && Owner.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse && Owner.Calamity().arsenalCooldown <= 0 && isSummonWeapon)
             {
                 Projectile.ai[2] = 5;
