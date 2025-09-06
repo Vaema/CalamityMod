@@ -176,9 +176,6 @@ namespace CalamityMod.Balancing
             // 35% resist to Flying Dragon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
 
-            // 25% resist to Lucrecia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<DNA>()))));
-
             // 20% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<AuroraFire>()))));
 
