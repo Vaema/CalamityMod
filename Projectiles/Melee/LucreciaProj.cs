@@ -163,7 +163,7 @@ namespace CalamityMod.Projectiles.Melee
                     // Fire the bigass projectile
                     if (!trailFXTriggered)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 24, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 8, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
                         SoundEngine.PlaySound(swish with { Volume = 0.45f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
@@ -221,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
                         var fireDirection = Vector2.Normalize(mousePosition - player.Center);
                         var helixSpeed = 12f;
                         var helixVelocity = fireDirection * helixSpeed;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaSmallProjectile>(), Projectile.damage * 3, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaSmallProjectile>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);

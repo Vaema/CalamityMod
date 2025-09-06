@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Melee.Shortswords
+namespace CalamityMod.Projectiles.Melee
 {
     public class LucreciaDNATrailCreator : ModProjectile
     {
