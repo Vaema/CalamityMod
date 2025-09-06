@@ -1,18 +1,14 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Steamworks;
-using CalamityMod.Projectiles.Turret;
-using Mono.Cecil;
+using CalamityMod.Projectiles.Melee;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -27,21 +23,25 @@ namespace CalamityMod.Projectiles.Ranged
         public int Time = 0;
         public int shotCounter = 0;
         public int framesBetweenShots = 0;
-        public bool isTired = false;
+        public bool PostVolley = false;
 
         public override void KillHoldoutLogic()
         {
             //If the player is dead, kill the holdout.
-            if (!isTired && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
+            if (Owner.CantUseHoldout() || !PostVolley && HeldItem.type != Owner.ActiveItem().type)
                 Projectile.Kill();
         }
         
-
         public override void HoldoutAI()
         {
+            //Set the scaling to 0 as soon as the holdout spawns
+            if (Time == 1)
+            {
+                Owner.Calamity().sharkGunDamageScaling = 0;
+            }
             if (Time >= 10)
             {
-                if (framesBetweenShots == 0 && shotCounter <= 31)
+                if (framesBetweenShots == 0 && shotCounter <= 25)
                 {
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15;
                     #region Debug Text Display
@@ -50,25 +50,6 @@ namespace CalamityMod.Projectiles.Ranged
                     #endregion
                     #region Visuals and Sounds
                     SoundEngine.PlaySound(SoundID.Item85, Projectile.Center);
-                    if (shotCounter > 20)
-                    {
-                        for (int i = 0; i < 3; ++i)
-                        {
-                            int bloodLifetime = Main.rand.Next(12, 15);
-                            float bloodScale = Main.rand.NextFloat(0.4f, 0.6f);
-                            Color bloodColor = Color.Lerp(Color.LightBlue * 0.7f, Color.LightBlue, Main.rand.NextFloat());
-                            bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
-
-                            if (Main.rand.NextBool(20))
-                                bloodScale *= 1.5f;
-
-                            float randomSpeedMultiplier = Main.rand.NextFloat(0.8f, 1.5f);
-                            Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 2 * randomSpeedMultiplier;
-                            bloodVelocity.Y -= 3f;
-                            BloodParticle blood = new BloodParticle(Projectile.Center + (Projectile.velocity * 14f).RotatedBy(-0.8f * Projectile.direction), bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                            GeneralParticleHandler.SpawnParticle(blood);
-                        }
-                    }
                     #endregion
 
                     //How many frames between firing projectiles, and how far the gun moves backward to give the effect of recoil. Change this number to edit fire rate
@@ -78,18 +59,35 @@ namespace CalamityMod.Projectiles.Ranged
                     Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(1.5f)), ModContent.ProjectileType<ArcherfishShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     shotCounter++;
-                    //Allow a pause before firing the rocket. This allows the final bullet a chance to hit before the rocket is fired. Lowering this number reduces the delay, but may also cause the gun to become inconsistent
+                    //Frame time is much longer due to Archerfish working differently, and handling both the shot and the "reload" on the same step
                     if (shotCounter == 25)
-                        framesBetweenShots = 80;
+                        framesBetweenShots = 100;
                 }
                 if (framesBetweenShots > 0)
                     framesBetweenShots--;
             }
             if (shotCounter == 25 && framesBetweenShots > 0)
-            {
-                isTired = true;
+            {   
+                //Holdout cannot be killed during the final shot and cooldown
+                PostVolley = true;
                 Owner.channel = true;
-                if (framesBetweenShots % 6 == 0)
+                //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the final shot doing 0 damage
+                if (Owner.Calamity().sharkGunDamageScaling == 0)
+                {
+                    Owner.Calamity().sharkGunDamageScaling++;
+                }
+                //Pauses before triggering the final water blast. This allows extra water streams time to hit. Increasing this number reduces the delay, but may also cause the gun to become inconsistent
+                if (framesBetweenShots == 80)
+                {
+                    SoundEngine.PlaySound((Main.rand.NextBool(2) ? SoundID.Item85 : SoundID.Item86).WithPitchOffset(-0.5f), Owner.Center);
+                    SoundEngine.PlaySound(SoundID.NPCDeath14.WithPitchOffset(1f), Owner.Center);
+                    //Fires the water jet. Damage is 20% of base, multiplied by how many shots hit.
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30, ModContent.ProjectileType<MantisClawJet>(), (int)(Projectile.damage * 0.2f) * Owner.Calamity().sharkGunDamageScaling, Projectile.knockBack, Projectile.owner);
+                }
+                #region Post Firing Visuals and Sounds
+                //After the water blast is fired, make the fish "sweat" during the reload
+                //I don't think this is how science works
+                if (framesBetweenShots % 6 == 0 && framesBetweenShots <= 80)
                 {
                     for (int i = 0; i < 2; ++i)
                     {
@@ -108,7 +106,8 @@ namespace CalamityMod.Projectiles.Ranged
                         GeneralParticleHandler.SpawnParticle(blood);
                     }
                 }
-                if (framesBetweenShots % 25 == 0)
+                //Takes a heavy breath every 25 frames after the final shot is fired
+                if (framesBetweenShots % 25 == 0 && framesBetweenShots <= 75)
                 {
                     for (int i = 0; i < 4; i++)
                     {
@@ -119,6 +118,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(SoundID.Item111 with { Pitch = 0.05f, PitchVariance = 0.25f, MaxInstances = -1 }, Projectile.Center);
                     OffsetLengthFromArm -= 4.5f;
                 }
+                #endregion
 
             }
             if (shotCounter == 25 && framesBetweenShots == 0)
@@ -126,12 +126,8 @@ namespace CalamityMod.Projectiles.Ranged
                 if (framesBetweenShots == 0)
                 {
                     SoundEngine.PlaySound(SoundID.NPCDeath19, Projectile.Center);
-                    //After firing the rocket, kill the projectile to allow left click to be held down
+                    //After firing the water blast, kill the projectile to allow left click to be held down
                     Projectile.Kill();
-                }
-                else
-                {
-                    framesBetweenShots--;
                 }
             }
             Time++;

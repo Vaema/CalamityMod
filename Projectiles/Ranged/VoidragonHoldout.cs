@@ -57,6 +57,12 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.alpha = Main.rand.Next(90, 150);
                 dust.color = Main.rand.NextBool() ? Color.Indigo : Color.DarkBlue;
             }
+            //Smoothly scale down the gun visuals before reloading
+            if (Time < 30)
+            {
+                if (Owner.Calamity().sharkGunDamageScaling > 0)
+                    Owner.Calamity().sharkGunDamageScaling--;
+            }
             //Pause to give the effect of reloading
             if (Time == 30)
             {

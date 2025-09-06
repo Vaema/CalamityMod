@@ -54,11 +54,23 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(BuffID.Wet, 120);
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+            //Only increase damage on the first hit
+            if (Projectile.numHits == 0)
+            {
+                Player Owner = Main.player[Projectile.owner];
+                Owner.Calamity().sharkGunDamageScaling++;
+            }
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(BuffID.Wet, 120);
             target.AddBuff(ModContent.BuffType<RiptideDebuff>(), 120);
+            //Only increase damage on the first hit
+            if (Projectile.numHits == 0)
+            {
+                Player Owner = Main.player[Projectile.owner];
+                Owner.Calamity().sharkGunDamageScaling++;
+            }
         }
     }
 }
