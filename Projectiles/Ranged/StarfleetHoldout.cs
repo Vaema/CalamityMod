@@ -55,6 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void HoldoutAI()
         {
+            SetUsage = false;
             bool doingNothing = shootingCooldown == 0 && starburstCooldown == 0 && starburstTimer == 0;
             if (lastUseTime == 0 || doingNothing)
                 lastUseTime = Owner.HeldItem.useAnimation;
