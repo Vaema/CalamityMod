@@ -31,7 +31,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.usesLocalNPCImmunity = true;
             Projectile.tileCollide = false;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
