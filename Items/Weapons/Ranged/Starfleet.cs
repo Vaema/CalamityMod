@@ -1,10 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 76;
             Item.height = 36;
-            Item.damage = 888;
+            Item.damage = 1562;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 70;
             Item.useAnimation = 70;
@@ -30,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<PlasmaBlast>();
+            Item.shoot = ModContent.ProjectileType<StarfleetStar>();
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.FallenStar;
         }

@@ -1,35 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.DraedonsArsenal;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class PlasmaBlast : ModProjectile, ILocalizedModType
+    public class StarfleetStar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int time = 0;
         public Color c1 = new Color(192, 10, 111);
         public Color c2 = Color.Coral;
         public Color c3 = Color.DarkOrange;
         public Player Owner => Main.player[Projectile.owner];
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 10;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-        }
         public override void SetDefaults()
         {
             Projectile.width = 25;
@@ -37,7 +26,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 1;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.timeLeft = 600;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
@@ -93,18 +82,24 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            float minMult = 0.4f;
-            int hitsToMinMult = 15;
+            float minMult = 0.1f;
+            int hitsToMinMult = 2;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
         }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            
-        }
         public override void OnKill(int timeLeft)
         {
-            
+            for (int i = 0; i < 15; i++)
+            {
+                float variance = Main.rand.NextFloat(-0.5f, 0.5f);
+                int dustStyle = DustType<SquashDust>();
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle);
+                dust.scale = (Main.rand.NextFloat(1.4f, 1.8f) - Math.Abs(variance)) * 1.5f;
+                dust.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance) * Main.rand.NextFloat(18f, 19f) * (float)Math.Pow(1 - Math.Abs(variance), 2);
+                dust.noGravity = true;
+                dust.color = Color.Lerp(c1, c3, Main.rand.NextFloat(0f, 1f));
+                dust.fadeIn = 2.5f;
+            }
         }
 
     }

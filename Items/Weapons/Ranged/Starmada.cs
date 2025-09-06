@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.UseSound = SoundID.Item92;
             Item.autoReuse = true;
             Item.noMelee = true;
-            Item.shoot = ModContent.ProjectileType<PlasmaBlast>();
+            Item.shoot = ModContent.ProjectileType<StarfleetStar>();
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.FallenStar;
             Item.rare = ModContent.RarityType<CosmicPurple>();
@@ -43,7 +43,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 int starType = Utils.SelectRandom(Main.rand,
                 [
-                    ModContent.ProjectileType<PlasmaBlast>(),
+                    ModContent.ProjectileType<StarfleetStar>(),
                     ModContent.ProjectileType<AstralStar>(),
                     ProjectileID.StarCannonStar,
                     ProjectileID.Starfury

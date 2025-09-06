@@ -100,6 +100,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// Defaults to <see langword="true"/>.
         /// </summary>
         public bool KeepRefreshingLifetime { get; set; } = true;
+        /// <summary>
+        /// If the holdout should constantly set Owner.itemTime and Owner.itemAnimation as 2.
+        /// </summary>
+        public bool SetUsage { get; set; } = true;
 
         /// <summary>
         /// The current offset length from the arm of the holdout.<br/>
@@ -216,7 +220,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.ChangeDir(direction);
 
             Owner.heldProj = Projectile.whoAmI;
-            //Owner.itemTime = Owner.itemAnimation = 2;
+            if (SetUsage)
+                Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
 
             // -Pi/2 because the arms rotation starts with arms pointing down.

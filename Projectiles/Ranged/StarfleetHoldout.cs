@@ -1,18 +1,14 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Typeless;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -28,15 +24,15 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYDownwards => 10f;
         public override float WeaponTurnSpeed => (0.6f);
 
+        public int time = 0;
         public int lastUseTime = 0;
         public int perfectLeniancy = 2;
-        public int time = 0;
         public int goodLeniancy => perfectLeniancy + 6;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
         public int extendedCooldown => (int)(lastUseTime * 1.2f);
         public int naildriverCooldown => (int)(lastUseTime * 1.5f);
-        public int starburstPerfectTime => 23;
+        public int starburstPerfectTime = 23;
         public float recoilIntensity = 0;
         public int recoilTimerMax = 62;
         public Vector2 recoilDirection;
@@ -46,8 +42,8 @@ namespace CalamityMod.Projectiles.Ranged
         public Color c2 = Color.Coral;
         public Color c3 = Color.DarkOrange;
         public ref float starburstCooldown => ref Projectile.ai[2];
-        public bool naildriver => ((starburstTimer < starburstPerfectTime + perfectLeniancy) && (starburstTimer > starburstPerfectTime - perfectLeniancy)); // if within perfect frame window
-        public bool scattershot => !naildriver && ((starburstTimer < starburstPerfectTime + goodLeniancy) && (starburstTimer > starburstPerfectTime - goodLeniancy)); // If within early or late frame window
+        public bool naildriver => ((starburstTimer <= starburstPerfectTime + perfectLeniancy) && (starburstTimer >= starburstPerfectTime - perfectLeniancy)); // if within perfect frame window
+        public bool scattershot => !naildriver && ((starburstTimer <= starburstPerfectTime + goodLeniancy) && (starburstTimer >= starburstPerfectTime - goodLeniancy)); // If within early or late frame window
         public override void KillHoldoutLogic() { }
         public override void SetDefaults()
         {
@@ -146,9 +142,9 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 6; i++)
             {
                 float randomVel = Main.rand.NextFloat(0.7f, 1.1f);
-                float damageMult = (naildriver || scattershot) ? 2.3f : 1f;
+                float damageMult = (naildriver || scattershot) ? 2f : 1f;
                 float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<PlasmaBlast>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner);
+                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner);
                 shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
             }
             for (int i = 0; i < 25; i++)
@@ -163,11 +159,12 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.fadeIn = 4.75f;
             }
 
-
-            if (naildriver)
+            // You can uncomment this to check your timing
+            /*if (naildriver)
             Main.NewText("naildriver: " + (starburstPerfectTime - starburstTimer), Color.DarkOrchid);
             if (scattershot)
-            Main.NewText("scattershot: " + (starburstPerfectTime - starburstTimer), Color.Lime);
+            Main.NewText("scattershot: " + (starburstPerfectTime - starburstTimer), Color.Lime);*/
+
             recoilIntensity = (naildriver ? 55f : scattershot ? 20f : 0);
         }
         public void FireStarburst()
@@ -183,17 +180,6 @@ namespace CalamityMod.Projectiles.Ranged
                 recoilTimerMax = extendedCooldown;
             if (starburstCooldown < extendedCooldown)
                 starburstCooldown = extendedCooldown;
-
-            //Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Vector2.Zero, ModContent.ProjectileType<PartisanExplosion>(), 0, Projectile.knockBack, Projectile.owner);
-
-            /*for (int i = 0; i < 50; i++)
-            {
-                Vector2 intenededVel = (MathHelper.TwoPi * i / 50f).ToRotationVector2() * 4f;
-                Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2.3f).RotatedBy(Projectile.velocity.ToRotation());
-                Vector2 fxPlace = GunTipPosition + fxVel.RotatedBy(Projectile.velocity.ToRotation());
-
-                StarsmokeMetaball.SpawnParticle(fxPlace, fxVel + Projectile.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(6, 9), 40f * Main.rand.NextFloat(0.7f, 1), 70, new Vector2(1f, 1f), 0.001f * (Main.rand.NextBool() ? -1 : 1), Main.rand.NextFloat(0.3f, 2));
-            }*/
 
             float blastSize = 140;
             float minMultiplier = 0.1f;
