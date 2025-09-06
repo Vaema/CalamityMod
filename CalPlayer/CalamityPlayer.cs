@@ -5533,7 +5533,7 @@ namespace CalamityMod.CalPlayer
             }
             else if (stealthStrike85Cost)
             {
-                rogueStealth -= 0.9f * stealthToLose;
+                rogueStealth -= 0.85f * stealthToLose;
                 if (rogueStealth <= 0f)
                     rogueStealth = 0f;
             }
