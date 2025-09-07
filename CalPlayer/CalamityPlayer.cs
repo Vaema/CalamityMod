@@ -463,10 +463,10 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool stealthStrike75Cost = false;
         /// <summary>
-        /// If true, stealth strikes only require 85% of the player's max stealth to perform.<br/>
+        /// If true, stealth strikes only require 90% of the player's max stealth to perform.<br/>
         /// Used by Coin of Deceit.
         /// </summary>
-        public bool stealthStrike85Cost = false;
+        public bool stealthStrike90Cost = false;
         /// <summary> If true, this player is wearing a rogue or all-class armor set. This bool is required in order to use rogue stealth. </summary>
         public bool wearingRogueArmor = false;
         /// <summary> The sum of the player's stealth generation boosts from accessory modifiers. </summary>
@@ -5308,7 +5308,7 @@ namespace CalamityMod.CalPlayer
             stealthStrikeThisFrame = false;
             stealthStrikeHalfCost = false;
             stealthStrike75Cost = false;
-            stealthStrike85Cost = false;
+            stealthStrike90Cost = false;
 
             // stealthAcceleration only resets if you don't have either of the accelerator accessories equipped
             if (!darkGodSheath && !eclipseMirror)
@@ -5503,8 +5503,8 @@ namespace CalamityMod.CalPlayer
                 consumptionMult = 0.5f;
             else if (stealthStrike75Cost)
                 consumptionMult = 0.75f;
-            else if (stealthStrike85Cost)
-                consumptionMult = 0.85f;
+            else if (stealthStrike90Cost)
+                consumptionMult = 0.9f;
             return rogueStealth >= rogueStealthMax * consumptionMult;
         }
 
@@ -5531,9 +5531,9 @@ namespace CalamityMod.CalPlayer
                 if (rogueStealth <= 0f)
                     rogueStealth = 0f;
             }
-            else if (stealthStrike85Cost)
+            else if (stealthStrike90Cost)
             {
-                rogueStealth -= 0.85f * stealthToLose;
+                rogueStealth -= 0.9f * stealthToLose;
                 if (rogueStealth <= 0f)
                     rogueStealth = 0f;
             }
