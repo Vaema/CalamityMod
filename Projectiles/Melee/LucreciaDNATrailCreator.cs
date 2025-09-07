@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Melee
         private int trailTimer = 0;
         // The timer is initialized with a delay. It will reset to 6 after the first shot.
         private int middleStreakTimer = 40;
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetDefaults()

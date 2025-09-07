@@ -5,6 +5,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
 {
     public class TableCoralLeft : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
