@@ -3254,7 +3254,7 @@ namespace CalamityMod.Projectiles
                                 if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
                                 {
                                     owner.lifeRegenCount -= 600; // -5 health per 10 ticks
-                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
                                     if (Main.projectile.IndexInRange(projID))
                                     {
                                         Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
@@ -3417,7 +3417,7 @@ namespace CalamityMod.Projectiles
                                 if (owner.HasBuff(BuffID.WellFed2))
                                 {
                                     var bIndex = owner.FindBuffIndex(BuffID.WellFed2);
-                                    if (owner.buffTime[bIndex] < 60000)
+                                    if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) 
                                     {
                                         owner.buffTime[bIndex] += 300;
                                     }
@@ -3431,7 +3431,7 @@ namespace CalamityMod.Projectiles
                             else //If the player DOES have Ex. Stuffed, increase the duration of it
                             {
                                 var bIndex = owner.FindBuffIndex(BuffID.WellFed3);
-                                if (owner.buffTime[bIndex] < 60000)
+                                if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) //Requires fishing once per day if you'd like to keep free ExStuffed forever
                                 {
                                     owner.buffTime[bIndex] += 300;
                                 }
