@@ -1,19 +1,13 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.ID;
-using Steamworks;
-using CalamityMod.Projectiles.Turret;
-using Mono.Cecil;
-using CalamityMod.Projectiles.Rogue;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -108,39 +102,29 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (shotCounter == 50 && framesBetweenShots == 0)
             {
-                if (framesBetweenShots == 0)
+                //Kill the holdout to allow left click to be held down.
+                Projectile.Kill();
+                for (int x = 0; x < Main.maxProjectiles; x++)
                 {
-                    SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
-
-                    //Need to update this effect. Will probably move to PreDraw
-                    SoundEngine.PlaySound(hitSound with { Volume = 0.5f , Pitch = 0.8f }, Projectile.Center);
-                    Particle Star = new CritSpark(GunTipPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 28), Vector2.Zero, Color.Goldenrod, Color.OrangeRed, 2f, 20, 0.2f, 3f);
-                    GeneralParticleHandler.SpawnParticle(Star);
-
-                    //Kill the holdout to allow left click to be held down.
-                    Projectile.Kill();
-                    for (int x = 0; x < Main.maxProjectiles; x++)
+                    //Activate all fish to rush at the cursor and home in on the nearest enemy
+                    Projectile projectile = Main.projectile[x];
+                    if (projectile.active && projectile.type == ModContent.ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
                     {
-                        //Activate all fish to rush at the cursor and home in on the nearest enemy
-                        Projectile projectile = Main.projectile[x];
-                        if (projectile.active && projectile.type == ModContent.ProjectileType<SeaDragonRocket>() && projectile.ai[1] < 5)
+                        projectile.ai[1] = 5;
+                        projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
+                    }
+                    //If on GFB, also turns ANY projectile on screen into a fish
+                    if (Main.zenithWorld && projectile.type != ModContent.ProjectileType<SeaDragonRocket>())
+                    {
+                        SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/FISH");
+                        SoundEngine.PlaySound(joke with { Volume = 0.35f, MaxInstances = -1 }, projectile.Center);
+                        for (int i = 0; i < 2; i++)
                         {
-                            projectile.ai[1] = 5;
-                            projectile.velocity = Utils.DirectionTo(projectile.Center, Owner.Calamity().mouseWorld) * 12;
+                            Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projectile.Center, (Vector2.One * 10).RotatedByRandom(100), ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage + projectile.damage) * 3, Projectile.knockBack, Projectile.owner);
+                            fishy.ai[2] = Main.rand.NextFloat(0.1f, 0.4f);
+                            fishy.ai[1] = 5;
                         }
-                        //If on GFB, also turns ANY projectile on screen into a fish
-                        if (Main.zenithWorld && projectile.type != ModContent.ProjectileType<SeaDragonRocket>())
-                        {
-                            SoundStyle joke = new("CalamityMod/Sounds/Custom/GFB/FISH");
-                            SoundEngine.PlaySound(joke with { Volume = 0.35f, MaxInstances = -1 }, projectile.Center);
-                            for (int i = 0; i < 2; i++)
-                            {
-                                Projectile fishy = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projectile.Center, (Vector2.One * 10).RotatedByRandom(100), ModContent.ProjectileType<SeaDragonRocket>(), (int)(Projectile.damage + projectile.damage) * 3, Projectile.knockBack, Projectile.owner);
-                                fishy.ai[2] = Main.rand.NextFloat(0.1f, 0.4f);
-                                fishy.ai[1] = 5;
-                            }
-                            projectile.timeLeft = 1;
-                        }
+                        projectile.timeLeft = 1;
                     }
                 }
             }
@@ -151,12 +135,31 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time < 2)
                 return false;
             Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/ThinSparkle").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
             Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(lightColor), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+            //This bit ensures that the eye glint at the moment the fish are unleashed is snapped to the gun
+            //Due to the holdout only existing for 1 frame then getting killed, it has to be tied to the newly spawned holdout
+            //This runs a check to see if any fish are present, then triggers the eye glint and sound
+            //This prevents the eye gint from showing up when there are no fish present, such as when the player first spawns the holdout
+            //A little hacky, but it works 
+            if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SeaDragonRocket>()] > 0)
+            {
+                if (Time == 3)
+                {
+                    SoundStyle hitSound = new("CalamityMod/Sounds/Item/SevensStrikerTriples");
+                    SoundEngine.PlaySound(hitSound with { Volume = 0.5f, Pitch = 0.8f }, Projectile.Center);
+                }
+                if (Time > 2 && Time < 16)
+                {
+                    for (int i = 0; i <= 2; i++)
+                        Main.EntitySpriteDraw(texture2, GunTipPosition - Main.screenPosition + (-Projectile.velocity.RotatedBy(0.1 * Projectile.direction) * 30f), null, Color.Lerp(Color.Goldenrod, Color.OrangeRed, 0.5f) with { A = 1 }, Time * 0.25f, texture2.Size() * 0.5f, 1.1f, flipSprite);
+                }
+            }
             return false;
         }
     }

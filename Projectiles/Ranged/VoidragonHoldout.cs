@@ -169,7 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 30;
                     #endregion
 
-                    //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the rocket doing 0 damage
+                    //If the player hasn't hit any shots, increase the multiplier from 0 to 1 to avoid the laser doing 0 damage
                     if (Owner.Calamity().sharkGunDamageScaling == 0)
                     {
                         Owner.Calamity().sharkGunDamageScaling++;

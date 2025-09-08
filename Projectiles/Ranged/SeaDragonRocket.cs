@@ -94,10 +94,10 @@ namespace CalamityMod.Projectiles.Ranged
             // Explode on kill if attacking, else just poof out
             if (attacking)
             {
-                SoundEngine.PlaySound(SoundID.NPCDeath19 with { Volume = 2.5f }, Projectile.position);
+                SoundEngine.PlaySound(SoundID.NPCDeath19, Projectile.position);
                 SoundStyle hitSound2 = new("CalamityMod/Sounds/NPCHit/AnahitaHit", 3);
                 SoundEngine.PlaySound(hitSound2 with { Volume = 1.1f }, Projectile.Center);
-                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.8f) with { Volume = 1.1f }, Projectile.position);
+                SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode.WithPitchOffset(0.8f) with { Volume = 1.1f , MaxInstances = 2}, Projectile.position);
                 for (int i = 0; i < 3; i++)
                 {
                     Particle Star = new CritSpark(Projectile.Center, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(4, 5), Color.SkyBlue, Main.rand.NextBool() ? Color.HotPink : Color.SeaGreen, Main.rand.NextFloat(0.6f, 0.9f), 30, 0.4f, 3f);
