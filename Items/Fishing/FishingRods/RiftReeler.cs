@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -30,13 +31,35 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<RiftReelerBobber>();
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
+            Item.accessory = true;
+        }
+        public override bool AllowPrefix(int pre)
+        {
+            if (pre == 0)
+                return true;
+            return false;
+        }
+
+        public override bool CanReforge()
+        {
+            return false;
+        }
+        public override void HoldItem(Player player)
+        {
+            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.RiftReeler;
+        }
+
+        public override void UpdateEquip(Player player)
+        {
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.RiftReeler;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            for (int i = 0; i < Main.rand.Next(3, 6); i++) //3 to 5 bobbers
+            for (int i = 0; i < 4; i++) //4 bobbers
             {
-                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(18f)), type, 0, 0f, player.whoAmI, ai2: Main.rand.Next(2));
+                Projectile.NewProjectile(source, position, velocity.RotatedByRandom(MathHelper.ToRadians(45f)), type, 10, 1f, player.whoAmI, ai2: Main.rand.Next(2));
             }
             return false;
         }
@@ -47,7 +70,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
             if (bobber.ai[2] == 0f)
                 lineColor = new Color(255, 165, 0, 100);
             else
-                lineColor = new Color(0, 206, 209, 100);
+                lineColor = new Color(200, 206, 209, 100);
         }
 
         public override void AddRecipes()

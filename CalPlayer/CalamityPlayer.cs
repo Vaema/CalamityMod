@@ -178,7 +178,20 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
-
+        public enum FishingMinigames
+        {
+            None,
+            WulfrumRod,
+            NavyFishingRod,
+            HeronRod,
+            SlurperPole,
+            VerstaltiteFishingRod,
+            FeralDoubleRod,
+            RiftReeler,
+            EarlyBloomRod,
+            TheDevourerOfCods
+        }
+        public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         public StatModifier TypelessDebuffMultiplier = new();
@@ -401,6 +414,7 @@ namespace CalamityMod.CalPlayer
         public bool canFireBloodflareMageProjectile = false;
         public bool canFireBloodflareRangedProjectile = false;
 
+        public int consecutiveCaughtFish = 0;
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
         #endregion
@@ -2571,6 +2585,8 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            SelectedFishingMinigame = FishingMinigames.None;
+
             #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;
@@ -2829,6 +2845,8 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Buffs, Debuffs, Counters, and Nonsense
+            if (Player.HeldItem.IsAir || Player.HeldItem.fishingPole == 0)
+                consecutiveCaughtFish = 0;
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
             whitewaterHeal = 0;
@@ -5662,6 +5680,30 @@ namespace CalamityMod.CalPlayer
                     life.noGravity = true;
                 }
             }
+        }
+        #endregion
+
+        #region Controls
+        // These are used to entirely disable player directional inputs while being able to read them for other features
+        public bool ShouldHideControls = false;
+        public bool pressedRight = false;
+        public bool pressedLeft = false;
+        public bool pressedUp = false;
+        public bool pressedDown = false;
+        public override void SetControls()
+        {
+            pressedRight = Player.controlRight;
+            pressedLeft = Player.controlLeft;
+            pressedUp = Player.controlUp;
+            pressedDown = Player.controlDown;
+            if (ShouldHideControls)
+            {
+                Player.controlLeft = false;
+                Player.controlUp = false;
+                Player.controlDown = false;
+                Player.controlRight = false;
+            }
+            ShouldHideControls = false;
         }
         #endregion
     }

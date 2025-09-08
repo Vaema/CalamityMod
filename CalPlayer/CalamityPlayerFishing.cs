@@ -10,6 +10,7 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Melee;
@@ -171,6 +172,20 @@ namespace CalamityMod.CalPlayer
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
                 itemDrop = -1;
                 return;
+            }
+
+            if (attempt.playerFishingConditions.PoleItemType == ModContent.ItemType<WulfrumRod>())
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    itemDrop = ModContent.ItemType<WulfrumMetalScrap>();
+                    return;
+                }
+                if (Main.rand.NextBool(15))
+                {
+                    itemDrop = ModContent.ItemType<EnergyCore>();
+                    return;
+                }
             }
 
             // Ignore catches if it's junk
@@ -352,6 +367,10 @@ namespace CalamityMod.CalPlayer
                 fishingLevel = fishingLevel * VerstaltiteFishingRod.FishingPowerBiomeMult;
             if (Player.ZoneSkyHeight && fishingRod.type == ModContent.ItemType<HeronRod>())
                 fishingLevel = fishingLevel * HeronRod.FishingPowerBiomeMult;
+            if (fishingRod.type == ModContent.ItemType<FeralDoubleRod>())
+            {
+                fishingLevel *= 1f + (Player.statLifeMax2 - Player.statLife) * 0.002f;
+            }
 
             // Prevent the player from fishing if they have the Bloodworm
             if (bait.type == ModContent.ItemType<BloodwormItem>())
@@ -415,6 +434,8 @@ namespace CalamityMod.CalPlayer
                 if (fishList.Contains(fish.type))
                     fish.stack += Main.rand.Next(1, 3 + 1);
             }
+            if (fish.type == ModContent.ItemType<WulfrumMetalScrap>())
+                fish.stack = Main.rand.Next(1, 6);
         }
         #endregion
     }

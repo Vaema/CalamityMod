@@ -3963,42 +3963,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // Navy Fishing Rod's electric aura when in-use
-            if (Player.ActiveItem().type == ModContent.ItemType<NavyFishingRod>() && Player.ownedProjectileCounts[ModContent.ProjectileType<NavyBobber>()] != 0)
-            {
-                const int FramesPerHit = 120;
-
-                // Constantly increment the timer every frame.
-                navyRodAuraTimer = (navyRodAuraTimer + 1) % FramesPerHit;
-
-                // If the timer rolls over, it's time to deal damage. Only run this code for the client which is holding the fishing rod,
-                if (navyRodAuraTimer == 0 && Player.whoAmI == Main.myPlayer)
-                {
-                    const int BaseDamage = 10;
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(BaseDamage);
-                    var source = Player.GetSource_ItemUse(Player.ActiveItem());
-                    float range = 200f;
-
-                    foreach (NPC npc in Main.ActiveNPCs)
-                    {
-                        if (npc.friendly || npc.damage <= 0 || npc.dontTakeDamage)
-                            continue;
-
-                        if (Vector2.Distance(Player.Center, npc.Center) <= range)
-                            Projectile.NewProjectile(source, npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), damage, 0f, Player.whoAmI, npc.whoAmI);
-
-                        // Occasionally spawn cute sparks so it looks like an electrical aura
-                        if (Main.rand.NextBool(10))
-                        {
-                            Vector2 velocity = CalamityUtils.RandomVelocity(50f, 30f, 60f);
-                            Projectile spark = Projectile.NewProjectileDirect(source, npc.Center, velocity, ModContent.ProjectileType<GenericElectricSpark>(), damage / 2, 0f, Player.whoAmI);
-                            spark.localNPCHitCooldown = -2;
-                            spark.timeLeft = 30;
-                        }
-                    }
-                }
-            }
-
             // Inferno potion boost
             if (ataxiaBlaze && Player.inferno)
             {
