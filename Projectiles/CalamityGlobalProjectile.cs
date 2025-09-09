@@ -3239,6 +3239,8 @@ namespace CalamityMod.Projectiles
                     {
                         if (projectile.wet) //Fishing in water
                         {
+
+                            projectile.extraUpdates = 0;
                             if (cplayer.mouseRight && projectile.ai[1] == 0)
                             {
                                 projectile.localAI[1] += 2;
@@ -3261,6 +3263,8 @@ namespace CalamityMod.Projectiles
                                     }
                                 }
                                 projectile.timeLeft++;
+
+                                projectile.extraUpdates = 0;
                                 return true;
                             }
                             else if (PersistentFishingData >= 0)
@@ -3279,9 +3283,15 @@ namespace CalamityMod.Projectiles
                                     break;
                                 }
                             }
+                            if (PersistentFishingData == -1)
+                                projectile.extraUpdates = 1;
+                            else
+                                projectile.extraUpdates = 0;
 
                         }
                     }
+                    else if (projectile.ai[0] == 1)
+                        projectile.extraUpdates = 3;
                     break;
 
 

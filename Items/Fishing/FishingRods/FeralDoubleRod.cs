@@ -43,6 +43,8 @@ namespace CalamityMod.Items.Fishing.FishingRods
         {
             if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
                 player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.FeralDoubleRod;
+            Item.fishingPole = 40 +(int)((1f + (player.statLifeMax2 - player.statLife) * 0.25f));
+
         }
 
         public override void UpdateEquip(Player player)

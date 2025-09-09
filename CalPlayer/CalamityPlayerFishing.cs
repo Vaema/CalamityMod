@@ -367,10 +367,6 @@ namespace CalamityMod.CalPlayer
                 fishingLevel = fishingLevel * VerstaltiteFishingRod.FishingPowerBiomeMult;
             if (Player.ZoneSkyHeight && fishingRod.type == ModContent.ItemType<HeronRod>())
                 fishingLevel = fishingLevel * HeronRod.FishingPowerBiomeMult;
-            if (fishingRod.type == ModContent.ItemType<FeralDoubleRod>())
-            {
-                fishingLevel *= 1f + (Player.statLifeMax2 - Player.statLife) * 0.002f;
-            }
 
             // Prevent the player from fishing if they have the Bloodworm
             if (bait.type == ModContent.ItemType<BloodwormItem>())
