@@ -11,6 +11,7 @@ namespace CalamityMod.Projectiles.Environment
 {
     public class BarrelCactusProjectile : ModProjectile, ILocalizedModType
     {   //I tried, someone else figure it out I bet YuH could do it
+        public new string LocalizationCategory => "Projectiles.Misc";
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 1;

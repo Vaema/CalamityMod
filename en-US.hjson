@@ -1,8 +1,0 @@
-Mods: {
-	CalamityMod: {
-		Projectiles: {
-			LucreciaDNATrailCreator.DisplayName: Lucrecia D N A Trail Creator
-			BarrelCactusProjectile.DisplayName: Barrel Cactus Projectile
-		}
-	}
-}
