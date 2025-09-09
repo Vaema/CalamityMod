@@ -2854,33 +2854,26 @@ namespace CalamityMod.Projectiles
 
         #region Fishing Minigames
         // All these fields are exclusively used for fishing minigames, so I declared them in this region for organization
-
         /// <summary>
-        /// Reel state of bobber
-        /// ai[0] in bobber AI
+        /// Reel state of bobber.<br/>
+        /// ai[0] in bobber AI.
         /// </summary>
         private float isReelingIn = 0;
         /// <summary>
-        /// How long you have to catch a fish when bitten
-        /// ai[1] in bobber AI
+        /// How long you have to catch a fish when bitten.<br/>
+        /// ai[1] in bobber AI.
         /// </summary>
         private float CatchTime = 0;
         /// <summary>
-        /// How long until a fish bites
-        /// LocalAI[1] in bobber AI
+        /// How long until a fish bites.<br/>
+        /// LocalAI[1] in bobber AI.
         /// </summary>
         private float TimerToCatch = 0;
-        /// <summary>
-        /// Item ID of hooked item for fishing minigames
-        /// </summary>
+        /// <summary> Item ID of hooked item for fishing minigames. </summary>
         public int CaughtItemID = -1;
-        /// <summary>
-        /// What this does depends on the fishing minigame. Used to store data between updates
-        /// </summary>
+        /// <summary> What this does depends on the fishing minigame. Used to store data between updates. </summary>
         public float PersistentFishingData = -1;
-        /// <summary>
-        /// What this does depends on the fishing minigame. Used to store data between updates
-        /// </summary>
+        /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
         public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
         public bool RunFishingMinigames(Projectile projectile)
         {
@@ -2924,7 +2917,7 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[1] == 1)
                 {
-                    if (Main.netMode != 1)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         NPC.SpawnOnPlayer(owner.whoAmI, 370);
                     }
@@ -2939,9 +2932,9 @@ namespace CalamityMod.Projectiles
                     {
                         point.Y += 64;
                     }
-                    if (Main.netMode == 1)
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
                     {
-                        NetMessage.SendData(130, -1, -1, null, point.X / 16, point.Y / 16, num);
+                        NetMessage.SendData(MessageID.FishOutNPC, -1, -1, null, point.X / 16, point.Y / 16, num);
                     }
                     else
                     {
@@ -3005,8 +2998,6 @@ namespace CalamityMod.Projectiles
             //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
             //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
-
-
             switch (owner.Calamity().SelectedFishingMinigame)
             {
                 case CalamityPlayer.FishingMinigames.WulfrumRod:
@@ -3287,6 +3278,17 @@ namespace CalamityMod.Projectiles
 
                 case CalamityPlayer.FishingMinigames.NavyFishingRod:
                     {
+                        foreach (var item in Main.ActiveProjectiles)
+                        {
+                            if (item.bobber && item.owner == projectile.owner && item.whoAmI != projectile.whoAmI)
+                            {
+                                item.active = false;
+                            }
+                        }
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
                         if (isReelingIn != projectile.ai[0])
                             return false;
                         var waterline = GetWaterLine();
