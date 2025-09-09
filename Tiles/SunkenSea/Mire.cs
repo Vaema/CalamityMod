@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
-    public class AridSoil : ModTile
+    public class Mire : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -18,14 +18,12 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileBlendAll[Type] = true;
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
-
-            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
             Main.tileShine2[Type] = true;
 
             DustType = DustID.Hive;
-            AddMapEntry(new Color(171, 101, 87));
+            AddMapEntry(new Color(71, 38, 30));
 
             //Stone merges
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
@@ -34,7 +32,6 @@ namespace CalamityMod.Tiles.SunkenSea
 
             //Sand merges
             this.RegisterUniversalMerge(ModContent.TileType<PolypSand>(), "CalamityMod/Tiles/Merges/PolypSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Dunesand>(), "CalamityMod/Tiles/Merges/DunesandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<ScarletSeaGrassTile>(), "CalamityMod/Tiles/Merges/ScarletSeaGrassTile");
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<VolcanicSand>(), "CalamityMod/Tiles/Merges/VolcanicSandMerge");
@@ -52,11 +49,6 @@ namespace CalamityMod.Tiles.SunkenSea
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-        {
-            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
     }
 }
