@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Dyes.HairDye
             Item.consumable = true;
             Item.maxStack = Item.CommonMaxStack;
 
-            Item.value = Item.buyPrice(gold: 7, silver: 50); // Sold by Stylist
+            Item.value = Item.buyPrice(gold: 5); // Sold by Stylist
             Item.rare = ItemRarityID.Green;
         }
     }

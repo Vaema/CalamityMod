@@ -66,6 +66,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
             IL_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
+            On_NPC.NPCLoot += PreventDiabolistLootLogic;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
             // Mechanics / features
@@ -96,7 +97,9 @@ namespace CalamityMod.ILEditing
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
-            IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;
+            IL_Player.ApplyLifeAndOrMana += ChaliceBufferHeal;
+            On_Player.CheckMana_int_bool_bool += AllowNegativeCheckMana;
+            On_Player.CheckMana_Item_int_bool_bool += AllowNegativeCheckMana;
 
             //LavaStyles
             if (ExternalMods.biomeLava == null)
@@ -195,9 +198,10 @@ namespace CalamityMod.ILEditing
             On_NPC.SlimeRainSpawns += PreventBossSlimeRainSpawns;
             On_ShimmerTransforms.IsItemTransformLocked += AdjustShimmerRequirements;
             On_Projectile.AI_015_Flails += FlailsNoLongerAffectedByPlayerVelocity;
+            IL_Projectile.AI_061_FishingBobber += WhitelistVictideBobber;
+            On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
-            IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;

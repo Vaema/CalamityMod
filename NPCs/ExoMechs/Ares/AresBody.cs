@@ -219,10 +219,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int BlenderDamage = 110; // 440
+        public static int BlenderDamage = 105; // 420
 
         // Hekate (GFB)
-        public static int NeuronLaserDamage = 85; // 340
+        public static int NeuronLaserDamage = 80; // 320
 
         public override void SetDefaults()
         {
@@ -889,7 +889,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     else
                     {
                         // Enrage if the target is more than the deathray length away
-                        if ((distanceFromTarget > DeathrayEnrageDistance || (CalamityWorld.LegendaryMode)) && EnragedState == (float)Enraged.No)
+                        if ((distanceFromTarget > DeathrayEnrageDistance || Main.zenithWorld) && EnragedState == (float)Enraged.No)
                         {
                             // Play enrage sound
                             if (Main.LocalPlayer.active && !Main.LocalPlayer.dead && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < soundDistance)
@@ -909,7 +909,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                         NPC.velocity *= decelerationVelocityMult;
 
                         int totalProjectiles = death ? 10 : revenge ? 9 : expertMode ? 8 : 6;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             totalProjectiles += 4;
 
                         float radians = MathHelper.TwoPi / totalProjectiles;

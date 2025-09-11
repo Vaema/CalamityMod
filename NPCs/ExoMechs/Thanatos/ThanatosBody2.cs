@@ -528,7 +528,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             else
                 baseVelocity *= increaseSpeedMult;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 baseVelocity *= 1.15f;
         }
 

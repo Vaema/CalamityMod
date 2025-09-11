@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -21,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 68;
             Item.height = 68;
-            Item.damage = 100;
+            Item.damage = 110;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1
             Item.useStyle = ItemUseStyleID.Swing;
@@ -31,8 +32,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.UseSound = SoundID.Item113;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<Mechworm>();
             Item.shoot = ModContent.ProjectileType<MechwormHead>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
@@ -104,6 +105,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             int head = -1;
             int tail = -1;
             foreach (Projectile p in Main.ActiveProjectiles)

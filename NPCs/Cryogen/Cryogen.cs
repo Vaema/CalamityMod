@@ -91,7 +91,7 @@ namespace CalamityMod.NPCs.Cryogen
 
         public static int IceBlastDamage = 23; // 92; Also applies to GFB darts
         public static int IceRainDamage = 23; // 92; Also applies to GFB darts
-        public static int IceBombDamage = 30; // 120; Also applies to GFB fireblasts
+        public static int IceBombDamage = 28; // 112; Also applies to GFB fireblasts
 
         public override void SetDefaults()
         {
@@ -115,7 +115,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
 
             if (Main.zenithWorld)
@@ -187,27 +187,6 @@ namespace CalamityMod.NPCs.Cryogen
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-
-            // Enrage
-            if (!player.ZoneSnow && !BossRushEvent.BossRushActive)
-            {
-                if (biomeEnrageTimer > 0)
-                    biomeEnrageTimer--;
-            }
-            else
-                biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
-
-            bool biomeEnraged = biomeEnrageTimer <= 0;
-
-            float enrageScale = death ? 0.5f : 0f;
-            if (biomeEnraged)
-            {
-                NPC.Calamity().CurrentlyEnraged = true;
-                enrageScale += 2f;
-            }
-
-            if (enrageScale > 2f)
-                enrageScale = 2f;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -291,7 +270,7 @@ namespace CalamityMod.NPCs.Cryogen
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 int spawnType = Main.zenithWorld ? NPCID.RedDevil : NPCID.IceGolem;
                 if (!NPC.AnyNPCs(spawnType))
@@ -319,13 +298,13 @@ namespace CalamityMod.NPCs.Cryogen
 
             float chargePhaseGateValue = 360f;
             float chargeDuration = 60f;
-            float chargeTelegraphTime = NPC.ai[0] == 2f ? (CalamityWorld.LegendaryMode ? 60f : 80f) : (CalamityWorld.LegendaryMode ? 90f : 120f);
+            float chargeTelegraphTime = NPC.ai[0] == 2f ? (Main.getGoodWorld ? 60f : 80f) : (Main.getGoodWorld ? 90f : 120f);
             float chargeTelegraphMaxRotationIncrement = 1f;
             float chargeTelegraphRotationIncrement = chargeTelegraphMaxRotationIncrement / chargeTelegraphTime;
             float chargeSlowDownTime = 15f;
-            float chargeVelocityMin = CalamityWorld.LegendaryMode ? 24f : 12f;
-            float chargeVelocityMax = CalamityWorld.LegendaryMode ? 42f : 30f;
-            if (CalamityWorld.LegendaryMode)
+            float chargeVelocityMin = Main.getGoodWorld ? 24f : 12f;
+            float chargeVelocityMax = Main.getGoodWorld ? 42f : 30f;
+            if (Main.getGoodWorld)
             {
                 chargePhaseGateValue *= 0.7f;
                 chargeDuration *= 0.8f;
@@ -381,7 +360,7 @@ namespace CalamityMod.NPCs.Cryogen
                             int totalProjectiles = 16;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = iceBlast;
-                            float velocity = 9f + enrageScale;
+                            float velocity = death ? 9.5f : 9f;
                             float projectileVelocityToPass = 0f;
                             if (type == ModContent.ProjectileType<BrimstoneBarrage>())
                                 projectileVelocityToPass = velocity * 2f;
@@ -401,15 +380,14 @@ namespace CalamityMod.NPCs.Cryogen
                 float playerYDist = player.Center.Y - cryogenCenter.Y;
                 float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                float cryogenSpeed = revenge ? 5f : 4f;
-                cryogenSpeed += 4f * enrageScale;
+                float cryogenSpeed = death ? 7f : revenge ? 5f : 4f;
 
                 playerDistance = cryogenSpeed / playerDistance;
                 playerXDist *= playerDistance;
                 playerYDist *= playerDistance;
 
                 float inertia = 50f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -456,7 +434,7 @@ namespace CalamityMod.NPCs.Cryogen
                                 int totalProjectiles = 12;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
                                 int type = iceBlast;
-                                float velocity2 = 9f + enrageScale;
+                                float velocity2 = death ? 9.5f : 9f;
                                 float projectileVelocityToPass = 0f;
                                 if (type == ModContent.ProjectileType<BrimstoneBarrage>())
                                     projectileVelocityToPass = velocity2 * 2f;
@@ -471,10 +449,8 @@ namespace CalamityMod.NPCs.Cryogen
                         }
                     }
 
-                    float velocity = revenge ? 3.5f : 4f;
-                    float acceleration = 0.15f;
-                    velocity -= enrageScale * 0.8f;
-                    acceleration += 0.07f * enrageScale;
+                    float velocity = death ? 3.1f : revenge ? 3.5f : 4f;
+                    float acceleration = death ? 0.185f : 0.15f;
 
                     if (NPC.position.Y > player.position.Y - 375f)
                     {
@@ -532,7 +508,7 @@ namespace CalamityMod.NPCs.Cryogen
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = iceRain;
-                                float maxVelocity = 9f + enrageScale;
+                                float maxVelocity = death ? 9.5f : 9f;
                                 float velocity = maxVelocity - (calamityGlobalNPC.newAI[0] * maxVelocity * 0.5f);
                                 int totalProjectiles = 10;
                                 int maxTotalProjectileReductionBasedOnRotationSpeed = (int)(totalProjectiles * 0.7f);
@@ -571,7 +547,7 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.ai[1] == chargeGateValue)
                     {
                         float chargeVelocity = Vector2.Distance(NPC.Center, player.Center) / chargeDuration * 2f;
-                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (chargeVelocity + enrageScale * 2f);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (chargeVelocity + (death ? 1f : 0f));
 
                         if (NPC.velocity.Length() < chargeVelocityMin)
                         {
@@ -652,7 +628,7 @@ namespace CalamityMod.NPCs.Cryogen
                                 int totalProjectiles = 12;
                                 float radians = MathHelper.TwoPi / totalProjectiles;
                                 int type = iceBlast;
-                                float velocity = 9f + enrageScale;
+                                float velocity = death ? 9.5f : 9f;
                                 float projectileVelocityToPass = 0f;
                                 if (type == ModContent.ProjectileType<BrimstoneBarrage>())
                                     projectileVelocityToPass = velocity * 2f;
@@ -672,15 +648,14 @@ namespace CalamityMod.NPCs.Cryogen
                     float playerYDist = player.Center.Y - cryogenCenter.Y;
                     float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                    float cryogenSpeed = revenge ? 7f : 6f;
-                    cryogenSpeed += 4f * enrageScale;
+                    float cryogenSpeed = death ? 9f : revenge ? 7f : 6f;
 
                     playerDistance = cryogenSpeed / playerDistance;
                     playerXDist *= playerDistance;
                     playerYDist *= playerDistance;
 
                     float inertia = 50f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.5f;
 
                     NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -700,7 +675,7 @@ namespace CalamityMod.NPCs.Cryogen
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = iceRain;
-                                float maxVelocity = 9f + enrageScale;
+                                float maxVelocity = death ? 9.5f : 9f;
                                 float velocity = maxVelocity - (calamityGlobalNPC.newAI[0] * maxVelocity * 0.5f);
                                 int totalProjectiles = calamityGlobalNPC.newAI[1] == 0f ? 8 : 4;
                                 int maxTotalProjectileReductionBasedOnRotationSpeed = (int)(totalProjectiles * 0.4f);
@@ -739,7 +714,7 @@ namespace CalamityMod.NPCs.Cryogen
                     if (NPC.ai[1] == chargeGateValue)
                     {
                         float chargeVelocity = Vector2.Distance(NPC.Center, player.Center) / chargeDuration * 2f;
-                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (chargeVelocity + enrageScale * 2f);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (chargeVelocity + (death ? 1f : 0f));
 
                         if (NPC.velocity.Length() < chargeVelocityMin)
                         {
@@ -813,7 +788,7 @@ namespace CalamityMod.NPCs.Cryogen
                             int totalProjectiles = 12;
                             float radians = MathHelper.TwoPi / totalProjectiles;
                             int type = iceBlast;
-                            float velocity = 10f + enrageScale;
+                            float velocity = death ? 10.5f : 10f;
                             float projectileVelocityToPass = 0f;
                             if (type == ModContent.ProjectileType<BrimstoneBarrage>())
                                 projectileVelocityToPass = velocity * 2f;
@@ -833,15 +808,14 @@ namespace CalamityMod.NPCs.Cryogen
                 float playerYDist = player.Center.Y - cryogenCenter.Y;
                 float playerDistance = (float)Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
 
-                float speed = revenge ? 5.5f : 5f;
-                speed += 3f * enrageScale;
+                float speed = death ? 7f : revenge ? 5.5f : 5f;
 
                 playerDistance = speed / playerDistance;
                 playerXDist *= playerDistance;
                 playerYDist *= playerDistance;
 
                 float inertia = 50f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -917,7 +891,7 @@ namespace CalamityMod.NPCs.Cryogen
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = iceRain;
-                                float velocity = 9f + enrageScale;
+                                float velocity = death ? 9.5f : 9f;
                                 for (int i = 0; i < 3; i++)
                                 {
                                     int totalProjectiles = 6;
@@ -1008,7 +982,7 @@ namespace CalamityMod.NPCs.Cryogen
                 {
                     if (NPC.ai[1] == 60f) // Spawn homing ice blasts on charge
                     {
-                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (18f + enrageScale * 2f);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * (death ? 19f : 18f);
 
                         if (Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
@@ -1017,7 +991,7 @@ namespace CalamityMod.NPCs.Cryogen
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = iceBlast;
-                                float velocity = 1.5f + enrageScale * 0.5f;
+                                float velocity = death ? 1.75f : 1.5f;
                                 int totalSpreads = phase7 ? 3 : 2;
                                 for (int i = 0; i < totalSpreads; i++)
                                 {
@@ -1084,7 +1058,7 @@ namespace CalamityMod.NPCs.Cryogen
                     return;
                 }
 
-                float chargeVelMult = 18f + enrageScale * 2f;
+                float chargeVelMult = death ? 19f : 18f;
 
                 Vector2 chargeDirection = new Vector2(NPC.Center.X + (NPC.direction * 20), NPC.Center.Y + 6f);
                 float playerchargeXDist = player.position.X + player.width * 0.5f - chargeDirection.X;
@@ -1118,7 +1092,7 @@ namespace CalamityMod.NPCs.Cryogen
                 }
 
                 float inertia = 30f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerchargeXDist) / (inertia + 1f);
@@ -1174,10 +1148,8 @@ namespace CalamityMod.NPCs.Cryogen
                     NPC.netUpdate = true;
                 }
 
-                float velocity = revenge ? 5f : 6f;
-                float acceleration = 0.2f;
-                velocity -= enrageScale;
-                acceleration += 0.07f * enrageScale;
+                float velocity = death ? 4.5f : revenge ? 5f : 6f;
+                float acceleration = death ? 0.535f : 0.2f;
 
                 if (NPC.position.Y > player.position.Y - 375f)
                 {

@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPCID.Sets.TrailingMode[Type] = 1;
         }
 
-        public static int MineDamage = 75; // 300
+        public static int MineDamage = 70; // 280
 
         public override void SetDefaults()
         {
@@ -81,7 +81,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f;
@@ -99,11 +99,11 @@ namespace CalamityMod.NPCs.Polterghast
             direction *= 0.5f;
             NPC.rotation = direction.ToRotation();
 
-            if (!chargePhase || CalamityWorld.LegendaryMode)
+            if (!chargePhase || Main.getGoodWorld)
             {
                 NPC.ai[2] += 1f;
                 float shootMineGateValue = 150f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     shootMineGateValue *= 0.5f;
 
                 if (NPC.ai[2] >= shootMineGateValue)
@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.Polterghast
             if (SPEEN < 0f)
                 SPEEN = 0f;
 
-            NPC.ai[1] += (CalamityWorld.LegendaryMode ? 1.5f : 0.5f) + SPEEN;
+            NPC.ai[1] += (Main.getGoodWorld ? 1.5f : 0.5f) + SPEEN;
         }
 
         public override Color? GetAlpha(Color drawColor) => new Color(200, 200, 200, 0);

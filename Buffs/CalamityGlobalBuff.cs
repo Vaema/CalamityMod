@@ -16,14 +16,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag buff stacking
             // Other mods need to add to this list because we genuinely don't have any way to tell this
-            if (SummonTagBuffList.Includes(type) && buffIndex > 0)
+            if (CalamityBuffSets.IsSummonTagBuff[type] && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (player.buffTime[i] > 0)
                     {
                         int buffID = player.buffType[i];
-                        if (SummonTagBuffList.Includes(buffID) && buffID != type)
+                        if (CalamityBuffSets.IsSummonTagBuff[buffID] && buffID != type)
                         {
                             player.DelBuff(i);
                             break;
@@ -90,6 +90,14 @@ namespace CalamityMod.Buffs
                 player.Calamity().shine = true;
             }
 
+            // Star in a Bottle provides Mana Regeneration Potion effect and cancels out the usual effect if you don't have it
+            else if (type == BuffID.StarInBottle && !player.manaRegenBuff)
+            {
+                player.manaRegenBuff = true;
+                player.manaRegenDelayBonus -= 0.5f;
+                player.manaRegenBonus -= 10;
+            }
+
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
             else if (type >= BuffID.BeetleEndurance1 && type <= BuffID.BeetleEndurance3 && player.beetleDefense)
             {
@@ -131,14 +139,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
             // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
-            if (SummonTagDebuffDict.TryGet(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (npc.buffTime[i] > 0)
                     {
                         int buffID = npc.buffType[i];
-                        if (SummonTagDebuffDict.TryGet(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        if (CalamityBuffSets.SummonTagDebuff.TryGetValue(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
                         {
                             npc.DelBuff(i);
                             break;
@@ -150,7 +158,7 @@ namespace CalamityMod.Buffs
             if (type == BuffID.Webbed)
             {
                 npc.Calamity().webbed = true;
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             if (type == BuffID.Electrified)
@@ -200,10 +208,6 @@ namespace CalamityMod.Buffs
                     tip = tip.Replace("25", "15");
                     break;
 
-                case BuffID.LeafCrystal:
-                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.LeafCrystal");
-                    break;
-
                 case BuffID.MagicPower:
                     tip = tip.Replace("20", "10");
                     break;
@@ -247,10 +251,6 @@ namespace CalamityMod.Buffs
 
                 case BuffID.Swiftness:
                     tip = tip.Replace("25", "15");
-                    break;
-
-                case BuffID.Warmth:
-                    tip += "\n" + CalamityUtils.GetTextValue("Vanilla.BuffDescription.WarmthExtra");
                     break;
 
                 case BuffID.WeaponImbueConfetti:

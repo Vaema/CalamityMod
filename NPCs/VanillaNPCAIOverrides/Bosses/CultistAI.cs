@@ -76,7 +76,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int idleTime = phase8 ? 40 : phase7 ? 45 : phase3 ? 55 : 60;
             float timeToFinishRitual = phase8 ? 180f : phase7 ? 240f : phase5 ? 300f : 360f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 iceMistFireRate = 40;
                 iceMistSpeed = 15f;

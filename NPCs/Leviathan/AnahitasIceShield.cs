@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
-            NPC.damage = 45; // 90
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noTileCollide = true;
@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
         }
 

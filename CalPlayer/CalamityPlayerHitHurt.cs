@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -14,10 +14,18 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Aerospec;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.Daedalus;
 using CalamityMod.Items.Armor.Demonshade;
+using CalamityMod.Items.Armor.Empyrean;
+using CalamityMod.Items.Armor.GodSlayer;
+using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.LunicCorps;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Sulphurous;
+using CalamityMod.Items.Armor.Tarragon;
+using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
@@ -78,7 +86,7 @@ namespace CalamityMod.CalPlayer
                 sVeilDust2.noLight = false;
             }
 
-            SoundEngine.PlaySound(SilvaHeadSummon.DispelSound, Player.Center);
+            SoundEngine.PlaySound(SilvaArmor.DispelSound, Player.Center);
 
             NetMessage.SendData(MessageID.Dodge, -1, -1, null, Player.whoAmI, 1f, 0f, 0f, 0, 0, 0);
         }
@@ -157,7 +165,7 @@ namespace CalamityMod.CalPlayer
                 Player.GiveUniversalIFrames(abyssalMirrorDodgeIFrames, true);
 
                 rogueStealth += 0.5f;
-                SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
+                SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
 
                 var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<AbyssalMirror>()));
                 for (int i = 0; i < 10; i++)
@@ -294,10 +302,10 @@ namespace CalamityMod.CalPlayer
 
             if (silvaSet && silvaCountdown > 0)
             {
-                if (silvaCountdown == SilvaReviveDuration && !hasSilvaEffect)
+                if (silvaCountdown == SilvaArmor.ReviveDuration && !hasSilvaEffect)
                 {
-                    SoundEngine.PlaySound(SilvaHeadSummon.ActivationSound, Player.Center);
-                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), SilvaReviveDuration);
+                    SoundEngine.PlaySound(SilvaArmor.ActivationSound, Player.Center);
+                    Player.AddBuff(ModContent.BuffType<SilvaRevival>(), SilvaArmor.ReviveDuration);
                 }
 
                 hasSilvaEffect = true;
@@ -334,6 +342,8 @@ namespace CalamityMod.CalPlayer
                 Player.AddBuff(ModContent.BuffType<Encased>(), CalamityUtils.SecondsToFrames(3f));
 
                 Player.statLife = Player.statLifeMax2 * 3 / 10;
+                if (Player.statMana < 0)
+                    Player.statMana = 0;
 
                 SoundEngine.PlaySound(SoundID.Item92, Player.Center);
 
@@ -705,7 +715,7 @@ namespace CalamityMod.CalPlayer
             {
                 Item heldItem = Player.ActiveItem();
 
-                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !DisabledSummonerNerfMinionList.Includes(proj.type))
+                if (CalamityUtils.ShouldTriggerSummonPenalty(Player, heldItem) && !CalamityProjectileSets.MinionWhichIgnoresSummonerNerf[proj.type])
                     modifiers.FinalDamage *= BalancingConstants.SummonerCrossClassNerf;
             }
         }
@@ -806,10 +816,10 @@ namespace CalamityMod.CalPlayer
                 contactDamageReduction += 0.5;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += Buffs.StatBuffs.TarragonCloak.ContactDamageReduction;
+                contactDamageReduction += TarragonHeadMelee.CloakContactDamageReduction;
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
-                contactDamageReduction += 0.5;
+                contactDamageReduction += BloodflareHeadMelee.FrenzyContactDamageReduction;
 
             if (npc.Calamity().temporalSadness)
                 contactDamageReduction += 0.5;
@@ -822,11 +832,6 @@ namespace CalamityMod.CalPlayer
 
             if (trinketOfChiBuff)
                 contactDamageReduction += 0.08;
-
-            // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
-            // To prevent abuse, this effect does not work if there are any bosses alive.
-            if (fearmongerSet && !areThereAnyDamnBosses && (Main.pumpkinMoon || Main.snowMoon))
-                contactDamageReduction += 0.15;
 
             if (abyssalDivingSuitPlates)
                 contactDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
@@ -931,7 +936,7 @@ namespace CalamityMod.CalPlayer
                     return;
                 }
             }
-            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
+            if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -970,6 +975,21 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
 
                         return;
+                    }
+                    else if (daedalusReflect)
+                    {
+                        proj.hostile = false;
+                        proj.friendly = true;
+                        proj.velocity *= -1f;
+                        proj.penetrate = 1;
+
+                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
+                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
+                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
+                        modifiers.Cancel();
+
+                        int cooldownDuration = (int)MathHelper.Lerp(DaedalusHeadMelee.ReflectCooldownMin, DaedalusHeadMelee.ReflectCooldownMax, cooldownDurationScalar);
+                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
                     }
                 }
             }
@@ -1070,20 +1090,8 @@ namespace CalamityMod.CalPlayer
                     projectileDamageReduction += 0.25;
             }
 
-            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && proj.damage > 0)
-            {
-                // Daedalus Reflect counts as a reflect but doesn't actually stop you from taking damage
-                if (daedalusReflect && !disableAllDodges && !evolution && !Player.HasCooldown(GlobalDodge.ID))
-                    projectileDamageReduction += 0.5;
-            }
-
             if (trinketOfChiBuff)
                 projectileDamageReduction += 0.08;
-
-            // Fearmonger set provides 15% multiplicative DR that ignores caps during the Holiday Moons.
-            // To prevent abuse, this effect does not work if there are any bosses alive.
-            if (fearmongerSet && !areThereAnyDamnBosses && (Main.pumpkinMoon || Main.snowMoon))
-                projectileDamageReduction += 0.15;
 
             if (abyssalDivingSuitPlates)
                 projectileDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
@@ -1208,7 +1216,7 @@ namespace CalamityMod.CalPlayer
                 Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 7;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(40);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(CrawCarapace.ThornsDamage);
                     Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, 0f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
                 }
                 SoundEngine.PlaySound(SoundID.NPCHit33 with { Volume = 0.5f }, Player.Center);
@@ -1233,7 +1241,7 @@ namespace CalamityMod.CalPlayer
                 Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 15;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(250);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(Baroclaw.ThornsDamage);
                     Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
                     
                     npc.AddBuff(ModContent.BuffType<ArmorCrunch>(), 900);
@@ -1268,8 +1276,8 @@ namespace CalamityMod.CalPlayer
                 Vector2 pushVel = Utils.DirectionTo(Player.Center, npc.Center) * 22;
                 if (!npc.dontTakeDamage)
                 {
-                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(350);
-                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
+                    int onHitDamage = (int)Player.GetBestClassDamage().ApplyTo(TheAbsorber.ThornsDamage);
+                    Projectile revenge = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), onHitDamage, -1f, Player.whoAmI, npc.whoAmI, pushVel.X, pushVel.Y);
                     
                     npc.AddBuff(ModContent.BuffType<AbsorberAffliction>(), 900);
                 }
@@ -1435,40 +1443,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            // As these reflects do not cancel damage, they need to be in OnHit rather than ModifyHit
-            if (!ProjectileDestroyExceptionsList.Includes(proj.type) && proj.active && !proj.friendly && proj.hostile && hurtInfo.Damage > 0)
-            {
-                double dodgeDamageGateValuePercent = 0.05;
-                int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
-
-                // Reflects count as dodges. They share the timer and can be disabled by global dodge disabling effects.
-                if (!disableAllDodges && !Player.HasCooldown(GlobalDodge.ID) && proj.damage >= dodgeDamageGateValue)
-                {
-                    double maxCooldownDurationDamagePercent = 0.5;
-                    int maxCooldownDurationDamageValue = (int)Math.Round(Player.statLifeMax2 * (maxCooldownDurationDamagePercent - dodgeDamageGateValuePercent));
-
-                    // Just in case...
-                    if (maxCooldownDurationDamageValue <= 0)
-                        maxCooldownDurationDamageValue = 1;
-
-                    float cooldownDurationScalar = MathHelper.Clamp((proj.damage - dodgeDamageGateValue) / (float)maxCooldownDurationDamageValue, 0f, 1f);
-
-                    if (daedalusReflect && !evolution)
-                    {
-                        proj.hostile = false;
-                        proj.friendly = true;
-                        proj.velocity *= -1f;
-                        proj.penetrate = 1;
-
-                        // 17APR2024: Ozzatron: The Daedalus Reflect set bonus also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                        int daedalusReflectIFrames = Player.ComputeReflectIFrames();
-                        Player.GiveUniversalIFrames(daedalusReflectIFrames, true);
-
-                        int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.DaedalusReflectCooldownMin, BalancingConstants.DaedalusReflectCooldownMax, cooldownDurationScalar);
-                        Player.AddCooldown(GlobalDodge.ID, cooldownDuration);
-                    }
-                }
-            }
             if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
             {
                 Player.AddBuff(ModContent.BuffType<NOU>(), 15, true);
@@ -2092,10 +2066,9 @@ namespace CalamityMod.CalPlayer
                 // Regardless of whether shields took damage, iterate over and stall all shield regen on ANY hit.
                 // This applies even if you are hit while shields are fully down, or if you unequip any of the relevant items.
                 {
-                    // Rover Drive does not recharge while partially full, only when broken.
-                    // If you are hit when recharging, though, that timer gets reset.
-                    if (cooldowns.TryGetValue(WulfrumRoverDriveRecharge.ID, out var roverDriveRechargeCD))
-                        roverDriveRechargeCD.timeLeft = RoverDrive.ShieldRechargeTime;
+                    // Set Rover Drive's recharge delay to full. Override any existing cooldown instance.
+                    if (roverDrive)
+                        Player.AddCooldown(WulfrumRoverDriveRecharge.ID, RoverDrive.ShieldRechargeDelay, true);
 
                     // Set the Lunic Corps Armor's recharge delay to full. Override any existing cooldown instance.
                     if (lunicCorpsSet)
@@ -2285,9 +2258,15 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (daedalusAbsorb && Main.rand.NextBool(10))
+                if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
                 {
-                    int healAmt = (int)(hurtInfo.Damage / 2D);
+                    int healAmt = (int)(hurtInfo.Damage * VictideHeadBarrier.BarrierDamageAbsorptionPercent);
+                    victideBarrierHeal += healAmt;
+                }
+
+                if (daedalusAbsorb && Main.rand.NextBool(DaedalusHeadMagic.AbsorptionChanceDenominator))
+                {
+                    int healAmt = (int)(hurtInfo.Damage * DaedalusHeadMagic.DamageAbsorptionPercent);
                     Player.HealPlayer(healAmt);
                 }
 
@@ -2433,15 +2412,15 @@ namespace CalamityMod.CalPlayer
 
                 if (tarraMelee)
                 {
-                    Player.AddBuff(ModContent.BuffType<TarraLifeRegen>(), 120);
+                    Player.AddBuff(ModContent.BuffType<TarraLifeRegen>(), TarragonHeadMelee.TarraLifeDuration);
                 }
                 else if (xerocSet)
                 {
-                    Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), 180);
+                    Player.AddBuff(ModContent.BuffType<EmpyreanWrath>(), EmpyreanMask.WrathDuration);
                 }
                 else if (reaverDefense)
                 {
-                    Player.AddBuff(ModContent.BuffType<ReaverRage>(), 180);
+                    Player.AddBuff(ModContent.BuffType<ReaverRage>(), ReaverHeadTank.ReaverRageDuration);
                 }
 
                 if (fBarrier || (aquaticHeart && NPC.downedBoss3))
@@ -2564,10 +2543,9 @@ namespace CalamityMod.CalPlayer
                 {
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
                     var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, AerospecBreastplate.FeatherEntitySourceContext);
+                    int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(AerospecBreastplate.SetBonusFeatherDamage);
                     for (int n = 0; n < 4; n++)
                     {
-                        int featherDamage = (int)Player.GetBestClassDamage().ApplyTo(AerospecBreastplate.SetBonusFeatherDamage);
-
                         CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 20f, ModContent.ProjectileType<StickyFeatherAero>(), featherDamage, 1f, Player.whoAmI);
                     }
                 }
@@ -2576,14 +2554,8 @@ namespace CalamityMod.CalPlayer
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<HideofAstrumDeus>()));
                     SoundEngine.PlaySound(SoundID.Item74, Player.Center);
 
-                    int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(25);
-                    int astralStarDamage = (int)Player.GetBestClassDamage().ApplyTo(320);
-
+                    int blazeDamage = (int)Player.GetBestClassDamage().ApplyTo(HideofAstrumDeus.BlazeDamage);
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
-                    for (int n = 0; n < 12; n++)
-                    {
-                        CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<AstralStar>(), astralStarDamage, 5f, Player.whoAmI);
-                    }
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
                 // In the meantime, gave them homing astral bombers instead of the lame falling stars
@@ -2593,8 +2565,7 @@ namespace CalamityMod.CalPlayer
                     int projAmount = (rampartOfDeities ? 12 : 6);
                     for (int n = 0; n < projAmount; n++)
                     {
-                        int baseDamage = 130 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1);
-                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(baseDamage);
+                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage);
 
                         Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2631,7 +2602,7 @@ namespace CalamityMod.CalPlayer
                     {
                         var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<RottenBrain>()));
                         int effectStrength = amalgam ? 3 : aBrain ? 2 : 1;
-                        int effectDamage = amalgam ? 400 : aBrain ? 35 : 15;
+                        int effectDamage = amalgam ? TheAmalgam.NimbusDamage : aBrain ? AmalgamatedBrain.NimbusDamage : RottenBrain.NimbusDamage;
                         effectDamage = (int)Player.GetBestClassDamage().ApplyTo(effectDamage);
 
                         Vector2 spawnerVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi / 40f) * 12.5f;
@@ -2665,7 +2636,7 @@ namespace CalamityMod.CalPlayer
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item74, Player.Center);
-                        int eDamage = (int)Player.GetBestClassDamage().ApplyTo(230);
+                        int eDamage = (int)Player.GetBestClassDamage().ApplyTo(HydrothermicArmor.BlazeDamage);
 
                         if (Player.whoAmI == Main.myPlayer)
                             Projectile.NewProjectile(fuckYouBitch, Player.Center, Vector2.Zero, ModContent.ProjectileType<DeepseaBlaze>(), eDamage, 1f, Player.whoAmI, 0f, 0f);
@@ -2673,21 +2644,18 @@ namespace CalamityMod.CalPlayer
                 }
                 else if (daedalusShard) // Daedalus Ranged helm
                 {
-                    var source = Player.GetSource_Misc("22");
                     if (hurtInfo.Damage > 0)
                     {
                         SoundEngine.PlaySound(SoundID.Item27, Player.Center);
-                        float spread = 45f * 0.0174f;
-                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
-                        double deltaAngle = spread / 8f;
-                        double offsetAngle;
-                        int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(60);
 
                         if (Player.whoAmI == Main.myPlayer)
                         {
+                            var source = Player.GetSource_Misc("22");
+                            float offset = Main.rand.NextFloat(MathHelper.TwoPi);
+                            int sDamage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(DaedalusHeadRanged.ShardDamage);
                             for (int i = 0; i < 10; i++)
                             {
-                                Vector2 circleVel = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
+                                Vector2 circleVel = ((MathHelper.TwoPi * i / 10f) + offset).ToRotationVector2() * Main.rand.NextFloat(5f, 8f);
                                 int shard = Projectile.NewProjectile(source, Player.Center, circleVel, ProjectileID.CrystalShard, sDamage, 1f, Player.whoAmI);
                                 if (shard.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[shard].DamageType = DamageClass.Generic;
@@ -2695,28 +2663,17 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
-                else if (reaverDefense) //Defense and DR Helm
-                {
-                    var source = Player.GetSource_Misc("23");
-                    if (hurtInfo.Damage > 0)
-                    {
-                        int rDamage = (int)Player.GetBestClassDamage().ApplyTo(240);
-
-                        if (Player.whoAmI == Main.myPlayer)
-                            Projectile.NewProjectile(source, Player.Center.X, Player.position.Y + 36f, 0f, -18f, ModContent.ProjectileType<ReaverThornBase>(), rDamage, 0f, Player.whoAmI, 0f, 0f);
-                    }
-                }
                 else if (godSlayerDamage) //god slayer melee helm
                 {
                     var source = Player.GetSource_Misc("24");
-                    if (hurtInfo.Damage > 80)
+                    if (hurtInfo.Damage > GodSlayerHeadMelee.SetBonusHurtDamageThreshold)
                     {
                         SoundEngine.PlaySound(SoundID.Item73, Player.Center);
                         float spread = 45f * 0.0174f;
                         double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
                         double deltaAngle = spread / 8f;
                         double offsetAngle;
-                        int shrapnelDamage = Player.CalcIntDamage<MeleeDamageClass>(675);
+                        int shrapnelDamage = Player.CalcIntDamage<MeleeDamageClass>(GodSlayerHeadMelee.DartDamage);
                         if (Player.whoAmI == Main.myPlayer)
                         {
                             for (int i = 0; i < 4; i++)
@@ -2736,7 +2693,7 @@ namespace CalamityMod.CalPlayer
                         var source = Player.GetSource_OnHurt(hurtInfo.DamageSource, DemonshadeHelm.ShadowScytheEntitySourceContext);
                         for (int l = 0; l < 2; l++)
                         {
-                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(300);
+                            int shadowbeamDamage = (int)Player.GetBestClassDamage().ApplyTo(DemonshadeHelm.BeamDamage);
 
                             Projectile beam = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.ShadowBeamFriendly, shadowbeamDamage, 7f, Player.whoAmI);
                             if (beam.whoAmI.WithinBounds(Main.maxProjectiles))
@@ -2748,7 +2705,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int l = 0; l < 5; l++)
                         {
-                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(500);
+                            int scytheDamage = (int)Player.GetBestClassDamage().ApplyTo(DemonshadeHelm.ScytheDamage);
 
                             Projectile scythe = CalamityUtils.ProjectileRain(source, Player.Center, 400f, 100f, 500f, 800f, 22f, ProjectileID.DemonScythe, scytheDamage, 7f, Player.whoAmI);
                             if (scythe.whoAmI.WithinBounds(Main.maxProjectiles))

@@ -450,6 +450,8 @@ namespace CalamityMod
             TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
@@ -520,6 +522,7 @@ namespace CalamityMod
             TileType<CelestialRemains>(),
             // Sunken Sea
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<PolypSand>(),
             TileType<VolcanicSand>(),
             TileType<PinkPearlPile>(),

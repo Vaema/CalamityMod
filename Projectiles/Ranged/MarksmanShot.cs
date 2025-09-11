@@ -110,18 +110,25 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     // Assemble an array of the remaining coins.
                     Projectile[] otherCoins = validCoins.Where((proj) => proj.whoAmI != struckCoin.whoAmI).ToArray();
-
+                    RicoshotTarget nextCoin = Projectile.FindRicochetTarget(Projectile.Center, otherCoins, true);
+                    RicochetOffCoin(nextCoin, struckCoin);
                     // Ricochet off of this coin to the next target.
                     // This coin (and potential further coins) may have already been recursively frozen.
                     // As long as those coins have not yet been struck, they are valid targets.
-                    RicoshotTarget nextTarget = Projectile.FindRicochetTarget(Projectile.Center, otherCoins, true);
-                    RicochetOffCoin(nextTarget, struckCoin);
-
-                    // If the next target is another coin, freeze it to (almost) guarantee it will be hit.
-                    if (nextTarget.type == RicoshotTargetType.Coin)
+                    // If the next target is another coin/clip, freeze it.
+                    if (nextCoin.type == RicoshotTargetType.Coin)
                     {
-                        Projectile nextCoin = Main.projectile[nextTarget.entityID];
-                        nextCoin.ai[1] = RicoshotCoin.RicochetPause;
+                        Projectile nextCoinProj = Main.projectile[nextCoin.entityID];
+
+                        // Use the correct RicochetPause value based on the projectile type
+                        if (nextCoinProj.type == ModContent.ProjectileType<M1GarandEmptyClip>())
+                        {
+                            nextCoinProj.ai[1] = M1GarandEmptyClip.RicochetPause;
+                        }
+                        else
+                        {
+                            nextCoinProj.ai[1] = RicoshotCoin.RicochetPause;
+                        }
                     }
                 }
             }
@@ -142,17 +149,41 @@ namespace CalamityMod.Projectiles.Ranged
             if (NumRicochets == 0 && CalamityUtils.CanRicoshotCoinForceCrit(struckCoin))
                 cgp.forcedCrit = true;
 
-            // Apply bonus damage to the projectile. This is an additive multiplier between multiple coins.
-            float bonusDamageRatio = struckCoin.ai[0] switch
+            // Apply bonus damage to the projectile based on the projectile type. This is an additive multiplier between multiple coins/clips.
+            float bonusDamageRatio = 0f;
+            if (struckCoin.type == ModContent.ProjectileType<RicoshotCoin>())
             {
-                1f => NumRicochets > 0 ? RicoshotCoin.SilverMulticoinBonus : RicoshotCoin.SilverBonus,
-                2f => NumRicochets > 0 ? RicoshotCoin.GoldMulticoinBonus : RicoshotCoin.GoldBonus,
-                _ => NumRicochets > 0 ? RicoshotCoin.CopperMulticoinBonus : RicoshotCoin.CopperBonus,
-            };
+                bonusDamageRatio = struckCoin.ai[0] switch
+                {
+                    1f => NumRicochets > 0 ? RicoshotCoin.SilverMulticoinBonus : RicoshotCoin.SilverBonus,
+                    2f => NumRicochets > 0 ? RicoshotCoin.GoldMulticoinBonus : RicoshotCoin.GoldBonus,
+                    _ => NumRicochets > 0 ? RicoshotCoin.CopperMulticoinBonus : RicoshotCoin.CopperBonus,
+                };
+            }
+            else if (struckCoin.type == ModContent.ProjectileType<M1GarandEmptyClip>())
+            {
+                bonusDamageRatio = NumRicochets > 0 ? M1GarandEmptyClip.ClipMulticlipBonus : M1GarandEmptyClip.ClipBonus;
+            }
+
             cgp.totalRicoshotDamageBonus += bonusDamageRatio;
 
             // Increment the ricochet count, relegating further coins to only give the multicoin bonus damage.
             NumRicochets++;
+
+            // If the target was valid, freeze the shot in place for a brief moment.
+            if (target.IsValid)
+            {
+                if (struckCoin.type == ModContent.ProjectileType<M1GarandEmptyClip>())
+                {
+                    RicochetFreezeTimer = M1GarandEmptyClip.RicochetPause;
+                }
+                else
+                {
+                    RicochetFreezeTimer = RicoshotCoin.RicochetPause;
+                }
+            }
+
+            SoundEngine.PlaySound(RicoshotCoin.BlingHitSound, struckCoin.Center);
 
             // If the target was valid, freeze the shot in place for a brief moment.
             if (target.IsValid)

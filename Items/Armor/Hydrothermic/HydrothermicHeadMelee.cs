@@ -2,16 +2,28 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Hydrothermic
 {
     [AutoloadEquip(EquipType.Head)]
     [LegacyName("AtaxiaHelm")]
-
     public class HydrothermicHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float MeleeDamageBoost = 0.12f;
+        public static int MeleeCritBoost = 10;
+        public static float MeleeSpeedBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeDamageBoost.ToPercent(), MeleeCritBoost, MeleeSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusAggroBoost = 700;
+        public static int GeyserCountLimit = 3;
+        public static double GeyserDamageRatio = 0.15D;
+        public static int GeyserDamageSoftcap = 45;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -21,10 +33,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
             Item.defense = 33; //67
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<HydrothermicArmor>() && legs.type == ModContent.ItemType<HydrothermicSubligar>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<HydrothermicArmor>() && legs.type == ModContent.ItemType<HydrothermicSubligar>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -34,22 +43,18 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(HydrothermicArmor.InfernoHealthThreshold.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaGeyser = true;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.15f;
-            player.aggro += 700;
+            player.aggro += SetBonusAggroBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            var modPlayer = player.Calamity();
-            modPlayer.ataxiaFire = true;
-            player.GetDamage<MeleeDamageClass>() += 0.17f;
-            player.GetCritChance<MeleeDamageClass>() += 10;
-            player.lavaImmune = true;
-            player.buffImmune[BuffID.OnFire] = true;
+            player.GetDamage<MeleeDamageClass>() += MeleeDamageBoost;
+            player.GetCritChance<MeleeDamageClass>() += MeleeCritBoost;
+            player.GetAttackSpeed<MeleeDamageClass>() += MeleeSpeedBoost;
         }
 
         public override void AddRecipes()

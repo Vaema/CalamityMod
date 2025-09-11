@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 aggressionLevel = 6;
 
             if (npc.type == NPCID.MoonLordCore)
@@ -820,7 +820,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.localAI[1] < 0f)
                         {
                             npc.localAI[1] = 0f;
-                            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && Main.remixWorld)
+                            if (Main.netMode != NetmodeID.MultiplayerClient && Main.zenithWorld)
                             {
                                 for (int k = 0; k < 30; k++)
                                 {
@@ -1174,9 +1174,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 handAttackDirection = Vector2.Normalize(handAttackRotation) * velocity;
                             float ai = (MathHelper.TwoPi * (float)Main.rand.NextDouble() - MathHelper.Pi) / 30f + 0.0174532924f * handFaceDirection;
                             int type = ProjectileID.PhantasmalEye;
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, EyeDamage, 0f, Main.myPlayer, 0f, ai);
+                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), handAttackMovement, handAttackDirection, type, EyeDamage, 0f, Main.myPlayer, 0f, ai, aggressionLevel);
                             Main.projectile[proj].timeLeft = 1200;
-                            Main.projectile[proj].Calamity().lineColor = aggressionLevel;
                         }
                     }
                     else
@@ -1864,7 +1863,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + freeEyeRotation.X, npc.Center.Y + freeEyeRotation.Y, trueEyeSphereDirection.X, trueEyeSphereDirection.Y, type, 0, 0f, Main.myPlayer, 30f, npc.whoAmI);
                             Main.projectile[proj].timeLeft = 1200;
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.zenithWorld)
                             {
                                 for (int k = 0; k < 3; k++)
                                 {

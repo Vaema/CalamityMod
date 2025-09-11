@@ -98,12 +98,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Werewolf:
                     npcLoot.ChangeDropRate(ItemID.MoonCharm, 1, 20);
                     break;
-
-                // Possessed Armor
-                // Nazar @ 1% Normal, 2% Expert+
-                case NPCID.PossessedArmor:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    break;
                 #endregion
 
                 #region Sky / Space
@@ -465,14 +459,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Chaos Elemental
-                // Megaphone @ 1% Normal, 2% Expert+
                 // Rod of Discord @ 0.5% Normal, 0.625% Expert+ (2.5 times higher chance than vanilla)
                 case NPCID.ChaosElemental:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
-
                     // Remove the vanilla loot rule for Rod of Discord.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.RodofDiscord);
-
                     // Define a replacement rule which has an increased chance.
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.RodofDiscord, 200, 160));
                     break;
@@ -481,12 +471,6 @@ namespace CalamityMod.NPCs
                 // Trifold Map @ 1% Normal, 2% Expert+
                 case NPCID.IlluminantBat:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.TrifoldMap, 100, 50));
-                    break;
-
-                // Illuminant Slime
-                // Fast Clock @ 1% Normal, 2% Expert+
-                case NPCID.IlluminantSlime:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Gastropod
@@ -562,7 +546,12 @@ namespace CalamityMod.NPCs
                 #endregion
 
                 #region Jungle
-                //Moss hornets are after all of this switching since it no longer works if placed here
+                // Moss Hornet
+                // Needler @ 4% Normal, 6.67% Expert+
+                // This automatically covers all variations
+                case NPCID.MossHornet:
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
+                    break;
 
                 // Moth
                 // Butterfly Dust @ 100% INSTEAD OF 50%
@@ -707,11 +696,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Ghost Bracelet @ 5% (Dandy requests this drops at a "high chance" but inventory clutter is real so)
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
                 case NPCID.Ghost:
                     npcLoot.Add(ModContent.ItemType<GhostBracelet>(), 20);
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -729,14 +715,11 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<BloodOrb>(), 1, 6, 12);
                     break;
 
-                // Wandering Eye Fish
-                // Bouncing Eyeball @ 10% Normal, 16.66% Expert+
+                // Wandering Eye Fish, Zombie Merman
+                // Bouncing Eyeball @ 12.5%
                 case NPCID.EyeballFlyingFish:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<BouncingEyeball>(), 10, 6));
-                    postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
-                    break;
-
                 case NPCID.ZombieMerman:
+                    npcLoot.Add(ModContent.ItemType<BouncingEyeball>(), 8);
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 1, 10, 12);
                     break;
 
@@ -812,13 +795,6 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateShip:
                     rev.Add(ItemID.FlyingDutchmanMasterTrophy);
                     rev.Add(ItemID.PirateShipMountItem, 4);
-                    break;
-
-                // Pirate's Curse
-                // Nazar and Megaphone @ 1% Normal, 2% Expert
-                case NPCID.PirateGhost:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Nazar, 100, 50));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Megaphone, 100, 50));
                     break;
                 #endregion
 
@@ -997,15 +973,15 @@ namespace CalamityMod.NPCs
 
                 #region Martian Madness
                 // Martian Madness On-Foot Soldiers
-                // 1.5% chance to drop any of the three Calamity martian drops
+                // 1% chance to drop any of the three Calamity martian drops
                 case NPCID.BrainScrambler:
                 case NPCID.GrayGrunt:
                 case NPCID.GigaZapper:
                 case NPCID.RayGunner:
                 case NPCID.ScutlixRider:
-                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 66);
-                    npcLoot.Add(ModContent.ItemType<Wingman>(), 66);
-                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 66);
+                    npcLoot.Add(ModContent.ItemType<DoomsdayDevice>(), 100);
+                    npcLoot.Add(ModContent.ItemType<Wingman>(), 100);
+                    npcLoot.Add(ModContent.ItemType<NullificationPistol>(), 100);
                     break;
 
                 // Martian Engineer
@@ -1155,10 +1131,10 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.RoyalGel));
 
                     // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, 4));
-                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, 4));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.Remix, ItemID.Keybrand, DropHelper.NormalWeaponDropRateInt));
+                    npcLoot.AddNormalOnly(ItemDropRule.ByCondition(DropHelper.NotRemix, ItemID.Katana, DropHelper.NormalWeaponDropRateInt));
 
-                    npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), 10);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<CrownJewel>(), DropHelper.NormalWeaponDropRateFraction);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1177,8 +1153,8 @@ namespace CalamityMod.NPCs
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.EoCShield));
 
                     // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ModContent.ItemType<TeardropCleaver>(), 10);
-                    npcLoot.AddNormalOnly(ModContent.ItemType<DeathstareRod>(), 4);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<TeardropCleaver>(), DropHelper.NormalWeaponDropRateFraction);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<DeathstareRod>(), DropHelper.NormalWeaponDropRateFraction);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                     // Master items drop in Revengeance
@@ -1302,7 +1278,7 @@ namespace CalamityMod.NPCs
 
                     // Expert+ drops are also available on Normal
                     npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.HiveBackpack));
-                    npcLoot.AddNormalOnly(ModContent.ItemType<TheBee>(), 10);
+                    npcLoot.AddNormalOnly(ModContent.ItemType<TheBee>(), DropHelper.NormalWeaponDropRateFraction);
 
                     // Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1368,6 +1344,7 @@ namespace CalamityMod.NPCs
                             var wofWeapons = new int[]
                             {
                                 ItemID.BreakerBlade,
+                                ModContent.ItemType<Carnage>(),
                                 ItemID.ClockworkAssaultRifle,
                                 ModContent.ItemType<Meowthrower>(),
                                 ItemID.LaserRifle,
@@ -1403,9 +1380,6 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-
-                    // Would be in the bag otherwise
-                    npcLoot.AddNormalOnly(ModContent.ItemType<Carnage>(), 10);
 
                     // Drop Hermit's Box directly for EACH player, regardles of Expert or not. 100% chance on first kill, 10% chance afterwards.
                     // The special first kill rule is unlisted in the Bestiary
@@ -1507,7 +1481,6 @@ namespace CalamityMod.NPCs
 
                     // Expert+ drops are also available on Normal. These are done manually due to Last Twin Standing.
                     npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ItemID.MechanicalWheelPiece);
-                    npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ModContent.ItemType<Arbalest>(), 10);
 
                     // Would be in the bag otherwise
                     npcLoot.AddIf((info) => !Main.expertMode && IsLastTwinStanding(info), ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
@@ -1902,22 +1875,16 @@ namespace CalamityMod.NPCs
                     break;
                     #endregion
             }
-            //If the enemy is part of a list (Hornets, Skeletons, etc,) place it here as in the section before it no longer works
+            //If the enemy is part of a list, place it here as in the section before it no longer works
             #region Enemy Lists
-
-            // All Moss Hornets
-            // Needler @ 4% Normal, 6.67% Expert+
-            if (MossHornetIDList.Includes(npc.type))
-                npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Needler>(), 25, 15));
-
             // All Skeletons
             // Ancient Bone Dust @ 20% Normal, 33.33% Expert+
-            if (SkeletonIDList.Includes(npc.type))
+            if (CalamityNPCTypeSets.Skeleton[npc.type])
                 npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AncientBoneDust>(), 5, 3));
 
             // All Hardmode Dungeon Enemies
             // Ectoplasm @ 20%
-            if (BuffedDungeonEnemiesList.Includes(npc.type))
+            if (CalamityNPCSets.IsBuffedDungeonEnemy[npc.type])
                 npcLoot.Add(ItemID.Ectoplasm, 5);
             #endregion
         }
@@ -1951,7 +1918,7 @@ namespace CalamityMod.NPCs
         public override bool PreKill(NPC npc)
         {
             // Stop Eater of Worlds segments and Brain of Cthulhu Creepers from dropping partial loot in Rev+
-            if (CalamityWorld.revenge && (EaterOfWorldsIDList.Includes(npc.type) || npc.type == NPCID.Creeper))
+            if (CalamityWorld.revenge && (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || npc.type == NPCID.Creeper))
                 DropHelper.BlockDrops(ItemID.DemoniteOre, ItemID.ShadowScale, ItemID.CrimtaneOre, ItemID.TissueSample);
 
             // Boss Rush pre-kill effects

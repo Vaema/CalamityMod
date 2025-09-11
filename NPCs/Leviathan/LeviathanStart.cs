@@ -59,7 +59,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().ProvidesProximityRage = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
         }
 

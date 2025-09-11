@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Accessories.Vanity
             Item.width = 36;
             Item.height = 44;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
+            Item.value = Item.buyPrice(platinum: 5); // Sold by Archmage
             Item.rare = ItemRarityID.Pink;
             Item.Calamity().devItem = true;
         }

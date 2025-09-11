@@ -488,11 +488,7 @@ ExaltedOathblade: {
 
 Excelsus: {
 	DisplayName: Excelsus
-	Tooltip:
-		'''
-		Fires a spread of spinning blades
-		Summons laser fountains on hit
-		'''
+	Tooltip: Fires a spread of spinning blades
 }
 
 Exoblade: {
@@ -644,7 +640,14 @@ GeliticBlade: {
 
 GildedProboscis: {
 	DisplayName: Gilded Proboscis
-	Tooltip: Heals the player on hit
+	Tooltip:
+		'''
+		Steals life proportional to the damage dealt to foes
+		<left> to charge up a precise thrust
+		The thrust begins weak, but becomes more powerful the longer it's held
+		<right> to dash forward with a mighty upstrike
+		The distance you dash depends on if you are moving with or against the dash
+		'''
 }
 
 GoldplumeSpear: {
@@ -797,8 +800,10 @@ Lucrecia: {
 	DisplayName: Lucrecia
 	Tooltip:
 		'''
-		Fires a DNA chain
-		Finesse
+		[c/9370db:Fires a spiraling darklight shard when swung]
+		[c/837ce4:Hits with the blade itself build energy]
+		[c/7489ee:Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
 

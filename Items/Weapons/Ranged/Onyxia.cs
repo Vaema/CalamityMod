@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 34;
-            Item.damage = 100;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -31,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.BlackBolt;
             Item.shootSpeed = 28f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset()

@@ -1,5 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -27,6 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 52;
             Item.damage = 42;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<EntropysVigilBuff>();
             Item.shoot = ModContent.ProjectileType<Calamitamini>();
             Item.knockBack = 2f;
 
@@ -45,6 +46,8 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
+
             Vector2 mouse = player.ClampedMouseWorld();
             float randomAngleOffset = Main.rand.NextFloat(MathHelper.TwoPi);
             for (int i = 0; i < 3; i++)
@@ -55,15 +58,18 @@ namespace CalamityMod.Items.Weapons.Summon
                 switch (i)
                 {
                     case 0:
-                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Calamitamini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Calamitamini>();
                         break;
                     case 1:
-                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Catastromini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Catastromini>();
                         break;
                     case 2:
-                        Projectile.NewProjectile(source, mouse, spawnVelocity, ModContent.ProjectileType<Cataclymini>(), damage, knockback, player.whoAmI);
+                        type = ModContent.ProjectileType<Cataclymini>();
                         break;
                 }
+
+                var minion = Projectile.NewProjectileDirect(source, mouse, spawnVelocity, type, damage, knockback, player.whoAmI);
+                minion.originalDamage = Item.damage;
             }
 
             return false;

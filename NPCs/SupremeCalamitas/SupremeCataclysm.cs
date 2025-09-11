@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
-        public static int FistDamage = 105; // 420
+        public static int FistDamage = 100; // 400
 
         public override void SetDefaults()
         {

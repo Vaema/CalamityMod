@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Sounds;
@@ -36,20 +37,16 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.UseSound = CommonCalamitySounds.FlareSound;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<FieryDraconidBuff>();
             Item.shoot = ModContent.ProjectileType<FieryDraconid>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                position = player.ClampedMouseWorld();
-                int dragon = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(dragon))
-                    Main.projectile[dragon].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

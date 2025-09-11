@@ -56,7 +56,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1; // Saws only pierce a certain number of times before returning, and don't deal direct damage while returning
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()

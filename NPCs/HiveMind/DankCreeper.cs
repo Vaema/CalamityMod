@@ -24,15 +24,15 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.lifeMax = 120;
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax *= 4;
-
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
+            {
+                NPC.lifeMax *= 3;
                 NPC.reflectsProjectiles = true;
+            }
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
+            NPC.knockBackResist = 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
