@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LucreciaDNATrailCreator : ModProjectile
+    public class LucreciaDNATrailCreator : ModProjectile, ILocalizedModType
     {
         private List<Vector2> oldPositionsLeft = new List<Vector2>();
         private List<Vector2> oldPositionsRight = new List<Vector2>();
