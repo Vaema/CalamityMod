@@ -632,29 +632,28 @@ namespace CalamityMod.NPCs.Ravager
                             }
 
                             int spawnDistance = 360;
+                            SoundEngine.PlaySound(PillarSound, NPC.Center);
                             if (death && phase2)
+                            {
                                 spawnDistance = 300;
-                                SoundEngine.PlaySound(PillarSound, NPC.Center);
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
-
-                                if (death && !leftClawActive && !rightClawActive)
+                                var index = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X), (int)player.Center.Y - spawnDistance - 100, ModContent.NPCType<RockPillar>());
+                                if (Main.npc.IndexInRange(index))
                                 {
+                                    var npc = Main.npc[index];
+                                    (int, int) H_W = (npc.height, npc.width);
+                                    npc.position = npc.Center;
+                                    npc.height = H_W.Item2;
+                                    npc.width = H_W.Item1;
+                                    npc.rotation = -MathHelper.PiOver2;
+                                    npc.Center = npc.position;
+                                    npc.ModNPC.DrawOffsetY = npc.width / 2 - npc.height / 2;
 
-                                    var index = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X), (int)player.Center.Y - spawnDistance - 100, ModContent.NPCType<RockPillar>());
-                                    if (Main.npc.IndexInRange(index))
-                                    {
-                                        var npc = Main.npc[index];
-                                        (int, int) H_W = (npc.height, npc.width);
-                                        npc.position = npc.Center;
-                                        npc.height = H_W.Item2;
-                                        npc.width = H_W.Item1;
-                                        npc.rotation = -MathHelper.PiOver2;
-                                        npc.Center = npc.position;
-                                        npc.ModNPC.DrawOffsetY = npc.width / 2 - npc.height / 2;
-                                    }
                                 }
-                            if (!anyFlamePillars)
+                            }
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+
+                            if (!anyFlamePillars && !phase2)
                             {
                                 float distanceMultiplier = finalPhase ? 2.5f : 2f;
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)player.Center.X - (int)(spawnDistance * distanceMultiplier), (int)player.Center.Y - 100, ModContent.NPCType<FlamePillar>());
