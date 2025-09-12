@@ -9,7 +9,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class WallCoral : ModTile
     {
-        private const int Variants = 4;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -19,8 +18,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
 
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = Variants;
-            TileObjectData.newTile.RandomStyleRange = Variants;
+            TileObjectData.newTile.StyleWrapLimit = 4;
+            TileObjectData.newTile.RandomStyleRange = 4;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
