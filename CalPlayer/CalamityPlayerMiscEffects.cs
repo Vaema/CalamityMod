@@ -202,6 +202,10 @@ namespace CalamityMod.CalPlayer
             {
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), Player.HeldItem.damage, Player.HeldItem.knockBack, Player.whoAmI);
             }
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0 && !Player.dead)
+            {
+                Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), Player.HeldItem.damage, Player.HeldItem.knockBack, Player.whoAmI);
+            }
 
             // De-equipping Gael's Greatsword deletes all rage.
             if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())

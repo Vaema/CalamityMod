@@ -11,7 +11,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class StarfleetStar : ModProjectile, ILocalizedModType
+    public class StarmadaStar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 1;
-            Projectile.penetrate = 3;
+            Projectile.penetrate = 5;
             Projectile.timeLeft = 600;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
@@ -82,12 +82,10 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D glowTexture = Request<Texture2D>("CalamityMod/Projectiles/Rogue/LeonidStar").Value;
             Texture2D tex2 = Request<Texture2D>("CalamityMod/Particles/FadeStreak").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
-            Vector2 rotationPoint = glowTexture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             for (int i = 0; i < 5; i++)
@@ -102,9 +100,18 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             float minMult = 0.1f;
-            int hitsToMinMult = 2;
+            int hitsToMinMult = 4;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
+
+            if (Projectile.numHits == 0)
+            {
+                // spawn slice projectiles
+                Vector2 spawnPos = target.Center + Vector2.UnitY.RotatedByRandom(0.6f) * (target.height / 2 + 40);
+                Vector2 vel = spawnPos.DirectionTo(target.Center);
+                int damage = (int)(Projectile.damage * 0.33f);
+                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, vel, ModContent.ProjectileType<StarmadaHitProj>(), damage, 0, Projectile.owner, target.whoAmI, Main.rand.Next(0, 7 + 1), Main.rand.Next(0, 300 + 1));
+            }
         }
         public override void OnKill(int timeLeft)
         {

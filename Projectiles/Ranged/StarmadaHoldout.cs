@@ -4,6 +4,7 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,12 +15,12 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
 {
-    public class StarfleetHoldout : BaseGunHoldoutProjectile
+    public class StarmadaHoldout : BaseGunHoldoutProjectile
     {
-        public override int AssociatedItemID => ItemType<Starfleet>();
+        public override int AssociatedItemID => ItemType<Starmada>();
         public override Vector2 GunTipPosition => base.GunTipPosition + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.direction) * -5;
         public override float RecoilResolveSpeed => 0.1f;
-        public override float MaxOffsetLengthFromArm => 25f;
+        public override float MaxOffsetLengthFromArm => 32f;
         public override float OffsetXUpwards => -12f;
         public override float BaseOffsetY => -10f;
         public override float OffsetYDownwards => 10f;
@@ -28,6 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
         public int time = 0;
         public int lastUseTime = 0;
         public int perfectLeniancy = 2;
+        public float frontRecoil = 0;
         public int goodLeniancy => perfectLeniancy + 6;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
@@ -77,8 +79,9 @@ namespace CalamityMod.Projectiles.Ranged
                 Owner.itemTime = Owner.itemAnimation = 2;
 
             glowIntensity = MathHelper.Lerp(glowIntensity, (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax, 0, shootingCooldown, true), 5), 0.2f);
-            
-            if ((Owner.HeldItem.type != ItemType<Starfleet>() && doingNothing) || Owner.dead)
+            frontRecoil = MathHelper.Lerp(frontRecoil, 0, 0.11f);
+
+            if ((Owner.HeldItem.type != ItemType<Starmada>() && doingNothing) || Owner.dead)
             {
                 Projectile.Kill();
                 return;
@@ -97,9 +100,17 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 // Do wind up animation
                 if (starburstTimer < starburstPerfectTime / 2)
-                    OffsetLengthFromArm = 25 - 12 * (1 - (float)Math.Pow(Utils.GetLerpValue(starburstPerfectTime / 2 - 1, 0, starburstTimer, true), 5));
+                {
+                    float up = (1 - (float)Math.Pow(Utils.GetLerpValue(starburstPerfectTime / 2 - 1, 0, starburstTimer, true), 2));
+                    OffsetLengthFromArm = 32 - 7 * up;
+                    frontRecoil = -25 * up;
+                }
                 else
-                    OffsetLengthFromArm = 13 + 20 * ((float)Math.Pow(Utils.GetLerpValue(starburstPerfectTime / 2, starburstPerfectTime - 1, starburstTimer, true), 8));
+                {
+                    float down = ((float)Math.Pow(Utils.GetLerpValue(starburstPerfectTime / 2, starburstPerfectTime - 1, starburstTimer, true), 12));
+                    OffsetLengthFromArm = 25 + 15 * down;
+                    frontRecoil = -25 + 25 * down;
+                }
 
                 if (starburstTimer == starburstPerfectTime)
                     FireStarburst();
@@ -143,23 +154,24 @@ namespace CalamityMod.Projectiles.Ranged
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 
-            SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarfleetFire");
+            SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarmadaFire");
             for (int i = 0; i < (naildriver ? 2 : 1); i++)
-                SoundEngine.PlaySound(shotgunFire with { Volume = 0.7f, Pitch = ((naildriver && i == 0) ? 0f : 0.2f), MaxInstances = 2 }, Projectile.Center);
+                SoundEngine.PlaySound(shotgunFire with { Volume = 0.7f, Pitch = ((naildriver && i == 0) ? -0.2f : 0f), MaxInstances = 2 }, Projectile.Center);
             // Perfects have longer cooldown
             int cooldown = (naildriver ? naildriverCooldown : lastUseTime);
             recoilTimerMax = cooldown;
             shootingCooldown = cooldown;
             recoilDirection = -Projectile.velocity;
-            Owner.Calamity().GeneralScreenShakePower = (naildriver ? 9 : scattershot ? 7 : 4);
+            Owner.Calamity().GeneralScreenShakePower = (naildriver ? 10 : scattershot ? 8 : 5);
             OffsetLengthFromArm = (naildriver ? 0 : scattershot ? 7 : 15);
+            frontRecoil = (naildriver ? -25 : scattershot ? -18 : -10);
 
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 8; i++)
             {
                 float randomVel = Main.rand.NextFloat(0.8f, 1f);
                 float damageMult = (naildriver || scattershot) ? 2f : 1f;
                 float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
+                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
                 shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
             }
             for (int i = 0; i < 25; i++)
@@ -180,30 +192,44 @@ namespace CalamityMod.Projectiles.Ranged
             if (scattershot)
             Main.NewText("scattershot: " + (starburstPerfectTime - starburstTimer), Color.Lime);*/
 
-            recoilIntensity = (naildriver ? 55f : scattershot ? 20f : 0);
+            recoilIntensity = (naildriver ? 70f : scattershot ? 25f : 0);
+            setVel = true;
         }
         public void FireStarburst()
         {
-            if (Owner.Calamity().GeneralScreenShakePower < 7)
-                Owner.Calamity().GeneralScreenShakePower = 7;
+            if (Owner.Calamity().GeneralScreenShakePower < 8)
+                Owner.Calamity().GeneralScreenShakePower = 8;
             recoilDirection = -Projectile.velocity;
-            if (recoilIntensity < 15)
-                recoilIntensity = 15;
+            if (recoilIntensity < 19)
+                recoilIntensity = 19;
             if (recoilTimerMax < extendedCooldown)
                 recoilTimerMax = extendedCooldown;
             if (starburstCooldown < extendedCooldown)
                 starburstCooldown = extendedCooldown;
+            setVel = true;
 
-            float blastSize = 140;
+            Vector2 blastCenter = GunTipPosition + Projectile.velocity * 10;
+            float blastSize = 180;
             float minMultiplier = 0.1f;
             int hitsToMinMult = 6;
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 3), -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), blastCenter, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 3), -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
             blast.timeLeft = 15;
 
-            for (int i = 0; i < 14; i++)
+            for (int x = 0; x < Main.maxProjectiles; x++)
             {
-                float dist = Main.rand.NextFloat(0, 3);
-                Particle forwardJet = new CustomSpark(GunTipPosition + Main.rand.NextVector2CircularEdge(dist * 5, dist * 5), Projectile.velocity * Main.rand.NextFloat(4, 5) * (6 - dist * 2), "CalamityMod/Particles/ForwardSmear", false, (int)(Main.rand.Next(9, 15 + 1) + (dist * 3)), Main.rand.NextFloat(0.1f, 0.2f), GetRandomColor(), new Vector2(1f, 1f), shrinkSpeed: 0.3f);
+                Projectile projectile = Main.projectile[x];
+                if (projectile.active && projectile.type == ModContent.ProjectileType<StarmadaHitProj>() && projectile.localAI[2] == 1)
+                {
+                    projectile.localAI[2] = 5;
+                    projectile.velocity = projectile.Center.DirectionFrom(Owner.Center) * 12;
+                    projectile.timeLeft = 300;
+                }
+            }
+
+            for (int i = 0; i < 20; i++)
+            {
+                float dist = Main.rand.NextFloat(1, 4);
+                Particle forwardJet = new CustomSpark(GunTipPosition + Main.rand.NextVector2CircularEdge(dist * 3.5f, dist * 3.5f), Projectile.velocity * Main.rand.NextFloat(5, 6) * (8 - dist * 2), "CalamityMod/Particles/ForwardSmear", false, (int)(Main.rand.Next(9, 15 + 1) + (dist * 3)), Main.rand.NextFloat(0.15f, 0.25f), GetRandomColor(), new Vector2(1f, 1f), shrinkSpeed: 0.3f);
                 GeneralParticleHandler.SpawnParticle(forwardJet);
             }
             for (int i = 0; i < 34; i++)
@@ -213,16 +239,32 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle stars = new VelChangingSpark(GunTipPosition, startVel, startVel.RotatedBy(rot * 5), "CalamityMod/Particles/PulseStar", Main.rand.Next(25, 45 + 1), Main.rand.NextFloat(0.1f, 0.35f), GetRandomColor(), new Vector2(1f, 1f), shrinkSpeed: Main.rand.NextFloat(0.02f, 0.06f), lerpRate: 0.02f, glowCenter: true);
                 GeneralParticleHandler.SpawnParticle(stars);
             }
-            int parts = 60;
+            int parts = 85;
             for (int i = 0; i < parts; i++)
             {
-                Vector2 intenededVel = (MathHelper.TwoPi * i / parts).ToRotationVector2() * 4f;
+                Vector2 intenededVel = (MathHelper.TwoPi * i / parts).ToRotationVector2() * 5f;
                 Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2.3f).RotatedBy(Projectile.velocity.ToRotation());
                 Vector2 fxVelEnd = new Vector2(intenededVel.X * 0.5f, intenededVel.Y * 6f).RotatedBy(Projectile.velocity.ToRotation());
                 Vector2 fxPlace = GunTipPosition + fxVel.RotatedBy(Projectile.velocity.ToRotation());
 
-                float size = Utils.GetLerpValue(0, -4, intenededVel.X, true);
-                float width = Utils.GetLerpValue(0, 4 * Math.Sign(fxVel.X), fxVel.X, true);
+                float size = Utils.GetLerpValue(0, -5, intenededVel.X, true);
+                float width = Utils.GetLerpValue(0, 5 * Math.Sign(fxVel.X), fxVel.X, true);
+                Color clr = (size <= 0.5f ? Color.Lerp(c3, c2, size * 2) : Color.Lerp(c2, c1, size * 2 - 1f));
+
+                Particle aura = new CustomSpark(fxPlace, fxVel * 1.2f, "CalamityMod/Particles/BloomCircle", false, (int)(19 + size * 6), 0.45f + size * 0.23f, clr * 0.7f, new Vector2(1f + width * size, 1f), glowCenter: true, glowOpacity: size * 0.85f, glowCenterScale: 0.75f);
+                GeneralParticleHandler.SpawnParticle(aura);
+
+            }
+            int parts2 = 45;
+            for (int i = 0; i < parts2; i++)
+            {
+                Vector2 intenededVel = (MathHelper.TwoPi * i / parts2).ToRotationVector2() * 3f;
+                Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2.3f).RotatedBy(Projectile.velocity.ToRotation());
+                Vector2 fxVelEnd = new Vector2(intenededVel.X * 0.5f, intenededVel.Y * 6f).RotatedBy(Projectile.velocity.ToRotation());
+                Vector2 fxPlace = GunTipPosition + Projectile.velocity * 45 + fxVel.RotatedBy(Projectile.velocity.ToRotation());
+
+                float size = Utils.GetLerpValue(0, -3, intenededVel.X, true);
+                float width = Utils.GetLerpValue(0, 3 * Math.Sign(fxVel.X), fxVel.X, true);
                 Color clr = (size <= 0.5f ? Color.Lerp(c3, c2, size * 2) : Color.Lerp(c2, c1, size * 2 - 1f));
 
                 Particle aura = new CustomSpark(fxPlace, fxVel * 1.2f, "CalamityMod/Particles/BloomCircle", false, (int)(15 + size * 5), 0.35f + size * 0.2f, clr * 0.7f, new Vector2(1f + width * size, 1f), glowCenter: true, glowOpacity: size * 0.85f, glowCenterScale: 0.75f);
@@ -244,13 +286,16 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (time < 2)
                 return false;
-            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
-            Texture2D glowTexture = Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/StarfleetGlow").Value;
             Texture2D orb = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+
+            Texture2D front = Request<Texture2D>("CalamityMod/Projectiles/Ranged/StarmadaFront").Value;
+            Texture2D frontGlow = Request<Texture2D>("CalamityMod/Projectiles/Ranged/StarmadaFrontGlow").Value;
+            Texture2D back = Request<Texture2D>("CalamityMod/Projectiles/Ranged/StarmadaBack").Value;
+            Texture2D backGlow = Request<Texture2D>("CalamityMod/Projectiles/Ranged/StarmadaBackGlow").Value;
+
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             Color drawColor = Projectile.GetAlpha(lightColor);
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);
-            Vector2 rotationPoint = texture.Size() * 0.5f;
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             float glowMult = (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax / 2, recoilTimerMax, Math.Max(shootingCooldown, starburstCooldown), true), 4);
@@ -260,23 +305,33 @@ namespace CalamityMod.Projectiles.Ranged
             float sine2 = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 55.5f / MathHelper.Pi);
             float fastSine = (float)Math.Sin(time * 0.2f);
             Color glowColor = shiftColor;
+            Vector2 frontRecoilPlace = Projectile.velocity * frontRecoil;
 
             if (starburstTimer > 0 && starburstCooldown == 0)
             {
                 for (int i = 0; i < draws; i++)
                 {
                     Vector2 drawOffset = (MathHelper.TwoPi * i / draws).ToRotationVector2().RotatedBy(time * 2);
-                    Main.EntitySpriteDraw(texture, drawPosition + drawOffset * 6 * attackMult, null, shiftColor with { A = 0 } * 0.7f * attackMult, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+                    Main.EntitySpriteDraw(back, drawPosition + drawOffset * 6 * attackMult, null, shiftColor with { A = 0 } * 0.7f * attackMult, drawRotation, back.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+                    Main.EntitySpriteDraw(front, drawPosition + drawOffset * 6 * attackMult + frontRecoilPlace, null, shiftColor with { A = 0 } * 0.7f * attackMult, drawRotation, front.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
                 }
             }
-            
-            Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
 
-            for (int i = 0; i < draws; i++)
+            // back
+            Main.EntitySpriteDraw(back, drawPosition, null, drawColor, drawRotation, back.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+            for (int i = 0; i < draws; i++) // back glow
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / draws).ToRotationVector2().RotatedBy(time / 5) * (1.25f + (fastSine + 2f) * 0.2f + glowMult * 4);
-                Main.EntitySpriteDraw(glowTexture, drawPosition + drawOffset, null, Color.Lerp(Color.Gray * 0.15f, glowColor with { A = 0 }, glowIntensity) * (0.1f + 0.5f * glowMult), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
-                Main.EntitySpriteDraw(glowTexture, drawPosition, null, Color.Lerp(Color.Gray * 0.15f, Color.White with { A = 0 }, glowIntensity), drawRotation, rotationPoint, Projectile.scale * Owner.gravDir, flipSprite);
+                Main.EntitySpriteDraw(backGlow, drawPosition + drawOffset, null, Color.Lerp(Color.Gray * 0.15f, glowColor with { A = 0 }, glowIntensity) * (0.1f + 0.5f * glowMult), drawRotation, backGlow.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+                Main.EntitySpriteDraw(backGlow, drawPosition, null, Color.Lerp(Color.Gray * 0.15f, Color.White with { A = 0 }, glowIntensity), drawRotation, backGlow.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+            }
+            // front
+            Main.EntitySpriteDraw(front, drawPosition + frontRecoilPlace, null, drawColor, drawRotation, front.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+            for (int i = 0; i < draws; i++) // front glow
+            {
+                Vector2 drawOffset = (MathHelper.TwoPi * i / draws).ToRotationVector2().RotatedBy(time / 5) * (1.25f + (fastSine + 2f) * 0.2f + glowMult * 4);
+                Main.EntitySpriteDraw(frontGlow, drawPosition + drawOffset + frontRecoilPlace, null, Color.Lerp(Color.Gray * 0.15f, glowColor with { A = 0 }, glowIntensity) * (0.1f + 0.5f * glowMult), drawRotation, frontGlow.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
+                Main.EntitySpriteDraw(frontGlow, drawPosition + frontRecoilPlace, null, Color.Lerp(Color.Gray * 0.15f, Color.White with { A = 0 }, glowIntensity), drawRotation, frontGlow.Size() * 0.5f, Projectile.scale * Owner.gravDir, flipSprite);
             }
             
             if (starburstTimer > 0 && starburstCooldown == 0)

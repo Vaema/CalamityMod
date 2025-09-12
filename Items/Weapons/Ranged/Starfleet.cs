@@ -1,9 +1,13 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -23,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.knockBack = 15f;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.UseSound = SoundID.Item92;
             Item.channel = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -33,13 +36,35 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         // Holdout projectile is spawned when holding the item, so using the item does nothing
         public override bool CanUseItem(Player player) => false;
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            Player Owner = Main.LocalPlayer;
+            if (Owner is null)
+                return;
+            float rate = (Main.GlobalTimeWrappedHourly * 3);
+            List<Color> eColors = new List<Color>()
+            {
+                new Color(164, 47, 160),
+                new Color(227, 97, 72),
+                new Color(193, 255, 146)
+            };
+            int colorIndex = (int)(rate / 2 % eColors.Count);
+            Color currentColor = eColors[colorIndex];
+            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip7");
+            if (line != null)
+                line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.2f);
+        }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SuperStarCannon).
-                AddIngredient<StarSputter>().
                 AddIngredient<RuinousSoul>(4).
-                AddTile(TileID.MythrilAnvil).
+                AddIngredient(ItemID.FallenStar, 15).
+                AddIngredient<GalacticaSingularity>(3).
+                AddIngredient<ExodiumCluster>(25).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }
