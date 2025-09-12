@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Accessories
                 AddTile(TileID.TinkerersWorkbench).
                 AddCondition(Condition.InGraveyard).
                 Register();
+                .DisableDecraft();
         }
     }
 }
