@@ -86,6 +86,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
+
+            if (Main.getGoodWorld)
+                NPC.takenDamageMultiplier = 2;
         }
 
         public override void BossHeadSlot(ref int index)

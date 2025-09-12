@@ -504,14 +504,24 @@ namespace CalamityMod.NPCs.DevourerofGods
                 homingTurnSpeed *= NPC.Distance(destination) / 500f;
                 if (NPC.Distance(destination) > 1400)
                     NPC.ai[1] = 1;
+                if (NPC.ai[1] == -1)
+                {
+                    NPC.ai[1] = 0;
+                }
+                else
                 if (NPC.ai[1] == 1)
                 {
                     homingTurnSpeed *= 5;
                     float ftwDotProduct = Vector2.Dot(NPC.DirectionTo(destination), NPC.velocity.SafeNormalize(Vector2.Zero));
                     if (ftwDotProduct > 0.95f)
-                        NPC.ai[1] = 0;
+                    {
+                        NPC.ai[1] = -1;
+
+                    }
                 }
-                speed *= 5;
+                else
+                    Main.NewText(NPC.Distance(destination));
+                    speed *= 5;
                 if (NPC.ai[3] == 0)
                     phaseLimit += 600;
                 else
