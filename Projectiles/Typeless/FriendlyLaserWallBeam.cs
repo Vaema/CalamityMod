@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Typeless
         public bool canDamage => doneAttack && laserFX >= 1f;
         public bool doneAttack = false;
         public int attackTime = 30;
-        public float laserLength => laserType == 0 ? 2000 : 1000;
+        public float laserLength => laserType == 0 ? 4000 : 2000;
         public float laserFX = 0;
         public float storedTime = 0;
         public Color drawColor = Color.Magenta;

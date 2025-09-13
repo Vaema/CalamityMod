@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         {
             if (Projectile.localAI[1] > DashStartup)
             {
-                modifiers.SourceDamage *= 4;
+                modifiers.SourceDamage *= 6;
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

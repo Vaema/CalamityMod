@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 4000;
+            Item.damage = 6200;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 45;
             Item.useAnimation = 45;
@@ -46,10 +46,17 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
         private int storedDMG = 1;
         private float storedKB = 1;
+        private int storedDir = 1;
+        private float storedRot = -5;
         public override void UseItemFrame(Player player)
         {
             if (player.direction == -1)
                 player.itemRotation -= MathHelper.Pi;
+            if (storedRot == -5)
+                storedRot = player.itemRotation;
+            bool flip = false;
+            if (storedDir != player.direction)
+                flip = true;
             if (player.itemTime < 60)
             {
                 player.itemRotation = player.DirectionTo(player.Calamity().mouseWorld).ToRotation();
@@ -67,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                             Main.LocalPlayer.Calamity().GeneralScreenShakePower = 2;
                         if (Main.myPlayer == player.whoAmI)
                         {
-                            Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 1016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
+                            Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
                         }
                     }
                 }
@@ -82,7 +89,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                         Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
                     if (Main.myPlayer == player.whoAmI)
                     {
-                        int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 1016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);
+                        int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);
                         if (Main.projectile.IndexInRange(p))
                         {
                             Main.projectile[p].scale = 4;
@@ -92,9 +99,17 @@ namespace CalamityMod.Items.Weapons.Ranged
                     player.itemAnimation = 0;
                 }
             }
+            if (player.dashDelay != -1)
             player.direction = player.itemRotation.ToRotationVector2().X.DirectionalSign();
+            storedDir = player.direction;
+            storedRot = player.itemRotation;
             if (player.direction == -1)
                 player.itemRotation += MathHelper.Pi;
+            if (flip)
+            {
+                player.itemRotation -= MathHelper.Pi;
+                player.itemRotation *= -1;
+            }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

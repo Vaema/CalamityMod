@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.netUpdate = true;
                 }
                 Projectile.velocity = Vector2.Lerp(dir, Projectile.DirectionTo(Main.player[Projectile.owner].Center).SafeNormalize(Vector2.Zero), (Lifetime - Projectile.timeLeft) / (ReboundTime * 1.75f));
-                Projectile.velocity *= Projectile.Calamity().stealthStrike ? 25f : 20f;
+                Projectile.velocity *= Projectile.Calamity().stealthStrike ? 40f : 25f;
             }
             if (Projectile.timeLeft < Lifetime - ReboundTime)
             {
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Rogue
             else if (Projectile.timeLeft == Lifetime - ReboundTime)
             {
                 NPC npc = null;
-                float maxDist = 600;
+                float maxDist = 1000;
                 foreach (var item in Main.ActiveNPCs)
                 {
                     if (!item.CanBeChasedBy())
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (npc != null)
                 {
-                    int laserDamage = (int)(Projectile.damage * 0.5f);
+                    int laserDamage = (int)(Projectile.damage * 0.75f);
                     Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.DirectionTo(npc.Center), ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, -1.5f);
                     if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                     {

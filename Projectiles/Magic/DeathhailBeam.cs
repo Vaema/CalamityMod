@@ -113,6 +113,12 @@ namespace CalamityMod.Projectiles.Magic
         {
             base.OnHitPlayer(target, info);
         }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
+            base.OnHitNPC(target, hit, damageDone);
+        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             if (!canDamage)
