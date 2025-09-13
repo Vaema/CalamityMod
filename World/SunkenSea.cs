@@ -939,6 +939,17 @@ namespace CalamityMod.World
                                 WorldGen.PlaceTile(X, Y, (ushort)ModContent.TileType<Navystone>());
                             }
 
+                            float horizontalOffsetNoiseWallsinner = CalamityUtils.PerlinNoise2D(X / 80, Y / 80, 5, unchecked(cavePerlinSeedWalls + 1)) * 0.01f;
+                            float cavePerlinValueWallsinner = CalamityUtils.PerlinNoise2D(X / 375f, Y / 375f, 5, cavePerlinSeedWalls) + 0.5f + horizontalOffsetNoiseWallsinner;
+                            float cavePerlinValue2Wallsinner = CalamityUtils.PerlinNoise2D(X / 375f, Y / 375f, 5, unchecked(cavePerlinSeedWalls - 1)) + 0.5f;
+                            float caveNoiseMapWallsinner = (cavePerlinValueWallsinner + cavePerlinValue2Wallsinner) * 0.5f;
+                            float caveCreationThresholdWallsinner = horizontalOffsetNoiseWallsinner * 5.5f + 0.435f;
+
+                            if (caveNoiseMapWallsinner * caveNoiseMapWallsinner > caveCreationThresholdWallsinner)
+                            {
+                                WorldGen.PlaceWall(X, Y, ModContent.WallType<NavyslateWall>());
+                            }
+
                             //place walls in the biome using a different "seed" so it differs from the cave generation
                             //this creates a neat effect where walls worm their way through the caverns while leaving openings for the background to show through
                             float horizontalOffsetNoiseWalls = CalamityUtils.PerlinNoise2D(X / 80, Y / 80, 5, unchecked(cavePerlinSeedWalls + 1)) * 0.01f;
@@ -951,6 +962,8 @@ namespace CalamityMod.World
                             {
                                 WorldGen.PlaceWall(X, Y, ModContent.WallType<NavystoneWall>());
                             }
+
+                            
 
                             Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
                             Main.tile[X, Y].LiquidAmount = byte.MaxValue;
