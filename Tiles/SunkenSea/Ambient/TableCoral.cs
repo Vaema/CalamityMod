@@ -22,6 +22,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.DrawXOffset = 2;
             TileObjectData.addTile(Type);
 
             DustType = 253;

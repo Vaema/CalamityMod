@@ -12,6 +12,7 @@ using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.DraedonSummoner;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -173,7 +174,7 @@ namespace CalamityMod.Tiles
                     return;
 
                 Tile t = Main.tile[xPos, yPos];
-                if (t.HasTile && (t.TileType == TileType<LumenylCrystals>() || t.TileType == TileType<SeaPrismCrystals>()))
+                if (t.HasTile && (t.TileType == TileType<LumenylCrystals>() || t.TileType == TileType<SeaPrismCrystals>() || t.TileType == TileType<SmallCorals>()))
                 {
                     WorldGen.KillTile(xPos, yPos, false, false, false);
                     if (!Main.tile[xPos, yPos].HasTile && Main.netMode != NetmodeID.SinglePlayer)
@@ -182,7 +183,7 @@ namespace CalamityMod.Tiles
             }
 
             // Check if crystals should be shattered, do not shatter crystals next to other crystals if a crystal is shattered.
-            if (Main.tileSolid[tile.TileType] && tile.TileType != TileType<LumenylCrystals>() && tile.TileType != TileType<SeaPrismCrystals>())
+            if (Main.tileSolid[tile.TileType] && tile.TileType != TileType<LumenylCrystals>() && tile.TileType != TileType<SeaPrismCrystals>() && tile.TileType != TileType<SmallCorals>())
             {
                 bool dontShatter = fail || effectOnly;
                 CheckShatterCrystal(i + 1, j, dontShatter);

@@ -7,9 +7,9 @@ using Terraria.GameContent;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-	public class NavystonePileBase : ModTile
+	public class SmallNavystonePileBase : ModTile
 	{
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/NavystonePile";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SmallNavystonePile";
 
         public override void SetStaticDefaults()
         {
@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             DustType = DustID.Stone;
 
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style2x1);
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
 
@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         }
     }
 
-    public class NavystonePile : NavystonePileBase
+    public class SmallNavystonePile : NavystonePileBase
     {
         public override void SetStaticDefaults()
         {

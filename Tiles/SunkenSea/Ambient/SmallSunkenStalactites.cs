@@ -11,27 +11,24 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-    [LegacyName("SunkenStalagmites")]
-    public class SunkenStalagmite1 : ModTile
+    public class SmallSunkenStalactites : ModTile
     {
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
+            TileObjectData.newTile.AnchorTop = new AnchorData(AnchorType.SolidTile, TileObjectData.newTile.Width, 0);
+            TileObjectData.newTile.AnchorBottom = default(AnchorData);
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleWrapLimit = 3;
+            TileObjectData.newTile.RandomStyleRange = 3;
+            TileObjectData.newTile.DrawYOffset = -2;
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(31, 92, 114));
 
             base.SetStaticDefaults();
         }
-    }
-
-    public class SunkenStalagmite2 : SunkenStalagmite1
-    {
-    }
-
-    public class SunkenStalagmite3 : SunkenStalagmite1
-    {
     }
 }

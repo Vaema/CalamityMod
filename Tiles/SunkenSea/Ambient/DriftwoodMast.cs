@@ -27,6 +27,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.StyleWrapLimit = 6;
             TileObjectData.newTile.RandomStyleRange = 6;
 
+            TileObjectData.newTile.DrawYOffset = 2;
+
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(146, 123, 127));
             DustType = DustID.Shadewood_Tree;
