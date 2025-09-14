@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -32,9 +33,15 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 15; i++)
             {
-                Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.CopperCoin, 0f, 0f, 0, default, 1f);
+                int size = 16;
+                Vector2 position = Projectile.Center;
+                Vector2 velocity = Main.rand.NextVector2Circular(size, size);
+                SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.2f, 0.3f), Color.DarkOrange * 0.5f, Main.rand.Next(6, 9), 1, 1.5f);
+                GeneralParticleHandler.SpawnParticle(energy);
+                Dust dust = Dust.NewDustPerfect(position, DustID.Torch, velocity, 0, default, Main.rand.NextFloat(1f, 2f));
+                dust.noGravity = true;
             }
             int projAmt = Main.rand.Next(2, 4);
             if (Projectile.owner == Main.myPlayer)
