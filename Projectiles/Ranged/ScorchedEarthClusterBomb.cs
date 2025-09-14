@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -9,6 +10,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class ScorchedEarthClusterBomb : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+        public Vector2 vibrate = Vector2.Zero;
         public override void SetDefaults()
         {
             Projectile.width = 14;
@@ -28,11 +30,16 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.velocity *= 0.95f;
             if (Projectile.velocity.Length() < 0.5f && Projectile.timeLeft > 10)
                 Projectile.timeLeft = 10;
+            if (Projectile.timeLeft <= 75)
+            {
+                float power = 2.5f;
+                vibrate = Main.rand.NextVector2Circular(power, power);
+            }
         }
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item14, Projectile.position);
+            SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.8f , MaxInstances = 3}, Projectile.position);
             for (int i = 0; i < 15; i++)
             {
                 int size = 16;
@@ -52,6 +59,16 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<RocketFire>(), Projectile.damage, 0f, Projectile.owner);
                 }
             }
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D Texture = Terraria.GameContent.TextureAssets.Projectile[Projectile.type].Value;
+            Rectangle frame = Texture.Frame(1, Main.projFrames[Projectile.type], 0, Projectile.frame);
+            Vector2 drawPosition;
+            Vector2 origin = frame.Size() * 0.5f;
+            drawPosition = Projectile.Center - Main.screenPosition;
+            Main.EntitySpriteDraw(Texture, drawPosition + vibrate, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
+            return false;
         }
     }
 }

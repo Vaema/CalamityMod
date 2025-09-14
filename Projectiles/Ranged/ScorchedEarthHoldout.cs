@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
                 //for (int i = 0; i < 2; i++)
                 {
                     //Vector2 backsmokeVel = new Vector2(6, -2) * Main.rand.NextFloat(0.1f, 1.1f);
-                    //Particle backsmoke = new HeavySmokeParticle(Projectile.Center + (-Projectile.velocity * 60f), backsmokeVel, Main.rand.NextBool() ? Color.DarkSlateGray : Color.Black, Main.rand.Next(20, 30 + 1), Main.rand.NextFloat(0.2f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
+                    //Particle backsmoke = new HeavySmokeParticle(GunTipPosition + (-Projectile.velocity * 110f), -Projectile.velocity.SafeNormalize(Vector2.UnitY) * backsmokeVel, Main.rand.NextBool() ? Color.DarkSlateGray : Color.Black, Main.rand.Next(20, 30 + 1), Main.rand.NextFloat(0.2f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                     //GeneralParticleHandler.SpawnParticle(backsmoke);
                 }
             }
