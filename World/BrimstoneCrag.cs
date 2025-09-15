@@ -56,8 +56,10 @@ namespace CalamityMod.World
             {
                 for (int y = Main.maxTilesY - 90; y <= Main.maxTilesY - 5; y++)
                 {
-                    WorldGen.PlaceTile(x, y, (ushort)ModContent.TileType<BrimstoneSlag>());
-                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
+                    Tile tile = Main.tile[x, y];
+                    tile.TileType = (ushort)ModContent.TileType<BrimstoneSlag>();
+                    tile.HasTile = true;
+                    tile.WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
                 }
             }
 

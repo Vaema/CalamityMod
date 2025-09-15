@@ -9,7 +9,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class WallCoral : ModTile
     {
-        private const int Variants = 4;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -17,21 +16,29 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileSolidTop[Type] = false;
             Main.tileLighted[Type] = true;
 
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.Origin = new Point16(1, 1);
+
+            TileObjectData.newTile.AnchorTop = AnchorData.Empty;
+            TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
+            TileObjectData.newTile.AnchorLeft = AnchorData.Empty;
+            TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 3, 0);
+            TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
 
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = Variants;
-            TileObjectData.newTile.RandomStyleRange = Variants;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
-            TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
-            TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.StyleWrapLimit = 4;
+            TileObjectData.newTile.RandomStyleRange = 4;
+            TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16 };
+            TileObjectData.newTile.CoordinateWidth = 16;
+            TileObjectData.newTile.CoordinatePadding = 2;
+            TileObjectData.newTile.DrawXOffset = 2;
+
             TileObjectData.addTile(Type);
+
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
         }
 
-        public override void NumDust(int i, int j, bool fail, ref int num)
-        {
-            num = fail ? 1 : 3;
-        }
+        public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
     }
 }

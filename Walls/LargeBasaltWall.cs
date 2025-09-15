@@ -10,7 +10,25 @@ namespace CalamityMod.Walls
         {
             Main.wallHouse[Type] = true;
 
-            AddMapEntry(new Color(45, 44, 50));
+            AddMapEntry(new Color(65, 64, 68));
+        }
+        public override void RandomUpdate(int i, int j)
+        {
+            Tile t = Main.tile[i, j];
+            if (t.LiquidType == LiquidID.Water && j < Main.maxTilesY - 205)
+            {
+                t.LiquidAmount = 0;
+                WorldGen.SquareTileFrame(i, j);
+            }
+        }
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            Tile t = Main.tile[i, j];
+            if (t.LiquidType == LiquidID.Water && j < Main.maxTilesY - 205)
+            {
+                t.LiquidAmount = 0;
+                WorldGen.SquareTileFrame(i, j);
+            }
         }
 
         public override bool CreateDust(int i, int j, ref int type)

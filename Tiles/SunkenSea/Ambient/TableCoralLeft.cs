@@ -10,7 +10,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class TableCoralLeft : ModTile
     {
-        private const int Variants = 3;
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -18,12 +17,13 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileSolidTop[Type] = true;
 
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = Variants;
-            TileObjectData.newTile.RandomStyleRange = Variants;
+            TileObjectData.newTile.StyleWrapLimit = 3;
+            TileObjectData.newTile.RandomStyleRange = 3;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
+            TileObjectData.newTile.DrawXOffset = -2;
             TileObjectData.addTile(Type);
 
             DustType = 253;
