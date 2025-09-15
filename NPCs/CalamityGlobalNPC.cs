@@ -925,48 +925,13 @@ namespace CalamityMod.NPCs
             bool wormBoss = CalamityNPCTypeSets.DesertScourge.Contains(npc.type) || CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || CalamityNPCTypeSets.Perforators.Contains(npc.type) ||
                 CalamityNPCTypeSets.AquaticScourge.Contains(npc.type) || CalamityNPCTypeSets.AstrumDeus.Contains(npc.type) || CalamityNPCTypeSets.StormWeaver.Contains(npc.type);
             bool slimeGod = CalamityNPCTypeSets.SlimeGod.Contains(npc.type);
+
+
             ActiveHeatDebuffMultiplier = HeatDebuffMultiplier;
-            if (VulnerableToHeat.HasValue)
-            {
-                if (VulnerableToHeat.Value)
-                    ActiveHeatDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
-
             ActiveColdDebuffMultiplier = ColdDebuffMultiplier;
-            if (VulnerableToCold.HasValue)
-            {
-                if (VulnerableToCold.Value)
-                    ActiveColdDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
-
             ActiveSicknessDebuffMultiplier = SicknessDebuffMultiplier;
-            if (VulnerableToSickness.HasValue)
-            {
-                if (VulnerableToSickness.Value)
-                    ActiveSicknessDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
             ActiveElectricDebuffMultiplier = ElectricDebuffMultiplier;
-            if (VulnerableToElectricity.HasValue)
-            {
-                if (VulnerableToElectricity.Value)
-                    ActiveElectricDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
             ActiveWaterDebuffMultiplier = WaterDebuffMultiplier;
-            if (VulnerableToWater.HasValue)
-            {
-                if (VulnerableToWater.Value)
-                    ActiveWaterDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
 
             if (irradiated)
             {
@@ -993,11 +958,48 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
+            if (VulnerableToHeat.HasValue)
+            {
+                if (VulnerableToHeat.Value)
+                    ActiveHeatDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+
+            if (VulnerableToCold.HasValue)
+            {
+                if (VulnerableToCold.Value)
+                    ActiveColdDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+
+            if (VulnerableToSickness.HasValue)
+            {
+                if (VulnerableToSickness.Value)
+                    ActiveSicknessDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+            if (VulnerableToElectricity.HasValue)
+            {
+                if (VulnerableToElectricity.Value)
+                    ActiveElectricDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+            if (VulnerableToWater.HasValue)
+            {
+                if (VulnerableToWater.Value)
+                    ActiveWaterDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
             #endregion
 
-            // Oiled
-
+            
             bool hasModHotOil = false;
+            //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Count(); index++)
             {
                 var type = npc.buffType[index];
@@ -1008,21 +1010,15 @@ namespace CalamityMod.NPCs
                 if (debuffData.HeatDebuffScaling > 0)
                     hasModHotOil = true;
             }
-            //Oiled comes after so that we can detect if they have a heat debuff
-            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
-            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
+            //Oiled comes after so that we can detect if they have a heat debuff in the above loop
+            bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
             if (npc.oiled)
             {
                 var oil = DebuffData.Oiled;
                 int index = npc.FindBuffIndex(BuffID.Oiled);
-                if (hasHotOil || hasColdOil)
+                if (hasVanillaOil)
                     npc.lifeRegen -= oil.EnemyVanillaRegenToCancelOut;
                 oil.NPCLifeRegenMethod(npc, BuffID.Oiled, ref index, ref damage);
-            }
-
-            if (npc.dryadBane)
-            {
-               
             }
 
             // Debuffs that aren't affected by weaknesses or resistances.
