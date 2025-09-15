@@ -1529,10 +1529,12 @@ namespace CalamityMod.World
             //first clean up unnecessary chunks of tiles
             CleanOutSmallClumps();
 
-            //just loop through the whole world and check for the specific tiles in the sunken sea because im lazy
-            for (int X = 20; X <= Main.maxTilesX - 20; X++)
+            // Loop through the area around the Sunken Sea and check for the specific tiles
+            int minX = Math.Max(20, GenVars.UndergroundDesertLocation.Left - 20);
+            int maxX = Math.Min(GenVars.UndergroundDesertLocation.Right + 20, Main.maxTilesX - 20);
+            for (int X = minX; X <= maxX; X++)
             {
-                for (int Y = 20; Y <= Main.maxTilesY - 20; Y++)
+                for (int Y = (int)Main.worldSurface; Y <= Main.UnderworldLayer; Y++)
                 {
                     if (WorldGen.genRand.NextBool(200))
                         WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(2), Actions.Chain(new GenAction[]
