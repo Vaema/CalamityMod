@@ -16,7 +16,6 @@ namespace CalamityMod.Projectiles.Ranged
         public bool BonusEffectMode;
         public bool HasHit = false;
         public bool SetLifetime = false;
-        public int index = -1;
         public static readonly SoundStyle RocketExplosion = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBExplosion");
         public ref float RocketID => ref Projectile.ai[0];
 
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
             //Be VERY CAREFUL changing this. The rocket quickly gains speed for a very limited amount of time to make sure it doesn't go too fast
             if (time > 24 && time < 34)
             {
-                Projectile.velocity *= index != -1 ? 1.15f : 1.5f;
+                Projectile.velocity *= 1.5f;
             }
             //All of these effects only trigger once the rocket is speeding up
             if (time >= 24)
@@ -170,6 +169,7 @@ namespace CalamityMod.Projectiles.Ranged
                 bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
                 SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
                 SoundEngine.PlaySound(RocketExplosion with { MaxInstances = 2}, Projectile.Center);
+                //If using a rocket with extra effects, spawn an invisible copy that handes the tile breaking/liquid spawning logic
                 if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII || RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket)
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorchedEarthRocket>(), 0, 0f, Projectile.owner, RocketID, 0f, 2f);
                 // Create Blast
@@ -179,6 +179,7 @@ namespace CalamityMod.Projectiles.Ranged
                 int debuff1 = BuffID.Daybreak;
                 int debuff2 = BuffID.Oiled;
                 int debuffTime = 360;
+                //The explosion has a different damage scaling depending on which rocket type you have. Left is Cluster Rocket, right is Non-Cluster.
                 Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * (isClusterRocket ? 0.75f : 1)), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                 blast.localAI[0] = debuff1;
                 blast.localAI[2] = debuff2;
