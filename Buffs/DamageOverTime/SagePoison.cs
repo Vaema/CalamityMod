@@ -17,8 +17,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         };
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
-            // The base DoT has this formula used when it's applied
-            // (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f;
+            // The base DoT is multiplied by the amount of Viral Sprouts you have when applied
             // See SageNeedle.cs for details
 
             //Reduce power of weakness/resistances but leave sickness debuff boosters at full power
