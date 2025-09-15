@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
             DustType = DustID.Ash;
             HitSound = SoundID.Tink;
 
-            AddMapEntry(new Color(58, 55, 70));
+            AddMapEntry(new Color(77, 75, 86));
 
             MinPick = 110;
 
