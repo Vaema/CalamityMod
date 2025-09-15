@@ -13,15 +13,18 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public int time = 0;
+        public bool BonusEffectMode;
+        public bool HasHit = false;
+        public bool SetLifetime = false;
         public int index = -1;
         public static readonly SoundStyle RocketExplosion = new("CalamityMod/Sounds/Item/AnomalysNanogunMPFBExplosion");
+        public ref float RocketID => ref Projectile.ai[0];
 
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 10;
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         }
-
 
         public override void SetDefaults()
         {
@@ -81,15 +84,94 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 CalamityUtils.HomeInOnNPC(Projectile, true, 350f, 20f, 6f);
             }
+            //Handling Tile Breaking/Liquid Rockets
+            BonusEffectMode = Projectile.ai[2] == 2;
+            if (BonusEffectMode)
+            {
+                if (!SetLifetime)
+                {
+                    Projectile.timeLeft = 60;
+                    Projectile.extraUpdates = 0;
+                    Projectile.damage = 0;
+                    Projectile.alpha = 255;
+                    SetLifetime = true;
+                }
+                if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII)
+                {
+
+                    var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID);
+                    int blastRadius = (int)(Projectile.RocketBehavior(info) * 3f);
+                    if (time % 5 == 0)
+                    {
+                        Projectile.ExplodeTiles((int)(blastRadius * Utils.Remap(time, 60f, 1f, 1f, 0f, true)), info.respectStandardBlastImmunity, info.tilesToCheck, info.wallsToCheck);
+                    }
+                }
+                else
+                {
+                    Point center = Projectile.Center.ToTileCoordinates();
+                    var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID);
+                    int blastRadius = Projectile.RocketBehavior(info);
+                    if (RocketID == ItemID.DryRocket)
+                    {
+                        DelegateMethods.f_1 = 10.5f * Utils.Remap(time, 60f, 1f, 1f, 0f, true);
+                        if (time == 0)
+                        {
+                            Utils.PlotTileArea(center.X * blastRadius, center.Y * blastRadius, DelegateMethods.SpreadDry);
+                        }
+                    }
+                    if (RocketID == ItemID.WetRocket)
+                    {
+                        DelegateMethods.f_1 = 10.5f * Utils.Remap(time, 60f, 1f, 1f, 0f, true);
+                        if (time == 0)
+                        {
+                            Utils.PlotTileArea(center.X * blastRadius, center.Y * blastRadius, DelegateMethods.SpreadWater);
+                        }
+                    }
+                    if (RocketID == ItemID.LavaRocket)
+                    {
+                        DelegateMethods.f_1 = 10.5f * Utils.Remap(time, 60f, 1f, 1f, 0f, true);
+                        if (time == 0)
+                        {
+                            Utils.PlotTileArea(center.X * blastRadius, center.Y * blastRadius, DelegateMethods.SpreadLava);
+                        }
+                    }
+                    if (RocketID == ItemID.HoneyRocket)
+                    {
+                        DelegateMethods.f_1 = 10.5f * Utils.Remap(time, 60f, 1f, 1f, 0f, true);
+                        if (time == 0)
+                        {
+                            Utils.PlotTileArea(center.X * blastRadius, center.Y * blastRadius, DelegateMethods.SpreadHoney);
+                        }
+                    }
+                }
+            }
             time++;
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            HasHit = true;
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            HasHit = true;
+        }
+
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            HasHit = true;
+            return true;
         }
 
         public override void OnKill(int timeLeft)
         {
-            if (Projectile.owner == Main.myPlayer)
+            if (Projectile.owner == Main.myPlayer && HasHit == true && !BonusEffectMode && Projectile.ai[2] == 0)
             {
+                bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
                 SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
                 SoundEngine.PlaySound(RocketExplosion with { MaxInstances = 2}, Projectile.Center);
+                if (RocketID == ItemID.RocketII || RocketID == ItemID.RocketIV || RocketID == ItemID.MiniNukeII || RocketID == ItemID.DryRocket || RocketID == ItemID.WetRocket || RocketID == ItemID.LavaRocket || RocketID == ItemID.HoneyRocket)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<ScorchedEarthRocket>(), 0, 0f, Projectile.owner, RocketID, 0f, 2f);
                 // Create Blast
                 float blastSize = 300;
                 float minMultiplier = 0.25f;
@@ -97,37 +179,37 @@ namespace CalamityMod.Projectiles.Ranged
                 int debuff1 = BuffID.Daybreak;
                 int debuff2 = BuffID.Oiled;
                 int debuffTime = 360;
-                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
+                Projectile blast = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * (isClusterRocket ? 0.75f : 1)), Projectile.knockBack, Projectile.owner, blastSize, minMultiplier, hitsToMinMult);
                 blast.localAI[0] = debuff1;
                 blast.localAI[2] = debuff2;
                 blast.localAI[1] = debuffTime;
                 blast.timeLeft = 15;
                 blast.DamageType = DamageClass.Ranged;
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < (isClusterRocket ? 9 : 5); j++)
                 {
                     Vector2 velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(8f, 10f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<ScorchedEarthClusterBomb>(), (int)(Projectile.damage * 0.25), Projectile.knockBack * 0.25f, Projectile.owner);
                 }
-            }
-            for (int i = 0; i < 15; i++)
-            {
-                Vector2 randVel = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
-                Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.DarkSlateGray * 0.8f, Main.rand.Next(25, 35 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.7f);
-                GeneralParticleHandler.SpawnParticle(smoke);
-            }
-            for (int i = 0; i < 2; i++)
-            {
-                //Explosion effect
-                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.OrangeRed : Color.DarkGoldenrod * 0.8f, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.2f, 20, true, 1.4f);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.18f, 20, true, 1f);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
-                Particle blastRing3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Red, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 1.8f, 25, true);
-                GeneralParticleHandler.SpawnParticle(blastRing3);
-                Particle blastRing4 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.5f, 0.8f, 25, true);
-                GeneralParticleHandler.SpawnParticle(blastRing4);
-                Particle blastRing5 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.13f, 20, true, 1f);
-                GeneralParticleHandler.SpawnParticle(blastRing5);
+                for (int i = 0; i < 15; i++)
+                {
+                    Vector2 randVel = new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.6f);
+                    Particle smoke = new HeavySmokeParticle(Projectile.Center + randVel, randVel, Color.Black, Main.rand.Next(20, 25 + 1), Main.rand.NextFloat(0.9f, 2.3f), 0.7f);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }
+                for (int i = 0; i < 2; i++)
+                {
+                    //Explosion effect
+                    Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Main.rand.NextBool() ? Color.OrangeRed : Color.DarkGoldenrod * 0.8f, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.2f, 20, true, 1.4f);
+                    GeneralParticleHandler.SpawnParticle(blastRing);
+                    Particle blastRing2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.18f, 20, true, 1f);
+                    GeneralParticleHandler.SpawnParticle(blastRing2);
+                    Particle blastRing3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Red, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 1f, 1.8f, 25, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing3);
+                    Particle blastRing4 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.5f, 0.8f, 25, true);
+                    GeneralParticleHandler.SpawnParticle(blastRing4);
+                    Particle blastRing5 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0f, 0.13f, 20, true, 1f);
+                    GeneralParticleHandler.SpawnParticle(blastRing5);
+                }
             }
         }
         public override bool PreDraw(ref Color lightColor)
