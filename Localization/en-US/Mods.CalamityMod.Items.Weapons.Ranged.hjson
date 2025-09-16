@@ -1046,7 +1046,7 @@ ScorchedEarth: {
 		'''
 		Fires a burst of four heat seeking missiles that rapidly accelerate after a short delay
 		All rockets explode into napalm cluster bombs on impact
-50% chance to save ammo
+		50% chance to save ammo
 		'Burns your targets to a fine crisp'
 		'''
 }
