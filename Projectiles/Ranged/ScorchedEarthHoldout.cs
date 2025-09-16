@@ -3,10 +3,8 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.ScorchedEarth;
 using static Terraria.ModLoader.ModContent;
@@ -50,6 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Vector2 smokeVel = new Vector2(0, -8) * Main.rand.NextFloat(0.1f, 1.1f);
                 Particle smoke = new HeavySmokeParticle(GunTipPosition, smokeVel, Main.rand.NextBool() ? Color.DarkSlateGray : Color.DarkGray, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
+                //Visual request from the donor that I tried and didn't end up liking. This is commented and not deleted in case the donor really wants this effect 
                 //for (int i = 0; i < 2; i++)
                 {
                     //Vector2 backsmokeVel = new Vector2(6, -2) * Main.rand.NextFloat(0.1f, 1.1f);
