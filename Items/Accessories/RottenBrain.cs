@@ -34,7 +34,8 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<BloodyWormTooth>().
                 AddTile(TileID.TinkerersWorkbench).
                 AddCondition(Condition.InGraveyard).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

@@ -10,13 +10,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LucreciaDNATrailCreator : ModProjectile
+    public class LucreciaDNATrailCreator : ModProjectile, ILocalizedModType
     {
         private List<Vector2> oldPositionsLeft = new List<Vector2>();
         private List<Vector2> oldPositionsRight = new List<Vector2>();
         private int trailTimer = 0;
         // The timer is initialized with a delay. It will reset to 6 after the first shot.
         private int middleStreakTimer = 40;
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetDefaults()

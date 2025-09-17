@@ -10,6 +10,7 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Melee;
@@ -171,6 +172,20 @@ namespace CalamityMod.CalPlayer
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
                 itemDrop = -1;
                 return;
+            }
+
+            if (attempt.playerFishingConditions.PoleItemType == ModContent.ItemType<WulfrumRod>())
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    itemDrop = ModContent.ItemType<WulfrumMetalScrap>();
+                    return;
+                }
+                if (Main.rand.NextBool(15))
+                {
+                    itemDrop = ModContent.ItemType<EnergyCore>();
+                    return;
+                }
             }
 
             // Ignore catches if it's junk
@@ -415,6 +430,8 @@ namespace CalamityMod.CalPlayer
                 if (fishList.Contains(fish.type))
                     fish.stack += Main.rand.Next(1, 3 + 1);
             }
+            if (fish.type == ModContent.ItemType<WulfrumMetalScrap>())
+                fish.stack = Main.rand.Next(1, 6);
         }
         #endregion
     }

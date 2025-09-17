@@ -17,6 +17,11 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileLighted[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.DrawYOffset = 2;
+
+            TileObjectData.newTile.StyleHorizontal = true;
+            TileObjectData.newTile.StyleWrapLimit = 3;
+            TileObjectData.newTile.RandomStyleRange = 3;
+
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(48, 201, 214));
             DustType = DustID.IceGolem;
@@ -29,26 +34,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             num = fail ? 1 : 2;
         }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.14f;
-            g = 0.41f;
-            b = 0.45f;
-        }
-    }
-
-    public class DigitateCoral2 : DigitateCoral
-    {
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            r = 0.14f;
-            g = 0.41f;
-            b = 0.45f;
-        }
-    }
-    
-    public class DigitateCoral3 : DigitateCoral
-    {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.14f;

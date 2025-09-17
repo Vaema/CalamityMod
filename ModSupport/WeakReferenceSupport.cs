@@ -1335,8 +1335,8 @@ namespace CalamityMod
                 return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
             };
             
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.DeathEnabled", deathEnabled, 50);
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.RevengeanceEnabled", revengeanceEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.Death", deathEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.Revengeance", revengeanceEnabled, 50);
         }
         #endregion
     }

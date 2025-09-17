@@ -178,7 +178,20 @@ namespace CalamityMod.CalPlayer
         public int momentumCapacitorTime = 0;
         /// <summary> A multiplier on the player's movement speed applied while using Momentum Capacitor. </summary>
         public float momentumCapacitorBoost = 0f;
-
+        public enum FishingMinigames
+        {
+            None,
+            WulfrumRod,
+            NavyFishingRod,
+            HeronRod,
+            SlurperPole,
+            VerstaltiteFishingRod,
+            FeralDoubleRod,
+            RiftReeler,
+            EarlyBloomRod,
+            TheDevourerOfCods
+        }
+        public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
         public StatModifier TypelessDebuffMultiplier = new();
@@ -402,6 +415,7 @@ namespace CalamityMod.CalPlayer
         public bool canFireBloodflareMageProjectile = false;
         public bool canFireBloodflareRangedProjectile = false;
 
+        public int consecutiveCaughtFish = 0;
         public float WeakTimeFreezeUseTimer = 0;
         public bool WeakTimeFreezeInUse = false;
         #endregion
@@ -464,10 +478,10 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool stealthStrike75Cost = false;
         /// <summary>
-        /// If true, stealth strikes only require 85% of the player's max stealth to perform.<br/>
+        /// If true, stealth strikes only require 90% of the player's max stealth to perform.<br/>
         /// Used by Coin of Deceit.
         /// </summary>
-        public bool stealthStrike85Cost = false;
+        public bool stealthStrike90Cost = false;
         /// <summary> If true, this player is wearing a rogue or all-class armor set. This bool is required in order to use rogue stealth. </summary>
         public bool wearingRogueArmor = false;
         /// <summary> The sum of the player's stealth generation boosts from accessory modifiers. </summary>
@@ -2572,6 +2586,8 @@ namespace CalamityMod.CalPlayer
             pinkCandle = false;
             yellowCandle = false;
 
+            SelectedFishingMinigame = FishingMinigames.None;
+
             #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;
@@ -2830,6 +2846,8 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             #region Buffs, Debuffs, Counters, and Nonsense
+            if (Player.HeldItem.IsAir || Player.HeldItem.fishingPole == 0)
+                consecutiveCaughtFish = 0;
             heldGaelsLastFrame = false;
             gaelSwipes = 0;
             whitewaterHeal = 0;
@@ -5309,7 +5327,7 @@ namespace CalamityMod.CalPlayer
             stealthStrikeThisFrame = false;
             stealthStrikeHalfCost = false;
             stealthStrike75Cost = false;
-            stealthStrike85Cost = false;
+            stealthStrike90Cost = false;
 
             // stealthAcceleration only resets if you don't have either of the accelerator accessories equipped
             if (!darkGodSheath && !eclipseMirror)
@@ -5504,8 +5522,8 @@ namespace CalamityMod.CalPlayer
                 consumptionMult = 0.5f;
             else if (stealthStrike75Cost)
                 consumptionMult = 0.75f;
-            else if (stealthStrike85Cost)
-                consumptionMult = 0.85f;
+            else if (stealthStrike90Cost)
+                consumptionMult = 0.9f;
             return rogueStealth >= rogueStealthMax * consumptionMult;
         }
 
@@ -5532,7 +5550,7 @@ namespace CalamityMod.CalPlayer
                 if (rogueStealth <= 0f)
                     rogueStealth = 0f;
             }
-            else if (stealthStrike85Cost)
+            else if (stealthStrike90Cost)
             {
                 rogueStealth -= 0.9f * stealthToLose;
                 if (rogueStealth <= 0f)
@@ -5663,6 +5681,30 @@ namespace CalamityMod.CalPlayer
                     life.noGravity = true;
                 }
             }
+        }
+        #endregion
+
+        #region Controls
+        // These are used to entirely disable player directional inputs while being able to read them for other features
+        public bool ShouldHideControls = false;
+        public bool pressedRight = false;
+        public bool pressedLeft = false;
+        public bool pressedUp = false;
+        public bool pressedDown = false;
+        public override void SetControls()
+        {
+            pressedRight = Player.controlRight;
+            pressedLeft = Player.controlLeft;
+            pressedUp = Player.controlUp;
+            pressedDown = Player.controlDown;
+            if (ShouldHideControls)
+            {
+                Player.controlLeft = false;
+                Player.controlUp = false;
+                Player.controlDown = false;
+                Player.controlRight = false;
+            }
+            ShouldHideControls = false;
         }
         #endregion
     }
